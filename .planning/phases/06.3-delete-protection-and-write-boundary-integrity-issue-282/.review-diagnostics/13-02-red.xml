@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="8" time="0.980" timestamp="2026-10-30T23:39:04.959324+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_migration_docs" name="test_documented_provider_added_same_name_relation[False-False-False]" time="0.304"><failure message="AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields&#10;assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]&#10;  &#10;  Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;&#10;  Use -v to get more diff">recipes = namespace(build=&lt;function recipes.&lt;locals&gt;.build at 0x7e670cf25800&gt;, install=&lt;function recipes.&lt;locals&gt;.install at 0x7..._migration_docs.recipes.&lt;locals&gt;.Blocker'&gt;, events=[], actor=&lt;User: recipe_actor&gt;, url='/migration_document/1/delete/')
+details = False, blocked = False, empty = False
+
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    @pytest.mark.parametrize("empty", [False, True])
+    def test_documented_provider_added_same_name_relation(recipes, details, blocked, empty):
+        from crud_views.lib.deletion import merge_delete_preview
+    
+        r = recipes
+        # Execute both published fences before a new application model is introduced.
+        model_provider = r.build(OVERRIDE)()
+        view = r.build(EFFECT)
+        effect_provider = view.cv_get_delete_preview
+    
+        def combined(self, boundaries, *, using):
+            return model_provider.cv_get_delete_preview(boundaries, using=using) + effect_provider(
+                self, boundaries, using=using
+            )
+    
+        view.cv_get_delete_preview = combined
+        view.cv_show_related_objects = details
+        r.install(view)
+        initial = r.client.get(r.url)
+        assert initial.status_code == 200 and initial.context["delete_preview_incomplete"] is False
+        assert NOTICE not in initial.content.decode()
+    
+        def added_effect(*args):
+            r.events.append(("added-handler", "must never execute during preview"))
+    
+        class AdditionalAttachment(models.Model):
+            document = models.ForeignKey(r.Document, on_delete=added_effect)
+    
+            class Meta:
+                app_label = "app"
+    
+        with connection.schema_editor() as editor:
+            editor.create_model(AdditionalAttachment)
+        try:
+            if not empty:
+                AdditionalAttachment.objects.create(document=r.target)
+            if blocked:
+                r.Blocker.objects.create(document=r.target, title="Never disclose new-relation blocker")
+            inspection = inspect_deletion(r.target, using="default")
+            effect = view()
+            effect.object = r.target
+            records = effect_provider(effect, inspection.boundaries, using="default")
+&gt;           assert [record.boundary.field_model for record in records] == [r.Attachment], (
+                "The actual published fence must attest Attachment.document only, regardless of added same-name fields"
+            )
+E           AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields
+E           assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]
+E             
+E             Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;
+E             Use -v to get more diff
+
+tests/test1/test_delete_migration_docs.py:339: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_migration_docs" name="test_documented_provider_added_same_name_relation[False-False-True]" time="0.056"><failure message="AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields&#10;assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]&#10;  &#10;  Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;&#10;  Use -v to get more diff">recipes = namespace(build=&lt;function recipes.&lt;locals&gt;.build at 0x7e670cd4eca0&gt;, install=&lt;function recipes.&lt;locals&gt;.install at 0x7..._migration_docs.recipes.&lt;locals&gt;.Blocker'&gt;, events=[], actor=&lt;User: recipe_actor&gt;, url='/migration_document/1/delete/')
+details = True, blocked = False, empty = False
+
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    @pytest.mark.parametrize("empty", [False, True])
+    def test_documented_provider_added_same_name_relation(recipes, details, blocked, empty):
+        from crud_views.lib.deletion import merge_delete_preview
+    
+        r = recipes
+        # Execute both published fences before a new application model is introduced.
+        model_provider = r.build(OVERRIDE)()
+        view = r.build(EFFECT)
+        effect_provider = view.cv_get_delete_preview
+    
+        def combined(self, boundaries, *, using):
+            return model_provider.cv_get_delete_preview(boundaries, using=using) + effect_provider(
+                self, boundaries, using=using
+            )
+    
+        view.cv_get_delete_preview = combined
+        view.cv_show_related_objects = details
+        r.install(view)
+        initial = r.client.get(r.url)
+        assert initial.status_code == 200 and initial.context["delete_preview_incomplete"] is False
+        assert NOTICE not in initial.content.decode()
+    
+        def added_effect(*args):
+            r.events.append(("added-handler", "must never execute during preview"))
+    
+        class AdditionalAttachment(models.Model):
+            document = models.ForeignKey(r.Document, on_delete=added_effect)
+    
+            class Meta:
+                app_label = "app"
+    
+        with connection.schema_editor() as editor:
+            editor.create_model(AdditionalAttachment)
+        try:
+            if not empty:
+                AdditionalAttachment.objects.create(document=r.target)
+            if blocked:
+                r.Blocker.objects.create(document=r.target, title="Never disclose new-relation blocker")
+            inspection = inspect_deletion(r.target, using="default")
+            effect = view()
+            effect.object = r.target
+            records = effect_provider(effect, inspection.boundaries, using="default")
+&gt;           assert [record.boundary.field_model for record in records] == [r.Attachment], (
+                "The actual published fence must attest Attachment.document only, regardless of added same-name fields"
+            )
+E           AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields
+E           assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]
+E             
+E             Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;
+E             Use -v to get more diff
+
+tests/test1/test_delete_migration_docs.py:339: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_migration_docs" name="test_documented_provider_added_same_name_relation[False-True-False]" time="0.053"><failure message="AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields&#10;assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]&#10;  &#10;  Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;&#10;  Use -v to get more diff">recipes = namespace(build=&lt;function recipes.&lt;locals&gt;.build at 0x7e670cbda8e0&gt;, install=&lt;function recipes.&lt;locals&gt;.install at 0x7..._migration_docs.recipes.&lt;locals&gt;.Blocker'&gt;, events=[], actor=&lt;User: recipe_actor&gt;, url='/migration_document/1/delete/')
+details = False, blocked = True, empty = False
+
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    @pytest.mark.parametrize("empty", [False, True])
+    def test_documented_provider_added_same_name_relation(recipes, details, blocked, empty):
+        from crud_views.lib.deletion import merge_delete_preview
+    
+        r = recipes
+        # Execute both published fences before a new application model is introduced.
+        model_provider = r.build(OVERRIDE)()
+        view = r.build(EFFECT)
+        effect_provider = view.cv_get_delete_preview
+    
+        def combined(self, boundaries, *, using):
+            return model_provider.cv_get_delete_preview(boundaries, using=using) + effect_provider(
+                self, boundaries, using=using
+            )
+    
+        view.cv_get_delete_preview = combined
+        view.cv_show_related_objects = details
+        r.install(view)
+        initial = r.client.get(r.url)
+        assert initial.status_code == 200 and initial.context["delete_preview_incomplete"] is False
+        assert NOTICE not in initial.content.decode()
+    
+        def added_effect(*args):
+            r.events.append(("added-handler", "must never execute during preview"))
+    
+        class AdditionalAttachment(models.Model):
+            document = models.ForeignKey(r.Document, on_delete=added_effect)
+    
+            class Meta:
+                app_label = "app"
+    
+        with connection.schema_editor() as editor:
+            editor.create_model(AdditionalAttachment)
+        try:
+            if not empty:
+                AdditionalAttachment.objects.create(document=r.target)
+            if blocked:
+                r.Blocker.objects.create(document=r.target, title="Never disclose new-relation blocker")
+            inspection = inspect_deletion(r.target, using="default")
+            effect = view()
+            effect.object = r.target
+            records = effect_provider(effect, inspection.boundaries, using="default")
+&gt;           assert [record.boundary.field_model for record in records] == [r.Attachment], (
+                "The actual published fence must attest Attachment.document only, regardless of added same-name fields"
+            )
+E           AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields
+E           assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]
+E             
+E             Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;
+E             Use -v to get more diff
+
+tests/test1/test_delete_migration_docs.py:339: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_migration_docs" name="test_documented_provider_added_same_name_relation[False-True-True]" time="0.057"><failure message="AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields&#10;assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]&#10;  &#10;  Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;&#10;  Use -v to get more diff">recipes = namespace(build=&lt;function recipes.&lt;locals&gt;.build at 0x7e670c35dd00&gt;, install=&lt;function recipes.&lt;locals&gt;.install at 0x7..._migration_docs.recipes.&lt;locals&gt;.Blocker'&gt;, events=[], actor=&lt;User: recipe_actor&gt;, url='/migration_document/1/delete/')
+details = True, blocked = True, empty = False
+
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    @pytest.mark.parametrize("empty", [False, True])
+    def test_documented_provider_added_same_name_relation(recipes, details, blocked, empty):
+        from crud_views.lib.deletion import merge_delete_preview
+    
+        r = recipes
+        # Execute both published fences before a new application model is introduced.
+        model_provider = r.build(OVERRIDE)()
+        view = r.build(EFFECT)
+        effect_provider = view.cv_get_delete_preview
+    
+        def combined(self, boundaries, *, using):
+            return model_provider.cv_get_delete_preview(boundaries, using=using) + effect_provider(
+                self, boundaries, using=using
+            )
+    
+        view.cv_get_delete_preview = combined
+        view.cv_show_related_objects = details
+        r.install(view)
+        initial = r.client.get(r.url)
+        assert initial.status_code == 200 and initial.context["delete_preview_incomplete"] is False
+        assert NOTICE not in initial.content.decode()
+    
+        def added_effect(*args):
+            r.events.append(("added-handler", "must never execute during preview"))
+    
+        class AdditionalAttachment(models.Model):
+            document = models.ForeignKey(r.Document, on_delete=added_effect)
+    
+            class Meta:
+                app_label = "app"
+    
+        with connection.schema_editor() as editor:
+            editor.create_model(AdditionalAttachment)
+        try:
+            if not empty:
+                AdditionalAttachment.objects.create(document=r.target)
+            if blocked:
+                r.Blocker.objects.create(document=r.target, title="Never disclose new-relation blocker")
+            inspection = inspect_deletion(r.target, using="default")
+            effect = view()
+            effect.object = r.target
+            records = effect_provider(effect, inspection.boundaries, using="default")
+&gt;           assert [record.boundary.field_model for record in records] == [r.Attachment], (
+                "The actual published fence must attest Attachment.document only, regardless of added same-name fields"
+            )
+E           AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields
+E           assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]
+E             
+E             Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;
+E             Use -v to get more diff
+
+tests/test1/test_delete_migration_docs.py:339: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_migration_docs" name="test_documented_provider_added_same_name_relation[True-False-False]" time="0.091"><failure message="AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields&#10;assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]&#10;  &#10;  Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;&#10;  Use -v to get more diff">recipes = namespace(build=&lt;function recipes.&lt;locals&gt;.build at 0x7e670c2b2340&gt;, install=&lt;function recipes.&lt;locals&gt;.install at 0x7..._migration_docs.recipes.&lt;locals&gt;.Blocker'&gt;, events=[], actor=&lt;User: recipe_actor&gt;, url='/migration_document/1/delete/')
+details = False, blocked = False, empty = True
+
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    @pytest.mark.parametrize("empty", [False, True])
+    def test_documented_provider_added_same_name_relation(recipes, details, blocked, empty):
+        from crud_views.lib.deletion import merge_delete_preview
+    
+        r = recipes
+        # Execute both published fences before a new application model is introduced.
+        model_provider = r.build(OVERRIDE)()
+        view = r.build(EFFECT)
+        effect_provider = view.cv_get_delete_preview
+    
+        def combined(self, boundaries, *, using):
+            return model_provider.cv_get_delete_preview(boundaries, using=using) + effect_provider(
+                self, boundaries, using=using
+            )
+    
+        view.cv_get_delete_preview = combined
+        view.cv_show_related_objects = details
+        r.install(view)
+        initial = r.client.get(r.url)
+        assert initial.status_code == 200 and initial.context["delete_preview_incomplete"] is False
+        assert NOTICE not in initial.content.decode()
+    
+        def added_effect(*args):
+            r.events.append(("added-handler", "must never execute during preview"))
+    
+        class AdditionalAttachment(models.Model):
+            document = models.ForeignKey(r.Document, on_delete=added_effect)
+    
+            class Meta:
+                app_label = "app"
+    
+        with connection.schema_editor() as editor:
+            editor.create_model(AdditionalAttachment)
+        try:
+            if not empty:
+                AdditionalAttachment.objects.create(document=r.target)
+            if blocked:
+                r.Blocker.objects.create(document=r.target, title="Never disclose new-relation blocker")
+            inspection = inspect_deletion(r.target, using="default")
+            effect = view()
+            effect.object = r.target
+            records = effect_provider(effect, inspection.boundaries, using="default")
+&gt;           assert [record.boundary.field_model for record in records] == [r.Attachment], (
+                "The actual published fence must attest Attachment.document only, regardless of added same-name fields"
+            )
+E           AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields
+E           assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]
+E             
+E             Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;
+E             Use -v to get more diff
+
+tests/test1/test_delete_migration_docs.py:339: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_migration_docs" name="test_documented_provider_added_same_name_relation[True-False-True]" time="0.056"><failure message="AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields&#10;assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]&#10;  &#10;  Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;&#10;  Use -v to get more diff">recipes = namespace(build=&lt;function recipes.&lt;locals&gt;.build at 0x7e670c35d300&gt;, install=&lt;function recipes.&lt;locals&gt;.install at 0x7..._migration_docs.recipes.&lt;locals&gt;.Blocker'&gt;, events=[], actor=&lt;User: recipe_actor&gt;, url='/migration_document/1/delete/')
+details = True, blocked = False, empty = True
+
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    @pytest.mark.parametrize("empty", [False, True])
+    def test_documented_provider_added_same_name_relation(recipes, details, blocked, empty):
+        from crud_views.lib.deletion import merge_delete_preview
+    
+        r = recipes
+        # Execute both published fences before a new application model is introduced.
+        model_provider = r.build(OVERRIDE)()
+        view = r.build(EFFECT)
+        effect_provider = view.cv_get_delete_preview
+    
+        def combined(self, boundaries, *, using):
+            return model_provider.cv_get_delete_preview(boundaries, using=using) + effect_provider(
+                self, boundaries, using=using
+            )
+    
+        view.cv_get_delete_preview = combined
+        view.cv_show_related_objects = details
+        r.install(view)
+        initial = r.client.get(r.url)
+        assert initial.status_code == 200 and initial.context["delete_preview_incomplete"] is False
+        assert NOTICE not in initial.content.decode()
+    
+        def added_effect(*args):
+            r.events.append(("added-handler", "must never execute during preview"))
+    
+        class AdditionalAttachment(models.Model):
+            document = models.ForeignKey(r.Document, on_delete=added_effect)
+    
+            class Meta:
+                app_label = "app"
+    
+        with connection.schema_editor() as editor:
+            editor.create_model(AdditionalAttachment)
+        try:
+            if not empty:
+                AdditionalAttachment.objects.create(document=r.target)
+            if blocked:
+                r.Blocker.objects.create(document=r.target, title="Never disclose new-relation blocker")
+            inspection = inspect_deletion(r.target, using="default")
+            effect = view()
+            effect.object = r.target
+            records = effect_provider(effect, inspection.boundaries, using="default")
+&gt;           assert [record.boundary.field_model for record in records] == [r.Attachment], (
+                "The actual published fence must attest Attachment.document only, regardless of added same-name fields"
+            )
+E           AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields
+E           assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]
+E             
+E             Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;
+E             Use -v to get more diff
+
+tests/test1/test_delete_migration_docs.py:339: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_migration_docs" name="test_documented_provider_added_same_name_relation[True-True-False]" time="0.054"><failure message="AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields&#10;assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]&#10;  &#10;  Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;&#10;  Use -v to get more diff">recipes = namespace(build=&lt;function recipes.&lt;locals&gt;.build at 0x7e670cbd9b20&gt;, install=&lt;function recipes.&lt;locals&gt;.install at 0x7..._migration_docs.recipes.&lt;locals&gt;.Blocker'&gt;, events=[], actor=&lt;User: recipe_actor&gt;, url='/migration_document/1/delete/')
+details = False, blocked = True, empty = True
+
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    @pytest.mark.parametrize("empty", [False, True])
+    def test_documented_provider_added_same_name_relation(recipes, details, blocked, empty):
+        from crud_views.lib.deletion import merge_delete_preview
+    
+        r = recipes
+        # Execute both published fences before a new application model is introduced.
+        model_provider = r.build(OVERRIDE)()
+        view = r.build(EFFECT)
+        effect_provider = view.cv_get_delete_preview
+    
+        def combined(self, boundaries, *, using):
+            return model_provider.cv_get_delete_preview(boundaries, using=using) + effect_provider(
+                self, boundaries, using=using
+            )
+    
+        view.cv_get_delete_preview = combined
+        view.cv_show_related_objects = details
+        r.install(view)
+        initial = r.client.get(r.url)
+        assert initial.status_code == 200 and initial.context["delete_preview_incomplete"] is False
+        assert NOTICE not in initial.content.decode()
+    
+        def added_effect(*args):
+            r.events.append(("added-handler", "must never execute during preview"))
+    
+        class AdditionalAttachment(models.Model):
+            document = models.ForeignKey(r.Document, on_delete=added_effect)
+    
+            class Meta:
+                app_label = "app"
+    
+        with connection.schema_editor() as editor:
+            editor.create_model(AdditionalAttachment)
+        try:
+            if not empty:
+                AdditionalAttachment.objects.create(document=r.target)
+            if blocked:
+                r.Blocker.objects.create(document=r.target, title="Never disclose new-relation blocker")
+            inspection = inspect_deletion(r.target, using="default")
+            effect = view()
+            effect.object = r.target
+            records = effect_provider(effect, inspection.boundaries, using="default")
+&gt;           assert [record.boundary.field_model for record in records] == [r.Attachment], (
+                "The actual published fence must attest Attachment.document only, regardless of added same-name fields"
+            )
+E           AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields
+E           assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]
+E             
+E             Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;
+E             Use -v to get more diff
+
+tests/test1/test_delete_migration_docs.py:339: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_migration_docs" name="test_documented_provider_added_same_name_relation[True-True-True]" time="0.056"><failure message="AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields&#10;assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]&#10;  &#10;  Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;&#10;  Use -v to get more diff">recipes = namespace(build=&lt;function recipes.&lt;locals&gt;.build at 0x7e670cd4f060&gt;, install=&lt;function recipes.&lt;locals&gt;.install at 0x7..._migration_docs.recipes.&lt;locals&gt;.Blocker'&gt;, events=[], actor=&lt;User: recipe_actor&gt;, url='/migration_document/1/delete/')
+details = True, blocked = True, empty = True
+
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    @pytest.mark.parametrize("empty", [False, True])
+    def test_documented_provider_added_same_name_relation(recipes, details, blocked, empty):
+        from crud_views.lib.deletion import merge_delete_preview
+    
+        r = recipes
+        # Execute both published fences before a new application model is introduced.
+        model_provider = r.build(OVERRIDE)()
+        view = r.build(EFFECT)
+        effect_provider = view.cv_get_delete_preview
+    
+        def combined(self, boundaries, *, using):
+            return model_provider.cv_get_delete_preview(boundaries, using=using) + effect_provider(
+                self, boundaries, using=using
+            )
+    
+        view.cv_get_delete_preview = combined
+        view.cv_show_related_objects = details
+        r.install(view)
+        initial = r.client.get(r.url)
+        assert initial.status_code == 200 and initial.context["delete_preview_incomplete"] is False
+        assert NOTICE not in initial.content.decode()
+    
+        def added_effect(*args):
+            r.events.append(("added-handler", "must never execute during preview"))
+    
+        class AdditionalAttachment(models.Model):
+            document = models.ForeignKey(r.Document, on_delete=added_effect)
+    
+            class Meta:
+                app_label = "app"
+    
+        with connection.schema_editor() as editor:
+            editor.create_model(AdditionalAttachment)
+        try:
+            if not empty:
+                AdditionalAttachment.objects.create(document=r.target)
+            if blocked:
+                r.Blocker.objects.create(document=r.target, title="Never disclose new-relation blocker")
+            inspection = inspect_deletion(r.target, using="default")
+            effect = view()
+            effect.object = r.target
+            records = effect_provider(effect, inspection.boundaries, using="default")
+&gt;           assert [record.boundary.field_model for record in records] == [r.Attachment], (
+                "The actual published fence must attest Attachment.document only, regardless of added same-name fields"
+            )
+E           AssertionError: The actual published fence must attest Attachment.document only, regardless of added same-name fields
+E           assert [&lt;class 'test...lAttachment'&gt;] == [&lt;class 'test....Attachment'&gt;]
+E             
+E             Left contains one more item: &lt;class 'tests.test1.test_delete_migration_docs.test_documented_provider_added_same_name_relation.&lt;locals&gt;.AdditionalAttachment'&gt;
+E             Use -v to get more diff
+
+tests/test1/test_delete_migration_docs.py:339: AssertionError</failure></testcase></testsuite></testsuites>

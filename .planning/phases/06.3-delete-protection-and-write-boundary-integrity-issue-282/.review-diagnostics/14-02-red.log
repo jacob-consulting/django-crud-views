@@ -1,0 +1,43 @@
+...............................................................F         [100%]
+=================================== FAILURES ===================================
+________________________ test_nullable_join_parent_link ________________________
+
+    def test_nullable_join_parent_link():
+        """A supported nullable parent link must not collect unrelated null-key parents."""
+        with isolate_apps("tests.test1.app"):
+    
+            class Parent(models.Model):
+                code = models.CharField(max_length=40, unique=True, null=True)
+    
+                class Meta:
+                    app_label = "app"
+    
+            class Child(Parent):
+                child_id = models.IntegerField(primary_key=True)
+                parent_link = models.OneToOneField(
+                    Parent, to_field="code", parent_link=True, null=True, on_delete=models.CASCADE
+                )
+    
+                class Meta:
+                    app_label = "app"
+    
+            with connections["default"].schema_editor() as editor:
+                editor.create_model(Parent)
+                editor.create_model(Child)
+            try:
+                Parent.objects.create(pk=101, code=None)
+                Parent.objects.create(pk=102, code=None)
+                child = Child(child_id=202, parent_link_id=None)
+                child.save_base(raw=True, force_insert=True, using="default")
+                inspection = inspect_deletion(child, using="default")
+                assert inspection.complete is True
+>               assert inspection.related == ([child], {}, [])
+E               assert RelatedObject... protected=[]) == ([<Child: Chi...02)>], {}, [])
+E                 
+E                 At index 0 diff: [<Child: Child object (202)>, [<Parent: Parent object (101)>, <Parent: Parent object (102)>]] != [<Child: Child object (202)>]
+E                 Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:290: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_delete_join_identity.py::test_nullable_join_parent_link
+1 failed, 63 passed, 40 deselected in 3.95s

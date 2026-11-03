@@ -39,43 +39,137 @@ function cvModalElements() {
     };
 }
 
-function cvModalInject(html) {
-    const els = cvModalElements();
-    // unload first: listeners (tooltips, widgets) tear down while their elements are still attached
+// Each open owns its asynchronous requests, hide subscription and return target.
+let cvModalSession = null;
+let cvModalGeneration = 0;
+
+function cvModalUsable(el) {
+    if (!(el instanceof HTMLElement) || !el.isConnected || !el.getClientRects().length) return false;
+    if (el.matches(":disabled, [aria-disabled='true']")) return false;
+    for (let node = el; node; node = node.parentElement) {
+        if (node.hidden || node.inert || node.hasAttribute("inert") || node.getAttribute("aria-hidden") === "true") return false;
+        const style = getComputedStyle(node);
+        if (style.display === "none" || style.visibility === "hidden" || style.visibility === "collapse") return false;
+    }
+    return true;
+}
+
+function cvModalFocus(el, temporary = false) {
+    if (!cvModalUsable(el)) return false;
+    const added = temporary && !el.hasAttribute("tabindex");
+    const clean = () => {
+        if (added && el.getAttribute("tabindex") === "-1") el.removeAttribute("tabindex");
+        el.removeEventListener("blur", clean);
+    };
+    if (added) el.setAttribute("tabindex", "-1");
+    el.focus();
+    if (document.activeElement !== el) { clean(); return false; }
+    if (added) el.addEventListener("blur", clean, {once: true});
+    return true;
+}
+
+function cvModalRelease(session) {
+    session.shown = false;
+    session.unsubscribe?.();
+    session.unsubscribe = null;
+    session.opener = null;
+    if (cvModalSession === session) cvModalSession = null;
+}
+
+function cvModalRestore(opener, modal) {
+    if (!modal.contains(opener) && cvModalFocus(opener)) return;
+    for (const el of document.querySelectorAll("main, [role='main']")) {
+        if (!modal.contains(el) && cvModalFocus(el, true)) return;
+    }
+    for (const el of document.querySelectorAll("a[href], button, input, select, textarea, [tabindex], [contenteditable='true']")) {
+        if (!modal.contains(el) && cvModalFocus(el)) return;
+    }
+    cvModalFocus(document.body, true);
+}
+
+function cvModalInject(html, recoverFocus = false) {
+    const els = cvModalElements(), session = cvModalSession, active = document.activeElement;
+    const lostFocus = recoverFocus && session?.shown && session.modal === els.modal && els.content.contains(active);
+    // Listeners tear down old content while attached, then initialize its replacement.
     els.modal.dispatchEvent(new CustomEvent(CVModalConst.unloadEvent, {bubbles: true}));
     els.content.innerHTML = html;
     els.modal.dispatchEvent(new CustomEvent(CVModalConst.loadedEvent, {bubbles: true}));
+    if (!lostFocus || cvModalSession !== session || !session.shown || active.isConnected) return;
+    if (els.modal.contains(document.activeElement) && cvModalUsable(document.activeElement)) return;
+    for (const selector of [":invalid, [aria-invalid='true']", "[" + CVModalConst.dismissAttr + "]"]) {
+        for (const el of els.content.querySelectorAll(selector)) if (cvModalFocus(el)) return;
+    }
+    cvModalFocus(els.modal, true);
 }
 
-function cvModalOpen(url, size) {
+function cvModalObserveHidden(session, adapter) {
+    if (typeof adapter.onHidden !== "function") {
+        throw new Error("cv.adapters.modal.onHidden(modalEl, callback) is required; update your custom modal adapter.");
+    }
+    const unsubscribe = adapter.onHidden(session.modal, function () {
+        if (cvModalSession !== session || (!session.shown && !session.replacingVisible)) return;
+        const target = session.opener;
+        cvModalRelease(session);
+        cvModalRestore(target, session.modal);
+    });
+    if (typeof unsubscribe !== "function") {
+        throw new Error("cv.adapters.modal.onHidden must return an unsubscribe function.");
+    }
+    session.unsubscribe = unsubscribe;
+}
+
+function cvModalOpen(url, size, opener = document.activeElement) {
     const els = cvModalElements();
+    const replacingVisible = (cvModalSession?.shown || cvModalSession?.replacingVisible) &&
+        cvModalSession.modal === els.modal && cvModalUsable(els.modal);
+    if (cvModalSession) cvModalRelease(cvModalSession);
+    const session = {modal: els.modal, opener, replacingVisible, shown: false, unsubscribe: null};
+    cvModalSession = session;
+    cvModalGeneration++;
+    function fail(error) {
+        if (cvModalSession !== session) return;
+        cvModalRelease(session);
+        console.error(error);
+        globalThis.location.assign(url);
+    }
+    // A visible shell can be dismissed while the next request is pending. Keep its
+    // completed-hide subscription live throughout that request so late work is cancelled.
+    try {
+        if (replacingVisible) cvModalObserveHidden(session, cv.adapters.modal);
+    } catch (error) { fail(error); return; }
     fetch(url, {headers: {"X-CV-Modal": "true"}})
         .then(function (response) {
+            if (cvModalSession !== session) return null;
             if (!response.ok) {
+                cvModalRelease(session);
                 globalThis.location.assign(url);
                 return null;
             }
             return response.text();
         })
         .then(function (html) {
-            if (html === null) {
-                return;
-            }
-            cv.adapters.modal.setSize(els.dialog, size || "");
+            if (html === null || cvModalSession !== session) return;
+            const adapter = cv.adapters.modal;
+            if (!session.unsubscribe) cvModalObserveHidden(session, adapter);
+            adapter.setSize(els.dialog, size || "");
             els.modal.setAttribute(CVModalConst.urlAttr, url);
-            cvModalInject(html);
-            cv.adapters.modal.show(els.modal);
+            session.shown = replacingVisible && cvModalUsable(els.modal);
+            cvModalInject(html, true);
+            if (cvModalSession !== session) return;
+            session.shown = true;
+            adapter.show(els.modal);
         })
-        .catch(function (error) {
-            console.error(error);
-            globalThis.location.assign(url);
-        });
+        .catch(fail);
 }
 
 function cvModalSubmit(form, submitter) {
     const els = cvModalElements(),
         url = form.getAttribute("action"),
-        fallback = els.modal.getAttribute(CVModalConst.urlAttr) || url;
+        fallback = els.modal.getAttribute(CVModalConst.urlAttr) || url,
+        generation = cvModalGeneration,
+        session = cvModalSession?.modal === els.modal ? cvModalSession : null;
+    const current = () => els.modal.isConnected && generation === cvModalGeneration &&
+        (!session || (cvModalSession === session && session.shown));
     fetch(url, {
         method: "POST",
         // the submitter keeps the clicked button's name/value, as a native submit would
@@ -83,6 +177,7 @@ function cvModalSubmit(form, submitter) {
         headers: {"X-CV-Modal": "true"},
     })
         .then(function (response) {
+            if (!current()) return null;
             const redirect = response.headers.get("X-CV-Redirect");
             if (redirect) {
                 globalThis.location.assign(redirect);
@@ -95,13 +190,13 @@ function cvModalSubmit(form, submitter) {
             return null;
         })
         .then(function (html) {
-            if (html === null || html === undefined) {
+            if (html === null || html === undefined || !current()) {
                 return;
             }
-            cvModalInject(html);
+            cvModalInject(html, true);
         })
         .catch(function () {
-            globalThis.location.assign(fallback);
+            if (current()) globalThis.location.assign(fallback);
         });
 }
 
@@ -115,7 +210,7 @@ document.addEventListener("click", function (event) {
     const trigger = event.target.closest(CVModalConst.trigger);
     if (trigger) {
         event.preventDefault();
-        cvModalOpen(trigger.getAttribute("href"), trigger.getAttribute(CVModalConst.sizeAttr));
+        cvModalOpen(trigger.getAttribute("href"), trigger.getAttribute(CVModalConst.sizeAttr), trigger);
         return;
     }
     const dismiss = event.target.closest("[" + CVModalConst.dismissAttr + "]");

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="1.905" timestamp="2026-10-30T12:48:40.708833+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_inspection" name="test_tracer_real_preview_confirmation_and_commit[invalid]" time="0.753"><failure message="AssertionError: GET must describe relationships without running deletion callbacks&#10;assert ['SET'] == []&#10;  &#10;  Left contains one more item: 'SET'&#10;  Use -v to get more diff">client_user_publisher_cascade_delete = &lt;django.test.client.Client object at 0x74d49129b530&gt;
+publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x74d49129a4b0&gt;
+outcome = 'invalid'
+
+    @pytest.mark.django_db(transaction=True)
+    @pytest.mark.parametrize("outcome", ["invalid", "native-blocked", "business-blocked", "permitted"])
+    def test_tracer_real_preview_confirmation_and_commit(
+        client_user_publisher_cascade_delete, publisher_penguin, monkeypatch, outcome
+    ):
+        events = []
+        survivor = Publisher.objects.create(name="Survivor")
+        survivor_book = Book.objects.create(title="Retained book", publisher=survivor)
+        book = Book.objects.create(title="Cascade book", publisher=publisher_penguin)
+        note = BookNote.objects.create(book=book, note="Reassign on confirmed delete")
+        target_pk, book_pk = publisher_penguin.pk, book.pk
+    
+        def replacement():
+            events.append("SET")
+            Publisher.objects.create(name="Callback side effect")
+            return survivor_book.pk
+    
+        monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(replacement))
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_form_valid_hook", lambda self, context: events.append("hook"))
+    
+        def committed(self, context):
+            assert not connection.in_atomic_block
+            events.append("commit")
+    
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_on_commit", committed)
+        monkeypatch.setattr(
+            PublisherCascadeDeleteView,
+            "cv_check_delete_protection",
+            lambda self: ["Business blocker"] if outcome == "business-blocked" else [],
+        )
+        blocker = Contract.objects.create(publisher=publisher_penguin, title="Hidden blocker")
+        url = f"/publisher_cascade/{target_pk}/delete/"
+        response = client_user_publisher_cascade_delete.get(url)
+&gt;       assert events == [], "GET must describe relationships without running deletion callbacks"
+E       AssertionError: GET must describe relationships without running deletion callbacks
+E       assert ['SET'] == []
+E         
+E         Left contains one more item: 'SET'
+E         Use -v to get more diff
+
+tests/test1/test_delete_inspection.py:44: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_tracer_real_preview_confirmation_and_commit[native-blocked]" time="0.315"><failure message="AssertionError: GET must describe relationships without running deletion callbacks&#10;assert ['SET'] == []&#10;  &#10;  Left contains one more item: 'SET'&#10;  Use -v to get more diff">client_user_publisher_cascade_delete = &lt;django.test.client.Client object at 0x74d490c43e00&gt;
+publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x74d490c15340&gt;
+outcome = 'native-blocked'
+
+    @pytest.mark.django_db(transaction=True)
+    @pytest.mark.parametrize("outcome", ["invalid", "native-blocked", "business-blocked", "permitted"])
+    def test_tracer_real_preview_confirmation_and_commit(
+        client_user_publisher_cascade_delete, publisher_penguin, monkeypatch, outcome
+    ):
+        events = []
+        survivor = Publisher.objects.create(name="Survivor")
+        survivor_book = Book.objects.create(title="Retained book", publisher=survivor)
+        book = Book.objects.create(title="Cascade book", publisher=publisher_penguin)
+        note = BookNote.objects.create(book=book, note="Reassign on confirmed delete")
+        target_pk, book_pk = publisher_penguin.pk, book.pk
+    
+        def replacement():
+            events.append("SET")
+            Publisher.objects.create(name="Callback side effect")
+            return survivor_book.pk
+    
+        monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(replacement))
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_form_valid_hook", lambda self, context: events.append("hook"))
+    
+        def committed(self, context):
+            assert not connection.in_atomic_block
+            events.append("commit")
+    
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_on_commit", committed)
+        monkeypatch.setattr(
+            PublisherCascadeDeleteView,
+            "cv_check_delete_protection",
+            lambda self: ["Business blocker"] if outcome == "business-blocked" else [],
+        )
+        blocker = Contract.objects.create(publisher=publisher_penguin, title="Hidden blocker")
+        url = f"/publisher_cascade/{target_pk}/delete/"
+        response = client_user_publisher_cascade_delete.get(url)
+&gt;       assert events == [], "GET must describe relationships without running deletion callbacks"
+E       AssertionError: GET must describe relationships without running deletion callbacks
+E       assert ['SET'] == []
+E         
+E         Left contains one more item: 'SET'
+E         Use -v to get more diff
+
+tests/test1/test_delete_inspection.py:44: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_tracer_real_preview_confirmation_and_commit[business-blocked]" time="0.356"><failure message="AssertionError: GET must describe relationships without running deletion callbacks&#10;assert ['SET'] == []&#10;  &#10;  Left contains one more item: 'SET'&#10;  Use -v to get more diff">client_user_publisher_cascade_delete = &lt;django.test.client.Client object at 0x74d490c351f0&gt;
+publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x74d490c369f0&gt;
+outcome = 'business-blocked'
+
+    @pytest.mark.django_db(transaction=True)
+    @pytest.mark.parametrize("outcome", ["invalid", "native-blocked", "business-blocked", "permitted"])
+    def test_tracer_real_preview_confirmation_and_commit(
+        client_user_publisher_cascade_delete, publisher_penguin, monkeypatch, outcome
+    ):
+        events = []
+        survivor = Publisher.objects.create(name="Survivor")
+        survivor_book = Book.objects.create(title="Retained book", publisher=survivor)
+        book = Book.objects.create(title="Cascade book", publisher=publisher_penguin)
+        note = BookNote.objects.create(book=book, note="Reassign on confirmed delete")
+        target_pk, book_pk = publisher_penguin.pk, book.pk
+    
+        def replacement():
+            events.append("SET")
+            Publisher.objects.create(name="Callback side effect")
+            return survivor_book.pk
+    
+        monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(replacement))
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_form_valid_hook", lambda self, context: events.append("hook"))
+    
+        def committed(self, context):
+            assert not connection.in_atomic_block
+            events.append("commit")
+    
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_on_commit", committed)
+        monkeypatch.setattr(
+            PublisherCascadeDeleteView,
+            "cv_check_delete_protection",
+            lambda self: ["Business blocker"] if outcome == "business-blocked" else [],
+        )
+        blocker = Contract.objects.create(publisher=publisher_penguin, title="Hidden blocker")
+        url = f"/publisher_cascade/{target_pk}/delete/"
+        response = client_user_publisher_cascade_delete.get(url)
+&gt;       assert events == [], "GET must describe relationships without running deletion callbacks"
+E       AssertionError: GET must describe relationships without running deletion callbacks
+E       assert ['SET'] == []
+E         
+E         Left contains one more item: 'SET'
+E         Use -v to get more diff
+
+tests/test1/test_delete_inspection.py:44: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_tracer_real_preview_confirmation_and_commit[permitted]" time="0.323"><failure message="AssertionError: GET must describe relationships without running deletion callbacks&#10;assert ['SET'] == []&#10;  &#10;  Left contains one more item: 'SET'&#10;  Use -v to get more diff">client_user_publisher_cascade_delete = &lt;django.test.client.Client object at 0x74d490acbda0&gt;
+publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x74d490acb410&gt;
+outcome = 'permitted'
+
+    @pytest.mark.django_db(transaction=True)
+    @pytest.mark.parametrize("outcome", ["invalid", "native-blocked", "business-blocked", "permitted"])
+    def test_tracer_real_preview_confirmation_and_commit(
+        client_user_publisher_cascade_delete, publisher_penguin, monkeypatch, outcome
+    ):
+        events = []
+        survivor = Publisher.objects.create(name="Survivor")
+        survivor_book = Book.objects.create(title="Retained book", publisher=survivor)
+        book = Book.objects.create(title="Cascade book", publisher=publisher_penguin)
+        note = BookNote.objects.create(book=book, note="Reassign on confirmed delete")
+        target_pk, book_pk = publisher_penguin.pk, book.pk
+    
+        def replacement():
+            events.append("SET")
+            Publisher.objects.create(name="Callback side effect")
+            return survivor_book.pk
+    
+        monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(replacement))
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_form_valid_hook", lambda self, context: events.append("hook"))
+    
+        def committed(self, context):
+            assert not connection.in_atomic_block
+            events.append("commit")
+    
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_on_commit", committed)
+        monkeypatch.setattr(
+            PublisherCascadeDeleteView,
+            "cv_check_delete_protection",
+            lambda self: ["Business blocker"] if outcome == "business-blocked" else [],
+        )
+        blocker = Contract.objects.create(publisher=publisher_penguin, title="Hidden blocker")
+        url = f"/publisher_cascade/{target_pk}/delete/"
+        response = client_user_publisher_cascade_delete.get(url)
+&gt;       assert events == [], "GET must describe relationships without running deletion callbacks"
+E       AssertionError: GET must describe relationships without running deletion callbacks
+E       assert ['SET'] == []
+E         
+E         Left contains one more item: 'SET'
+E         Use -v to get more diff
+
+tests/test1/test_delete_inspection.py:44: AssertionError</failure></testcase></testsuite></testsuites>

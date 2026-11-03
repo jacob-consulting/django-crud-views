@@ -1,0 +1,253 @@
+{
+  "recorded_at": "2026-11-01T07:55:45.529046+00:00",
+  "total": 12,
+  "unanswered": 0,
+  "phase_blocking_unresolved": 0,
+  "broader_compatibility": "unverified; outside phase gate; issue 286",
+  "items": [
+    {
+      "id": "GUA-precision",
+      "original_owner_disposition": {
+        "id": "GUA-precision",
+        "status": "accepted / tested scope; general precision unverified",
+        "evidence": [
+          "Plan 06 structured backstop; GUARDIAN-REVIEW; WINDOWS 11",
+          "Ordinary int/UUID, configured exact keys, custom permission suffixes and same-alias controls pass; no general custom-PK/database-cast/collation identity predicate supplied.",
+          "Maintainer accepted the named integer/UUID, exact configured permission-key including Unicode, queryset-scope and database-alias evidence. General custom-PK/database-cast/collation identity remains unverified; no broader predicate was supplied or inferred. This is a bounded owner disposition, not universal precision proof or global GUA-01 completion. See guided-review.json."
+        ],
+        "question": "Define the intended identity predicate and supported PK/backend/collation cases, or record an explicit evidence-backed bounded disposition.",
+        "actual_response": "accept tested scope",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:17:27.872675+00:00"
+      },
+      "current_status": "accepted / explicit bounded identity contract; broader compatibility deferred to issue 286",
+      "scope": "06.3-SCOPE-RECONCILIATION.md",
+      "authorization": "do the formal scope ceconciliation/re-verifcation for phase 6.3",
+      "recorded_at": "2026-11-01T07:55:45.529046+00:00"
+    },
+    {
+      "id": "DEL-01-unclassified",
+      "original_owner_disposition": {
+        "id": "DEL-01-unclassified",
+        "status": "retained unresolved / insufficient_spec",
+        "evidence": [
+          "Plan 01 unidentified detector row; VERIFICATION",
+          "Actual original and gap design approvals are recorded with reviewed hashes; the original unidentified condition has no acceptance predicate.",
+          "Owner explicitly retained this item unresolved as one of the four named unclassified detector items. The original condition remains unspecified; no acceptance predicate, passing test or dismissal is inferred. This completes its owner disposition while retaining the obligation."
+        ],
+        "question": "Recover this detector condition or explicitly justify its disposition independently of named approval checks.",
+        "actual_response": "retain all four unresolved",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:19:48.100891+00:00"
+      },
+      "current_status": "dismissed / no additional actionable finding",
+      "investigation": {
+        "requirement_id": "DEL-01",
+        "category": "unclassified",
+        "status": "dismissed",
+        "verification": null,
+        "resolution": null,
+        "reason": "Recovered input matches zero classifier shapes; the sole candidate is a manual-review fallback, not an undisclosed approval condition. Original, repair and focus approval records bind actual maintainer responses to reviewed designs. Prohibition-01 was separately accepted. No additional actionable finding after bounded review; no release approval inferred."
+      },
+      "basis": "06.3-UNCLASSIFIED-REVIEW.md; authorized do 1"
+    },
+    {
+      "id": "DEL-03-unclassified",
+      "original_owner_disposition": {
+        "id": "DEL-03-unclassified",
+        "status": "retained unresolved / insufficient_spec",
+        "evidence": [
+          "Plan 04 unidentified detector row; VERIFICATION",
+          "Real callback/transaction/native/converter cases pass in all three series; CR-01/02/03 do not identify the unknown signal.",
+          "Owner explicitly retained this item unresolved as one of the four named unclassified detector items. The original condition remains unspecified; no acceptance predicate, passing test or dismissal is inferred. This completes its owner disposition while retaining the obligation."
+        ],
+        "question": "Identify the condition beyond named provenance controls, or provide an evidence-backed disposition of that unknown.",
+        "actual_response": "retain all four unresolved",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:19:48.100891+00:00"
+      },
+      "current_status": "dismissed / no additional actionable finding",
+      "investigation": {
+        "requirement_id": "DEL-03",
+        "category": "unclassified",
+        "status": "dismissed",
+        "verification": null,
+        "resolution": null,
+        "reason": "Recovered input matches zero classifier shapes; the sole candidate is a manual-review fallback, not an undisclosed exception case. Bounded native/custom provenance, stale preview, real commit/rollback and callback-event review is documented and replayed. Concrete CR findings are separately repaired. No additional actionable finding; no universal application-handler guarantee inferred."
+      },
+      "basis": "06.3-UNCLASSIFIED-REVIEW.md; authorized do 1"
+    },
+    {
+      "id": "DEL-04-unclassified",
+      "original_owner_disposition": {
+        "id": "DEL-04-unclassified",
+        "status": "retained unresolved / insufficient_spec",
+        "evidence": [
+          "Plan 05 unidentified detector row; VERIFICATION",
+          "Independent aliases, selected native rows/parents and commit routing pass; no general central-auth/cross-database guarantee.",
+          "Owner explicitly retained this item unresolved as one of the four named unclassified detector items. The original condition remains unspecified; no acceptance predicate, passing test or dismissal is inferred. This completes its owner disposition while retaining the obligation."
+        ],
+        "question": "Recover the original database condition or explicitly dispose of it with bounded reasoning.",
+        "actual_response": "retain all four unresolved",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:19:48.100891+00:00"
+      },
+      "current_status": "dismissed / no additional actionable finding",
+      "investigation": {
+        "requirement_id": "DEL-04",
+        "category": "unclassified",
+        "status": "dismissed",
+        "verification": null,
+        "resolution": null,
+        "reason": "Recovered input matches zero classifier shapes; the sole candidate is a manual-review fallback, not an undisclosed database condition. Bounded colliding-PK, selected protection, pinned alias/transaction/commit and selected-row/parent review covers the declared contract. No additional actionable finding; no central-auth or general cross-database Guardian support inferred."
+      },
+      "basis": "06.3-UNCLASSIFIED-REVIEW.md; authorized do 1"
+    },
+    {
+      "id": "AUTH-06-unclassified",
+      "original_owner_disposition": {
+        "id": "AUTH-06-unclassified",
+        "status": "retained unresolved / insufficient_spec",
+        "evidence": [
+          "Phase 6.2 AUTH-06 transfer; plan 06; GUARDIAN-REVIEW",
+          "Named strict/per-view/helper/manage/actor policy plus repaired CT-01 positive access pass. CT-01 is not known to be this unidentified predicate.",
+          "Owner explicitly retained this item unresolved as one of the four named unclassified detector items. The original condition remains unspecified; no acceptance predicate, passing test or dismissal is inferred. This completes its owner disposition while retaining the obligation."
+        ],
+        "question": "Identify or justify closure of the original AUTH-06 detector signal separately from CT-01.",
+        "actual_response": "retain all four unresolved",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:19:48.100891+00:00"
+      },
+      "current_status": "dismissed / no additional actionable finding",
+      "investigation": {
+        "requirement_id": "AUTH-06",
+        "category": "unclassified",
+        "status": "dismissed",
+        "verification": null,
+        "resolution": null,
+        "reason": "Recovered Phase 6.2 and 6.3 inputs both match zero classifier shapes; this is a manual-review fallback. The bounded policy review covers inherited/per-view flags, removed settings, strict helper, actors, scope, manage diagnostics and detached state. IN-02/IN-03 and CT-01 are separately fixed. No additional actionable finding; closure follows recovered detector semantics and review, not an assumption that CT-01 was a hidden predicate. General Guardian precision remains unverified."
+      },
+      "basis": "06.3-UNCLASSIFIED-REVIEW.md; authorized do 1"
+    },
+    {
+      "id": "prohibition-01",
+      "original_owner_disposition": {
+        "id": "prohibition-01",
+        "status": "accepted / described maintainer authorization scope",
+        "evidence": [
+          "Plan 01 DEL-01 prohibition; VERIFICATION",
+          "APPROVAL/GAP-APPROVAL preserve actual responses and hashes; independent review and test counts are not approval. FOCUS-APPROVAL records the separate actual approve response before plan-19 product commits.",
+          "Maintainer replied approve after requesting and receiving detailed descriptions of the original contract, CR-01/02/03 plus CT-01 repair contract, and modal focus/onHidden adapter contract. This accepts prohibition-01: the three recorded implementation approvals reflect intended authorization. The answer does not grant release/theme-freeze approval or resolve the remaining precision/unclassified items. See guided-review.json."
+        ],
+        "question": "Review whether actual maintainer decisions alone authorized each material contract change; give a justified disposition.",
+        "actual_response": "approve",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:16:27.206004+00:00"
+      },
+      "current_status": "accepted / described maintainer authorization scope"
+    },
+    {
+      "id": "prohibition-02",
+      "original_owner_disposition": {
+        "id": "prohibition-02",
+        "status": "accepted / direct callback evidence and tested scope",
+        "evidence": [
+          "Plan 02 DEL-02/AUTH-01 prohibition; VERIFICATION",
+          "Direct event lists, real commits/rollback and positive callback controls in `test_delete_inspection.py` and `test_delete_provenance.py`; row rollback never establishes absence of external events.",
+          "Maintainer accepted direct callback-event evidence: guided blocked/Cancel paths had empty event lists; successful deletion recorded custom_notes as a positive control. Automated tests distinguish callback events from durable database state, preserving events when later failures roll back rows. Acceptance is bounded to tested preview/rejection paths, not a universal no-external-effect guarantee. See guided-review.json."
+        ],
+        "question": "Review the direct external-event evidence and confirm or challenge the bounded no-premature-callback claim.",
+        "actual_response": "accept prohibition-02",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:10:58.567037+00:00"
+      },
+      "current_status": "accepted / direct callback evidence and tested scope"
+    },
+    {
+      "id": "prohibition-03",
+      "original_owner_disposition": {
+        "id": "prohibition-03",
+        "status": "accepted / reviewed incomplete-preview meaning",
+        "evidence": [
+          "Plan 03 DEL-05/AUTH-03 prohibition; VERIFICATION",
+          "Owner-qualified boundary controls, English/German partial-count headings and independent warning; real page/modal screenshots. Finite evidence does not prove universal comprehension.",
+          "Maintainer explicitly accepted that the reviewed English/German screens communicate partial objects/counts and possible additional effects outside the preview. This is the actual owner comprehension judgment for the reviewed fixtures, not universal comprehension. See guided-review.json."
+        ],
+        "question": "Review whether incomplete previews/counts communicate their limits; give a justified disposition.",
+        "actual_response": "accept prohibition-03",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:09:43.112274+00:00"
+      },
+      "current_status": "accepted / reviewed incomplete-preview meaning"
+    },
+    {
+      "id": "prohibition-09",
+      "original_owner_disposition": {
+        "id": "prohibition-09",
+        "status": "accepted / scoped current and historical evidence",
+        "evidence": [
+          "Plan 09 DEL-06 prohibition; VERIFICATION",
+          "Source/import/node/JUnit checks cover fresh assertion sessions; historical observations and substituted previews are not used as repair acceptance. Current source hashes/negative controls and backend-provenance.json distinguish new client proof from 468 unchanged backend paths.",
+          "Maintainer accepted the evidence boundaries: current ten-case browser manifest matches source hashes; Cancel failure/fix/retest are retained; earlier backend results are historical and limited to tested cases; UI acceptance is scoped to the browser, layouts and text reviewed. No historical green or substituted preview establishes uncovered guarantees. See guided-review.json."
+        ],
+        "question": "Review the fresh independent predicates and their limits; confirm or challenge the evidence boundary.",
+        "actual_response": "accept prohibition-09",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:12:26.405325+00:00"
+      },
+      "current_status": "accepted / scoped current and historical evidence"
+    },
+    {
+      "id": "UI-01",
+      "original_owner_disposition": {
+        "id": "UI-01",
+        "status": "accepted / reviewed English layouts",
+        "evidence": [
+          "UI-REVIEW visual hierarchy gap; UI-SPEC",
+          "24 real fixture-backed screenshots: page/modal \u00d7 partial/blocked \u00d7 English/German \u00d7 1440\u00d7900/768\u00d71024/375\u00d7812. Notices ordered; unblocked form present, blocked form absent. Superseded captures: 19-evidence/visual-results.json, 24 states / 36 current images, including confirmation scrolled into view; missing CJK glyphs remain.",
+          "Maintainer passed all 12 English page/modal \u00d7 partial/blocked \u00d7 1440x900/768x1024/375x812 combinations and explicitly accepted UI-01. Warning hierarchy, nested rows, scrolling, confirmation availability, blocked form absence and reachable Close were reviewed. German/Unicode readability remains pending under UI-02. See guided-review.json."
+        ],
+        "question": "Review screenshot hierarchy, scrolling and confirmation availability at each viewport; accept or identify a concrete issue.",
+        "actual_response": "accept UI-01",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:05:41.437905+00:00"
+      },
+      "current_status": "accepted / reviewed English layouts"
+    },
+    {
+      "id": "UI-02",
+      "original_owner_disposition": {
+        "id": "UI-02",
+        "status": "accepted / reviewed browser readability and localization",
+        "evidence": [
+          "UI-REVIEW narrow language/Unicode gap; UI-SPEC",
+          "Actual English/German wrapping, escaped labels/nested rows, equal root scroll/client widths; CJK text survives DOM but cached browser fonts display missing glyph boxes. Superseded captures: 19-evidence/visual-results.json, 24 states / 36 current images, including confirmation scrolled into view; missing CJK glyphs remain.",
+          "Explicit UI-02 acceptance follows English review and twelve German page/modal \u00d7 partial/blocked \u00d7 1440x900/768x1024/375x812 checks. Maintainer confirmed German warnings/buttons, long-label wrapping and M\u00fcnchen / \u6771\u4eac / \u96ea glyph readability in their browser. Automated cached-browser missing-glyph captures remain environment-specific historical evidence. See guided-review.json."
+        ],
+        "question": "Review complete-copy readability and localization; a suitable-font host/browser is still needed to judge CJK glyph readability.",
+        "actual_response": "accept UI-02",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T13:08:39.639900+00:00"
+      },
+      "current_status": "accepted / reviewed browser readability and localization"
+    },
+    {
+      "id": "UI-03",
+      "original_owner_disposition": {
+        "id": "UI-03",
+        "status": "accepted / tested-browser keyboard UX",
+        "evidence": [
+          "UI-REVIEW keyboard/422 gap; UI-SPEC",
+          "Plan 19 current browser-results.json: real unchecked/blocked 422 focus, Close/Escape, main fallback, repeated/rapid opens, native dialog, Tab/Space/Cancel/204; independent targeted review clean. Objective checks do not establish UX acceptance.",
+          "Guided review: unchecked/Escape and stale-blocked/Close passed; Cancel destination HTTP 500 reported by maintainer. Fixture table corrected; strengthened current browser-results.json passes all ten cases. Maintainer passed the corrected keyboard navigation and Cancel retest; final UX disposition pending; see guided-review.json and ../06.3-FOCUS-REVIEW.md.",
+          "Explicit UI-03 acceptance follows four guided keyboard checks: unchecked validation/Escape, stale blocked response/Close, corrected Tab/Shift+Tab and Cancel, successful confirmed deletion. See guided-review.json. Scope is the browser and fixture exercised; no screen-reader or universal browser acceptance is inferred."
+        ],
+        "question": "Review the repaired keyboard/focus experience using current captures or the repeatable fixture; give an actual UX disposition.",
+        "actual_response": "accept UI-03",
+        "reviewer": "user (maintainer)",
+        "timestamp": "2026-10-31T12:58:11.458045+00:00"
+      },
+      "current_status": "accepted / tested-browser keyboard UX"
+    }
+  ]
+}

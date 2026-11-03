@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete_databases.py -k cross_alias_global_cache -q -p no:cacheprovider --tb=short --junitxml=.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/.review-diagnostics/05-02-cache-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"2\" time=\"0.937\" timestamp=\"2026-10-30T14:00:01.285260+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_delete_databases\" name=\"test_guardian_cross_alias_global_cache_does_not_grant_labels[default]\" time=\"0.710\"><failure message=\"assert [&lt;Contract: default secret&gt;] == []&#10;  &#10;  Left contains one more item: &lt;Contract: default secret&gt;&#10;  Use -v to get more diff\">tests/test1/test_delete_databases.py:378: in test_guardian_cross_alias_global_cache_does_not_grant_labels\n    assert result.protected == []\nE   assert [&lt;Contract: default secret&gt;] == []\nE     \nE     Left contains one more item: &lt;Contract: default secret&gt;\nE     Use -v to get more diff</failure></testcase><testcase classname=\"tests.test1.test_delete_databases\" name=\"test_guardian_cross_alias_global_cache_does_not_grant_labels[shard]\" time=\"0.037\" /></testsuite></testsuites>",
+  "targetTest": "test_guardian_cross_alias_global_cache_does_not_grant_labels[default]",
+  "targetFile": "tests/test1/test_delete_databases.py",
+  "expected": "Unknown-provenance permission cache grants no labels on either alias",
+  "actual": "Default candidate label was shown from the pre-populated permission cache",
+  "runStartedAt": "2026-10-30T14:00:01.285260+00:00",
+  "reportPath": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/.review-diagnostics/05-02-cache-red.xml",
+  "reportModifiedAt": "2026-10-30T14:00:02.221138+00:00",
+  "semanticAssessment": "Executed assertion exposed default secret; no collection or setup failure."
+}

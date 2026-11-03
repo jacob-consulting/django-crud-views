@@ -1,0 +1,378 @@
+{
+  "review": "Guided maintainer review",
+  "observations": [
+    {
+      "item": "UI-03",
+      "part": "unchecked confirmation and Escape return",
+      "steps": [
+        "Open delete modal by keyboard for English partial fixture, publisher 1.",
+        "Submit Delete with confirmation unchecked; validation appears and focus moves to confirmation checkbox.",
+        "Press Escape; visible focus returns to the exact opener."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:47:26.821522+00:00",
+      "scope": "This subcheck passed; overall UI-03 disposition remains pending."
+    },
+    {
+      "item": "UI-03",
+      "part": "stale delete blocked and Close return",
+      "steps": [
+        "Open English stale fixture publisher 3 before protection is added.",
+        "After protection is added, check confirmation with Space and submit Delete using Enter.",
+        "Blocked-deletion notice appears, deletion form disappears, and visible focus moves to Close.",
+        "Activate Close with Enter; focus returns to the opener."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:50:01.703502+00:00",
+      "server_state_after_response": {
+        "exists": true,
+        "events": []
+      },
+      "scope": "This subcheck passed; overall UI-03 disposition remains pending."
+    },
+    {
+      "item": "UI-03",
+      "part": "keyboard navigation and Cancel",
+      "actual_response": "ViewSetKeyFoundError at /publisher_cascade/: key detail not registered at publisher_cascade after Cancel",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:52:20.545647+00:00",
+      "status": "failed",
+      "reproduced": "Authenticated local GET /publisher_cascade/ returns HTTP 500 with the same exception.",
+      "scope": "Tab navigation was not separately confirmed. Cancel navigation reached the configured destination, which failed to render."
+    },
+    {
+      "item": "UI-03",
+      "part": "keyboard navigation and Cancel retest after fixture correction",
+      "steps": [
+        "Tab and Shift+Tab keep focus inside the modal.",
+        "Activate Cancel with Enter; publisher list renders without error."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:56:02.821191+00:00",
+      "server_state_after_response": {
+        "exists": true,
+        "events": []
+      },
+      "scope": "This subcheck passed; overall UI-03 disposition remains pending."
+    },
+    {
+      "item": "UI-03",
+      "part": "successful deletion by keyboard",
+      "steps": [
+        "Open English success fixture publisher 4 using keyboard.",
+        "Check confirmation using Space and activate Delete using Enter.",
+        "Modal closes and publisher list loads without an error; en success record is absent."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:56:52.893806+00:00",
+      "server_state_after_response": {
+        "exists": false,
+        "events": [
+          {
+            "kind": "custom_notes",
+            "using": "default"
+          }
+        ]
+      },
+      "scope": "This subcheck passed; final overall UI-03 disposition has not yet been requested."
+    },
+    {
+      "item": "UI-03",
+      "part": "overall owner UX disposition",
+      "actual_response": "accept UI-03",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T12:58:11.458045+00:00",
+      "status": "accepted",
+      "scope": "Keyboard/focus experience in the browser and fixture exercised by the maintainer; does not assert screen-reader or all-browser coverage."
+    },
+    {
+      "item": "UI-01",
+      "part": "English partial preview desktop layout",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 1",
+      "steps": [
+        "Incomplete-preview warning is easy to notice.",
+        "Related objects and nested rows have a clear hierarchy.",
+        "Scrolling reaches confirmation checkbox and buttons without clipping."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:00:51.586907+00:00",
+      "scope": "Desktop English partial-preview subcheck passed; remaining UI-01 sizes/states and final disposition pending."
+    },
+    {
+      "item": "UI-01",
+      "part": "English partial preview tablet and phone layout",
+      "viewports": [
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 375,
+          "height": 812
+        }
+      ],
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 1",
+      "steps": [
+        "Warnings and nested rows remain readable without horizontal scrolling.",
+        "Nothing overlaps or gets clipped.",
+        "Vertical scrolling reaches the confirmation checkbox and buttons."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:02:25.064834+00:00",
+      "scope": "All four requested tablet/phone English partial-preview combinations passed; blocked layouts and final UI-01 disposition pending."
+    },
+    {
+      "item": "UI-01",
+      "part": "English blocked preview desktop, tablet, and phone layout",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 375,
+          "height": 812
+        }
+      ],
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 2",
+      "steps": [
+        "Incomplete-preview warning and blocked-deletion notice are easy to notice.",
+        "Related rows remain readable without overlap or horizontal scrolling.",
+        "No confirmation checkbox or Delete button is present.",
+        "Modal Close control remains reachable."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:04:00.041593+00:00",
+      "scope": "All six requested English blocked-preview combinations passed; final UI-01 disposition pending. German/Unicode review remains pending under UI-02."
+    },
+    {
+      "item": "UI-01",
+      "part": "overall owner layout disposition",
+      "actual_response": "accept UI-01",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:05:41.437905+00:00",
+      "status": "accepted",
+      "scope": "12 English partial/blocked page/modal combinations at the three specified sizes; German/Unicode review remains pending under UI-02."
+    },
+    {
+      "item": "UI-02",
+      "part": "German partial-preview readability and Unicode",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 375,
+          "height": 812
+        }
+      ],
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 5 with review_language=de",
+      "steps": [
+        "German warnings and buttons remain readable.",
+        "Long labels wrap without clipping.",
+        "München, 東京 and 雪 display as characters rather than empty boxes."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:07:09.549615+00:00",
+      "scope": "All six German partial-preview combinations passed in the maintainer browser, including reported Unicode glyph readability. Cached automated browser missing-glyph observations remain historical and environment-specific. German blocked-preview checks and final UI-02 disposition remain pending."
+    },
+    {
+      "item": "UI-02",
+      "part": "German blocked-preview readability and Unicode",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 375,
+          "height": 812
+        }
+      ],
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 6 with review_language=de",
+      "steps": [
+        "Both German warnings are readable and clearly distinct.",
+        "Long labels and München / 東京 / 雪 remain readable without clipping.",
+        "No confirmation checkbox or Delete button appears; modal Close remains reachable."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:08:02.470656+00:00",
+      "scope": "All six German blocked-preview combinations passed in the maintainer browser. Final UI-02 disposition remains pending; cached automated-browser missing-glyph observations remain environment-specific historical evidence."
+    },
+    {
+      "item": "UI-02",
+      "part": "overall owner readability and localization disposition",
+      "actual_response": "accept UI-02",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:08:39.639900+00:00",
+      "status": "accepted",
+      "scope": "English/German readability and Unicode in the browser and fixtures reviewed at the three specified sizes; no universal font/browser claim."
+    },
+    {
+      "item": "prohibition-03",
+      "part": "owner incomplete-preview meaning disposition",
+      "question": "Do the reviewed English/German screens make clear that displayed objects/counts cover only the inspected portion and deletion may affect additional objects the preview cannot show?",
+      "actual_response": "accept prohibition-03",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:09:43.112274+00:00",
+      "status": "accepted",
+      "scope": "Owner comprehension of the reviewed incomplete-preview copy; no universal comprehension claim."
+    },
+    {
+      "item": "prohibition-02",
+      "part": "owner direct callback evidence disposition",
+      "question": "Accept direct event-list evidence for tested preview/rejection paths, with successful deletion as a positive control and no inference from database rollback alone?",
+      "actual_response": "accept prohibition-02",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:10:58.567037+00:00",
+      "status": "accepted",
+      "scope": "Direct callback-event evidence for tested paths. Callbacks may run before later failures; database rollback does not prove absence of external effects."
+    },
+    {
+      "item": "prohibition-09",
+      "part": "owner evidence-boundary disposition",
+      "question": "Accept current source-matched browser evidence, retained failure/fix/retest history, historical backend evidence limited to its tested cases, and scoped actual UI acceptance?",
+      "actual_response": "accept prohibition-09",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:12:26.405325+00:00",
+      "status": "accepted",
+      "scope": "Evidence establishes only the cases actually checked; historical green or substituted previews do not prove uncovered guarantees."
+    },
+    {
+      "item": "prohibition-01",
+      "part": "owner authorization scope disposition",
+      "question": "Does the detailed description of the three recorded implementation approvals accurately reflect the scope you intended to authorize?",
+      "reviewed_scope": [
+        "Initial callback-safe inspection, partial previews/providers, deletion provenance, selected database and bounded Guardian policy, with immediate migrations.",
+        "CR-01 selected-database native graph, CR-02 field-owner provider identity/migration, CR-03 nullable joins, CT-01 configured Guardian content-type permission discovery.",
+        "Modal focus recovery/return and required onHidden adapter migration."
+      ],
+      "actual_response": "approve",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:16:27.206004+00:00",
+      "status": "accepted",
+      "scope": "Acceptance of prohibition-01 after detailed explanation; original approval records remain unchanged. Not release/theme-freeze approval or acceptance of remaining items."
+    },
+    {
+      "item": "GUA-precision",
+      "part": "owner bounded identity disposition",
+      "question": "Accept tested integer/UUID, exact configured permission-key, queryset-scope and database-alias evidence while retaining the broader custom-PK/database-conversion/text-comparison limitation?",
+      "actual_response": "accept tested scope",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:17:27.872675+00:00",
+      "status": "accepted / tested scope",
+      "retained_limitation": "General custom-PK/database-cast/collation precision remains unverified. No global GUA-01 completion or universal identity guarantee."
+    },
+    {
+      "items": [
+        "DEL-01-unclassified",
+        "DEL-03-unclassified",
+        "DEL-04-unclassified",
+        "AUTH-06-unclassified"
+      ],
+      "part": "owner disposition of four unclassified detector items",
+      "actual_response": "retain all four unresolved",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:19:48.100891+00:00",
+      "status": "retained unresolved / insufficient_spec",
+      "scope": "All four named obligations remain open until original predicates are recovered or separately justified; not four demonstrated bugs and not phase acceptance."
+    }
+  ],
+  "repairs": [
+    {
+      "item": "UI-03 Cancel destination",
+      "recorded_at": "2026-10-31T12:54:39.665367+00:00",
+      "root_cause": "PublisherCascadeListView reused PublisherTable.id LinkDetailColumn, but its ViewSet does not register detail. Strict configuration checking raises during list rendering.",
+      "change": "Use PublisherCascadeTable with a plain id column. Browser regression now requires HTTP 200 and rendered table rows at both Cancel and confirmed-delete destinations.",
+      "red_evidence": "cancel-red.json",
+      "green_evidence": "browser-results.json",
+      "verification": {
+        "browser": "All 10 cases passed; strengthened source-bound evidence validator passed.",
+        "python_checkout": "178 passed: tests/test1/test_modal.py and tests/test1/test_delete.py, Django 6.0.9; PYTHONPATH explicitly includes checkout src and root. See cancel-pytest-checkout.log.",
+        "invalid_environment_run": "Initial command without PYTHONPATH imported the older installed site-packages/crud_views and yielded 126 failed, 52 passed. Not checkout validation; full named failures retained in cancel-pytest.log.",
+        "origin": "Restarted corrected harness on 9000. Authenticated list GET returns 200 with populated table; publisher 1 exists and events is empty.",
+        "prior_screenshots": "All prior 19-evidence/browser-results.json screenshot hashes still match after reused basenames."
+      },
+      "owner_retest": "pass: user confirmed keyboard navigation and Cancel destination after correction"
+    }
+  ],
+  "language_review_setup": {
+    "temporary_script": "/tmp/dcv-focus-tunnel-bbn9ns4x/server.py",
+    "sha256": "7f47233531fa0101a7c46c691fc08f7dddd7a6d5dfcd4f5afae1976dd63d5aeb",
+    "change": "Temporary language selector authenticates the disposable reviewer, sets review_language cookie and redirects to the language-specific fixture. Canonical historical server.py and product code unchanged.",
+    "restart": "Disposable database reset; previous observations remain historical.",
+    "local_checks": [
+      {
+        "pk": 5,
+        "modal": false,
+        "status": 200,
+        "german_warning_present": true
+      },
+      {
+        "pk": 5,
+        "modal": true,
+        "status": 200,
+        "german_warning_present": true
+      },
+      {
+        "pk": 6,
+        "modal": false,
+        "status": 200,
+        "german_warning_present": true
+      },
+      {
+        "pk": 6,
+        "modal": true,
+        "status": 200,
+        "german_warning_present": true
+      }
+    ],
+    "public_access": "Maintainer browser only via Cloudflare; no public access probe."
+  }
+}

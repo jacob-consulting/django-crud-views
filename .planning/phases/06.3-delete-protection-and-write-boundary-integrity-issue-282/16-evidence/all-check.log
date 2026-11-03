@@ -1,0 +1,13 @@
+{"label": "django42-collect", "nodes": 2011, "outcomes": {}, "deselected": [], "seconds": 1.633}
+{"label": "django42-repairs", "nodes": 201, "outcomes": {"passed": 201}, "deselected": [], "seconds": 10.053}
+{"label": "django42-retained", "nodes": 1810, "outcomes": {"passed": 1810}, "deselected": [], "seconds": 268.122}
+{"label": "django42-full", "nodes": 7508, "outcomes": {"passed": 7507, "skipped": 1}, "deselected": ["tests/test1/test_form_buttons_golden.py::test_filter_form_baseline"], "seconds": 452.13}
+{"label": "django52-collect", "nodes": 2011, "outcomes": {}, "deselected": [], "seconds": 1.708}
+{"label": "django52-repairs", "nodes": 201, "outcomes": {"passed": 201}, "deselected": [], "seconds": 8.242}
+{"label": "django52-retained", "nodes": 1810, "outcomes": {"passed": 1810}, "deselected": [], "seconds": 401.008}
+{"label": "django52-full", "nodes": 7509, "outcomes": {"passed": 7508, "skipped": 1}, "deselected": [], "seconds": 663.575}
+{"label": "django60-collect", "nodes": 2011, "outcomes": {}, "deselected": [], "seconds": 1.697}
+{"label": "django60-repairs", "nodes": 201, "outcomes": {"passed": 201}, "deselected": [], "seconds": 8.078}
+{"label": "django60-retained", "nodes": 1810, "outcomes": {"passed": 1810}, "deselected": [], "seconds": 462.257}
+{"label": "django60-full", "nodes": 7508, "outcomes": {"passed": 7508}, "deselected": ["tests/test1/test_form_buttons_golden.py::test_filter_form_baseline"], "seconds": 765.815}
+GAP_MATRIX_OK group=all focused_nodes=2011 required_families=426 source=bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12

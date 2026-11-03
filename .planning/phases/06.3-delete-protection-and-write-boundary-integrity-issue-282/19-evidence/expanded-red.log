@@ -1,0 +1,60 @@
+06-js-verify: node v24.21.0 (/home/alex/.nvm/versions/node/v24.21.0/bin/node); npm 11.19.0 (/home/alex/.nvm/versions/node/v24.21.0/lib/node_modules/npm/bin/npm-cli.js); lock sha256 567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e; 71 installed packages match the lock, 72 engine ranges satisfied; 25 optional packages for other platforms skipped; jquery@3.7.1 jsdom@30.1.2 vitest@5.0.3
+
+> django-crud-views-js-tests@1.0.0 test
+> vitest run tests/js/modal.test.js tests/js/adapters.test.js
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+ ❯ tests/js/adapters.test.js (38 tests | 1 failed) 55ms
+   ❯ adapters.js (38)
+     × published native-dialog adapter reports only its completed close and cleans up 6ms
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+ ❯ tests/js/modal.test.js (52 tests | 1 failed) 3422ms
+   ❯ modal focus lifecycle (21)
+     × ignores hidden, disabled, inert and aria-hidden invalid fields 76ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/js/adapters.test.js > adapters.js > published native-dialog adapter reports only its completed close and cleans up
+TypeError: cv.adapters.modal.onHidden is not a function
+ ❯ tests/js/adapters.test.js:70:67
+     68|         const cv = {adapters: {}}; new Function("cv", code)(cv);
+     69|         const dialog = document.createElement("dialog"), child = docum…
+     70|         const callback = vi.fn(), unsubscribe = cv.adapters.modal.onHi…
+       |                                                                   ^
+     71|         expect(callback).not.toHaveBeenCalled();
+     72|         dialog.dispatchEvent(new Event("cancel", {cancelable: true}));…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/js/modal.test.js > modal focus lifecycle > ignores hidden, disabled, inert and aria-hidden invalid fields
+AssertionError: expected '' to be 'valid-target' // Object.is equality
+
+- Expected
++ Received
+
+- valid-target
+
+ ❯ tests/js/modal.test.js:474:43
+    472|         await open(); content.querySelector('input').focus();
+    473|         await replace('<input required hidden><input required disabled…
+    474|         expect(document.activeElement.id).toBe('valid-target');
+       |                                           ^
+    475|     });
+    476|     it('tries dismiss then shell when invalid candidates cannot take f…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 88 passed (90)
+   Start at  08:35:59
+   Duration  4.26s (tests 71%, environment 21%, transform 4%, setup 3%)
+

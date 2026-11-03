@@ -7,7 +7,7 @@ tasks:
     cmds:
       - uv run manage.py migrate
       - uv run manage.py seed
-      - uv run manage.py runserver 0.0.0.0:8000
+      - uv run manage.py runserver 0.0.0.0:9000
 
   seed:
     desc: Migrate and (re)seed demo data — idempotent

@@ -1,0 +1,65 @@
+{
+  "reviewed_head": "ca00ee31e42a5676288ee5450ca0e6e22edaf507",
+  "results": [
+    {
+      "alias": {
+        "deleted_count": 2,
+        "preview_complete": true,
+        "preview_summary": {},
+        "unrelated_child_survives": false,
+        "unrelated_parent_survives": true
+      },
+      "boundary": {
+        "boundaries": 1,
+        "complete_after_one_attestation": true,
+        "custom_relations": 2
+      },
+      "django": "4.2.30",
+      "null": {
+        "actual_deleted_count": 1,
+        "preview_protected_count": 1,
+        "unlinked_ref_survives": true
+      }
+    },
+    {
+      "alias": {
+        "deleted_count": 2,
+        "preview_complete": true,
+        "preview_summary": {},
+        "unrelated_child_survives": false,
+        "unrelated_parent_survives": true
+      },
+      "boundary": {
+        "boundaries": 1,
+        "complete_after_one_attestation": true,
+        "custom_relations": 2
+      },
+      "django": "5.2.18",
+      "null": {
+        "actual_deleted_count": 1,
+        "preview_protected_count": 1,
+        "unlinked_ref_survives": true
+      }
+    },
+    {
+      "alias": {
+        "deleted_count": 2,
+        "preview_complete": true,
+        "preview_summary": {},
+        "unrelated_child_survives": false,
+        "unrelated_parent_survives": true
+      },
+      "boundary": {
+        "boundaries": 1,
+        "complete_after_one_attestation": true,
+        "custom_relations": 2
+      },
+      "django": "6.0.9",
+      "null": {
+        "actual_deleted_count": 1,
+        "preview_protected_count": 1,
+        "unlinked_ref_survives": true
+      }
+    }
+  ]
+}

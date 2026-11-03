@@ -1,0 +1,2089 @@
+{
+  "deselected": [],
+  "exit_code": 0,
+  "nodes": [
+    "tests/test1/test_guardian_content_types.py::test_configured_base_content_type_registered_access[helper]",
+    "tests/test1/test_guardian_content_types.py::test_configured_base_content_type_registered_access[request]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-object]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-group]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-global]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-superuser]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-ungranted]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-object]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-group]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-global]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-superuser]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-ungranted]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_manage_policy",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_standard_grant_round_trip[user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_standard_grant_round_trip[group]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[r\\xe9viser_vehicle-r\\xe9viser]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[inspect_vehicle_status-inspect_vehicle_status]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[inspect_vehicle_status_vehicle-inspect_vehicle_status]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[view_vehicle_vehicle-view_vehicle]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_mapping[r\\xe9viser -r\\xe9viser_vehicle]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_mapping[view-change_vehicle]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_mapping_mismatch[helper]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_mapping_mismatch[request]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-True-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-True-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-True-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-False-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-False-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-False-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-True-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-True-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-True-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-False-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-False-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-False-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -True-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -True-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -True-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -False-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -False-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -False-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-True-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-True-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-True-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-False-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-False-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-False-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-True-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-True-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-True-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-False-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-False-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-False-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-True-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-True-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-True-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-False-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-False-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-False-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-True-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-True-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-True-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-False-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-False-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-False-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-True-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-True-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-True-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-False-assign_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-False-remove_perm]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-False-get_objects_for_user]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-r\\xe9viser]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-R\\xe9viser ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-re\\u0301viser ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-r\\xe9v\\u0456ser ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-r\\xe9viser  ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-r\\xe9viser]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-R\\xe9viser ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-re\\u0301viser ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-r\\xe9v\\u0456ser ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-r\\xe9viser  ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-r\\xe9viser]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-R\\xe9viser ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-re\\u0301viser ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-r\\xe9v\\u0456ser ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-r\\xe9viser  ]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_default_controls[Publisher]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_default_controls[PublisherProxy]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_default_controls[Car]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_does_not_change_core_discovery",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_supplied_database_alias",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_cache_contract[empty]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_cache_contract[nonempty]",
+    "tests/test1/test_guardian_content_types.py::test_configured_content_type_cache_contract[settings_change]",
+    "tests/test1/test_guardian_content_type_docs.py::test_documented_guardian_content_type_migration[0]",
+    "tests/test1/test_guardian_content_type_docs.py::test_documented_guardian_content_type_migration[1]",
+    "tests/test1/test_guardian_content_type_docs.py::test_documented_guardian_custom_permission_namespace",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[False-False]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[False-True]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[True-False]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[True-True]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-0-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-0-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-1-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-1-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-3-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-3-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-0-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-0-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-1-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-1-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-3-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-3-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-0-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-0-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-1-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-1-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-3-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-3-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-0-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-0-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-1-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-1-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-3-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-3-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-0-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-0-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-0-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-1-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-1-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-1-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-3-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-3-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-3-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-0-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-0-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-0-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-1-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-1-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-1-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-3-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-3-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-3-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-False-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-False-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-False-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-True-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-True-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-True-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-False-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-False-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-False-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-True-PROTECT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-True-RESTRICT]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-True-CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_native_count[CASCADE]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_unknown_boundary[False-False-custom]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_unknown_boundary[False-True-custom]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_unknown_boundary[True-False-custom]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_unknown_boundary[True-True-custom]",
+    "tests/test1/test_delete_join_identity.py::test_nullable_join_parent_link",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-False-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-False-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-True-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-True-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-False-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-False-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-True-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-True-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[False-False-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[False-False-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[False-True-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[False-True-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[True-False-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[True-False-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[True-True-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[True-True-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links_keep_parents[default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links_keep_parents[shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_missing_row[False-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_missing_row[False-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_missing_row[True-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_missing_row[True-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_custom_dispatch[False-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_custom_dispatch[False-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_custom_dispatch[True-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_custom_dispatch[True-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_success_hook_failure[False-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_success_hook_failure[False-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_success_hook_failure[True-default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_success_hook_failure[True-shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_read_error_propagates[default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_read_error_propagates[shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_denied_request[default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_denied_request[shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_count[default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_join_count[shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_same_alias_stale_join[default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_same_alias_stale_join[shard]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_converter_error[default]",
+    "tests/test1/test_delete_join_identity.py::test_native_selected_parent_converter_error[shard]"
+  ],
+  "outcomes": [
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_base_content_type_registered_access[helper]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_base_content_type_registered_access[request]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-object]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-group]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-global]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-superuser]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-ungranted]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-object]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-group]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-global]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-superuser]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[False-ungranted]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_manage_policy",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_standard_grant_round_trip[user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_standard_grant_round_trip[group]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[r\\xe9viser_vehicle-r\\xe9viser]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[inspect_vehicle_status-inspect_vehicle_status]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[inspect_vehicle_status_vehicle-inspect_vehicle_status]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[view_vehicle_vehicle-view_vehicle]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_mapping[r\\xe9viser -r\\xe9viser_vehicle]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_mapping[view-change_vehicle]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_mapping_mismatch[helper]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_mapping_mismatch[request]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-True-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-True-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-True-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-False-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-False-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-False-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-True-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-True-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-True-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-False-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-False-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-False-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -True-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -True-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -True-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -False-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -False-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -False-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-True-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-True-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-True-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-False-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-False-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\\u0456ew-False-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-True-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-True-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-True-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-False-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-False-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-False-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-True-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-True-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-True-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-False-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-False-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-False-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-True-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-True-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-True-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-False-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-False-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-False-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-True-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-True-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-True-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-False-assign_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-False-remove_perm]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-False-get_objects_for_user]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-r\\xe9viser]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-R\\xe9viser ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-re\\u0301viser ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-r\\xe9v\\u0456ser ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[assign_perm-r\\xe9viser  ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-r\\xe9viser]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-R\\xe9viser ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-re\\u0301viser ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-r\\xe9v\\u0456ser ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[remove_perm-r\\xe9viser  ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-r\\xe9viser]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-R\\xe9viser ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-re\\u0301viser ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-r\\xe9v\\u0456ser ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_explicit_keys_are_exact[get_objects_for_user-r\\xe9viser  ]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_default_controls[Publisher]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_default_controls[PublisherProxy]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_default_controls[Car]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_does_not_change_core_discovery",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_supplied_database_alias",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_cache_contract[empty]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_cache_contract[nonempty]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_types.py::test_configured_content_type_cache_contract[settings_change]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_type_docs.py::test_documented_guardian_content_type_migration[0]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_type_docs.py::test_documented_guardian_content_type_migration[1]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_guardian_content_type_docs.py::test_documented_guardian_custom_permission_namespace",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[False-False]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[False-True]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[True-False]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[True-True]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-0-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-0-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-1-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-1-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-3-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-False-3-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-0-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-0-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-1-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-1-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-3-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[False-True-3-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-0-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-0-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-1-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-1-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-3-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-False-3-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-0-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-0-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-1-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-1-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-3-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_restrict_cascade_request[True-True-3-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-0-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-0-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-0-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-1-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-1-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-1-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-3-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-3-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[False-3-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-0-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-0-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-0-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-1-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-1-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-1-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-3-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-3-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_native_counts[True-3-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-False-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-False-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-False-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-True-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-True-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[False-True-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-False-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-False-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-False-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-True-PROTECT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-True-RESTRICT]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_controls[True-True-CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_nonnull_native_count[CASCADE]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_unknown_boundary[False-False-custom]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_unknown_boundary[False-True-custom]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_unknown_boundary[True-False-custom]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_unknown_boundary[True-True-custom]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_nullable_join_parent_link",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-False-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-False-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-True-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-True-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-False-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-False-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-True-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-True-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[False-False-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[False-False-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[False-True-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[False-True-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[True-False-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[True-False-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[True-True-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links[True-True-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links_keep_parents[default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_links_keep_parents[shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_missing_row[False-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_missing_row[False-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_missing_row[True-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_missing_row[True-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_custom_dispatch[False-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_custom_dispatch[False-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_custom_dispatch[True-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_custom_dispatch[True-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_success_hook_failure[False-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_success_hook_failure[False-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_success_hook_failure[True-default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_success_hook_failure[True-shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_read_error_propagates[default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_read_error_propagates[shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_denied_request[default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_denied_request[shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_count[default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_join_count[shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_same_alias_stale_join[default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_same_alias_stale_join[shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_converter_error[default]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    },
+    {
+      "node": "tests/test1/test_delete_join_identity.py::test_native_selected_parent_converter_error[shard]",
+      "outcome": "passed",
+      "reason": null,
+      "when": "call",
+      "xfail": null
+    }
+  ],
+  "runtime": {
+    "django": "6.0.9",
+    "django_deletion_sha256": "27d04ac8ec534f337eb0b257d89f6b59ded830b6c3bc752e2030e818380db18a",
+    "executable": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+    "imports": {
+      "crud_views": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+        "sha256": "3a56ad144140e2db6a49222257c8dd13eb2adca1b9ceeda19c2e01e26cd6177b"
+      },
+      "crud_views.apps": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/apps.py",
+        "sha256": "6f703360e9e76a87ae9d65b772390f13a8e298fa0d3e6b193286c802d9584b34"
+      },
+      "crud_views.checks": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/checks.py",
+        "sha256": "b3273f8aa6d63ac7f665c970651fdadafd1c48487d15ad1459439fdfaad3587d"
+      },
+      "crud_views.lib": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views.lib.assets": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/assets.py",
+        "sha256": "815fabd2b3616d6efb5ca04074fc7f362d88005abec53f096d34478f6dc2797b"
+      },
+      "crud_views.lib.breadcrumb": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/breadcrumb.py",
+        "sha256": "675d281efae8d7b900766fe300b9ddde5a904c041737ea6575b6f18d3206b74c"
+      },
+      "crud_views.lib.button_classes": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/button_classes.py",
+        "sha256": "e345849ff21d5ded2c79da93450da5d2036d791682d323951d897fb2feefaaf2"
+      },
+      "crud_views.lib.check": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/check.py",
+        "sha256": "d2f074a38d7d9484d2bcc30036efa940a97c05eb7235df55bdb6ebd56e2fb671"
+      },
+      "crud_views.lib.conditional": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/conditional/__init__.py",
+        "sha256": "8786ad65931be19f7d07f38bda1865a44e8ebbc8c4285962fd8ddd38aeec9ae1"
+      },
+      "crud_views.lib.conditional.formset": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/conditional/formset.py",
+        "sha256": "c900b5994c2492c5d3a5b3284d7517ea21eb2a7655ed2d0bf3d7ade98e81afa6"
+      },
+      "crud_views.lib.conditional.group": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/conditional/group.py",
+        "sha256": "988081692a81d92f74cf05deea0300c6d8143e534e8227cb41bfdf78fdcbba96"
+      },
+      "crud_views.lib.conditional.layout": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/conditional/layout.py",
+        "sha256": "b6cdb52bfeb2448399ca174e8390aabfc99121c2991c2fef8f38bca32e5ad5d7"
+      },
+      "crud_views.lib.conditional.toggle": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/conditional/toggle.py",
+        "sha256": "70eee69f0980e05119a9350b35af18f99fe7416022f38deb1996743c42bc56b8"
+      },
+      "crud_views.lib.context_processor": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/context_processor.py",
+        "sha256": "bea45802c524ba57c04ed475e4c657e29977a98047e741e8b79cbc0e1fc9627d"
+      },
+      "crud_views.lib.crispy": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/crispy/__init__.py",
+        "sha256": "7f30859793d38108ed31bc2a295b53a2c90be61ffeba89d92cb57a794f24f74e"
+      },
+      "crud_views.lib.crispy.buttons": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/crispy/buttons.py",
+        "sha256": "1d7092ef2be94c63e834a612adb8a8121242f22525a459af022776abc1245fba"
+      },
+      "crud_views.lib.crispy.form": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/crispy/form.py",
+        "sha256": "cf2d7f8774b4048a8f23d3efaf9b6b92ea218c1f7ad48a23e14feb26a93a81bd"
+      },
+      "crud_views.lib.crispy.table": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/crispy/table.py",
+        "sha256": "bbf3ac1d3a686b68ec9de209011abe5a917df78731f7a95e7b7bbf0748bf2929"
+      },
+      "crud_views.lib.deletion": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/deletion.py",
+        "sha256": "91b3464f8337006d79b839e4af344dd223fcf12e2ee536f14d0545c3f36280b6"
+      },
+      "crud_views.lib.exceptions": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/exceptions.py",
+        "sha256": "0072a39d98525f445939f027d76568b32388ecd5302cc59d36c8a270731d2e96"
+      },
+      "crud_views.lib.formsets": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/formsets/__init__.py",
+        "sha256": "a96eaf24bfc5c29f376b842669b712a1d782596d3d8f921fba19204d86d30b69"
+      },
+      "crud_views.lib.formsets.formsets": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/formsets/formsets.py",
+        "sha256": "b71e383bb1f8d6d13ded8893804655aa2c8c2a7c7cb99439fe0f013a375219bd"
+      },
+      "crud_views.lib.formsets.inline_formset": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/formsets/inline_formset.py",
+        "sha256": "a187443c1f95026c094d21bd2ee137f1dbd34f24f99ab9130290ac3513d4d6e0"
+      },
+      "crud_views.lib.formsets.layout": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/formsets/layout.py",
+        "sha256": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937"
+      },
+      "crud_views.lib.formsets.mixins": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/formsets/mixins.py",
+        "sha256": "a7c424b9e86a9aef3cecd094c2680fe9dcd47607257e5fef1e9742f2e6f0985c"
+      },
+      "crud_views.lib.formsets.render_tree": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/formsets/render_tree.py",
+        "sha256": "ad6fd7e961415a9b71c31586e80eb67e431bd7e9247da2c322d43bf437cfb469"
+      },
+      "crud_views.lib.icons": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/icons.py",
+        "sha256": "bc3a3d3ef8913f1d6ac194d025ae539c1503afd8c8f929c272eef1ecc9307b25"
+      },
+      "crud_views.lib.lazy": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/lazy.py",
+        "sha256": "5403c2570fffd2898aade7fe2f4d243840140f53f4a8ebc8387fd5aeb3c9ef20"
+      },
+      "crud_views.lib.messages": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/messages.py",
+        "sha256": "df20fd99388998e58bd12a29c8acae311ea2a99ce781a043c6dc8043c563fc4f"
+      },
+      "crud_views.lib.ordered": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ordered.py",
+        "sha256": "d9e582df3b182b380eda282e8c198d0c2c22f4345090046fa5e4842fdfc029f8"
+      },
+      "crud_views.lib.pipeline": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/pipeline.py",
+        "sha256": "d675c2091eed75b65dec51e33a2d3c81b4d556a7bb6f859f398bb68116fd0f35"
+      },
+      "crud_views.lib.resource": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/resource.py",
+        "sha256": "9a4728623212912b2612bde6df1a2e51e494ad2582019d8a5ac42326c5c7e81d"
+      },
+      "crud_views.lib.session": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/session.py",
+        "sha256": "f44b8a4fc249afc9ad3db6c62e552f85d4925d4029e6f4349008c66966c74d74"
+      },
+      "crud_views.lib.settings": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/settings.py",
+        "sha256": "1e1bbd027d7dd7e6d2365c06dcda750db6b7d17a979659582c40891ea757cd91"
+      },
+      "crud_views.lib.table": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/table/__init__.py",
+        "sha256": "a338bdccef6068cd9892579146a38a203b8f9338a32fdd985d4a142a46289545"
+      },
+      "crud_views.lib.table.attrs": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/table/attrs.py",
+        "sha256": "32fa50e24f9fb81aa4ee1d71702279573c5c586f6e1a1f3c44db90fd04f89564"
+      },
+      "crud_views.lib.table.columns": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/table/columns.py",
+        "sha256": "c7170fe7ac6df56e1dd55ed0e2e0dc8c7ab75fe6f4a630eaa00a63e685adae4c"
+      },
+      "crud_views.lib.table.table": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/table/table.py",
+        "sha256": "59f6054eaf3804c795c6eb63864eec5e1f588ec72f0fe1f5280a281f5b3ec548"
+      },
+      "crud_views.lib.view": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/__init__.py",
+        "sha256": "12348de5ba48918ca6b4e7693720e07164e60388ee4dcc0d39dac3e3281d8255"
+      },
+      "crud_views.lib.view.action_menu": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/action_menu.py",
+        "sha256": "f39bb30b71d706012341f9f3ee4abdf299b2d2a28ffa18da279284a072745602"
+      },
+      "crud_views.lib.view.base": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py",
+        "sha256": "7b22c4563d2a492046d4a3aa9efe84be30448a7b0681080efe520969817cf3c2"
+      },
+      "crud_views.lib.view.button_data": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/button_data.py",
+        "sha256": "5fb48eeb721ef2cabcda1febeded82682fbd7d20261a36a2d7d8713c2cff1ee5"
+      },
+      "crud_views.lib.view.buttons": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/buttons.py",
+        "sha256": "7ba1ff9ccbd0b5b1354610f0bb4656eace86d0b5c3a7e17a6fa3a8aa36f0d218"
+      },
+      "crud_views.lib.view.card": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/card.py",
+        "sha256": "ab0c8c2caa5feb8d0f46f5d74fcb73fb9573dab204270cd9849d5b5c87b9aea5"
+      },
+      "crud_views.lib.view.context": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/context.py",
+        "sha256": "ee871ad35b3bbf412c4af227555ccad92d34499e048557b20820bc3cfd2b44a3"
+      },
+      "crud_views.lib.view.label_mode": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/label_mode.py",
+        "sha256": "2b33b6aa899500cebc84eb10735ba2b9ac6594a1b9f098678a1d1173a8f39e59"
+      },
+      "crud_views.lib.view.meta": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/meta.py",
+        "sha256": "03401c7898839d0f1a4429e8ed0d6941c43ef6614aada7e716afca8f79c2bb82"
+      },
+      "crud_views.lib.view.variant": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/variant.py",
+        "sha256": "7f71fd0349b0b59435b577ecd668d19aefeb40488d859957e98f4e0d3067ff58"
+      },
+      "crud_views.lib.view.visibility": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/visibility.py",
+        "sha256": "18548c82f58c12af2dda45ed3d8b8bf97256dca045a4730067230af313754ef5"
+      },
+      "crud_views.lib.views": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/__init__.py",
+        "sha256": "40246cf27ab811885e7de3fba049b221067114650f3ae3da90d96e4a66f1540e"
+      },
+      "crud_views.lib.views.action": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/action.py",
+        "sha256": "0b7572d8c10bdd404c60e05fbf72e49f60ec30766fb8b0a3be7c5740864144fc"
+      },
+      "crud_views.lib.views.action_ordered": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/action_ordered.py",
+        "sha256": "1dbe889377365407287e8c4b26b27ef80e0eb650e01c47f60c78d64a081cd4b9"
+      },
+      "crud_views.lib.views.card": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/card.py",
+        "sha256": "efdad2ee683492d177132fb8c79f80bf09c94559ac4a8af93517798acd29ef56"
+      },
+      "crud_views.lib.views.child": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/child.py",
+        "sha256": "f6e06d0e4f1f56f55e5b8153fe700364e9a43b5838fd54514f65c90130b9fecb"
+      },
+      "crud_views.lib.views.create": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/create.py",
+        "sha256": "d3604e0da2c2292ec411103a9cf35bd02cfd03789bf78fa558ad4fae7dd135a1"
+      },
+      "crud_views.lib.views.delete": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/delete.py",
+        "sha256": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e"
+      },
+      "crud_views.lib.views.detail": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/detail.py",
+        "sha256": "039cc0aedc07fbe7739393e4765bdb8d2270db1fdd08d8077e584abed86f38ed"
+      },
+      "crud_views.lib.views.form": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/form.py",
+        "sha256": "6e9c1191da2165f8e0a6f5e367994dd0d7e5dfa106c66118fa59ed94a53c1925"
+      },
+      "crud_views.lib.views.list": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/list.py",
+        "sha256": "d648c275eb34bf883fe6e0889cc64b0244769420f5abc66dc50718acf839af7a"
+      },
+      "crud_views.lib.views.manage": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py",
+        "sha256": "97da5bd1f570457ca3eb9fc8f9377b630aea2839c359b45c3c4e0cb97bd95b34"
+      },
+      "crud_views.lib.views.mixins": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/mixins.py",
+        "sha256": "0fdc2acabec44fbc80d700581762bedd25605d3337eca8e165541f8b6967b856"
+      },
+      "crud_views.lib.views.update": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/update.py",
+        "sha256": "bd9b274bc616f25c40f1d7ac964f48666f4d860a6d1f039c6f0798f7090a1dc7"
+      },
+      "crud_views.lib.viewset": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/viewset/__init__.py",
+        "sha256": "90e76939d7b5efeed2517aea29c66b5fe5f2c8e18b25d60616668a2cacd03250"
+      },
+      "crud_views.lib.viewset.parentviewset": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/viewset/parentviewset.py",
+        "sha256": "1b7525686dcaaed2a6003a3efa324156ba0100600af40d15a2d57c6312e88981"
+      },
+      "crud_views.lib.viewset.path_regs": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/viewset/path_regs.py",
+        "sha256": "48e8810979f535d39dfaf7ecaa44513256f81dd683727ffb237f37e3a7b61bed"
+      },
+      "crud_views.management": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/management/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views.migrations": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/migrations/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views.templatetags": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/templatetags/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views.templatetags.crud_views": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/templatetags/crud_views.py",
+        "sha256": "c022181ebd937f910688db37f876aa10e954a6168373414a9f852376c7172e2c"
+      },
+      "crud_views.templatetags.crud_views_formsets": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/templatetags/crud_views_formsets.py",
+        "sha256": "2d1f5eb1bb614965dc15c1cd078f96b4d324cd5b77f536b6364347cb45885dc8"
+      },
+      "crud_views_guardian": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_guardian.apps": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/apps.py",
+        "sha256": "0ba2babfa16a252062da72175393b5138ee18b650b56cb98fac8f45236187782"
+      },
+      "crud_views_guardian.checks": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/checks.py",
+        "sha256": "b3c7429e3cf5bcd9a91ab0a75fdd55bcaffdd86978af0e8ee17cbf7002a5919a"
+      },
+      "crud_views_guardian.lib": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_guardian.lib.mixins": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/mixins.py",
+        "sha256": "fb56c16a8fcbfcffa0edab95166751ccd071faf83bfa736cc903ad84fbf63aba"
+      },
+      "crud_views_guardian.lib.views": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/views.py",
+        "sha256": "811da5ddeba75f8a8cbe6ba432036e158f8c94dc9cbf490f4527df6cdbaf841b"
+      },
+      "crud_views_guardian.lib.viewset": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/viewset.py",
+        "sha256": "c50198c84caf94100f61c7783d113e5f0b78248755cba4e803fe7c5972d11131"
+      },
+      "crud_views_object_detail": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_object_detail.apps": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/apps.py",
+        "sha256": "90331e4583f345495fd2d64a4c7e06dd070a6aa579d9bc9283dca38d1059fccc"
+      },
+      "crud_views_object_detail.lib": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/lib/__init__.py",
+        "sha256": "3823a7debac8b0fed962636f1e22a9d808e0b1083b45f6dba3815db75369e270"
+      },
+      "crud_views_object_detail.lib.conf": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/lib/conf.py",
+        "sha256": "2d15b8bbdd4d52c439bf590f2d8e94e2952c718ce404c4ec2ee1a09c31ebc536"
+      },
+      "crud_views_object_detail.lib.config": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/lib/config.py",
+        "sha256": "d21c570f1952942720d0d2754e086429189f41d06b54d1ca2694fb182a4224e7"
+      },
+      "crud_views_object_detail.lib.mixins": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/lib/mixins.py",
+        "sha256": "a0a731d7264a18b9c322d8b3339ffec00fd40a19d76c463e4c263ffc733470b3"
+      },
+      "crud_views_object_detail.lib.resolvers": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/lib/resolvers.py",
+        "sha256": "6999d89952179ae74ceed127f3d70ae766217fadcf0df59ccad3e795b149b957"
+      },
+      "crud_views_object_detail.lib.views": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/lib/views.py",
+        "sha256": "ebccb0a0363f743377e7e7b36ded0f9089cf9563093806aedc2adef6cf462efa"
+      },
+      "crud_views_object_detail.templatetags": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/templatetags/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_object_detail.templatetags.crud_views_object_detail": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/templatetags/crud_views_object_detail.py",
+        "sha256": "f52b2b27ce71f3863dd0499af883cc48f15d7b4cd4bfbe89734d385c3ac3985c"
+      },
+      "crud_views_polymorphic": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_polymorphic.apps": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/apps.py",
+        "sha256": "b4d8985fa5fb52d938c772242daedcd462a700e2f6c65a7099d61f734e7d812f"
+      },
+      "crud_views_polymorphic.lib": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/lib/__init__.py",
+        "sha256": "31c8a0b489a647786453c38e6fe888529795d0c0a6b2e9cf4b0a4ff061644cce"
+      },
+      "crud_views_polymorphic.lib.create": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/lib/create.py",
+        "sha256": "b035d9831d4e34b45e5a55bf6621029a6fac850bf5dee23200530ccc39afa608"
+      },
+      "crud_views_polymorphic.lib.create_select": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/lib/create_select.py",
+        "sha256": "ead2641af324304462c30b5aac8c03ea9e56270b2874571b169c89bb41e098ce"
+      },
+      "crud_views_polymorphic.lib.delete": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/lib/delete.py",
+        "sha256": "0ba1e6614b960e60970f0b97cb127e5ea109b5165185eada6d6c189620ef5ef5"
+      },
+      "crud_views_polymorphic.lib.detail": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/lib/detail.py",
+        "sha256": "c1abb0ff9ee95114c3143fd0a7f1c3d118c26ac3f45a1c17b7d9ed51b88ae233"
+      },
+      "crud_views_polymorphic.lib.update": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/lib/update.py",
+        "sha256": "813208b358f705ef280e2ee9b3e8b9c5fb7ccda62576083858c0aeb0504621ea"
+      },
+      "crud_views_polymorphic.lib.utils": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/lib/utils.py",
+        "sha256": "ee043b643154f769afc4f31160102e0a975830af8ff0fe60146e9b84787b7384"
+      },
+      "crud_views_workflow": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_workflow.apps": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/apps.py",
+        "sha256": "17e242ddb613ff4b7addb6535d6dc8f819374e2608922278f706ffa77eaebdc8"
+      },
+      "crud_views_workflow.checks": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/checks.py",
+        "sha256": "4197f6a9a20a002c36535631929657c73391a4af2c26e7f3ad5b65bb62cfe528"
+      },
+      "crud_views_workflow.lib": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/lib/__init__.py",
+        "sha256": "98900b66eec4946c6992eb83b5ba036de6fdd23a58a52bb6123e47e076ff1192"
+      },
+      "crud_views_workflow.lib.enums": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/lib/enums.py",
+        "sha256": "1741ade413fedd9d165a6eb9ba05a0bbb794f935b972392a24b52e29d75c7335"
+      },
+      "crud_views_workflow.lib.forms": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/lib/forms.py",
+        "sha256": "ad742e0f5f486073f73dbeb3f5584cfb6baaf7b40718513956acaf7d370aaa9a"
+      },
+      "crud_views_workflow.lib.mixins": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/lib/mixins.py",
+        "sha256": "ab0b086a0f481184137afbe3c80e61d99f8088c1608c2364afe6c6b84a044eb0"
+      },
+      "crud_views_workflow.lib.views": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/lib/views.py",
+        "sha256": "22fb1c4374ef9647481c1e86f0fefdd78fc166d64b24481fafc583326b4e262d"
+      },
+      "crud_views_workflow.migrations": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/migrations/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_workflow.migrations.0001_initial": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/migrations/0001_initial.py",
+        "sha256": "f8350eafcc6acf18aeafce2f1e3c2862a74b371f6965048e3540e347832d4219"
+      },
+      "crud_views_workflow.migrations.0002_rename_workflow_object_id_to_pk": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/migrations/0002_rename_workflow_object_id_to_pk.py",
+        "sha256": "a9674aa1cd420a57b23c92f8a3a6cd409792f29af7ef4e684ca2cce16349d34b"
+      },
+      "crud_views_workflow.models": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/models.py",
+        "sha256": "bd17d7230ce20de7b3e295f0b7c36e0e5519d9b1e235f98cfefa8309f608e827"
+      }
+    },
+    "packages": {
+      "crud_views": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+        "sha256": "3a56ad144140e2db6a49222257c8dd13eb2adca1b9ceeda19c2e01e26cd6177b"
+      },
+      "crud_views_guardian": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_object_detail": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_polymorphic": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_polymorphic/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "crud_views_workflow": {
+        "path": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "python": "3.12.3",
+    "versions": {
+      "crispy-bootstrap5": "2023.10",
+      "django": "6.0.9",
+      "django-crispy-forms": "2.0",
+      "django-guardian": "3.5.2",
+      "django-ordered-model": "3.7.4",
+      "django-polymorphic": "4.11.7",
+      "pydantic": "2.14.1",
+      "pytest": "9.2.0",
+      "pytest-django": "4.14.0"
+    }
+  }
+}

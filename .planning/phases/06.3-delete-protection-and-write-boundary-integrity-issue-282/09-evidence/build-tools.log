@@ -1,0 +1,16 @@
+{
+  "label": "build-tools",
+  "started": "2026-10-30T14:48:18.210999+00:00",
+  "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234",
+  "diff_sha256": "320aa003bbdfb80f49eb33dcae3bbfa46974e22f610d308f05cea87bcb1a98a2",
+  "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec",
+  "command": ".venv/bin/python -c 'from importlib.metadata import version; import json; print(json.dumps({name:version(name) for name in (\"nox\",\"mkdocs\",\"ruff\",\"pre-commit\")}))'",
+  "environment": {
+    "PYTHONPATH": null,
+    "PYTEST_XDIST_AUTO_NUM_WORKERS": null
+  }
+}
+{"nox": "2026.10.20", "mkdocs": "1.6.1", "ruff": "0.17.3", "pre-commit": "4.7.0"}
+
+RESULT {"label": "build-tools", "started": "2026-10-30T14:48:18.210999+00:00", "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234", "diff_sha256": "320aa003bbdfb80f49eb33dcae3bbfa46974e22f610d308f05cea87bcb1a98a2", "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec", "command": ".venv/bin/python -c 'from importlib.metadata import version; import json; print(json.dumps({name:version(name) for name in (\"nox\",\"mkdocs\",\"ruff\",\"pre-commit\")}))'", "environment": {"PYTHONPATH": null, "PYTEST_XDIST_AUTO_NUM_WORKERS": null}, "exit_code": 0, "duration_seconds": 0.062, "finished": "2026-10-30T14:48:18.292968+00:00"}

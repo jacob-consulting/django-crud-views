@@ -221,6 +221,14 @@ msgstr "Absteigend"
 msgid "This object cannot be deleted:"
 msgstr "Dieses Objekt kann nicht gelöscht werden:"
 
+#: templates/crud_views/view_delete.content.html:6
+msgid "This preview is incomplete. Custom deletion behavior may affect additional objects."
+msgstr "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen."
+
+#: templates/crud_views/snippets/delete/related_objects.html:15
+msgid "Some related objects that will also be deleted (partial counts):"
+msgstr "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):"
+
 #: templates/crud_views/snippets/delete/related_objects.html:6
 msgid "Deletion is blocked by protected relationships:"
 msgstr "Das Löschen wird durch geschützte Beziehungen verhindert:"

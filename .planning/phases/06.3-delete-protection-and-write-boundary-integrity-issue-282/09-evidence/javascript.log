@@ -1,0 +1,40 @@
+{
+  "label": "javascript",
+  "started": "2026-10-30T14:37:37.594020+00:00",
+  "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234",
+  "diff_sha256": "ec026078b98b14c0b0d50b6a946b21b47866415759cd3b4c1e298332cb98db04",
+  "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec",
+  "command": "bash .planning/phases/06-form-button-leaf/06-js-verify.sh",
+  "environment": {
+    "PYTHONPATH": null,
+    "PYTEST_XDIST_AUTO_NUM_WORKERS": null
+  }
+}
+06-js-verify: node v24.21.0 (/home/alex/.nvm/versions/node/v24.21.0/bin/node); npm 11.19.0 (/home/alex/.nvm/versions/node/v24.21.0/lib/node_modules/npm/bin/npm-cli.js); lock sha256 567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e; 71 installed packages match the lock, 72 engine ranges satisfied; 25 optional packages for other platforms skipped; jquery@3.7.1 jsdom@30.1.2 vitest@5.0.3
+
+> django-crud-views-js-tests@1.0.0 test
+> vitest run
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+
+ Test Files  8 passed (8)
+      Tests  234 passed (234)
+   Start at  14:37:38
+   Duration  4.37s (environment 66%, tests 18%, setup 8%, transform 6%, import 1%, worker 1%)
+
+Environment  jsdom was created 8 times · 14.03s total, 66% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+RESULT {"label": "javascript", "started": "2026-10-30T14:37:37.594020+00:00", "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234", "diff_sha256": "ec026078b98b14c0b0d50b6a946b21b47866415759cd3b4c1e298332cb98db04", "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec", "command": "bash .planning/phases/06-form-button-leaf/06-js-verify.sh", "environment": {"PYTHONPATH": null, "PYTEST_XDIST_AUTO_NUM_WORKERS": null}, "exit_code": 0, "duration_seconds": 5.057, "finished": "2026-10-30T14:37:42.676051+00:00"}

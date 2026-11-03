@@ -1,7 +1,10 @@
 {% extends "crud_views/snippets/form_frame.html" %}
-{% load crud_views %}
+{% load crud_views i18n %}
 
 {% block cv_form_body %}
+{% if delete_preview_incomplete %}
+    {% cv_alert "warning" text=_("This preview is incomplete. Custom deletion behavior may affect additional objects.") %}
+{% endif %}
 {% if delete_protection_errors %}
     {% include "crud_views/snippets/delete/protection_errors.html" %}
 {% else %}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="0.937" timestamp="2026-10-30T14:00:01.285260+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_databases" name="test_guardian_cross_alias_global_cache_does_not_grant_labels[default]" time="0.710"><failure message="assert [&lt;Contract: default secret&gt;] == []&#10;  &#10;  Left contains one more item: &lt;Contract: default secret&gt;&#10;  Use -v to get more diff">tests/test1/test_delete_databases.py:378: in test_guardian_cross_alias_global_cache_does_not_grant_labels
+    assert result.protected == []
+E   assert [&lt;Contract: default secret&gt;] == []
+E     
+E     Left contains one more item: &lt;Contract: default secret&gt;
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test1.test_delete_databases" name="test_guardian_cross_alias_global_cache_does_not_grant_labels[shard]" time="0.037" /></testsuite></testsuites>

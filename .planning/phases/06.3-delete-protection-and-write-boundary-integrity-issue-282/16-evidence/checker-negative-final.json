@@ -1,0 +1,60 @@
+{
+  "checker_sha256": "442c7d07fd1a56b9d8ea3f056154443bd228bcec69c06047a3065307f97f5bc3",
+  "results": {
+    "baseline": {
+      "passed": true
+    },
+    "class_qualified_baseline": {
+      "passed": true
+    },
+    "empty_collection": {
+      "reason": "django42-repairs",
+      "rejected": true
+    },
+    "import_hash_mismatch": {
+      "reason": "('django42-repairs', 'crud_views')",
+      "rejected": true
+    },
+    "incomplete": {
+      "reason": "('django42-repairs', 'incomplete/nonzero')",
+      "rejected": true
+    },
+    "junit_class_mismatch": {
+      "reason": "('django42-repairs', 'JUnit node mismatch')",
+      "rejected": true
+    },
+    "missing_outcome": {
+      "reason": "('django42-repairs', 'missing outcomes')",
+      "rejected": true
+    },
+    "nonzero": {
+      "reason": "('django42-repairs', 'incomplete/nonzero')",
+      "rejected": true
+    },
+    "package_hash_mismatch": {
+      "reason": "('django42-repairs', 'crud_views')",
+      "rejected": true
+    },
+    "runtime_mismatch": {
+      "reason": "django42-repairs",
+      "rejected": true
+    },
+    "source_mismatch": {
+      "reason": "django42-repairs",
+      "rejected": true
+    },
+    "unexpected_deselection": {
+      "reason": "('django42-repairs', ['unapproved'])",
+      "rejected": true
+    },
+    "unexpected_skip": {
+      "reason": "('django42-repairs', [{'node': 'tests/test1/test_guardian_content_types.py::test_configured_base_content_type_registered_access[helper]', 'outcome': 'skipped', 'reason': 'unapproved', 'when': 'call', 'xfail': None}])",
+      "rejected": true
+    },
+    "unexpected_xfail": {
+      "reason": "django42-repairs",
+      "rejected": true
+    }
+  },
+  "scope": "Copied/synthetic checker contract diagnostics only; no product acceptance"
+}

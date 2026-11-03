@@ -1,0 +1,74 @@
+{
+  "recorded_at": "2026-11-01T07:56:52.873350+00:00",
+  "scope": "06.3-SCOPE-RECONCILIATION.md",
+  "nyquist": {
+    "plans": 20,
+    "in_scope_gaps": 0,
+    "map": "validation-map.json",
+    "manual_evidence": "current-dispositions.json"
+  },
+  "security": {
+    "threats": 36,
+    "open": 0,
+    "asvs": 1,
+    "plan_time_register": [
+      "06.3-11-PLAN.md",
+      "06.3-19-PLAN.md",
+      "06.3-02-PLAN.md",
+      "06.3-18-PLAN.md",
+      "06.3-15-PLAN.md",
+      "06.3-14-PLAN.md",
+      "06.3-07-PLAN.md",
+      "06.3-01-PLAN.md",
+      "06.3-05-PLAN.md",
+      "06.3-12-PLAN.md",
+      "06.3-03-PLAN.md",
+      "06.3-09-PLAN.md",
+      "06.3-10-PLAN.md",
+      "06.3-06-PLAN.md",
+      "06.3-04-PLAN.md",
+      "06.3-17-PLAN.md",
+      "06.3-20-PLAN.md",
+      "06.3-13-PLAN.md",
+      "06.3-08-PLAN.md",
+      "06.3-16-PLAN.md"
+    ],
+    "result": "existing independent audit retained; unchanged source; L1 zero-open short-circuit; append-audit unchanged"
+  },
+  "ui": {
+    "result": "existing audit and actual owner acceptance retained; unchanged UI source",
+    "browser_manifest": "../20-evidence/final-browser-results.json",
+    "manifest_validation": "FOCUS_EVIDENCE_OK"
+  },
+  "code_review": {
+    "result": "clean; zero new source delta from independently reviewed 8a26b39",
+    "open_findings": 0,
+    "continuity": "source-continuity.json"
+  },
+  "parent_uat": {
+    "file": ".planning/phases/06-form-button-leaf/06-UAT.md",
+    "status": "complete",
+    "failed_gaps": 0,
+    "action": "no change"
+  },
+  "regression": {
+    "javascript": {
+      "files": 8,
+      "passed": 266,
+      "exit_code": 0,
+      "command": "timeout 600 npm test"
+    },
+    "guardian_django42": {
+      "passed": 298,
+      "exit_code": 0,
+      "command": "PYTHONPATH=\"$PWD/src:$PWD\" timeout 600 .nox/crispy_floor-3-12-django-4-2/bin/python -m pytest tests/test1/test_guardian_policy.py tests/test1/test_guardian_content_types.py -q -p no:cacheprovider"
+    },
+    "guardian_delete_django60": {
+      "passed": 531,
+      "result": "retained fresh preceding investigation; identical source",
+      "log": "../unclassified-evidence/bounded-review-tests.log"
+    },
+    "broader_python": "retained three-series focused/full-suite evidence, unchanged source; no redundant full-suite claim"
+  },
+  "issue_286": "open; broader compatibility unverified/outside phase gate"
+}

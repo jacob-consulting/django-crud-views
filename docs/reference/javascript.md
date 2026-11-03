@@ -30,6 +30,7 @@ assignment at any point before the user acts takes effect.
 | Adapter | Method | Called by core when | Bootstrap default |
 |---|---|---|---|
 | `modal` | `show(modalEl)` | the partial is injected | `Modal.getOrCreateInstance(modalEl).show()`; throws a clear error when the namespace has no `Modal` |
+| `modal` | `onHidden(modalEl, callback)` | subscribe before showing; return idempotent unsubscribe | listens to this modal’s `hidden.bs.modal` event after hiding and focus-trap release |
 | `modal` | `hide(modalEl)` | a `[data-cv-modal-dismiss]` element inside the shell is clicked | `Modal.getInstance(modalEl)?.hide()` |
 | `modal` | `setSize(dialogEl, size)` | before `show`, with the view's `cv_modal_size` token | ensures `modal-dialog` and swaps the size class: `modal-sm` / `modal-lg` / `modal-xl` for `sm` / `lg` / `xl`; `""` and unknown tokens remove it. Other classes on the dialog (a shell override's `modal-dialog-centered`) are kept |
 | `tooltip` | `init(el, {location})` | for every `[data-cv-tooltip]` under a root: page load, `cv:modal:loaded`, `cv:formset:row-added`; `location` is the marker's value, see [Tooltips](#tooltips) | `Tooltip.getOrCreateInstance(el)` (the context is ignored); does nothing without `Tooltip` |
@@ -52,7 +53,7 @@ cv.adapters.tooltip = {init(el, {location}) { /* your tooltip library */ }};
 Adapters assigned **before** `adapters.js` loads are kept, so a hand-written object may also be set earlier. Create the
 namespace first: `globalThis.cv ??= {}; cv.adapters ??= {};`. The merge is
 shallow, per adapter: assigning `cv.adapters.modal = {...}` replaces the whole default `modal` adapter, so provide
-`show`, `hide` and `setSize` together. Every adapter such an early map leaves out gets its default while
+`show`, `hide`, `setSize` and `onHidden` together. Every adapter such an early map leaves out gets its default while
 `adapters.js` loads, so a partial map assigned before core needs nothing else.
 
 Replacing the **whole map after** core loads is different: `cv.adapters = {...}` discards the defaults, and core never
@@ -153,11 +154,26 @@ Then assign the modal adapter in a script loaded after core:
 
 ```javascript
 cv.adapters.modal = {
+    onHidden(modalEl, callback) {
+        const closed = event => { if (event.target === modalEl && !modalEl.open) callback(); };
+        modalEl.addEventListener("close", closed);
+        return () => modalEl.removeEventListener("close", closed);
+    },
     show(modalEl) { modalEl.showModal(); },
     hide(modalEl) { modalEl.close(); },
     setSize(dialogEl, size) { dialogEl.dataset.size = size; },
 };
 ```
+
+`onHidden` is required. It must not call back during subscription. It reports completed dismissal from
+Close, Escape, backdrop or an adapter API only after the dialog is hidden and its focus trap/inertness is
+released. A prevented hide does not notify. Core unsubscribes on hide, failed opening or replacement by a
+new session. Custom asynchronous adapters must wait for completion; synchronous adapters may notify after
+hiding completes. The native `close` event above covers Escape as well as `close()`.
+
+Missing hooks or a non-function cleanup return log an error and fall back to full-page navigation before
+content injection/showing. Factory consumers receive the method automatically; custom adapters must
+[migrate immediately](../migrating-1.0.md#modal-adapter-completed-hide-lifecycle).
 
 The partial's close button carries `data-cv-modal-dismiss`, which calls `hide`. See [Modals](modals.md) for the
 partial and the size tokens.

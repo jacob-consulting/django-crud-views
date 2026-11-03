@@ -653,3 +653,254 @@ def test_group_member_sees_policy_rows_under_group_gate(pol, client, manage_mode
     assert response.status_code == 200
     assert _views_policy(response)["detail"] == _policy(applicable=True, accept=True)
     assert _policy_row("detail", "True", "global fallback: model permissions accepted").search(_flat(response))
+
+
+# ── Phase 6.3: exact configured keys and immutable helper authority ──────────
+
+
+INVALID_KEYS = ["", "typo", "View", "view ", "v\u0456ew", None, 1, [], {}, b"view"]
+
+
+def _key_error(perm, permissions):
+    alternatives = ", ".join(repr(key) for key in sorted(permissions))
+    return f"Invalid permission key {perm!r}. Valid keys: {alternatives}."
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("helper", ["assign_perm", "remove_perm", "get_objects_for_user"])
+@pytest.mark.parametrize("perm", INVALID_KEYS)
+@pytest.mark.parametrize(("active", "superuser"), [(True, False), (True, True), (False, False), (False, True)])
+def test_invalid_helper_keys_validate_before_guardian_or_permission_writes(
+    pol, publishers, monkeypatch, helper, perm, active, superuser
+):
+    from unittest.mock import Mock
+
+    import guardian.shortcuts
+    from django.contrib.auth.models import Group
+    from guardian.models import GroupObjectPermission, UserObjectPermission
+
+    obj, _ = publishers
+    user = _user("invalid_key", active=active, superuser=superuser)
+    group = Group.objects.create(name="existing_grant")
+    pol.pub_vs.assign_perm("view", user, obj)
+    pol.pub_vs.assign_perm("view", group, obj)
+    before = (list(UserObjectPermission.objects.values()), list(GroupObjectPermission.objects.values()))
+    shortcut = Mock(wraps=getattr(guardian.shortcuts, helper))
+    monkeypatch.setattr(guardian.shortcuts, helper, shortcut)
+    # A valid inactive query may call none(); an invalid key must never even touch the supplied queryset.
+    scope = Mock()
+    scope.none.side_effect = AssertionError("queryset accessed before key validation")
+
+    with pytest.raises(ValueError) as error:
+        if helper == "get_objects_for_user":
+            pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+        else:
+            getattr(pol.pub_vs, helper)(perm, user, obj)
+
+    assert str(error.value) == _key_error(perm, pol.pub_vs.permissions)
+    shortcut.assert_not_called()
+    assert (list(UserObjectPermission.objects.values()), list(GroupObjectPermission.objects.values())) == before
+
+
+@pytest.mark.django_db
+def test_invalid_query_key_precedes_default_queryset_access(pol, monkeypatch):
+    from unittest.mock import Mock
+
+    user = _user("invalid_default_scope", active=False)
+    all_rows = Mock(side_effect=AssertionError("default queryset accessed before key validation"))
+    monkeypatch.setattr(pol.pub_vs.model.objects, "all", all_rows)
+    with pytest.raises(ValueError) as error:
+        pol.pub_vs.get_objects_for_user(user, "typo")
+    assert str(error.value) == _key_error("typo", pol.pub_vs.permissions)
+    all_rows.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("invalid", ["", "view", "Réviser", "réviser ", "re\u0301viser", "rév\u0456ser", None, [], {}])
+@pytest.mark.parametrize("helper", ["assign_perm", "remove_perm", "get_objects_for_user"])
+def test_diagnostics_list_sorted_actual_configured_keys(pol, publishers, helper, invalid):
+    from collections import OrderedDict
+
+    obj, _ = publishers
+    user = _user("custom_diagnostic")
+    original = pol.pub_vs.permissions
+    pol.pub_vs._default_permissions = OrderedDict(
+        [("zebra", original["delete"]), ("réviser", original["view"]), ("alpha", original["change"])]
+    )
+    with pytest.raises(ValueError) as error:
+        if helper == "get_objects_for_user":
+            pol.pub_vs.get_objects_for_user(user, invalid)
+        else:
+            getattr(pol.pub_vs, helper)(invalid, user, obj)
+    assert str(error.value) == _key_error(invalid, pol.pub_vs.permissions)
+
+
+@pytest.mark.django_db
+def test_custom_unicode_key_round_trip_preserves_permission_and_queryset_types(pol, publishers, monkeypatch):
+    from collections import OrderedDict
+    from unittest.mock import Mock
+
+    import guardian.shortcuts
+    from django.db.models import QuerySet
+
+    from tests.test1.app.models import Publisher
+
+    obj, other = publishers
+    user = _user("unicode_key")
+    permission = pol.pub_vs.permissions["view"]
+    pol.pub_vs._default_permissions = OrderedDict([("réviser", permission)])
+    spies = {name: Mock(wraps=getattr(guardian.shortcuts, name)) for name in ("assign_perm", "remove_perm")}
+    for name, spy in spies.items():
+        monkeypatch.setattr(guardian.shortcuts, name, spy)
+    pol.pub_vs.assign_perm("réviser", user, obj)
+    scope = Publisher.objects.filter(pk__in=[obj.pk, other.pk]).order_by("pk")
+    result = pol.pub_vs.get_objects_for_user(user, "réviser", qs=scope)
+    assert isinstance(result, QuerySet)
+    assert result.model is Publisher and result.db == scope.db
+    assert list(result) == [obj]
+    assert type(result[0].pk) is type(obj.pk)
+    assert not pol.pub_vs.get_objects_for_user(user, "réviser", qs=scope.none()).exists()
+    pol.pub_vs.remove_perm("réviser", user, obj)
+    assert not pol.pub_vs.get_objects_for_user(user, "réviser").exists()
+    assert spies["assign_perm"].call_args.args[0] is permission
+    assert spies["remove_perm"].call_args.args[0] is permission
+
+
+def test_strict_helper_policy_rejects_mapping_mutation():
+    from crud_views_guardian.lib.viewset import STRICT_HELPER_POLICY
+
+    try:
+        with pytest.raises(TypeError):
+            STRICT_HELPER_POLICY["accept_global_perms"] = True
+    finally:
+        if isinstance(STRICT_HELPER_POLICY, dict):
+            STRICT_HELPER_POLICY["accept_global_perms"] = False
+
+
+@pytest.mark.django_db
+def test_policy_mutation_cannot_turn_global_permission_into_helper_authority(pol, publishers):
+    from contextlib import suppress
+
+    from crud_views_guardian.lib.viewset import STRICT_HELPER_POLICY
+
+    user = _grant_global(_user("mutable_policy"), "view_publisher")
+    try:
+        with suppress(TypeError):
+            STRICT_HELPER_POLICY["accept_global_perms"] = True
+        result = _pks(pol.pub_vs.get_objects_for_user(user, "view"))
+    finally:
+        if isinstance(STRICT_HELPER_POLICY, dict):
+            STRICT_HELPER_POLICY["accept_global_perms"] = False
+    assert result == []
+
+
+@pytest.mark.django_db
+def test_manage_policy_copies_are_detached_across_requests_and_from_helper(pol, client, publishers):
+    user = _grant_global(_user("copy_manager"), "view_publisher")
+    client.force_login(user)
+    first = _manage(client, pol.pub_vs)
+    second = _manage(client, pol.pub_vs)
+    first.context["guardian_config"]["get_objects_for_user"]["accept_global_perms"] = True
+    first.context["views"]["list"]["guardian_policy"]["cv_guardian_accept_global_perms"] = True
+
+    assert second.context["guardian_config"]["get_objects_for_user"] == STRICT_HELPER
+    assert _views_policy(second)["list"] == _policy(applicable=True, accept=False)
+    assert _pks(pol.pub_vs.get_objects_for_user(user, "view")) == []
+    third = _manage(client, pol.pub_vs)
+    assert third.context["guardian_config"]["get_objects_for_user"] == STRICT_HELPER
+    assert _views_policy(third)["list"] == _policy(applicable=True, accept=False)
+
+
+@pytest.mark.django_db
+def test_inherited_global_flag_and_explicit_sibling_override_remain_independent(pol, client, publishers, monkeypatch):
+    from crud_views_guardian.lib.mixins import GuardianQuerysetMixin
+
+    obj, other = publishers
+    user = _grant_global(_user("inherited_policy"), "view_publisher")
+    client.force_login(user)
+    assert "cv_guardian_accept_global_perms" not in pol.PublisherList.__dict__
+    monkeypatch.setattr(GuardianQuerysetMixin, "cv_guardian_accept_global_perms", True)
+    monkeypatch.setattr(pol.PublisherDetail, "cv_guardian_accept_global_perms", False)
+
+    assert _pks(client.get(_url(pol.pub_vs, "list")).context["object_list"]) == sorted([obj.pk, other.pk])
+    assert client.get(_url(pol.pub_vs, "detail", pk=obj.pk)).status_code == 403
+    assert _pks(pol.pub_vs.get_objects_for_user(user, "view")) == []
+    policies = _views_policy(_manage(client, pol.pub_vs))
+    assert policies["list"] == _policy(applicable=True, accept=True)
+    assert policies["detail"] == _policy(applicable=True, accept=False)
+
+
+@pytest.mark.django_db
+def test_strict_helper_preserves_uuid_queryset_identities(author_douglas_adams, author_terry_pratchett):
+    from django.db.models import QuerySet
+
+    from tests.test1.app.models import Author
+    from tests.test1.app.views import cv_guardian_author
+
+    user = _user("uuid_precision")
+    cv_guardian_author.assign_perm("view", user, author_douglas_adams)
+    scope = Author.objects.filter(pk__in=[author_douglas_adams.pk, author_terry_pratchett.pk])
+    result = cv_guardian_author.get_objects_for_user(user, "view", qs=scope)
+    assert isinstance(result, QuerySet) and result.model is Author and result.db == scope.db
+    assert list(result) == [author_douglas_adams]
+    assert isinstance(result[0].pk, uuid.UUID)
+    assert result[0].pk == author_douglas_adams.pk
+    assert not cv_guardian_author.get_objects_for_user(user, "view", qs=scope.none()).exists()
+
+
+@pytest.mark.django_db
+def test_registered_proxy_viewset_uses_concrete_permission_without_key_or_pk_coercion(unique_name, publishers):
+    from guardian.shortcuts import assign_perm
+
+    from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import PublisherProxy
+
+    obj, _ = publishers
+    user = _user("proxy_policy")
+    viewset = GuardianViewSet(model=PublisherProxy, name=unique_name)
+
+    class ProxyListView(GuardianListViewPermissionRequired):
+        cv_viewset = viewset
+
+    assign_perm("view_publisher", user, obj)
+    assert viewset.permissions["view"] == "app.view_publisher"
+    result = viewset.get_objects_for_user(user, "view")
+    assert result.model is PublisherProxy
+    assert _pks(result) == [obj.pk]
+    assert isinstance(result[0], PublisherProxy)
+    view = ProxyListView()
+    view.request = SimpleNamespace(user=user)
+    view.kwargs = {}
+    assert _pks(view.get_queryset()) == [obj.pk]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("path_kind", ["helper", "list"])
+def test_registered_polymorphic_base_content_type_policy_residual(unique_name, monkeypatch, path_kind):
+    """CT-01: a configured base grant supports both registered access paths."""
+    from guardian.conf import settings as guardian_settings
+    from guardian.shortcuts import assign_perm
+
+    from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Car
+
+    monkeypatch.setattr(
+        guardian_settings, "GET_CONTENT_TYPE", "polymorphic.contrib.guardian.get_polymorphic_base_content_type"
+    )
+    car = Car.objects.create(name="Residual content type", doors=4)
+    user = _user("polymorphic_policy")
+    viewset = GuardianViewSet(model=Car, name=unique_name)
+
+    class CarListView(GuardianListViewPermissionRequired):
+        cv_viewset = viewset
+
+    assign_perm("view_vehicle", user, car)
+    view = CarListView()
+    view.request = SimpleNamespace(user=user)
+    view.kwargs = {}
+    result = viewset.get_objects_for_user(user, "view") if path_kind == "helper" else view.get_queryset()
+    assert _pks(result) == [car.pk]
+    assert result.model is Car
+    assert viewset.permissions["view"] == "app.view_vehicle"

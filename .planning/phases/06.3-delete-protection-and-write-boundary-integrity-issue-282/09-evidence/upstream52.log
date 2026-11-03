@@ -1,0 +1,103 @@
+{
+  "label": "upstream52",
+  "started": "2026-10-30T14:52:55.714077+00:00",
+  "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234",
+  "diff_sha256": "320aa003bbdfb80f49eb33dcae3bbfa46974e22f610d308f05cea87bcb1a98a2",
+  "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec",
+  "command": ".nox/tests-3-12-django-5-2/bin/python -c 'import hashlib,inspect; from pathlib import Path; from django.db.models import Model; from django.db.models.deletion import Collector; print(\"base.py\", hashlib.sha256(Path(inspect.getsourcefile(Model)).read_bytes()).hexdigest()); print(inspect.getsource(Model.delete)); print(inspect.getsource(Collector.get_del_batches))'",
+  "environment": {
+    "PYTHONPATH": null,
+    "PYTEST_XDIST_AUTO_NUM_WORKERS": null
+  },
+  "runtime": {
+    "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+    "python": "3.12.3",
+    "django": "5.2.18",
+    "crud_views": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/__init__.py",
+    "versions": {
+      "django": "5.2.18",
+      "django-guardian": "3.5.2",
+      "django-polymorphic": "4.11.7",
+      "django-ordered-model": "3.7.4",
+      "django-crispy-forms": "2.7",
+      "crispy-bootstrap5": "2026.9",
+      "pytest": "9.2.0",
+      "pytest-django": "4.14.0",
+      "pydantic": "2.14.2"
+    },
+    "django_deletion_sha256": "45cb0be274507192d8220f0032337ab9716e45256db303042586b7c11918b983",
+    "changed_production_hashes": {
+      "src/crud_views/lib/deletion.py": {
+        "imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/lib/deletion.py",
+        "checkout_sha256": "1988932a0433be5ff3663563bfd339a877649c952f0d024797acfbe464be3525",
+        "imported_sha256": "1988932a0433be5ff3663563bfd339a877649c952f0d024797acfbe464be3525"
+      },
+      "src/crud_views/lib/views/delete.py": {
+        "imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/lib/views/delete.py",
+        "checkout_sha256": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e",
+        "imported_sha256": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e"
+      },
+      "src/crud_views/locale/de/LC_MESSAGES/django.mo": {
+        "imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/locale/de/LC_MESSAGES/django.mo",
+        "checkout_sha256": "8f921cc881a23dd003bdbf02942ad9ed46e4a70165ceed206820dbe660c549dd",
+        "imported_sha256": "8f921cc881a23dd003bdbf02942ad9ed46e4a70165ceed206820dbe660c549dd"
+      },
+      "src/crud_views/locale/de/LC_MESSAGES/django.po": {
+        "imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/locale/de/LC_MESSAGES/django.po",
+        "checkout_sha256": "cae21eb03c92346467ee3a26aaa91387c92920c3409f77969145676ccb5b37a6",
+        "imported_sha256": "cae21eb03c92346467ee3a26aaa91387c92920c3409f77969145676ccb5b37a6"
+      },
+      "src/crud_views/templates/crud_views/snippets/delete/related_objects.html": {
+        "imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/templates/crud_views/snippets/delete/related_objects.html",
+        "checkout_sha256": "8165790ead799807aa3854cba495c4166f92c2f1fd7f977b040e0f49b9f47c23",
+        "imported_sha256": "8165790ead799807aa3854cba495c4166f92c2f1fd7f977b040e0f49b9f47c23"
+      },
+      "src/crud_views/templates/crud_views/view_delete.content.html": {
+        "imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/templates/crud_views/view_delete.content.html",
+        "checkout_sha256": "63c6fae38dbaf038eed76f7269ce333b88816b121908f73aa08cf131174c3c66",
+        "imported_sha256": "63c6fae38dbaf038eed76f7269ce333b88816b121908f73aa08cf131174c3c66"
+      },
+      "src/crud_views_guardian/lib/views.py": {
+        "imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views_guardian/lib/views.py",
+        "checkout_sha256": "811da5ddeba75f8a8cbe6ba432036e158f8c94dc9cbf490f4527df6cdbaf841b",
+        "imported_sha256": "811da5ddeba75f8a8cbe6ba432036e158f8c94dc9cbf490f4527df6cdbaf841b"
+      },
+      "src/crud_views_guardian/lib/viewset.py": {
+        "imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views_guardian/lib/viewset.py",
+        "checkout_sha256": "e6b1eadcda4363c1b2ac8e64ae79b217c8ba47f97ec5427b4a26d6fc4f865d99",
+        "imported_sha256": "e6b1eadcda4363c1b2ac8e64ae79b217c8ba47f97ec5427b4a26d6fc4f865d99"
+      }
+    },
+    "all_changed_source_matches": true
+  }
+}
+base.py ce0ede738855ed6477e5dd5b5d4e1d1a083271d51df7c18d8c497480f350dcfd
+    def delete(self, using=None, keep_parents=False):
+        if not self._is_pk_set():
+            raise ValueError(
+                "%s object can't be deleted because its %s attribute is set "
+                "to None." % (self._meta.object_name, self._meta.pk.attname)
+            )
+        using = using or router.db_for_write(self.__class__, instance=self)
+        collector = Collector(using=using, origin=self)
+        collector.collect([self], keep_parents=keep_parents)
+        return collector.delete()
+
+    def get_del_batches(self, objs, fields):
+        """
+        Return the objs in suitably sized batches for the used connection.
+        """
+        conn_batch_size = max(
+            connections[self.using].ops.bulk_batch_size(fields, objs), 1
+        )
+        if len(objs) > conn_batch_size:
+            return [
+                objs[i : i + conn_batch_size]
+                for i in range(0, len(objs), conn_batch_size)
+            ]
+        else:
+            return [objs]
+
+
+RESULT {"label": "upstream52", "started": "2026-10-30T14:52:55.714077+00:00", "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234", "diff_sha256": "320aa003bbdfb80f49eb33dcae3bbfa46974e22f610d308f05cea87bcb1a98a2", "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec", "command": ".nox/tests-3-12-django-5-2/bin/python -c 'import hashlib,inspect; from pathlib import Path; from django.db.models import Model; from django.db.models.deletion import Collector; print(\"base.py\", hashlib.sha256(Path(inspect.getsourcefile(Model)).read_bytes()).hexdigest()); print(inspect.getsource(Model.delete)); print(inspect.getsource(Collector.get_del_batches))'", "environment": {"PYTHONPATH": null, "PYTEST_XDIST_AUTO_NUM_WORKERS": null}, "runtime": {"executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python", "python": "3.12.3", "django": "5.2.18", "crud_views": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/__init__.py", "versions": {"django": "5.2.18", "django-guardian": "3.5.2", "django-polymorphic": "4.11.7", "django-ordered-model": "3.7.4", "django-crispy-forms": "2.7", "crispy-bootstrap5": "2026.9", "pytest": "9.2.0", "pytest-django": "4.14.0", "pydantic": "2.14.2"}, "django_deletion_sha256": "45cb0be274507192d8220f0032337ab9716e45256db303042586b7c11918b983", "changed_production_hashes": {"src/crud_views/lib/deletion.py": {"imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/lib/deletion.py", "checkout_sha256": "1988932a0433be5ff3663563bfd339a877649c952f0d024797acfbe464be3525", "imported_sha256": "1988932a0433be5ff3663563bfd339a877649c952f0d024797acfbe464be3525"}, "src/crud_views/lib/views/delete.py": {"imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/lib/views/delete.py", "checkout_sha256": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e", "imported_sha256": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e"}, "src/crud_views/locale/de/LC_MESSAGES/django.mo": {"imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/locale/de/LC_MESSAGES/django.mo", "checkout_sha256": "8f921cc881a23dd003bdbf02942ad9ed46e4a70165ceed206820dbe660c549dd", "imported_sha256": "8f921cc881a23dd003bdbf02942ad9ed46e4a70165ceed206820dbe660c549dd"}, "src/crud_views/locale/de/LC_MESSAGES/django.po": {"imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/locale/de/LC_MESSAGES/django.po", "checkout_sha256": "cae21eb03c92346467ee3a26aaa91387c92920c3409f77969145676ccb5b37a6", "imported_sha256": "cae21eb03c92346467ee3a26aaa91387c92920c3409f77969145676ccb5b37a6"}, "src/crud_views/templates/crud_views/snippets/delete/related_objects.html": {"imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/templates/crud_views/snippets/delete/related_objects.html", "checkout_sha256": "8165790ead799807aa3854cba495c4166f92c2f1fd7f977b040e0f49b9f47c23", "imported_sha256": "8165790ead799807aa3854cba495c4166f92c2f1fd7f977b040e0f49b9f47c23"}, "src/crud_views/templates/crud_views/view_delete.content.html": {"imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views/templates/crud_views/view_delete.content.html", "checkout_sha256": "63c6fae38dbaf038eed76f7269ce333b88816b121908f73aa08cf131174c3c66", "imported_sha256": "63c6fae38dbaf038eed76f7269ce333b88816b121908f73aa08cf131174c3c66"}, "src/crud_views_guardian/lib/views.py": {"imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views_guardian/lib/views.py", "checkout_sha256": "811da5ddeba75f8a8cbe6ba432036e158f8c94dc9cbf490f4527df6cdbaf841b", "imported_sha256": "811da5ddeba75f8a8cbe6ba432036e158f8c94dc9cbf490f4527df6cdbaf841b"}, "src/crud_views_guardian/lib/viewset.py": {"imported": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crud_views_guardian/lib/viewset.py", "checkout_sha256": "e6b1eadcda4363c1b2ac8e64ae79b217c8ba47f97ec5427b4a26d6fc4f865d99", "imported_sha256": "e6b1eadcda4363c1b2ac8e64ae79b217c8ba47f97ec5427b4a26d6fc4f865d99"}}, "all_changed_source_matches": true}, "exit_code": 0, "duration_seconds": 0.141, "finished": "2026-10-30T14:52:56.067937+00:00"}

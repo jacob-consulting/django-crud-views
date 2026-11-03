@@ -1,0 +1,35 @@
+{
+  "argv": [
+    ".venv/bin/ruff",
+    "format",
+    "--check",
+    "src",
+    "tests"
+  ],
+  "artifacts": {
+    "log": "fcf70d879799d84809bf70d40442dbbd9a98147d68dc0e94a0a441578ffc77db"
+  },
+  "command": ".venv/bin/ruff format --check src tests",
+  "duration_seconds": 0.019,
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views"
+  },
+  "exit_code": 0,
+  "finished": "2026-10-31T00:03:48.384910+00:00",
+  "head": "b3e7026fa4ba993e994b310690eecc6289480f93",
+  "kind": null,
+  "label": "ruff-format",
+  "pid": 52585,
+  "pytest_argv": null,
+  "series": null,
+  "source_after_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "source_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "started": "2026-10-31T00:03:48.365715+00:00",
+  "status": "complete",
+  "tools": {
+    "check.py": "ff0d624c9c97154dbd6925d11c5d22b85ac982bb9abb4f7f7cd5e614f8221029",
+    "run.py": "9abc3a69ddef1822c090f0e805978f1b8fb9776f7fc01280c601305462886048"
+  },
+  "tracked_diff_sha256": "1f2a99e5d384d7fab75c5ab169ada980d0e5ca40ae68105f8a822cb00c5fc6c1"
+}

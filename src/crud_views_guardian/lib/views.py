@@ -1,4 +1,9 @@
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import DEFAULT_DB_ALIAS, connections, router
 
 from crud_views.lib.views import (
     ActionViewPermissionRequired,
@@ -52,18 +57,22 @@ class GuardianDeleteRelatedObjectsMixin:
         return RelatedObjects(
             tree=_filter_tree(related.tree, permitted),
             summary=related.summary,
-            protected=[obj for obj in related.protected if obj.pk in permitted(obj._meta.model)],
+            protected=[obj for obj in related.protected if obj.pk in permitted(obj._meta.model, using=obj._state.db)],
         )
 
 
 class _PermittedPks:
-    """Request-local, per-model cache of viewable pks (one instance per projection).
+    """Request-local cache keyed by (model, candidate database).
 
     Use guardian's own content type and a bare codename; guardian derives the type from ``klass``. Models without
     a grantable view permission yield no pks for ordinary users (fail closed, D-07/D-08). Auto-created through
     tables are decided without touching ContentType: only authenticated active superusers see their rows, like
     the core view (D-05). That branch materializes the entire model's pk set once per projection, including
     unrelated through rows; it is not a bounded cascade-only query. Inactive actors get nothing.
+
+    Supported projection requires co-located actor, auth joins, content types and configured Guardian grants.
+    A route mismatch hides labels, including superuser/global/through fast paths; it never changes native blocking.
+    This deliberately does not support central-auth grants for target rows on another database.
     """
 
     def __init__(self, user, accept_global: bool):
@@ -71,27 +80,138 @@ class _PermittedPks:
         self.accept_global = accept_global
         self._cache: dict = {}
 
-    def __call__(self, model) -> set:
+    @staticmethod
+    def _routes_match(model, actor, using):
+        """Validate the actual unbound managers/related paths used by installed Django and Guardian.
+
+        Explicitly binding the candidate is insufficient: permission subqueries and SQL joins otherwise reuse
+        colliding actor/content-type IDs. Check joins as tables, too, even though SQL executes on the outer DB.
+        No query is evaluated here and through models never require a ContentType lookup.
+        """
+        from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
+        from guardian.utils import get_group_obj_perms_model, get_user_obj_perms_model
+
+        user_model = get_user_model()
+        models = {
+            user_model,
+            Group,
+            Permission,
+            ContentType,
+            user_model._meta.get_field("groups").remote_field.through,
+            user_model._meta.get_field("user_permissions").remote_field.through,
+            Group._meta.get_field("permissions").remote_field.through,
+            get_user_obj_perms_model(),
+            get_group_obj_perms_model(),
+        }
+        # Guardian's per-target resolver may itself call the configured ContentType hook for direct grants.
+        # Validate every enabled direct candidate from metadata first, so resolution cannot cross that boundary
+        # before its auth/grant routes have been checked. The no-target resolvers above read configuration only.
+        for field in model._meta.get_fields():
+            if field.auto_created and (field.one_to_many or field.one_to_one):
+                table = field.related_model
+                if (
+                    table is not None
+                    and issubclass(table, (UserObjectPermissionBase, GroupObjectPermissionBase))
+                    and getattr(table, "enabled", True)
+                    and not table.objects.is_generic()
+                ):
+                    models.add(table)
+        for table in models:
+            # Guardian uses .objects, Django auth uses both default and related managers.
+            for manager in (table.objects, table._default_manager, table._base_manager):
+                if manager.all().db != using:
+                    return False
+            if router.db_for_read(table, instance=actor) != using:
+                return False
+        return all(
+            qs.db == using
+            for qs in (
+                actor.groups.all(),
+                actor.user_permissions.all(),
+                Permission.objects.filter(group__in=actor.groups.all()),
+                Group.permissions.through._default_manager.all(),
+            )
+        )
+
+    def _projection_actor(self, model, *, using):
+        """Resolve anonymous identity when configured; never substitute a colliding authenticated actor."""
+        from guardian.conf import settings as guardian_settings
+        from guardian.utils import get_anonymous_user
+
+        actor = self.user
+        if not getattr(actor, "is_authenticated", False):
+            if not getattr(actor, "is_anonymous", False) or guardian_settings.ANONYMOUS_USER_NAME is None:
+                return None
+            # Validate the query route before Guardian's configured (possibly cached) resolver runs.
+            if get_user_model().objects.all().db != using:
+                return None
+            try:
+                actor = get_anonymous_user()
+            except ObjectDoesNotExist:
+                return None
+        if (
+            not isinstance(actor, get_user_model())
+            or actor._state.adding
+            or actor.pk is None
+            or actor._state.db != using
+            or not getattr(actor, "is_active", True)
+        ):
+            return None
+        if not self._routes_match(model, actor, using):
+            return None
+        if len(connections.databases) > 1:
+            # Unknown backend SQL paths cannot be certified by this finite topology predicate.
+            if (
+                using != DEFAULT_DB_ALIAS
+                and self.accept_global
+                and any(
+                    backend
+                    not in {
+                        "django.contrib.auth.backends.ModelBackend",
+                        "guardian.backends.ObjectPermissionBackend",
+                    }
+                    for backend in settings.AUTHENTICATION_BACKENDS
+                )
+            ):
+                return None
+            # Identity has already been verified. Reload only that same-alias identity to discard permission
+            # and prefetch caches with unknown alias provenance; never replace request.user.
+            try:
+                actor = get_user_model()._default_manager.using(using).get(pk=actor.pk)
+            except ObjectDoesNotExist:
+                return None
+            if not getattr(actor, "is_active", True) or not self._routes_match(model, actor, using):
+                return None
+        return actor
+
+    def __call__(self, model, *, using) -> set:
         if _guardian_inactive_actor(self.user):
             return set()
-        if model not in self._cache:
+        if not isinstance(using, str) or using not in connections:
+            return set()
+        key = (model, using)
+        if key not in self._cache:
+            candidates = model._default_manager.using(using).all()
+            actor = self._projection_actor(model, using=using)
+            if candidates.db != using or actor is None:
+                self._cache[key] = set()
+                return self._cache[key]
             opts = model._meta
             if opts.auto_created:
-                self._cache[model] = (
-                    set(model._default_manager.values_list("pk", flat=True))
-                    if getattr(self.user, "is_authenticated", False) and getattr(self.user, "is_superuser", False)
-                    else set()
-                )
-                return self._cache[model]
+                self._cache[key] = set(candidates.values_list("pk", flat=True)) if actor.is_superuser else set()
+                return self._cache[key]
 
             from guardian.ctypes import get_content_type
             from guardian.shortcuts import get_objects_for_user
 
             ct = get_content_type(model)
+            if ct._state.db != using:
+                self._cache[key] = set()
+                return self._cache[key]
             codename = f"view_{ct.model}"
-            qs = get_objects_for_user(self.user, codename, klass=model, accept_global_perms=self.accept_global)
-            self._cache[model] = set(qs.values_list("pk", flat=True))
-        return self._cache[model]
+            qs = get_objects_for_user(actor, codename, klass=candidates, accept_global_perms=self.accept_global)
+            self._cache[key] = set(qs.values_list("pk", flat=True)) if qs.db == using else set()
+        return self._cache[key]
 
 
 def _filter_tree(items: list, permitted: _PermittedPks) -> list:
@@ -103,7 +223,7 @@ def _filter_item(item, permitted: _PermittedPks):
     if isinstance(item, list):
         return _filter_tree(item, permitted)
     if item is not None and hasattr(item, "_meta"):
-        return item if item.pk in permitted(item._meta.model) else None
+        return item if item.pk in permitted(item._meta.model, using=item._state.db) else None
     return item
 
 

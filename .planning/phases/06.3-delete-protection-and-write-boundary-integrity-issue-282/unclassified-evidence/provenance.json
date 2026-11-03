@@ -1,0 +1,43 @@
+{
+  "checked_at": "2026-11-01T07:45:19.194934+00:00",
+  "baseline_commit": "07ef9f1c54af5c52d4120dda3cfede36b3439f2f",
+  "historical_requirement_match": "1a82767:.planning/REQUIREMENTS.md (all four exact lines)",
+  "approval_checks": [
+    {
+      "approval": "06.3-APPROVAL.md",
+      "reviewed_revision": "f1fbc3e4d4f53cf2807ea80dd7a808dea426957b",
+      "design_sha256": "1642a5751e0a8e0bd9ee9df8ca3429c962e701e4078988108f8878617174d7e4",
+      "result": "MATCHED_REVIEWED_AND_CURRENT_BYTES"
+    },
+    {
+      "approval": "06.3-GAP-APPROVAL.md",
+      "reviewed_revision": "0a956709c451ccbe3ed7c2e10fce3b82fd2714a9",
+      "design_sha256": "feee0a1bbb36028e6bf95f9cbc8aabf73709a1db3463e64328db1d14bad7b572",
+      "result": "MATCHED_REVIEWED_AND_CURRENT_BYTES",
+      "plans_sha256": "4de8457efead5268b3463860fcfc1dc0eea32c883d7fd3fd24eb402be2bdbc59"
+    },
+    {
+      "approval": "06.3-FOCUS-APPROVAL.md",
+      "result": "FOCUS_APPROVAL_BOUND"
+    }
+  ],
+  "files": {
+    "phase63-input.json": "b4b1fea9036ae6a630fcc65372fab072eafa0c471bc86600e9739c3d845af837",
+    "replay.cjs": "9ccad2348c4cf0460a65fe47be6413899566c1553ff3d827c3c8e03278585085",
+    "replay-result.json": "400b485bfbe0c4dccbf89177020d5b47845d8174ea21b3024f5064bc39c18550",
+    "phase63-output.json": "9d7bfe3fc2aa424debf1861671d145751b0a16a73844f92f71dca4140f882b02",
+    "detector-source.txt": "9f1a29bfd4c4cbce03eb124faf6f1ee851923e35e94027f7f8aadcb90173dea3",
+    "resolutions.json": "673c8a9389ebd0b18637bd7c907584e00182a27a7725b343c623c619a8a55cff",
+    "phase62-output.json": "59f756725ffb50447fd1ccf55e181de7c0b86cae58b19e85b833c93d8750fb87",
+    "phase62-input.json": "df639a2a404eb364598d9dc0ef42aefd265a1830adbeb9872f44705aac2a5909",
+    "bounded-review-tests.log": "12035c59af6351450b4a0971f727653a32e0164538193337e3a7c769120627d9"
+  },
+  "bounded_test_run": {
+    "exit_code": 0,
+    "passed": 531,
+    "duration_seconds": 80.95,
+    "environment": ".nox/crispy_floor-3-12-django-6-0",
+    "command": "PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete_provenance.py tests/test1/test_delete_databases.py tests/test1/test_guardian_policy.py tests/test1/test_guardian_content_types.py -q -p no:cacheprovider",
+    "log": "bounded-review-tests.log"
+  }
+}

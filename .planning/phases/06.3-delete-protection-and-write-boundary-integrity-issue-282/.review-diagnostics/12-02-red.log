@@ -1,0 +1,1265 @@
+FFFFFFF......FFFF....FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF... [ 79%]
+...............FFFF                                                      [100%]
+=================================== FAILURES ===================================
+_________ test_configured_base_content_type_registered_access[helper] __________
+tests/test1/test_guardian_content_types.py:106: in test_configured_base_content_type_registered_access
+    result = routes.viewset.get_objects_for_user(user, "view", qs=scope)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/viewset.py:136: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+_________ test_configured_base_content_type_registered_access[request] _________
+tests/test1/test_guardian_content_types.py:113: in test_configured_base_content_type_registered_access
+    response = client.get(_url(routes, "list"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1127: in get
+    response = super().get(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:475: in get
+    return self.generic(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:671: in generic
+    return self.request(**r)
+           ^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1090: in request
+    self.check_exception(response)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:805: in check_exception
+    raise exc_value
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py:55: in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py:198: in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:106: in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/mixins.py:277: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/auth/mixins.py:110: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/view/base.py:228: in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:145: in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/list.py:158: in get
+    self.object_list = self.get_queryset()
+                       ^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/mixins.py:193: in get_queryset
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+------------------------------ Captured log call -------------------------------
+ERROR    django.request:log.py:249 Internal Server Error: /ct690e40262ba146e4848cc1e0ec0990f1/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py", line 106, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/mixins.py", line 277, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 110, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 228, in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py", line 145, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/list.py", line 158, in get
+    self.object_list = self.get_queryset()
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/mixins.py", line 193, in get_queryset
+    return get_objects_for_user(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py", line 672, in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py", line 561, in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+____________ test_configured_content_type_actor_policy[True-object] ____________
+tests/test1/test_guardian_content_types.py:148: in test_configured_content_type_actor_policy
+    result = routes.viewset.get_objects_for_user(user, "view", qs=scope)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/viewset.py:136: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+____________ test_configured_content_type_actor_policy[True-group] _____________
+tests/test1/test_guardian_content_types.py:148: in test_configured_content_type_actor_policy
+    result = routes.viewset.get_objects_for_user(user, "view", qs=scope)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/viewset.py:136: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+____________ test_configured_content_type_actor_policy[True-global] ____________
+tests/test1/test_guardian_content_types.py:148: in test_configured_content_type_actor_policy
+    result = routes.viewset.get_objects_for_user(user, "view", qs=scope)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/viewset.py:136: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+__________ test_configured_content_type_actor_policy[True-superuser] ___________
+tests/test1/test_guardian_content_types.py:148: in test_configured_content_type_actor_policy
+    result = routes.viewset.get_objects_for_user(user, "view", qs=scope)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/viewset.py:136: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+__________ test_configured_content_type_actor_policy[True-ungranted] ___________
+tests/test1/test_guardian_content_types.py:148: in test_configured_content_type_actor_policy
+    result = routes.viewset.get_objects_for_user(user, "view", qs=scope)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/viewset.py:136: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+_ test_configured_content_type_custom_permissions[r\xe9viser_vehicle-r\xe9viser] _
+tests/test1/test_guardian_content_types.py:214: in test_configured_content_type_custom_permissions
+    assert routes.viewset.permissions == expected
+E   AssertionError: assert OrderedDict({...pp.view_car'}) == {'add': 'app....vehicle', ...}
+E     
+E     Differing items:
+E     {'delete': 'app.delete_car'} != {'delete': 'app.delete_vehicle'}
+E     {'add': 'app.add_car'} != {'add': 'app.add_vehicle'}
+E     {'view': 'app.view_car'} != {'view': 'app.view_vehicle'}
+E     {'réviser': 'app.réviser_car'} != {'réviser': 'app.réviser_vehicle'}
+E     {'change': 'app.change_car'} != {'change': 'app.change_vehicle'}...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_configured_content_type_custom_permissions[inspect_vehicle_status-inspect_vehicle_status] _
+tests/test1/test_guardian_content_types.py:214: in test_configured_content_type_custom_permissions
+    assert routes.viewset.permissions == expected
+E   AssertionError: assert OrderedDict({...pp.view_car'}) == {'add': 'app....vehicle', ...}
+E     
+E     Differing items:
+E     {'delete': 'app.delete_car'} != {'delete': 'app.delete_vehicle'}
+E     {'change': 'app.change_car'} != {'change': 'app.change_vehicle'}
+E     {'view': 'app.view_car'} != {'view': 'app.view_vehicle'}
+E     {'add': 'app.add_car'} != {'add': 'app.add_vehicle'}
+E     Left contains 2 more items:...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_configured_content_type_custom_permissions[inspect_vehicle_status_vehicle-inspect_vehicle_status] _
+tests/test1/test_guardian_content_types.py:214: in test_configured_content_type_custom_permissions
+    assert routes.viewset.permissions == expected
+E   AssertionError: assert OrderedDict({...pp.view_car'}) == {'add': 'app....vehicle', ...}
+E     
+E     Differing items:
+E     {'delete': 'app.delete_car'} != {'delete': 'app.delete_vehicle'}
+E     {'change': 'app.change_car'} != {'change': 'app.change_vehicle'}
+E     {'view': 'app.view_car'} != {'view': 'app.view_vehicle'}
+E     {'add': 'app.add_car'} != {'add': 'app.add_vehicle'}
+E     Left contains 2 more items:...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_configured_content_type_custom_permissions[view_vehicle_vehicle-view_vehicle] _
+tests/test1/test_guardian_content_types.py:214: in test_configured_content_type_custom_permissions
+    assert routes.viewset.permissions == expected
+E   AssertionError: assert OrderedDict({...pp.view_car'}) == {'add': 'app....vehicle', ...}
+E     
+E     Differing items:
+E     {'delete': 'app.delete_car'} != {'delete': 'app.delete_vehicle'}
+E     {'change': 'app.change_car'} != {'change': 'app.change_vehicle'}
+E     {'view': 'app.view_car'} != {'view': 'app.view_vehicle'}
+E     {'add': 'app.add_car'} != {'add': 'app.add_vehicle'}
+E     Left contains 2 more items:...
+E     
+E     ...Full output truncated, use '-vv' to show
+_________ test_configured_content_type_invalid_keys[-True-assign_perm] _________
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_________ test_configured_content_type_invalid_keys[-True-remove_perm] _________
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[-True-get_objects_for_user] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+________ test_configured_content_type_invalid_keys[-False-assign_perm] _________
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+________ test_configured_content_type_invalid_keys[-False-remove_perm] _________
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[-False-get_objects_for_user] ____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_______ test_configured_content_type_invalid_keys[View-True-assign_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_______ test_configured_content_type_invalid_keys[View-True-remove_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+__ test_configured_content_type_invalid_keys[View-True-get_objects_for_user] ___
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+______ test_configured_content_type_invalid_keys[View-False-assign_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+______ test_configured_content_type_invalid_keys[View-False-remove_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+__ test_configured_content_type_invalid_keys[View-False-get_objects_for_user] __
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+______ test_configured_content_type_invalid_keys[view -True-assign_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+______ test_configured_content_type_invalid_keys[view -True-remove_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+__ test_configured_content_type_invalid_keys[view -True-get_objects_for_user] __
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+______ test_configured_content_type_invalid_keys[view -False-assign_perm] ______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+______ test_configured_content_type_invalid_keys[view -False-remove_perm] ______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_ test_configured_content_type_invalid_keys[view -False-get_objects_for_user] __
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[v\u0456ew-True-assign_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[v\u0456ew-True-remove_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_ test_configured_content_type_invalid_keys[v\u0456ew-True-get_objects_for_user] _
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[v\u0456ew-False-assign_perm] ____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[v\u0456ew-False-remove_perm] ____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_ test_configured_content_type_invalid_keys[v\u0456ew-False-get_objects_for_user] _
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[child_only-True-assign_perm] ____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[child_only-True-remove_perm] ____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_ test_configured_content_type_invalid_keys[child_only-True-get_objects_for_user] _
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+___ test_configured_content_type_invalid_keys[child_only-False-assign_perm] ____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+___ test_configured_content_type_invalid_keys[child_only-False-remove_perm] ____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_ test_configured_content_type_invalid_keys[child_only-False-get_objects_for_user] _
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_______ test_configured_content_type_invalid_keys[None-True-assign_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_______ test_configured_content_type_invalid_keys[None-True-remove_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+__ test_configured_content_type_invalid_keys[None-True-get_objects_for_user] ___
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+______ test_configured_content_type_invalid_keys[None-False-assign_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+______ test_configured_content_type_invalid_keys[None-False-remove_perm] _______
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+__ test_configured_content_type_invalid_keys[None-False-get_objects_for_user] __
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_____ test_configured_content_type_invalid_keys[invalid6-True-assign_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_____ test_configured_content_type_invalid_keys[invalid6-True-remove_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_ test_configured_content_type_invalid_keys[invalid6-True-get_objects_for_user] _
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[invalid6-False-assign_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[invalid6-False-remove_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_ test_configured_content_type_invalid_keys[invalid6-False-get_objects_for_user] _
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_____ test_configured_content_type_invalid_keys[invalid7-True-assign_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_____ test_configured_content_type_invalid_keys[invalid7-True-remove_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_ test_configured_content_type_invalid_keys[invalid7-True-get_objects_for_user] _
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[invalid7-False-assign_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+____ test_configured_content_type_invalid_keys[invalid7-False-remove_perm] _____
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_ test_configured_content_type_invalid_keys[invalid7-False-get_objects_for_user] _
+tests/test1/test_guardian_content_types.py:310: in test_configured_content_type_invalid_keys
+    routes.viewset.assign_perm("view", user, car)
+src/crud_views_guardian/lib/viewset.py:113: in assign_perm
+    assign_perm(permission, user_or_group, obj)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:173: in assign_perm
+    return model.objects.assign_perm(perm, user, obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:76: in assign_perm
+    permission = _ensure_permission(perm, ctype)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/managers.py:39: in _ensure_permission
+    perm = Permission.objects.get(content_type=ctype, codename=perm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:639: in get
+    raise self.model.DoesNotExist(
+E   django.contrib.auth.models.Permission.DoesNotExist: Permission matching query does not exist.
+_________ test_configured_content_type_does_not_change_core_discovery __________
+tests/test1/test_guardian_content_types.py:367: in test_configured_content_type_does_not_change_core_discovery
+    assert guardian.permissions["view"] == "app.view_vehicle"
+E   AssertionError: assert 'app.view_car' == 'app.view_vehicle'
+E     
+E     - app.view_vehicle
+E     + app.view_car
+______________ test_configured_content_type_cache_contract[empty] ______________
+tests/test1/test_guardian_content_types.py:377: in test_configured_content_type_cache_contract
+    assert viewset.permissions == OrderedDict()
+E   AssertionError: assert OrderedDict({...pp.view_car'}) == OrderedDict()
+E     
+E     Left contains 4 more items:
+E     {'add': 'app.add_car',
+E      'change': 'app.change_car',
+E      'delete': 'app.delete_car',
+E      'view': 'app.view_car'}
+E     Use -v to get more diff
+____________ test_configured_content_type_cache_contract[nonempty] _____________
+tests/test1/test_guardian_content_types.py:388: in test_configured_content_type_cache_contract
+    assert ct_routes().viewset.permissions["later"] == "app.later_vehicle"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'later'
+_________ test_configured_content_type_cache_contract[settings_change] _________
+tests/test1/test_guardian_content_types.py:390: in test_configured_content_type_cache_contract
+    assert cached["view"] == "app.view_vehicle"
+E   AssertionError: assert 'app.view_car' == 'app.view_vehicle'
+E     
+E     - app.view_vehicle
+E     + app.view_car
+=========================== short test summary info ============================
+FAILED tests/test1/test_guardian_content_types.py::test_configured_base_content_type_registered_access[helper]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_base_content_type_registered_access[request]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-object]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-group]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-global]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-superuser]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_actor_policy[True-ungranted]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[r\xe9viser_vehicle-r\xe9viser]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[inspect_vehicle_status-inspect_vehicle_status]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[inspect_vehicle_status_vehicle-inspect_vehicle_status]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_custom_permissions[view_vehicle_vehicle-view_vehicle]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-True-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-True-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-True-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-False-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-False-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[-False-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-True-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-True-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-True-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-False-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-False-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[View-False-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -True-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -True-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -True-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -False-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -False-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[view -False-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\u0456ew-True-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\u0456ew-True-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\u0456ew-True-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\u0456ew-False-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\u0456ew-False-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[v\u0456ew-False-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-True-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-True-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-True-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-False-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-False-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[child_only-False-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-True-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-True-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-True-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-False-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-False-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[None-False-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-True-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-True-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-True-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-False-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-False-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid6-False-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-True-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-True-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-True-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-False-assign_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-False-remove_perm]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_invalid_keys[invalid7-False-get_objects_for_user]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_does_not_change_core_discovery
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_cache_contract[empty]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_cache_contract[nonempty]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_content_type_cache_contract[settings_change]
+63 failed, 28 passed in 3.81s

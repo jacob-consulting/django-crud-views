@@ -1,0 +1,94 @@
+{
+  "captured": "2026-10-31T08:34:23.632Z",
+  "revision": "35b517a7f92f1416861e8f0ddcf92ddd3eed6b5d",
+  "sourceHashes": {
+    "src/crud_views/static/crud_views/js/modal.js": "0748a9116e2046fc77972b76d23db971189e40934ba1adeb9dba9d64b54c2427",
+    "src/crud_views/static/crud_views/js/adapters.js": "165164815172520c5f08c4f009ad38bc2a3d0a016de7827a0e7bef024167704a",
+    "tests/browser/modal-focus.cjs": "1b6c13c7bb28650f718d266d010cfb88db91de41bbffe9d7d074ef6dd35d7136",
+    "docs/reference/javascript.md": "7a94c3f577ea855a47ba8c14c162798b5bbc2cb4dcde71c47e59b47d1e370854",
+    "docs/reference/modals.md": "f817e9204640f30b34f055b9d8cd2459ca29e844571a7b0ab79e36257bfbc37c",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/17-evidence/server.py": "19160e33bd34943829258db4faf4560e840a0f598cd8717b1822ccd9314ede67",
+    "src/crud_views/templates/crud_views/modal/shell.html": "bc5b91977d517671b9c246cbbbce5a813a0d8bc10caf36f8c78f214df15328ee",
+    "src/crud_views/templates/crud_views/modal/content.html": "385a9fe7721f506cd760f5f6b1171a30f779280b50c42a32a9e937e99cc12e67",
+    "package-lock.json": "567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e"
+  },
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs",
+    "--case",
+    "unchecked",
+    "--output",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/19-evidence/unchecked.json"
+  ],
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\n6.0.9",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "browser": "149.0.7827.55"
+  },
+  "completed": true,
+  "passed": true,
+  "cases": [
+    {
+      "id": "unchecked",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "real 422",
+          "passed": true
+        },
+        {
+          "name": "invalid confirmation retains visible keyboard focus",
+          "passed": true
+        },
+        {
+          "name": "exactly one form",
+          "passed": true
+        },
+        {
+          "name": "invalid request does not delete or call custom handler",
+          "passed": true
+        },
+        {
+          "name": "completed hide returns exact opener",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/unchecked.png",
+          "sha256": "c14e1894d3543e942b0823007abc0d5d6203cb16354d4fb682d1c1e3743b97bd"
+        }
+      ],
+      "status": 422,
+      "focus": {
+        "tag": "INPUT",
+        "id": "id_confirm",
+        "name": "confirm",
+        "connected": true,
+        "visible": true,
+        "focusVisible": true,
+        "inModal": true
+      },
+      "state": {
+        "exists": true,
+        "events": []
+      },
+      "close": {
+        "id": "launch",
+        "events": [
+          "hidden",
+          "opener"
+        ]
+      }
+    }
+  ],
+  "pageErrors": []
+}

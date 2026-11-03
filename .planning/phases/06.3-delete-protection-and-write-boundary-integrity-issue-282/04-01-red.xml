@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.147" timestamp="2026-10-30T13:41:31.254227+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_provenance" name="test_native_pk_validation_precedes_collection" time="0.002"><failure message="TypeError: Model instances without primary key value are unhashable">def test_native_pk_validation_precedes_collection():
+        """Exercise both installed native contracts without inventing composite support on 4.2."""
+        with isolate_apps("tests.test1.app"):
+            if hasattr(models, "CompositePrimaryKey"):
+    
+                class Root(models.Model):
+                    first = models.IntegerField()
+                    second = models.IntegerField()
+                    pk = models.CompositePrimaryKey("first", "second")
+    
+                    class Meta:
+                        app_label = "app"
+    
+                target = Root(first=17)
+                assert target.pk == (17, None)
+            else:
+    
+                class Root(models.Model):
+                    class Meta:
+                        app_label = "app"
+    
+                target = Root()
+            with pytest.raises(ValueError) as native:
+                models.Model.delete(target, using="default")
+            with pytest.raises(ValueError) as adapted:
+&gt;               execute_deletion(target, using="default")
+
+tests/test1/test_delete_provenance.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/crud_views/lib/deletion.py:378: in execute_deletion
+    collector.collect([target])
+src/crud_views/lib/deletion.py:270: in collect
+    new_objs = self.add(objs, source, nullable, reverse_dependency=reverse_dependency)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:131: in add
+    if obj not in instances:
+       ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Root: Root object ((17, None))&gt;
+
+    def __hash__(self):
+        if not self._is_pk_set():
+&gt;           raise TypeError("Model instances without primary key value are unhashable")
+E           TypeError: Model instances without primary key value are unhashable
+
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/base.py:628: TypeError</failure></testcase></testsuite></testsuites>

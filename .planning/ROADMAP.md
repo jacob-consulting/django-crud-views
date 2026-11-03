@@ -27,7 +27,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html` (completed 2026-10-28)
 - [x] **Phase 6.1: Cancel form button as a link (INSERTED)** - #275: themes can opt into native cancel links while preserving the button default (completed 2026-10-29)
 - [x] **Phase 6.2: Request authorization and write integrity (INSERTED)** - analysis B1–B7: secure request paths, safe delete previews and truthful Guardian configuration before the freeze (completed 2026-10-30)
-- [ ] **Phase 6.3: Delete protection and write-boundary integrity (INSERTED)** - issue #282
+- [x] **Phase 6.3: Delete protection and write-boundary integrity (INSERTED)** - issue #282 (completed 2026-11-01)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -377,6 +377,8 @@ recommendations are proposals, not locked decisions.
 
 **Scope exclusions**: Conditional/formset lifecycle work A1–A7 (proposed 6.4), presentation/alias cleanup
 (proposed 6.5), Tabler theme-adoption seams (proposed 6.6), the jQuery port, and the final stability inventory. Do not reopen completed Phase 6/6.1 acceptance.
+**Transfer closure (2026-11-01)**: Phase 6.3 passed 91/91 and completes the transferred deletion and bounded Guardian obligations. Broader Guardian identity compatibility remains unverified under issue #286. The following 2026-10-30 transfer table is historical; A19/A25 and other separate exclusions retain their own dispositions.
+
 **Acceptance reconciliation (2026-10-30)**: All nine plans executed; retained 6.2 scope verified and UAT completed on 2026-10-30, including the final Playwright blocked-delete check. [Issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282) defers
 **unresolved CR-02–CR-04 to Phase 6.3** as remediation of this phase's existing promises, not scope erasure.
 
@@ -396,7 +398,7 @@ WR-01 is fixed by quick 261030-csg (bd31992). IN-01/IN-04 are closed with explic
 The revised analysis §8 puts conditional/formset, presentation and Tabler proposals at 6.4/6.5/6.6; only 6.3 is
 inserted here. Phase 7 remains last and cannot freeze the affected promises before remediation.
 
-**Plans**: 9/9 plans complete; final automated gates refreshed; canonical verification passed; final Playwright UAT passed; 6.3 transfers remain unresolved
+**Plans**: 9/9 plans complete; final automated gates refreshed; canonical verification passed; final Playwright UAT passed; 6.3 transfers completed within reconciled scope on 2026-11-01
 
 Plans:
 **Wave 1**
@@ -424,6 +426,12 @@ Plans:
 
 ### Phase 06.3: Delete protection and write-boundary integrity — issue #282 (INSERTED)
 
+**Acceptance scope (2026-11-01):** Guardian identity review is bounded to the tested integer/UUID, exact-key,
+queryset/model/type and same-alias predicates in
+[06.3-SCOPE-RECONCILIATION](phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-SCOPE-RECONCILIATION.md).
+Broader custom-PK/backend-cast/collation compatibility remains unverified follow-up in issue #286,
+outside this phase's completion gate. Four unclassified detector fallbacks are dismissed with recorded reasons.
+
 **Goal**: Remediate unresolved Phase 6.2 CR-02–CR-04: protection inspection respects confirmation/write
 boundaries, unknown application failures propagate, and inspection/deletion use the same target database.
 Also complete a bounded Guardian policy review of the residual AUTH-06 detector flag and IN-02/IN-03,
@@ -437,7 +445,7 @@ preserving 6.2’s implemented and tested policy behavior.
 **Planning gate**: Detailed design/implementation plan and maintainer review before implementation. Settle safe
 inspection, supported custom behavior, exception translation, routing and override compatibility together.
 No architecture is chosen; do not run a blanket automatic `--fix` pass.
-**Success Criteria** (all pending):
+**Success Criteria** (all verified within reconciled scope, 2026-11-01):
 
   1. Real-preview GET, invalid confirmation and custom-protected POST execute no deletion callbacks (including
      SET/default factories); failed valid POST preserves the write boundary. Rollback alone cannot undo external effects.
@@ -457,14 +465,69 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
      no additional gap, close it with a documented rationale. Replay policy tests on cached Django 4.2/6.0;
      preserve the completed AUTH-06 implementation. Escalate any substantial policy redesign as a separate scope decision.
 
-**Disposition**: CR-02–CR-04 deferred here and **unresolved**. CR-01/WR-02 remain fixed in their earlier scope.
-The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
-here unresolved, alongside #282 rather than as an amendment to the external issue.
+**Disposition (2026-11-01)**: Transferred CR-02–CR-04 are repaired and independently verified.
+IN-02/IN-03 and bounded CT-01 are fixed; the AUTH-06 detector fallback is dismissed with recovered-source
+evidence. CR-01/WR-02 remain fixed in their earlier scope. GUA-01 was added on 2026-10-30 alongside #282;
+its broader custom-PK/backend/collation follow-up remains unverified in issue #286.
 WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
-**Plans**: 0 plans; not planned or verified
+**Plans**: 20/20 complete. Final goal verification passed 91/91 with no overrides and no in-scope human checks outstanding. Original owner responses and subsequent scope dispositions are preserved. Phase 06.3 completed on 2026-11-01; broader Guardian compatibility remains in issue #286. No release or merge is inferred.
 
 Plans:
-- [ ] TBD (run $gsd-plan-phase 06.3 to break down; maintainer review required before implementation)
+**Wave 1**
+- [x] 06.3-01-PLAN.md — Blocking maintainer review of the integrated design
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.3-02-PLAN.md — Callback-safe confirmation and native deletion tracer
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.3-03-PLAN.md — Graph inspection, safe provider and partial notices
+- [x] 06.3-06-PLAN.md — Strict-helper diagnostics and bounded Guardian review
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.3-04-PLAN.md — Native provenance and real write-boundary evidence
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.3-05-PLAN.md — Pinned alias, two databases and Guardian label projection
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [x] 06.3-07-PLAN.md — Authorization, templates and actual polymorphic deletion
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [x] 06.3-08-PLAN.md — Executable migration examples and paired release guidance
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [x] 06.3-09-PLAN.md — Three-series matrix and affected acceptance reconciliation
+
+**Wave 9** *(blocked on Wave 8 completion)*
+- [x] 06.3-10-PLAN.md — Reviewable repair contract and maintainer approval
+
+**Wave 10** *(plans 11 and 12 complete)*
+- [x] 06.3-11-PLAN.md — CR-01 selected-database native target and parent identity
+- [x] 06.3-12-PLAN.md — CT-01 configured Guardian content-type access
+
+**Wave 11** *(plan 13 complete)*
+- [x] 06.3-13-PLAN.md — CR-02 independent relationship boundaries and provider migration
+
+**Wave 12** *(ready after Wave 11 completion)*
+- [x] 06.3-14-PLAN.md — CR-03 native null-join semantics and truthful previews
+
+**Wave 13** *(blocked on Wave 12 completion)*
+- [x] 06.3-15-PLAN.md — Executable migration and reference guidance
+
+**Wave 14** *(plan 16 complete; source-bound focused/full and quality evidence ready)*
+- [x] 06.3-16-PLAN.md — Fresh three-series automated evidence
+
+**Wave 15** *(executed; human dispositions, UI-F01 and independent acceptance review remain pending)*
+- [x] 06.3-17-PLAN.md — Human review and acceptance reconciliation
+
+**Wave 16** *(complete; actual bound focus-contract approval recorded)*
+- [x] 06.3-18-PLAN.md — Bound focus lifecycle contract and maintainer decision
+
+**Wave 17** *(complete; focus repair and current verification independently reviewed)*
+- [x] 06.3-19-PLAN.md — Modal focus repair, actual browser regressions and adapter migration
+
+**Wave 18** *(task 20-01 complete; task 20-02 awaits twelve individual owner dispositions)*
+- [x] 06.3-20-PLAN.md — Current review packet and twelve individual human dispositions
 
 ### Phase 7: Theme-surface stability policy
 
@@ -531,5 +594,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
 | 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
-| 6.3. Delete protection and write-boundary integrity | 0/TBD | Not started | - |
+| 6.3. Delete protection and write-boundary integrity | 20/20 | Complete    | 2026-11-01 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

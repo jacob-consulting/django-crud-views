@@ -1,0 +1,230 @@
+{
+  "plans": [
+    {
+      "plan": "06.3-01-PLAN.md",
+      "summary": "06.3-01-SUMMARY.md",
+      "tasks": [
+        "01-01: Record maintainer approval of the integrated proposal"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-02-PLAN.md",
+      "summary": "06.3-02-SUMMARY.md",
+      "tasks": [
+        "02-01: Wire a real safe-preview confirmation through native deletion and commit",
+        "02-02: Replace unsafe collection call contracts with real-preview regressions"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-03-PLAN.md",
+      "summary": "06.3-03-SUMMARY.md",
+      "tasks": [
+        "03-01: Implement complete native graph semantics and boundary-scoped providers",
+        "03-02: Render partial counts and independent notices in English and German"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-04-PLAN.md",
+      "summary": "06.3-04-SUMMARY.md",
+      "tasks": [
+        "04-01: Establish origin at native collection and preserve upstream semantics",
+        "04-02: Prove commits, rollbacks and external effects on the actual request path"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-05-PLAN.md",
+      "summary": "06.3-05-SUMMARY.md",
+      "tasks": [
+        "05-01: Exercise one pinned alias with two real independent databases",
+        "05-02: Keep Guardian labels scoped to the candidate database"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-06-PLAN.md",
+      "summary": "06.3-06-SUMMARY.md",
+      "tasks": [
+        "06-01: Make invalid-key diagnostics consistent and strict policy immutable",
+        "06-02: Record bounded residual policy review with explicit dispositions"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-07-PLAN.md",
+      "summary": "06.3-07-SUMMARY.md",
+      "tasks": [
+        "07-01: Replay authorization and native-template boundaries with partial previews",
+        "07-02: Exercise actual polymorphic model deletion and failure origin"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-08-PLAN.md",
+      "summary": "06.3-08-SUMMARY.md",
+      "tasks": [
+        "08-01: Document the integrated delete lifecycle with executable migration examples",
+        "08-02: Pair release notes and Guardian contract guidance"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-09-PLAN.md",
+      "summary": "06.3-09-SUMMARY.md",
+      "tasks": [
+        "09-01: Provision verified Django 5.2 and run the three-series gates",
+        "09-02: Re-review affected acceptance and publish the remediation handoff"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-10-PLAN.md",
+      "summary": "06.3-10-SUMMARY.md",
+      "tasks": [
+        "10-01: Turn the four counterexamples into a reviewable contract delta",
+        "10-02: Approve the exact contract delta and bounded CT-01 scope",
+        "Approve the reviewed delta",
+        "Request changes or separate CT-01 scope"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-11-PLAN.md",
+      "summary": "06.3-11-SUMMARY.md",
+      "tasks": [
+        "11-01: Delete one selected native target without touching its stale-join neighbour",
+        "11-02: Extend selected-row integrity through parent links and failure paths"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-12-PLAN.md",
+      "summary": "06.3-12-SUMMARY.md",
+      "tasks": [
+        "12-01: Resolve one configured Car grant through helper and registered list request",
+        "12-02: Pin custom-permission, actor and cache boundaries of the repaired identity"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-13-PLAN.md",
+      "summary": "06.3-13-SUMMARY.md",
+      "tasks": [
+        "13-01: Keep one unattested same-name relationship visible as incomplete",
+        "13-02: Migrate and execute owner-qualified provider recipes"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-14-PLAN.md",
+      "summary": "06.3-14-SUMMARY.md",
+      "tasks": [
+        "14-01: Confirm deletion of a null-key root without a false protector",
+        "14-02: Cover RESTRICT/CASCADE counts and non-null positive protection controls"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-15-PLAN.md",
+      "summary": "06.3-15-SUMMARY.md",
+      "tasks": [
+        "15-01: Execute the published configured-content-type migration through real access",
+        "15-02: State native target, parent and custom-routing limits precisely"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-16-PLAN.md",
+      "summary": "06.3-16-SUMMARY.md",
+      "tasks": [
+        "16-01: Verify the integrated repaired request paths on all three supported series",
+        "16-02: Complete full-suite and quality evidence on the verified source"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-17-PLAN.md",
+      "summary": "06.3-17-SUMMARY.md",
+      "tasks": [
+        "17-01: Assemble actual UI evidence and the twelve-item human review ledger",
+        "17-02: Reconcile defect, security and affected acceptance claims to fresh evidence"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-18-PLAN.md",
+      "summary": "06.3-18-SUMMARY.md",
+      "tasks": [
+        "18-01: Bind the concrete focus proposal to its executable review packet",
+        "18-02: Obtain the maintainer decision on the focus lifecycle and adapter migration",
+        "Approve this packet",
+        "Request changes"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-19-PLAN.md",
+      "summary": "06.3-19-SUMMARY.md",
+      "tasks": [
+        "19-01: Recover focus through one real unchecked response and completed dismissal",
+        "19-02: Expand lifecycle regressions and publish the complete adapter contract"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    },
+    {
+      "plan": "06.3-20-PLAN.md",
+      "summary": "06.3-20-SUMMARY.md",
+      "tasks": [
+        "20-01: Assemble the source-bound repair and twelve-item decision packet",
+        "20-02: Record individual owner dispositions and preserve any unresolved acceptance gates",
+        "Provide individual dispositions",
+        "Retain named unresolved items"
+      ],
+      "has_verification": true,
+      "summary_complete": true
+    }
+  ],
+  "new_task_evidence": {
+    "18-01": "18-evidence/check.py reviewable; hash binding and negative controls",
+    "18-02": "18-evidence/check.py approval; actual focus approval",
+    "19-01": "JS RED/GREEN and actual-browser unchecked focus regression",
+    "19-02": "20-evidence/final-browser-results.json; 12 current source-bound cases; canonical independent REVIEW after CR-05",
+    "20-01": "FOCUS-REVIEW; historical captures and current owner browser review",
+    "20-02": "dispositions.json; all twelve actual responses, eight scoped acceptances and four retained unresolved"
+  },
+  "retained_manual_obligations": [
+    "DEL-01-unclassified",
+    "DEL-03-unclassified",
+    "DEL-04-unclassified",
+    "AUTH-06-unclassified"
+  ],
+  "bounded_limit": "General custom-PK/cast/collation precision remains unverified outside owner-accepted tested scope",
+  "final_repair": "CR-05: acc4354 RED; 8a26b39 GREEN; 266JS tests plus independent re-review",
+  "reconciled_at": "2026-11-01T07:55:45.529046+00:00",
+  "scope_contract": "06.3-SCOPE-RECONCILIATION.md",
+  "phase_blocking_gaps": [],
+  "deferred": "issue 286; broader identity compatibility remains unverified",
+  "note": "Existing automated task map and actual manual decisions retained; no implementation/test gap remains under clarified scope."
+}

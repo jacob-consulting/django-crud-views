@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_polymorphic.py::test_library_delete_car_parent_rows_and_partial[partial-False-library_delete_case0] -q -p no:cacheprovider --tb=short --junitxml=.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/07-02-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"1.014\" timestamp=\"2026-10-30T14:13:37.998680+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_polymorphic\" name=\"test_library_delete_car_parent_rows_and_partial[partial-False-library_delete_case0]\" time=\"0.893\"><failure message=\"AssertionError: assert {'library cascade': 1} == {'library cas... 'vehicle': 1}&#10;  &#10;  Omitting 1 identical items, use -vv to show&#10;  Right contains 1 more item:&#10;  {'vehicle': 1}&#10;  Use -v to get more diff\">tests/test1/test_polymorphic.py:218: in test_library_delete_car_parent_rows_and_partial\n    _exercise_actual_library_delete(library_delete_case, monkeypatch, atomic, covered)\ntests/test1/test_polymorphic.py:162: in _exercise_actual_library_delete\n    assert response.context[\"related_summary\"] == summary\nE   AssertionError: assert {'library cascade': 1} == {'library cas... 'vehicle': 1}\nE     \nE     Omitting 1 identical items, use -vv to show\nE     Right contains 1 more item:\nE     {'vehicle': 1}\nE     Use -v to get more diff</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_library_delete_car_parent_rows_and_partial[partial-False-library_delete_case0]",
+  "targetFile": "tests/test1/test_polymorphic.py",
+  "expected": "Car preview includes one Vehicle parent row and excludes Car root from related_summary",
+  "actual": "related_summary contains only library cascade:1; vehicle:1 is missing",
+  "reportPath": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/07-02-red.xml",
+  "runStartedAt": "2026-10-30T14:13:37.998680+00:00",
+  "reportModifiedAt": "2026-10-30T14:13:39.011611+00:00",
+  "semanticAssessment": "Target executed and failed on the intended summary assertion. Vehicle._base_manager upcasts the parent to Car; inspector deduplicates it as root and omits Vehicle. No setup, import or collection error."
+}

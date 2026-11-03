@@ -45,6 +45,7 @@ class RecipeCardListView(BreadcrumbMixin, CardListViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_path = ""  # the card list IS the landing page of this ViewSet
     cv_card_container_class = "col-md-6"
+    paginate_by = 6  # six cards per page; the seed data gives three pages so pagination is visible
     cv_context_actions = ["card", "create"]
     # signed ordering: the direction is part of each choice, so the toolbar is a single combo
     # (no asc/desc buttons) that submits on change

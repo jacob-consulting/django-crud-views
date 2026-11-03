@@ -58,10 +58,10 @@ except where a requirement says the markup changes.
 
 ### Table pagination (plan 3B)
 
-- [ ] **PAGE-01**: Golden of today's paginated table is committed before the change
-- [ ] **PAGE-02**: `table/bootstrap5.html` renders `page-previous` / `page-next` registry icons with translated hidden labels, `aria-current="page"`, disabled ends as `<a class="page-link" aria-disabled="true">`, translated `<nav>` label; existing tables2 block names kept
-- [ ] **PAGE-03**: One shared `pagination:hidden-label` class key (default `visually-hidden`) is read by both table and card pagination
-- [ ] **PAGE-04**: Both paginations produce the same accessible structure; CHANGELOG Breaking (DOM), migration bullet, `.po` files updated
+- [x] **PAGE-01**: Golden of today's paginated table is committed before the change
+- [x] **PAGE-02**: `table/bootstrap5.html` renders `page-previous` / `page-next` registry icons with translated hidden labels, `aria-current="page"`, disabled ends as `<a class="page-link" aria-disabled="true">`, translated `<nav>` label; existing tables2 block names kept
+- [x] **PAGE-03**: One shared `pagination:hidden-label` class key (default `visually-hidden`) is read by both table and card pagination
+- [x] **PAGE-04**: Both paginations produce the same accessible structure; CHANGELOG Breaking (DOM), migration bullet, `.po` files updated
 
 ### Stability policy (plan 4)
 
@@ -122,10 +122,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ALRT-02 | Phase 4 (plan 3A) | Complete |
 | ALRT-03 | Phase 4 (plan 3A) | Complete |
 | ALRT-04 | Phase 4 (plan 3A) | Complete |
-| PAGE-01 | Phase 5 (plan 3B) | Pending |
-| PAGE-02 | Phase 5 (plan 3B) | Pending |
-| PAGE-03 | Phase 5 (plan 3B) | Pending |
-| PAGE-04 | Phase 5 (plan 3B) | Pending |
+| PAGE-01 | Phase 5 (plan 3B) | Complete |
+| PAGE-02 | Phase 5 (plan 3B) | Complete |
+| PAGE-03 | Phase 5 (plan 3B) | Complete |
+| PAGE-04 | Phase 5 (plan 3B) | Complete |
 | FORM-01 | Phase 6 (plan 2) | Pending |
 | FORM-02 | Phase 6 (plan 2) | Pending |
 | FORM-03 | Phase 6 (plan 2) | Pending |

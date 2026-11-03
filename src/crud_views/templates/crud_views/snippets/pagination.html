@@ -4,11 +4,11 @@
     <ul class="pagination justify-content-center">
         {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?{% if base_qs %}{{ base_qs }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">{% cv_icon "page-previous" %}<span class="visually-hidden">{% translate "previous" %}</span></a>
+                <a class="page-link" href="?{% if base_qs %}{{ base_qs }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">{% cv_icon "page-previous" %}<span class="{% cv_button_class 'pagination' 'hidden-label' %}">{% translate "previous" %}</span></a>
             </li>
         {% else %}
             <li class="page-item disabled">
-                <a class="page-link" aria-disabled="true">{% cv_icon "page-previous" %}<span class="visually-hidden">{% translate "previous" %}</span></a>
+                <a class="page-link" aria-disabled="true">{% cv_icon "page-previous" %}<span class="{% cv_button_class 'pagination' 'hidden-label' %}">{% translate "previous" %}</span></a>
             </li>
         {% endif %}
         {% for num in paginator.page_range %}
@@ -22,11 +22,11 @@
         {% endfor %}
         {% if page_obj.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?{% if base_qs %}{{ base_qs }}&amp;{% endif %}page={{ page_obj.next_page_number }}"><span class="visually-hidden">{% translate "next" %}</span>{% cv_icon "page-next" %}</a>
+                <a class="page-link" href="?{% if base_qs %}{{ base_qs }}&amp;{% endif %}page={{ page_obj.next_page_number }}"><span class="{% cv_button_class 'pagination' 'hidden-label' %}">{% translate "next" %}</span>{% cv_icon "page-next" %}</a>
             </li>
         {% else %}
             <li class="page-item disabled">
-                <a class="page-link" aria-disabled="true"><span class="visually-hidden">{% translate "next" %}</span>{% cv_icon "page-next" %}</a>
+                <a class="page-link" aria-disabled="true"><span class="{% cv_button_class 'pagination' 'hidden-label' %}">{% translate "next" %}</span>{% cv_icon "page-next" %}</a>
             </li>
         {% endif %}
     </ul>

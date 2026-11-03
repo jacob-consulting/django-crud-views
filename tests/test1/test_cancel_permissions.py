@@ -2,19 +2,21 @@
 
 import ast
 from pathlib import Path
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 
 import pytest
 from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured
 from django.db import DatabaseError
-from django.http import Http404
-from django.test import RequestFactory
+from django.http import Http404, HttpResponse
+from django.test import RequestFactory, override_settings
+from django.urls import clear_url_caches, include, path, reverse
 from django.views.generic.edit import FormMixin
 
 from crud_views.lib.view.cancel import effective_cancel_keys
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
-from tests.test1.test_cancel_origin import url
+from tests.test1.test_cancel_origin import cancel_url, url
+from tests.test1.test_guardian_parent_none import _grant_global, _url, _user, pn  # noqa: F401 -- shared isolated fixture
 
 
 def fallback_errors(cls):
@@ -311,3 +313,208 @@ def test_core_structurally_impossible_fallback_is_configuration_error(cv_publish
     monkeypatch.setattr(target, "cv_get_url_extra_kwargs", classmethod(lambda cls: {"unexpected": "argument"}))
     with pytest.raises(ImproperlyConfigured, match="registered usable destination"):
         bound(cv_publisher.get_view_class("create"), user_publisher_view).cv_get_cancel_url()
+
+
+@pytest.mark.django_db
+def test_guardian_form_parent_grant_does_not_authorize_list(pn, publisher_a, client, monkeypatch):
+    from guardian.shortcuts import assign_perm
+
+    user = _user("cancel_create_only")
+    assign_perm("change_publisher", user, publisher_a)
+    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", "view")
+    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_create_permission", "change")
+    calls = []
+    monkeypatch.setattr(pn.BookList, "cv_action_enabled", classmethod(lambda cls, user, obj: calls.append(obj) or True))
+    client.force_login(user)
+    response = client.get(_url(pn.book_vs, "create", publisher_a.pk))
+    assert response.status_code == 200
+    assert "data-cv-cancel-url" not in response.content.decode()
+    assert calls == []  # denied destination policy precedes state
+    assert client.get(_url(pn.book_vs, "list", publisher_a.pk)).status_code == 403
+    response = client.post(_url(pn.book_vs, "create", publisher_a.pk), {"title": "Allowed without Cancel"})
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_guardian_empty_list_is_accessible(pn, publisher_a, client):
+    user = _user("cancel_empty_list")
+    client.force_login(user)
+    response = client.get(_url(pn.book_vs, "create", publisher_a.pk))
+    destination = cancel_url(response)
+    assert destination == _url(pn.book_vs, "list", publisher_a.pk)
+    target = client.get(destination)
+    assert target.status_code == 200
+    assert list(target.context["object_list"]) == []
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "grant,global_opt_in,accessible", [("object", False, True), ("global", False, False), ("global", True, True)]
+)
+def test_guardian_object_destination_policy(pn, publisher_a, client, monkeypatch, grant, global_opt_in, accessible):
+    from guardian.shortcuts import assign_perm
+    from tests.test1.app.models import Book
+
+    book = Book.objects.create(title="Cancel object", publisher=publisher_a)
+    user = _user("cancel_object")
+    assign_perm("change_book", user, book)
+    if grant == "object":
+        assign_perm("view_book", user, book)
+    else:
+        user = _grant_global(user, "view_book")
+    monkeypatch.setattr(pn.BookDetail, "cv_guardian_accept_global_perms", global_opt_in)
+    client.force_login(user)
+    response = client.get(_url(pn.book_vs, "update", publisher_a.pk, book.pk), {"cv_from": "detail"})
+    assert response.status_code == 200
+    destination = cancel_url(response)
+    expected = (
+        _url(pn.book_vs, "detail", publisher_a.pk, book.pk) if accessible else _url(pn.book_vs, "list", publisher_a.pk)
+    )
+    assert destination == expected
+    assert client.get(destination).status_code == 200
+    assert client.get(_url(pn.book_vs, "detail", publisher_a.pk, book.pk)).status_code == (200 if accessible else 403)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("actor", ["anonymous", "inactive"])
+@pytest.mark.parametrize("target_key", ["list", "detail", "create"])
+def test_guardian_denies_anonymous_and_inactive_destinations(pn, publisher_a, monkeypatch, actor, target_key):
+    from django.contrib.auth.models import AnonymousUser
+    from tests.test1.app.models import Book
+
+    user = AnonymousUser() if actor == "anonymous" else _user("inactive_cancel", superuser=True, active=False)
+    book = Book.objects.create(title="Actor gate", publisher=publisher_a)
+    cls = pn.book_vs.get_view_class(target_key)
+    monkeypatch.setattr(cls, "cv_action_enabled", classmethod(lambda *args: pytest.fail("state before actor gate")))
+    view = bound(pn.BookUpdate, user, book, **{pn.book_vs.parent.get_pk_name(): publisher_a.pk})
+    view.cv_cancel_keys = None
+    view.cv_cancel_key = target_key
+    assert view.cv_get_cancel_url() is None
+
+
+@pytest.fixture
+def guardian_targets(pn):
+    """Custom parent-only and create targets in the same isolated child ViewSet."""
+    from crud_views.lib.views import CustomFormNoObjectViewPermissionRequired
+    from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
+
+    events = []
+    state = {"enabled": True, "create_allowed": True}
+
+    class ParentOnly(GuardianParentPermissionMixin, CustomFormNoObjectViewPermissionRequired):
+        cv_viewset = pn.book_vs
+        cv_key = "inspect"
+        cv_path = "inspect"
+        cv_permission = "view"
+
+        @classmethod
+        def cv_action_enabled(cls, user, obj=None):
+            events.append(("parent-state", obj))
+            return state["enabled"]
+
+        @classmethod
+        def _cv_action_enabled_for_rendering(cls, user, obj, rendering_view):
+            events.append(("parent-adapter", obj))
+            return cls.cv_action_enabled(user, obj)
+
+        def get(self, request, *args, **kwargs):
+            return HttpResponse("Parent-only destination")
+
+    class NestedCreate(pn.BookCreate):
+        cv_viewset = pn.book_vs
+        cv_key = "special_create"
+        cv_path = "special-create"
+
+        @classmethod
+        def cv_create_has_access(cls, user, rendering_view, parent_obj):
+            events.append(("create-access", parent_obj))
+            return state["create_allowed"] and super().cv_create_has_access(user, rendering_view, parent_obj)
+
+        @classmethod
+        def cv_action_enabled(cls, user, obj=None):
+            events.append(("create-state", obj))
+            return state["enabled"]
+
+        @classmethod
+        def _cv_action_enabled_for_rendering(cls, user, obj, rendering_view):
+            events.append(("create-adapter", obj))
+            return super()._cv_action_enabled_for_rendering(user, obj, rendering_view)
+
+        def get(self, request, *args, **kwargs):
+            return HttpResponse("Nested create destination")
+
+    urls = ModuleType("cancel_guardian_custom_urls")
+    urls.urlpatterns = [*pn.pub_vs.urlpatterns, *pn.book_vs.urlpatterns, path("", include("tests.test1.project.urls"))]
+    with override_settings(ROOT_URLCONF=urls):
+        clear_url_caches()
+        try:
+            yield SimpleNamespace(parent=ParentOnly, create=NestedCreate, events=events, state=state)
+        finally:
+            clear_url_caches()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key,prefix", [("inspect", "parent"), ("special_create", "create")])
+@pytest.mark.parametrize("permission", ["view", None])
+def test_guardian_parent_only_and_create_targets(
+    pn, guardian_targets, publisher_a, publisher_b, client, monkeypatch, key, prefix, permission
+):
+    from guardian.shortcuts import assign_perm
+
+    user = _user("cancel_parent_only")
+    assign_perm("view_publisher", user, publisher_a)
+    assert not user.has_perm("app.view_book") and not user.has_perm("app.add_book")
+    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", permission)
+    monkeypatch.setattr(pn.BookCreate, "cv_cancel_keys", [key])
+    monkeypatch.setattr(pn.BookCreate, "cv_cancel_key", key)
+    client.force_login(user)
+    response = client.get(_url(pn.book_vs, "create", publisher_a.pk), {"cv_from": key})
+    assert response.status_code == 200
+    destination = cancel_url(response)
+    assert destination == _url(pn.book_vs, key, publisher_a.pk)
+    expected = ([("create-access", publisher_a)] if prefix == "create" else []) + [
+        (f"{prefix}-adapter", publisher_a),
+        (f"{prefix}-state", publisher_a),
+    ]
+    assert guardian_targets.events == expected
+    guardian_targets.events.clear()
+    assert client.get(destination).status_code == 200
+    assert guardian_targets.events == [(f"{prefix}-state", publisher_a)]
+    guardian_targets.events.clear()
+
+    view = bound(pn.BookCreate, user, **{pn.book_vs.parent.get_pk_name(): publisher_b.pk})
+    if permission is not None:
+        assert view.cv_get_cancel_url() is None
+        assert guardian_targets.events == []
+        assert client.get(_url(pn.book_vs, key, publisher_b.pk)).status_code == 403
+    guardian_targets.state["enabled"] = False
+    view.kwargs[pn.book_vs.parent.get_pk_name()] = publisher_a.pk
+    assert view.cv_get_cancel_url() is None
+    assert client.get(destination).status_code == 403
+    guardian_targets.events.clear()
+    view.kwargs[pn.book_vs.parent.get_pk_name()] = 999999
+    assert view.cv_get_cancel_url() is None
+    assert guardian_targets.events == []
+    assert client.get(_url(pn.book_vs, key, 999999)).status_code == 404
+
+
+@pytest.mark.django_db
+def test_guardian_create_custom_access_denial(pn, guardian_targets, publisher_a):
+    user = _user("cancel_custom_denial")
+    guardian_targets.state["create_allowed"] = False
+    view = bound(pn.BookCreate, user, **{pn.book_vs.parent.get_pk_name(): publisher_a.pk})
+    view.cv_cancel_key = "special_create"
+    assert view.cv_get_cancel_url() is None
+    assert guardian_targets.events == [("create-access", publisher_a)]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("error", [Http404, KeyError, DatabaseError])
+def test_guardian_custom_parent_failures_propagate(pn, publisher_a, monkeypatch, error):
+    def fail(self):
+        raise error("custom Guardian parent")
+
+    monkeypatch.setattr(pn.BookCreate, "cv_get_parent_object", fail)
+    view = bound(pn.BookCreate, _user("cancel_custom_failure"), **{pn.book_vs.parent.get_pk_name(): publisher_a.pk})
+    with pytest.raises(error, match="custom Guardian parent"):
+        view.cv_get_cancel_url()

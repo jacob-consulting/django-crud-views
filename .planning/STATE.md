@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.7"
+current_phase_name: Dynamic cancel navigation and origin query state
 status: planning
-stopped_at: Phase 06.6 complete, ready to plan Phase 7
-last_updated: "2026-11-03T06:42:23.598Z"
+stopped_at: Phase 06.7 context gathered
+last_updated: "2026-11-03T13:12:43.316Z"
 last_activity: 2026-11-03
-last_activity_desc: Phase 06.6 complete, transitioned to Phase 7
-state_head: a3081128b07bdaa9fbc5bcd71a5429ddab7a41eb
+last_activity_desc: "Phase 06.7 context gathered; approved issue #302 and discussion decisions ready for planning"
+state_head: 9135efb08cf8c75779a9d634463b816d9e9f2df9
 progress:
-  total_phases: 13
+  total_phases: 14
   completed_phases: 12
   total_plans: 101
   completed_plans: 101
-  percent: 92
 milestone_name: milestone
 ---
 
@@ -25,17 +24,17 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-03)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.7 — Dynamic cancel navigation and origin query state
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.7 — Dynamic cancel navigation and origin query state
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-03 — Phase 06.6 complete, transitioned to Phase 7
+Last activity: 2026-11-03 — Phase 06.7 context gathered; approved issue #302 and discussion decisions ready for planning
 
-Progress: [█████████░] 92%
-Next: $gsd-discuss-phase 7
+Progress: [████████░░] 86%
+Next: $gsd-plan-phase 06.7
 
 ### Phase 06.6 completion — 2026-11-03
 
@@ -594,6 +593,7 @@ None yet.
 - Phase 6.4 inserted after Phase 6.3: Conditional and formset correctness/lifecycle (analysis A1–A7); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 6.5 inserted after Phase 6.4: Remaining presentation contracts and decided cleanup — source analysis §8 (#259, C1/C2, Python no_label and obsolete guard removal) (URGENT)
 - Phase 06.6 inserted after Phase 06.5: Theme-adoption seams from the Tabler sync (#277–#280); source analysis §8 slice 6.6; complete before Phase 7 freezes the theme surface (URGENT)
+- Phase 06.7 inserted after Phase 06.6: Dynamic cancel navigation and origin query state (#302); approved scope and defaults; complete before Phase 7 freezes the public surface (URGENT)
 
 ## Deferred Items
 
@@ -603,6 +603,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-03T06:43:07.801739+00:00
-Stopped at: Phase 06.6 complete, ready to discuss Phase 7
-Resume file: None
+Last session: 2026-11-03T13:12:40.179Z
+Stopped at: Phase 06.7 context gathered
+Resume file: .planning/phases/06.7-dynamic-cancel-navigation-and-origin-query-state/06.7-CONTEXT.md

@@ -287,6 +287,7 @@ def state_routes():
 
     from django_filters import FilterSet
 
+    from crud_views.lib.views.list import ListViewFilterFormHelper
     from crud_views.lib.views.mixins import ListViewTableFilterMixin
     from crud_views.lib.viewset import ViewSet
     from tests.test1.app.models import Author
@@ -324,7 +325,8 @@ def state_routes():
                 "cv_path": key,
                 "cv_header_template_code": "Authors",
                 "cv_header_template": None,
-                "filterset_class": AuthorFilter,
+                "filterset_class": AuthorFilter if filtered else None,
+                "formhelper_class": ListViewFilterFormHelper if filtered else None,
                 "paginate_by": 1,
                 "cv_order_fields": ["last_name"],
             },
@@ -456,6 +458,7 @@ def test_open_forms_bind_distinct_current_parents(
     from django.urls import path, reverse
     from django_filters import FilterSet
 
+    from crud_views.lib.views.list import ListViewFilterFormHelper
     from crud_views.lib.views.mixins import ListViewTableFilterMixin
     from tests.lib.helper.user import user_viewset_permission
     from tests.test1.app.models import Book
@@ -475,6 +478,7 @@ def test_open_forms_bind_distinct_current_parents(
     class FilteredBooks(ListViewTableFilterMixin, BookListView):
         cv_viewset = None
         filterset_class = BookFilter
+        formhelper_class = ListViewFilterFormHelper
 
     monkeypatch.setattr(FilteredBooks, "cv_viewset", cv_book)
     parent_key = cv_book.get_parent_url_args()[0]

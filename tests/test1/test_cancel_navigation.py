@@ -9,6 +9,7 @@ from django.core import signing
 from django_filters import FilterSet
 
 from crud_views.lib.session import SessionData
+from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.views.mixins import ListViewTableFilterMixin
 from tests.test1.app.models import Author
 
@@ -173,6 +174,7 @@ def test_emitted_list_update_round_trip(
     class FilteredAuthors(ListViewTableFilterMixin, original):
         cv_viewset = None
         filterset_class = AuthorFilter
+        formhelper_class = ListViewFilterFormHelper
 
     monkeypatch.setattr(FilteredAuthors, "cv_viewset", cv_author_origin)
     monkeypatch.setattr(cv_author_origin.get_view_class("update"), "cv_cancel_keys", "auto")

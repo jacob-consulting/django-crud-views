@@ -188,6 +188,51 @@ Save it as `myapp_theme/templates/bootstrap5/buttons/pill.html`. Keep `data-cv-c
 `viewset.js` reads it, and `title` with `data-cv-tooltip="form"` in `"icon"` mode. A button added with
 `helper.add_input()` is still rendered by the template pack's `baseinput.html`, never by these templates.
 
+## Cancel links in custom form-button templates
+
+A cancel can render as a native `<a href>` link: through its `tag=` keyword, or through the class-table key
+`form:cancel-tag` (see [Cancel links](buttons.md#cancel-links)). The bundled leaf does that by itself. A custom
+template decides its own markup: the package never forces a link over it. It receives the effective element as
+`cv_tag`, `"a"` or `"button"`, after every fallback.
+
+A template written before `cv_tag` existed, such as the pill template above, keeps working. On a cancel it renders
+its `<button>`, and `data-cv-cancel-url` with `viewset.js` still navigate. Only the link's attribute set reaches it as
+`cv_flat_attrs`, so button-only extras such as `form` or `formaction` are missing there while the option selects
+`"a"`. To render the native link, the template consults `cv_tag`:
+
+```python
+from crud_views.lib.crispy import Button
+
+
+class PillCancel(Button):
+    template = "%s/buttons/pill_cancel.html"
+```
+
+```django
+{% load crud_views %}
+{% if cv_tag == "a" %}
+<a href="{{ cv_cancel_url }}" id="{{ cv_id }}"
+   class="{% cv_button_class 'form' cv_key cv_label_mode %} rounded-pill{% if cv_css_class %} {{ cv_css_class }}{% endif %}{% if cv_icon_class %} {{ cv_icon_class }}{% endif %}"
+   {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="form"{% endif %}{{ cv_flat_attrs }}>
+{% else %}
+<button type="{{ cv_type }}" name="{{ cv_name }}" value="{{ cv_value }}" id="{{ cv_id }}"
+        class="{% cv_button_class 'form' cv_key cv_label_mode %} rounded-pill{% if cv_css_class %} {{ cv_css_class }}{% endif %}{% if cv_icon_class %} {{ cv_icon_class }}{% endif %}"
+        {% if cv_cancel_url is not None %}data-cv-cancel-url="{{ cv_cancel_url }}"{% endif %}
+        {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="form"{% endif %}{{ cv_flat_attrs }}>
+{% endif %}
+    {% if cv_label_mode != "label" and cv_icon and cv_icon_inline is not False %}{% cv_icon cv_icon %}{% endif %}
+    <span{% if cv_label_mode == "icon" %} class="{% cv_button_class 'form' 'hidden-label' %}"{% endif %}>{{ cv_label }}</span>
+{% if cv_tag == "a" %}</a>{% else %}</button>{% endif %}
+```
+
+Save it as `myapp_theme/templates/bootstrap5/buttons/pill_cancel.html`. On the link branch, `cv_cancel_url` is the
+only `href`. Never add `type`, `name`, `value` or `data-cv-cancel-url` there, so that `viewset.js` leaves the link to
+the browser. `cv_flat_attrs` holds the link's filtered attributes, with `target` and `rel` as the caller gave them.
+The button branch is the pill template unchanged. `cv_type`, `cv_name`, `cv_value` and `cv_cancel_url` keep their
+values under a link, so one template serves both elements. Template precedence (`template=`, the subclass attribute,
+the bundled leaf), `%s` pack substitution and literal-text escaping work as in
+[Custom form-button templates](#custom-form-button-templates).
+
 ## Framing the form pages
 
 The create, update, custom-form and delete pages share one frame, `snippets/form_frame.html`:

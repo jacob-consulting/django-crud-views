@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import NamedTuple
 
 import pytest
-from django.test import Client
+from django.test import Client, override_settings
 from django.utils import translation
 from lxml import html as lxml_html
 
@@ -363,3 +363,113 @@ def test_filter_region_extractor_scope():
     )
     with pytest.raises(AssertionError):
         _extract_filter_form_region('<form id="filter-form"></form><form id="filter-form"></form>')
+
+
+# --- opt-in cancel links (Phase 6.1, D-14, D-17): configured pages, separate from the default byte baselines ---
+#
+# Every case below runs inside a scoped override_settings; nothing is registered on the theme (review A8). Links are
+# parsed on their own: _extract_controls and the committed goldens stay button-only and unchanged.
+
+LINK_SETTINGS = {"CRUD_VIEWS_BUTTON_CLASSES": {"form:cancel-tag": "a"}}
+CANCEL_ID = "button-id-reset"
+
+
+def _page_markup(request, case: str) -> str:
+    spec = CONTROL_CASES[case]
+    client: Client = request.getfixturevalue(spec.client)
+    pk = request.getfixturevalue(spec.obj).pk if spec.obj else None
+    with translation.override("en"):
+        response = client.get(spec.path.format(pk=pk))
+    assert response.status_code == 200
+    return response.content.decode("utf-8")
+
+
+def _owning_form(markup: str, case: str):
+    """The form owning the page's unique native action, located by its expected id (review A5)."""
+    action_id = CONTROL_CASES[case].expected[0]["id"]
+    doc = lxml_html.fromstring(markup)
+    (action,) = doc.xpath("//*[@id=$id]", id=action_id)
+    assert action.tag == "button"
+    form = next(action.iterancestors("form"), None)
+    assert form is not None, f"{case}: the native action has no owning form"
+    return form, action
+
+
+def _form_cancel_link(markup: str, case: str):
+    """Exactly one a#button-id-reset inside the owning form and no cancel button there; a toolbar link sharing the
+    href elsewhere on the page cannot satisfy this."""
+    form, action = _owning_form(markup, case)
+    links = form.xpath(".//a[@id=$id]", id=CANCEL_ID)
+    assert len(links) == 1, f"{case}: {len(links)} cancel links in the owning form"
+    assert form.xpath(".//button[@id=$id]", id=CANCEL_ID) == []
+    return links[0], action
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("case", sorted(CONTROL_CASES))
+def test_configured_page_cancel_is_one_form_scoped_native_link(request, case):
+    """D-14/D-15: the configured cancel of each package form is a native link to the page's existing destination."""
+    submit, cancel = CONTROL_CASES[case].expected
+    with override_settings(**LINK_SETTINGS):
+        markup = _page_markup(request, case)
+    link, action = _form_cancel_link(markup, case)
+    assert link.get("href") == cancel["data-cv-cancel-url"]
+    assert (link.get("id"), link.get("class")) == (cancel["id"], cancel["class"])
+    assert " ".join(link.text_content().split()) == cancel["value"]
+    for omitted in ("name", "value", "type", "data-cv-cancel-url", "disabled", "formnovalidate"):
+        assert link.get(omitted) is None, omitted
+    # the other action keeps its native submitter identity
+    assert (_type(action), action.get("name"), action.get("value")) == ("submit", submit["name"], submit["value"])
+    assert (action.get("id"), action.get("class")) == (submit["id"], submit["class"])
+    # the raw anchor opening tag carries exactly one href
+    (start,) = re.findall(rf"""<a\b(?:[^>"']|"[^"]*"|'[^']*')*\bid="{CANCEL_ID}"(?:[^>"']|"[^"]*"|'[^']*')*>""", markup)
+    assert len(re.findall(r"(?<![\w-])href=", start, re.IGNORECASE)) == 1
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("case", sorted(CONTROL_CASES))
+def test_configured_page_restores_the_button_after_settings_cleanup(request, case):
+    """Before / inside / after on one page: default golden bytes, a configured link, the default bytes again."""
+    golden = (GOLDEN_DIR / f"{case}.html").read_bytes()
+    assert _golden_bytes(_page_controls(request, case)) == golden
+    with override_settings(**LINK_SETTINGS):
+        _form_cancel_link(_page_markup(request, case), case)
+    assert _golden_bytes(_page_controls(request, case)) == golden
+    form, _ = _owning_form(_page_markup(request, case), case)
+    assert form.xpath(".//a[@id=$id]", id=CANCEL_ID) == []
+    assert len(form.xpath(".//button[@id=$id]", id=CANCEL_ID)) == 1
+
+
+@pytest.mark.django_db
+def test_configured_delete_page_still_deletes_with_its_clicked_submitter(client_user_author_delete, golden_author):
+    """The configured delete page renders a cancel link, and its native delete submitter still deletes."""
+    from tests.test1.app.models import Author
+
+    with override_settings(**LINK_SETTINGS):
+        with translation.override("en"):
+            markup = client_user_author_delete.get(f"/author/{AUTHOR_PK}/delete/").content.decode("utf-8")
+        link, action = _form_cancel_link(markup, "delete")
+        assert link.get("href") == "/author/"
+        assert (action.get("name"), action.get("value"), _type(action)) == ("delete", "Delete", "submit")
+        response = client_user_author_delete.post(
+            f"/author/{AUTHOR_PK}/delete/", {"confirm": True, action.get("name"): action.get("value")}
+        )
+    assert response.status_code == 302
+    assert response.url == "/author/"
+    assert not Author.objects.filter(pk=AUTHOR_PK).exists()
+
+
+@pytest.mark.django_db
+def test_configured_filter_form_keeps_native_apply_reset_and_hidden_controls(
+    client_user_publisher_view, cv_publisher, publisher_penguin
+):
+    """Filter Apply / Reset are no cancel: under the link configuration the controls are the golden's, byte for byte."""
+    golden = (GOLDEN_DIR / "filter.html").read_text(encoding="utf-8")
+    with override_settings(**LINK_SETTINGS):
+        live = _filter_region(client_user_publisher_view)
+    assert _golden_bytes(_extract_controls(live, FILTER_CONTROLS)) == _golden_bytes(
+        _extract_controls(golden, FILTER_CONTROLS)
+    )
+    form = lxml_html.fragment_fromstring(live)
+    assert form.cssselect("a") == []
+    assert [el.get("id") for el in form.cssselect("button")] == ["filter-button", "filter-button-reset"]

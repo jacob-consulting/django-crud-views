@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
 status: planning
-stopped_at: Phase 06 complete, ready to plan Phase 7
-last_updated: "2026-10-28T14:17:56.648Z"
-last_activity: 2026-10-28
-last_activity_desc: Phase 06 complete, transitioned to Phase 7
-state_head: dbca22ea38bc3a7c25be2fc1338efbf69233e6d4
+stopped_at: Phase 06.1 complete, ready to plan Phase 7
+last_updated: "2026-10-29T05:32:55.886Z"
+last_activity: 2026-10-29
+last_activity_desc: Phase 06.1 complete, transitioned to Phase 7
+state_head: 726cfc8a3a153a982b1be4592c19b6fb79bf790e
 progress:
-  total_phases: 7
-  completed_phases: 6
-  total_plans: 24
-  completed_plans: 24
-  percent: 86
+  total_phases: 8
+  completed_phases: 7
+  total_plans: 27
+  completed_plans: 27
+  percent: 88
 milestone_name: milestone
 ---
 
@@ -22,7 +22,7 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-28)
+See: .planning/PROJECT.md (updated 2026-10-29)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -32,15 +32,15 @@ See: .planning/PROJECT.md (updated 2026-10-28)
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-28 — Phase 06 complete, transitioned to Phase 7
+Last activity: 2026-10-29 — Phase 06.1 complete, transitioned to Phase 7
 
-Progress: 24/24 plans executed ([█████████░] 86%); 6/7 phases complete
+Progress: 27/27 plans executed ([█████████░] 88%); 7/8 phases complete
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 24
+- Total plans completed: 27
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -54,6 +54,7 @@ Progress: 24/24 plans executed ([█████████░] 86%); 6/7 phase
 | 04 | 3 | - | - |
 | 05 | 3 | - | - |
 | 06 | 10 | - | - |
+| 06.1 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -89,6 +90,9 @@ Progress: 24/24 plans executed ([█████████░] 86%); 6/7 phase
 | Phase 06 P08 | 16 min | 3 tasks | 14 files |
 | Phase 06 P09 | 22min | 2 tasks | 3 files |
 | Phase 06 P10 | 13min | 3 tasks | 7 files |
+| Phase 06.1 P01 | 12 min | 3 tasks | 12 files |
+| Phase 06.1 P02 | 8 min | 2 tasks | 4 files |
+| Phase 06.1 P03 | 9 min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -163,6 +167,14 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-10: icon= omission is stored as the private bool _cv_kind_icon (sentinel compared in __init__ only); deepcopy isolation of filter layouts kept
 - [Phase 06]: 06-10: _form_button_data treats any non-str or whitespace-only cv_icon as None before availability, diagnostics, host classes and the leaf; accepted strings kept exactly
 - [Phase 06]: UAT 4/4 passed; review IN-01..IN-03 fixed (aed6003, 92d5430, d75fb31; disposition open 0/6); re-verification 42/42 passed (dbca22e); full suite 4632 passed
+- [Phase 06.1]: Cancel link eligibility is cv_key cancel AND native type button; explicit tag validated at adapter construction (None/button quiet), a requires form:cancel slot
+- [Phase 06.1]: Invalid selected form:cancel-tag raises in strict mode, else warns and renders button; valid explicit tag never reads the table; E365 for invalid str values, E361 for non-str
+- [Phase 06.1]: FORM_TAGS and CANCEL_TAG_KEY live in button_classes (pre-setup importable); form leaf branches on effective cv_tag with byte-identical button branch
+- [Phase 06.1]: Cancel links drop WHATWG button-only attributes, name/type/value, extra href and data-cv-cancel-url case-insensitively; filtering only when final cv_tag is a
+- [Phase 06.1]: On a link, case variants of generated id/class (and title/data-cv-tooltip in icon mode) are dropped; fallback/default buttons keep every extra byte for byte
+- [Phase 06.1]: 06.1-03: tag= keyword change recorded in the existing Form buttons Breaking entry with paired migrating-1.0.md guidance; cancel links are an Added entry
+- [Phase 06.1]: 06.1-03: real-browser cancel-link acceptance (no-JS, new tab, disabled) left pending for end-of-phase UAT; jsdom proves handler noninterference only
+- [Phase 06.1]: UAT 3/3 passed via automated Chromium (JS-disabled click/Enter/middle-click, disabled fallback, JS-on non-interception), user-confirmed; verification canonicalized to passed
 
 ### Pending Todos
 
@@ -182,10 +194,12 @@ None yet.
 
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
+- Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
 
 ### Roadmap Evolution
 
 - Phase 06 edited: User decision D-18: verify completed Phase 1/2 contracts on executing working branch before spec; main merge no longer prerequisite
+- Phase 6.1 inserted after Phase 6: Cancel form button as a link (#275); complete before Phase 7 freezes the theme surface (URGENT)
 
 ## Deferred Items
 
@@ -195,6 +209,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28
-Stopped at: Phase 06 complete, ready to plan Phase 7
+Last session: 2026-10-29T05:40:00Z
+Stopped at: Phase 06.1 complete, ready to plan Phase 7
 Resume file: None

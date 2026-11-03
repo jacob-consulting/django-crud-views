@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.963" timestamp="2026-11-01T12:12:45.894008+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_fragment_authorization" name="test_added_outer_fragment_retains_endpoint_for_nested_actions" time="0.693"><failure message="AssertionError: assert {None} == {'/frg2pube7b781c1/1/update/'}&#10;  &#10;  Extra items in the left set:&#10;  None&#10;  Extra items in the right set:&#10;  '/frg2pube7b781c1/1/update/'&#10;  Use -v to get more diff">fr = namespace(gpub_vs=ViewSet(frgpube7b781c1), gbook_vs=ViewSet(frgbooke7b781c1), cpub_vs=ViewSet(frcpube7b781c1), g2pub_v...eepUpdate=&lt;class 'tests.test1.test_fragment_authorization.fr.&lt;locals&gt;.FrDeepPublisherUpdateView'&gt;, calls={'render': 1})
+world = namespace(publisher_a=&lt;Publisher: Pan Books&gt;, publisher_b=&lt;Publisher: Gollancz&gt;, book_a=&lt;Book: Hitchhiker's Guide&gt;, book_b=&lt;Book: Mort&gt;)
+
+    @pytest.mark.django_db
+    def test_added_outer_fragment_retains_endpoint_for_nested_actions(fr, world):
+        """A modal lives at another URL: every newly rendered child's Add must retain the editor endpoint."""
+        parent = world.publisher_a
+        client = _editor_client(fr, world, viewset=fr.g2pub_vs)
+        url = _url(fr.g2pub_vs, "update", pk=parent.pk)
+        page = client.get(url)
+        params = browser_add_row(page.content, f"books-{parent.pk}-0")
+        fragment = _get(client, url, params)
+        assert fragment.status_code == 200
+        metadata = _formset_metadata(fragment.json()["html"].encode())
+        assert len(metadata) == 2
+&gt;       assert {item[0]["path"] for item in metadata.values()} == {url}
+E       AssertionError: assert {None} == {'/frg2pube7b781c1/1/update/'}
+E         
+E         Extra items in the left set:
+E         None
+E         Extra items in the right set:
+E         '/frg2pube7b781c1/1/update/'
+E         Use -v to get more diff
+
+tests/test1/test_fragment_authorization.py:1180: AssertionError</failure></testcase></testsuite></testsuites>

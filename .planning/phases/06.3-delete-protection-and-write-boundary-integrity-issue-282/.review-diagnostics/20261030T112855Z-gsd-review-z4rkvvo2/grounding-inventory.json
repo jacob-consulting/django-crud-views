@@ -1,0 +1,3240 @@
+[
+  {
+    "kind": "CLI flag",
+    "symbol": "--check",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+    "quote": "\u2026t, and .venv/bin/ruff check src tests plus .venv/bin/ruff format --check src tests. Record versions, HEAD, import roots, commands, selected counts, durations, omissions and failures in MATRI\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "--deselect",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+    "quote": "\u2026floor-3-12-django-${dcv_django}/bin/python -m pytest tests/test1 --deselect tests/test1/test_form_buttons_golden.py::test_filter_form_baseline -q -p no:cacheprovider || exit $?; done && .ven\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "--no-install",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+    "quote": "\u2026 no:cacheprovider || exit $?; done && .venv/bin/python -m nox -r --no-install -s \"tests-3.12(django='5.2')\" && npm test && .venv/bin/mkdocs build --strict && .venv/bin/ruff check src tests &\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "--strict",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+    "quote": "\u2026rdian_policy.py -q -p no:cacheprovider && .venv/bin/mkdocs build --strict</automated>\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "-c",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:85",
+    "quote": "<automated>.venv/bin/python -c 'from pathlib import Path; import hashlib; p=Path(\".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282\"); a=(p/\"06.3-APPROVAL.md\").r\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:85",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:105"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "-k",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+    "quote": "<automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete_inspection.py -k tracer -q -p no:cacheprovider</automated>",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:135",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:97",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:110",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:122"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "-m",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+    "quote": "<automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete_inspection.py -k tracer -q -p no:cacheprovider</automated>",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:127",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:111",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:135",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:97",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:110",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:133",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:98",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:122",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:105"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "-p",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+    "quote": "<automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete_inspection.py -k tracer -q -p no:cacheprovider</automated>",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:127",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:111",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:135",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:97",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:110",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:133",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:98",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:122",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:105"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "-q",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+    "quote": "<automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete_inspection.py -k tracer -q -p no:cacheprovider</automated>",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:127",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:111",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:135",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:97",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:110",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:133",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:98",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:122",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:105"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "-r",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+    "quote": "\u2026 -p no:cacheprovider || exit $?; done && .venv/bin/python -m nox -r --no-install -s \"tests-3.12(django='5.2')\" && npm test && .venv/bin/mkdocs build --strict && .venv/bin/ruff check src test\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "CLI flag",
+    "symbol": "-s",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+    "quote": "\u2026ider || exit $?; done && .venv/bin/python -m nox -r --no-install -s \"tests-3.12(django='5.2')\" && npm test && .venv/bin/mkdocs build --strict && .venv/bin/ruff check src tests && .venv/bin/r\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "intel has no CLI adapter; read-only installed --help output checked separately for Python/pytest/nox/mkdocs/ruff.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".nox/crispy_floor-3-12-django-${dcv_django}/bin/python",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+    "quote": "\u2026tomated>for dcv_django in 4-2 6-0; do PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-${dcv_django}/bin/python -m pytest tests/test1 --deselect tests/test1/test_form_buttons_golden.\u2026",
+    "verdict": "VERIFIED",
+    "evidence": "Both substitutions 4-2 and 6-0 exist; PLAN 09 loop enumerates these values.",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".nox/crispy_floor-3-12-django-4-2/bin/python",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+    "quote": "\u2026n_policy.py -q -p no:cacheprovider && PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-4-2/bin/python -m pytest tests/test1/test_guardian_policy.py -q -p no:cacheprovider</automated>\u2026",
+    "verdict": "VERIFIED",
+    "evidence": ".nox/crispy_floor-3-12-django-4-2/bin/python:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".nox/crispy_floor-3-12-django-6-0/bin/python",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+    "quote": "<automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete_inspection.py -k tracer -q -p no:cacheprovider</automated>",
+    "verdict": "VERIFIED",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/bin/python:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:127",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:111",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:135",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:97",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:110",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:133",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:98",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:122",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:105"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/PROJECT.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:48",
+    "quote": "@.planning/PROJECT.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/PROJECT.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:48",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:63",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:68",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:54",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:59",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:59",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:58",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:58",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:52"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/ROADMAP.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:49",
+    "quote": "@.planning/ROADMAP.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/ROADMAP.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:49",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:64",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:69",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:55",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:60",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:60",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:59",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:59",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:53"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/STATE.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:50",
+    "quote": "@.planning/STATE.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/STATE.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:50",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:65",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:70",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:56",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:61",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:61",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:60",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:60",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:54"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:114",
+    "quote": "@.planning/phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:114",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:96"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:115",
+    "quote": "@.planning/phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:115",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:97"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:85",
+    "quote": "\u2026bin/python -c 'from pathlib import Path; import hashlib; p=Path(\".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282\"); a=(p/\"06.3-APPROVAL.md\").read_text(); asser\u2026",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:85"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-SUMMARY.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:146",
+    "quote": "Create `.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-SUMMARY.md` when execution is done, including commands, outcomes, limitations and deviations.",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:146"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:32",
+    "quote": "to: \".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md\"",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:32"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-SUMMARY.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:169",
+    "quote": "Create `.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-SUMMARY.md` when execution is done, including commands, outcomes, limitations and deviations.",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:169"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-SUMMARY.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:177",
+    "quote": "Create `.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-SUMMARY.md` when execution is done, including commands, outcomes, limitations and deviations.",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:177"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-SUMMARY.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:161",
+    "quote": "Create `.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-SUMMARY.md` when execution is done, including commands, outcomes, limitations and deviations.",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:161"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-SUMMARY.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:175",
+    "quote": "Create `.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-SUMMARY.md` when execution is done, including commands, outcomes, limitations and deviations.",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:175"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-SUMMARY.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:165",
+    "quote": "Create `.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-SUMMARY.md` when execution is done, including commands, outcomes, limitations and deviations.",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:165"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-SUMMARY.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:165",
+    "quote": "Create `.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-SUMMARY.md` when execution is done, including commands, outcomes, limitations and deviations.",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:165"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-SUMMARY.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:154",
+    "quote": "Create `.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-SUMMARY.md` when execution is done, including commands, outcomes, limitations and deviations.",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:154"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-SUMMARY.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:146",
+    "quote": "Create `.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-SUMMARY.md` when execution is done, including commands, outcomes, limitations and deviations.",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:146"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-ACCEPTANCE.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:9",
+    "quote": "- .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-ACCEPTANCE.md",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:9",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:30",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:36",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:68",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:94"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-APPROVAL.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:8",
+    "quote": "- .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-APPROVAL.md",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:8",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:26",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:31",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:63",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:74"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-CONTEXT.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:51",
+    "quote": "@.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-CONTEXT.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-CONTEXT.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:51",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:77",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:66",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:71",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:57",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:62",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:62",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:61",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:61",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:55"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:52",
+    "quote": "@.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:52",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:76",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:67",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:117",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:72",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:97",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:125",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:58",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:84",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:109",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:63",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:99",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:63",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:93",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:118",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:62",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:88",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:112",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:62",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:90",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:108",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:56",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:100"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GUARDIAN-REVIEW.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:11",
+    "quote": "- .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GUARDIAN-REVIEW.md",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:11",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:39",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:77",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:112",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:107",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:99"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-MATRIX.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:8",
+    "quote": "- .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-MATRIX.md",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:8",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:28",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:35",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:67",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:75",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:98"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-PACKAGES.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:9",
+    "quote": "- .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-PACKAGES.md",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:9",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:28",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:64",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:80"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-PATTERNS.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:53",
+    "quote": "@.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-PATTERNS.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-PATTERNS.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:53",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:68",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:73",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:59",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:64",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:64",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:63",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:63",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:57"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-RESEARCH.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:78",
+    "quote": "@.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-RESEARCH.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-RESEARCH.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:78",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:96"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-VALIDATION.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:54",
+    "quote": "@.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-VALIDATION.md",
+    "verdict": "VERIFIED",
+    "evidence": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-VALIDATION.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:54",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:69",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:74",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:60",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:65",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:65",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:64",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:64",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:10",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:32",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:58",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:69",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:75",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:81",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:94"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".venv/bin/mkdocs",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+    "quote": "\u2026py tests/test1/test_guardian_policy.py -q -p no:cacheprovider && .venv/bin/mkdocs build --strict</automated>\u2026",
+    "verdict": "VERIFIED",
+    "evidence": ".venv/bin/mkdocs:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".venv/bin/python",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:85",
+    "quote": "<automated>.venv/bin/python -c 'from pathlib import Path; import hashlib; p=Path(\".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282\"); a=(p/\"06.3-APPROVAL.md\").r\u2026",
+    "verdict": "VERIFIED",
+    "evidence": ".venv/bin/python:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:85",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": ".venv/bin/ruff",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+    "quote": "\u2026 deselection. Run npm test, .venv/bin/mkdocs build --strict, and .venv/bin/ruff check src tests plus .venv/bin/ruff format --check src tests. Record versions, HEAD, import roots, commands, s\u2026",
+    "verdict": "VERIFIED",
+    "evidence": ".venv/bin/ruff:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "/home/alex/.codex/gsd-core/templates/summary.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:44",
+    "quote": "@/home/alex/.codex/gsd-core/templates/summary.md",
+    "verdict": "VERIFIED",
+    "evidence": "/home/alex/.codex/gsd-core/templates/summary.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:44",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:59",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:64",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:50",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:55",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:55",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:54",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:54",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:48"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "/home/alex/.codex/gsd-core/workflows/execute-plan.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:43",
+    "quote": "@/home/alex/.codex/gsd-core/workflows/execute-plan.md",
+    "verdict": "VERIFIED",
+    "evidence": "/home/alex/.codex/gsd-core/workflows/execute-plan.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:58",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:63",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:49",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:54",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:54",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:53",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:53",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:47"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "CHANGELOG.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:12",
+    "quote": "- CHANGELOG.md",
+    "verdict": "VERIFIED",
+    "evidence": "CHANGELOG.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:12",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:36",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:77",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:106",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:55"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "docs/migrating-1.0.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:11",
+    "quote": "- docs/migrating-1.0.md",
+    "verdict": "VERIFIED",
+    "evidence": "docs/migrating-1.0.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:11",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:34",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:76",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:84",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:88",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:55"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "docs/reference/delete_view.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:8",
+    "quote": "- docs/reference/delete_view.md",
+    "verdict": "VERIFIED",
+    "evidence": "docs/reference/delete_view.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:8",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:28",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:73",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:84",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:86",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:55"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "docs/reference/guardian.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:10",
+    "quote": "- docs/reference/guardian.md",
+    "verdict": "VERIFIED",
+    "evidence": "docs/reference/guardian.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:10",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:32",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:75",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:55"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "docs/reference/request_lifecycle.md",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:9",
+    "quote": "- docs/reference/request_lifecycle.md",
+    "verdict": "VERIFIED",
+    "evidence": "docs/reference/request_lifecycle.md:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:9",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:30",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:74",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:84",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:87",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:55"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "noxfile.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:98",
+    "quote": "@noxfile.py",
+    "verdict": "VERIFIED",
+    "evidence": "noxfile.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:98",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:77"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "package.json",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:79",
+    "quote": "@package.json",
+    "verdict": "VERIFIED",
+    "evidence": "package.json:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:79"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "pyproject.toml",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:97",
+    "quote": "@pyproject.toml",
+    "verdict": "VERIFIED",
+    "evidence": "pyproject.toml:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:97",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:78"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/checks.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:99",
+    "quote": "@src/crud_views/checks.py",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/checks.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:99"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/lib/check.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:98",
+    "quote": "@src/crud_views/lib/check.py",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/lib/check.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:98"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/lib/deletion.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:8",
+    "quote": "- src/crud_views/lib/deletion.py",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:8",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:33",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:47",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:78",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:89",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:114",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:8",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:36",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:52",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:8",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:28",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:37",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:69",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:82",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:106",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:10",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:33",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:76",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/lib/view/base.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:93",
+    "quote": "@src/crud_views/lib/view/base.py",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/lib/view/base.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:93",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:97"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/lib/views/delete.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:9",
+    "quote": "- src/crud_views/lib/views/delete.py",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/lib/views/delete.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:9",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:35",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:46",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:79",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:89",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:91",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:114",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:9",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:38",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:51",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:84",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:9",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:30",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:38",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:70",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:82",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:106",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:11",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:35",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:77",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:11",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:36",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:76",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:107",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:22",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:43"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/lib/views/mixins.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:92",
+    "quote": "@src/crud_views/lib/views/mixins.py",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/lib/views/mixins.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:92",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:98"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/locale/de/LC_MESSAGES/django.mo",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:14",
+    "quote": "- src/crud_views/locale/de/LC_MESSAGES/django.mo",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/locale/de/LC_MESSAGES/django.mo:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:14",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:48",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:89",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:120"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/locale/de/LC_MESSAGES/django.po",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:13",
+    "quote": "- src/crud_views/locale/de/LC_MESSAGES/django.po",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/locale/de/LC_MESSAGES/django.po:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:13",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:46",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:88",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:120",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:46"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/templates/crud_views/snippets/delete/related_objects.html",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:11",
+    "quote": "- src/crud_views/templates/crud_views/snippets/delete/related_objects.html",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/templates/crud_views/snippets/delete/related_objects.html:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:11",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:39",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:81",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:89",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:12",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:44",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:87",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:120",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:45"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views/templates/crud_views/view_delete.content.html",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:10",
+    "quote": "- src/crud_views/templates/crud_views/view_delete.content.html",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/templates/crud_views/view_delete.content.html:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:10",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:37",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:80",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:89",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:11",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:86",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:120",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:122",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:44"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views_guardian/lib/mixins.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:122",
+    "quote": "@src/crud_views_guardian/lib/mixins.py",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views_guardian/lib/mixins.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:122",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:116"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views_guardian/lib/views.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:12",
+    "quote": "- src/crud_views_guardian/lib/views.py",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views_guardian/lib/views.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:12",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:37",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:78",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:121",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:90",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:117",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:12",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:38",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:77",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:47"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views_guardian/lib/viewset.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:8",
+    "quote": "- src/crud_views_guardian/lib/viewset.py",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views_guardian/lib/viewset.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:8",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:33",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:74",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:87",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:89",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:48"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "src/crud_views_polymorphic/lib/views.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:109",
+    "quote": "@src/crud_views_polymorphic/lib/views.py",
+    "verdict": "MISSING",
+    "evidence": "Absent existing read_first path; actual adapter src/crud_views_polymorphic/lib/delete.py:5 and export lib/__init__.py:7.",
+    "severity": {
+      "severity": "needs-acknowledgement",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:109"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+    "quote": "\u2026s/authorization/policy modules on 4.2, 5.2 and 6.0. Run the full tests/test1 suite on cached 4.2/6.0 using only the existing crispy-floor filter golden deselection; the nox 5.2 full tests su\u2026",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/app/models.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:110",
+    "quote": "@tests/test1/app/models.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/app/models.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:110"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/conftest.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:8",
+    "quote": "- tests/test1/conftest.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/conftest.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:8",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:29",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:74",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:96",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:53"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_authorization_matrix.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:85",
+    "quote": "@tests/test1/test_authorization_matrix.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_authorization_matrix.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:85",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:98"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_authorization_templates.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:9",
+    "quote": "- tests/test1/test_authorization_templates.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_authorization_templates.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:9",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:32",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:74",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:86",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:98"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_check_messages.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:100",
+    "quote": "@tests/test1/test_check_messages.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_check_messages.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:100"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_delete.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:13",
+    "quote": "- tests/test1/test_delete.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_delete.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:13",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:114",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:116",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:127",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:124",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:11",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:34",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:72",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:82",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:85",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:106"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_delete_databases.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:9",
+    "quote": "- tests/test1/test_delete_databases.py",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:9",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:31",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:75",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:110",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:133",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:51"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_delete_inspection.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:12",
+    "quote": "- tests/test1/test_delete_inspection.py",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:12",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:41",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:82",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:89",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:114",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:127",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:10",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:40",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:85",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:111",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:120",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:135",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:49"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_delete_migration_docs.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:13",
+    "quote": "- tests/test1/test_delete_migration_docs.py",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:13",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:38",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:41",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:78",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:84",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:52"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_delete_provenance.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:10",
+    "quote": "- tests/test1/test_delete_provenance.py",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Declared by owning PLAN artifacts/output and DESIGN:42\u201356.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:10",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:32",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:71",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:82",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:97",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:106",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:105",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:50"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_form_button_docs.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:89",
+    "quote": "@tests/test1/test_form_button_docs.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_form_button_docs.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:89"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_form_buttons_golden.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+    "quote": "\u2026django-${dcv_django}/bin/python -m pytest tests/test1 --deselect tests/test1/test_form_buttons_golden.py::test_filter_form_baseline -q -p no:cacheprovider || exit $?; done && .venv/bin/pytho\u2026",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_form_buttons_golden.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_guardian_delete.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:13",
+    "quote": "- tests/test1/test_guardian_delete.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_guardian_delete.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:13",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:39",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:79",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:133",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:8",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:30",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:73",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:87",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:98"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_guardian_inactive.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:10",
+    "quote": "- tests/test1/test_guardian_inactive.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_guardian_inactive.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:10",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:37",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:76",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:87",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:92",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:103"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_guardian_policy.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:9",
+    "quote": "- tests/test1/test_guardian_policy.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_guardian_policy.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:9",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:35",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:75",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:87",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:91",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:112",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:105"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_polymorphic.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:10",
+    "quote": "- tests/test1/test_polymorphic.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_polymorphic.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:10",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:34",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:41",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:75",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:107",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:111",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:122"
+    ]
+  },
+  {
+    "kind": "path",
+    "symbol": "tests/test1/test_transactions.py",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:86",
+    "quote": "@tests/test1/test_transactions.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_transactions.py:1 (filesystem existence; binary/directory paths have no line semantics)",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:86",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:108",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:116",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:119"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "boundaries",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:90",
+    "quote": "`DeleteInspection` carries `related: RelatedObjects`, `boundaries: tuple[DeletePreviewBoundary, ...]` and derived",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:90"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "boundary",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:105",
+    "quote": "`DeletePreviewContribution` is frozen with `boundary`, `deleted: tuple[Model, ...] = ()`,",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:105"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "complete",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:91",
+    "quote": "`complete: bool`. Raw blockers and unresolved boundaries are local and never included in template context.",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:91"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "deleted",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:105",
+    "quote": "`DeletePreviewContribution` is frozen with `boundary`, `deleted: tuple[Model, ...] = ()`,",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:105"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "field_name",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:101",
+    "quote": "`field_name` (None for model_delete), `using`, and `source_pks` (tuple). The package creates these descriptors. A",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:101"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "kind",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:100",
+    "quote": "`DeletePreviewBoundary` is frozen and contains `kind` (`on_delete`, `private_relation`, `model_delete`), `model`,",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:100"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "model",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:100",
+    "quote": "`DeletePreviewBoundary` is frozen and contains `kind` (`on_delete`, `private_relation`, `model_delete`), `model`,",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:100"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "protected",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:106",
+    "quote": "`protected: tuple[Model, ...] = ()`, and `complete: bool = False`. Validate saved model instances and matching",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:106"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "related",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:90",
+    "quote": "`DeleteInspection` carries `related: RelatedObjects`, `boundaries: tuple[DeletePreviewBoundary, ...]` and derived",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:90"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "source_pks",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:101",
+    "quote": "`field_name` (None for model_delete), `using`, and `source_pks` (tuple). The package creates these descriptors. A",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:101"
+    ]
+  },
+  {
+    "kind": "proposed field",
+    "symbol": "using",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:101",
+    "quote": "`field_name` (None for model_delete), `using`, and `source_pks` (tuple). The package creates these descriptors. A",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:101"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "AttributeError",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:104",
+    "quote": "\u2026fails_when>Invalid inactive key returns empty silently, KeyError/AttributeError replaces the diagnostic, valid keys are hardcoded, policy can be mutated through mapping/context, or helper ac\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Python built-in/dynamic field or call parameter; no JS intel representation; no absence claim. (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:104"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "CASCADE",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:98",
+    "quote": "- A real registered core route with native CASCADE/PROTECT and one unknown SET relationship renders safe details and an incomplete notice without executing factories.",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:22 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:98",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:70",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:145",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:151"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "Car",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:115",
+    "quote": "- Confirmed Car deletion invokes real PolymorphicModel.delete once with chosen using, removes intended child/parent rows, and preserves signal origin.",
+    "verdict": "UNCHECKABLE",
+    "evidence": "tests/test1/app/models.py:178 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:115",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:119"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "Collector",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+    "quote": "\u2026ve collector seam and native/custom dispatcher, retaining Django Collector.delete for SQL. Thread the chosen alias through these calls. Replace unsafe lifecycle preview calls with the inspec\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:95 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:28",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:29",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:30",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:63",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:139",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:162"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "Collector.collect",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:29",
+    "quote": "`Collector.collect` catches and aggregates ProtectedError around on_delete, losing provenance. The native",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:245 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:29",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:63"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "Collector.delete",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+    "quote": "\u2026ve collector seam and native/custom dispatcher, retaining Django Collector.delete for SQL. Thread the chosen alias through these calls. Replace unsafe lifecycle preview calls with the inspec\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:435 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:30",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:139",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:162"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "ContentType",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:130",
+    "quote": "\u2026e other alias. Do not equate actors by PK or accidentally create ContentType rows during through-model projection. Keep manage's policy copy separate. If Guardian cannot support the selected\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/contenttypes/models.py:134; .nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/contenttypes/migrations/0002_remove_content_type_name.py:6 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:130"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "CrudView",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:24",
+    "quote": "atomic entry, mutation, success hook, then on_commit. `CrudView.cv_get_db_alias` currently routes without instance",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/view/base.py:62 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:24"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "CrudViewProcessFormMixin",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:23",
+    "quote": "context, protection response, POST and `cv_form_valid`. `CrudViewProcessFormMixin.cv_form_valid_process` orders",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/mixins.py:23 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:23"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "DO_NOTHING",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:73",
+    "quote": "| Native SET_NULL / DO_NOTHING | No deletion traversal and no handler invocation |",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:80 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:73",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:154"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "DeleteInspection",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+    "quote": "\u2026`; frozen `DeletePreviewBoundary`, `DeletePreviewContribution`, `DeleteInspection`; private `_DeleteInspector`, `_DeleteCollector`, `_NativeDeleteBlocked`; functions `inspect_deletion`, `mer\u2026",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:62",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:90"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "DeletePreviewBoundary",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+    "quote": "\u2026s` definition here and re-export it from `views.delete`; frozen `DeletePreviewBoundary`, `DeletePreviewContribution`, `DeleteInspection`; private `_DeleteInspector`, `_DeleteCollector`, `_Na\u2026",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:90",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:100"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "DeletePreviewContribution",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+    "quote": "\u2026-export it from `views.delete`; frozen `DeletePreviewBoundary`, `DeletePreviewContribution`, `DeleteInspection`; private `_DeleteInspector`, `_DeleteCollector`, `_NativeDeleteBlocked`; funct\u2026",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:96",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:105"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "DeleteView",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:179",
+    "quote": "DeleteView's default `cv_get_db_alias` uses `router.db_for_write(type(self.object), instance=self.object)`; router",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:149 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:179"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "ForeignKey",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:65",
+    "quote": "use identity, never application-defined equality/deconstruct. Exact ForeignKey/OneToOne metadata is supported;",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/fields/related.py:953 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:65"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "GuardianDeleteRelatedObjectsMixin",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:25",
+    "quote": "hints. `GuardianDeleteRelatedObjectsMixin` replaces core filtering; `_PermittedPks` currently caches by model only.",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views_guardian/lib/views.py:39 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:25"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "GuardianViewSet",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:26",
+    "quote": "`GuardianViewSet` reads a mutable policy mapping and indexes permissions after an inactive shortcut.",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views_guardian/lib/viewset.py:21 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:26"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "ImproperlyConfigured",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:108",
+    "quote": "\u2026or check ID by scanning existing checks and add matching runtime ImproperlyConfigured for detectable legacy collection overrides. Bind using to custom deletion signatures before execution; o\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/exceptions.py:123 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:108",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:116"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "IntegrityError",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:167",
+    "quote": "race-free preview promise. IntegrityError or a race after the collector check propagates.",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/utils.py:37 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:167"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "KeyError",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:104",
+    "quote": "<fails_when>Invalid inactive key returns empty silently, KeyError/AttributeError replaces the diagnostic, valid keys are hardcoded, policy can be mutated through mapping/context, or helper a\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Python built-in/dynamic field or call parameter; no JS intel representation; no absence claim. (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:104"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "MappingProxyType",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:100",
+    "quote": "\u2026onfigured permission unchanged. Freeze STRICT_HELPER_POLICY with MappingProxyType without exposing its backing mutable dict; retain manage dict copy and existing effective-policy schema. Kee\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Python standard-library types.MappingProxyType; runtime built-in, not indexed by JS-only intel (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:100",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:206"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "Model.delete",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+    "quote": "\u2026stom bound deletion once with using, propagating failures; exact Model.delete uses the adapter. Keep unexpected loader/provider errors outside translation.</action>\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/base.py:1291 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:92",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:28",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:78",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:138",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:169",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:180"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "NestedObjects",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:92",
+    "quote": "<action>Replace obsolete NestedObjects/graph-certification/traceback and always-call-Model.delete claims with the approved implemented contracts, per D-05\u2013D-08/D-14/D-15. Document public pro\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/admin/utils.py:186 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:92",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:63"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "PROTECT",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:98",
+    "quote": "- A real registered core route with native CASCADE/PROTECT and one unknown SET relationship renders safe details and an incomplete notice without executing factories.",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:34 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:98",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:89",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:71",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:151"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "PolymorphicModel.delete",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:115",
+    "quote": "- Confirmed Car deletion invokes real PolymorphicModel.delete once with chosen using, removes intended child/parent rows, and preserves signal origin.",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/polymorphic/models.py:244 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:115",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:31",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:78"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "ProtectedError",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:94",
+    "quote": "\u2026ths set a sticky flag before invocation. Never aggregate unknown ProtectedError into a package marker. Catch the marker only after atomic unwind; no catch may enclose actual SQL/signal execu\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:10 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:29",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:149"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "Publisher",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:107",
+    "quote": "\u2026TEST.MIRROR. Add transaction=True multi-db tests using colliding Publisher PKs, protector on only one alias, distinct child labels and explicit router observations. Extend/fix the delete-sco\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "tests/test1/app/models.py:27 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:107"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "RESTRICT",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:27",
+    "quote": "- \"DEL-02/adjacency: Cycles and diamond graphs terminate and count each same-model same-alias PK once; RESTRICT rows already in the native cascade closure do not block.\"",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:47 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:27",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:108",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:89",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:98",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:92",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:72",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:84",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:110",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:145",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:152",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:222",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:273"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "RelatedObjects",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+    "quote": "\u2026-04/D-12/D-14. Add the new deletion.py module and move/re-export RelatedObjects without changing its tuple shape. Implement real metadata reads for the tracer's native root/CASCADE/PROTECT g\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:33 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:106",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:109",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:22",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:37",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:90"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "SET",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:98",
+    "quote": "- A real registered core route with native CASCADE/PROTECT and one unknown SET relationship renders safe details and an incomplete notice without executing factories.",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:52 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:98",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:120",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:108",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:112",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:16",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:74",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:82",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:154"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "SET_DEFAULT",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:120",
+    "quote": "- SET callable, SET_DEFAULT factory, custom on_delete, custom model delete and private bulk handler are never called by real GET, invalid confirmation or custom-protected POST.",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:76 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:120",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:74",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:154"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "SET_NULL",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:73",
+    "quote": "| Native SET_NULL / DO_NOTHING | No deletion traversal and no handler invocation |",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:69 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:73",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:154"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "STRICT_HELPER_POLICY",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:44",
+    "quote": "via: \"Immutable STRICT_HELPER_POLICY remains the helper authority and manage exposes a detached dict copy\"",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views_guardian/lib/viewset.py:11 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:44",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:100",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:48",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:206"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "TypeError",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:170",
+    "quote": "a method and catch TypeError to infer compatibility. An opaque callable whose signature cannot be inspected raises",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Python built-in/dynamic field or call parameter; no JS intel representation; no absence claim. (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:170"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "ValueError",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:96",
+    "quote": "- All three helpers raise ValueError with invalid key and sorted actual valid alternatives for active and inactive users, before Guardian calls or permission row changes.",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Python built-in/dynamic field or call parameter; no JS intel representation; no absence claim. (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:96",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:101",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:110",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:209"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "Vehicle",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:119",
+    "quote": "\u2026g the actual bound delete method where needed. Verify actual Car/Vehicle rows, related cascades, origin, using, hook order and commit outcome. Keep PolymorphicModel.delete on the custom exec\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "tests/test1/app/models.py:168 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:119"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "ViewSet",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:87",
+    "quote": "\u2026t a second optional field beside a model/PK-only primary. Public ViewSet URL keys remain unchanged; the request pins its trusted write alias after authorization. The detector also matched ge\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/viewset/__init__.py:47 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:87",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:25",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:250"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "_DeleteCollector",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:94",
+    "quote": "<action>Finish the version-audited _DeleteCollector adaptation in DESIGN, preserving native collection structures and inherited SQL execution. Compare the installed 4.2/6.0 source and offici\u2026",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:139",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:144"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "_DeleteInspector",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+    "quote": "\u2026dary`, `DeletePreviewContribution`, `DeleteInspection`; private `_DeleteInspector`, `_DeleteCollector`, `_NativeDeleteBlocked`; functions `inspect_deletion`, `merge_delete_preview`, `execute\u2026",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "_NativeDeleteBlocked",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:39",
+    "quote": "via: \"Only _NativeDeleteBlocked crosses atomic unwind into post's friendly protection response\"",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:39",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:158"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "_PermittedPks",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:130",
+    "quote": "<action>Implement alias-aware _PermittedPks and tree/protected projection, retaining Guardian content-type/bare-codename semantics and per-view global fallback. Pass the candidate object's d\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views_guardian/lib/views.py:59 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:130",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:25"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "_resolve_permission_key",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:100",
+    "quote": "<action>Per D-09\u2013D-11/D-13, add _resolve_permission_key and invoke it before inactive shortcut, queryset access and assign/remove. Use self.permissions actual keys, not a hardcoded CRUD list\u2026",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:100",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:48",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:208"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "_state.db",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:103",
+    "quote": "- Instance-aware write router wins over loaded _state.db; explicit cv_get_db_alias override runs once even after deletion clears PK.",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/base.py:472 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:107",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:180"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "bulk_related_objects",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:77",
+    "quote": "| Generic/private bulk relation | Record boundary without invoking bulk_related_objects; safe provider may describe it |",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/contenttypes/fields.py:537 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:77"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "collect_related",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:75",
+    "quote": "\u2026nt dependency without following cached descriptors; match native collect_related=False recursion |\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:250 (Collector.collect parameter) (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:75"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "connection.in_atomic_block",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:116",
+    "quote": "\u2026 side-effect rows and record independent Python event lists plus connection.in_atomic_block. Keep real preview enabled in callback-safety cases. Use a custom callback that writes then raises\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/backends/base/base.py:71 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:116"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "custom_callback_entered",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:156",
+    "quote": "any such executable extension set a collector-wide sticky `custom_callback_entered` flag. Recursive custom",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:156"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_alert",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:132",
+    "quote": "<action>Implement DESIGN notice text through existing translated cv_alert calls. Keep the incomplete notice outside the branch that displays custom protection so D-03/D-12 combinations canno\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/templatetags/crud_views.py:402 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:132",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:131"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_atomic",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:22",
+    "quote": "- \"D-15: Actual transaction tests prove rollback with cv_atomic=True and committed side effects with cv_atomic=False, while external callback events remain visible in both.\"",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/resource.py:153; src/crud_views/lib/view/base.py:83 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:22",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:112",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:183",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:233"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_filter_related_objects",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:53",
+    "quote": "via: \"cv_get_delete_preview contributions merge before cv_filter_related_objects; raw blocker and completeness remain separate\"",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:275; src/crud_views_guardian/lib/views.py:48 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:53"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_form_valid",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:48",
+    "quote": "via: \"get_context_data calls inspect_deletion; cv_form_valid calls execute_deletion on the pinned alias\"",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:365 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:48",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:23"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_form_valid_hook",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:113",
+    "quote": "- Custom model, pre/post-delete signal, cv_form_valid_hook and on_commit failures propagate; post-commit failure leaves deletion committed.",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/mixins.py:79 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:162"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_form_valid_process",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:23",
+    "quote": "context, protection response, POST and `cv_form_valid`. `CrudViewProcessFormMixin.cv_form_valid_process` orders",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/mixins.py:48 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:23",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:184"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_get_atomic",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:104",
+    "quote": "- Inspection, custom delete(using), atomic entry and on_commit share the pinned alias, including a cooperative cv_get_atomic override.",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/view/base.py:237 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:104",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:183",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:185"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_get_db_alias",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:103",
+    "quote": "- Instance-aware write router wins over loaded _state.db; explicit cv_get_db_alias override runs once even after deletion clears PK.",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/view/base.py:233 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:24",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:177",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:179"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_get_delete_db_alias",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:44",
+    "quote": "via: \"cv_get_delete_db_alias pins using for inspection, atomic/write/on_commit and candidate-alias permission projection\"",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:44",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:176",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:186"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_get_delete_preview",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:53",
+    "quote": "via: \"cv_get_delete_preview contributions merge before cv_filter_related_objects; raw blocker and completeness remain separate\"",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:53",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:96"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_get_related_objects",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:124",
+    "quote": "\u2026e as errors. Replace old call-count tests that expect the unsafe cv_get_related_objects override or no-instance router with the approved inspector/provider contracts, preserving their meanin\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:206 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:124",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:22",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:115"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "cv_show_related_objects",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:123",
+    "quote": "unresolved boundaries. Only when `cv_show_related_objects` is true, provide the existing filtered preview keys.",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:161 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:123"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "deconstruct",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:65",
+    "quote": "use identity, never application-defined equality/deconstruct. Exact ForeignKey/OneToOne metadata is supported;",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:65 (SET closure attribute) (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:65",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:74"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "delete_preview_incomplete",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:122",
+    "quote": "Always provide `has_protected_objects` from native plus provider blockers and `delete_preview_incomplete` from",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:122"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "execute_deletion",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:48",
+    "quote": "via: \"get_context_data calls inspect_deletion; cv_form_valid calls execute_deletion on the pinned alias\"",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:48",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:137"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "fail_on_restricted",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:151",
+    "quote": "1. Native CASCADE recurses directly with fail_on_restricted=False; native PROTECT materializes the queried blockers",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:254 (Collector.collect parameter) (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:151"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "get_context_data",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:48",
+    "quote": "via: \"get_context_data calls inspect_deletion; cv_form_valid calls execute_deletion on the pinned alias\"",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:304 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:48"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "has_protected_objects",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:122",
+    "quote": "Always provide `has_protected_objects` from native plus provider blockers and `delete_preview_incomplete` from",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:309 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:122"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "hashlib.sha256",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:85",
+    "quote": "\u2026 in a and \"reviewer:\" in a and \"reviewed_revision:\" in a; assert hashlib.sha256((p/\"06.3-DESIGN.md\").read_bytes()).hexdigest() in a'</automated>\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Python standard-library hashlib; runtime extension export, not indexed by JS-only intel (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md:85"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "inspect_deletion",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:48",
+    "quote": "via: \"get_context_data calls inspect_deletion; cv_form_valid calls execute_deletion on the pinned alias\"",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:48",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:62"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "keep_parents",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:119",
+    "quote": "\u2026DESIGN and D-12/D-14/D-15. The API calls ordinary delete without keep_parents; do not introduce an upcasting feature. Exercise a subclass override that fails and a compatible safe-preview co\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:253 (Collector.collect parameter) (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:145"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "lazy_sub_objs",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:74",
+    "quote": "| Any SET closure, SET_DEFAULT, unknown handler | Record boundary even for an empty relationship; never call handler, lazy_sub_objs, deconstruct or default factory |",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:63 (SET closure attribute) (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:74"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "merge_delete_preview",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42",
+    "quote": "\u2026llector`, `_NativeDeleteBlocked`; functions `inspect_deletion`, `merge_delete_preview`, `execute_deletion` |\u2026",
+    "verdict": "SKIPPED \u2014 proposed API",
+    "evidence": "DESIGN:42\u201348, 90\u2013110, 156; not an existing-source assertion.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:42"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "model_validate",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:120",
+    "quote": "\u2026action>Review the exact D-16 residual scope: removed constructor/model_validate key; inherited/mixed view flags; strict-helper independence; object/group/active-superuser/inactive cases; man\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/pydantic/main.py:747 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:120",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:214"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "on_commit",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:99",
+    "quote": "- GET, invalid POST and custom-protected POST emit zero callback events; removing the blocker and confirming executes the actual deletion and on_commit once.",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/transaction.py:129; .nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/backends/base/base.py:727 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:99",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:103",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:116",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:24",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:44",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:104",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:24",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:162",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:174",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:184"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "origin",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:100",
+    "quote": "- Native root/cascade success retains signal origin, row deletion and full-page/modal response contracts.",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/deletion.py:97 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:100",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:124",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:81",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:92",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:95",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:106",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:115",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:123",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:147",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:30",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:50",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:139",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:140",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:193",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:258"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "post",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:39",
+    "quote": "via: \"Only _NativeDeleteBlocked crosses atomic unwind into post's friendly protection response\"",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:331; src/crud_views/lib/views/action.py:16 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:39",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:113",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:120",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:163"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "router.db_for_write",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:107",
+    "quote": "\u2026ESIGN: selector once after authorized target resolution, default router.db_for_write(type(target), instance=target), alias validation, all reads/writes/commit registration use cached using. \u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/utils.py:220 (generated router method) (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:107",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:179"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "self.permissions",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:100",
+    "quote": "\u2026before inactive shortcut, queryset access and assign/remove. Use self.permissions actual keys, not a hardcoded CRUD list; return the configured permission unchanged. Freeze STRICT_HELPER_POL\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/viewset/__init__.py:473 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md:100"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "test_filter_form_baseline",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86",
+    "quote": "\u2026 tests/test1 --deselect tests/test1/test_form_buttons_golden.py::test_filter_form_baseline -q -p no:cacheprovider || exit $?; done && .venv/bin/python -m nox -r --no-install -s \"tests-3.12(d\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "tests/test1/test_form_buttons_golden.py:266 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:86"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "transaction",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:22",
+    "quote": "- \"D-15: Actual transaction tests prove rollback with cv_atomic=True and committed side effects with cv_atomic=False, while external callback events remain visible in both.\"",
+    "verdict": "UNCHECKABLE",
+    "evidence": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/transaction.py:1 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:22",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:112",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:116",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:143",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:24",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:107",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:50",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:164",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:233"
+    ]
+  },
+  {
+    "kind": "symbol",
+    "symbol": "using",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+    "quote": "\u2026dlers to classify them. Preserve custom bound deletion once with using, propagating failures; exact Model.delete uses the adapter. Keep unexpected loader/provider errors outside translation.\u2026",
+    "verdict": "UNCHECKABLE",
+    "evidence": "src/crud_views/lib/views/delete.py:212; .nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/query.py:1851 (supplementary direct-source evidence only; Python declaration/signature unsupported by effective intel)",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    },
+    "all_references": [
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:102",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:124",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:108",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:133",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md:94",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:44",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:104",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:107",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:115",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:119",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md:147",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md:110",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md:83",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:43",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:62",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:64",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:75",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:80",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:96",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:101",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:107",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:137",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:139",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:141",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:169",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:191",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:195",
+      ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md:334"
+    ]
+  }
+]

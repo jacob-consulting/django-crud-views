@@ -1,0 +1,202 @@
+{
+  "Pillow_import_spec": {
+    ".venv/bin/python": {
+      "returncode": 0,
+      "stdout": "None",
+      "stderr": ""
+    },
+    ".nox/crispy_floor-3-12-django-4-2/bin/python": {
+      "returncode": 0,
+      "stdout": "None",
+      "stderr": ""
+    },
+    ".nox/tests-3-12-django-5-2/bin/python": {
+      "returncode": 0,
+      "stdout": "None",
+      "stderr": ""
+    },
+    ".nox/crispy_floor-3-12-django-6-0/bin/python": {
+      "returncode": 0,
+      "stdout": "None",
+      "stderr": ""
+    }
+  },
+  "source_sha256": {
+    "src/crud_views/lib/formsets/formsets.py": "b71e383bb1f8d6d13ded8893804655aa2c8c2a7c7cb99439fe0f013a375219bd",
+    "src/crud_views/checks.py": "b3273f8aa6d63ac7f665c970651fdadafd1c48487d15ad1459439fdfaad3587d",
+    "tests/test1/test_conditional_checks.py": "0fb49d753dd4f2b8fa4375ede7b3c7d7274a3a11821dc9889d59d72ffc638a8a",
+    "tests/browser/modal-focus.cjs": "925595ba32db569d02946e932047e96ddb2dd7dd92e6b2cd4287426fa28e48d0",
+    "pyproject.toml": "96234e1ba7ea5f683b9bb6480c22bd89cb4dddac199bedb67879c4f440eb662e",
+    "uv.lock": "800d8edeae14c58b7d4757b948e22d5d7807f9f5d09080db6641dacbb414263f",
+    "noxfile.py": "bbf7d47ca7d27c4f67d7b089dd4720cb2b15db3fdcf21f595fe1729c457664a8",
+    ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/fields.py": "b1273eaa32e6a2e985d30fb34965bb3afc57af27af07cef3a69299612f963eac",
+    ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/fields/files.py": "8e24944a312f413b12b720893328451db0762b5d48b05c7e8d9dfdc6485ebb63"
+  },
+  "key_grammar": "^[a-z\\-]+$",
+  "note": "Read-only source/plan adequacy review; no implementation tests run. Effective authority remains intel UNCHECKABLE; these direct observations are separate.",
+  "reuse": {
+    "prior": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/.review-diagnostics/20261101T095938Z-gsd-review-ey04xax5/gsd-review-direct-evidence.json",
+    "prior_sha256": "8768316b847138df13da0c6f7ba5aa58762989742908822954710fd9a3ed9fcd",
+    "unchanged_source_checks": {
+      "src/crud_views/lib/formsets/formsets.py": true,
+      "src/crud_views/checks.py": true,
+      "tests/test1/test_conditional_checks.py": true,
+      "tests/browser/modal-focus.cjs": true,
+      "pyproject.toml": true,
+      "uv.lock": true,
+      "noxfile.py": true,
+      ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/fields.py": true,
+      ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/fields/files.py": true,
+      ".github/workflows/tests.yml": true,
+      ".github/workflows/js.yml": true,
+      ".planning/phases/06-form-button-leaf/06-JS-RUNTIME.json": true
+    },
+    "note": "Historical dependency probes retained as historical. All supporting source hashes rechecked; no fresh test execution."
+  },
+  "A18_fresh_source_sha256": {
+    ".github/workflows/tests.yml": "5eeb3ff161ffaaa132dd33ef8a4fb60c077de4fb6f7da9d725b9265e9198f0d8",
+    ".github/workflows/js.yml": "c8208fd41e70510fa1b1c9a4322f574e3c23c01d92cd8bbc8e0b5e027c0f3990",
+    "noxfile.py": "bbf7d47ca7d27c4f67d7b089dd4720cb2b15db3fdcf21f595fe1729c457664a8",
+    ".planning/phases/06-form-button-leaf/06-JS-RUNTIME.json": "651e0c8b36938eeab7872bcfb66539124bf6fdefd2f9035616863c820e027aec"
+  },
+  "A18_evidence": [
+    ".github/workflows/tests.yml:18-25",
+    ".github/workflows/js.yml:14-19",
+    "noxfile.py:13-19",
+    ".planning/phases/06-form-button-leaf/06-JS-RUNTIME.json:7",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md:113",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-10-PLAN.md:96"
+  ],
+  "A18_current_plan_evidence": [
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md:113",
+      "quote": "  <behavior>The explicitly enabled tracer saves only the intended Profile; wrong-row mutation or failure to run the Node subprocess fails the test. Manifest/default and CV_FOCUS_NODE selection are covered; invalid overrides and missing runtimes fail clearly without skips once enabled. Without CV_CONDITIONAL_TRACER=1, ordinary Python tests collect and pass with Node absent and the tracer uncollected. Unprefixed single forms still work. Ambiguous groups retain their prior local visibility/control state, emit a diagnostic and leave unrelated groups functional. Initializer includes a supplied group root and retries a late checkbox without duplicate change handlers.</behavior>",
+      "source_sha256": "d3cdb18bf387b1b32a35fdaff021aa5675e84ce8036dbb89472351229de0c606"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md:116",
+      "quote": "Addresses review A18 (L637@cfb0031): use CV_CONDITIONAL_TRACER=1 as the exact opt-in. Set only test_tracer_rendered_conditional_round_trip.__test__ from that environment comparison; with the variable absent or another value pytest must not collect that function, while all ordinary layout tests remain collected. Keep the helper definition and inline script inert at import: no manifest reads, executable discovery, --version probes, jsdom loads or subprocesses until the opted-in case runs. Do not use skip/skipif/importorskip, runtime-availability auto-selection, or a module-wide collection exclusion. Add a normal Python-only regression in this same module that imports a fresh copy with opt-in absent, asserts the tracer's __test__ is false and ordinary tests remain discoverable, and spies against manifest reads/runtime probes. Preserve the A17 precedence and hard failures inside the enabled tracer. Record actual runtime provenance through pytest record_property using tracer_node_path, tracer_node_version and tracer_jsdom_version for plan10's JUnit evidence checks. The exact-node enabled verify command must select and pass the real tracer; the disabled verify command clears both CV_CONDITIONAL_TRACER and CV_FOCUS_NODE and empties PATH. Plan10 additionally records an enabled missing-runtime failure control and requires this tracer's passed case for each Django series; default CI omission cannot count as phase acceptance.</action>",
+      "source_sha256": "d3cdb18bf387b1b32a35fdaff021aa5675e84ce8036dbb89472351229de0c606"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md:119",
+      "quote": "    <automated>CV_CONDITIONAL_TRACER=1 PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_conditional_layout.py::test_tracer_rendered_conditional_round_trip -q -p no:cacheprovider</automated>",
+      "source_sha256": "d3cdb18bf387b1b32a35fdaff021aa5675e84ce8036dbb89472351229de0c606"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md:121",
+      "quote": "    <automated>env -u CV_CONDITIONAL_TRACER -u CV_FOCUS_NODE PATH= PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_conditional_layout.py -q -p no:cacheprovider</automated>",
+      "source_sha256": "d3cdb18bf387b1b32a35fdaff021aa5675e84ce8036dbb89472351229de0c606"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md:137",
+      "quote": "    <automated>CV_CONDITIONAL_TRACER=1 PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_conditional_formset.py tests/test1/test_conditional_layout.py -q -p no:cacheprovider</automated>",
+      "source_sha256": "d3cdb18bf387b1b32a35fdaff021aa5675e84ce8036dbb89472351229de0c606"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-10-PLAN.md:99",
+      "quote": "Addresses A18 (L637@cfb0031): use the concrete enabled, disabled and missing-runtime command forms in VALIDATION for each of the three named interpreters. For enabled focused/full runs explicitly set CV_CONDITIONAL_TRACER=1, preserve CV_FOCUS_NODE overrides and require tests/test1/test_conditional_layout.py::test_tracer_rendered_conditional_round_trip as passed in each series' JUnit case records. A green aggregate alone is insufficient: missing case, zero selected, skip, error or failure fails acceptance. Record the resolved Node path/version and jsdom version from the actual tracer as JUnit testcase properties, and require them in --check. Produce one additional ordinary full Python suite per series with CV_CONDITIONAL_TRACER and CV_FOCUS_NODE removed from the subprocess environment and PATH empty; call the cached Python directly, apply only the same exact existing CSP/golden exclusions and assert shutil.which('node') and shutil.which('npm') are None under that environment. Record these environment facts and full-suite JUnit evidence, require nonzero passing ordinary tests and no tracer testcase (including no skipped tracer). This proves normal collection needs neither the manifest's machine-specific executable nor npm setup; do not mutate global environment, manifests, CI or nox. Include an enabled negative-control subprocess selecting the exact tracer node ID with CV_FOCUS_NODE set to a guaranteed nonexistent path inside a temporary directory. For each series require nonzero exit, the tracer recorded as failed with that selected-path diagnostic, zero skips and no fallback; zero collection or setup/collection error does not prove runtime handling. Label this expected-failure control separately from required green suites. Capture JUnit in memory via temporary files and normalize it into the already owned results.json; no new tracked artifact is needed. --check must require all three route records per series, verify the enabled runtime provenance and the disabled environment assertions, and reject missing/forged/contradictory route outcomes.</action>",
+      "source_sha256": "d56f41c27d4675a50c8a221d610b770d276d8823d97334b49c764813b06dbd3e"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-10-PLAN.md:100",
+      "quote": "  <acceptance_criteria>All three cached series and required JS/docs/lint/browser checks produce nonempty passing evidence on the same source. Each series includes a passed enabled tracer with runtime provenance, a failed exact-node missing-runtime control and a passing ordinary full suite with opt-in absent/Node unavailable/tracer uncollected. Known exclusions are explicit; no new required behavior is skipped. Checker rejects missing, skipped, failed or zero-selected required tracer evidence and all deliberate evidence corruption controls. MATRIX reports actual versions/scope rather than an unrun full Python matrix.</acceptance_criteria>",
+      "source_sha256": "d56f41c27d4675a50c8a221d610b770d276d8823d97334b49c764813b06dbd3e"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md:113",
+      "quote": "Plan10 runs these commands for **each** of the existing three cached Python interpreters named above. The",
+      "source_sha256": "2946ed6b1968f5bd00057bb11efaef0e40a1d1073375a632cb1265d4b85429b3"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md:122",
+      "quote": "| Enabled full acceptance | `CV_CONDITIONAL_TRACER=1 PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests -q -p no:cacheprovider` | Exit zero and exact tracer node ID passed, with selected Node path/version and jsdom version; no skipped/failed/missing tracer. Focused acceptance likewise sets the opt-in and requires that passed case. |",
+      "source_sha256": "2946ed6b1968f5bd00057bb11efaef0e40a1d1073375a632cb1265d4b85429b3"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md:123",
+      "quote": "| Ordinary full Python suite | `env -u CV_CONDITIONAL_TRACER -u CV_FOCUS_NODE PATH= PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests -q -p no:cacheprovider` | Exit zero, nonempty ordinary passing cases, both variables absent, empty PATH, node/npm undiscoverable, and no tracer case (including no skipped tracer). |",
+      "source_sha256": "2946ed6b1968f5bd00057bb11efaef0e40a1d1073375a632cb1265d4b85429b3"
+    },
+    {
+      "location": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md:124",
+      "quote": "| Enabled missing-runtime control | `CV_CONDITIONAL_TRACER=1 CV_FOCUS_NODE=\"$CV_PHASE_MISSING_NODE\" PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_conditional_layout.py::test_tracer_rendered_conditional_round_trip -q -p no:cacheprovider` | Expected nonzero exit and exact tracer failed with the selected nonexistent path diagnostic, zero skips and no fallback. Zero selection or collection/setup failure is not valid control evidence. |",
+      "source_sha256": "2946ed6b1968f5bd00057bb11efaef0e40a1d1073375a632cb1265d4b85429b3"
+    }
+  ],
+  "A18_pytest_source_evidence": [
+    {
+      "series": "4.2",
+      "location": ".nox/crispy_floor-3-12-django-4-2/lib/python3.12/site-packages/_pytest/python.py:264",
+      "quote": "        elif getattr(obj, \"__test__\", True):",
+      "source_sha256": "9553fbb38363c987f59b1de522142a9dc0e9f6191cd1f173a6bee21140d4c887"
+    },
+    {
+      "series": "4.2",
+      "location": ".nox/crispy_floor-3-12-django-4-2/lib/python3.12/site-packages/_pytest/junitxml.py:322",
+      "quote": "def record_property(request: FixtureRequest) -> Callable[[str, object], None]:",
+      "source_sha256": "3f3b32bac64d387060d513844db6b70b1b43c5391bfe0cc819cf062d55bc4966"
+    },
+    {
+      "series": "5.2",
+      "location": ".nox/tests-3-12-django-5-2/lib/python3.12/site-packages/_pytest/python.py:264",
+      "quote": "        elif getattr(obj, \"__test__\", True):",
+      "source_sha256": "9553fbb38363c987f59b1de522142a9dc0e9f6191cd1f173a6bee21140d4c887"
+    },
+    {
+      "series": "5.2",
+      "location": ".nox/tests-3-12-django-5-2/lib/python3.12/site-packages/_pytest/junitxml.py:322",
+      "quote": "def record_property(request: FixtureRequest) -> Callable[[str, object], None]:",
+      "source_sha256": "3f3b32bac64d387060d513844db6b70b1b43c5391bfe0cc819cf062d55bc4966"
+    },
+    {
+      "series": "6.0",
+      "location": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/_pytest/python.py:264",
+      "quote": "        elif getattr(obj, \"__test__\", True):",
+      "source_sha256": "9553fbb38363c987f59b1de522142a9dc0e9f6191cd1f173a6bee21140d4c887"
+    },
+    {
+      "series": "6.0",
+      "location": ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/_pytest/junitxml.py:322",
+      "quote": "def record_property(request: FixtureRequest) -> Callable[[str, object], None]:",
+      "source_sha256": "3f3b32bac64d387060d513844db6b70b1b43c5391bfe0cc819cf062d55bc4966"
+    }
+  ],
+  "fresh_note_source_evidence": {
+    "src/crud_views/static/crud_views/js/formset.js": {
+      "sha256": "e7375887e60f9314d47fe6aaeda70e21d084fb8ebb52aa1d6d9c89dce50a2479",
+      "quoted_spans": [
+        {
+          "start": 478,
+          "end": 488,
+          "quote": "            let reorder_success = null;\n            try {\n                reorder_success = this.reorder_formsets();\n            } catch (error) {\n                console.error(\"error\", error.message);\n                reorder_success = false;\n            }\n            if (!reorder_success) {\n                event.preventDefault();\n                return false;\n            }"
+        }
+      ]
+    },
+    "src/crud_views/static/crud_views/js/modal.js": {
+      "sha256": "1b47bdd0bf0d5130e4a1ada0b0a51880cc24ae7be6cea8f29e976ef24c8fd5c0",
+      "quoted_spans": [
+        {
+          "start": 227,
+          "end": 233,
+          "quote": "document.addEventListener(\"submit\", function (event) {\n    if (!(event.target instanceof Element) || !event.target.closest(\"#\" + CVModalConst.content)) {\n        return;\n    }\n    event.preventDefault();\n    cvModalSubmit(event.target, event.submitter);\n});"
+        }
+      ]
+    },
+    "src/crud_views/lib/conditional/group.py": {
+      "sha256": "988081692a81d92f74cf05deea0300c6d8143e534e8227cb41bfdf78fdcbba96",
+      "quoted_spans": [
+        {
+          "start": 10,
+          "end": 15,
+          "quote": "class ConditionalGroup:\n    \"\"\"A group of form fields governed by a single boolean toggle.\n\n    When the toggle is on, ``required`` fields are enforced. When off, every\n    field in the group is cleared to its empty value and never validated.\n    \"\"\""
+        },
+        {
+          "start": 40,
+          "end": 46,
+          "quote": "class ConditionalGroupFormMixin:\n    \"\"\"Server-side authority for conditional field-groups.\n\n    Mix in *before* the concrete Form/ModelForm. JS is irrelevant to the\n    outcome: an off group is always cleared, an on group always enforces its\n    required fields, regardless of what the client submitted.\n    \"\"\""
+        }
+      ]
+    }
+  }
+}

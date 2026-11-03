@@ -1,0 +1,18 @@
+{% load crud_views_object_detail %}
+{% if group %}
+<section class="native-group" id="{{ presentation.panel_id }}" data-root="{{ component.id }}" data-group-id="{{ group.id }}">
+    <h2 id="{{ presentation.control_id }}">{{ group.title }}</h2>
+    <dl>
+        {% for prop in group.properties %}
+        <dt>{{ prop.label }}</dt>
+        <dd data-original-path="{{ prop.path }}" data-original-value="{{ prop.value }}">{% render_property_value prop %}</dd>
+        {% endfor %}
+    </dl>
+</section>
+{% else %}
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Native presentation</title></head>
+<body><main>
+    {% render_object_detail object object_detail_groups layout="native" component_id=object_detail_id %}
+</main></body></html>
+{% endif %}

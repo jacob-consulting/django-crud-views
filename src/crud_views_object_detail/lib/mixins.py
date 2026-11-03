@@ -26,6 +26,13 @@ class ObjectDetailMixin:
     #: Falls back to ``CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT`` when None.
     cv_object_detail_layout: str | None = None
 
+    #: Stable component token; applications own uniqueness across independent responses.
+    cv_object_detail_id: str | None = None
+
+    def cv_get_object_detail_id(self) -> str | None:
+        """Return the component token; override to choose a namespace using self.request."""
+        return self.cv_object_detail_id
+
     @property
     def property_display(self):
         return self.cv_property_display
@@ -48,6 +55,7 @@ class ObjectDetailMixin:
             instance = self.get_object_for_detail()
             context["object_detail_groups"] = resolve_all(instance, groups, view=self)
         context["object_detail_layout"] = self.cv_object_detail_layout
+        context["object_detail_id"] = self.cv_get_object_detail_id()
         return context
 
     @classmethod

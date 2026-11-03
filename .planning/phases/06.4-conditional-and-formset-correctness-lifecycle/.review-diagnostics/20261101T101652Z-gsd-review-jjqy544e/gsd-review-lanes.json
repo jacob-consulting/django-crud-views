@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "fable-review",
+    "ok": false,
+    "reason": "malformed_lane",
+    "detail": "no such declared lane"
+  },
+  {
+    "slug": "grok-review",
+    "ok": false,
+    "reason": "malformed_lane",
+    "detail": "no such declared lane"
+  },
+  {
+    "slug": "gemini-review",
+    "ok": false,
+    "reason": "malformed_lane",
+    "detail": "no such declared lane"
+  }
+]

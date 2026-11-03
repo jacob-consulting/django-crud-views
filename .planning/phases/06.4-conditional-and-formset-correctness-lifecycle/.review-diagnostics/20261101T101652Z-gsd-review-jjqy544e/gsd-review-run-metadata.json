@@ -1,0 +1,37 @@
+{
+  "phase": "06.4",
+  "cycle": 4,
+  "reviewed_at": "2026-11-01T10:16:52.963784+00:00",
+  "git_head": "83c4f35504350afa6c5bffc423f4a5a56b9cfb02",
+  "selected_reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "selection": "review.default_reviewers; no explicit flags",
+  "parallel_lanes": true,
+  "successful_reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "failed_reviewers": [],
+  "retries": 0,
+  "grounding_authority": "intel",
+  "configured_authority": "grep",
+  "current_high": 0,
+  "current_actionable": 0,
+  "plan_hashes": {
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md": "d3cdb18bf387b1b32a35fdaff021aa5675e84ce8036dbb89472351229de0c606",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-02-PLAN.md": "df85df2554256ddb43185559707e126745fd90fece3be5d1f8bb2cd7037bab60",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-03-PLAN.md": "ef250a39c28284247cf9e242f7ed4dcb22b9b06bea6cb9031c0c75af10e99eb3",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-04-PLAN.md": "4856b64a04dfdf9a2c6532686eba3914b5e4266129bac8cab48d5b8b153e5564",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-05-PLAN.md": "2b5406e620fb5f97d7989b6a04759fcf4b0ce846ceab7886241e57dadbbf313e",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-06-PLAN.md": "282d5e21819d358c5aea769ffa6125b645cab3f1eeb7ad79289123f147fea6e4",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-07-PLAN.md": "27b89467453b1a3de53e67ed72c95bbc037a403842c451b0259b6fd27ee35bc1",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-08-PLAN.md": "8002cc7bff49b8068523cbdfd118fec1be1c8df5af2f53485ccaec894a458e55",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-09-PLAN.md": "add36a183b52247e8a26cc96ca4c3421d81b0d7ed1af1a4855701f061d325b09",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-10-PLAN.md": "d56f41c27d4675a50c8a221d610b770d276d8823d97334b49c764813b06dbd3e"
+  },
+  "prompt_note": "Full current plans and prior consolidated findings/dispositions included. Explicit A18 closure and fresh correctness review requested; prior H1-H3 closures preserved unless regression."
+}

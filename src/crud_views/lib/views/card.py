@@ -45,11 +45,9 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
 
     def cv_get_card_action_data(self, action: CardAction, obj, user) -> dict:
         """Unresolved button data for one card action (#149, #174); the cv_card_action tag and the menu share it."""
-        # resolved once for both branches: action mode, no_label, own instance choice, then class resolver (#213)
+        # resolved once for both branches: action mode, own instance choice, then class resolver (#213)
         if action.label_mode is not None:
             label_mode = action.label_mode
-        elif action.no_label:
-            label_mode = "icon"
         elif "cv_card_actions_label_mode" in vars(self):
             label_mode = self.cv_card_actions_label_mode
             if label_mode is None:

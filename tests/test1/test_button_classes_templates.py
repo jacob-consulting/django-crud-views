@@ -129,7 +129,11 @@ def test_card_order_and_language_from_table(client):
 # structural keys whose value selects markup rather than classes (Phase 6.1): a valid value, never a CSS sentinel, so
 # the strict render of a cancel stays valid; they are left out of SENTINELS, which only holds CSS sentinels
 STRUCTURAL_VALUES = {"form:cancel-tag": "button"}
-SENTINEL_CLASSES = {key: STRUCTURAL_VALUES.get(key, "x-" + key.replace(":", "-")) for key in DEFAULT_BUTTON_CLASSES}
+SENTINEL_CLASSES = {
+    key: STRUCTURAL_VALUES.get(key, "x-" + key.replace(":", "-"))
+    for key in DEFAULT_BUTTON_CLASSES
+    if key.split(":", 1)[0] not in {"heading", "heading-page", "heading-modal", "heading-group"}
+}
 SENTINELS = frozenset(value for key, value in SENTINEL_CLASSES.items() if key not in STRUCTURAL_VALUES)
 # Bootstrap tokens the chain still carries because they are behaviour hooks, not looks. #232 is the list to empty.
 BEHAVIOUR_TOKENS = {
@@ -157,6 +161,33 @@ def _offenders(doc) -> list[tuple[str, str]]:
                     continue
                 found.add((node.tag, token))
     return sorted(found)
+
+
+def test_button_sentinels_exclude_only_heading_namespaces():
+    heading_keys = {
+        key
+        for key in DEFAULT_BUTTON_CLASSES
+        if key.split(":", 1)[0] in {"heading", "heading-page", "heading-modal", "heading-group"}
+    }
+    assert set(SENTINEL_CLASSES) == set(DEFAULT_BUTTON_CLASSES) - heading_keys
+    assert heading_keys
+    assert all(SENTINEL_CLASSES[key] == value for key, value in STRUCTURAL_VALUES.items())
+
+
+def test_button_guard_accepts_heading_utilities_and_detects_button_and_label_leaks():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):
+        title = Template(
+            '{% load crud_views %}{% cv_heading "header" level=1 size=3 class="mb-0" %}Title{% endcv_heading %}'
+        ).render(Context())
+        leaf = render_to_string(FORM_LEAF, cv_button_data(_form_contract("submit", "both"), "form"))
+    doc = html.fromstring(f"<div>{title}{leaf}</div>")
+    assert _styled(doc)
+    assert _offenders(doc) == []
+    (button,) = doc.cssselect("button")
+    (label,) = button.cssselect("span")
+    button.set("class", button.get("class") + " mt-4")
+    label.set("class", (label.get("class") or "") + " ps-4")
+    assert _offenders(doc) == [("button", "mt-4"), ("span", "ps-4")]
 
 
 def _leaf_contract(location: str, mode: str) -> dict:

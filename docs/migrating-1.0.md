@@ -44,7 +44,7 @@ Two removals raise at runtime instead, the first time the page renders:
 
 - `TypeError` from a `cv_get_context()` override with the old signature: see
   [Views and Python code](#views-and-python-code).
-- `ValueError: cv_no_label is no longer a leaf input`: see [Views and Python code](#views-and-python-code).
+- A validation error for removed `CardAction.no_label`: see [Removed card label keyword](#removed-card-label-keyword).
 
 A `GuardianViewSet(..., cv_guardian_accept_global_perms=...)` fails earlier still, with a Pydantic `ValidationError`
 when the module that builds it is imported: see
@@ -137,9 +137,10 @@ The other changes to views:
 
 - **`cv_modal_size`** (`viewset.E250`) takes the tokens `""`, `"sm"`, `"lg"` and `"xl"`: `cv_modal_size = "modal-lg"`
   becomes `cv_modal_size = "lg"` ([Modals](reference/modals.md)).
-- **If anything puts `cv_no_label` into a button's context** (a `cv_get_context()` override, a dict passed to
-  `{% cv_render_button %}`, or a `cv_no_label` variable in the page's template context): it raises `ValueError`.
-  Use `cv_label_mode` (`"label"`, `"icon"` or `"both"`) instead. `CardAction(no_label=True)` keeps working.
+- **Remove obsolete `cv_no_label` template context** from overrides and use `cv_label_mode`
+  (`"label"`, `"icon"` or `"both"`). Stray legacy context is harmless and unprojected; the obsolete guard is gone.
+  Python `CardAction.no_label` is rejected on presence, including `False`; see the
+  [replacement recipe](#removed-card-label-keyword).
 - **Card buttons show their icon next to their label** (#213). To get the 0.29 label-only buttons back on every card
   view of the project, set `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"card": "label"}` in your settings. For one view, set
   `cv_card_actions_label_mode = "label"` on the card view; for one button, `CardAction(label_mode="label")`
@@ -154,7 +155,7 @@ The other changes to views:
   `cv_get_card_actions_label_mode()` resolves class-level defaults and stays callable on the class; calling it
   through an instance still reads class configuration. Read the effective per-action `cv_label_mode` stamped on
   the button context or returned by `cv_get_card_action_data()`. A view that assigns the attribute on a class or
-  instance keeps its choice, including `as_view()` and per-request assignment. `CardAction(no_label=True)` still
+  instance keeps its choice, including `as_view()` and per-request assignment. `CardAction(label_mode="icon")`
   renders icon-only.
 - **`CardAction.variant` defaults to the target view's variant.** A card action pointing at a create view without an
   explicit `variant` now renders `btn-primary`; set `variant="secondary"` to keep the 0.29 look
@@ -169,6 +170,105 @@ The other changes to views:
 - `cv_icon_action` and `cv_icon_header` on your views need no change: a raw CSS class such as
   `"fa-solid fa-truck"` still renders as before. Semantic names (`"detail"`) and `prefix:name` values
   (`"fas:truck"`) work too ([Icon values](reference/icons.md#icon-values)).
+
+## Presentation contracts
+
+### Heading hosts and sizing
+
+Update copied page, modal and group title templates now. Use the executable
+[page and modal recipes](reference/templates.md#page-title-recipe),
+[plain group recipe](reference/icons.md#plain-group-title-recipe) and
+[title-button recipe](reference/icons.md#title-button-recipe). Each calls
+`cv_heading_icon` and consumes `host_class` on the title-bearing element plus
+`inline_html` exactly once. For interactive titles the button owns the host class,
+not the enclosing heading. Empty/disabled icons leave visible text intact.
+
+`cv_heading` keeps semantic heading levels; `size` selects `heading:size-1` through
+`heading:size-6`, independently of the semantic level. Map or suppress these classes
+using the [native heading class table](reference/theme.md#native-heading-class-table).
+Style shared `heading:icon-host` / `heading:icon-inline` slots or their
+`heading-page`, `heading-modal`, and `heading-group` overrides.
+
+The old page `cv_header_icon` body block placement is superseded by the projection:
+override `cv_get_header_icon()` or registry/classes instead. Keep `cv_header` for
+visible-title customization. The **tag** `cv_header_icon` remains callable for standalone
+icon rendering; it is not the host-aware heading recipe. Split-card group icons now
+use heading-group slots; copied `text-default fs-5` styling must move there if desired.
+Intentional markup changes remove nested page heading wrappers, put host icons on titles,
+and render element-library icons once. Redeploy copied templates with these changes.
+
+### Interactive object-detail templates and targets
+
+Replace copied object and group templates together using the executed
+[tabs and accordion recipes](reference/object_detail_layout_packs.md#copied-interactive-templates).
+Use `component.groups` and forward `presentation` / `component` to `render_group`.
+Both triggers and panels read the same `selected` flag; the first tab and panel are active.
+Accordions remain initially collapsed. Keep the stock marker and panel reading/focus stop,
+or follow the reference's theme qualification and verify your own focus sequence.
+
+Old title-slug selectors and fixed accordion root IDs are obsolete. Supply
+`cv_object_detail_id` / `cv_get_object_detail_id()` (or tag `component_id`) and explicit
+group `id` keys, then update links, Selenium selectors and scripts to the
+[length-prefixed formula](reference/object_detail_layout_packs.md#template-projection-and-stable-targets).
+Use the executable [page/modal hook](reference/object_detail_configuration.md#page-and-modal-identity)
+to distinguish actual modal requests; additional instances require distinct tokens.
+Generated IDs intentionally change across renders; explicit group keys preserve targets
+through translation and reordering. Stable IDs do not add fragment-driven activation or persistence.
+
+Applications own unique namespaces for independently fetched modal content and fresh
+backend renders without scope transport whose output is later assembled into one page.
+Includes/inheritance and explicitly transported library rendering still detect collisions;
+see the precise [collision detection boundary](reference/object_detail_layout_packs.md#collision-detection-boundary).
+Redeploy templates and collected/bundled static assets together. The additive semantic badge
+fields do not require a template migration: default Bootstrap output remains unchanged.
+Native themes can use the tested [badge recipe](reference/object_detail_badges.md#native-semantic-badge-template)
+and [minimal native layout](reference/object_detail_layout_packs.md#minimal-native-layout).
+
+### Filtered object-detail assets
+
+The installed object-detail extension registers `crud_views_object_detail/js/tabs.js`.
+Default `cv_sources("js")` (`keys=None`) already includes the registered extension.
+An explicit core-only filter, `keys=["crud_views"]`, omits it. Replace that filter
+with both bundle keys; this does not change pipeline filtering semantics:
+
+```python
+from crud_views.lib.pipeline import cv_sources
+
+sources = cv_sources("js", keys=["crud_views", "crud_views_object_detail"])
+```
+
+Use `sources` as the pipeline package's `source_filenames`; keep it lazy in settings.
+Do not add a duplicate direct script when your bundle already includes it. Load Bootstrap
+before initializing stock tabs. Rebuild/redeploy static bundles along with copied templates.
+
+### Removed card label keyword
+
+Before migration, `CardAction(key="detail", no_label=True)` requested icon-only output.
+That keyword is removed: **every supplied value**, including `False`, `None`, and use
+alongside `label_mode`, now raises a Pydantic validation error naming `label_mode`.
+Omit it to inherit, or choose the supported explicit mode:
+
+```python
+from crud_views.lib.view.card import CardAction
+
+action = CardAction(key="detail", label_mode="icon")
+inherited = CardAction(key="detail")
+```
+
+Before migration, copied leaves read `cv_no_label`. Use `cv_label_mode` in replacement
+leaves; within an existing action context (including its resolved access permission,
+URL, label and icon), forward the mode to the real renderer:
+
+```django
+{% load crud_views %}
+{% with cv_label_mode="icon" %}{% cv_button "card" %}{% endwith %}
+```
+
+A stray legacy template `cv_no_label` variable is ignored, never projected, and no longer
+raises through an obsolete guard. This differs from Python's presence-based rejection.
+The accepted `cv_context_actions_label_mode` and `cv_context_action_label_mode` APIs both
+remain unchanged; their plural/singular names have distinct meanings and are not aliases
+being removed. Existing card/action mode precedence remains intact.
 
 ### JavaScript
 
@@ -978,8 +1078,10 @@ Which template takes the markup:
 | `tags/context_actions.html`, `columns/actions.html` | `tags/button/container.html` (receives `cv_buttons`, `cv_group`, `cv_location`; the element is the `<location>:container-tag` key) |
 
 - **`tags/card_action.html` copies that branch on `cv_no_label`** break silently. The card action context no longer
-  carries `cv_no_label`; it carries `cv_label_mode`. So a copy renders the label on every button, the icon-only ones
-  (`CardAction(no_label=True)`) included. The leaf branches on `cv_label_mode` (`"label"`, `"icon"`, `"both"`)
+  carries `cv_no_label`; it carries `cv_label_mode`. So a copy renders the label on every button, including
+  supported icon-only actions (`CardAction(label_mode="icon")`). Removed Python `no_label` inputs fail validation
+  before rendering; see [Removed card label keyword](#removed-card-label-keyword).
+  The leaf branches on `cv_label_mode` (`"label"`, `"icon"`, `"both"`)
   ([The leaf contract](reference/buttons.md#the-leaf-contract)).
 
 ### Hooks instead of copies

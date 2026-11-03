@@ -1,0 +1,42 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_edit_only_extras_rejected_before_any_save[package-changed-update] ____
+
+policy_routes = namespace(client=<django.test.client.Client object at 0x7ac9f96b7dd0>, routes={True: namespace(vs=ViewSet(policy64ab05...formsets=[], js_data={}, scripts=True))}, family=<class 'tests.test1.test_formsets_policy.PolicyPackageInlineFormSet'>)
+policy_world = namespace(parent=<Publisher: Original>, book=<Book: book>, sibling=<Book: sibling original>, note=<BookNote: original note>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ac9f96b4770>
+operation = 'update', variant = 'changed'
+
+    @pytest.mark.parametrize("operation", ["create", "update"])
+    @pytest.mark.parametrize("variant", ["changed", "deleted", "nested-only"])
+    def test_edit_only_extras_rejected_before_any_save(policy_routes, policy_world, monkeypatch, operation, variant):
+        # Prove the same route/adapter can validate and save before exercising the rejection.
+        url, good = editor(policy_routes, policy_world, operation=operation)
+        good["name"] = "Positive control"
+        assert policy_routes.client.post(url, good).status_code == 302
+        url, payload = editor(policy_routes, policy_world, operation=operation)
+        payload["name"] = "Must not save"
+        pk = policy_world.parent.pk if operation == "update" else "None"
+        index = 1 if operation == "update" else 0
+        prefix = f"books-{pk}-0"
+        if operation == "update":
+            payload[f"{prefix}-0-title"] = "must not edit"
+            payload[f"siblings-{pk}-0-0-title"] = "sibling must not edit"
+            payload[f"books-notes-{pk}-0-0-{policy_world.book.pk}-0-0-note"] = "must not edit note"
+        if variant != "nested-only":
+            payload[f"{prefix}-{index}-title"] = "forged extra"
+        if variant == "deleted":
+            payload[f"{prefix}-{index}-DELETE"] = "on"
+        if variant == "nested-only":
+            payload[f"books-notes-{pk}-0-{index}-None-0-0-note"] = "forged nested extra"
+        saves = observe_saves(monkeypatch)
+        policy = observe_policy(monkeypatch)
+        response = policy_routes.client.post(url, payload)
+>       assert response.status_code == 200
+E       assert 302 == 200
+E        +  where 302 = <HttpResponseRedirect status_code=302, "text/html; charset=utf-8", url="/policy64ab059172f44e11a8b54585c83cbfdf/">.status_code
+
+tests/test1/test_formsets_policy.py:231: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_formsets_policy.py::test_edit_only_extras_rejected_before_any_save[package-changed-update]
+1 failed in 0.82s

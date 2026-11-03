@@ -1,0 +1,63 @@
+✖ browser close rejection still terminates and reaps fixture (64.773246ms)
+✖ browser close timeout still terminates and reaps fixture (97.373878ms)
+✔ successful cleanup retains a passing report (58.449818ms)
+✔ early startup failure retains original failure without resources (1.722138ms)
+✖ browser failure and server timeout retain both errors and reap after SIGKILL (41.207423ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 2
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 324.446599
+
+✖ failing tests:
+
+test at tests/browser/presentation-cleanup.test.cjs:64:5
+✖ browser close rejection still terminates and reaps fixture (64.773246ms)
+  AssertionError [ERR_ASSERTION]: fixture must exit before report is saved
+      at exercise (/home/alex/projects/alex/django-crud-views/.claude/worktrees/rf-06.5-20261102/tests/browser/presentation-cleanup.test.cjs:50:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/.claude/worktrees/rf-06.5-20261102/tests/browser/presentation-cleanup.test.cjs:65:35)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/browser/presentation-cleanup.test.cjs:64:5
+✖ browser close timeout still terminates and reaps fixture (97.373878ms)
+  AssertionError [ERR_ASSERTION]: fixture must exit before report is saved
+      at exercise (/home/alex/projects/alex/django-crud-views/.claude/worktrees/rf-06.5-20261102/tests/browser/presentation-cleanup.test.cjs:50:9)
+      at async TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/.claude/worktrees/rf-06.5-20261102/tests/browser/presentation-cleanup.test.cjs:65:35)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/browser/presentation-cleanup.test.cjs:94:1
+✖ browser failure and server timeout retain both errors and reap after SIGKILL (41.207423ms)
+  AssertionError [ERR_ASSERTION]: fixture must exit before report is saved
+      at exercise (/home/alex/projects/alex/django-crud-views/.claude/worktrees/rf-06.5-20261102/tests/browser/presentation-cleanup.test.cjs:50:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/.claude/worktrees/rf-06.5-20261102/tests/browser/presentation-cleanup.test.cjs:95:31)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="3" time="1.524" timestamp="2026-10-30T13:32:31.994829+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_guardian_policy" name="test_registered_proxy_viewset_uses_concrete_permission_without_key_or_pk_coercion" time="0.599" /><testcase classname="tests.test1.test_guardian_policy" name="test_registered_polymorphic_base_content_type_policy_residual[helper]" time="0.304"><failure message="guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs">tests/test1/test_guardian_policy.py:903: in test_registered_polymorphic_base_content_type_policy_residual
+    result = viewset.get_objects_for_user(user, "view") if path_kind == "helper" else view.get_queryset()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/viewset.py:114: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs</failure></testcase><testcase classname="tests.test1.test_guardian_policy" name="test_registered_polymorphic_base_content_type_policy_residual[list]" time="0.337"><failure message="guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs">tests/test1/test_guardian_policy.py:903: in test_registered_polymorphic_base_content_type_policy_residual
+    result = viewset.get_objects_for_user(user, "view") if path_kind == "helper" else view.get_queryset()
+                                                                                      ^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/mixins.py:193: in get_queryset
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs</failure></testcase></testsuite></testsuites>

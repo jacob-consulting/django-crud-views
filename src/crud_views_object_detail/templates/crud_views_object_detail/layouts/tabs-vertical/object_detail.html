@@ -1,26 +1,28 @@
-{% load crud_views_object_detail %}
-<div class="card">
+{% load crud_views crud_views_object_detail %}
+<div class="card" id="{{ component.id }}">
     <div class="card-body">
         <div class="row">
             <div class="col-md-3">
-                <div class="nav flex-column nav-pills" id="objectDetailTabs" role="tablist" aria-orientation="vertical">
-                    {% for group in groups %}
-                    <button class="nav-link{% if forloop.first %} active{% endif %} text-start"
-                            id="objectDetailTab-{{ group.title|slugify }}"
+                <div class="nav flex-column nav-pills" id="{{ component.tablist_id }}" role="tablist" aria-orientation="vertical" data-cv-od-tabs>
+                    {% for entry in component.groups %}
+                    {% cv_heading_icon entry.group.icon location="group" as icon %}
+                    <button class="nav-link{% if entry.selected %} active{% endif %} text-start{% if icon.host_class %} {{ icon.host_class }}{% endif %}"
+                            id="{{ entry.control_id }}"
                             data-bs-toggle="pill"
-                            data-bs-target="#objectDetailPane-{{ group.title|slugify }}"
+                            data-bs-target="#{{ entry.panel_id }}"
                             type="button" role="tab"
-                            aria-controls="objectDetailPane-{{ group.title|slugify }}"
-                            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
-                        {% if group.icon %}{% cv_icon group.icon css="me-2" %}{% endif %}{{ group.title }}
+                            aria-controls="{{ entry.panel_id }}"
+                            tabindex="{% if entry.selected %}0{% else %}-1{% endif %}"
+                            aria-selected="{% if entry.selected %}true{% else %}false{% endif %}">
+                        {{ icon.inline_html }}{{ entry.group.title }}
                     </button>
                     {% endfor %}
                 </div>
             </div>
             <div class="col-md-9 border-start">
-                <div class="tab-content ps-md-4" id="objectDetailTabContent">
-                    {% for group in groups %}
-                    {% render_group group layout=layout %}
+                <div class="tab-content ps-md-4" id="{{ component.content_id }}">
+                    {% for entry in component.groups %}
+                    {% render_group entry.group layout=layout presentation=entry component=component %}
                     {% endfor %}
                 </div>
             </div>

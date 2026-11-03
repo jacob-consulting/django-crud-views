@@ -6,6 +6,18 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Heading hosts and sizing.** Copied page/modal/group titles must use the heading icon projection and place
+  host classes on the title-bearing heading or button. Sizing now comes from `heading:size-1` through
+  `heading:size-6`; the old separate page icon block is superseded, and split-card icons use heading-group
+  slots instead of hardcoded `text-default fs-5`. See the tested
+  [migration](docs/migrating-1.0.md#heading-hosts-and-sizing).
+- **Interactive object-detail templates and targets.** Copied tabs/accordion templates must consume the shared
+  component/group ID and selection projection. Title-derived IDs are replaced by scoped targets; tabs select
+  the first panel and initialize keyboard behavior through the extension asset. See the tested
+  [migration](docs/migrating-1.0.md#interactive-object-detail-templates-and-targets).
+- **Removed card label keyword.** Any supplied Python `CardAction.no_label` value, including `False`, is rejected
+  with a `label_mode` migration error. The obsolete template `cv_no_label` guard is removed: stray context is
+  harmless and unprojected. See the tested [migration](docs/migrating-1.0.md#removed-card-label-keyword).
 - **Conditional bound markers and lifecycle.** Copied conditional templates must render the exact bound
   `cv_toggle_field`/`x_formset.cv_toggle_field` name; unprefixed suffix matching is removed. Use the repeat-safe
   `cv.initConditional(root=document)` and `cv.initFormsets(root=document)` for custom insertion. Native formset
@@ -129,15 +141,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `cv_get_card_action_data()`. A view that assigns the attribute on a class or instance keeps its choice, including
   `as_view()` and per-request assignment.
 - A 0.29 or 0.30 override of `crud_views/tags/card_action.html` that branches on `cv_no_label` no longer gets that
-  key: the card action context carries `cv_label_mode` instead, so the override renders the label on every button,
-  the `CardAction(no_label=True)` ones included, and raises nothing. Move the markup into `tags/button/action.html`,
-  which branches on `cv_label_mode` (#253).
+  key: the card action context carries `cv_label_mode` instead. Move the markup into `tags/button/action.html`,
+  which branches on `cv_label_mode` (#253), and replace removed Python inputs with `label_mode="icon"`.
 - `cv_label_visible` has left the leaf contract; `cv_label_mode` (`"label"`, `"icon"` or `"both"`) replaces it. A
   project override of `crud_views/tags/button/action.html` must branch on the new key.
-- `cv_no_label` is no longer a `cv_button_data()` input and raises `ValueError` naming the replacement.
-  `cv_button` passes the whole template context to `cv_button_data()`, so this also fires at every location, the
-  non-card ones included, for a page that carries a `cv_no_label` context variable.
-  `CardAction(no_label=True)` is unaffected.
+- `cv_button_data()` ignores an obsolete template `cv_no_label` context variable and never projects it to the
+  leaf. Use `cv_label_mode`; Python `CardAction.no_label` is rejected on presence (see migration above).
 - A new `viewset.E210` rejects an unknown `label_mode` or a set `cv_card_actions_label_mode`.
 - `cv_modal_size` takes the semantic tokens `""`, `"sm"`, `"lg"` and `"xl"`. `modal-*` values fail `viewset.E250`
   with the replacement in the message.
@@ -414,6 +423,10 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- Object-detail resolved properties expose additive `badge_color` and `badge_pill` fields alongside `badge_css`
+  and `badge_label`. Native themes can map arbitrary resolved color names and pill state without parsing
+  Bootstrap classes. Default output, ordinary-value fallback and badge-template precedence are retained;
+  see the [native badge recipe](docs/reference/object_detail_badges.md#native-semantic-badge-template).
 - **Safe delete-preview providers (#282).** Frozen `DeletePreviewBoundary`, `DeletePreviewContribution` and
   `DeleteInspection` records describe unknown effects without calling deletion. Contributions add deleted rows and
   protected vetoes; per-boundary completeness is a trusted application attestation. Generic/private/custom behavior

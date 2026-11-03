@@ -62,11 +62,52 @@ cv_property_display = [
 | Parameter     | Description |
 |---------------|-------------|
 | `title`       | Group heading (required) |
+| `id`          | Optional stable group key; strict ASCII token, independent of translated title |
 | `description` | Subtitle or help text |
 | `icon`        | Icon value: `prefix:name`, a semantic name from `CRUD_VIEWS_ICONS` or a raw CSS class (see [Icons](icons.md)) |
 | `properties`  | List of strings, dicts, or `PropertyConfig` objects |
 
 Properties can be mixed freely — plain strings, dicts with `PropertyConfig` fields, or `x()` / `PropertyConfig` instances.
+
+## Component and group identity
+
+Set `cv_object_detail_id = "author-page"` on an object-detail view for stable component
+targets, or override `cv_get_object_detail_id()` for request-aware identity. The view
+projects this as `object_detail_id`; the stock content template forwards it to the tag.
+A raw tag can pass the same input explicitly:
+
+```django
+{% load crud_views_object_detail %}
+{% render_object_detail object groups=object_detail_groups component_id="author-page" %}
+```
+
+Both supplied component tokens and group `id` keys must match `[A-Za-z][A-Za-z0-9_-]*`.
+Empty strings, whitespace, non-ASCII tokens, punctuation outside `_-`, and non-string
+values fail; `None` means omitted. Duplicate group keys within one component fail too.
+For stable links use explicit group keys, such as `{"id": "bio", "title": "Biography",
+"properties": ["name"]}`. Otherwise the fallback is positional: reordering changes
+the group's target. Display titles can be repeated, empty or translated without collisions.
+See the [exact target formula and collision boundary](object_detail_layout_packs.md#template-projection-and-stable-targets).
+
+### Page and modal identity
+
+Use this mixin before your object-detail view base. It reads the actual request header;
+`cv_modal` enables modal behavior and is not the request discriminator.
+
+```python
+from crud_views.lib.view.base import cv_is_modal_request
+
+
+class AuthorIdentityMixin:
+    def cv_get_object_detail_id(self):
+        return "author-modal" if cv_is_modal_request(self.request) else "author-page"
+```
+
+Normal requests use `author-page`; `X-CV-Modal: true` requests use `author-modal`.
+Repeated renders preserve these targets. Additional repeated instances need their own
+distinct tokens (for example `author-sidebar`): this two-context recipe alone cannot
+distinguish two modals or two page components. Applications own uniqueness when independently
+fetched responses or untransported fresh backend renders are assembled into one page.
 
 ## View-Callable Fallback
 

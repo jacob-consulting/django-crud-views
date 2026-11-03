@@ -28,6 +28,8 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.1: Cancel form button as a link (INSERTED)** - #275: themes can opt into native cancel links while preserving the button default (completed 2026-10-29)
 - [x] **Phase 6.2: Request authorization and write integrity (INSERTED)** - analysis B1–B7: secure request paths, safe delete previews and truthful Guardian configuration before the freeze (completed 2026-10-30)
 - [x] **Phase 6.3: Delete protection and write-boundary integrity (INSERTED)** - issue #282 (completed 2026-11-01)
+- [x] **Phase 6.4: Conditional and formset correctness/lifecycle (INSERTED)** - analysis A1–A7: correct conditional state, server save behavior and dynamic formset initialization before the freeze (completed 2026-11-02)
+- [x] **Phase 6.5: Remaining presentation contracts and decided cleanup (INSERTED)** - analysis #259/C1/C2 and decided alias cleanup before the freeze (completed 2026-11-02)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -529,23 +531,211 @@ Plans:
 **Wave 18** *(task 20-01 complete; task 20-02 awaits twelve individual owner dispositions)*
 - [x] 06.3-20-PLAN.md — Current review packet and twelve individual human dispositions
 
+### Phase 06.4: Conditional and formset correctness/lifecycle (INSERTED)
+
+**Goal**: Conditional groups and formsets bind to the correct row, preserve disabled-state ownership, enforce
+server-side save semantics and initialize reliably across page/modal/dynamic-row lifecycles before Phase 7 freezes
+their theme contracts.
+**Source**: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` §4 (A1–A7), §8 slice 6.4 and §9 item 2.
+**Requirements**: COND-01, COND-02, COND-03, COND-04, COND-05, FSET-01, FSET-02, FSET-03, LIFE-01, LIFE-02, AUTH-02 (A19 handoff only).
+**Depends on**: Phase 6.3; retain Phase 6.2's formset-fragment authorization and request/write boundaries.
+**Parallel with**: None in the current roadmap.
+**Research/spec**: Settle bound toggle identity and copied-template compatibility, disabled-state ownership,
+supported field-clearing semantics, and successful initialization/root/visibility contracts. The source recommends
+native immediate visibility; decide whether a downstream theme needs a presentation-only callback/adapter before
+the freeze. That seam must not own disabled-state or authorization decisions. Recommendations are not locked design.
+**Success Criteria** (what must be TRUE):
+
+  1. A1: Each conditional group binds to its own intended toggle across sibling/nested rows, shared suffixes,
+     prefixes, multiple forms, modal content and dynamically added rows; compatibility for old markup is explicit.
+  2. A2/A3: Baseline disabled reasons and all enclosing groups compose correctly in both nesting orders. Native
+     reset recomputes state after a non-cancelled reset, remains scoped to its form and preserves management inputs.
+  3. A4: Inactive supported fields clear with correct persistence semantics, including existing FileField references
+     (without promising storage-file deletion), explicit empty values, Boolean and M2M cases. Unsupported shapes
+     have an explicit guard. Documentation accurately describes inherited clean/model validation and suppressed errors.
+  4. A5: Active `edit_only` formsets cannot create rows through forged extras, including custom control templates;
+     stock Add controls agree with server policy and ordinary edits still work. Assess forged initial-row IDs and
+     document reject/ignore behavior without claiming an unproven cross-parent mutation.
+  5. A6/A7: Formsets and toggles initialize automatically and idempotently on initial load, modal load/422 replacement
+     and nested added rows. Initialization can retry after a missing toggle appears, includes supported root elements
+     and handles scripts loaded after DOMContentLoaded. Add/delete/order/submit and widget lifecycle work without
+     duplicate bindings or reliance on undocumented controller constructors/private flags.
+  6. Stock and minimal non-Bootstrap crispy/group/formset templates pass lifecycle and keyboard/focus acceptance,
+     including two forms, disabled widgets, reset, hidden-content focus, management POST/re-render and JS-off/tampered
+     POST. Preserve fragment authorization, parent denial, restricted querysets, atomic rollback and documented
+     skip/opt-in aggregate purge semantics. Keep jQuery in this slice; the #210 port remains deferred.
+  7. Document the usable formset template projection and any changed identity/root/visibility hooks for Phase 7.
+     Preserve event detail `{prefix, rows}`, one event per outer inserted row, request coordinates and `{html, rows}`.
+     Pair any Breaking changelog entry with `docs/migrating-1.0.md`. A8 `commit=False` public/internal classification
+     remains a final-policy decision; it is not silently added to this repair scope.
+
+**Plans**:26/26 executed. Plans23–26 closed G6/WR-05 within scope. Human UAT complete: Chrome/Orca checks pass and H2 bounded contract accepted. Independent security44/44closed at ASVS1. Canonical10/10, validation compliant and final handoff ready. Completed2026-11-02. Next: `$gsd-discuss-phase 7`.
+
+Plans:
+**Wave 1**
+- [x] 06.4-01-PLAN.md — Exact conditional identity from rendered form to submitted values (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.4-02-PLAN.md — Field-aware conditional persistence (wave 2)
+- [x] 06.4-05-PLAN.md — Composed conditional state, native reset and focus (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.4-03-PLAN.md — Static and runtime clearing configuration contract (wave 3)
+- [x] 06.4-04-PLAN.md — Mandatory active formset row-policy validation (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.4-06-PLAN.md — Form-scoped formset initialization and modal submit ordering (wave 4)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.4-07-PLAN.md — Successful non-first sibling fragment round trips (wave 5)
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [x] 06.4-08-PLAN.md — Real HTTP and browser conditional/formset acceptance (wave 6)
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [x] 06.4-09-PLAN.md — Tested migration and Phase 7 public contract handoff (wave 7)
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [x] 06.4-10-PLAN.md — Supported-series regression evidence and acceptance handoff (wave 8)
+
+**Wave 9** *(gap closure; dependencies in PLAN frontmatter)*
+- [x] 06.4-11-PLAN.md — Reapply mandatory row policy after native recleaning (wave 9)
+- [x] 06.4-12-PLAN.md — Separate the mandatory Django bridge from ordinary Node tests (wave 9)
+- [x] 06.4-14-PLAN.md — Preserve conditional ownership while a binding is unresolved (wave 9)
+
+**Wave 10** *(gap closure; dependencies in PLAN frontmatter)*
+- [x] 06.4-13-PLAN.md — Keep row deletion eligibility stable through insertion and reordering (wave 10)
+- [x] 06.4-15-PLAN.md — Enforce evidence selection and current runtime requests (wave 10)
+
+**Wave 11** *(gap closure; dependencies in PLAN frontmatter)*
+- [x] 06.4-16-PLAN.md — Exercise repaired lifecycle in a representative browser host (wave 11)
+- [x] 06.4-17-PLAN.md — Reconcile repaired contracts and required test commands in documentation (wave 11)
+
+**Wave 12** *(gap closure; dependencies in PLAN frontmatter)*
+- [x] 06.4-18-PLAN.md — Capture and validate current-source gap repair evidence (wave 12)
+
+**Wave 13** *(gap closure; dependencies in PLAN frontmatter)*
+- [x] 06.4-19-PLAN.md — Reconcile independent reviews and gather the outstanding human dispositions (wave 13)
+
+**Wave 14** *(blocked on Wave 13 completion)*
+- [x] 06.4-20-PLAN.md — Reject missing control records and stale conditional captures
+
+**Wave 15** *(blocked on Wave 14 completion)*
+- [x] 06.4-21-PLAN.md — Refresh affected evidence with verified source applicability and original provenance
+
+**Wave 16** *(blocked on Wave 15 completion)*
+- [x] 06.4-22-PLAN.md — Independent reassessment and end-of-phase acceptance handoff
+
+**Wave 17** *(blocked on Wave 16 completion)*
+- [x] 06.4-23-PLAN.md — Reject oversized capture dimensions with exact diagnostics through both CLIs
+
+**Wave 18** *(blocked on Wave 17 completion)*
+- [x] 06.4-24-PLAN.md — Refresh checker evidence with immutable source and gate provenance
+
+**Wave 19** *(blocked on Wave 18 completion)*
+- [x] 06.4-25-PLAN.md — Obtain independent code/security reviews and reconcile validation
+
+**Wave 20** *(blocked on Wave 19 completion)*
+- [x] 06.4-26-PLAN.md — Replay canonical controls, reassess and rebind the final handoff
+
+**WR-05 execution result (2026-11-01):** Plans23–26/nine tasks complete. Checker67/Ruff/35controls/clean positive pass,17original gates retained; two independent14-probe reviews and14canonical observations close G6/WR-05. Canonical human_needed9/10, final handoff structurally valid/not-ready; H1/H2 and31flags remain. Security40/44closed with4highopen at independent snapshot. Two UAT checks pending; no Phase7 advancement. Next: `$gsd-verify-work 06.4`.
+
+**WR-05 planning result (2026-11-01):** Plans 23–26 / nine tasks passed independent checking after one revision. Coverage: 11/11 requirements, 19/19 decisions. Canonical gaps_found, H1/H2, 31 flags and open security obligations remain explicit. Next: `$gsd-execute-phase 06.4 --gaps-only`.
+
+**Execution result (2026-11-01):** Plans 20–22 complete; WR-03/04 independently closed, new WR-05 remains fail-closed diagnostic gap. Canonical 8/10; security 38/41 closed with 3 high open; H1/H2 and 31 flags unresolved. Final handoff structurally valid and not ready. Next: `$gsd-plan-phase 06.4 --gaps`.
+
+**Planning result (2026-11-01):** Plans 20–22 passed the independent checker. Canonical verification remains gaps_found (8/10 merged truths): G6/WR-03/04, H1/H2 and six security obligations (five high) remain open. No phase acceptance is inferred. Next: `$gsd-execute-phase 06.4 --gaps-only`.
+
+Shared-path sequencing: 01 precedes 02, then 04 (render tree/formsets); 01 precedes 05 (toggle JS);
+02 precedes 03 (clearing); 06 precedes 07 (formset JS tests). Browser 08 integrates all repairs,
+09 publishes tested contracts, and 10 records the final supported-series evidence.
+
+### Phase 06.5: Remaining presentation contracts and decided cleanup (INSERTED)
+
+**Goal**: Settle the remaining heading and object-detail presentation contracts and complete the already-decided
+label alias cleanup before Phase 7 freezes the public theme surface.
+**Source**: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` §2 heading-host probe (#259),
+§5 C1/C2, §6 alias dispositions and §8 slice 6.5.
+**Requirements**: PRES-01, PRES-02, PRES-03, PRES-04, PRES-05, PRES-06.
+**Depends on**: Phase 6.4 for final integration after completed Phases 6.2–6.4; preserves Phase 6/6.1 form-leaf contracts.
+**Parallel with**: None in the remaining execution sequence.
+**Research/spec**: Settle heading slot/tag/context names and shared control/panel ID projection before implementation.
+Decide the response to the removed Python constructor keyword and document heading sizing-class constraints.
+The discussion selects semantic badge color/pill context now, retaining existing Bootstrap defaults and badge
+precedence. CONTEXT.md D-01–D-17 locks configurable headings, immediate migration and optional stable IDs.
+**Success Criteria** (what must be TRUE):
+
+  1. #259: Stock page, modal and icon-bearing object-detail group headings support element and host icons with
+     accessible headings and no duplicate icon. Cover mixed libraries, empty/disabled icons, escaped classes and
+     heading-level changes; define the public heading contract and its sizing-class constraints.
+  2. C1: One- and two-group vertical tabs have matching selected triggers and visible initial panels, and switch
+     correctly in a real browser. Keep trigger/panel state together through the documented template projection.
+  3. C2: Accordion and tab controls target unique panels for colliding, repeated, empty and translated titles,
+     repeated detail components and page/modal coexistence. Document the shared per-render/group ID contract.
+  4. A minimal native layout override retains escaped titles/values and the supported resolved-property context.
+     Record actual browser/keyboard acceptance for corrected tabs; identify any untested non-Bootstrap visual or
+     assistive-technology behavior explicitly. Expose resolved semantic badge color/pill context alongside existing
+     classes, preserving custom color names, ordinary-value fallback and badge-template precedence.
+  5. Remove Python `CardAction.no_label` and the obsolete template `cv_no_label` rejection guard as already decided;
+     migrate fixtures/docs/tests to `label_mode="icon"` and `cv_label_mode`, with clear old-keyword behavior.
+     Preserve both accepted singular/plural label-mode APIs and existing form-leaf contracts.
+  6. Document intentional stock markup and copied-template changes, pairing every Breaking changelog entry with
+     `docs/migrating-1.0.md`. Hand the settled heading, ID/context and alias contracts to Phase 7's inventory.
+
+**Scope exclusions**: Completed authorization/deletion/conditional/formset acceptance, proposed Phase 6.6 Tabler
+seams (#277–#280), unrelated CSS cleanup, the jQuery port, optional diagnostics and the final stability policy.
+**Plans**: 9/9 plans complete; UAT 28/28 passed, canonical verification passed and security 20/20 closed. Completed 2026-11-02.
+
+Plans:
+
+**Wave 1**
+
+- [x] 06.5-01-PLAN.md — Make a real modal heading consume theme sizing and one host/element icon projection.
+- [x] 06.5-06-PLAN.md — Expose semantic badge color and pill from the existing single resolution.
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] 06.5-02-PLAN.md — Apply the shared heading contract to page and plain group titles and publish its exact recipe.
+- [x] 06.5-07-PLAN.md — Remove the alias while rejecting its presence with an actionable migration error.
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [x] 06.5-03-PLAN.md — Render generated identities and first selection through tabs and accordion from one projection.
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [x] 06.5-04-PLAN.md — Expose stable application identity and prove the rendering collision boundary.
+- [x] 06.5-05-PLAN.md — Initialize stock tabs before first page or modal keyboard interaction.
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [x] 06.5-08-PLAN.md — Prove stock keyboard behavior and native projection in a real browser.
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
+- [x] 06.5-09-PLAN.md — Publish tested migrations and hand settled presentation contracts to Phase 7.
+
+**UI hint**: existing heading and object-detail markup/behavior; browser acceptance required, no new screens.
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6.3, Phase 4 and Phase 5 (and so, transitively, Phases 6.1, 6, 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6.3 only and documents the surface as it is. Include the cancel
+**Depends on**: Phase 6.5, Phase 4 and Phase 5 (and so, transitively, Phases 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phase 6.5 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
 protected-preview and Guardian configuration contracts from Phase 6.2, qualified by the unresolved acceptance
-split above until Phase 6.3 remediation is verified. Keep proposed 6.4/6.5/6.6 ahead of Phase 7 if accepted.
+split above until Phase 6.3 remediation is verified. Include the settled conditional/formset contracts from Phase 6.4.
+Include the settled heading, object-detail ID/context and alias cleanup contracts from Phase 6.5.
+Keep proposed 6.6 ahead of Phase 7 if accepted.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
   - the tier assignments
   - a public `is_library_renderer` helper
   - whether the reference theme's private imports are acceptable
-  - how to mark the undecided label-mode pair and `no_label` (done, or provisional/deprecated)
+  - document both accepted label-mode APIs and the completed Phase 6.5 alias removal; do not reopen those decisions
 
 **Requirements**: STAB-01, STAB-02, STAB-03, STAB-04, STAB-05, STAB-06
 **Success Criteria** (what must be TRUE):
@@ -570,7 +760,7 @@ split above until Phase 6.3 remediation is verified. Keep proposed 6.4/6.5/6.6 a
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -580,7 +770,9 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 7) is
 | 4 | 6.1 (#275) | Extends Phase 6 with a theme-selectable cancel link before the stability freeze |
 | 5 | 6.2 (analysis B1–B7) | Secures request/write boundaries and safe contexts before the freeze |
 | 6 | 6.3 (#282) | Delete protection and write-boundary integrity before the freeze |
-| 7 | 7 (plan 4) | Needs 6.3, 4 and 5 merged; last change before the 1.0.0 bump |
+| 7 | 6.4 (analysis A1–A7) | Conditional/formset correctness and lifecycle before freezing their theme contracts |
+| 8 | 6.5 (analysis #259/C1/C2) | Remaining presentation contracts and decided alias cleanup before the freeze |
+| 9 | 7 (plan 4) | Needs 6.5, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -595,4 +787,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
 | 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
 | 6.3. Delete protection and write-boundary integrity | 20/20 | Complete    | 2026-11-01 |
+| 6.4. Conditional and formset correctness/lifecycle | 26/26 | Complete    | 2026-11-02 |
+| 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

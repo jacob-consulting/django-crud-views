@@ -6,6 +6,7 @@ CV_UPDATE_GOLDEN=1 pytest tests/test1/test_heading_level.py
 """
 
 import os
+import re
 import uuid
 from pathlib import Path
 
@@ -23,14 +24,45 @@ from tests.test1.app.models import Author, Campaign
 from tests.test1.app.views import cv_author, cv_author_modal, cv_campaign
 
 GOLDEN_DIR = Path(__file__).parent / "golden" / "heading_level"
-# the test project's base template wraps {% cv_header %} in its own headings (h5.d-flex > h3); those are the host's
-HEADINGS = " | ".join(f"//h{n}[not(ancestor-or-self::h5[contains(@class, 'd-flex')])]" for n in range(1, 7))
+# Only the test host's page title is excluded; card-header group headings remain content.
+HEADINGS = " | ".join(f"//h{n}[not(ancestor-or-self::*[@data-test-page-title])]" for n in range(1, 7))
 LAYOUTS = ["accordion", "card-rows", "list-group-3col", "split-card", "striped-rows", "table-inline", "tabs-vertical"]
 
 
 def _headings(markup: str) -> str:
     doc = lxml_html.fromstring(f"<div>{markup}</div>")
+    # Only generated object-detail target attributes are dynamic. Preserve every
+    # class, semantic heading and unrelated attribute in these heading snapshots.
+    namespaces = {}
+    for node in doc.iter():
+        for attr in ("id", "aria-controls", "aria-labelledby", "data-bs-target", "data-bs-parent"):
+            value = node.get(attr)
+            if value and (match := re.match(r"(#?)(cvod-c33-g[0-9a-f]{32})(-.+)$", value)):
+                namespace = namespaces.setdefault(match[2], f"cvod-generated-{len(namespaces)}")
+                node.set(attr, match[1] + namespace + match[3])
     return "\n".join(lxml_html.tostring(h, encoding="unicode").strip() for h in doc.xpath(HEADINGS))
+
+
+def test_content_selector_excludes_only_marked_page_title():
+    markup = "<div data-test-page-title><h1>Page</h1></div>"
+    markup += '<div class="card-header"><h2>Card rows</h2></div>'
+    markup += '<div class="card-header"><h2>Striped rows</h2></div>'
+    assert _headings(markup) == "<h2>Card rows</h2>\n<h2>Striped rows</h2>"
+
+
+def test_heading_normalization_only_changes_generated_target_attributes():
+    generated = "cvod-c33-g" + "a" * 32
+    markup = (
+        f'<h2 class="{generated}"><button id="{generated}-i0-control" '
+        f'data-bs-target="#{generated}-i0-panel" aria-controls="{generated}-i0-panel">Title</button></h2>'
+        '<h2 id="cvod-c6-stable-root">Stable</h2>'
+    )
+    actual = _headings(markup)
+    assert f'class="{generated}"' in actual
+    assert 'id="cvod-generated-0-i0-control"' in actual
+    assert 'data-bs-target="#cvod-generated-0-i0-panel"' in actual
+    assert 'aria-controls="cvod-generated-0-i0-panel"' in actual
+    assert '<h2 id="cvod-c6-stable-root">Stable</h2>' in actual
 
 
 def _compare(name: str, actual: str):

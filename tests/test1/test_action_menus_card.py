@@ -44,7 +44,7 @@ def author_card_actions(monkeypatch):
         "cv_card_actions",
         [
             CardAction(key="detail", label="Details", variant="primary", flex=True),
-            CardAction(key="update", label="Edit", variant="primary", flex=True, no_label=True),
+            CardAction(key="update", label="Edit", variant="primary", flex=True, label_mode="icon"),
             CardAction(key="ping", label="Ping"),
         ],
     )
@@ -68,7 +68,7 @@ def test_inline_card_button_keeps_classes_gains_icon_and_menu(db, author_douglas
     assert "btn-secondary" in toggle.get("class")
     assert "btn-sm" in toggle.get("class")
     items = wrapper.cssselect(".dropdown-item")
-    # variant / flex / no_label are ignored in the menu; CardAction.label is the item text
+    # variant / flex / label_mode are ignored in the menu; CardAction.label is the item text
     assert [i.text_content().strip() for i in items] == ["Edit", "Ping"]
     assert all("btn" not in i.get("class") for i in items)
 

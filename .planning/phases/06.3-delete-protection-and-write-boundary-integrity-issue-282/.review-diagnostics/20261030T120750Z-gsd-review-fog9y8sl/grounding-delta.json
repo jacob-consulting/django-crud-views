@@ -1,0 +1,158 @@
+[
+  {
+    "symbol": "_assert_handler_error",
+    "kind": "function",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:124",
+    "quote": ".db.models.base.Collector expectations, the actual _assert_handler_error aggregation/traceback assertions and _assert_collection_extension_propagates request/effect asserti",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Direct declaration tests/test1/test_delete.py:1122; old aggregation/traceback assertions confirmed. Python is unsupported by effective intel.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "_assert_collection_extension_propagates",
+    "kind": "function",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md:124",
+    "quote": "or aggregation/traceback assertions and _assert_collection_extension_propagates request/effect assertions and the delete(self) spy (use a keyword using parameter or **kwargs that forwards using)",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Direct declaration tests/test1/test_delete.py:1109; request/effect assertions confirmed. Python is unsupported by effective intel.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "getattr",
+    "kind": "function",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:110",
+    "quote": "ecks. Resolve the optional ViewSet with getattr(cls, \"cv_viewset\", None); if it is Resource-based, skip only model.delete signature inspection and",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Python builtin; no JS-only intel representation; no signature mismatch claimed.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "issubclass",
+    "kind": "function",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:110",
+    "quote": "jango Model subclass (type check before issubclass); absent/non-model values skip this model-specific check without dereferencing delete. Bare model-l",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Python builtin; no JS-only intel representation; no signature mismatch claimed.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "Resource",
+    "kind": "class",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:110",
+    "quote": "attr(cls, \"cv_viewset\", None); if it is Resource-based, skip only model.delete signature inspection and preserve the existing viewset.E262 unsupported-wri",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Direct declaration src/crud_views/lib/resource.py:67; ViewSet.is_resource is at src/crud_views/lib/viewset/__init__.py:106. Python unsupported by intel.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "Model",
+    "kind": "class",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:110",
+    "quote": "tional ViewSet model only when it is an actual Django Model subclass (type check before issubclass); absent/non-model values skip this model-specific check without dere",
+    "verdict": "UNCHECKABLE",
+    "evidence": "django.db.models.Model imported/exported from installed Django; current design already cites Model.delete. No signature assertion by intel.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "viewset.E262",
+    "kind": "check identifier",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:110",
+    "quote": "re inspection and preserve the existing viewset.E262 unsupported-write diagnostic. Otherwise take an available class model or optional ViewSet model onl",
+    "verdict": "UNCHECKABLE",
+    "evidence": "Existing id src/crud_views/lib/viewset/__init__.py:208 checks unsupported Resource writes; Python check identifiers unsupported by intel.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "src/crud_views/lib/viewset/__init__.py",
+    "kind": "path",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:100",
+    "quote": "@src/crud_views/lib/viewset/__init__.py",
+    "verdict": "VERIFIED",
+    "evidence": "src/crud_views/lib/viewset/__init__.py:1 filesystem existence; actual model-less tests test_modal.py:160 and inactive direct caller test_guardian_inactive.py:404 inspected.",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "tests/test1/test_modal.py",
+    "kind": "path",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:101",
+    "quote": "@tests/test1/test_modal.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_modal.py:1 filesystem existence; actual model-less tests test_modal.py:160 and inactive direct caller test_guardian_inactive.py:404 inspected.",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "tests/test1/test_guardian_inactive.py",
+    "kind": "path",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:14",
+    "quote": "- tests/test1/test_guardian_inactive.py",
+    "verdict": "VERIFIED",
+    "evidence": "tests/test1/test_guardian_inactive.py:1 filesystem existence; actual model-less tests test_modal.py:160 and inactive direct caller test_guardian_inactive.py:404 inspected.",
+    "severity": {
+      "severity": "none",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "test_signature_checks_skip_bare_and_resource_views",
+    "kind": "new test",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md:110",
+    "quote": "rror or a spurious signature error. Add test_signature_checks_skip_bare_and_resource_views in test_delete_inspection.py covering bare classes, absent ViewSet/model, Resource-backed deletion",
+    "verdict": "SKIPPED \u2014 new artifact",
+    "evidence": "Owning task explicitly creates this test in proposed test_delete_inspection.py; not an existing-symbol claim.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "_PermittedPks.__call__(model, *, using)",
+    "kind": "proposed signature",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:134",
+    "quote": "C2-L02: make the private call contract _PermittedPks.__call__(model, *, using) explicit and required; do not infer DEFAULT_DB_ALIAS when no candidate is supplied. Production tree",
+    "verdict": "SKIPPED \u2014 proposed change",
+    "evidence": "Existing declaration src/crud_views_guardian/lib/views.py:74 has (model); task intentionally changes it and migrates all callers. Proposed signature is not required to exist yet.",
+    "severity": {
+      "severity": "excluded-new",
+      "hardBlock": false
+    }
+  },
+  {
+    "symbol": "DEFAULT_DB_ALIAS",
+    "kind": "constant",
+    "reference": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md:134",
+    "quote": "ng) explicit and required; do not infer DEFAULT_DB_ALIAS when no candidate is supplied. Production tree/protected callers pass each candidate._state.db. Mig",
+    "verdict": "UNCHECKABLE",
+    "evidence": "The plan rejects this fallback; existing django/db/__init__.py:14 constant is not a new API. Python unsupported by intel.",
+    "severity": {
+      "severity": "INFO",
+      "hardBlock": false
+    }
+  }
+]

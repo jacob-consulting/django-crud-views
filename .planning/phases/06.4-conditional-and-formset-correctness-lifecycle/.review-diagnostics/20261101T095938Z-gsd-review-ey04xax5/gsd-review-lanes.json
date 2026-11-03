@@ -1,0 +1,18 @@
+[
+  {
+    "slug": "claude",
+    "ok": true,
+    "section": "Claude",
+    "transport": "spawn",
+    "promptBudget": null,
+    "promptPath": "/tmp/gsd-review-ey04xax5/gsd-review-prompt.md"
+  },
+  {
+    "slug": "opencode",
+    "ok": true,
+    "section": "OpenCode",
+    "transport": "spawn",
+    "promptBudget": null,
+    "promptPath": "/tmp/gsd-review-ey04xax5/gsd-review-prompt.md"
+  }
+]

@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 
 const harness = "tests/js/runtime-contract.test.js";
 const requiredFiles = [
-    "adapters", "formset", "harness", "list.filter", "modal", "toggle", "tooltip", "viewset",
+    "adapters", "formset", "harness", "list.filter", "modal", "object-detail-tabs", "toggle", "tooltip", "viewset",
 ].map(name => `tests/js/${name}.test.js`);
 
 describe("test runtime boundary", () => {
@@ -25,6 +25,7 @@ describe("test runtime boundary", () => {
             "package.json", "vitest.config.js", "vitest.integration.config.js",
             "tests/js", "tests/js-integration", "tests/test1/golden/alerts",
             "src/crud_views/static/crud_views/js", "docs/reference/javascript.md",
+            "src/crud_views_object_detail/static/crud_views_object_detail/js",
         ]) {
             const destination = path.join(directory, relative);
             fs.mkdirSync(path.dirname(destination), { recursive: true });
@@ -65,6 +66,8 @@ describe("test runtime boundary", () => {
         expect(fs.existsSync(path.join(directory, ".venv"))).toBe(false);
         expect(fs.readdirSync(environment.PATH)).toEqual(["node"]);
         expect(environment.CV_FRAGMENT_PYTHON).toBeUndefined();
+        expect(fs.existsSync(path.join(directory,
+            "src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js"))).toBe(true);
         for (const name of requiredFiles) expect(expectedFiles).toContain(name);
         const { result, report } = run("vitest.config.js", "ordinary", ["--exclude", harness]);
         const failures = report.testResults.flatMap(file => file.assertionResults)

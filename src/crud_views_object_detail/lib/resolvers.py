@@ -53,6 +53,15 @@ class ResolvedProperty:
     link_url: str | None = None
     badge_css: str | None = None
     badge_label: str | None = None
+    badge_color: str | None = None
+    badge_pill: bool = False
+
+
+@dataclass(frozen=True)
+class _ResolvedBadge:
+    color: str
+    pill: bool
+    css: str
 
 
 @dataclass
@@ -61,6 +70,7 @@ class ResolvedGroup:
     description: str | None = None
     icon: str | None = None
     properties: list[ResolvedProperty] = field(default_factory=list)
+    id: str | None = None
 
 
 def _get_field_type(field_obj: models.Field) -> str:
@@ -91,8 +101,8 @@ def _resolve_link_url(value: Any, link: LinkConfig | None, is_many: bool) -> str
         return None
 
 
-def _resolve_badge_css(value: Any, badge: BadgeConfig) -> str | None:
-    """Compute Bootstrap badge CSS classes from config and value."""
+def _resolve_badge(value: Any, badge: BadgeConfig) -> _ResolvedBadge | None:
+    """Resolve semantic fields and compatible Bootstrap CSS from one color evaluation."""
     if value is None:
         return None
     color = None
@@ -107,7 +117,7 @@ def _resolve_badge_css(value: Any, badge: BadgeConfig) -> str | None:
     css = f"text-bg-{color}"
     if badge.pill:
         css += " rounded-pill"
-    return css
+    return _ResolvedBadge(color=color, pill=badge.pill, css=css)
 
 
 def _resolve_badge_label(value: Any, badge: BadgeConfig) -> str | None:
@@ -188,7 +198,7 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
     link_url = _resolve_link_url(value, config.link, is_many)
 
     # Resolve badge
-    badge_css = _resolve_badge_css(value, config.badge) if config.badge else None
+    badge = _resolve_badge(value, config.badge) if config.badge else None
     badge_label = _resolve_badge_label(value, config.badge) if config.badge else None
 
     return ResolvedProperty(
@@ -200,8 +210,10 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
         template=config.template,
         is_many=is_many,
         link_url=link_url,
-        badge_css=badge_css,
+        badge_css=badge.css if badge else None,
         badge_label=badge_label,
+        badge_color=badge.color if badge else None,
+        badge_pill=badge.pill if badge else False,
     )
 
 
@@ -250,6 +262,7 @@ def resolve_group(instance: models.Model, config: PropertyGroupConfig, view=None
         description=config.description,
         icon=config.icon,
         properties=[resolve_property(instance, prop, view=view) for prop in config.properties],
+        id=config.id,
     )
 
 

@@ -78,6 +78,16 @@ EXPECTED_KEYS = {
     "card:icon-host",
     "menu:icon-host",
     "form:icon-host",
+    "heading:size-1",
+    "heading:size-2",
+    "heading:size-3",
+    "heading:size-4",
+    "heading:size-5",
+    "heading:size-6",
+    "heading:icon-host",
+    "heading:icon-inline",
+    "heading-page:icon-inline",
+    "heading-modal:icon-inline",
 }
 
 
@@ -92,7 +102,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 74
+    assert len(EXPECTED_KEYS) == 84
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -308,9 +318,16 @@ host_icons = override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEW
 
 
 def test_icon_host_default_slots():
-    for location in ("context", "list", "card", "menu", "form"):
+    for location in ("context", "list", "card", "menu", "form", "heading"):
         assert DEFAULT_BUTTON_CLASSES[f"{location}:icon-host"] == "{name_class}"
-    assert len([key for key in DEFAULT_BUTTON_CLASSES if key.endswith(":icon-host")]) == 5
+    assert {key for key in DEFAULT_BUTTON_CLASSES if key.endswith(":icon-host")} == {
+        "context:icon-host",
+        "list:icon-host",
+        "card:icon-host",
+        "menu:icon-host",
+        "form:icon-host",
+        "heading:icon-host",
+    }
 
 
 @host_icons

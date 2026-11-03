@@ -49,15 +49,25 @@
       "status": "complete"
     },
     {
+      "number": "6.4",
+      "name": "Conditional and formset correctness/lifecycle",
+      "status": "complete"
+    },
+    {
+      "number": "6.5",
+      "name": "Remaining presentation contracts and decided cleanup",
+      "status": "complete"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-spec-phase 7",
-    "label": "Define the Phase 7 stability-policy specification",
-    "reason": "Phase 6.3 complete; 9/10 phases complete. Phase 7 requires a specification before planning."
+    "command": "$gsd-progress --next",
+    "label": "Advance to the next step (plan phase 7)",
+    "reason": "Phase 15 of 15 — needs a plan"
   },
-  "updated_at": "2026-11-01T08:03:45.934Z"
+  "updated_at": "2026-11-02T15:49:08.732Z"
 }

@@ -1,0 +1,64 @@
+{
+  "phase_status": {
+    "verdict": "uncheckable",
+    "phase": "06.5",
+    "stateStatus": "Ready for planning",
+    "roadmapStatus": "Planned",
+    "stateRank": null,
+    "roadmapRank": 1,
+    "authority": "STATE.md"
+  },
+  "judgment_pairs": [
+    {
+      "axis": "success criteria / must-have truths",
+      "authority": "ROADMAP.md",
+      "sources": [
+        ".planning/ROADMAP.md:666-681",
+        "06.5-01-PLAN.md:24",
+        "06.5-03-PLAN.md:27",
+        "06.5-04-PLAN.md:25",
+        "06.5-05-PLAN.md:22",
+        "06.5-06-PLAN.md:23",
+        "06.5-07-PLAN.md:31",
+        "06.5-08-PLAN.md:23",
+        "06.5-09-PLAN.md:25"
+      ],
+      "result": "No opposing assertion found: headings/icons, initial tabs, ID collisions, native/badge semantics, exact alias cleanup and migration/handoff are retained."
+    },
+    {
+      "axis": "requirement IDs",
+      "authority": "ROADMAP.md",
+      "sources": [
+        ".planning/ROADMAP.md:659",
+        "06.5-01-PLAN.md:requirements",
+        "06.5-02-PLAN.md:requirements",
+        "06.5-03-PLAN.md:requirements",
+        "06.5-04-PLAN.md:requirements",
+        "06.5-05-PLAN.md:requirements",
+        "06.5-06-PLAN.md:requirements",
+        "06.5-07-PLAN.md:requirements",
+        "06.5-08-PLAN.md:requirements",
+        "06.5-09-PLAN.md:requirements"
+      ],
+      "result": "PRES-01 through PRES-06 match; no contradictory identity."
+    },
+    {
+      "axis": "defined terms / decisions",
+      "authority": "CONTEXT.md",
+      "sources": [
+        "06.5-CONTEXT.md:20-80",
+        "06.5-01-PLAN.md",
+        "06.5-02-PLAN.md",
+        "06.5-03-PLAN.md",
+        "06.5-04-PLAN.md",
+        "06.5-05-PLAN.md",
+        "06.5-06-PLAN.md",
+        "06.5-07-PLAN.md",
+        "06.5-08-PLAN.md",
+        "06.5-09-PLAN.md"
+      ],
+      "result": "D-01\u2013D-17 semantics retained; immediate migration, stable supplied IDs, runtime collision boundary, alias rejection versus harmless template key, semantic badge defaults and preserved prior scope agree."
+    }
+  ],
+  "policy": "Fact-drift advisory only; contributes to neither convergence count."
+}

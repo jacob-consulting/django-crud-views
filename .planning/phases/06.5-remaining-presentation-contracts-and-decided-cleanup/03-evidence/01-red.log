@@ -1,0 +1,159 @@
+FFFFFFFF.                                                                [100%]
+=================================== FAILURES ===================================
+_____________________ test_tabs_initial_selection[False-0] _____________________
+
+count = 0, focusable = False
+
+    @pytest.mark.parametrize("count", [0, 1, 2])
+    @pytest.mark.parametrize("focusable", [False, True])
+    def test_tabs_initial_selection(count, focusable):
+        prop = ResolvedProperty(path="name", label="Name", value="Value", link_url="/next/" if focusable else None)
+        doc = render([ResolvedGroup(title="Same", properties=[prop]) for _ in range(count)])
+        tabs = doc.cssselect('[role="tab"]')
+        panels = doc.cssselect('[role="tabpanel"]')
+        assert len(tabs) == len(panels) == count
+        assert len(doc.cssselect('.tab-pane.active.show')) == min(1, count)
+        assert len(doc.cssselect('[role="tab"].active[aria-selected="true"]')) == min(1, count)
+>       assert len(doc.cssselect('[data-cv-od-tabs][aria-orientation="vertical"]')) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = cssselect('[data-cv-od-tabs][aria-orientation="vertical"]')
+E        +      where cssselect = <Element main at 0x7fbdae5db2f0>.cssselect
+
+tests/test1/od/test_object_detail_identity.py:30: AssertionError
+_____________________ test_tabs_initial_selection[False-1] _____________________
+
+count = 1, focusable = False
+
+    @pytest.mark.parametrize("count", [0, 1, 2])
+    @pytest.mark.parametrize("focusable", [False, True])
+    def test_tabs_initial_selection(count, focusable):
+        prop = ResolvedProperty(path="name", label="Name", value="Value", link_url="/next/" if focusable else None)
+        doc = render([ResolvedGroup(title="Same", properties=[prop]) for _ in range(count)])
+        tabs = doc.cssselect('[role="tab"]')
+        panels = doc.cssselect('[role="tabpanel"]')
+        assert len(tabs) == len(panels) == count
+>       assert len(doc.cssselect('.tab-pane.active.show')) == min(1, count)
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = cssselect('.tab-pane.active.show')
+E        +      where cssselect = <Element main at 0x7fbdacee9e50>.cssselect
+E        +  and   1 = min(1, 1)
+
+tests/test1/od/test_object_detail_identity.py:28: AssertionError
+_____________________ test_tabs_initial_selection[False-2] _____________________
+
+count = 2, focusable = False
+
+    @pytest.mark.parametrize("count", [0, 1, 2])
+    @pytest.mark.parametrize("focusable", [False, True])
+    def test_tabs_initial_selection(count, focusable):
+        prop = ResolvedProperty(path="name", label="Name", value="Value", link_url="/next/" if focusable else None)
+        doc = render([ResolvedGroup(title="Same", properties=[prop]) for _ in range(count)])
+        tabs = doc.cssselect('[role="tab"]')
+        panels = doc.cssselect('[role="tabpanel"]')
+        assert len(tabs) == len(panels) == count
+>       assert len(doc.cssselect('.tab-pane.active.show')) == min(1, count)
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = cssselect('.tab-pane.active.show')
+E        +      where cssselect = <Element main at 0x7fbdaceea8f0>.cssselect
+E        +  and   1 = min(1, 2)
+
+tests/test1/od/test_object_detail_identity.py:28: AssertionError
+_____________________ test_tabs_initial_selection[True-0] ______________________
+
+count = 0, focusable = True
+
+    @pytest.mark.parametrize("count", [0, 1, 2])
+    @pytest.mark.parametrize("focusable", [False, True])
+    def test_tabs_initial_selection(count, focusable):
+        prop = ResolvedProperty(path="name", label="Name", value="Value", link_url="/next/" if focusable else None)
+        doc = render([ResolvedGroup(title="Same", properties=[prop]) for _ in range(count)])
+        tabs = doc.cssselect('[role="tab"]')
+        panels = doc.cssselect('[role="tabpanel"]')
+        assert len(tabs) == len(panels) == count
+        assert len(doc.cssselect('.tab-pane.active.show')) == min(1, count)
+        assert len(doc.cssselect('[role="tab"].active[aria-selected="true"]')) == min(1, count)
+>       assert len(doc.cssselect('[data-cv-od-tabs][aria-orientation="vertical"]')) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = cssselect('[data-cv-od-tabs][aria-orientation="vertical"]')
+E        +      where cssselect = <Element main at 0x7fbdaceeaad0>.cssselect
+
+tests/test1/od/test_object_detail_identity.py:30: AssertionError
+_____________________ test_tabs_initial_selection[True-1] ______________________
+
+count = 1, focusable = True
+
+    @pytest.mark.parametrize("count", [0, 1, 2])
+    @pytest.mark.parametrize("focusable", [False, True])
+    def test_tabs_initial_selection(count, focusable):
+        prop = ResolvedProperty(path="name", label="Name", value="Value", link_url="/next/" if focusable else None)
+        doc = render([ResolvedGroup(title="Same", properties=[prop]) for _ in range(count)])
+        tabs = doc.cssselect('[role="tab"]')
+        panels = doc.cssselect('[role="tabpanel"]')
+        assert len(tabs) == len(panels) == count
+>       assert len(doc.cssselect('.tab-pane.active.show')) == min(1, count)
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = cssselect('.tab-pane.active.show')
+E        +      where cssselect = <Element main at 0x7fbdaceeb070>.cssselect
+E        +  and   1 = min(1, 1)
+
+tests/test1/od/test_object_detail_identity.py:28: AssertionError
+_____________________ test_tabs_initial_selection[True-2] ______________________
+
+count = 2, focusable = True
+
+    @pytest.mark.parametrize("count", [0, 1, 2])
+    @pytest.mark.parametrize("focusable", [False, True])
+    def test_tabs_initial_selection(count, focusable):
+        prop = ResolvedProperty(path="name", label="Name", value="Value", link_url="/next/" if focusable else None)
+        doc = render([ResolvedGroup(title="Same", properties=[prop]) for _ in range(count)])
+        tabs = doc.cssselect('[role="tab"]')
+        panels = doc.cssselect('[role="tabpanel"]')
+        assert len(tabs) == len(panels) == count
+>       assert len(doc.cssselect('.tab-pane.active.show')) == min(1, count)
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = cssselect('.tab-pane.active.show')
+E        +      where cssselect = <Element main at 0x7fbdaceeb250>.cssselect
+E        +  and   1 = min(1, 2)
+
+tests/test1/od/test_object_detail_identity.py:28: AssertionError
+________ test_generated_targets_ignore_titles_and_do_not_mutate_groups _________
+
+    def test_generated_targets_ignore_titles_and_do_not_mutate_groups():
+        groups = [ResolvedGroup(title=title) for title in ["A B", "A-B", "", "", gettext_lazy("日本語"), '<img src="x">']]
+        before = deepcopy(groups)
+        doc = render(groups, repeat=True)
+        ids = doc.xpath("//@id")
+>       assert len(ids) == len(set(ids))
+E       AssertionError: assert 28 == 8
+E        +  where 28 = len(['objectDetailTabs', 'objectDetailTab-a-b', 'objectDetailTab-a-b', 'objectDetailTab-', 'objectDetailTab-', 'objectDetailTab-', ...])
+E        +  and   8 = len({'objectDetailPane-', 'objectDetailPane-a-b', 'objectDetailPane-img-srcx', 'objectDetailTab-', 'objectDetailTab-a-b', 'objectDetailTab-img-srcx', ...})
+E        +    where {'objectDetailPane-', 'objectDetailPane-a-b', 'objectDetailPane-img-srcx', 'objectDetailTab-', 'objectDetailTab-a-b', 'objectDetailTab-img-srcx', ...} = set(['objectDetailTabs', 'objectDetailTab-a-b', 'objectDetailTab-a-b', 'objectDetailTab-', 'objectDetailTab-', 'objectDetailTab-', ...])
+
+tests/test1/od/test_object_detail_identity.py:45: AssertionError
+____________ test_standalone_tab_has_label_without_missing_control _____________
+
+    def test_standalone_tab_has_label_without_missing_control():
+        doc = render([ResolvedGroup(title='<Title " &>')], standalone=True)
+        (panel,) = doc.cssselect('[role="tabpanel"]')
+>       assert panel.get("aria-labelledby") is None
+E       AssertionError: assert 'objectDetailTab-title' is None
+E        +  where 'objectDetailTab-title' = get('aria-labelledby')
+E        +    where get = <Element div at 0x7fbdacd34550>.get
+
+tests/test1/od/test_object_detail_identity.py:55: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/od/test_object_detail_identity.py::test_tabs_initial_selection[False-0]
+FAILED tests/test1/od/test_object_detail_identity.py::test_tabs_initial_selection[False-1]
+FAILED tests/test1/od/test_object_detail_identity.py::test_tabs_initial_selection[False-2]
+FAILED tests/test1/od/test_object_detail_identity.py::test_tabs_initial_selection[True-0]
+FAILED tests/test1/od/test_object_detail_identity.py::test_tabs_initial_selection[True-1]
+FAILED tests/test1/od/test_object_detail_identity.py::test_tabs_initial_selection[True-2]
+FAILED tests/test1/od/test_object_detail_identity.py::test_generated_targets_ignore_titles_and_do_not_mutate_groups
+FAILED tests/test1/od/test_object_detail_identity.py::test_standalone_tab_has_label_without_missing_control
+8 failed, 1 passed, 8205 deselected in 1.64s

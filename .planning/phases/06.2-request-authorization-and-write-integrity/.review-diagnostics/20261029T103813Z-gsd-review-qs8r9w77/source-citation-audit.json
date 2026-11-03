@@ -1,0 +1,1122 @@
+[
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 8,
+    "quote": "  - src/crud_views/lib/views/delete.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 9,
+    "quote": "  - src/crud_views/templates/crud_views/snippets/delete/related_objects.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 10,
+    "quote": "  - src/crud_views/templates/crud_views/view_delete.content.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 11,
+    "quote": "  - tests/test1/test_delete.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 12,
+    "quote": "  - tests/test1/test_guardian_delete.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 13,
+    "quote": "  - src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 14,
+    "quote": "  - tests/test1/test_transactions.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 15,
+    "quote": "  - tests/test1/test_polymorphic.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 25,
+    "quote": "    - \"D-01 and D-02: Delete dispatch rejects DELETE with 405, including subclasses restoring the method name; their 405 Allow and OPTIONS omit DELETE. Existing authentication/parent gates run first. Active top-level Guardian actors reach 405 before object lookup, regardless of grant or target existence; core permission/state checks may deny earlier. View construction emits no DeleteViewCustomDeleteWarning on Django 4.2 and modal Vary decoration is retained.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 28,
+    "quote": "    - \"Edge AUTH-01 adjacency: Core, Guardian and the registered polymorphic VehicleDeleteView share the same method restriction; rejected polymorphic DELETE leaves both Car and Vehicle storage unchanged, while GET and validated POST retain their existing behavior.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 40,
+    "quote": "    - path: src/crud_views/lib/views/delete.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 42,
+    "quote": "    - path: src/crud_views/templates/crud_views/snippets/delete/related_objects.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 44,
+    "quote": "    - path: src/crud_views/templates/crud_views/view_delete.content.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 46,
+    "quote": "    - path: tests/test1/test_delete.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 48,
+    "quote": "    - path: tests/test1/test_guardian_delete.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 50,
+    "quote": "    - path: src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 52,
+    "quote": "    - path: tests/test1/test_transactions.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 54,
+    "quote": "    - path: tests/test1/test_polymorphic.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 55,
+    "quote": "      provides: \"Registered VehicleDeleteView DELETE rejection and existing GET/validated POST controls\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 57,
+    "quote": "    - from: src/crud_views/lib/views/delete.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 58,
+    "quote": "      to: src/crud_views/templates/crud_views/snippets/delete/related_objects.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 59,
+    "quote": "      via: \"get_context_data captures has_protected_objects before the polymorphic cv_filter_related_objects hook; view_delete.content.html includes the snippet on that flag, and the snippet renders one notice plus permitted labels.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 60,
+    "quote": "    - from: src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 61,
+    "quote": "      to: src/crud_views/lib/views/delete.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 62,
+    "quote": "      via: \"GuardianDeleteRelatedObjectsMixin applies _PermittedPks to protected objects even when the cascade tree is empty, feeding only permitted protected_objects into the inherited preview context.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 90,
+    "quote": "- has_protected_objects context boolean in src/crud_views/lib/views/delete.py (new context contract; original objects stay local)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 91,
+    "quote": "- Private _DeleteMethodGuardMixin in src/crud_views/lib/views/delete.py (cooperative request rejection; no public configuration)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 99,
+    "quote": "  <files>src/crud_views/lib/views/delete.py, src/crud_views/templates/crud_views/snippets/delete/related_objects.html, src/crud_views/templates/crud_views/view_delete.content.html, tests/test1/test_delete.py, tests/test1/test_guardian_delete.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 100,
+    "quote": "  <read_first>src/crud_views/lib/views/delete.py; src/crud_views/templates/crud_views/snippets/delete/related_objects.html; tests/test1/test_delete.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 101,
+    "quote": "  <behavior>A real protected-only Publisher confirmation has empty related_summary and protected_objects but has_protected_objects=True and exactly one blocked notice in full-page/modal HTML. Custom protection POST re-renders 200 (422 for modal) with no write; a valid confirmed database-PROTECT POST raises ProtectedError with storage intact. DELETE returns 405 after existing pre-handler gates, including a subclass restoring delete in http_method_names.</behavior>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 103,
+    "quote": "  <action>Start with failing Django Client regressions for the DELETE bypass and hidden protected label/notice defects. Restrict DeleteView.http_method_names and add a private _DeleteMethodGuardMixin in delete.py, inserting it after CrudView and before generic.DeleteView in DeleteView's bases. Its cooperative dispatch rejects request.method == \"DELETE\" via http_method_not_allowed without object lookup or handler selection, and delegates every other method to super().dispatch. This closes the restored-method-name request path per D-01/D-02/A05 without a delete() override (A22). Source MRO: GuardianParentPermissionMixin.dispatch and PermissionRequiredMixin.dispatch run before this guard; CrudView.dispatch wraps it and retains X-CV-Modal Vary decoration. Thus core permission/state lookup remains earlier, while active top-level Guardian rejection precedes get_object. Leave Django's inherited delete method identity intact to avoid Django 4.2's construction warning; do not suppress warnings. Pin default OPTIONS Allow excluding DELETE, core/Guardian inherited/subclass rejection, preserved Vary and zero post-gate object/write/hook calls. Capture bool(related.protected) into has_protected_objects before invoking cv_filter_related_objects. Put core protected filtering inside core cv_filter_related_objects using its model-permission cache; get_context_data consumes the hook result without a second core filter (A04). Preserve RelatedObjects and aggregate summaries. Update BOTH view_delete.content.html's enclosing include and the related_objects.html alert to use the independent flag per D-07/D-08 (H01); render only permitted labels and no alternate raw-object context. Replace test_protected_objects_shown_as_warning's obsolete ungranted-label assertion with no-grant and view_contract-granted cases (A02), including empty-summary all-hidden full-page and modal requests. Keep POST unchanged: separately pin custom cv_check_delete_protection errors to 200/422, and database PROTECT to pytest.raises(ProtectedError) plus unchanged parent/Contract storage (A01). Exception handling redesign is outside this task."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 105,
+    "quote": "Addresses review concerns A18/A22: override DeleteView._allowed_methods() by filtering only DELETE from super()._allowed_methods(), preserving all other inherited method discovery. This single hook supplies both http_method_not_allowed and options; no separate OPTIONS override is needed. Assert the same allowed-method set in 405 Allow and successful OPTIONS for default and restored-method core/Guardian concrete subclasses. Restored method names still stop at the dispatch guard before any delete handler. In both supported environments construct/request the existing concrete views inside warnings.catch_warnings(record=True) with simplefilter(\"always\") and assert no recorded category named DeleteViewCustomDeleteWarning; do not import that removed category unconditionally on Django 6.0. Also assert the package inherits DeletionMixin.delete unchanged. These are compatibility preservation checks, not a claimed existing warning defect in unmodified source.</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 108,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete.py tests/test1/test_guardian_delete.py -q -p no:cacheprovider && PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-4-2/bin/python -m pytest tests/test1/test_delete.py tests/test1/test_guardian_delete.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 116,
+    "quote": "  <files>src/crud_views_guardian/lib/views.py, tests/test1/test_guardian_delete.py, tests/test1/test_delete.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 117,
+    "quote": "  <read_first>src/crud_views_guardian/lib/views.py; tests/test1/test_guardian_delete.py; tests/test1/test_delete.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 119,
+    "quote": "  <action>Apply _PermittedPks to protected model instances inside GuardianDeleteRelatedObjectsMixin.cv_filter_related_objects, independently of tree contents; remove its direct-call empty-tree identity shortcut (the real collector normally includes its root). Return permitted objects in original order with unchanged aggregates per D-07/D-08/D-13. Do not call the core model-level filter after this override: an object grant must retain a label even without global view permission (A04). Replace test_filter_related_objects_empty_tree_is_returned_unchanged with value/nonmutation assertions, and replace test_filter_related_objects_hides_unpermitted_and_keeps_structure's protected string sentinel with real models and permission assertions (A02); retain its cascade-tree structure checks. Test object/group grants, per-view global fallback, no/partial/full grants, protected-only real requests, direct empty-tree projections, equal labels on distinct objects, escaping, nonmutation and next-request revocation. Assert context and HTML, including one notice when summary and labels are empty. For a confirmed database-PROTECT POST assert ProtectedError and unchanged storage; custom-protection responses remain the separate 200/422 contract (A01).</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 122,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_guardian_delete.py tests/test1/test_delete.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 130,
+    "quote": "  <files>tests/test1/test_transactions.py, tests/test1/test_delete.py, tests/test1/test_guardian_delete.py, tests/test1/test_polymorphic.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 131,
+    "quote": "  <read_first>src/crud_views/lib/views/mixins.py; tests/test1/test_transactions.py; src/crud_views_polymorphic/lib/delete.py; tests/test1/app/views.py (VehicleDeleteView); tests/test1/test_polymorphic.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 132,
+    "quote": "  <behavior>Invalid confirmation and custom protection prevent writes; valid POST deletes once; failure in the success hook rolls back and suppresses on-commit. Registered VehicleDeleteView rejects DELETE with 405 and no DELETE in Allow, preserving both Car and Vehicle rows; existing GET/validated POST positives still pass.</behavior>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 133,
+    "quote": "  <action>Expand existing registered-view tests per D-12 rather than registering duplicate view keys. Cover empty/invalid confirmation, independent cv_check_delete_protection, missing targets, repeated rejected DELETE, permitted deletion hook order, cv_atomic rollback and on-commit behavior. Keep CSRF/login policy unchanged. Exercise inherited subclasses restoring the method name to pin 01-01's dispatch guard. Reuse the tracer's observed bypass failure; record passing preservation evidence for validation, hooks and rollback without inventing failures or reverting earlier fixes (A03). For statuses use the actor/route matrix in 05: Guardian active top-level DELETE is 405 before object lookup, while core and child parent gates may deny earlier (A10)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 137,
+    "quote": "For A26 per D-01/D-02, add test_delete_vehicle_http_delete_rejected in tests/test1/test_polymorphic.py using client_user_vehicle_delete, cv_vehicle and car_sedan. Send HTTP DELETE to the existing /vehicle/{pk}/delete/ route served by the registered VehicleDeleteView, inheriting PolymorphicDeleteViewPermissionRequired; do not create a duplicate registration or replace its route. Assert 405 and DELETE absent from the parsed Allow methods. Snapshot the concrete Car row and the base Vehicle row through its non_polymorphic queryset before the request, then assert both still exist with identical stored values afterward. Retain test_delete_vehicle as the positive control: GET returns 200 and validated confirm POST returns 302 and removes both rows. The focused -k delete selections must collect both the new rejection regression and the existing positive control under cached Django 6.0 and 4.2. Record measured passing evidence for this inherited-path expansion after 01-01; do not revert the guard to manufacture another failure.</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 138,
+    "quote": "  <acceptance_criteria>Every supported delete write path retains validation/protection/hook/atomic boundaries. Restored-method subclass cases also retain truthful Allow/OPTIONS headers and isolated class state. Registered VehicleDeleteView returns 405 for DELETE with DELETE absent from Allow and unchanged Car/Vehicle storage; its existing GET 200 and validated POST 302/removal controls pass on Django 6.0 and 4.2. Selected tests collect and pass; preservation tests may already pass before implementation, and rejected-method evidence cites 01-01.</acceptance_criteria>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 140,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_transactions.py tests/test1/test_delete.py tests/test1/test_guardian_delete.py -q -p no:cacheprovider && PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_polymorphic.py -k delete -q -p no:cacheprovider && PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-4-2/bin/python -m pytest tests/test1/test_polymorphic.py -k delete -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 161,
+    "quote": "| T-06.2-01 | Elevation of privilege | DeleteView inherited DELETE | high | mitigate | 01-01 / 01-03 enforce 405 and assert no write/hook side effects. |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 186,
+    "quote": "| A01 protection response distinction | MEDIUM | 01-01/02 distinguish custom 200/422 from unchanged database ProtectedError and assert storage. |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 196,
+    "quote": "| Catch database ProtectedError as a new response | Rejected as a lifecycle change outside this phase; 01-01/02 pin existing exception and storage preservation. |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 215,
+    "quote": "| A22 Django 4.2 custom-delete warning | MEDIUM | 01-01 uses a cooperative dispatch guard after CrudView and before Django DeleteView; preserves prior gates, modal Vary, unchanged delete identity, method-list/Allow filtering and POST. Both supported focused commands assert warning-free construction. 01-03 pins restored-name dispatch rejection. Supersedes Round 1 A05's delete-handler mechanism and Round 2 A18's inherited-handler wording; their rejection/header requirements remain. |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md",
+    "line": 227,
+    "quote": "| A26 registered polymorphic DELETE evidence | LOW | 01-03 owns test_polymorphic.py and an explicit VehicleDeleteView request asserting 405, DELETE absent from Allow and unchanged concrete Car/base Vehicle storage. Existing GET/validated POST controls remain, with focused Django 6.0/4.2 verification. The inherited guard design is unchanged. |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 8,
+    "quote": "  - src/crud_views_guardian/lib/mixins.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 9,
+    "quote": "  - src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 10,
+    "quote": "  - tests/test1/test_guardian_parent_none.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 11,
+    "quote": "  - tests/test1/test_guardian.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 12,
+    "quote": "  - src/crud_views_guardian/lib/viewset.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 13,
+    "quote": "  - tests/test1/test_guardian_inactive.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 14,
+    "quote": "  - src/crud_views/lib/view/base.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 15,
+    "quote": "  - src/crud_views/lib/view/buttons.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 16,
+    "quote": "  - src/crud_views/lib/views/card.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 27,
+    "quote": "    - \"Child-create cv_has_access checks a supplied parent or resolves the configured FK parent from an own-child instance; None, unrelated/missing-parent and M2M own-child inputs deny. Explicit parent calls and URL-bound list/create routes remain supported for M2M. FK object-page/card controls use the resolved parent, preserving separate permission/state values.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 29,
+    "quote": "    - \"The list create override passes a resolved parent to the state adapter; failed fallback lookup yields cv_access=False/cv_action_enabled=False without calling a custom state hook with None.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 30,
+    "quote": "    - \"D-11: Inactive ordinary, object/group-granted and superuser actors receive no rows or object access even with AllowAllUsersModelBackend.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 36,
+    "quote": "    - path: src/crud_views_guardian/lib/mixins.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 38,
+    "quote": "    - path: src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 40,
+    "quote": "    - path: tests/test1/test_guardian_parent_none.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 42,
+    "quote": "    - path: tests/test1/test_guardian.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 44,
+    "quote": "    - path: src/crud_views_guardian/lib/viewset.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 46,
+    "quote": "    - path: tests/test1/test_guardian_inactive.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 48,
+    "quote": "    - path: src/crud_views/lib/view/base.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 49,
+    "quote": "      provides: \"Internal context-state adapter preserving default action behavior and original ViewContext\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 50,
+    "quote": "    - path: src/crud_views/lib/view/buttons.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 51,
+    "quote": "      provides: \"ContextButton state dispatch through the same adapter\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 52,
+    "quote": "    - path: src/crud_views/lib/views/card.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 55,
+    "quote": "    - from: src/crud_views/lib/view/base.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 56,
+    "quote": "      to: src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 57,
+    "quote": "      via: \"Internal context-state adapter normalizes Guardian child-create targets to their configured FK parent before calling the existing custom cv_action_enabled hook; permission helpers resolve the same parent independently.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 58,
+    "quote": "    - from: src/crud_views/lib/view/buttons.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 59,
+    "quote": "      to: src/crud_views/lib/views/card.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 60,
+    "quote": "      via: \"ContextButton and card action builders use the same internal state adapter, retaining original page/label context and URL construction.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 61,
+    "quote": "    - from: src/crud_views_guardian/lib/mixins.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 62,
+    "quote": "      to: tests/test1/test_guardian_inactive.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 91,
+    "quote": "- tests/test1/test_guardian_parent_none.py (new regression module)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 92,
+    "quote": "- tests/test1/test_guardian_inactive.py (new regression module)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 93,
+    "quote": "- Shared internal parent-permission resolver in GuardianParentPermissionMixin (new class-callable implementation detail)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 94,
+    "quote": "- Private Guardian create parent-object resolver and internal _cv_action_enabled_for_context classmethod adapter (no new public configuration or permission rule)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 98,
+    "quote": "Test-local route contract (A08): construct fresh named ViewSets and classes inside yielding fixtures; build their complete URL patterns before first resolution. Use override_settings(ROOT_URLCONF=temporary_module) including required existing routes, and clear_url_caches() on entry and in finally. Snapshot/restore affected _REGISTRY entries and _VOCAB_CACHE, restore settings/module registration, and never add a view to an existing cached urlpatterns. Cleanup must run after assertion failures. Apply this contract to both new modules."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 104,
+    "quote": "  <files>src/crud_views_guardian/lib/mixins.py, src/crud_views_guardian/lib/views.py, src/crud_views/lib/view/base.py, tests/test1/test_guardian_parent_none.py, tests/test1/test_guardian.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 105,
+    "quote": "  <read_first>src/crud_views_guardian/lib/mixins.py; src/crud_views_guardian/lib/views.py; src/crud_views/lib/view/base.py; src/crud_views/lib/check.py; src/crud_views/lib/viewset/parentviewset.py; tests/test1/test_guardian.py; tests/test1/app/views.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 107,
+    "quote": "  <action>Add nested route regressions using the fixture isolation contract above. Centralize parent permission-key fallback into a class-callable resolver shared by dispatch and both create helpers. Preserve create-permission None fallback to general parent permission; when the resolved key is None, skip only permission evaluation. Resolve the URL parent first and always run cv_action_enabled(user,parent_obj) for no-object views per D-10. Child object views keep their own object-state gate."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 109,
+    "quote": "Addresses review concern H03: add a private parent-object resolver on GuardianCreateViewPermissionRequired. Accept an actual configured parent model instance first, including an M2M parent supplied explicitly. For an instance of cls.cv_viewset.model, reject own-child inference when parent.many_to_many_through_attribute is set; otherwise resolve its FK through cls.cv_viewset.parent.get_attribute(), then require a configured parent-model instance. Do not guess an attribute name, use the child's PK as a parent PK, select a manager's first/only/all related parents, accept unrelated types, or catch arbitrary application exceptions. Missing/None relations and Django ObjectDoesNotExist deny. Both create helpers use the shared resolution/permission check; cv_has_access(obj=None) remains False so the URL-bound list override performs its real-parent check. Top-level model-add behavior stays unchanged. Keep cv_has_access and cv_create_has_access permission-only, with no child-add requirement and no state check folded into them. Rename/expand test_create_cv_has_access_child_wrong_type_obj: its Book input is a legitimate FK own-child, so no parent grant remains False, the correct parent's grant gives True, another parent's grant gives False, and an unrelated Author denies even for a superuser. Cover configured non-default FK attribute, parent-None, None/missing relation and direct-parent inputs; update helper/test docstrings (superseding Round 1 H02's blanket wrong-model rationale)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 111,
+    "quote": "Pin enabled None-policy GET=200 and valid POST=302 with one child bound to URL parent; disabled GET/POST=403 with no child; nonexistent parent GET/POST=404. Include forged FK and interleaved parents (A10). For A13/A23 declare cv_guardian_accept_global_perms: bool and cv_guardian_anonymous_behavior: str on GuardianParentPermissionMixin as annotations ONLY, with no assigned defaults. CheckUnknownAttributes already collects annotation-only names; retain the existing getattr False/redirect fallbacks. Prove parent-only explicit settings produce no W280, then compose the parent mixin before custom object and queryset mixins defining global=True and anonymous=\"404\"; assert both resolved values, global-only permission behavior and anonymous 404 remain inherited. Restore the vocabulary cache with fixture cleanup."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 113,
+    "quote": "Move H03's shared state adapter into this task so list rendering can use it immediately: add private classmethod CrudView._cv_action_enabled_for_context(user,obj), defaulting to cls.cv_action_enabled(user,obj), and route _cv_get_action_context through it. Override the adapter on GuardianCreateViewPermissionRequired: top-level delegates unchanged; nested resolves the parent, returns False without a custom hook call when unresolved, otherwise invokes cls.cv_action_enabled(user,parent). Keep original ViewContext, labels, URLs and permission fields unchanged. For A24 route GuardianQuerysetMixin.cv_get_context's post-lookup state call through that adapter, retaining the separate cv_create_has_access permission result. Test real list success with the actual Publisher supplied to a strict state-hook spy; for the late-failure case let dispatch's parent lookup succeed and make only the subsequent cv_get_parent_object fallback raise Http404 or KeyError. Assert rendering completes with both fields False, no custom state-hook call with None, and no write. Normal missing-parent requests must still stop at dispatch with 404. Toolbar/alias/card call sites expand in 02-03."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 115,
+    "quote": "Addresses A25 by explicitly limiting own-child normalization to a single FK parent. In test_guardian_parent_none.py build isolated Guardian Genre list/create routes with existing Publisher/Genre models and GenreForm, parent attribute=\"publishers\", many_to_many_through_attribute=\"genres\", and CrispyViewMixin/CreateViewParentMixin/GuardianCreateViewPermissionRequired. No new models or shared fixture-file edits. A Genre associated with two publishers cannot establish a unique parent: both permission helpers and the nested state adapter deny that child input without invoking the custom state hook, even for a superuser or None policy. The same helpers with an explicit Publisher retain normal allowed/denied parent permission results; URL-bound list controls and direct create GET/POST use that URL parent and link the new Genre only to it, including enabled None policy without child-add grants. A disabled parent still rejects GET/POST without creating/linking a row. Do not infer route authority from an M2M object or expand helper signatures. A route-aware M2M own-child control enhancement is explicitly deferred: the current helper's object-only inputs carry no selected-parent identity, while public parent-object calls and existing URL-aware paths already supply it.</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 118,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_guardian_parent_none.py tests/test1/test_guardian.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 126,
+    "quote": "  <files>src/crud_views_guardian/lib/mixins.py, src/crud_views_guardian/lib/views.py, src/crud_views_guardian/lib/viewset.py, tests/test1/test_guardian_inactive.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 127,
+    "quote": "  <read_first>src/crud_views_guardian/lib/viewset.py; tests/test1/test_guardian_card.py; tests/test1/conftest.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 129,
+    "quote": "  <action>Deny authenticated inactive users with PermissionDenied in GuardianParentPermissionMixin.dispatch after its anonymous branch and before parent/None logic, and in both object/queryset has_permission overrides before permissive returns. Guard callable access/queryset/preview paths including create helpers, GuardianViewSet.get_objects_for_user and _PermittedPks: False, .none() or empty PK set as appropriate per D-11. Preserve anonymous modes and active-superuser semantics per D-05. In test_guardian_inactive.py define isolated GuardianActionViewPermissionRequired and CrispyViewMixin/FormSetMixin/GuardianUpdateViewPermissionRequired routes using existing Publisher/Book forms; these routes must exist in wave 2 without importing plan 03's future module (A08). Inactive fragment tests assert dispatch 403 before get_template_html with a spy, independently of fragment choice authorization work. Override AUTHENTICATION_BACKENDS with AllowAllUsersModelBackend plus Guardian backend and force_login with that backend; prove authenticated-but-inactive request identity. Test ordinary/object/group/global-only/superuser actors over list/card/detail/update/delete/action/create/fragment and callable paths, with next-request revocation/deactivation. Require observed pre-fix failures for queryset leaks and permissive request entry. Existing ObjectPermissionChecker object/parent denials are preservation tests and may start green; record them accurately (A03). Inactive dispatch rejects DELETE with 403; active top-level Guardian DELETE is 405, as specified in 05's matrix (A10).</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 132,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_guardian_inactive.py tests/test1/test_guardian_parent_none.py tests/test1/test_guardian_card.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 139,
+    "quote": "  <files>src/crud_views/lib/view/buttons.py, src/crud_views/lib/views/card.py, tests/test1/test_guardian_parent_none.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 140,
+    "quote": "  <read_first>src/crud_views/lib/view/base.py; src/crud_views/lib/view/buttons.py; src/crud_views/lib/views/card.py; src/crud_views/templatetags/crud_views.py; src/crud_views/lib/viewset/parentviewset.py; tests/test1/test_guardian_parent_none.py</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 141,
+    "quote": "  <behavior>FK child detail/update/delete pages and card rows offer create when the real parent permits it. Denied parent access hides/disables create; an authorized but state-disabled parent yields cv_access=True and cv_action_enabled=False. The permission filter remains True in that state-disabled case and the actual button remains unavailable. M2M own-child inputs retain 02-01's explicit fail-closed boundary.</behavior>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 142,
+    "quote": "  <action>Addresses review concern H03 per D-10/D-12/D-14. Expand the _cv_action_enabled_for_context adapter introduced in 02-01 to all ContextButton state call sites and both card-action branches. The default/base action context, Guardian create override and URL-list fallback are already wired by 02-01 (A24); do not redefine them. Do not override/wrap consumer cv_action_enabled definitions or substitute the parent into the original ViewContext, label rendering, URL, or permission-filter API. Direct request dispatch already supplies the real parent and stays unchanged. cv_context_has_permission remains permission-only and benefits from 02-01's FK resolution without changing the tag implementation. Follow A25's boundary: own-child inference applies only to FK nesting; M2M object-only permission/state denies, while explicit parent and URL-bound list/create paths remain available."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 144,
+    "quote": "Use real child detail/update/delete requests with cv_context_actions including create, a ContextButton alias targeting create, and card actions. Grant the actor the child-page permission and general parent-view grant independently of the parent-create grant so the page remains reachable in both allowed and denied create cases. Exercise allowed/denied/revoked parent-create grants, strict/global fallback, None policy, disabled parent state and inactive denial. Assert a custom state hook receives a Publisher (including when rendering a Book page), never a Book; preserve original child label context and URL parent binding. Render cv_context_has_permission:\"create\" together with cv_context_button, asserting permission-only True but unavailable button for disabled state, and both False/unavailable for denied permission. Assert resolved cv_access/cv_action_enabled separately, hide/disable output, direct GET/POST status/storage agreement, and next-request revocation. Use the existing route/loader cleanup contract. Include no-parent core and Guardian control positives to prove the default adapter leaves other action objects unchanged.</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 147,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_guardian_parent_none.py tests/test1/test_guardian.py tests/test1/test_guardian_card.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 200,
+    "quote": "| Preserve wrong-type cv_has_access=True | Rejected: plan's fail-closed parent contract is retained with explicit ownership of the stale characterization test. D-10 does not lock the permissive wrong-model fallback; URL-bound valid-parent behavior stays covered. |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 219,
+    "quote": "| A23 parent-mixin defaults shadow consumer policies | LOW | 02-01 uses annotation-only declarations recognized by CheckUnknownAttributes, keeps getattr defaults, and checks custom object/queryset True/404 composition. Supersedes Round 1 A13's valued-declaration instruction while retaining W280 coverage. |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-02-PLAN.md",
+    "line": 220,
+    "quote": "| A24 list fallback state hook receives None | LOW | 02-01 owns the base/Guardian adapter and routes the list fallback through it; tests real-parent success plus late Http404/KeyError failure after successful dispatch, with independent access/state fields. 02-03 expands toolbar/card callers. Ownership remains at most five files per task. |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 8,
+    "quote": "  - src/crud_views/lib/formsets/mixins.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 9,
+    "quote": "  - tests/test1/test_fragment_authorization.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 10,
+    "quote": "  - src/crud_views/lib/formsets/formsets.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 11,
+    "quote": "  - tests/test1/test_formsets_bugs.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 12,
+    "quote": "  - tests/test1/app/models.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 23,
+    "quote": "    - \"D-09 and D-13: Authorized saved/unsaved nested fragments preserve existing working coordinates and {html, rows}; ordinary custom ModelChoiceField filtering remains application-owned. Existing non-first child-declaration fragment output-index mismatch is explicitly deferred under A19, not claimed fixed.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 28,
+    "quote": "    - path: src/crud_views/lib/formsets/mixins.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 30,
+    "quote": "    - path: tests/test1/test_fragment_authorization.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 32,
+    "quote": "    - path: src/crud_views/lib/formsets/formsets.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 34,
+    "quote": "    - path: tests/test1/test_formsets_bugs.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 36,
+    "quote": "    - path: tests/test1/app/models.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 39,
+    "quote": "    - from: src/crud_views/lib/formsets/mixins.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 40,
+    "quote": "      to: src/crud_views_guardian/lib/mixins.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 41,
+    "quote": "      via: \"FormSetMixinBase.get initializes self.object through the cooperative get_object authorization gate before get_template_html can render editor choices.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 42,
+    "quote": "    - from: src/crud_views/lib/formsets/mixins.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 43,
+    "quote": "      to: src/crud_views/lib/formsets/formsets.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 72,
+    "quote": "- tests/test1/test_fragment_authorization.py (new module with isolated real registered route fixtures)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 73,
+    "quote": "- Private declaration-aware fragment coordinate validator in src/crud_views/lib/formsets/formsets.py (new implementation detail)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 77,
+    "quote": "Route fixtures (A08) must create fresh ViewSets before computing urlpatterns, install a temporary ROOT_URLCONF, clear_url_caches() on entry/exit and restore registry entries, _VOCAB_CACHE, settings and temporary module registration in finally, following 02's isolation contract. Reuse existing integer fixtures for the tracer; UUID test-only models are added in 03-02. No mutations to cached production fixture routes."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 81,
+    "quote": "Supported-coordinate boundary (A19): the successful add-row/bound-POST compatibility claims cover top-level formsets (whose init index is zero) and nested paths selecting the first child declaration at each nesting level, including all specified saved/unsaved integer/UUID cases. FormSet.init enumerates sibling child declarations, but FormSets.get_template currently supplies index=0 for the selected fragment. Consequently a non-first child declaration's emitted prefix can disagree with its initialized formset. This pre-existing output/lifecycle defect is deferred to the proposed 6.3 slice, which has not been added to the roadmap. It does not exempt any request from editor authorization, declared-path validation, actual ancestor positions or FK ancestry checks; valid nonzero ancestor indices must still be parsed as declared. Do not reject an otherwise valid coordinate solely to hide this output defect or claim that its round trip now works."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 87,
+    "quote": "  <files>src/crud_views/lib/formsets/mixins.py, tests/test1/test_fragment_authorization.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 88,
+    "quote": "  <read_first>src/crud_views/lib/formsets/mixins.py; src/crud_views/lib/views/mixins.py; tests/test1/app/views_formset.py; tests/test1/test_formsets_bugs.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 89,
+    "quote": "  <behavior>A registered CrispyViewMixin/FormSetMixin/GuardianUpdateViewPermissionRequired endpoint denies an ungranted editor before a secret ModelChoiceField renders; granted actor receives html and rows.</behavior>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 90,
+    "quote": "  <action>Create Guardian create/update routes using existing integer formset fixtures and the isolated route contract above (A08). Reproduce B2 with a secret Contract choice. In FormSetMixinBase.get authorize and initialize before get_template_html: object views set self.object through cooperative get_object; create views use None while retaining parent dispatch and polymorphic declaration selection. Preserve normal super().get and avoid loading/rendering the full editor twice. Direct/modal fragments for ungranted/revoked/state-disabled actors return 403; missing or wrong-URL-parent targets return 404 after the actor satisfies earlier parent gates; inactive requests retain wave-2 dispatch 403. Anonymous modes retain 302-to-login/403/404. Assert rendering/choice evaluation is never entered for denied requests. Run the browser payload positives above for authorized create/update and preserve {html, rows} per D-09/D-12. Require red evidence for the B2 bypass only; previously denied core/inactive paths are preservation evidence.</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 93,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_fragment_authorization.py tests/test1/test_formsets.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 101,
+    "quote": "  <files>src/crud_views/lib/formsets/mixins.py, src/crud_views/lib/formsets/formsets.py, tests/test1/test_fragment_authorization.py, tests/test1/test_formsets_bugs.py, tests/test1/app/models.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 102,
+    "quote": "  <read_first>src/crud_views/lib/formsets/formsets.py; src/crud_views/lib/formsets/render_tree.py; src/crud_views/static/crud_views/js/formset.js; docs/reference/formsets.md; tests/test1/test_formsets_bugs.py; tests/test1/app/models.py; tests/test1/conftest.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 104,
+    "quote": "  <action>Implement a private declaration-aware coordinate validator beside FormSets traversal, called before get_template. Validate the authorized root, each declared child position and persisted FK ancestry; nested query pk denotes the immediate inline parent. Use FormSet.PK grammar plus each corresponding model PK field's to_python without splitting UUID hyphens. Root create identity is None; root update identity is the loaded object's PK. Top-level parent prefix accepts omitted or empty string and rejects nonempty values; nested prefixes require the exact declared ancestry depth. Accept nonnegative client-created row indices beyond current database counts. After any None ancestor, all deeper parent identities must remain None. Unknown/empty key paths, invalid identities, wrong depth/child index/root, unrelated persisted ancestors and missing nested prefixes produce BadRequest before rendering. Validate num and every prefix index using ASCII [0-9]+ with guarded int conversion, including excessively long input; num=\u00b2 and prefix index \u00b2 must be stable 400, never conversion exceptions (A15). Preserve missing endpoint/wrong-URL-parent lookup 404."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 106,
+    "quote": "For A07, add two models ONLY to installed tests/test1/app/models.py: UUIDFragmentRow with UUID primary key default=uuid.uuid4, FK Author and text field; UUIDFragmentLeaf with FK UUIDFragmentRow and text field. The in-memory unmigrated test app creates their tables through existing pytest-django setup. Define ModelForms/package-compatible inline factories and a nested FormSets declaration locally in test_fragment_authorization.py; root and nested parent grammar are UUID. Exercise saved Author\u2192UUIDFragmentRow\u2192UUIDFragmentLeaf requests, a second Author/row for forged ancestry, new Author create, and unsaved extra UUID rows under a saved Author. This proves real FK membership, not only regex parsing. Normalize FormSet.init's prefix identity to None when form.instance._state.adding is true even if a UUID default already populated pk, preserving saved UUIDs and never clearing the instance's real pk (A14). Match FormSet.template's existing unsaved representation; assert rendered metadata, add-row requests and subsequent bound formset POST prefixes agree on create and extra rows. Keep POST save/conditional lifecycle unchanged. Run all browser payload positives, persisted UUID negatives and integer formset regressions. Retain ancestry validation per AUTH-02/D-09 despite the proposal to drop it: authorization stops choice disclosure; ancestry separately fulfills the locked coordinate-integrity contract."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-03-PLAN.md",
+    "line": 111,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_fragment_authorization.py tests/test1/test_formsets_bugs.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 8,
+    "quote": "  - src/crud_views_guardian/lib/viewset.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 9,
+    "quote": "  - tests/test1/test_guardian_policy.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 10,
+    "quote": "  - src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 11,
+    "quote": "  - src/crud_views_guardian/templates/crud_views/snippets/guardian/config_table.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 12,
+    "quote": "  - src/crud_views_guardian/templates/crud_views/view_guardian_manage.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 13,
+    "quote": "  - tests/test1/test_guardian.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 23,
+    "quote": "    - \"D-03 and D-04: Global fallback stays per view; supplying the removed ViewSet flag fails with a diagnostic naming the per-view replacement.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 24,
+    "quote": "    - \"D-05: GuardianViewSet.get_objects_for_user remains strict with object/group/active-superuser semantics and no global-fallback option.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 28,
+    "quote": "    - path: src/crud_views_guardian/lib/viewset.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 30,
+    "quote": "    - path: tests/test1/test_guardian_policy.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 32,
+    "quote": "    - path: src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 34,
+    "quote": "    - path: src/crud_views_guardian/templates/crud_views/snippets/guardian/config_table.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 36,
+    "quote": "    - path: src/crud_views_guardian/templates/crud_views/view_guardian_manage.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 38,
+    "quote": "    - path: tests/test1/test_guardian.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 41,
+    "quote": "    - from: src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 42,
+    "quote": "      to: src/crud_views_guardian/templates/crud_views/view_guardian_manage.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 43,
+    "quote": "      via: \"GuardianManageView.get_view_data projects each registered view's effective cv_guardian_accept_global_perms and applicability into named per-view policy rows behind the existing manage authorization gate.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 44,
+    "quote": "    - from: src/crud_views_guardian/lib/views.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 45,
+    "quote": "      to: src/crud_views_guardian/templates/crud_views/snippets/guardian/config_table.html"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 74,
+    "quote": "- tests/test1/test_guardian_policy.py (new regression module)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 75,
+    "quote": "- Per-view effective global-policy entries in GuardianManageView.get_view_data and strict-helper entry in guardian_config (new context contract)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 76,
+    "quote": "- Targeted GuardianViewSet before-validator rejecting removed constructor key (new diagnostic)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 80,
+    "quote": "FLAGGED ASSUMPTION AUTH-06/unclassified: Probe input is the AUTH-06 requirement, \"Global fallback remains per view; the inert ViewSet flag is removed with clear diagnostics/migration; get_objects_for_user stays strict and manage shows effective policy per view and the strict helper policy.\" The detector emitted \"unclassified \u2014 review manually\" without an acceptance predicate. It remains unresolved, not auto-dismissed; carry this exact input/reason into ACCEPTANCE. Constructor, mixed-view, helper and manage tests prove named requirements, not all unidentified edges."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 82,
+    "quote": "For test-local views use 02's fixture contract (A08): fresh ViewSets/routes before URL resolution, temporary ROOT_URLCONF, clear_url_caches() before/after, and finally restoration of registry, vocabulary cache, settings and temporary module registration. Failed constructors must leave no registry entry."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 88,
+    "quote": "  <files>src/crud_views_guardian/lib/viewset.py, src/crud_views_guardian/lib/views.py, src/crud_views_guardian/templates/crud_views/snippets/guardian/config_table.html, tests/test1/test_guardian_policy.py, tests/test1/test_guardian.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 89,
+    "quote": "  <read_first>src/crud_views_guardian/lib/viewset.py; src/crud_views/lib/formsets/formsets.py; tests/test1/test_guardian.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 90,
+    "quote": "  <behavior>Removed keyword True or False raises a useful Pydantic validation error; two views on one ViewSet retain opposite fallback policies; helper remains strict.</behavior>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 92,
+    "quote": "  <action>In one task/commit remove GuardianViewSet.cv_guardian_accept_global_perms, replace GuardianManageView.get_context_data's obsolete field read with an explicit strict-helper entry, update config_table.html to show that helper, and update test_guardian_manage_context_has_guardian_config (A09), per D-04/D-05. Manage must render after this task. Add mode=before validator guarded by isinstance(data, collections.abc.Mapping), rejecting the exact removed key with a message naming the view-class replacement; non-mapping input passes through to Pydantic's established validation behavior (A12). Test removed True/False keywords, unrelated extras unchanged, model_validate(existing_instance), and an invalid non-mapping input yielding Pydantic ValidationError rather than TypeError; failed construction must not register a ViewSet. Keep any after-validator registration behavior unchanged. Add real strict/global-accepting sibling routes with global-only, object/group, active-superuser and inactive users. Keep helper accept_global_perms=False/use_groups=True, including 02's inactive denial; no helper configuration or ViewSet inheritance per D-03/D-05. Use isolated fixtures above. Run the combined new-policy and existing Guardian suite before committing, so removal cannot strand the manage reader.</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 93,
+    "quote": "  <acceptance_criteria>Removed-key tests go red then green. Per-view/helper behavior stays correct, model validation does not acquire a raw TypeError, failed construction leaves no registry entry, and the existing manage route renders 200 with strict-helper context immediately after this task.</acceptance_criteria>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 95,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_guardian_policy.py tests/test1/test_guardian.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 103,
+    "quote": "  <files>src/crud_views_guardian/lib/views.py, src/crud_views_guardian/templates/crud_views/snippets/guardian/config_table.html, src/crud_views_guardian/templates/crud_views/view_guardian_manage.html, tests/test1/test_guardian_policy.py, tests/test1/test_guardian.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 104,
+    "quote": "  <read_first>src/crud_views_guardian/templates/crud_views/snippets/guardian/config_table.html; src/crud_views_guardian/templates/crud_views/view_guardian_manage.html; src/crud_views/lib/views/manage.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 106,
+    "quote": "  <action>Expand the now-working manage projection with per-view effective fallback and applicability per D-06. In get_view_data treat GuardianObjectPermissionMixin/GuardianQuerysetMixin as applicable; treat parent-only views as applicable only with an actual parent and a non-None effective parent permission from 02's shared resolver. Object/queryset applicability remains true even if a separate parent policy is None. Plain views, manage itself, top-level create, and parent-only None-permission views report not applicable (A17). Applicable rows show explicit strict/global-accepting values from each view class, never from the removed ViewSet field; keep 04-01's independently strict helper entry. Render named mixed-policy rows through existing templates. Test all applicability categories, especially a parent-only create with both parent permission settings None and fallback=True: it must show not applicable while enabled create still succeeds with no grants. Preserve manage's existing yes/debug_only/group gate and test group-only mode separately from the fixture default yes. Add full response context/HTML checks and positive visible policy values, using isolated fixture teardown above."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 111,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_guardian_policy.py tests/test1/test_guardian.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-04-PLAN.md",
+    "line": 132,
+    "quote": "| T-06.2-08 | Tampering | GuardianViewSet constructor | medium | mitigate | 04-01 rejects the exact removed key before Pydantic discards it. |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 8,
+    "quote": "  - tests/test1/test_authorization_matrix.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 9,
+    "quote": "  - tests/test1/test_authorization_templates.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 25,
+    "quote": "    - path: tests/test1/test_authorization_matrix.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 27,
+    "quote": "    - path: tests/test1/test_authorization_templates.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 30,
+    "quote": "    - from: tests/test1/test_authorization_matrix.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 31,
+    "quote": "      to: tests/test1/test_authorization_templates.py"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 60,
+    "quote": "- tests/test1/test_authorization_matrix.py (new direct-request matrix)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 61,
+    "quote": "- tests/test1/test_authorization_templates.py (new locmem native-template regressions)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 67,
+    "quote": "Use fresh rows per destructive cell and explicit expected statuses, never an allowed-status set. For each actor run list/card GET, detail GET, update GET/valid POST, delete GET/confirmed POST/DELETE, action POST, create GET/valid POST and fragment GET. Bind the fixture action to a measurable field update and 302 redirect. The first table determines a granted object operation; the second pins method/storage results. Include strict and global-accepting views on the same ViewSet."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 76,
+    "quote": "| Inactive ordinary/object/group/global/superuser under AllowAllUsersModelBackend | Denied by core permission gate | Dispatch 403 | Dispatch 403 |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 90,
+    "quote": "| Granted database-PROTECT confirmed delete POST | ProtectedError re-raised by test client | Parent and protected relation persist |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 101,
+    "quote": "| Reachable child page, parent-create permitted but state disabled | Page GET 200; create GET/POST 403 | Permission filter True, cv_access=True and cv_action_enabled=False; control hidden/disabled; no new child |"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 110,
+    "quote": "For H03's child-page rows, keep the page reachable by granting its child permission and the general parent-view permission, independently of the create parent's change permission. Parameterize detail/update/delete pages and strict/global-accepting create policies, retaining parent-None's no-child-add rule. Include a configured FK attribute differing from the parent ViewSet name, different-parent grants and next-request revocation. The permission filter deliberately stays True for an authorized but disabled action; the actual control and request enforce state. These own-child agreement rows apply to FK nesting per A25: M2M object-only callers lack a unique selected parent and deny, while explicit-parent and URL-aware list/create positives are owned by 02-01. Do not expand these rows into a promise of M2M child-page inference. A19's exact fragment output/POST positive claims follow plan 03's supported-coordinate boundary; all declaration paths retain the authorization/ancestry matrix."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 118,
+    "quote": "  <files>tests/test1/test_authorization_matrix.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 119,
+    "quote": "  <read_first>tests/test1/test_guardian.py; tests/test1/test_guardian_card.py; tests/test1/test_conditional_formset.py; superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 121,
+    "quote": "  <action>Implement the actor and response tables above as parameterized real Client tests, using isolated routes and a measurable action callback. Each cell asserts its single expected status/exception, query result where applicable, stored row/field changes and hook counts per D-12/D-13. Add interleaved actors/view policies/URL parents and fresh-request revocation/deactivation. Use AllowAllUsersModelBackend for inactive sessions and prove request identity. Include the table's distinct core/Guardian DELETE ordering, parent-None disabled POST and manage modes; reuse earlier regression helpers without importing future modules or creating global route side effects. Run conditional-formset tests to preserve aggregate purge authority. This wave confirms fixes already made: record passing replay results and cite 01\u201304's defect evidence; do not revert code or manufacture a red-first result (A03)."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 126,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_authorization_matrix.py tests/test1/test_conditional_formset.py -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 134,
+    "quote": "  <files>tests/test1/test_authorization_templates.py</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 135,
+    "quote": "  <read_first>tests/test1/test_crispy_buttons.py; docs/reference/theme.md; tests/test1/test_delete.py; tests/test1/test_formsets.py; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 139,
+    "quote": "For H03 render the real create toolbar action, a ContextButton alias targeting create, and a create card action from own-child contexts. Render cv_context_has_permission:\"create\" alongside cv_context_button on the child page. Assert allowed labels/links and original child label context, denied hidden/disabled output, and permission-True/state-False behavior for a disabled parent. Use a custom state hook asserting the actual parent model argument; template code consumes resolved fields without reconstructing permission or state rules. For A20 apply the singleton fixture recipe to every manage override test as well.</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-05-PLAN.md",
+    "line": 142,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_authorization_templates.py tests/test1/test_form_buttons_golden.py tests/test1/test_crud.py tests/test1/test_cancel_origin.py --deselect tests/test1/test_form_buttons_golden.py::test_filter_form_baseline -q -p no:cacheprovider</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 8,
+    "quote": "  - docs/reference/guardian.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 9,
+    "quote": "  - docs/reference/delete_view.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 10,
+    "quote": "  - docs/reference/formsets.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 11,
+    "quote": "  - docs/reference/context_buttons.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 12,
+    "quote": "  - docs/faq.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 13,
+    "quote": "  - docs/reference/theme.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 14,
+    "quote": "  - docs/migrating-1.0.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 29,
+    "quote": "    - \"D-13: Documentation preserves aggregate counts/purge policy and explicitly assigns ordinary ModelChoiceField filtering to applications.\""
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 31,
+    "quote": "    - path: docs/reference/guardian.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 33,
+    "quote": "    - path: docs/reference/delete_view.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 35,
+    "quote": "    - path: docs/reference/formsets.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 37,
+    "quote": "    - path: docs/reference/context_buttons.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 39,
+    "quote": "    - path: docs/faq.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 41,
+    "quote": "    - path: docs/reference/theme.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 43,
+    "quote": "    - path: docs/migrating-1.0.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 52,
+    "quote": "    - from: docs/reference/guardian.md"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 86,
+    "quote": "Pre-fix full-suite baseline (A11), measured 2026-10-29 at 32f4f2e before implementation: both commands used PYTHONPATH=\"$PWD/src:$PWD\", tests/test1, -q -p no:cacheprovider and only --deselect tests/test1/test_form_buttons_golden.py::test_filter_form_baseline. Django 4.2.30: 5459 passed, 1 skipped, 1 deselected in 164.77s. Django 6.0.9: 5460 passed, 1 deselected in 295.18s. Both use Python 3.12.3, Guardian 3.5.2, crispy-forms 2.0, crispy-bootstrap5 2023.10, pytest 9.2.0 and Pydantic 2.14.1. VALIDATION records exact commands. This is broader than nox's CRISPY_FLOOR_TESTS and is measured baseline evidence, not proof that future AUTH tests pass. Current baseline has no unrelated failing nodes."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 92,
+    "quote": "  <files>docs/reference/guardian.md, docs/reference/delete_view.md, docs/reference/formsets.md, docs/reference/context_buttons.md, docs/faq.md</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 93,
+    "quote": "  <read_first>docs/reference/guardian.md; docs/reference/delete_view.md; docs/reference/formsets.md; docs/reference/context_buttons.md; docs/faq.md; docs/reference/conditional.md; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 95,
+    "quote": "  <action>Update canonical references from implemented code/tests per D-01\u2013D-14. Explain per-view fallback, removed ViewSet key/diagnostic, strict-helper active-superuser semantics, inactive sessions, parent-None parent/state gates, applicable/not-applicable manage rows and unchanged manage gate. For H03/A25, document actual-parent and FK own-child helper inputs (configured FK via ParentViewSet.get_attribute()), denial for None/unrelated/missing-parent inputs, unchanged URL-bound list override and top-level add behavior. Update the existing cv_context_has_permission recipes in context_buttons.md and faq.md: the filter is permission-only, resolves a Guardian FK child's actual parent for create, and can be True while state disables the real control. It remains False for child-create with a None list-page object; use the existing URL-aware resolved-button loop/control there. Do not instruct valid FK child-page callers to replace their object with a parent manually. State hooks on resolved create controls receive the real parent while labels retain the original page object."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 99,
+    "quote": "Document inherited HTTP DELETE now returning 405 after prior auth/parent/core-state gates, truthful Allow/OPTIONS excluding DELETE even after method-name restoration (A18), supported validated POST, and separate custom-protection 200/422 versus unchanged database ProtectedError behavior. Document safe protected_objects plus independent has_protected_objects, including outer preview include and preserved aggregates. Addresses A21: custom cv_filter_related_objects overrides must return only authorized RelatedObjects.protected entries, preserving the original independently captured blocked flag and aggregate policy. Delegate to the appropriate existing core/Guardian superclass filter or implement equivalent authorization; do not call the core model-only filter after Guardian's object filter or pass raw protected objects through. The delete view's per-view cv_guardian_accept_global_perms controls global view-permission fallback for each related protected model's labels, not only the deletion target; the removed ViewSet flag and strict helper do not configure it."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 101,
+    "quote": "Explain fragment authorization, saved/unsaved FK ancestry and None sentinel for unsaved UUID-default instances, retaining wire field names and html/rows; ordinary ModelChoiceField filtering remains application-owned. For A19 record the non-first child-declaration emitted-index mismatch and the exact supported-coordinate boundary from 03, with repair deferred to proposed 6.3; all paths still enforce authorization/ancestry. Link to existing conditional purge policy. Cross-check every described behavior against named implementation tests and record that semantic review in the summary; strict mkdocs alone is not semantic proof.</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 104,
+    "quote": "    <automated>.venv/bin/mkdocs build --strict</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 112,
+    "quote": "  <files>docs/reference/theme.md, docs/migrating-1.0.md, CHANGELOG.md</files>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 113,
+    "quote": "  <read_first>docs/reference/theme.md; docs/migrating-1.0.md; CHANGELOG.md; .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md</read_first>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 115,
+    "quote": "  <action>Add paired Breaking/migration entries per D-14 for rejecting inherited Django HTTP DELETE behavior (never describe it as a formerly documented package API), removed ViewSet constructor key, protected/manage context changes and the corrected child-create helper contract. H03 supersedes Round 1 H02's blanket wrong-model migration: valid FK own-child inputs remain supported through configured-FK parent resolution, but unrelated/missing-parent inputs deny and formerly unconditional own-child access now honors actual parent permission. For A25 call out M2M own-child denial explicitly in the same Breaking/migration pair: an object alone cannot identify the URL-selected parent, so automatic object-only controls can be unavailable while an authorized URL-bound create route still works. Explicit configured-parent helper calls and URL-aware list controls remain supported; do not prescribe arbitrary relation selection. Explain direct-parent/None semantics, independent permission/state fields, original child label context and the unchanged top-level add/parent-None rules; link the qualified wrapper recipes and deferred route-aware M2M boundary. Provide per-view config before/after and copied-preview guidance updating BOTH enclosing include and inner notice to has_protected_objects while displaying only filtered labels; include copied-manage applicability/strict-helper guidance."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 117,
+    "quote": "For A21 explicitly instruct custom cv_filter_related_objects overrides to filter RelatedObjects.protected before returning context, delegate to their correct core/Guardian superclass or supply equivalent checks, preserve the pre-filter blocked flag and aggregates, and avoid reintroducing raw hidden objects. Explain that global fallback on the delete view also governs global view grants for related protected labels; object grants still work without a core model-level second pass. Explain ancestry/unsaved UUID sentinel correction without changing request keys/response shape, and link A19's existing limitation without advertising it as fixed. Put safe-context theme guidance in a new standalone level-two section outside Custom alert frame, Custom form-button templates and Cancel links in custom form-button templates; preserve their exact Python/template fence counts and all existing heading/anchor names (A16). Preserve completed form/cancel/escaping contracts. Review Breaking/migration pairing semantically, then run the named existing doc extraction tests and strict build; do not rewrite those tests to hide unintended heading/fence drift.</action>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 120,
+    "quote": "    <automated>PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_alerts.py tests/test1/test_form_button_docs.py tests/test1/test_label_mode_docs.py tests/test1/test_pagination_docs.py -q -p no:cacheprovider && .venv/bin/mkdocs build --strict</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 131,
+    "quote": "  <action>Run the final selection in both cached environments with all six new modules, original eight-file baseline and form/cancel regressions, then full tests/test1 and strict docs. Use only the exact nox wrapper-golden exclusion; test_filter_form_controls_match_golden remains collected. Compare full-suite outcomes with the measured pre-fix baseline above (A11). Record interpreter versions, exact commands, collected/passed/skipped/deselected counts, durations and failures in ACCEPTANCE. Existing baseline has no failing nodes: any new failure needs investigation and cannot be silently excluded. If external/environment drift introduces an unrelated failure, reproduce it against the pre-fix source in an isolated checkout using the same environment before classifying it; record node, before/after evidence and limitation separately, leaving the full-suite result non-passing. Never label unrelated failures as AUTH results or missing tests as passes. Keep every AUTH regression passing as a completion requirement. Preserve wave-1\u20133 red-to-green evidence and mark replay/docs/preservation results honestly (A03). Update VALIDATION from actual execution. Hand Phase 7 the finalized method, diagnostic, safe-context, manage applicability/helper, wrong-type access-helper and fragment/UUID-sentinel contracts, plus the exact unresolved AUTH-06 probe input/reason. Do not claim unrun Python/Django/Guardian combinations."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 136,
+    "quote": "    <automated>for dcv_django in 6-0 4-2; do PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-${dcv_django}/bin/python -m pytest tests/test1/test_guardian.py tests/test1/test_guardian_card.py tests/test1/test_guardian_delete.py tests/test1/test_delete.py tests/test1/test_formsets.py tests/test1/test_formsets_bugs.py tests/test1/test_transactions.py tests/test1/test_conditional_formset.py tests/test1/test_guardian_parent_none.py tests/test1/test_guardian_inactive.py tests/test1/test_fragment_authorization.py tests/test1/test_guardian_policy.py tests/test1/test_authorization_matrix.py tests/test1/test_authorization_templates.py tests/test1/test_form_buttons_golden.py tests/test1/test_crud.py tests/test1/test_cancel_origin.py --deselect tests/test1/test_form_buttons_golden.py::test_filter_form_baseline -q -p no:cacheprovider && PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-${dcv_django}/bin/python -m pytest tests/test1 --deselect tests/test1/test_form_buttons_golden.py::test_filter_form_baseline -q -p no:cacheprovider || exit $?; done && .venv/bin/mkdocs build --strict</automated>"
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 164,
+    "quote": "Final integration also runs the same selection and full tests/test1 under Django 4.2, and .venv/bin/mkdocs build --strict. Preserve the existing crispy-floor wrapper-only golden exclusion exactly as noxfile.py specifies."
+  },
+  {
+    "plan": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-06-PLAN.md",
+    "line": 180,
+    "quote": "| A03 docs/integration evidence | MEDIUM | All tasks distinguish semantic review, builds and replay from defect reproduction. |"
+  }
+]

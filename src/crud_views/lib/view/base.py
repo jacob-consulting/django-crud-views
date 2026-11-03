@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from contextlib import nullcontext
+from contextlib import nullcontext, suppress
 from functools import cached_property
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
@@ -22,10 +22,11 @@ from django.shortcuts import get_object_or_404
 from django.template import Context as TemplateContext
 from django.template import Template
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.cache import patch_vary_headers
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.views.generic.edit import FormMixin
 
 from crud_views.lib import check
 from crud_views.lib.check import (
@@ -192,6 +193,14 @@ class CrudView(metaclass=CrudViewMetaClass):
             expression=cls.cv_origin_keys_registered(cls.cv_success_keys),
             msg=f"cv_success_keys entries must be registered view keys, got {cls.cv_success_keys!r}",
         )
+        if issubclass(cls, FormMixin) and cls.cv_viewset is not None:
+            yield CheckExpression(
+                context=cls,
+                id="E256",
+                expression=cls._cv_cancel_key_usable(cls.cv_cancel_key or cls.cv_key)
+                or any(cls._cv_cancel_key_usable(key) for key in effective_cancel_keys(cls)),
+                msg=cls._cv_cancel_configuration_message(),
+            )
         yield CheckExpression(
             context=cls,
             id="E207",
@@ -794,15 +803,42 @@ class CrudView(metaclass=CrudViewMetaClass):
         return origin
 
     @classmethod
+    def _cv_cancel_key_usable(cls, key):
+        """Static route shape only; actor permissions and action state are request-local."""
+        try:
+            target = cls.cv_viewset.get_view_class(key)
+        except ViewSetKeyFoundError:
+            return False
+        return cls.cv_object or not target.cv_object
+
+    @classmethod
+    def _cv_cancel_configuration_message(cls, key=None):
+        key = (cls.cv_cancel_key or cls.cv_key) if key is None else key
+        return f"{cls.__name__}.cv_cancel_key={key!r}: configure a registered usable destination"
+
+    def _cv_cancel_parent_object(self):
+        """Only the built-in missing-row lookup makes a destination unavailable.
+
+        Application overrides own their exceptions, including Http404. Missing URL
+        kwargs and database failures are programming/operational errors, not denial.
+        """
+        lookup = self.cv_get_parent_object
+        if getattr(lookup, "__func__", None) is not CrudView.cv_get_parent_object:
+            return lookup()
+        try:
+            return lookup()
+        except Http404:
+            return None
+
+    @classmethod
     def _cv_cancel_target_available(cls, user, obj, rendering_view):
         target_obj = obj if cls.cv_object else None
         if not cls.cv_has_access(user, target_obj):
             return False
         action_obj = target_obj
         if not cls.cv_object and cls.cv_viewset.has_parent:
-            try:
-                action_obj = rendering_view.cv_get_parent_object()
-            except Http404:
+            action_obj = rendering_view._cv_cancel_parent_object()
+            if action_obj is None:
                 return False
         return cls._cv_action_enabled_for_rendering(user, action_obj, rendering_view)
 
@@ -821,18 +857,25 @@ class CrudView(metaclass=CrudViewMetaClass):
 
         owner = copy(self)
         owner.request = request
+        availability = {}
+
+        def available(target):
+            if target not in availability:
+                availability[target] = target._cv_cancel_target_available(user, obj, owner)
+            return availability[target]
+
         capture = read_cancel_state(owner) if effective_cancel_keys(self) else None
         if capture and capture.origin in effective_cancel_keys(self):
             try:
                 target = self.cv_get_cls(capture.origin)
             except ViewSetKeyFoundError:
                 target = None
-            if (
-                target
-                and (not target.cv_object or obj is not None)
-                and target._cv_cancel_target_available(user, obj, owner)
-            ):
-                url = self.cv_get_url(capture.origin, obj)
+            url = None
+            if target and (not target.cv_object or obj is not None):
+                # An unusable request origin falls back; configured route failures below are errors.
+                with suppress(NoReverseMatch):
+                    url = self.cv_get_url(capture.origin, obj)
+            if url is not None and available(target):
                 if capture.query is not None:
                     query = capture.query
                     if is_cancel_list_destination(target):
@@ -840,19 +883,21 @@ class CrudView(metaclass=CrudViewMetaClass):
                     if query:
                         url += "?" + query
                 return url
+        fallback_key = self.cv_cancel_key or self.cv_key
+        message = self._cv_cancel_configuration_message(fallback_key)
         try:
-            target = self.cv_get_cls(self.cv_cancel_key)
+            target = self.cv_get_cls(fallback_key)
         except ViewSetKeyFoundError as exc:
-            raise ImproperlyConfigured(
-                f"{type(self).__name__}.cv_cancel_key={self.cv_cancel_key!r}: configure an existing destination"
-            ) from exc
+            raise ImproperlyConfigured(message) from exc
         if target.cv_object and obj is None:
-            raise ImproperlyConfigured(
-                f"{type(self).__name__}.cv_cancel_key={self.cv_cancel_key!r}: configure an existing usable destination"
-            )
-        if not target._cv_cancel_target_available(user, obj, owner):
+            raise ImproperlyConfigured(message)
+        try:
+            fallback_url = self.cv_get_url(fallback_key, obj)
+        except NoReverseMatch as exc:
+            raise ImproperlyConfigured(message) from exc
+        if not available(target):
             return None
-        return self.cv_get_url(self.cv_cancel_key, obj)
+        return fallback_url
 
     def cv_get_success_key(self, obj: Model | None = None) -> str | None:
         """The key the success redirect goes to: a validated origin, else cv_success_key.

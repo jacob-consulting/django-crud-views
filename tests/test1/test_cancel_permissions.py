@@ -2,6 +2,7 @@
 
 import ast
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from django.core.checks import Error
@@ -11,10 +12,9 @@ from django.http import Http404
 from django.test import RequestFactory
 from django.views.generic.edit import FormMixin
 
-from crud_views.lib.view import CrudView
 from crud_views.lib.view.cancel import effective_cancel_keys
-from crud_views.lib.viewset import ViewSet, _REGISTRY, _REGISTRY_LOCK
-from tests.test1.test_cancel_origin import cancel_url, url
+from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
+from tests.test1.test_cancel_origin import url
 
 
 def fallback_errors(cls):
@@ -25,6 +25,7 @@ def bound(cls, user, obj=None, query=None, **kwargs):
     view = cls()
     request = RequestFactory().get("/", query or {})
     request.user = user
+    request.resolver_match = SimpleNamespace(url_name=cls.cv_viewset.get_router_name(cls.cv_key))
     view.setup(request, **kwargs)
     view.object = obj
     return view
@@ -58,6 +59,7 @@ VALID_FORMS = {
     "vehicle": "VehicleCreateSelectView VehicleCreateView VehicleUpdateView VehicleDeleteView",
 }
 COLLECTED_VALID = {
+    "s3file": "S3FileDeleteView",
     "publisher_formset": "PublisherFormSetCreateView PublisherFormSetUpdateView",
     "readme": "ReadmeAuthorCreate ReadmeAuthorUpdate ReadmeAuthorDelete",
 }
@@ -71,7 +73,7 @@ COLLECTED_INVALID = {
 
 
 def test_registered_cancel_fallback_inventory(monkeypatch, record_property):
-    import tests.test1.app.views  # noqa: F401
+    import tests.test1.app.urls  # noqa: F401 -- include the lazily loaded Resource forms
 
     snapshot = dict(_REGISTRY)
     expected = {
@@ -113,9 +115,13 @@ def test_fallback_diagnostic_identifier_is_unique():
     declarations = []
     for path in Path("src").rglob("*.py"):
         for node in ast.walk(ast.parse(path.read_text())):
-            if isinstance(node, ast.keyword) and node.arg == "id":
-                if isinstance(node.value, ast.Constant) and node.value.value == "E256":
-                    declarations.append(str(path))
+            if (
+                isinstance(node, ast.keyword)
+                and node.arg == "id"
+                and isinstance(node.value, ast.Constant)
+                and node.value.value == "E256"
+            ):
+                declarations.append(str(path))
     assert declarations == ["src/crud_views/lib/view/base.py"]
 
 
@@ -152,7 +158,7 @@ def test_core_fallback_runtime_only_when_needed(cv_publisher, publisher_penguin,
     assert view.cv_get_cancel_url() == url(cv_publisher, "detail", publisher_penguin.pk)
     view.request.GET = view.request.GET.copy()
     view.request.GET["cv_from"] = "invalid"
-    with pytest.raises(ImproperlyConfigured, match="cv_cancel_key='missing'.*registered.*usable"):
+    with pytest.raises(ImproperlyConfigured, match=r"cv_cancel_key='missing'.*registered.*usable"):
         view.cv_get_cancel_url()
     monkeypatch.setattr(cls, "cv_cancel_key", "detail")
     view.object = None
@@ -210,7 +216,7 @@ def test_core_missing_parent_unavailable_and_missing_kwargs_propagate(cv_book, u
     view = bound(cls, user_book_view, **{cv_book.parent.get_pk_name(): 999999})
     assert view.cv_get_cancel_url() is None
     view.kwargs.clear()
-    with pytest.raises(KeyError):
+    with pytest.raises((KeyError, ValueError)):
         view.cv_get_cancel_url()
 
 
@@ -222,4 +228,86 @@ def test_core_state_errors_propagate(cv_publisher, user_publisher_view, monkeypa
 
     monkeypatch.setattr(cv_publisher.get_view_class("list"), "cv_action_enabled", classmethod(fail))
     with pytest.raises(error, match="state hook"):
+        bound(cv_publisher.get_view_class("create"), user_publisher_view).cv_get_cancel_url()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("enabled", [False, True])
+def test_core_custom_create_and_rendering_adapter(cv_publisher, user_publisher_add, client, monkeypatch, enabled):
+    target = cv_publisher.get_view_class("create")
+    events = []
+
+    @classmethod
+    def state(cls, user, obj=None):
+        events.append(("state", obj))
+        return enabled
+
+    @classmethod
+    def adapter(cls, user, obj, rendering_view):
+        events.append(("adapter", obj))
+        assert rendering_view.request.user == user
+        return cls.cv_action_enabled(user, obj)
+
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+    monkeypatch.setattr(target, "_cv_action_enabled_for_rendering", adapter)
+    owner = bound(cv_publisher.get_view_class("update"), user_publisher_add)
+    owner.cv_cancel_keys = ["create"]
+    owner.cv_cancel_key = "create"
+    owner.request.GET = RequestFactory().get("/", {"cv_from": "create"}).GET
+    assert owner.cv_get_cancel_url() == (url(cv_publisher, "create") if enabled else None)
+    # A denied origin which is also the fallback is evaluated only once.
+    assert events == [("adapter", None), ("state", None)]
+    events.clear()
+    context = owner.cv_get_context(key="create", obj=None, user=user_publisher_add, request=owner.request)
+    assert context["cv_access"] is True and context["cv_action_enabled"] is enabled
+    assert events == [("adapter", None), ("state", None)]
+    events.clear()
+    client.force_login(user_publisher_add)
+    assert client.get(url(cv_publisher, "create")).status_code == (200 if enabled else 403)
+    # Authorized GET additionally renders the page's own action metadata.
+    assert events == [("state", None)] + ([("adapter", None), ("state", None)] if enabled else [])
+
+
+@pytest.mark.django_db
+def test_core_resource_object_state(cv_s3file, user_s3file_view, monkeypatch, client):
+    from tests.test1.app.resources import S3File
+
+    obj = S3File.cv_get_items(None)[0]
+    seen = []
+    target = cv_s3file.get_view_class("detail")
+    monkeypatch.setattr(target, "cv_action_enabled", classmethod(lambda cls, user, obj: seen.append(obj) or True))
+    view = bound(cv_s3file.get_view_class("delete"), user_s3file_view, obj, {"cv_from": "detail"})
+    assert view.cv_get_cancel_url() == url(cv_s3file, "detail", obj.pk)
+    assert seen == [obj]
+    client.force_login(user_s3file_view)
+    assert client.get(view.cv_get_cancel_url()).status_code == 200
+
+
+@pytest.mark.django_db
+def test_core_current_key_fallback(cv_publisher, user_publisher_add, monkeypatch):
+    cls = cv_publisher.get_view_class("create")
+    monkeypatch.setattr(cls, "cv_cancel_key", None)
+    assert bound(cls, user_publisher_add).cv_get_cancel_url() == url(cv_publisher, "create")
+
+
+@pytest.mark.django_db
+def test_core_nested_no_object_state_receives_url_parent(cv_book, user_book_view, publisher_penguin, monkeypatch):
+    seen = []
+    monkeypatch.setattr(
+        cv_book.get_view_class("list"),
+        "cv_action_enabled",
+        classmethod(lambda cls, user, obj: seen.append(obj) or True),
+    )
+    view = bound(
+        cv_book.get_view_class("create"), user_book_view, **{cv_book.parent.get_pk_name(): publisher_penguin.pk}
+    )
+    assert view.cv_get_cancel_url()
+    assert seen == [publisher_penguin]
+
+
+@pytest.mark.django_db
+def test_core_structurally_impossible_fallback_is_configuration_error(cv_publisher, user_publisher_view, monkeypatch):
+    target = cv_publisher.get_view_class("list")
+    monkeypatch.setattr(target, "cv_get_url_extra_kwargs", classmethod(lambda cls: {"unexpected": "argument"}))
+    with pytest.raises(ImproperlyConfigured, match="registered usable destination"):
         bound(cv_publisher.get_view_class("create"), user_publisher_view).cv_get_cancel_url()

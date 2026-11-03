@@ -25,7 +25,15 @@ CRISPY_FLOOR = {"django-crispy-forms": "2.0", "crispy-bootstrap5": "2023.10"}
 
 # The form-button leaf feature suite (Phase 06): crispy adapters and goldens, the normalizer, host icons, the filter
 # helper, owner/config resolution, system checks, workflow forms, CRUD pages, modals and cancel origins.
+# Phase 06.6 adds page ownership, theme defaults/groups, request/migration contracts, alerts and the full key table.
 CRISPY_FLOOR_TESTS = [
+    "tests/test1/test_theme_form_ownership.py",
+    "tests/test1/test_theme_label_modes.py",
+    "tests/test1/test_theme_action_groups.py",
+    "tests/test1/test_theme_form_requests.py",
+    "tests/test1/test_theme_adoption_docs.py",
+    "tests/test1/test_alerts.py",
+    "tests/test1/test_button_classes.py",
     "tests/test1/test_crispy_buttons.py",
     "tests/test1/test_form_buttons_golden.py",
     "tests/test1/test_button_data.py",

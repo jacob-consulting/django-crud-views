@@ -1,0 +1,7 @@
+{"status": "blocked", "error": "stale delivery source/runtime/config hashes"}
+ 
+Traceback (most recent call last):
+  File "/tmp/commit_probe09_postuat.py", line 16, in <module>
+    assert record['exit_code']==0
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 from django.views import generic
 
 from crud_views.lib.check import Check, CheckTemplateOrCode
+from crud_views.lib.crispy.actions import _ThemedFormActions
 from crud_views.lib.crispy.buttons import _CV_HELPER_OWNER, Reset, Submit
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
@@ -127,9 +128,10 @@ class ListViewFilterFormHelper(FormHelper):
 
         An empty ``FormActions()`` is kept as an explicit, empty group.
         """
-        return FormActions(
+        return _ThemedFormActions(
             Submit("submit", _("Apply Filter"), css_id="filter-button", slot="form:filter-submit"),
             Reset("reset", _("Reset Filter"), css_id="filter-button-reset"),
+            class_key="form:filter-actions",
         )
 
     def __bool__(self):

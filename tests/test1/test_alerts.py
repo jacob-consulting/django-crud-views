@@ -12,6 +12,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import _trans
 from lxml import html as lxml_html
 
+from crud_views.lib import button_classes as bc
 from crud_views.lib.messages import alert_data
 from tests.test1.test_form_frame import _norm, _theme_templates
 from tests.test1.test_label_mode_docs import _section
@@ -146,6 +147,63 @@ def test_alert_colours_follow_the_class_table():
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"alert:error": "notification is-danger"}):
         html = _render('{% cv_alert "error" text="t" %}')
     assert 'class="notification is-danger"' in html
+
+
+@pytest.fixture
+def alert_class_registry(monkeypatch):
+    monkeypatch.setattr(bc, "_THEME_BUTTON_CLASSES", {})
+    bc.reset_button_classes_cache()
+    yield
+    bc.reset_button_classes_cache()
+
+
+@pytest.mark.parametrize("source", ["theme", "settings"])
+@pytest.mark.parametrize("value", ["theme-utility", "", None, "  spaced-utility  "])
+def test_alert_utility_classes_replace_or_omit(source, value, alert_class_registry):
+    values = {"alert:dismissible": value, "alert:close": value}
+    if source == "theme":
+        bc.register_button_classes(values)
+    else:
+        bc.register_button_classes(dict.fromkeys(values, "lower-theme"))
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=values if source == "settings" else {}):
+        html = _render('{% cv_alert "success" text="t" dismissible=True %}')
+    frame_class = "alert alert-success" + (f" {value}" if value else "")
+    close_class = value or ""
+    assert f'<div class="{frame_class}"' in html
+    assert f'<button type="button" class="{close_class}" data-cv-alert-dismiss' in html
+    frame, control = _dismissible_frame(html)
+    assert frame.get("class") == frame_class
+    assert control.get("class") == close_class
+    assert control.get("aria-label") == "Close"
+
+
+@pytest.mark.parametrize("slot", ["dismissible", "close"])
+def test_alert_utility_class_values_are_escaped(slot):
+    hostile = '"><script>alert(1)</script><x data-attack="yes'
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={f"alert:{slot}": hostile}):
+        markup = _render('{% cv_alert "success" text="t" dismissible=True %}')
+    assert "&quot;&gt;&lt;script&gt;" in markup
+    root = lxml_html.fragment_fromstring(markup, create_parent="root")
+    assert root.xpath(".//script | .//x | .//*[@data-attack]") == []
+    frame, control = _dismissible_frame(markup)
+    assert frame.get("class") == (
+        f"alert alert-success {hostile}" if slot == "dismissible" else "alert alert-success alert-dismissible fade show"
+    )
+    assert control.get("class") == (hostile if slot == "close" else "btn-close")
+    assert control.get("type") == "button"
+    assert "data-cv-alert-dismiss" in control.attrib
+
+
+def test_alert_utility_settings_merge_per_key_and_do_not_affect_plain_alerts(alert_class_registry):
+    bc.register_button_classes({"alert:dismissible": "theme-dismiss", "alert:close": "theme-close"})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"alert:close": "project-close"}):
+        frame, control = _dismissible_frame(_render('{% cv_alert "success" text="t" dismissible=True %}'))
+        plain = _render('{% cv_alert "success" text="t" %}')
+    assert frame.get("class") == "alert alert-success theme-dismiss"
+    assert control.get("class") == "project-close"
+    assert '<div class="alert alert-success"' in plain
+    assert "data-cv-alert-dismiss" not in plain
+    assert "theme-dismiss" not in plain
 
 
 def test_only_the_alert_templates_write_alert_markup():

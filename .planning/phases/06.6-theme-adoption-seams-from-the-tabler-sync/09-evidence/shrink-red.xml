@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.153" timestamp="2026-11-02T23:37:54.131669+00:00" hostname="weaver-dev"><testcase classname="tests.browser.test_theme_adoption_sources" name="test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection[Ran 1 test in 0.1s\nOK\n]" time="0.001"><failure message="Failed: DID NOT RAISE EvidenceError">output = 'Ran 1 test in 0.1s\nOK\n'
+
+    @pytest.mark.parametrize("output", ["Ran 1 test in 0.1s\nOK\n", "Ran 109 tests in 0.1s\nOK (skipped=108)\n"])
+    def test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection(output):
+        baseline = {"command": command("FAIL: test_old (theme.tests.OldTests.test_old)\nRan 109 tests in 1s\nFAILED (failures=1)\n", code=1)}
+&gt;       with pytest.raises(sources.EvidenceError, match="collection shrank|new skipped"):
+E       Failed: DID NOT RAISE EvidenceError
+
+tests/browser/test_theme_adoption_sources.py:1016: Failed</failure></testcase><testcase classname="tests.browser.test_theme_adoption_sources" name="test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection[Ran 109 tests in 0.1s\nOK (skipped=108)\n]" time="0.001"><failure message="Failed: DID NOT RAISE EvidenceError">output = 'Ran 109 tests in 0.1s\nOK (skipped=108)\n'
+
+    @pytest.mark.parametrize("output", ["Ran 1 test in 0.1s\nOK\n", "Ran 109 tests in 0.1s\nOK (skipped=108)\n"])
+    def test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection(output):
+        baseline = {"command": command("FAIL: test_old (theme.tests.OldTests.test_old)\nRan 109 tests in 1s\nFAILED (failures=1)\n", code=1)}
+&gt;       with pytest.raises(sources.EvidenceError, match="collection shrank|new skipped"):
+E       Failed: DID NOT RAISE EvidenceError
+
+tests/browser/test_theme_adoption_sources.py:1016: Failed</failure></testcase></testsuite></testsuites>

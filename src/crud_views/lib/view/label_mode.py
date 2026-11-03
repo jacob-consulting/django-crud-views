@@ -19,10 +19,13 @@ class LabelMode(StrEnum):
 
 LABEL_MODES: frozenset[str] = frozenset(mode.value for mode in LabelMode)
 
-# the package floor per button location: read-only, CRUD_VIEWS_LABEL_MODE_DEFAULTS is merged over it per key
+# Read-only package floor; themes and then live project settings override it per key.
 LABEL_MODE_DEFAULTS: Mapping[str, str] = MappingProxyType(
     {"context": "icon", "list": "icon", "card": "both", "form": "label"}
 )
+
+_THEME_LABEL_MODE_DEFAULTS: dict[str, str] = {}
+_theme_defaults_lock = threading.Lock()
 
 # marks CRUD_VIEWS_LABEL_MODE_DEFAULTS as absent (an explicit None is invalid, not absent)
 _UNSET = object()
@@ -34,6 +37,37 @@ _warned_lock = threading.Lock()
 
 def is_label_mode(value: object) -> bool:
     return isinstance(value, str) and value in LABEL_MODES
+
+
+def register_label_mode_defaults(defaults: dict[str, str]) -> None:
+    """Register theme floors per location; later registrations merge, and project settings still win.
+
+    Invalid input always raises before changing any value. Publish a copied mapping in one rebind so readers
+    observe a complete snapshot and concurrent registrations retain each other's keys.
+    """
+    from .button_data import LOCATIONS
+
+    global _THEME_LABEL_MODE_DEFAULTS
+    if not isinstance(defaults, dict):
+        raise ValueError(
+            f"register_label_mode_defaults requires a dict of location {sorted(LOCATIONS)} "
+            f"-> mode {sorted(LABEL_MODES)}, got {defaults!r}"
+        )
+    supplied = dict(defaults)
+    for location, mode in supplied.items():
+        if not isinstance(location, str) or location not in LOCATIONS or not is_label_mode(mode):
+            raise ValueError(
+                f"register_label_mode_defaults key {location!r} has value {mode!r}; "
+                f"locations must be one of {sorted(LOCATIONS)} and modes one of {sorted(LABEL_MODES)}"
+            )
+    with _theme_defaults_lock:
+        _THEME_LABEL_MODE_DEFAULTS = {**_THEME_LABEL_MODE_DEFAULTS, **supplied}
+
+
+def _theme_or_package_default(location: str) -> str:
+    """Resolve one snapshot without consulting project settings or the public resolver."""
+    theme = _THEME_LABEL_MODE_DEFAULTS
+    return theme.get(location, LABEL_MODE_DEFAULTS[location])
 
 
 def is_label_mode_map(value: object) -> bool:
@@ -84,12 +118,11 @@ def _invalid_label_mode(source: str, location: str, value: object, fallback: Cal
 
 
 def default_label_mode(location: str) -> str:
-    """The label-mode floor of a button location: CRUD_VIEWS_LABEL_MODE_DEFAULTS merged per key over
-    LABEL_MODE_DEFAULTS.
+    """The per-location floor: live CRUD_VIEWS_LABEL_MODE_DEFAULTS over theme over package defaults.
 
     Read on every call. A location outside button_data.LOCATIONS is a caller bug and raises in every mode. A
     malformed setting, or a malformed mode for this location, raises in strict mode and otherwise falls back to
-    the package default for the location (logged once); unknown keys in the setting are ignored here (E108).
+    the theme or package default for the location (logged once); unknown setting keys are ignored here (E108).
     """
     # deferred: button_data imports this module
     from .button_data import LOCATIONS
@@ -98,16 +131,16 @@ def default_label_mode(location: str) -> str:
         raise ValueError(f"location must be one of {sorted(LOCATIONS)}, got {location!r}")
     raw = _raw_label_mode_defaults()
     if raw is _UNSET:
-        return LABEL_MODE_DEFAULTS[location]
+        return _theme_or_package_default(location)
     if not isinstance(raw, dict):
         return _invalid_label_mode(
             f"setting CRUD_VIEWS_LABEL_MODE_DEFAULTS must be a dict of location -> one of {sorted(LABEL_MODES)}",
             location,
             raw,
-            lambda: LABEL_MODE_DEFAULTS[location],
+            lambda: _theme_or_package_default(location),
         )
     if location not in raw:
-        return LABEL_MODE_DEFAULTS[location]
+        return _theme_or_package_default(location)
     value = raw[location]
     if is_label_mode(value):
         return value
@@ -115,7 +148,7 @@ def default_label_mode(location: str) -> str:
         f"setting CRUD_VIEWS_LABEL_MODE_DEFAULTS key {location!r} must be one of {sorted(LABEL_MODES)}",
         location,
         value,
-        lambda: LABEL_MODE_DEFAULTS[location],
+        lambda: _theme_or_package_default(location),
     )
 
 

@@ -6,6 +6,16 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Page-owned forms and helpers.** `cv_render_form` always rejects application `form_tag=True`. With compatible
+  helpers, detectable unused wrapper settings warn normally and raise in strict mode; outer attributes are
+  never transferred. Migrate immediately using the [helper/page recipe](docs/migrating-1.0.md#page-owned-forms-and-helpers).
+- **Copied form and workflow templates.** Inner copies must consume the selected `cv_form_helper`; copied
+  workflow action bodies must call `cv_render_form`. Legacy bypass copies can emit duplicate tokens without
+  automatic diagnosis. See [both migrations](docs/migrating-1.0.md#copied-form-and-workflow-templates).
+- **Standalone library form wrappers.** Library helpers now set `form_tag=False`, so standalone crispy emits
+  fields and its existing token without a wrapper. Add a caller-owned form without a second token using the
+  [standalone recipe](docs/migrating-1.0.md#standalone-library-form-wrappers).
+
 - **Heading hosts and sizing.** Copied page/modal/group titles must use the heading icon projection and place
   host classes on the title-bearing heading or button. Sizing now comes from `heading:size-1` through
   `heading:size-6`; the old separate page icon block is superseded, and split-card icons use heading-group
@@ -313,6 +323,10 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - The sdist ships only an allowlist (`src`, `tests`, `docs`, `examples`, `noxfile.py`, `README.md`,
   `CHANGELOG.md`, `LICENSE`, `pyproject.toml`); planning and tooling folders no longer end up on PyPI.
   `scripts/check_dist.py` checks every built wheel and sdist, in CI (`nox -s package`) and before publishing.
+- Stock CRUD form rendering removes nested forms and duplicate CSRF tokens while preserving page-owned attributes,
+  native controls and writes. Workflow uses the shared boundary; protected/no-choice full-page omissions and
+  the inherited custom-form workflow modal body remain intact. See [ownership migration](docs/migrating-1.0.md#form-ownership-and-theme-adoption).
+
 - Conditional groups that become missing/ambiguous after binding retain their last owned state while ancestor and
   independent disabled reasons still apply; restoring one exact checkbox retries its current state.
 - Formset deletion eligibility follows each row's original bound index through movement/insertion. Native extra
@@ -422,6 +436,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- `register_label_mode_defaults()` lets themes register validated per-location defaults below live project
+  settings, with atomic validation and later-registration wins. See [theme defaults](docs/reference/theme.md#theme-label-defaults).
+- Empty additive `form:actions` and `form:filter-actions` utilities independently style library groups;
+  `alert:dismissible` and `alert:close` make existing Bootstrap classes replaceable/omittable without changing
+  dismissal hooks. See [theme adoption](docs/reference/theme.md#action-group-classes) and the
+  [complete class inventory](docs/reference/buttons.md#the-class-table).
 
 - Object-detail resolved properties expose additive `badge_color` and `badge_pill` fields alongside `badge_css`
   and `badge_label`. Native themes can map arbitrary resolved color names and pill state without parsing

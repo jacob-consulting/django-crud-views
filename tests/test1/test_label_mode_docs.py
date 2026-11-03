@@ -160,7 +160,7 @@ def test_label_mode_configuration_table():
 
     # the public API at its exact module path, with lazy reads and the strict / non-strict distinction
     flat = " ".join(config.split())
-    for name in ("default_label_mode", "LABEL_MODE_DEFAULTS"):
+    for name in ("default_label_mode", "LABEL_MODE_DEFAULTS", "register_label_mode_defaults"):
         assert hasattr(label_mode, name)
         assert f"`crud_views.lib.view.label_mode.{name}" in flat
     for phrase in (
@@ -221,6 +221,8 @@ def test_canonical_label_mode_resolution_sections():
     for step, marker in zip(card, markers, strict=True):
         assert marker in step, (marker, step)
     assert '"both"' in card[2]
+    for floor in (context[-1], listing[-1], card[-1]):
+        assert floor.index("project") < floor.index("theme registration") < floor.index("package default")
     card_body = _section(text, "### Card label-mode resolution")
     assert "`CardListView.cv_get_card_actions_label_mode()`" in card_body
     assert "own instance" in _flat(card[1]) and "class-level" in _flat(card[1])
@@ -794,7 +796,7 @@ def test_migration_e108_location_inventory():
         'a mode that is not exactly `"label"`, `"icon"` or `"both"`',
         "At render an unknown key is ignored.",
         "An invalid mode raises `ValueError` in strict mode (`CRUD_VIEWS_STRICT`, which defaults to `DEBUG`)",
-        "otherwise it logs one warning and the location falls back to its package floor.",
+        "otherwise it logs one warning and the location falls back to its theme registration, then its package floor.",
     ):
         assert marker in paragraph, marker
     # paragraph-scoped: a form mention elsewhere (the Form buttons section, the reference tables) cannot satisfy it

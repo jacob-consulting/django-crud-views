@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 import django_tables2 as tables
-from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Row
 from django.forms.models import inlineformset_factory
 from django.utils.translation import gettext_lazy as _
@@ -32,13 +31,6 @@ class QuestionnaireForm(CrispyModelForm):
 
     def get_layout_fields(self):
         return [Row(Column8("title")), Formsets()]
-
-    @property
-    def helper(self) -> FormHelper:
-        # the formsets render their own form tags
-        h = super().helper
-        h.form_tag = False
-        return h
 
 
 class QuestionForm(CrispyModelForm):

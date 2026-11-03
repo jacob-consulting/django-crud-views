@@ -152,6 +152,18 @@ Source: Phase 06.5 CONTEXT.md D-01–D-17. Completed 2026-11-02: canonical verif
 - [x] **PRES-05**: Badges expose resolved semantic color and pill alongside unchanged default CSS; arbitrary colors, one callback evaluation, ordinary-value fallbacks and badge-before-explicit-template precedence are preserved.
 - [x] **PRES-06**: Executed copied/native template migrations preserve escaped titles, values and resolved context; real browser acceptance and preservation gates report their limits, paired Breaking migration entries and Phase 7 public-surface handoff.
 
+### Theme-adoption seams (Phase 06.6)
+
+Source: Phase 06.6 CONTEXT.md D-01–D-19 and issues #277–#280. These IDs transcribe the accepted scope;
+the initial spec-less fallback was skipped while IDs were TBD, and generated no probe predicates.
+
+- [x] **THEME-01**: Page templates own actionable create/update/custom/delete/workflow forms and CSRF, including page/modal POST; library helpers are nonwrapping, incompatible application helpers always reject, and detectable unused wrapper settings warn normally/raise strict without mutating caller helpers. Preserve accepted controls, escaping, authorization, deletion and conditional/formset/focus behavior.
+- [x] **THEME-02**: register_label_mode_defaults validates atomically and merges per key with later registration winning; package → theme → live project setting resolves below explicit owner modes, invalid settings warn/fall back theme→package or raise strict, and E108/W292 reflect the effective contract.
+- [x] **THEME-03**: Empty-default form:actions and form:filter-actions independently style ordinary/delete versus filter default groups, supplement current/floor pack structure, preserve custom layouts with tested opt-in, and update W362/key inventory.
+- [x] **THEME-04**: alert:dismissible and alert:close replace or omit classes while preserving byte-identical Bootstrap defaults, escaping, accessible names, semantic markup and dismissal behavior.
+- [x] **THEME-05**: Real reference theme/pack revisions have an unmodified baseline, all required automated/real-browser scenarios pass with no new regressions, required overrides do not grow, and a tested exact-base adaptation patch/replay/migration handoff is retained and delivered to the companion under the 2026-11-02 D-11/D-14 amendment; unrelated work and coverage limits remain explicit.
+- [x] **THEME-06**: Executable migration examples document ownership, diagnostics, registration/precedence and group opt-in; nested-form/token DOM correction and every intentional compatibility change are recorded, Breaking entries pair with migrating-1.0.md, and Phase 7 receives the exact settled surface.
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -170,7 +182,7 @@ Deferred; tracked for 1.0.0 outside this milestone.
 - **LATER-03**: E36x check for `container-tag`
 - **LATER-04**: Promoted to PRES-01 in Phase 6.5; #259 heading contract remains pending verification.
 - **LATER-05**: #211 stale-override detection
-- **LATER-06**: Class keys for alert frame classes (`btn-close`, `alert-dismissible fade show`)
+- **LATER-06**: Promoted to THEME-04 in Phase 06.6; selected alert utility keys are required before the freeze.
 - **LATER-07**: Lowest-version crispy test session / Django 4.2 support decision for 1.0.0
 
 ## Out of Scope
@@ -178,13 +190,13 @@ Deferred; tracked for 1.0.0 outside this milestone.
 | Feature | Reason |
 |---------|--------|
 | Per-view / per-variant entries in the defaults map | Per-ViewSet/view knobs already exist; the map is the project-wide floor |
-| Themes setting label modes | Label mode is project/view configuration, not theme |
+| Themes replacing explicit owner label-mode choices | THEME-02 permits a theme floor only; explicit view/button modes and project settings retain precedence |
 | Using crispy `StrictButton` / `HTML()` for buttons | Unescaped content |
 | Overriding crispy-bootstrap5 templates globally | Breaks other template packs (crispy-tabler) |
 | Alert focus management / auto-dismiss | Beyond the leak fix |
 | Pagination extras beyond matching card pagination | Scope is consistency only |
 | Bootstrap 6 support | Alpha; adapters fallback covers absence of global `bootstrap` |
-| Tabler theme changes in its own repo | Each phase writes the Tabler follow-up into its acceptance note |
+| Publishing or pushing companion changes | THEME-05 authorizes verified source/test delivery and scoped local commits under amended D-11/D-14; publication is outside this phase |
 | The 1.0.0 version bump | Follows after the stability phase |
 
 ## Traceability
@@ -193,6 +205,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| THEME-01 | Phase 6.6 | Complete |
+| THEME-02 | Phase 6.6 | Complete |
+| THEME-03 | Phase 6.6 | Complete |
+| THEME-04 | Phase 6.6 | Complete |
+| THEME-05 | Phase 6.6 | Complete |
+| THEME-06 | Phase 6.6 | Complete |
 | PRES-01 | Phase 6.5 | Complete |
 | PRES-02 | Phase 6.5 | Complete |
 | PRES-03 | Phase 6.5 | Complete |
@@ -267,8 +285,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 65 total
-- Mapped to phases: 65
+- v1 requirements: 77 total (counted from defined requirement entries during Phase 06.6 planning)
+- Mapped to phases: 77
 - Unmapped: 0 ✓
 
 ---

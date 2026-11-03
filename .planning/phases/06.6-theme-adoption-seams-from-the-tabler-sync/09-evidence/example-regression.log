@@ -1,0 +1,13 @@
+bringing up nodes...
+bringing up nodes...
+
+.............................................                            [100%]
+=============================== warnings summary ===============================
+project/test_ratelimit.py::WriteRateLimitTest::test_31st_write_in_a_minute_is_429
+project/test_ratelimit.py::WriteRateLimitTest::test_other_client_ip_is_unaffected
+project/test_ratelimit.py::WriteRateLimitTest::test_get_is_never_limited
+  /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1148: RemovedInDjango60Warning: The default scheme will be changed from 'http' to 'https' in Django 6.0. Pass the forms.URLField.assume_scheme argument to silence this warning, or set the FORMS_URLFIELD_ASSUME_HTTPS transitional setting to True to opt into using 'https' as the new default scheme.
+    return form_class(**defaults)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+45 passed, 3 warnings in 2.23s

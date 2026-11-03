@@ -148,6 +148,26 @@ def messages_for(classes, source):
     return check_button_classes()
 
 
+@pytest.mark.parametrize("source", ["theme", "settings"])
+@pytest.mark.parametrize("key", ["alert:dismissible", "alert:close"])
+@pytest.mark.parametrize("value", ["theme-class", "", None])
+def test_alert_utilities_are_valid_without_label_modes(source, key, value):
+    from crud_views.lib.view.button_data import LOCATIONS
+
+    assert "alert" not in LOCATIONS
+    assert messages_for({key: value}, source) == []
+
+
+@pytest.mark.parametrize("source", ["theme", "settings"])
+@pytest.mark.parametrize("key", ["alert:dismissible", "alert:close"])
+@pytest.mark.parametrize("mode", MODES)
+def test_alert_utilities_reject_mode_suffixes(source, key, mode):
+    suffixed = f"{key}:{mode}"
+    messages = messages_for({suffixed: "theme-class"}, source)
+    assert ids(messages) == ["crud_views.W362"]
+    assert suffixed in messages[0].msg
+
+
 def test_class_key_vocabularies_are_finite_and_immutable():
     assert isinstance(bc.VARIANT_LOCATIONS, frozenset)
     assert {"context", "list", "card"} == bc.VARIANT_LOCATIONS

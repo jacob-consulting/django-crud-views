@@ -45,6 +45,7 @@ tasks:
   build:
     cmds:
       - uv build
+      - uv run --no-project python scripts/check_dist.py dist/
     silent: true
 
   docs:

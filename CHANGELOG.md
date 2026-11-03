@@ -135,6 +135,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- The sdist ships only an allowlist (`src`, `tests`, `docs`, `examples`, `noxfile.py`, `README.md`,
+  `CHANGELOG.md`, `LICENSE`, `pyproject.toml`); planning and tooling folders no longer end up on PyPI.
+  `scripts/check_dist.py` checks every built wheel and sdist, in CI (`nox -s package`) and before publishing.
 - `BreadcrumbItem` keeps a safe title (`mark_safe`, `format_html`, a rendered label) safe instead of turning it into a
   plain string, so it is no longer escaped twice (#271). A rendered label with an escaped variable, such as
   `{{ object }}` or `{{ verbose_name }}` containing `&` or `'`, showed `&amp;amp;`. This applies to every item: an

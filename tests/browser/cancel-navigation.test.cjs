@@ -64,6 +64,65 @@ test('options reject unknown cases, flags and missing values', () => {
         assert.throws(() => harness.options(argv));
     }
 });
+test('default reports live in distinct private directories', t => {
+    const first = harness.options([]), second = harness.options([]);
+    for (const opts of [first, second]) {
+        const directory = path.dirname(opts.output);
+        assert.notEqual(directory, os.tmpdir());
+        assert.equal(fs.statSync(directory).mode & 0o777, 0o700);
+        t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+    }
+    assert.notEqual(first.output, second.output);
+});
+test('sequential operations settle before the next starts and stop after rejection', async () => {
+    const events = [];
+    await harness.sequence([1, 2], async value => {
+        events.push(`start-${value}`);
+        await new Promise(resolve => setTimeout(resolve, 5));
+        events.push(`end-${value}`);
+    });
+    assert.deepEqual(events, ['start-1', 'end-1', 'start-2', 'end-2']);
+    const failure = new Error('primary scenario');
+    await assert.rejects(harness.sequence([3, 4], async value => {
+        events.push(`start-${value}`);
+        throw failure;
+    }), error => error === failure);
+    assert.equal(events.at(-1), 'start-3');
+});
+test('git executable must be an explicit immutable executable file', t => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'cancel-git-test-'));
+    t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+    const file = path.join(directory, 'git');
+    fs.writeFileSync(file, 'not executable', {mode: 0o666});
+    assert.throws(() => harness.validateExecutable('git'), /absolute/);
+    assert.throws(() => harness.validateExecutable(file));
+    fs.chmodSync(file, 0o777);
+    assert.throws(() => harness.validateExecutable(file), /writable/);
+    assert.equal(harness.validateExecutable('/usr/bin/git'), fs.realpathSync('/usr/bin/git'));
+});
+test('startup readiness handles split output and removes listeners', async () => {
+    const child = Object.assign(new EventEmitter(), {stdout: new EventEmitter(), exitCode: null, signalCode: null});
+    let stdout = '{"ready":';
+    const waiting = harness.waitForReady(child, () => ({stdout, stderr: ''}), 100);
+    child.stdout.emit('data');
+    stdout += '1234}\n';
+    child.stdout.emit('data');
+    assert.deepEqual(await waiting, {ready: 1234});
+    assert.equal(child.stdout.listenerCount('data'), 0);
+    assert.equal(child.listenerCount('exit'), 0);
+    assert.equal(child.listenerCount('error'), 0);
+});
+test('startup timeout and early process exit reject without retaining listeners', async () => {
+    const child = Object.assign(new EventEmitter(), {stdout: new EventEmitter(), exitCode: null, signalCode: null});
+    const logs = () => ({stdout: '', stderr: 'diagnostic'});
+    await assert.rejects(harness.waitForReady(child, logs, 5), /timed out: diagnostic/);
+    const waiting = harness.waitForReady(child, logs, 100);
+    child.exitCode = 1;
+    child.emit('exit');
+    await assert.rejects(waiting, /startup failed: diagnostic/);
+    assert.equal(child.stdout.listenerCount('data'), 0);
+    assert.equal(child.listenerCount('exit'), 0);
+});
 test('explicit unavailable runtime exits nonzero without browser launch', () => {
     const result = cp.spawnSync(process.execPath, [path.join(__dirname, 'cancel-navigation.cjs')], {
         encoding: 'utf8', env: {...process.env, CV_CANCEL_PYTHON: '/missing/cancel/python'}, timeout: 5000,
@@ -100,7 +159,7 @@ async function failedOrchestration({stopFails = false, writeFails = false} = {})
         newContext: async () => {throw primary;},
         close: async () => {events.push('browser.close'); throw Error('injected browser close failure');},
     };
-    const fakeProcess = {argv: ['node', __filename], env: {HOME: '/cached', CV_CANCEL_ASSETS_DIR: '/assets'},
+    const fakeProcess = {argv: ['node', __filename, '--output', '/fixture-report.json'], env: {HOME: '/cached', CV_CANCEL_ASSETS_DIR: '/assets'},
         execPath: process.execPath, version: process.version};
     const sandbox = {
         __dirname, __filename: path.join(__dirname, 'cancel-navigation.cjs'), module: {exports: {}},
@@ -130,7 +189,7 @@ async function failedOrchestration({stopFails = false, writeFails = false} = {})
     let rejected;
     try {
         await vm.runInNewContext(source + `
-            runtime = () => '/playwright';
+            runtime = variable => variable === 'CV_CANCEL_GIT' ? '/usr/bin/git' : '/playwright';
             loadAssets = () => new Map();
             sourceHashes = () => ({});
             startServer = async () => server;

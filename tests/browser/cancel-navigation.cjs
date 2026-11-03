@@ -1,5 +1,6 @@
 // Real HTTP acceptance for signed cancellation. Never fetch or install browser assets.
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const cp = require('node:child_process');
 const crypto = require('node:crypto');
@@ -7,14 +8,19 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '../..');
 const sha = value => crypto.createHash('sha256').update(value).digest('hex');
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+const compare = (left, right) => left.localeCompare(right, 'en');
+function sequence(values, operation) {
+    return [...values].reduce((previous, value) => previous.then(() => operation(value)), Promise.resolve());
+}
 function options(argv) {
-    const result = {case: 'all', output: '/tmp/cv-cancel-browser.json'};
+    const result = {case: 'all'};
     for (let i = 0; i < argv.length; i += 2) {
         assert(['--case', '--output'].includes(argv[i]), `Unknown option: ${argv[i]}`);
         assert(argv[i + 1] && !argv[i + 1].startsWith('--'), `Missing ${argv[i]}`);
         result[argv[i].slice(2)] = argv[i + 1];
     }
     assert(['all', 'smoke'].includes(result.case), 'Use --case all|smoke');
+    result.output ??= path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'cv-cancel-browser-')), 'report.json');
     return result;
 }
 function declarations() {
@@ -23,6 +29,30 @@ function declarations() {
         url, integrity: tag.match(/integrity="([^"]+)"/)?.[1] ?? null, css: url.endsWith('.css'),
     }));
 }
+function readAsset(dir, manifest, spec) {
+    const entry = manifest.assets[spec.url];
+    assert(entry, `Missing declared asset: ${spec.url}`);
+    assert(typeof entry.file === 'string' && !path.isAbsolute(entry.file), 'Asset containment: relative file required');
+    let filename = path.resolve(dir, entry.file);
+    assert(filename.startsWith(dir + path.sep), `Asset containment: ${entry.file}`);
+    filename = fs.realpathSync(filename);
+    assert(filename.startsWith(dir + path.sep), `Asset containment: ${entry.file}`);
+    const body = fs.readFileSync(filename);
+    assert.equal(sha(body), entry.sha256, `SHA-256 mismatch: ${spec.url}`);
+    if (spec.integrity) {
+        assert(spec.integrity.split(/\s+/).some(sri => {
+            const [algorithm, digest] = sri.split('-');
+            return ['sha256', 'sha384', 'sha512'].includes(algorithm) &&
+                crypto.createHash(algorithm).update(body).digest('base64') === digest;
+        }), `SRI mismatch: ${spec.url}`);
+    }
+    return {body, file: filename, sha256: sha(body), integrity: spec.integrity ?? null};
+}
+function cssDependencies(body, base) {
+    return [...body.toString().matchAll(/url\(\s*['"]?([^'"\s)]+)['"]?\s*\)/g)]
+        .map(match => match[1]).filter(url => !url.startsWith('data:') && !url.startsWith('#'))
+        .map(value => {const url = new URL(value, base).href; return {url, css: url.endsWith('.css')};});
+}
 function loadAssets(directory, declared = declarations()) {
     assert(directory, 'CV_CANCEL_ASSETS_DIR must name a local directory containing assets.json');
     const dir = fs.realpathSync(directory);
@@ -30,34 +60,11 @@ function loadAssets(directory, declared = declarations()) {
     assert.equal(manifest.version, 1, 'Unsupported assets.json version');
     assert(manifest.assets && typeof manifest.assets === 'object', 'Invalid assets.json mapping');
     const pending = [...declared], result = new Map();
-    for (let i = 0; i < pending.length; i++) {
-        const spec = pending[i];
+    for (const spec of pending) {
         if (result.has(spec.url)) continue;
-        const entry = manifest.assets[spec.url];
-        assert(entry, `Missing declared asset: ${spec.url}`);
-        assert(typeof entry.file === 'string' && !path.isAbsolute(entry.file), 'Asset containment: relative file required');
-        let filename = path.resolve(dir, entry.file);
-        assert(filename.startsWith(dir + path.sep), `Asset containment: ${entry.file}`);
-        filename = fs.realpathSync(filename);
-        assert(filename.startsWith(dir + path.sep), `Asset containment: ${entry.file}`);
-        const body = fs.readFileSync(filename);
-        assert.equal(sha(body), entry.sha256, `SHA-256 mismatch: ${spec.url}`);
-        if (spec.integrity) {
-            assert(spec.integrity.split(/\s+/).some(sri => {
-                const [algorithm, digest] = sri.split('-');
-                return ['sha256', 'sha384', 'sha512'].includes(algorithm) &&
-                    crypto.createHash(algorithm).update(body).digest('base64') === digest;
-            }), `SRI mismatch: ${spec.url}`);
-        }
-        result.set(spec.url, {body, file: filename, sha256: sha(body), integrity: spec.integrity ?? null});
-        if (spec.css) {
-            for (const match of body.toString().matchAll(/url\(\s*['"]?([^'"\s)]+)['"]?\s*\)/g)) {
-                if (!match[1].startsWith('data:') && !match[1].startsWith('#')) {
-                    const url = new URL(match[1], spec.url).href;
-                    pending.push({url, css: url.endsWith('.css')});
-                }
-            }
-        }
+        const asset = readAsset(dir, manifest, spec);
+        result.set(spec.url, asset);
+        if (spec.css) pending.push(...cssDependencies(asset.body, spec.url));
     }
     for (const url of Object.keys(manifest.assets)) assert(result.has(url), `Undeclared manifest URL: ${url}`);
     return result;
@@ -67,7 +74,7 @@ function assetFor(assets, url) {
     return assets.get(url);
 }
 function cached(directory, suffix) {
-    return fs.existsSync(directory) ? fs.readdirSync(directory).sort().reverse().map(name => path.join(directory, name, suffix)) : [];
+    return fs.existsSync(directory) ? fs.readdirSync(directory).sort(compare).reverse().map(name => path.join(directory, name, suffix)) : [];
 }
 function runtime(variable, candidates, executable = false) {
     const filename = process.env[variable] ?? candidates.find(file => fs.existsSync(file));
@@ -76,17 +83,51 @@ function runtime(variable, candidates, executable = false) {
     return path.resolve(filename); // Preserve Python venv symlink identity.
 }
 async function stopOwned(child) {
-    if (!child || child.exitCode !== null || child.signalCode !== null) return;
+    if (child?.exitCode !== null || child.signalCode !== null) return;
     const exited = new Promise(resolve => child.once('exit', resolve));
     child.kill('SIGTERM');
     await Promise.race([exited, delay(1500)]);
     if (child.exitCode === null && child.signalCode === null) {child.kill('SIGKILL'); await exited;}
 }
+function validateExecutable(filename) {
+    assert(path.isAbsolute(filename), 'Executable must be an absolute path');
+    const resolved = fs.realpathSync(filename), stat = fs.statSync(resolved);
+    assert(stat.isFile(), 'Executable must be a regular file');
+    assert.equal(stat.mode & 0o022, 0, 'Executable must not be group or world writable');
+    fs.accessSync(resolved, fs.constants.X_OK);
+    return resolved;
+}
+function gitExecutable() {
+    return validateExecutable(runtime('CV_CANCEL_GIT', ['/usr/bin/git', '/bin/git'], true));
+}
 function sourceHashes() {
-    const files = cp.execFileSync('git', ['ls-files', 'src', 'tests/test1', 'tests/browser/cancel*'], {cwd: root, encoding: 'utf8'})
+    const files = cp.execFileSync(gitExecutable(), ['ls-files', 'src', 'tests/test1', 'tests/browser/cancel*'], {cwd: root, encoding: 'utf8'})
         .trim().split('\n');
     files.push('tests/browser/cancel_navigation_server.py');
-    return Object.fromEntries([...new Set(files)].sort().map(file => [file, sha(fs.readFileSync(path.join(root, file)))]));
+    return Object.fromEntries([...new Set(files)].sort(compare).map(file => [file, sha(fs.readFileSync(path.join(root, file)))]));
+}
+function waitForReady(child, logs, timeout = 30000) {
+    return new Promise((resolve, reject) => {
+        const finish = (error, ready) => {
+            clearTimeout(timer);
+            child.stdout.off('data', inspect);
+            child.off('exit', exited);
+            child.off('error', failed);
+            if (error) reject(error); else resolve(ready);
+        };
+        const inspect = () => {
+            const line = logs().stdout.split('\n').slice(0, -1).find(value => value.startsWith('{"ready":'));
+            if (!line) return;
+            try {finish(null, JSON.parse(line));} catch (error) {finish(error);}
+        };
+        const exited = () => finish(new Error(`Fixture startup failed: ${logs().stderr}`));
+        const failed = error => finish(error);
+        const timer = setTimeout(() => finish(new Error(`Fixture startup timed out: ${logs().stderr}`)), timeout);
+        child.stdout.on('data', inspect);
+        child.once('exit', exited);
+        child.once('error', failed);
+        if (child.exitCode !== null || child.signalCode !== null) exited(); else inspect();
+    });
 }
 async function startServer(python) {
     const child = cp.spawn(python, ['tests/browser/cancel_navigation_server.py'], {
@@ -96,14 +137,10 @@ async function startServer(python) {
     let stdout = '', stderr = '';
     child.stdout.on('data', bytes => {stdout += bytes;});
     child.stderr.on('data', bytes => {stderr += bytes;});
+    const logs = () => ({stdout, stderr});
     try {
-        for (let i = 0; i < 300; i++) {
-            assert(child.exitCode === null && child.signalCode === null, `Fixture startup failed: ${stderr}`);
-            const ready = stdout.split('\n').find(line => line.startsWith('{"ready":'));
-            if (ready) return {child, ready: JSON.parse(ready), logs: () => ({stdout, stderr})};
-            await delay(100);
-        }
-        throw Error(`Fixture startup timed out: ${stderr}`);
+        const ready = await waitForReady(child, logs);
+        return {child, ready, logs};
     } catch (error) {await stopOwned(child); throw error;}
 }
 function normalized(url) {
@@ -111,31 +148,11 @@ function normalized(url) {
     parsed.searchParams.delete('cv_from_restore');
     return {path: parsed.pathname, query: [...parsed.searchParams]};
 }
-async function main() {
-    const opts = options(process.argv.slice(2));
-    // Validate explicit executables first, even if the asset prerequisite is absent.
-    const python = runtime('CV_CANCEL_PYTHON', [path.join(root, '.nox/tests-3-12-django-5-2/bin/python')], true);
-    const playwright = runtime('CV_CANCEL_PLAYWRIGHT', cached(`${process.env.HOME}/.npm/_npx`, 'node_modules/playwright'));
-    const chromium = runtime('CV_CANCEL_CHROMIUM', cached(`${process.env.HOME}/.cache/ms-playwright`, 'chrome-linux64/chrome'), true);
-    const assets = loadAssets(process.env.CV_CANCEL_ASSETS_DIR);
-    const started = Date.now();
-    const report = {status: 'running', captured: new Date().toISOString(), command: [process.execPath, __filename, ...process.argv.slice(2)],
-        revision: cp.execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim(), sourceHashes: sourceHashes(),
-        runtime: {node: process.version, nodePath: process.execPath, playwrightPath: playwright,
-            playwright: require(path.join(playwright, 'package.json')).version, chromiumPath: chromium},
-        manifest: {path: path.resolve(process.env.CV_CANCEL_ASSETS_DIR, 'assets.json'),
-            sha256: sha(fs.readFileSync(path.join(process.env.CV_CANCEL_ASSETS_DIR, 'assets.json')))},
-        declaredAssets: [...assets].map(([url, {body, ...entry}]) => ({url, ...entry})),
-        responses: [], cases: [], failures: [], cleanup: {}, humanAcceptance: 'pending; no screen-reader or visual certification'};
-    let server, browser;
-    try {
-        server = await startServer(python);
-        const base = `http://127.0.0.1:${server.ready.ready}`;
-        Object.assign(report.runtime, server.ready.runtime);
-        assert(report.runtime.packagePath.startsWith(root + '/src/'));
-        assert.match(report.runtime.django, /^(4\.2|5\.2|6\.0)\./);
-        browser = await require(playwright).chromium.launch({executablePath: chromium, headless: true, args: ['--disable-background-networking']});
-        report.runtime.chromium = browser.version();
+function assetContentType(url) {
+    const types = {'.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2'};
+    return types[path.extname(new URL(url).pathname)] ?? 'font/ttf';
+}
+async function browserScenarios(browser, assets, report, base, opts) {
         const pending = [], contexts = [];
         async function context(tag = 'button', limited = false) {
             const ctx = await browser.newContext({serviceWorkers: 'block'});
@@ -147,8 +164,7 @@ async function main() {
                 if (new URL(url).origin === base) return route.continue();
                 try {
                     const asset = assetFor(assets, url);
-                    const contentType = url.endsWith('.css') ? 'text/css' : url.endsWith('.js') ? 'text/javascript' :
-                        url.endsWith('.woff2') ? 'font/woff2' : 'font/ttf';
+                    const contentType = assetContentType(url);
                     await route.fulfill({status: 200, body: asset.body, contentType,
                         headers: {'access-control-allow-origin': '*'}});
                 } catch (error) {report.failures.push(error.message); await route.abort('blockedbyclient');}
@@ -236,10 +252,10 @@ async function main() {
         }
         const initial = await context();
         report.initialization = {bootstrap: '5.3.3', jquery: '3.7.1', cancel: 'cvGetConfig plus delegated clicks', modal: 'cvModalOpen plus real modal replacement'};
-        for (const tag of opts.case === 'smoke' ? ['button'] : ['button', 'a']) {
+        await sequence(opts.case === 'smoke' ? ['button'] : ['button', 'a'], async tag => {
             const {ctx, ids, page} = tag === 'button' ? initial : await context(tag);
             const flows = opts.case === 'smoke' ? [['list', 'update']] : [['list', 'update'], ['detail', 'update'], ['list', 'create'], ['list', 'delete'], ['detail', 'delete']];
-            for (const [origin, key] of flows) await run(`${tag}-${origin}-${key}`, async record => {
+            await sequence(flows, ([origin, key]) => run(`${tag}-${origin}-${key}`, async record => {
                 const source = origin === 'list' ? '/publisher/?name=Alpha&x=&x=two&sort=name&page=1' : `/publisher/${ids.publisher}/detail/?x=&x=detail`;
                 await goto(page, source);
                 const target = key === 'create' ? '/publisher/create/' : `/publisher/${ids.publisher}/${key}/`;
@@ -252,12 +268,14 @@ async function main() {
                 await cancel(page, ctx, control, source, record, tag === 'button');
                 // Repeated Cancel destination GETs cannot turn into mutations.
                 const before = await state(ctx);
-                for (let i = 0; i < 2; i++) assert.equal((await ctx.request.get(new URL(record.cancels[0].destination, base).href)).status(), 200);
+                await sequence([1, 2], async () => {
+                    assert.equal((await ctx.request.get(new URL(record.cancels[0].destination, base).href)).status(), 200);
+                });
                 const after = await state(ctx); assert.deepEqual(after.rows, before.rows);
                 assert(after.requests.slice(before.requests.length).every(req => !req.writes.length));
-            });
-            if (opts.case === 'smoke') continue;
-            for (const query of ['x=&x=A&name=Alpha', '']) await run(`${tag}-independent-tabs-${query ? 'filtered' : 'empty'}`, async record => {
+            }));
+            if (opts.case === 'smoke') return;
+            await sequence(['x=&x=A&name=Alpha', ''], query => run(`${tag}-independent-tabs-${query ? 'filtered' : 'empty'}`, async record => {
                 const second = await ctx.newPage();
                 try {
                     // Explicit empty capture starts from a fresh session, then tab B remembers filters.
@@ -273,7 +291,7 @@ async function main() {
                     assert.deepEqual(normalized(page.url()), normalized(new URL(source, base)), 'Bare list must remember restored state');
                     await cancel(second, ctx, secondControl, '/publisher/?name=Beta&x=B', record);
                 } finally {await second.close();}
-            });
+            }));
             await run(`${tag}-nested-parent-captures`, async record => {
                 const second = await ctx.newPage();
                 try {
@@ -285,24 +303,24 @@ async function main() {
                     await cancel(second, ctx, controlB, ids.other_book_list + '?x=parentB', record);
                 } finally {await second.close();}
             });
-            for (const key of ['delete', 'contact']) for (const query of ['', 'x=&x=%3Cscript%3E%26%22']) {
-                await run(`${tag}-modal-${key}-${query ? 'filtered' : 'empty'}`, async record => {
+            await sequence(['delete', 'contact'], key => sequence(['', 'x=&x=%3Cscript%3E%26%22'], query =>
+                run(`${tag}-modal-${key}-${query ? 'filtered' : 'empty'}`, async record => {
                     await ctx.request.get(base + '/author_modal/?cv_from_restore=1');
                     const source = '/author_modal/' + (query ? '?' + query : '');
                     await goto(page, source);
                     let response = await openAction(page, `/author_modal/${ids.author}/${key}/`, true);
                     await owner(page, response, tag, true);
-                    for (let i = 0; i < 2; i++) {
+                    await sequence([1, 2], async () => {
                         const waiting = page.waitForResponse(r => r.request().method() === 'POST' && r.request().headers()['x-cv-modal'] === 'true');
                         await page.locator('#cv-modal form [type="submit"]').click(); response = await waiting;
                         assert.equal(response.status(), 422);
                         await page.locator('#cv-modal form .invalid-feedback').first().waitFor();
                         await owner(page, response, tag, true);
-                    }
+                    });
                     const control = await owner(page, response, tag, true);
                     await cancel(page, ctx, control, source, record, tag === 'button');
-                });
-            }
+                })
+            ));
             await run(`${tag}-protected-delete-no-form`, async record => {
                 await goto(page, `/author_origin/${ids.protected}/delete/?cv_from=list`);
                 assert.equal(await page.locator('form.cv-form').count(), 0);
@@ -320,8 +338,10 @@ async function main() {
                     assert.equal(await limited.page.locator('form.cv-form [name="csrfmiddlewaretoken"]').count(), 1);
                     await limited.page.locator('[name="name"]').fill('Authorized ' + tag);
                     const waiting = limited.page.waitForResponse(r => r.request().method() === 'POST');
+                    const savedNavigation = limited.page.waitForNavigation();
                     await limited.page.locator('form.cv-form [type="submit"]').click();
                     const saved = await waiting; assert.equal(saved.status(), 302);
+                    await savedNavigation;
                     const after = await state(limited.ctx);
                     assert.equal(after.rows.Publisher.find(row => row.id === ids.publisher).name, 'Authorized ' + tag);
                     record.submit = {status: saved.status(), location: saved.headers().location};
@@ -329,22 +349,52 @@ async function main() {
                     await goto(limited.page, `/publisher/${ids.publisher}/update/`);
                     await limited.page.locator('[name="name"]').fill('Alpha');
                     const restored = limited.page.waitForResponse(r => r.request().method() === 'POST');
+                    const restoredNavigation = limited.page.waitForNavigation();
                     await limited.page.locator('form.cv-form [type="submit"]').click(); assert.equal((await restored).status(), 302);
+                    await restoredNavigation;
                 } finally {await limited.ctx.close();}
             });
-        }
+        });
         await Promise.all(pending);
         for (const spec of declarations()) assert(report.responses.some(r => r.url === spec.url), `Required asset never loaded: ${spec.url}`);
         for (const name of ['viewset.js', 'modal.js', 'adapters.js']) assert(report.responses.some(r => r.file.endsWith('/' + name)), `Required package script never loaded: ${name}`);
         assert(report.responses.some(r => r.url.endsWith('fa-solid-900.woff2')), 'Real icon font never loaded');
         assert.deepEqual(report.failures, []);
         report.finalAudit = await state(initial.ctx);
+        await sequence(contexts, ctx => ctx.close());
+}
+async function main() {
+    const opts = options(process.argv.slice(2));
+    // Validate explicit executables first, even if the asset prerequisite is absent.
+    const python = runtime('CV_CANCEL_PYTHON', [path.join(root, '.nox/tests-3-12-django-5-2/bin/python')], true);
+    const playwright = runtime('CV_CANCEL_PLAYWRIGHT', cached(`${process.env.HOME}/.npm/_npx`, 'node_modules/playwright'));
+    const chromium = runtime('CV_CANCEL_CHROMIUM', cached(`${process.env.HOME}/.cache/ms-playwright`, 'chrome-linux64/chrome'), true);
+    const assets = loadAssets(process.env.CV_CANCEL_ASSETS_DIR);
+    const started = Date.now();
+    const report = {status: 'running', captured: new Date().toISOString(), command: [process.execPath, __filename, ...process.argv.slice(2)],
+        revision: cp.execFileSync(gitExecutable(), ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim(), sourceHashes: sourceHashes(),
+        runtime: {node: process.version, nodePath: process.execPath, playwrightPath: playwright,
+            playwright: require(path.join(playwright, 'package.json')).version, chromiumPath: chromium},
+        manifest: {path: path.resolve(process.env.CV_CANCEL_ASSETS_DIR, 'assets.json'),
+            sha256: sha(fs.readFileSync(path.join(process.env.CV_CANCEL_ASSETS_DIR, 'assets.json')))},
+        declaredAssets: [...assets].map(([url, {body, ...entry}]) => ({url, ...entry})),
+        responses: [], cases: [], failures: [], cleanup: {}, humanAcceptance: 'pending; no screen-reader or visual certification'};
+    let server, browser;
+    try {
+        server = await startServer(python);
+        const base = `http://127.0.0.1:${server.ready.ready}`;
+        Object.assign(report.runtime, server.ready.runtime);
+        assert(report.runtime.packagePath.startsWith(root + '/src/'));
+        assert.match(report.runtime.django, /^(4\.2|5\.2|6\.0)\./);
+        browser = await require(playwright).chromium.launch({executablePath: chromium, headless: true, args: ['--disable-background-networking']});
+        report.runtime.chromium = browser.version();
+        await browserScenarios(browser, assets, report, base, opts);
         report.status = 'passed';
-        for (const ctx of contexts) await ctx.close();
     } catch (error) {report.status = 'failed'; report.error = error.stack; process.exitCode = 1;}
     finally {
         function cleanupError(stage, error) {
-            (report.cleanupErrors ??= []).push({stage, error: error.stack});
+            report.cleanupErrors ??= [];
+            report.cleanupErrors.push({stage, error: error.stack});
             report.status = 'failed';
             report.error ??= error.stack;
             process.exitCode = 1;
@@ -369,5 +419,5 @@ async function main() {
             error: report.error, cleanupErrors: report.cleanupErrors}));
     }
 }
-module.exports = {loadAssets, assetFor, options, stopOwned, runtime};
+module.exports = {loadAssets, assetFor, options, stopOwned, runtime, sequence, validateExecutable, waitForReady};
 if (require.main === module) main().catch(error => {console.error(error.stack); process.exitCode = 1;});

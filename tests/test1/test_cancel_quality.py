@@ -5,11 +5,13 @@ from urllib.parse import parse_qs, urlsplit
 
 import pytest
 from django import forms
+from django.core import signing
 from django.core.exceptions import ImproperlyConfigured
 from django.test import RequestFactory
 
 from crud_views.lib.crispy.form import CrispyFormMixin
-from crud_views.lib.view.cancel import capture_cancel_state, effective_cancel_keys, encode_cancel_state
+from crud_views.lib.session import SessionData
+from crud_views.lib.view.cancel import SALT, capture_cancel_state, effective_cancel_keys, encode_cancel_state
 from tests.test1.app.models import Author
 from tests.test1.test_cancel_navigation import emitted_link, rendered_cancel
 from tests.test1.test_cancel_permissions import bound
@@ -96,3 +98,74 @@ def test_crispy_kwargs_can_resolve_context_without_outer_button():
         "value": "Cancel",
         "data_cv_cancel_url": "/allowed/",
     }
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("identity", [None, "author_origin", [], [""], ["", "author_origin", "extra"]])
+def test_malformed_signed_identity_cannot_restore_query(
+    cv_author_origin, user_author_origin, author_douglas_adams, identity
+):
+    view = bound(cv_author_origin.get_view_class("update"), user_author_origin, author_douglas_adams)
+    payload = signing.Signer(salt=SALT).unsign_object(encode_cancel_state(view, "list", "x=untrusted"))
+    payload["viewset"] = identity
+    token = signing.Signer(salt=SALT).sign_object(payload)
+    view.request.GET = RequestFactory().get("/", {"cv_from_cancel": token}).GET
+    assert view.cv_get_cancel_url() == "/author_origin/card/"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("origin", ["gone", "detail"])
+def test_unregistered_or_unreversible_origin_uses_configured_fallback(
+    cv_author_origin, user_author_origin, author_douglas_adams, monkeypatch, origin
+):
+    view = bound(cv_author_origin.get_view_class("update"), user_author_origin, author_douglas_adams)
+    view.cv_cancel_keys = [origin]
+    token = encode_cancel_state(view, origin, "x=origin")
+    view.request.GET = RequestFactory().get("/", {"cv_from_cancel": token}).GET
+    if origin == "detail":
+        monkeypatch.setattr(
+            cv_author_origin.get_view_class("detail"),
+            "cv_get_url_extra_kwargs",
+            classmethod(lambda cls: {"unregistered_coordinate": "bad"}),
+        )
+    assert view.cv_get_cancel_url() == "/author_origin/card/"
+
+
+@pytest.mark.django_db
+def test_create_key_cannot_borrow_explicit_saved_object(cv_author_origin, user_author_origin, author_douglas_adams):
+    view = bound(cv_author_origin.get_view_class("create"), user_author_origin, query={"cv_from": "detail"})
+    view.cv_cancel_keys = ["detail"]
+    assert view.cv_get_cancel_key(obj=author_douglas_adams) == "card"
+
+
+@pytest.mark.parametrize(
+    "query,expected",
+    [
+        ("reset_filter=true", "/publisher/"),
+        ("reset_filter=true&sort=name&order=name&dir=desc", "/publisher/?sort=name&order=name&dir=desc"),
+    ],
+)
+def test_reset_drops_remembered_filter_and_retains_order_controls(cv_publisher, query, expected):
+    view = cv_publisher.get_view_class("list")()
+    view.kwargs = {}
+    view.request = RequestFactory().get("/publisher/?" + query)
+    view.request.session = {}
+    with SessionData.from_view(view) as state:
+        state["filter_query_string"] = "name=Penguin"
+    response = view.get(view.request)
+    assert response["Location"] == expected
+    assert SessionData.from_view(view).get("filter_query_string") is None
+
+
+@pytest.mark.django_db
+def test_selector_unregistered_origin_forwards_invalid_marker(client_user_vehicle_add, cv_vehicle, monkeypatch):
+    from django.contrib.contenttypes.models import ContentType
+
+    from tests.test1.app.models import Car
+
+    monkeypatch.setattr(cv_vehicle.get_view_class("create"), "cv_cancel_keys", ["gone"])
+    response = client_user_vehicle_add.post(
+        "/vehicle/create/select/?cv_from=gone", {"polymorphic_ctype_id": ContentType.objects.get_for_model(Car).pk}
+    )
+    assert response.status_code == 302
+    assert parse_qs(urlsplit(response["Location"]).query) == {"cv_from_cancel": ["invalid"]}

@@ -1,0 +1,27 @@
+{
+  "cycle": 2,
+  "phase": "06.6",
+  "reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "parallel_lanes": true,
+  "opencode_timeout_seconds": 1200,
+  "head_at_review": "f4c7744de5ef88286b74f1b74e05814667a22345",
+  "plans": {
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-01-PLAN.md": "62566d4d91cf33c40cb7e2a524419edbc60c1123f206e2a9d4bb8cc3f6f7223d",
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-02-PLAN.md": "f9311136f905ad5f1ea54a8f64bdbc81f18e11278041765975a148f67dcedead",
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-03-PLAN.md": "68bcfc9db3824c965056167d48cc377703f0c02bd58944e164421380d41f097f",
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-04-PLAN.md": "8eb2ab143a3037b59b6980a60b556d344c86dbc36d1d3b2387c627ced9f5cbc8",
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-05-PLAN.md": "0d71969a1af80f6e92e0f392db4ef155cc829c513b0cd9171bbc73cfb161ba90",
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-06-PLAN.md": "5ee338f9ad9f108d4065fb8c62b420c9cbd9ea095f6b56e2687852c92336e337",
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-07-PLAN.md": "31c9a6584583dc9076766e2d5c5f7944c12d38ae2c55e466fe092faf4e4f1c56",
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-08-PLAN.md": "3f1df82c4ff5e3cfffc742ee131d7650275d59d9b50339daa326ac880ad274a7",
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-09-PLAN.md": "571ef85567841c8e3afeae6354729b1737fba3e5652243bd73ad5bcc6bab4cf7"
+  },
+  "source_diff_since_cycle1": "",
+  "conflict_slot_sha256": "7a029c8c29407c80661fc75b9740ce91fd3e8f682be7ceece4c8a33666a12a01",
+  "authority": "intel",
+  "phase_status": "lag"
+}

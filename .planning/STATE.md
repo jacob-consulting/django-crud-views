@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.7"
-current_phase_name: Dynamic cancel navigation and origin query state
-status: verifying
-stopped_at: Phase 06.7 all plans complete; canonical 32/32 human_needed; four UAT checks pending
-last_updated: "2026-11-03T19:09:02.607Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.7 complete, ready to plan Phase 7
+last_updated: "2026-11-03T19:52:42.266Z"
 last_activity: 2026-11-03
-last_activity_desc: Phase 06.7 automated execution complete; verification and human acceptance pending
-state_head: 8e11868ed027894d8a2dfa6b16e606898701091c
+last_activity_desc: Phase 06.7 complete, transitioned to Phase 7
+state_head: f332b2437d3057d89ff616855b2116098815c946
 progress:
   total_phases: 14
-  completed_phases: 12
+  completed_phases: 13
   total_plans: 106
   completed_plans: 106
+  percent: 93
 milestone_name: milestone
 ---
 
@@ -24,17 +25,26 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-03)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.7 — Dynamic cancel navigation and origin query state
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.7 (Dynamic cancel navigation and origin query state) — VERIFYING
-Plan: 5 of 5
-Status: Plans executed; phase verification and human acceptance pending
-Last activity: 2026-11-03 — Plan 05 browser/runtime acceptance recorded; all automated gates passed
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-03 — Phase 06.7 complete, transitioned to Phase 7
 
-Progress: [████████░░] 86%
-Next: verify Phase 06.7 and resolve UI consideration confirmation plus human keyboard/focus/visual Cancel acceptance
+Progress: [█████████░] 93%
+Next: $gsd-discuss-phase 7 — settle the theme-surface stability policy before planning
+
+### Phase 06.7 completion — 2026-11-03
+
+- All five plans and CAN-01–CAN-07 complete; canonical verification passed and UAT 5/5 passed with no unresolved Cancel issues.
+- Maintainer approved the intended contract and migration guidance. Chrome 156.0.8078.79 with Orca passed button/link keyboard, omission, repeated invalid modal focus, and responsive label/both/icon/long-label checks at all three specified sizes.
+- The restricted user's save succeeded; its existing list success redirect returned 403. Recorded as an example/fixture limitation, not a Cancel failure; success behavior remains unchanged.
+- WINDOWS 30 resolved. Low query-visibility acceptance-record obligation remains open below the configured security threshold; no risk acceptance is inferred.
+- Temporary user/author removed; normal example settings restored on port 9000 with the tunnel hostname. Existing configuration and untracked artifacts preserved. No push, merge or release.
+- Earlier pending-human entries below are historical and superseded by this completion entry. Phase 7 needs discussion; no new phase implementation started.
 
 ### Phase 06.7 canonical verification — 2026-11-03
 
@@ -339,7 +349,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 101
+- Total plans completed: 106
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -359,6 +369,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.4 | 26 | - | - |
 | 06.5 | 9 | - | - |
 | 06.6 | 10 | - | - |
+| 06.7 | 5 | - | - |
 
 **Recent Trend:**
 
@@ -625,7 +636,7 @@ None yet.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
 - Phase 06.2 retained scope complete: CR-02–CR-04 transferred to Phase 6.3 / issue #282 and closed by its 2026-11-01 verification; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transfer completed within 6.3 GUA-01 scope; broader Guardian identity compatibility remains in #286; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
-- Phase 06.7: all five plans and automated CAN obligations are complete. Independent phase verification, UI consideration confirmation and human keyboard/focus/visual Cancel acceptance remain pending; WINDOWS 30 is open. Browser asset precondition is resolved with validated user-authorized local files.
+- Phase 06.7 complete: canonical verification and UAT passed; carry the dynamic Cancel helper/defaults/omission contract into Phase 7. Low query-visibility acceptance-record obligation remains open below the configured security threshold.
 
 ### Quick Tasks Completed
 
@@ -655,6 +666,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-03T19:09:00.362Z
-Stopped at: Phase 06.7 all plans complete; canonical 32/32 human_needed; four UAT checks pending
-Resume file: .planning/phases/06.7-dynamic-cancel-navigation-and-origin-query-state/06.7-UAT.md
+Last session: 2026-11-03T19:53:19.147283+00:00
+Stopped at: Phase 06.7 complete, ready to plan Phase 7
+Resume file: None

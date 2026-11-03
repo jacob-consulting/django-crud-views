@@ -31,7 +31,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.4: Conditional and formset correctness/lifecycle (INSERTED)** - analysis A1–A7: correct conditional state, server save behavior and dynamic formset initialization before the freeze (completed 2026-11-02)
 - [x] **Phase 6.5: Remaining presentation contracts and decided cleanup (INSERTED)** - analysis #259/C1/C2 and decided alias cleanup before the freeze (completed 2026-11-02)
 - [x] **Phase 6.6: Theme-adoption seams from the Tabler sync (INSERTED)** - issues #277–#280 before the freeze (completed 2026-11-03)
-- [ ] **Phase 6.7: Dynamic cancel navigation and origin query state (INSERTED)** - #302: dynamic defaults and reliable origin query restoration before the freeze
+- [x] **Phase 6.7: Dynamic cancel navigation and origin query state (INSERTED)** - #302: dynamic defaults and reliable origin query restoration before the freeze (completed 2026-11-03)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -804,7 +804,7 @@ ViewSet; detail destinations use the form's existing object.
 **Scope exclusions**: Detail → create → detail (Create uses its configured fallback), cross-ViewSet navigation,
 history stacks, browser-only state, success redirect changes, new modal support and new Cancel controls on protected
 deletion pages that currently hide the form.
-**Plans:** 5/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 **Wave 1**
@@ -898,5 +898,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.4. Conditional and formset correctness/lifecycle | 26/26 | Complete    | 2026-11-02 |
 | 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
 | 6.6. Theme-adoption seams from the Tabler sync | 10/10 | Complete    | 2026-11-03 |
-| 6.7. Dynamic cancel navigation and origin query state | 5/5 | In Progress | - |
+| 6.7. Dynamic cancel navigation and origin query state | 5/5 | Complete    | 2026-11-03 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

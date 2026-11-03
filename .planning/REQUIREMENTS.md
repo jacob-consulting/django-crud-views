@@ -21,10 +21,10 @@ except where a requirement says the markup changes.
 
 ### Class-key grammar (plan 1C)
 
-- [ ] **KEYS-01**: Maintainer decides the `form:*` second-segment grammar (A: `form:<kind>:<mode>`, B: variants everywhere) during phase discussion; the rule is written in `docs/reference/buttons.md#the-class-table`
-- [ ] **KEYS-02**: W362 accepts mode keys for form buttons per the chosen grammar and rejects malformed ones (e.g. `form:submitt:icon`, `form:container:icon`)
-- [ ] **KEYS-03**: `LOCATIONS` is split into explicit sets (e.g. `VARIANT_LOCATIONS`, `FORM_KINDS`) so adding `"form"` to the button-data locations cannot loosen W362
-- [ ] **KEYS-04**: A test parses the key count quoted in `buttons.md` and asserts it equals the size of `DEFAULT_BUTTON_CLASSES`
+- [x] **KEYS-01**: Maintainer decides the `form:*` second-segment grammar (A: `form:<kind>:<mode>`, B: variants everywhere) during phase discussion; the rule is written in `docs/reference/buttons.md#the-class-table`
+- [x] **KEYS-02**: W362 accepts mode keys for form buttons per the chosen grammar and rejects malformed ones (e.g. `form:submitt:icon`, `form:container:icon`)
+- [x] **KEYS-03**: `LOCATIONS` is split into explicit sets (e.g. `VARIANT_LOCATIONS`, `FORM_KINDS`) so adding `"form"` to the button-data locations cannot loosen W362
+- [x] **KEYS-04**: A test parses the key count quoted in `buttons.md` and asserts it equals the size of `DEFAULT_BUTTON_CLASSES`
 
 ### Filter toggle (plan 1B, #262)
 
@@ -110,10 +110,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LMOD-04 | Phase 1 (plan 1A) | Complete |
 | LMOD-05 | Phase 1 (plan 1A) | Complete |
 | LMOD-06 | Phase 1 (plan 1A) | Complete |
-| KEYS-01 | Phase 2 (plan 1C) | Pending |
-| KEYS-02 | Phase 2 (plan 1C) | Pending |
-| KEYS-03 | Phase 2 (plan 1C) | Pending |
-| KEYS-04 | Phase 2 (plan 1C) | Pending |
+| KEYS-01 | Phase 2 (plan 1C) | Complete |
+| KEYS-02 | Phase 2 (plan 1C) | Complete |
+| KEYS-03 | Phase 2 (plan 1C) | Complete |
+| KEYS-04 | Phase 2 (plan 1C) | Complete |
 | FILT-01 | Phase 3 (plan 1B) | Pending |
 | FILT-02 | Phase 3 (plan 1B) | Pending |
 | FILT-03 | Phase 3 (plan 1B) | Pending |

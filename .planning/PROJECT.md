@@ -34,13 +34,12 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ Django system checks for ViewSet/CrudView configuration — existing
 
 - ✓ **1A** Project-wide label-mode floors, lazy accessor, E108 and instance-safe card overrides — Phase 1
+- ✓ **1C** Option A `form:<kind>:<mode>` grammar, finite independent locations, W362 validation and live key-count guard — Phase 2
 
 ### Active
 
 - [ ] **1B** Filter toggle honours the label mode (#262): `FilterContextButton` resolves via
   `cv_get_action_label_mode("context", "filter")`; template three-way branch; `list.filter.js` tolerates icon-less toggle
-- [ ] **1C** Decide and implement the `form:*` second-segment grammar (option A: `form:<kind>:<mode>` vs option B:
-  variants everywhere — decision deferred to the phase discussion); document the rule; pin the key count in docs by test
 - [ ] **2** Form buttons through a crud_views leaf (#257): `"form"` in `LOCATIONS`, new leaf `tags/button/form.html`,
   crispy `Submit`/`Button`/`Reset` as thin adapters, escaping, icons `save`/`cancel`/`filter-reset`, checks
   E210/E211/W291/W292, `<input>` → `<button>` (Breaking), example project uses `both`
@@ -89,7 +88,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Group findings into phases by dependency, not rank order or one change | Reviewable units; #257 depends on 1A+1C; stability policy must be last | — Pending |
-| `form:*` grammar (A vs B) decided in the 1C phase discussion | Maintainer decision; plan recommends A (no renames before freeze) | — Pending |
+| Option A: `form:<kind>:<mode>`; context/list/card retain variants | Independent finite vocabularies preserve W362 boundaries; form rendering and floors remain Phase 6 work | Validated (Phase 2) |
 | Label-mode defaults are a project-wide floor, not per-ViewSet/view | Per-ViewSet/view knobs already exist | Validated (Phase 1) |
 | Phase 3 (Bootstrap leak fixes) is the droppable one if 1.0.0 ships early | Additive DOM changes with a one-line migration note each | — Pending |
 | Milestone limited to the five findings | Keep scope reviewable; other 1.0.0 items tracked separately | — Pending |
@@ -117,4 +116,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-26 after Phase 1 completion*
+*Last updated: 2026-10-26 after Phase 2 completion*

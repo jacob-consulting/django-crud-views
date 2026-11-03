@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 2
-current_phase_name: Form key grammar
+current_phase: 3
+current_phase_name: Filter toggle label mode
 status: planning
-stopped_at: Phase 01 complete, ready to plan Phase 2
-last_updated: "2026-10-26T11:27:52.151Z"
+stopped_at: Phase 02 complete, ready to plan Phase 3
+last_updated: "2026-10-26T13:53:21.354Z"
 last_activity: 2026-10-26
-last_activity_desc: Phase 01 complete, transitioned to Phase 2
-state_head: 2459b99e6b47e35cdeb619e7cb113069b74825d1
+last_activity_desc: Phase 02 complete, transitioned to Phase 3
+state_head: 6ce34b20370588ebeab26c67e4eb310ca6477969
 progress:
   total_phases: 7
-  completed_phases: 1
-  total_plans: 5
-  completed_plans: 5
-  percent: 14
+  completed_phases: 2
+  total_plans: 6
+  completed_plans: 6
+  percent: 29
 ---
 
 # Project State
@@ -23,22 +23,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 2 — Form key grammar
+**Current focus:** Phase 3 — Filter toggle label mode; short spec and context before planning
 
 ## Current Position
 
-Phase: 2 — Form key grammar
+Phase: 3 — Filter toggle label mode
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-26 — Phase 01 complete, transitioned to Phase 2
+Last activity: 2026-10-26 — Phase 02 complete, transitioned to Phase 3
 
-Progress: [█░░░░░░░░░] 14%
+Progress: [███░░░░░░░] 29%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -47,6 +47,7 @@ Progress: [█░░░░░░░░░] 14%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 | 5 | - | - |
+| 02 | 1 | - | - |
 
 **Recent Trend:**
 
@@ -63,6 +64,7 @@ Progress: [█░░░░░░░░░] 14%
 | Phase 01 P03 | 4 min | 2 tasks | 7 files |
 | Phase 01 P04 | 10 min | 2 tasks | 9 files |
 | Phase 01 P05 | 8 min | 3 tasks | 10 files |
+| Phase 02 P01 | 20 min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -85,6 +87,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Label-mode precedence is stated once per location in action_menus.md (context/list/card resolution sections); other pages link instead of restating
 - [Phase 01]: settings.md#label-mode-configuration is the single merge-or-replace table: CRUD_VIEWS_LABEL_MODE_DEFAULTS merges per location, per-action maps replace whole
 - [Phase 01]: Card action rendering honors own instance values before the class resolver; own None reads the live card floor, while absent own values retain subclass fallback hooks.
+- [Phase 02]: Form kinds accept all three class-key modes; context/list/card retain variants under independent immutable location allow-lists.
+- [Phase 02]: Form class keys do not enable form label floors or change crispy rendering; those remain Phase 6 work.
 
 ### Pending Todos
 
@@ -92,13 +96,14 @@ None yet.
 
 ### Blockers/Concerns
 
-
-- Phase 2: KEYS-01 grammar (A vs B) is an open maintainer decision; settle it in the phase discussion.
+- Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags seven pre-existing planning
+  Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
 - Phase 3, 6, 7: each needs a spec or maintainer decision before planning.
 - Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
 - Phase 5: confirm the hidden-label key name (`pagination:hidden-label` vs `table:hidden-label`) before Phase 7.
 - Phases 4, 5 and 6 must commit before-change goldens. Today's goldens contain no form buttons, dismissible alerts or
   table pagination.
+- Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 
 ## Deferred Items
 
@@ -108,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-26T11:28:24.696440+00:00
-Stopped at: Phase 01 complete, ready to plan Phase 2
+Last session: 2026-10-26T13:53:34Z
+Stopped at: Phase 02 complete, ready to plan Phase 3
 Resume file: None

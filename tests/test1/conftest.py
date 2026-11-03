@@ -20,6 +20,18 @@ def asset_registry():
     assets._REGISTRY.update(snapshot)
 
 
+@pytest.fixture(autouse=True)
+def isolate_label_mode_warnings(monkeypatch):
+    """A fresh once-per-(location, value) label-mode warning register for every test.
+
+    Production keeps the register for the process lifetime; within one test repeated pairs (across sources and
+    settings changes) are still logged once. monkeypatch restores the previous register at teardown.
+    """
+    from crud_views.lib.view import label_mode
+
+    monkeypatch.setattr(label_mode, "_warned", set())
+
+
 def pytest_configure():
     settings.configure(
         BASE_DIR=Path(__file__).resolve().parent.parent,

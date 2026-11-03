@@ -58,10 +58,12 @@ class CrudViewsSettings(BaseModel):
     context_actions_inline: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_INLINE", default=None)
     card_actions_inline: Any = from_settings("CRUD_VIEWS_CARD_ACTIONS_INLINE", default=None)
 
-    # label mode of context / list actions (#216): action key -> "label" | "icon" | "both"; keys not named are
-    # "icon" (in the toolbar, the target view's cv_context_action_label_mode first, #269). Overridable per ViewSet
-    # (*_actions_label_mode) and per view (cv_*_actions_label_mode), resolved on
-    # the rendering view
+    # label mode of context / list actions (#216): action key -> "label" | "icon" | "both". Each layer is selected
+    # whole, never merged: the view's map (cv_*_actions_label_mode) if not None, else the ViewSet's
+    # (*_actions_label_mode), else this setting, resolved on the rendering view. Keys not named take the
+    # configurable location floor default_label_mode() (CRUD_VIEWS_LABEL_MODE_DEFAULTS over the package "icon"; in
+    # the toolbar the target view's cv_context_action_label_mode first, #269). The floor setting is not a field:
+    # it is read raw at call time (override_settings applies) and validated by E108
     context_actions_label_mode: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE", default={})
     list_actions_label_mode: Any = from_settings("CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE", default={})
 
@@ -96,10 +98,18 @@ class CrudViewsSettings(BaseModel):
     )
 
     def _action_settings_messages(self) -> list[CheckMessage]:
-        """E105 / E106: the shape of the inline-keys lists (#174) and the label-mode maps (#216)."""
+        """E105 / E106 / E108: the shape of the inline-keys lists (#174), the label-mode maps (#216) and the
+        label-mode floor CRUD_VIEWS_LABEL_MODE_DEFAULTS."""
         # deferred imports: settings.py must not import the view package at module level
         from crud_views.lib.view.action_menu import cv_is_inline_keys
-        from crud_views.lib.view.label_mode import LABEL_MODES, is_label_mode_map
+        from crud_views.lib.view.button_data import LOCATIONS
+        from crud_views.lib.view.label_mode import (
+            _UNSET,
+            LABEL_MODES,
+            _raw_label_mode_defaults,
+            is_label_mode,
+            is_label_mode_map,
+        )
 
         messages: list[CheckMessage] = []
         for setting, value in (
@@ -129,6 +139,37 @@ class CrudViewsSettings(BaseModel):
                         ),
                     )
                 )
+        # the per-location floor, read raw on every check (like default_label_mode): absent means the package
+        # defaults, anything else must be a dict; one Error per bad entry, an unknown location before its mode
+        defaults = _raw_label_mode_defaults()
+        if defaults is not _UNSET:
+            if not isinstance(defaults, dict):
+                messages.append(
+                    Error(
+                        id="crud_views.E108",
+                        msg=(
+                            "setting CRUD_VIEWS_LABEL_MODE_DEFAULTS must be a dict of location -> one of "
+                            f"{sorted(LABEL_MODES)}, got {defaults!r}"
+                        ),
+                    )
+                )
+            else:
+                for location, mode in defaults.items():
+                    if location not in LOCATIONS:
+                        allowed = sorted(LOCATIONS)
+                    elif not is_label_mode(mode):
+                        allowed = sorted(LABEL_MODES)
+                    else:
+                        continue
+                    messages.append(
+                        Error(
+                            id="crud_views.E108",
+                            msg=(
+                                f"setting CRUD_VIEWS_LABEL_MODE_DEFAULTS key {location!r} must be one of "
+                                f"{allowed}, got {mode!r}"
+                            ),
+                        )
+                    )
         return messages
 
     @property

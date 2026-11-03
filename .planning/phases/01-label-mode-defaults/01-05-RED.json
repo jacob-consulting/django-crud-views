@@ -1,0 +1,13 @@
+{
+  "command": ".venv/bin/pytest tests/test1/test_card_label_mode_render.py::test_card_initkwargs_label_without_setting -q --junitxml=/tmp/01-05-task1-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.416\" timestamp=\"2026-10-26T11:56:31.951693+01:00\" hostname=\"work\"><testcase classname=\"tests.test1.test_card_label_mode_render\" name=\"test_card_initkwargs_label_without_setting\" time=\"0.307\"><failure message=\"assert [&lt;Element i a...774ef1fa60d0&gt;] == []&#10;  &#10;  Left contains one more item: &lt;Element i at 0x774ef1fa60d0&gt;&#10;  Use -v to get more diff\">author_douglas_adams = &lt;Author: Douglas Adams&gt;\nuser_author_view = &lt;User: user_author_view&gt;\nsettings = &lt;pytest_django.fixtures.Settings object at 0x774ef2562f60&gt;\n\n    @pytest.mark.django_db\n    def test_card_initkwargs_label_without_setting(author_douglas_adams, user_author_view, settings):\n        if hasattr(settings, \"CRUD_VIEWS_LABEL_MODE_DEFAULTS\"):\n            del settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS\n        assert not hasattr(settings, \"CRUD_VIEWS_LABEL_MODE_DEFAULTS\")\n    \n        label = _inline(\n            _render_card_view(AuthorCardListView, user_author_view, initkwargs={\"cv_card_actions_label_mode\": \"label\"}),\n            \"detail\",\n        )\n&gt;       _assert_label_only(label, \"Details\")\n\ntests/test1/test_card_label_mode_render.py:266: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nbutton = &lt;Element a at 0x774ef1fa7e30&gt;, text = 'Details'\n\n    def _assert_label_only(button, text):\n        assert _text(button) == text\n&gt;       assert _icons(button) == []\nE       assert [&lt;Element i a...774ef1fa60d0&gt;] == []\nE         \nE         Left contains one more item: &lt;Element i at 0x774ef1fa60d0&gt;\nE         Use -v to get more diff\n\ntests/test1/test_card_label_mode_render.py:243: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_card_initkwargs_label_without_setting",
+  "targetFile": "tests/test1/test_card_label_mode_render.py",
+  "expected": "label-only Details action, zero icons",
+  "actual": "Details action contains one icon",
+  "reportPath": "/tmp/01-05-task1-red.xml",
+  "runStartedAt": "2026-10-26T10:55:59Z",
+  "reportModifiedAt": "2026-10-26T10:56:32.367895+00:00",
+  "semanticAssessment": "Target executed and failed the planned icon-count assertion after a real 200 rendered response. Initial RequestFactory resolver_match setup error was corrected before collecting this RED evidence."
+}

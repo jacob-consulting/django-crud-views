@@ -277,3 +277,45 @@ def test_resource_with_viewset_pk_in_models_module(tmp_path):
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert "IMPORT-OK" in result.stdout
+
+
+def test_settings_defers_button_data_until_checks():
+    """D-07: crud_views.lib.settings imports before django.setup() without loading the view package; the
+    E108 check loads button_data (for LOCATIONS) only when it runs, and reads the raw setting then."""
+    code = textwrap.dedent(
+        """
+        import sys
+
+        from django.conf import settings
+
+        settings.configure(
+            INSTALLED_APPS=["django.contrib.contenttypes", "django.contrib.auth"],
+            CRUD_VIEWS_LABEL_MODE_DEFAULTS={"card": "nope"},
+        )
+
+        from crud_views.lib.settings import crud_views_settings
+
+        assert "crud_views.lib.view" not in sys.modules, "view package imported by settings"
+        assert "crud_views.lib.view.button_data" not in sys.modules, "button_data imported by settings"
+
+        import django
+
+        django.setup()
+
+        assert "crud_views.lib.view.button_data" not in sys.modules, "button_data imported by django.setup()"
+
+        messages = crud_views_settings.check_messages
+
+        assert "crud_views.lib.view.button_data" in sys.modules, "check did not load button_data"
+        ids = [m.id for m in messages]
+        assert ids.count("crud_views.E108") == 1, ids
+        assert set(ids) <= {"crud_views.E100", "crud_views.E108"}, ids
+        (e108,) = [m for m in messages if m.id == "crud_views.E108"]
+        assert "key 'card'" in e108.msg and "'nope'" in e108.msg, e108.msg
+
+        print("SETTINGS-DEFERRED-IMPORT-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=10)
+    assert result.returncode == 0, result.stderr
+    assert "SETTINGS-DEFERRED-IMPORT-OK" in result.stdout

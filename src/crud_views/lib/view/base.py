@@ -70,6 +70,21 @@ def cv_is_modal_request(request) -> bool:
     return request.headers.get("X-CV-Modal") == "true"
 
 
+def _cancel_target_available(target, user, obj, rendering_view):
+    """Evaluate the concrete destination's access and state hooks, including overrides."""
+    target_obj = obj if target.cv_object else None
+    if not target.cv_has_access(user, target_obj):
+        return False
+    if target.cv_object:
+        return target._cv_action_enabled_for_rendering(user, target_obj, rendering_view)
+    action_obj = None
+    if target.cv_viewset.has_parent:
+        action_obj = rendering_view._cv_cancel_parent_object()
+        if action_obj is None:
+            return False
+    return target._cv_action_enabled_for_rendering(user, action_obj, rendering_view)
+
+
 class CrudView(metaclass=CrudViewMetaClass):
     """
     A view that is part of a ViewSet
@@ -833,18 +848,7 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @classmethod
     def _cv_cancel_target_available(cls, user, obj, rendering_view):
-        if cls.cv_object:
-            if not cls.cv_has_access(user, obj):
-                return False
-            return cls._cv_action_enabled_for_rendering(user, obj, rendering_view)
-        if not cls.cv_has_access(user, None):
-            return False
-        action_obj = None
-        if cls.cv_viewset.has_parent:
-            action_obj = rendering_view._cv_cancel_parent_object()
-            if action_obj is None:
-                return False
-        return cls._cv_action_enabled_for_rendering(user, action_obj, rendering_view)
+        return _cancel_target_available(cls, user, obj, rendering_view)
 
     def _cv_cancel_owner(self, request):
         """Bind an override only to a shallow, request-local copy."""

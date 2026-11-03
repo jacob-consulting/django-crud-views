@@ -152,6 +152,12 @@ function assetContentType(url) {
     const types = {'.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2'};
     return types[path.extname(new URL(url).pathname)] ?? 'font/ttf';
 }
+function modalCases() {
+    return ['delete', 'contact'].flatMap(key => ['', 'x=&x=%3Cscript%3E%26%22'].map(query => ({key, query})));
+}
+function isModalPost(response) {
+    return response.request().method() === 'POST' && response.request().headers()['x-cv-modal'] === 'true';
+}
 async function browserScenarios(browser, assets, report, base, opts) {
         const pending = [], contexts = [];
         async function context(tag = 'button', limited = false) {
@@ -303,7 +309,7 @@ async function browserScenarios(browser, assets, report, base, opts) {
                     await cancel(second, ctx, controlB, ids.other_book_list + '?x=parentB', record);
                 } finally {await second.close();}
             });
-            await sequence(['delete', 'contact'], key => sequence(['', 'x=&x=%3Cscript%3E%26%22'], query =>
+            await sequence(modalCases(), ({key, query}) =>
                 run(`${tag}-modal-${key}-${query ? 'filtered' : 'empty'}`, async record => {
                     await ctx.request.get(base + '/author_modal/?cv_from_restore=1');
                     const source = '/author_modal/' + (query ? '?' + query : '');
@@ -311,7 +317,7 @@ async function browserScenarios(browser, assets, report, base, opts) {
                     let response = await openAction(page, `/author_modal/${ids.author}/${key}/`, true);
                     await owner(page, response, tag, true);
                     await sequence([1, 2], async () => {
-                        const waiting = page.waitForResponse(r => r.request().method() === 'POST' && r.request().headers()['x-cv-modal'] === 'true');
+                        const waiting = page.waitForResponse(isModalPost);
                         await page.locator('#cv-modal form [type="submit"]').click(); response = await waiting;
                         assert.equal(response.status(), 422);
                         await page.locator('#cv-modal form .invalid-feedback').first().waitFor();
@@ -320,7 +326,7 @@ async function browserScenarios(browser, assets, report, base, opts) {
                     const control = await owner(page, response, tag, true);
                     await cancel(page, ctx, control, source, record, tag === 'button');
                 })
-            ));
+            );
             await run(`${tag}-protected-delete-no-form`, async record => {
                 await goto(page, `/author_origin/${ids.protected}/delete/?cv_from=list`);
                 assert.equal(await page.locator('form.cv-form').count(), 0);

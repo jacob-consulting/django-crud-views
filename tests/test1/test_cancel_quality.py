@@ -58,6 +58,42 @@ def test_request_override_does_not_rebind_owner(cv_author_origin, user_author_or
     assert view.cv_get_cancel_url() == "/author_origin/card/"
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["detail", "list"])
+@pytest.mark.parametrize("allowed", [False, True])
+def test_cancel_dispatches_concrete_destination_policy(
+    cv_author_origin, user_author_origin, author_douglas_adams, monkeypatch, key, allowed
+):
+    events = []
+    original = cv_author_origin.get_view_class(key)
+
+    class Destination(original):
+        cv_viewset = None
+
+        @classmethod
+        def cv_has_access(cls, user, obj=None):
+            events.append(("access", cls, user, obj))
+            return allowed
+
+        @classmethod
+        def cv_action_enabled(cls, user, obj=None):
+            events.append(("state", cls, user, obj))
+            return True
+
+    monkeypatch.setattr(Destination, "cv_viewset", cv_author_origin)
+    monkeypatch.setitem(cv_author_origin._views, key, Destination)
+    owner = bound(cv_author_origin.get_view_class("update"), user_author_origin, author_douglas_adams, {"cv_from": key})
+    owner.cv_cancel_keys = [key]
+    owner.cv_cancel_key = key
+    expected_url = f"/author_origin/{author_douglas_adams.pk}/detail/" if key == "detail" else "/author_origin/"
+    assert owner.cv_get_cancel_url() == (expected_url if allowed else None)
+    target_obj = author_douglas_adams if key == "detail" else None
+    expected = [("access", Destination, user_author_origin, target_obj)]
+    if allowed:
+        expected.append(("state", Destination, user_author_origin, target_obj))
+    assert events == expected
+
+
 @pytest.mark.parametrize("fails", [False, True])
 def test_reentrant_crispy_context_restored_after_kwargs_hook(fails):
     previous = {"cv_url": "/previous/", "cv_action_label": "Previous"}

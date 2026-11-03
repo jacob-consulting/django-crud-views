@@ -4,6 +4,23 @@
 {% block guardian_config %}
 <h4>{% translate "Guardian Configuration" %}</h4>
 {% cv_alert "warning" body_template="crud_views/snippets/guardian/config_table.html" %}
+
+<h4>{% translate "Global permission fallback" %}</h4>
+<table class="table table-striped">
+    <tr>
+        <th scope="col">{% translate "View" %}</th>
+        <th scope="col">cv_guardian_accept_global_perms</th>
+        <th scope="col">{% translate "Effective policy" %}</th>
+    </tr>
+    {% for view_key, view in views.items %}
+    <tr>
+        <td>{{ view_key }}</td>
+        <td>{% if view.guardian_policy.global_fallback_applicable %}{{ view.guardian_policy.cv_guardian_accept_global_perms }}{% else %}—{% endif %}</td>
+        <td>{% if not view.guardian_policy.global_fallback_applicable %}{% translate "not applicable" %}{% elif view.guardian_policy.cv_guardian_accept_global_perms %}{% translate "global fallback: model permissions accepted" %}{% else %}{% translate "strict: object and group grants only" %}{% endif %}</td>
+    </tr>
+    {% endfor %}
+</table>
+<p>{% translate "Global fallback is configured on each view class. GuardianViewSet.get_objects_for_user() is independent of these view policies and always strict." %}</p>
 {% endblock guardian_config %}
 
 {% block permission_holders %}

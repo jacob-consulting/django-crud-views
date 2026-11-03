@@ -1,3 +1,6 @@
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
@@ -28,6 +31,43 @@ class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/create.html"
+
+    @classmethod
+    def _cv_action_enabled_for_context(cls, user, obj=None) -> bool:
+        """A nested create concerns its parent, never an unrelated or ambiguous child object."""
+        parent = cls.cv_viewset.parent
+        if parent is None:
+            return super()._cv_action_enabled_for_context(user, obj)
+        parent_model = parent.viewset.model
+        if not isinstance(obj, parent_model):
+            if not isinstance(obj, cls.cv_viewset.model) or parent.many_to_many_through_attribute:
+                return False
+            try:
+                obj = getattr(obj, parent.get_attribute())
+            except ObjectDoesNotExist:
+                return False
+        return isinstance(obj, parent_model) and cls.cv_action_enabled(user, obj)
+
+    @classmethod
+    def _cv_action_enabled_for_rendering(cls, user, obj, rendering_view) -> bool:
+        """Use the target route's parent while keeping permission and label inputs unchanged."""
+        parent = cls.cv_viewset.parent
+        if parent is not None:
+            source = rendering_view.cv_viewset
+            # A child link binds the current parent row, rather than an ancestor in the page URL.
+            if source.name != parent.name:
+                kwargs = getattr(rendering_view, "kwargs", {})
+                arg = parent.get_pk_name()
+                if arg in kwargs:
+                    try:
+                        if source.parent and source.parent.name == parent.name:
+                            obj = rendering_view.cv_get_parent_object()
+                        else:
+                            # A parent button can target a nested create higher in the ancestor chain.
+                            obj = get_object_or_404(parent.viewset.model, pk=kwargs[arg])
+                    except (Http404, KeyError):
+                        return False
+        return cls._cv_action_enabled_for_context(user, obj)
 
     def cv_form_valid(self, context: dict):
         """

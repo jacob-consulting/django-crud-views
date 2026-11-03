@@ -142,6 +142,24 @@ when the user may access a key:
 The filter checks access for `view`'s current object (or `None` for list-type views) and
 returns `False` for unknown keys.
 
+It is a permission check only. A key can be permitted while its action is disabled by state, in which case
+`cv_context_button` renders nothing (or a disabled button), so the wrapper can end up empty. To wrap only buttons that
+actually render, use the loop below.
+
+On a child page of a nested Guardian ViewSet with a `ForeignKey` parent, keep passing the page's own object: for the
+`create` key the filter checks the permission on that object's actual parent (a Book page asks about its Publisher).
+Two cases return `False`:
+
+- A child **list** page has no current object, so the filter gets `None`. The list's own create control resolves the
+  parent from the URL: place it with `{% cv_context_button "create" %}` or the loop below instead of gating on the
+  filter.
+- The page of a **`ManyToMany`** child: the child can belong to several parents, so its object cannot say which
+  parent a create would use. The filter and the page's create control both stay closed. Link to the child list under
+  the parent the user came from, or call the helpers with an explicit parent instance. Never pick "the first" related
+  parent yourself.
+
+See [What the create access helpers accept](reference/guardian.md#what-the-create-access-helpers-accept).
+
 ### Render a custom loop of buttons
 
 `view.cv_get_context_buttons` returns the resolved, **access-filtered** button contexts (so

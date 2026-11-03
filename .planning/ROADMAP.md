@@ -26,6 +26,8 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 5: Table pagination parity** - plan 3B: table pagination gets the same registry icons and accessible markup as card pagination (droppable) (completed 2026-10-27)
 - [x] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html` (completed 2026-10-28)
 - [x] **Phase 6.1: Cancel form button as a link (INSERTED)** - #275: themes can opt into native cancel links while preserving the button default (completed 2026-10-29)
+- [x] **Phase 6.2: Request authorization and write integrity (INSERTED)** - analysis B1–B7: secure request paths, safe delete previews and truthful Guardian configuration before the freeze (completed 2026-10-30)
+- [ ] **Phase 6.3: Delete protection and write-boundary integrity (INSERTED)** - issue #282
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -338,14 +340,142 @@ Plans:
 
 **UI hint**: no (tag choice in the existing form leaf; no new screens)
 
+### Phase 6.2: Request authorization and write integrity (INSERTED)
+
+**Goal**: Close the request authorization and write-integrity gaps in B1–B6 and settle B7's effective Guardian
+configuration before the theme-surface freeze. Authorization and safe context construction remain library-owned.
+**Source**: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md`, §3 (B1–B7), §8 (slice 6.2), §9 (decisions 1 and 4).
+**Canonical refs**: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md`; `docs/reference/guardian.md`; `docs/migrating-1.0.md`.
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, AUTH-07
+**Depends on**: Phase 6.1 for execution order; uses existing core delete/formset and Guardian composition.
+Must complete before Phase 7 freezes the affected contracts.
+**Parallel with**: None
+**Research/spec**: Discuss HTTP DELETE policy (reject or equivalent validated lifecycle), safe protected-object
+preview context, and Guardian global-permission configuration/helper/manage-display semantics. The source note's
+recommendations are proposals, not locked decisions.
+**Success Criteria** (what must be TRUE):
+
+  1. B1: Every allowed deletion method preserves permission, action-state, confirmation/form validation,
+     deletion-protection, hooks and transaction/rollback boundaries. HTTP DELETE is explicitly rejected or follows
+     the complete validated lifecycle; it cannot inherit a direct-delete bypass.
+  2. B2: Formset fragments authorize the target and validate URL-parent/fragment coordinates before rendering.
+     Ungranted, revoked, inactive, state-disabled, wrong-parent and missing-object requests disclose no form data
+     or choices; authorized fragments retain the documented request and `{html, rows}` protocol.
+  3. B3: Protected related objects are filtered before entering template context. No/partial/full related-view
+     grants reveal only permitted labels, while deletion remains visibly blocked even if all labels are hidden.
+  4. B4/B6: Parent permission `None` retains parent resolution and independent action-state checks. Create
+     visibility/access helpers and direct GET/POST agree without crashes or requiring a new child-add grant.
+  5. B5: Inactive users, including inactive superusers and group/object grant holders, receive no unauthorized
+     rows or object access even when an authentication backend permits inactive sessions.
+  6. B7: Guardian has a documented effective global-permission policy. View behavior, the ViewSet helper and
+     manage diagnostics are truthful; removal/clarification or inheritance of the inert ViewSet flag is
+     explicitly decided and covered by regressions.
+  7. Direct-request actor-matrix regressions and native list/card/action/manage/alert/formset overrides prove
+     server enforcement independently of presentation. Preserve intentional aggregate purge authority and
+     existing parent/global safeguards. Document changed access/config/context behavior; every Breaking entry
+     has a paired `docs/migrating-1.0.md` update.
+
+**Scope exclusions**: Conditional/formset lifecycle work A1–A7 (proposed 6.4), presentation/alias cleanup
+(proposed 6.5), Tabler theme-adoption seams (proposed 6.6), the jQuery port, and the final stability inventory. Do not reopen completed Phase 6/6.1 acceptance.
+**Acceptance reconciliation (2026-10-30)**: All nine plans executed; retained 6.2 scope verified and UAT completed on 2026-10-30, including the final Playwright blocked-delete check. [Issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282) defers
+**unresolved CR-02–CR-04 to Phase 6.3** as remediation of this phase's existing promises, not scope erasure.
+
+| Existing criterion / requirement | Retained 6.2 evidence | Outstanding acceptance |
+| --- | --- | --- |
+| 1 / AUTH-01 | DELETE 405 and named POST lifecycle controls | Callback-safe inspection, unknown converter propagation, database alignment → 6.3 DEL-02/03/04 |
+| 3 / AUTH-03 | Filtered protected labels, independent notice, fixed CR-01/WR-02 scope | Callback-free, target-database blocked-state determination → 6.3 DEL-02/04/05 |
+| 7 / AUTH-07 | Actor/native-template replay, paired docs | Real-preview/error/routing evidence, preserved authorization and re-review → 6.3 DEL-01–06 |
+| 4 / AUTH-04 | Parent-None dispatch and Guardian helper/state cases | WR-01 core rendered-state agreement fixed in quick 261030-csg; final post-fix Playwright UAT passed |
+| 2, 5, 6 / AUTH-02/05/06 | Named fragment/inactive/configuration cases | Preserve A19 (proposed 6.4); AUTH-06 residual review and IN-02/03 → 6.3 GUA-01; other findings retain separate dispositions |
+
+See [REQUIREMENTS](REQUIREMENTS.md#acceptance-ownership-split-2026-10-30),
+[06.2-ACCEPTANCE](phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md#acceptance-ownership-split-for-issue-282)
+and [06.2-REVIEW-DISPOSITION](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md).
+AUTH-06 residual review and IN-02/IN-03 are explicitly transferred unresolved to 6.3 GUA-01.
+WR-01 is fixed by quick 261030-csg (bd31992). IN-01/IN-04 are closed with explicit policy/limitation rationale; IN-05 is fixed.
+The revised analysis §8 puts conditional/formset, presentation and Tabler proposals at 6.4/6.5/6.6; only 6.3 is
+inserted here. Phase 7 remains last and cannot freeze the affected promises before remediation.
+
+**Plans**: 9/9 plans complete; final automated gates refreshed; canonical verification passed; final Playwright UAT passed; 6.3 transfers remain unresolved
+
+Plans:
+**Wave 1**
+- [x] 06.2-01-PLAN.md — Reject DELETE and secure protected preview context; retain POST integrity
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.2-02-PLAN.md — Enforce parent-None state and inactive actor denial
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.2-03-PLAN.md — Authorize fragments and validate saved/unsaved ancestry
+- [x] 06.2-04-PLAN.md — Remove inert configuration and report per-view manage policy
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.2-05-PLAN.md — Replay direct actor and native template matrices
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.2-06-PLAN.md — Document migrations and record supported-version evidence
+
+**Gap closure** *(UAT 2026-10-29, gaps G-06.2-1 and G-06.2-3; sequential waves 1-3)*
+- [x] 06.2-07-PLAN.md — Guardian delete preview fails closed per model: _PermittedPks resolves against guardian's content type (G-06.2-1 / CR-01)
+- [x] 06.2-08-PLAN.md — Blocked deletions: notice without a form, blocked POST 200/422 with exception backstop, flag on every delete page, copy and German catalog (G-06.2-3 / WR-02)
+- [x] 06.2-09-PLAN.md — Document both closures, pair CHANGELOG with migrating-1.0.md, update ACCEPTANCE/disposition and re-measure both cached environments
+
+**UI hint**: no (backend enforcement and safe existing template contexts; no new screens)
+
+### Phase 06.3: Delete protection and write-boundary integrity — issue #282 (INSERTED)
+
+**Goal**: Remediate unresolved Phase 6.2 CR-02–CR-04: protection inspection respects confirmation/write
+boundaries, unknown application failures propagate, and inspection/deletion use the same target database.
+Also complete a bounded Guardian policy review of the residual AUTH-06 detector flag and IN-02/IN-03,
+preserving 6.2’s implemented and tested policy behavior.
+**Source**: [Issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282);
+`superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` addendum 2026-10-30 and §8;
+[06.2-REVIEW](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW.md).
+**Requirements**: DEL-01, DEL-02, DEL-03, DEL-04, DEL-05, DEL-06, GUA-01; completes affected AUTH-01/03/07 obligations and owns the residual AUTH-06 review.
+**Depends on**: Phase 6.2 implementation/evidence baseline; this dependency does not assert 6.2 verification passed.
+**Parallel with**: None
+**Planning gate**: Detailed design/implementation plan and maintainer review before implementation. Settle safe
+inspection, supported custom behavior, exception translation, routing and override compatibility together.
+No architecture is chosen; do not run a blanket automatic `--fix` pass.
+**Success Criteria** (all pending):
+
+  1. Real-preview GET, invalid confirmation and custom-protected POST execute no deletion callbacks (including
+     SET/default factories); failed valid POST preserves the write boundary. Rollback alone cannot undo external effects.
+  2. Established native PROTECT/RESTRICT remains friendly; unknown handlers/converters/model methods/hooks/commit
+     callback failures propagate. Nested cascades and stale previews have real commit/rollback evidence in both atomic modes.
+  3. Two-database colliding-PK tests, protection on only one alias and instance-aware routing prove alignment of
+     protection inspection, deletion, transactions and commit hooks. CR-04's demonstrated impact is false blocking.
+  4. Core/Guardian/polymorphic authorization, filtered labels, independent notices and full-page/modal blocked
+     responses remain coherent. Real-preview safety tests do not replace the real collector with an empty preview.
+  5. Reproduce fixes on Django 4.2/6.0, add supported 5.2 evidence, replay deletion/transaction/authorization suites,
+     update deletion/override docs and changelog (Breaking paired with migrating-1.0.md), re-review and reconcile
+     affected 6.2 acceptance before closure. Existing green suites are not proof of these uncovered cases.
+
+  6. Bounded Guardian review (GUA-01): examine AUTH-06 policy boundaries, mutable strict-helper policy (IN-02)
+     and unknown permission-key diagnostics (IN-03). Give each actionable gap a concrete scenario/expected outcome,
+     fix and test confirmed defects, and record explicit dispositions. If the unclassified detector flag identifies
+     no additional gap, close it with a documented rationale. Replay policy tests on cached Django 4.2/6.0;
+     preserve the completed AUTH-06 implementation. Escalate any substantial policy redesign as a separate scope decision.
+
+**Disposition**: CR-02–CR-04 deferred here and **unresolved**. CR-01/WR-02 remain fixed in their earlier scope.
+The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
+here unresolved, alongside #282 rather than as an amendment to the external issue.
+WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
+**Plans**: 0 plans; not planned or verified
+
+Plans:
+- [ ] TBD (run $gsd-plan-phase 06.3 to break down; maintainer review required before implementation)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6.1, Phase 4 and Phase 5 (and so, transitively, Phases 6, 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6.1 only and documents the surface as it is. Include the cancel
-tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275.
+**Depends on**: Phase 6.3, Phase 4 and Phase 5 (and so, transitively, Phases 6.1, 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phase 6.3 only and documents the surface as it is. Include the cancel
+tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
+protected-preview and Guardian configuration contracts from Phase 6.2, qualified by the unresolved acceptance
+split above until Phase 6.3 remediation is verified. Keep proposed 6.4/6.5/6.6 ahead of Phase 7 if accepted.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -377,7 +507,7 @@ tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275.
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -385,7 +515,9 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 7) is valid. With par
 | 2 | 3 (plan 1B) ∥ 4 (plan 3A) ∥ 5 (plan 3B) | 3 needs 1; 4 and 5 are independent (5 rebases after 2 for the key count) |
 | 3 | 6 (plan 2) | Verify completed 1 and 2 on the working branch; spec first (D-18) |
 | 4 | 6.1 (#275) | Extends Phase 6 with a theme-selectable cancel link before the stability freeze |
-| 5 | 7 (plan 4) | Needs 6.1, 4 and 5 merged; last change before the 1.0.0 bump |
+| 5 | 6.2 (analysis B1–B7) | Secures request/write boundaries and safe contexts before the freeze |
+| 6 | 6.3 (#282) | Delete protection and write-boundary integrity before the freeze |
+| 7 | 7 (plan 4) | Needs 6.3, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -398,4 +530,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
+| 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
+| 6.3. Delete protection and write-boundary integrity | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

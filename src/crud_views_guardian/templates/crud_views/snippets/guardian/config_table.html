@@ -13,11 +13,13 @@
         <td>{{ guardian_config.cv_guardian_parent_create_permission }}</td>
     </tr>
     <tr>
-        <td>cv_guardian_accept_global_perms</td>
-        <td>{{ guardian_config.cv_guardian_accept_global_perms }}</td>
-    </tr>
-    <tr>
         <td>parent_viewset</td>
         <td>{{ guardian_config.parent_viewset }}</td>
+    </tr>
+    <tr>
+        <td>GuardianViewSet.get_objects_for_user()</td>
+        <td>
+            {% if guardian_config.get_objects_for_user.accept_global_perms %}{% translate "accepts global model permissions" %}{% else %}{% translate "strict: object and group grants only; global model permissions are not accepted" %}{% endif %}
+        </td>
     </tr>
 </table>

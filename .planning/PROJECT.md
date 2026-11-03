@@ -47,7 +47,11 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
   `cv_tag` leaf field, E365; link drops button-only attrs and falls back to a button when disabled or URL-less;
   `viewset.js` unchanged — Phase 6.1
 
+- ✓ **6.2 retained scope** Request authorization, fragment ancestry, inactive-actor denial, named Guardian policy, nested-create state agreement and blocked-delete UI — Phase 6.2; final Playwright acceptance passed. Transferred write-boundary obligations remain active below.
+
 ### Active
+
+- [ ] **6.3** Callback-safe deletion preview, exception propagation, database alignment and bounded Guardian policy review (DEL-01–06, GUA-01); five review findings and separate AUTH-06 review remain unresolved.
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
   `tests/test1/test_stability_doc.py`; closes the theme part of #89
@@ -115,6 +119,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Button-only attribute filtering lives in the normalizer (`_anchor_attrs`), not the leaf; disabled or URL-less cancels fall back to `<button>` | One authoritative escaped `href`; custom leaves receive clean `cv_flat_attrs` | Validated (Phase 6.1) |
 | A `tag` returned from `get_cancel_button_kwargs()` now raises — filed under the Form buttons Breaking entry with migration guidance | 0.30 rendered it as an attribute; the behavior change must be documented | Validated (Phase 6.1) |
 
+| Complete the retained 6.2 scope while explicitly transferring deletion and residual Guardian review to 6.3 | Preserve measured fixes without claiming unresolved callbacks/converters/database guarantees | Decided; 6.3 remains open |
+| Normalize nested-create rendered state against the target URL parent while preserving permission and label inputs | Controls agree with direct requests without broadening authority | Validated (WR-01, Phase 6.2) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -133,4 +140,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-29 after Phase 6.1 completion*
+*Last updated: 2026-10-30 after Phase 6.2 retained-scope completion*

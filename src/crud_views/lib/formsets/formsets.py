@@ -7,7 +7,7 @@ from collections.abc import Iterable
 from enum import Enum
 from typing import Any, Self
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import BadRequest, ValidationError
 from django.forms.forms import BaseForm
 from django.forms.models import BaseInlineFormSet, ModelForm
 from django.http.request import HttpRequest
@@ -19,6 +19,28 @@ from crud_views.lib.lazy import LazyStr
 from crud_views.lib.view import CrudView
 
 from .render_tree import XForm, XFormSet
+
+# A row index or ``num`` in a fragment request: ASCII digits only (``str.isdigit`` would accept "²"), at most
+# nine of them, so conversion never fails and no absurd index is rendered.
+_FRAGMENT_INDEX = re.compile(r"[0-9]{1,9}")
+
+
+def _cv_prefix_identity(instance):
+    """The identity a (possibly unsaved) parent instance contributes to a formset prefix.
+
+    An unsaved instance is ``None`` even when a default (e.g. ``uuid.uuid4``) already populated its pk, matching
+    the ``None`` sentinel that ``FormSet.template`` and ``formset.js`` use for new rows. Only the prefix is
+    affected; the instance keeps its pk.
+    """
+    if instance is None or instance._state.adding:
+        return None
+    return instance.pk
+
+
+def _cv_fragment_index(value: str | None, name: str) -> int:
+    if value is None or _FRAGMENT_INDEX.fullmatch(value) is None:
+        raise BadRequest(f"{name} must be a non-negative integer")
+    return int(value)
 
 
 class FormSet(BaseModel, arbitrary_types_allowed=True):
@@ -120,7 +142,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
         parent_prefix_ = f"{parent_prefix}-" if parent_prefix else ""
 
         for _i, form in enumerate(forms):
-            prefix_key = f"{parent_prefix_}{form.instance.pk}-{index}"
+            prefix_key = f"{parent_prefix_}{_cv_prefix_identity(form.instance)}-{index}"
             prefix = f"{self.key}-{prefix_key}"
 
             kwargs = {
@@ -370,6 +392,118 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
             "path": view.request.path,
         }
         self.js_data = data
+
+    def _cv_validate_fragment_coordinates(
+        self, key_path: list[str], pk: str, num: str | None, parent_prefix: str | None, root
+    ) -> tuple[str, int, str | None]:
+        """Validate a fragment request against the declaration and the persisted ancestry; raise BadRequest.
+
+        ``root`` is the endpoint's authorized object (``None`` for create). The selected formset at nesting depth
+        ``n`` is owned by the row identified by ``pk`` (the immediate inline parent; the root itself at depth 0).
+        Its parent prefix is the owning row's form prefix key, as rendered by ``FormSet.init``::
+
+            {root}-0-{r0}[-{id_j}-{child_index_j}-{r_j} for j in 1..n-1]
+
+        Each identity is ``None`` or matches its declaration's ``FormSet.PK`` grammar and converts with the owning
+        model's pk field. The root must be the endpoint's own object, ``0`` is the only top-level formset index,
+        every child index must be the declared position, and each saved identity must be a row of its
+        declaration's model whose foreign key points at the previous identity; once an identity is ``None`` all
+        deeper ones must be ``None``. Row indices are any non-negative integers (client-added rows exist only in
+        the browser). A top-level formset takes no parent prefix. Read-only: ancestry is checked with ``exists()``
+        on every request.
+
+        Returns the canonical ``(pk, num, parent_prefix)`` passed to ``get_template``.
+
+        Note: ``get_template`` still emits index 0 for the selected formset itself, so a fragment of a non-first
+        child declaration does not extend that formset's initialized prefix (known limitation, A19).
+        """
+        chain: list[FormSet] = []
+        node = None
+        for level, key in enumerate(key_path):
+            node = self.get(key) if level == 0 else node.children.get(key)
+            if node is None:
+                raise BadRequest(f"unknown formset template {'|'.join(key_path)}")
+            chain.append(node)
+        num_ = _cv_fragment_index(num, "num")
+        depth = len(chain) - 1
+
+        # parent prefix structure: identities, declared child indices and row indices
+        tokens: list[str] = []
+        child_indices: list[int] = []
+        rows: list[int] = []
+        if depth == 0:
+            if parent_prefix:
+                raise BadRequest("a top-level formset takes no formset parent prefix")
+        else:
+            if not parent_prefix:
+                raise BadRequest("a nested formset requires its formset parent prefix")
+            match = self._cv_parent_prefix_pattern(chain).fullmatch(parent_prefix)
+            if match is None:
+                raise BadRequest("formset parent prefix does not match the declared formset path")
+            groups = match.groups()
+            for j in range(depth):
+                identity_token, child, row = groups[3 * j : 3 * j + 3]
+                declared = 0 if j == 0 else list(chain[j - 1].children).index(key_path[j])
+                if _cv_fragment_index(child, "formset index") != declared:
+                    raise BadRequest("formset parent prefix does not match the declared formset path")
+                tokens.append(identity_token)
+                child_indices.append(declared)
+                rows.append(_cv_fragment_index(row, "row index"))
+        if re.fullmatch(rf"None|{chain[depth].pk.value}", pk or "", re.ASCII) is None:
+            raise BadRequest("pk does not match the declared formset primary key")
+        tokens.append(pk)
+
+        # identities: the endpoint root, then persisted foreign-key ancestry
+        values: list = []
+        for j, token in enumerate(tokens):
+            if j == 0:
+                expected = _cv_prefix_identity(root)
+                if token == "None":
+                    value = None
+                elif expected is None:
+                    raise BadRequest("formset root does not match the requested object")
+                else:
+                    value = self._cv_fragment_pk(type(root), token)
+                if value != expected:
+                    raise BadRequest("formset root does not match the requested object")
+            elif token == "None":
+                value = None
+            elif values[j - 1] is None:
+                raise BadRequest("a saved formset parent cannot belong to an unsaved one")
+            else:
+                owner = chain[j - 1].klass
+                value = self._cv_fragment_pk(owner.model, token)
+                ancestry = {"pk": value, f"{owner.fk.name}__pk": values[j - 1]}
+                if not owner.model._default_manager.filter(**ancestry).exists():
+                    raise BadRequest("formset parent does not belong to the requested ancestry")
+            values.append(value)
+
+        def canonical(value) -> str:
+            return "None" if value is None else str(value)
+
+        prefix_out = None
+        if depth:
+            prefix_out = "-".join(f"{canonical(values[j])}-{child_indices[j]}-{rows[j]}" for j in range(depth))
+        return canonical(values[-1]), num_, prefix_out
+
+    @staticmethod
+    def _cv_parent_prefix_pattern(chain: list[FormSet]) -> re.Pattern:
+        """``{root}-{index}-{row}`` then ``-{identity}-{child index}-{row}`` per intermediate level; each identity
+        is ``None`` or its declaration's pk grammar (UUID hyphens are part of the grammar, never a separator)."""
+        parts = []
+        for formset in chain[:-1]:
+            parts.append(rf"(None|{formset.pk.value})-([0-9]+)-([0-9]+)")
+        return re.compile("-".join(parts), re.ASCII)
+
+    @staticmethod
+    def _cv_fragment_pk(model, token: str):
+        field = model._meta.pk
+        try:
+            value = field.to_python(token)
+            field.run_validators(value)
+        except ValidationError as exc:
+            raise BadRequest("invalid formset parent identity") from exc
+        return value
 
     def get_template(self, key_path: list[str], pk: int, num: int, parent_prefix=None):
         formset = None

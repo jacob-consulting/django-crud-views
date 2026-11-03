@@ -10,6 +10,7 @@ import tempfile
 from pathlib import Path
 from wsgiref.simple_server import make_server
 
+from tests.browser.cancel_fixture_http import FixtureServer
 from tests.test1.conftest import pytest_configure
 
 pytest_configure()
@@ -142,7 +143,9 @@ urlpatterns = [
 
 def main():
     try:
-        with make_server("127.0.0.1", 0, StaticFilesHandler(get_wsgi_application())) as server:
+        with make_server(
+            "127.0.0.1", 0, StaticFilesHandler(get_wsgi_application()), server_class=FixtureServer
+        ) as server:
 
             def stop(signum, frame):
                 raise SystemExit(0)

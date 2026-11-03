@@ -103,7 +103,7 @@ function gitExecutable() {
 function sourceHashes() {
     const files = cp.execFileSync(gitExecutable(), ['ls-files', 'src', 'tests/test1', 'tests/browser/cancel*'], {cwd: root, encoding: 'utf8'})
         .trim().split('\n');
-    files.push('tests/browser/cancel_navigation_server.py');
+    files.push('tests/browser/cancel_navigation_server.py', 'tests/browser/cancel_fixture_http.py');
     return Object.fromEntries([...new Set(files)].sort(compare).map(file => [file, sha(fs.readFileSync(path.join(root, file)))]));
 }
 function waitForReady(child, logs, timeout = 30000) {

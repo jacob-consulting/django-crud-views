@@ -169,3 +169,45 @@ def test_selector_unregistered_origin_forwards_invalid_marker(client_user_vehicl
     )
     assert response.status_code == 302
     assert parse_qs(urlsplit(response["Location"]).query) == {"cv_from_cancel": ["invalid"]}
+
+
+def test_idle_browser_connection_cannot_starve_fixture_requests():
+    import socket
+    import threading
+    from urllib.request import urlopen
+    from wsgiref.simple_server import make_server
+
+    from tests.browser.cancel_fixture_http import FixtureServer
+
+    accepted = threading.Event()
+
+    class Server(FixtureServer):
+        request_timeout = 0.05
+
+        def get_request(self):
+            result = super().get_request()
+            accepted.set()
+            return result
+
+    def application(environ, start_response):
+        start_response("200 OK", [("Content-Type", "text/plain")])
+        return [b"ready"]
+
+    with make_server("127.0.0.1", 0, application, server_class=Server) as server:
+        worker = threading.Thread(target=server.serve_forever, kwargs={"poll_interval": 0.01})
+        worker.start()
+        idle = socket.create_connection(server.server_address, timeout=1)
+        try:
+            assert accepted.wait(1), "Idle speculative connection was never accepted"
+            body = None
+            try:
+                with urlopen(f"http://127.0.0.1:{server.server_port}/", timeout=0.3) as response:
+                    body = response.read()
+            except TimeoutError:
+                pass
+            assert body == b"ready", "An idle browser socket blocked the following real request"
+        finally:
+            idle.close()
+            server.shutdown()
+            worker.join(timeout=1)
+        assert not worker.is_alive()

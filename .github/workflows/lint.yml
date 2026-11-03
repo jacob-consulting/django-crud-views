@@ -17,3 +17,5 @@ jobs:
       - run: 'pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt'
       - run: ruff format --check .
       - run: ruff check .
+      # Wheel and sdist contain only allowlisted paths (scripts/check_dist.py).
+      - run: nox -s package

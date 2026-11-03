@@ -106,6 +106,22 @@ packages = [
     "src/crud_views_object_detail",
 ]
 
+# The sdist ships only what is listed here; everything else in the repository (.planning/, superpowers/,
+# .codegraph/, ...) stays out. docs/, examples/, noxfile.py and CHANGELOG.md are included because tests read them.
+# scripts/check_dist.py enforces this list on every built distribution.
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "src",
+    "tests",
+    "docs",
+    "examples",
+    "noxfile.py",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+
 [tool.ruff]
 line-length = 120
 extend-exclude = ["superpowers/**"]

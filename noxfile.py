@@ -31,3 +31,12 @@ def examples(session, django):
 
     with session.chdir("./examples/bootstrap5"):
         session.run("pytest", *session.posargs)
+
+
+@nox.session(python="3.13", venv_backend="uv")
+def package(session):
+    """Build the wheel and sdist and check that nothing outside the allowlist ships (scripts/check_dist.py)."""
+    session.install("build")
+    tmp = session.create_tmp()
+    session.run("python", "-m", "build", "--outdir", f"{tmp}/dist", ".")
+    session.run("python", "scripts/check_dist.py", f"{tmp}/dist")

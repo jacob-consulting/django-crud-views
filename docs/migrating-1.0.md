@@ -172,6 +172,10 @@ The other changes to views:
   `data-cv-tooltip`. With Bootstrap's JavaScript loaded they now show Bootstrap tooltips instead of the browser's
   `title` tooltip (#202). To keep the browser tooltip: `cv.adapters.tooltip = {init() {}}`
   ([Tooltips](reference/javascript.md#tooltips)).
+- **Dismissible alerts** close through `cv.adapters.alert`, called by `viewset.js` after `adapters.js`; with
+  `{% cv_js %}` there is nothing to do. A script of yours that replaces the whole `cv.adapters` map after core loads
+  must provide `alert` as well ([Hooks instead of copies](#hooks-instead-of-copies)), and a copied alert frame
+  needs the new close hook ([Contract changes](#contract-changes-in-templates-you-still-override)).
 
 ### CSS and tests that select on markup
 
@@ -198,6 +202,8 @@ None of these raise anything. Check your stylesheets, your JavaScript selectors 
   property-detail button uses `title` instead of `data-bs-title`.
 - **Alerts** (#250): the delete page's protection and related-objects alerts and the guardian manage page's config
   alert gain `role="alert"` and an icon before the heading.
+- **Alert close control:** the dismissible alert's close button carries `data-cv-alert-dismiss` instead of
+  `data-bs-dismiss="alert"` ([Contract changes](#contract-changes-in-templates-you-still-override)).
 - **Empty button containers** (#265): a toolbar, list row or card whose actions are all hidden for the user renders
   no container at all, so `[cv-list-container]` (or `cv-context-container`, `cv-card-container`) is not in every row
   any more. Selectors that expect it must handle its absence.
@@ -221,8 +227,10 @@ Go through your theme's `templates/crud_views/` directory. Delete each of these 
   and `text` instead of `css_class` and `message`. A copy that reads the old keys renders `class="alert alert-"` with
   an empty body. Override `tags/alert.html` (box, icon, heading, close button), `snippets/alert/text.html` or
   `snippets/alert/list.html`, and register the colours as `alert:error`, `alert:warning`, `alert:success`,
-  `alert:info` and `alert:debug` ([Alerts](reference/theme.md#alerts)). Python code that imports `ALERT_CLASSES` or
-  `ICON_NAMES` from `crud_views.lib.messages` uses `LEVELS` and the `message-<level>` icon names instead.
+  `alert:info` and `alert:debug` ([Alerts](reference/theme.md#alerts)). A `tags/alert.html` override uses the new close
+  hook ([Contract changes](#contract-changes-in-templates-you-still-override)). Python code that imports
+  `ALERT_CLASSES` or `ICON_NAMES` from `crud_views.lib.messages` uses `LEVELS` and the `message-<level>` icon names
+  instead.
 - **`tags/button_submit.html`, `tags/button_cancel.html`, `tags/button_delete.html`.** Nothing renders them any more;
   the form buttons come from crispy's `Submit`, `Button` and `Reset` and take their classes from the `form:*` keys
   ([Forms](reference/buttons.md#forms)).
@@ -303,11 +311,22 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
 - **The form frame:** `snippets/form_frame.html`, block `cv_form_frame` (#239).
 - **The card:** extend `tags/card.html` and fill `card_title`, `card_content` and `card_actions` (#243). A copy of
   `view_card.content.html` misses the translated empty state, "No items found." (#246).
-- **The alert frame:** `tags/alert.html` and its two bodies (#250).
+- **The alert frame:** `tags/alert.html` and its two bodies (#250). Its close control carries
+  `data-cv-alert-dismiss` ([Contract changes](#contract-changes-in-templates-you-still-override)); a styled copy
+  starts from the [Custom alert frame](reference/theme.md#custom-alert-frame) recipe.
 - **Heading levels:** `CRUD_VIEWS_HEADER_LEVEL`, plus `{% cv_heading %}` for the headings in your theme's own
   templates, so they follow the same setting (#251, [Heading levels](reference/templates.md#heading-levels)).
-- **JavaScript:** `cv.adapters.modal`, `cv.adapters.tooltip` and `cv.adapters.collapse` replace Bootstrap's API for a
-  theme on another framework ([`cv.adapters`](reference/javascript.md#cvadapters)).
+- **JavaScript:** `cv.adapters.modal`, `cv.adapters.tooltip`, `cv.adapters.collapse` and `cv.adapters.alert` replace
+  Bootstrap's API for a theme on another framework ([`cv.adapters`](reference/javascript.md#cvadapters)).
+  `alert.close(el)` is new: it closes a dismissible alert
+  ([Dismissible alerts](reference/javascript.md#dismissible-alerts)). How the theme assigns its adapters matters:
+    - A partial map assigned **before** `adapters.js` loads needs nothing: every entry it leaves out, `alert`
+      included, gets its default while `adapters.js` loads.
+    - A theme that replaces the **whole map after** core loads (`cv.adapters = {...}`) discards the defaults, and
+      core does not fill them in again. Its map must provide `alert` with `close(el)`, or every alert close button
+      throws a `TypeError` and the alert stays. Replace single entries (`cv.adapters.modal = {...}`) or merge into
+      the existing map (`Object.assign(cv.adapters, {...})`) instead; a map for a Bootstrap-compatible namespace
+      takes the entry from the factory, `alert: cv.bootstrapAdapters(ns).alert`.
 
 ### Contract changes in templates you still override
 
@@ -342,6 +361,29 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
   `aria-controls="filter-collapse"`; the `#filter-collapse` id is a contract
   ([The filter toggle contract](reference/javascript.md#the-filter-toggle-contract)). For adopting the resolved modes,
   constant labels and optional icon hooks, see [The filter toggle](reference/context_buttons.md#the-filter-toggle).
+- **The alert frame** (`tags/alert.html`). The close control carries `data-cv-alert-dismiss` instead of Bootstrap's
+  `data-bs-dismiss="alert"`; `viewset.js` hands its nearest `role="alert"` frame to `cv.adapters.alert.close`.
+  Replace the attribute completely, so the control carries only the new hook:
+
+    ```django
+    {# before #}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% translate 'Close' %}"></button>
+    {# after #}
+    <button type="button" class="btn-close" data-cv-alert-dismiss aria-label="{% translate 'Close' %}"></button>
+    ```
+
+    Keep `role="alert"` on the frame. Closing needs the core scripts `adapters.js` and then `viewset.js`, which
+    `{% cv_js %}` renders in that order ([What the scripts need](reference/javascript.md#what-the-scripts-need)). The
+    default adapter uses Bootstrap's `Alert` when its JavaScript is loaded and otherwise removes the alert
+    ([Dismissible alerts](reference/javascript.md#dismissible-alerts), [Flash messages](reference/messages.md)).
+    Migrate even if you keep Bootstrap. A copy that keeps only `data-bs-dismiss="alert"` still closes through
+    Bootstrap's own data API, as long as it keeps Bootstrap's frame markup (the `alert` class) and Bootstrap's
+    JavaScript is loaded; it never reaches `cv.adapters.alert`, so it gains neither a theme's adapter nor the removal
+    without Bootstrap's `Alert` until you switch it. Do not keep both attributes: such a control is dismissed by
+    Bootstrap and by core. The frame's `alert-dismissible fade show` and `btn-close` classes are still literal
+    Bootstrap CSS; to style them your way, start from the tested
+    [Custom alert frame](reference/theme.md#custom-alert-frame) recipe.
+
 - **The modal:** the close button in `modal/content.html` uses `data-cv-modal-dismiss`. A copy with `data-bs-dismiss`
   keeps working under the Bootstrap adapter only. `{% cv_config %}` renders the modal shell from `modal/shell.html`,
   which you can override on its own ([Theming the modal](reference/modals.md#theming-the-modal)).
@@ -371,14 +413,16 @@ about these.
   use `"fas:truck"` ([Views and Python code](#views-and-python-code)).
 - [ ] `cv.cvModalOpen(url, "modal-lg")` and `data-cv-modal-size="modal-lg"` open the default size: use `"lg"`
   ([JavaScript](#javascript)).
-- [ ] Hand-listed static files without `crud_views/js/adapters.js` lose the modal, filter and tooltip behaviour
-  ([Base template and your own templates](#base-template-and-your-own-templates)).
+- [ ] Hand-listed static files without `crud_views/js/adapters.js` lose the modal, filter and tooltip behaviour and
+  alert dismissal ([Base template and your own templates](#base-template-and-your-own-templates)).
+- [ ] A script that replaces the whole `cv.adapters` map after core loads without an `alert` entry makes every alert
+  close button throw ([Hooks instead of copies](#hooks-instead-of-copies)).
 - [ ] **[0.30]** Hand-listed static files without `crud_views/css/icons.css` lose the menu icon width.
 - [ ] **[0.30]** An overridden `cv_get_filter_icon()` is no longer called ([Views and Python code](#views-and-python-code)).
 - [ ] CSS, JavaScript selectors and tests that match the old markup: sort icons, pagination
   (`.disabled > span.page-link`, `&laquo;` / `&raquo;`), `d-none`, button attribute order and class strings,
-  formset control titles, empty button containers that no longer render
-  ([CSS and tests that select on markup](#css-and-tests-that-select-on-markup)).
+  formset control titles, empty button containers that no longer render, the alert close control's
+  `data-bs-dismiss="alert"` ([CSS and tests that select on markup](#css-and-tests-that-select-on-markup)).
 - [ ] Card buttons show their icon next to the label, and card actions without a `variant` take the target view's
   variant ([Views and Python code](#views-and-python-code)).
 
@@ -386,6 +430,8 @@ about these.
 
 - [ ] A `tags/messages.html` copy renders `class="alert alert-"` with an empty body
   ([Templates to delete](#templates-to-delete)).
+- [ ] A `tags/alert.html` copy with `data-bs-dismiss="alert"` closes only through Bootstrap's JavaScript and ignores
+  `cv.adapters.alert` ([Contract changes](#contract-changes-in-templates-you-still-override)).
 - [ ] A copy of a form page's content template uploads no files on create and custom-form pages
   ([Templates to delete](#templates-to-delete)).
 - [ ] Copies of `tags/button_submit.html`, `tags/button_cancel.html`, `tags/button_delete.html` and `tags/icon.html`

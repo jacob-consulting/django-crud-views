@@ -22,7 +22,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 1: Label-mode defaults** - plan 1A: one project-wide label-mode floor per location (`CRUD_VIEWS_LABEL_MODE_DEFAULTS`, E108) (completed 2026-10-26)
 - [x] **Phase 2: Form key grammar** - plan 1C: Option A form kinds implemented, reviewed and verified (completed 2026-10-26)
 - [x] **Phase 3: Filter toggle label mode** - plan 1B (#262): the filter toggle honours `icon` / `both` / `label` (completed 2026-10-26)
-- [ ] **Phase 4: Alert dismiss adapter** - plan 3A: alerts close through `cv.adapters.alert` with no Bootstrap data API (droppable)
+- [x] **Phase 4: Alert dismiss adapter** - plan 3A: alerts close through `cv.adapters.alert` with no Bootstrap data API (droppable) (completed 2026-10-26)
 - [ ] **Phase 5: Table pagination parity** - plan 3B: table pagination gets the same registry icons and accessible markup as card pagination (droppable)
 - [ ] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html`
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
@@ -149,7 +149,20 @@ document the frame override in `theme.md` (LATER-06 tracks the keys).
      src/crud_views/templates` lists only the dropdown templates named in `theme.md`.
   4. The example project's flash messages still close. `javascript.md`, `messages.md`, `theme.md`, the CHANGELOG
      Breaking entry and the migration bullet are updated.
-**Plans**: TBD
+**Plans**: 3/3 plans complete
+
+Plans:
+**Wave 1**
+- [x] 04-01-PLAN.md — Commit the current golden, deliver the rendered dismiss tracer and preserve message rendering
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 04-02-PLAN.md — Prove namespace, dynamic-content and custom/component ownership contracts
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 04-03-PLAN.md — Publish references and migration, then record browser acceptance and final quality gates
+
+Execution waves: 1 = 04-01; 2 = 04-02; 3 = 04-03. The first task commits only the baseline before product edits.
+
 **UI hint**: no (one DOM attribute and JS adapter; no new screens)
 
 ### Phase 5: Table pagination parity
@@ -268,7 +281,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 1. Label-mode defaults | 5/5 | Complete    | 2026-10-26 |
 | 2. Form key grammar | 1/1 | Complete    | 2026-10-26 |
 | 3. Filter toggle label mode | 2/2 | Complete    | 2026-10-26 |
-| 4. Alert dismiss adapter | 0/TBD | Not started | - |
+| 4. Alert dismiss adapter | 3/3 | Complete    | 2026-10-26 |
 | 5. Table pagination parity | 0/TBD | Not started | - |
 | 6. Form-button leaf | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

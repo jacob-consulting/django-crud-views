@@ -42,3 +42,14 @@ document.addEventListener("click", function (e) {
     e.preventDefault();
     globalThis.location.href = el.getAttribute("data-cv-cancel-url");
 });
+
+// alert dismissal via data-cv-alert-dismiss: the nearest role="alert" frame goes to the current alert adapter
+document.addEventListener("click", function (e) {
+    if (!(e.target instanceof Element)) return;
+    const control = e.target.closest("[data-cv-alert-dismiss]");
+    if (!control) return;
+    const frame = control.closest('[role="alert"]');
+    if (!frame) return;
+    e.preventDefault();
+    globalThis.cv.adapters.alert.close(frame);
+});

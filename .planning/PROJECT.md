@@ -36,13 +36,14 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ **1A** Project-wide label-mode floors, lazy accessor, E108 and instance-safe card overrides — Phase 1
 - ✓ **1C** Option A `form:<kind>:<mode>` grammar, finite independent locations, W362 validation and live key-count guard — Phase 2
 - ✓ **1B** Filter toggle label modes, constant translated labels, optional icons and accessible disclosure — Phase 3
+- ✓ **3A** Alert dismiss through `cv.adapters.alert` (`data-cv-alert-dismiss`, fallback `el.remove()`), golden-first,
+  core templates keep `data-bs-*` only in the dropdowns — Phase 4
 
 ### Active
 
 - [ ] **2** Form buttons through a crud_views leaf (#257): `"form"` in `LOCATIONS`, new leaf `tags/button/form.html`,
   crispy `Submit`/`Button`/`Reset` as thin adapters, escaping, icons `save`/`cancel`/`filter-reset`, checks
   E210/E211/W291/W292, `<input>` → `<button>` (Breaking), example project uses `both`
-- [ ] **3A** Alert dismiss through `cv.adapters.alert` (`data-cv-alert-dismiss`, fallback `el.remove()`)
 - [ ] **3B** Table pagination arrows from the registry, same accessible markup as #241 (`table:hidden-label` key recommended)
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
   `tests/test1/test_stability_doc.py`; closes the theme part of #89
@@ -99,6 +100,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Resolve the filter's declared key once for the toolbar; keep list-row resolution independent | Label templates and toolbar leaves share the mode without overriding row maps | Validated (Phase 3 review fixes) |
 | Validate resolved filter modes through the shared strict/log-and-floor policy | Runtime configuration errors retain diagnostics before custom label rendering | Validated (Phase 3 review fixes) |
 | Release filter label-mode support as Fixed; document copied-template migration | Default bytes remain unchanged while configured context floors now apply | Validated (Phase 3) |
+| Core performs no catch/log/fallback after a custom alert adapter fails; the `el.remove()` fallback lives only in the default adapter | Adapter owns its outcome and errors; core stays a thin delegated click listener | Validated (Phase 4) |
+| Alert dismiss change released as Breaking with a copied-template migration; `data-bs-*` audit scoped to core templates | Only copied `alert.html` overrides need the one-attribute edit; object-detail layouts keep Bootstrap collapse/tab attributes | Validated (Phase 4) |
 
 ## Evolution
 
@@ -118,4 +121,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-26 after Phase 3 completion*
+*Last updated: 2026-10-26 after Phase 4 completion*

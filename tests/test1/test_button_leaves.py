@@ -571,8 +571,11 @@ host_icons = override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEW
 FILTER_TOGGLE = "crud_views/tags/context_action_filter.html"
 
 
-def _filter_toggle(expanded: bool):
+def _filter_toggle(expanded: bool, mode: str | None = None):
+    # mode None: no cv_label_mode at all, the pre-#262 leaf contract, kept as a compatibility path
     ctx = {"cv_filter_expanded": expanded, "cv_action_label": "Filter", "cv_key": "filter"}
+    if mode is not None:
+        ctx["cv_label_mode"] = mode
     return _one(render_to_string(FILTER_TOGGLE, ctx), "button#cv-filter-toggle")
 
 
@@ -613,6 +616,17 @@ def test_host_filter_toggle_closed():
 def test_host_filter_toggle_open():
     classes = _filter_toggle(True).get("class").split()
     assert "icon-x" in classes and "icon-funnel" not in classes
+
+
+@host_icons
+@pytest.mark.parametrize("expanded", [False, True])
+def test_host_filter_toggle_explicit_icon_mode(expanded):
+    """An explicit icon mode renders the host placement exactly like the mode-less compatibility path."""
+    button, legacy = _filter_toggle(expanded, "icon"), _filter_toggle(expanded)
+    assert lxml_html.tostring(button) == lxml_html.tostring(legacy)
+    assert button.get("data-cv-filter-icon-open") == "icon-funnel"
+    assert button.get("title") == "Filter"
+    assert button.cssselect("span")[-1].get("class") == "visually-hidden"
 
 
 @host_icons

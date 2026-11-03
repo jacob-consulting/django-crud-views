@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 3
-current_phase_name: Filter toggle label mode
+current_phase: 4
+current_phase_name: Alert dismiss adapter
 status: planning
-stopped_at: Phase 02 complete, ready to plan Phase 3
-last_updated: "2026-10-26T13:53:21.354Z"
+stopped_at: Phase 03 complete, ready to plan Phase 4
+last_updated: "2026-10-26T17:00:11.537Z"
 last_activity: 2026-10-26
-last_activity_desc: Phase 02 complete, transitioned to Phase 3
-state_head: 6ce34b20370588ebeab26c67e4eb310ca6477969
+last_activity_desc: Phase 03 complete, transitioned to Phase 4
+state_head: b78b3d101d5880203d3c414d135a02ed5c0b2746
 progress:
   total_phases: 7
-  completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
-  percent: 29
+  completed_phases: 3
+  total_plans: 8
+  completed_plans: 8
+  percent: 43
 ---
 
 # Project State
@@ -23,22 +23,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 3 — Filter toggle label mode; short spec and context before planning
+**Current focus:** Phase 4 — Alert dismiss adapter
 
 ## Current Position
 
-Phase: 3 — Filter toggle label mode
+Phase: 4 — Alert dismiss adapter
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-26 — Phase 02 complete, transitioned to Phase 3
+Last activity: 2026-10-26 — Phase 03 complete, transitioned to Phase 4
 
-Progress: [███░░░░░░░] 29%
+Progress: [████░░░░░░] 43%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 6
+- Total plans completed: 8
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -48,6 +48,7 @@ Progress: [███░░░░░░░] 29%
 |-------|-------|-------|----------|
 | 01 | 5 | - | - |
 | 02 | 1 | - | - |
+| 03 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -65,6 +66,8 @@ Progress: [███░░░░░░░] 29%
 | Phase 01 P04 | 10 min | 2 tasks | 9 files |
 | Phase 01 P05 | 8 min | 3 tasks | 10 files |
 | Phase 02 P01 | 20 min | 3 tasks | 5 files |
+| Phase 03 P01 | 15 min | 3 tasks | 9 files |
+| Phase 03 P02 | 7 min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -89,6 +92,12 @@ Recent decisions affecting current work:
 - [Phase 01]: Card action rendering honors own instance values before the class resolver; own None reads the live card floor, while absent own values retain subclass fallback hooks.
 - [Phase 02]: Form kinds accept all three class-key modes; context/list/card retain variants under independent immutable location allow-lists.
 - [Phase 02]: Form class keys do not enable form label floors or change crispy rendering; those remain Phase 6 work.
+- [Phase 03]: Filter toggle resolves cv_get_action_label_mode('context', self.key, self) with no target default; leaf falls back to the legacy icon body for absent/unknown modes
+- [Phase 03]: list.filter.js unchanged: label-only markup is covered by its empty icon loop, collapse-first ordering and non-rollback persistence
+- [Phase 03]: Review fixes supersede A1: malformed resolved filter modes use the shared strict exception or warn-once/context-floor policy before label rendering; startup diagnostics remain.
+- [Phase 03]: Preserve a button's resolved mode only in context rendering; list rows always resolve their own mode. Review regression fixed in b78b3d1; 4/4 UAT and 22/22 verification checks passed.
+- [Phase 03]: 03-02: filter toggle change is released as Fixed (#262), not Breaking; default output unchanged, migration guide still updated for copied templates
+- [Phase 03]: 03-02: documented per-page filter override is view-level cv_context_buttons with FilterContextButton imported from crud_views.lib.view.buttons (no re-export)
 
 ### Pending Todos
 
@@ -98,7 +107,7 @@ None yet.
 
 - Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags seven pre-existing planning
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
-- Phase 3, 6, 7: each needs a spec or maintainer decision before planning.
+- Phases 6 and 7: each needs a spec or maintainer decision before planning.
 - Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
 - Phase 5: confirm the hidden-label key name (`pagination:hidden-label` vs `table:hidden-label`) before Phase 7.
 - Phases 4, 5 and 6 must commit before-change goldens. Today's goldens contain no form buttons, dismissible alerts or
@@ -113,6 +122,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-26T13:53:34Z
-Stopped at: Phase 02 complete, ready to plan Phase 3
+Last session: 2026-10-26T17:00:11.537Z
+Stopped at: Phase 03 complete, ready to plan Phase 4
 Resume file: None

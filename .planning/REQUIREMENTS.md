@@ -28,10 +28,10 @@ except where a requirement says the markup changes.
 
 ### Filter toggle (plan 1B, #262)
 
-- [ ] **FILT-01**: `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE = {"filter": "both"}` renders icon + "Filter" (no `title`); `"label"` renders text only; default `icon` output byte-identical (`toolbar_publisher_list.html` golden)
-- [ ] **FILT-02**: `list.filter.js` toggles `aria-expanded` and persists state for a toggle without icon spans (vitest label-only case)
-- [ ] **FILT-03**: The toggle's text stays constant; only `aria-expanded` and the icon change (WAI-ARIA toggle-button rule)
-- [ ] **FILT-04**: The "Filter" label is a translated msgid (German catalog updated)
+- [x] **FILT-01**: `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE = {"filter": "both"}` renders icon + "Filter" (no `title`); `"label"` renders text only; default `icon` output byte-identical (`toolbar_publisher_list.html` golden)
+- [x] **FILT-02**: `list.filter.js` toggles `aria-expanded` and persists state for a toggle without icon spans (vitest label-only case)
+- [x] **FILT-03**: The toggle's text stays constant; only `aria-expanded` and the icon change (WAI-ARIA toggle-button rule)
+- [x] **FILT-04**: The "Filter" label is a translated msgid (German catalog updated)
 
 ### Form-button leaf (plan 2, #257)
 
@@ -114,10 +114,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | KEYS-02 | Phase 2 (plan 1C) | Complete |
 | KEYS-03 | Phase 2 (plan 1C) | Complete |
 | KEYS-04 | Phase 2 (plan 1C) | Complete |
-| FILT-01 | Phase 3 (plan 1B) | Pending |
-| FILT-02 | Phase 3 (plan 1B) | Pending |
-| FILT-03 | Phase 3 (plan 1B) | Pending |
-| FILT-04 | Phase 3 (plan 1B) | Pending |
+| FILT-01 | Phase 3 (plan 1B) | Complete |
+| FILT-02 | Phase 3 (plan 1B) | Complete |
+| FILT-03 | Phase 3 (plan 1B) | Complete |
+| FILT-04 | Phase 3 (plan 1B) | Complete |
 | ALRT-01 | Phase 4 (plan 3A) | Pending |
 | ALRT-02 | Phase 4 (plan 3A) | Pending |
 | ALRT-03 | Phase 4 (plan 3A) | Pending |

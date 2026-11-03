@@ -233,9 +233,19 @@ def test_canonical_label_mode_resolution_sections():
     assert "| `cv_context_actions_label_mode` | dict |" in target
     assert "| `cv_context_action_label_mode` | str |" in target
 
+    # the filter toggle follows the resolved mode of its key (#262), without a target-view default
     rendering = _section(text, "### Rendering")
-    assert "filter toggle" in rendering and "outside this configuration" in rendering
+    flat_rendering = _flat(rendering)
+    assert "outside this configuration" not in rendering
+    assert "filter toggle" in rendering and "follows the resolved mode of its key" in flat_rendering
+    assert "passes it to the class lookup" in flat_rendering
+    assert "no [target-view default](#target-view-default)" in flat_rendering
+    assert "(context_buttons.md#the-filter-toggle)" in rendering
     assert "icon and short label in every mode" in rendering
+    never = _bullets(_section(text, "## What is never folded"))
+    assert any("template=" in b and "template_code=" in b for b in never)
+    toggle = [b for b in never if "filter toggle" in b]
+    assert len(toggle) == 1 and "resolved label mode" in toggle[0]
 
     checks = _section(text, "## System checks")
     assert "error" in _row(checks, "`crud_views.E108`")[1]
@@ -415,3 +425,80 @@ def test_button_label_mode_check_reference():
     for scalar in ("cv_card_actions_label_mode", "cv_context_action_label_mode"):
         assert re.search(rf"`{scalar}` (is )?the string or None ", e211), scalar
         assert re.search(rf"`{scalar}` (is )?the string or None ", menus), scalar
+
+
+def test_filter_toggle_reference_contract():
+    """The compact filter-toggle contract (#262): declared key, no target-view default, three modes, real import."""
+    text = CONTEXT_BUTTONS_MD.read_text()
+    section = _section(text, "### The filter toggle")
+    flat = _flat(section)
+    assert "no target-view default" in flat and "singular cv_context_action_label_mode does not change it" in flat
+    assert "the steps of [Context label-mode resolution](action_menus.md#context-label-mode-resolution)" in flat
+    # the resolution order is linked, not restated: no numbered steps in the compact contract
+    assert not re.search(r"^\d+\. ", section, re.MULTILINE)
+
+    # the examples use the existing API and the import path that actually works
+    code = "\n".join(FENCE.findall(section))
+    for fence in FENCE.findall(section):
+        ast.parse(fence)
+    assert 'CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE = {"filter": "both"}' in code
+    assert 'FilterContextButton(label_mode="label")' in code
+    assert "from crud_views.lib.view.buttons import FilterContextButton" in code
+    assert 'FilterContextButton(key="search")' in section and '{"search": "label"}' in section
+    import crud_views.lib.view as view_package
+    from crud_views.lib.view.buttons import FilterContextButton
+
+    assert FilterContextButton().key == "filter" and "FilterContextButton" not in view_package.__all__
+    imports = _section(text, "## Import Paths")
+    assert "from crud_views.lib.view.buttons import FilterContextButton" in imports
+
+    # the captured setting map and the lazily read floor are told apart, with the existing-floor impact
+    assert "read at startup" in flat and "replaced whole" in flat and "read on each render" in flat
+    assert "already sets it" in flat and "now changes the stock toggle" in flat
+
+    # three modes: icon keeps title/tooltip, both shows icon and label, label has no icon hooks
+    assert "unchanged markup" in _row(section, '`"icon"` (package floor)')[1]
+    both = _row(section, '`"both"`')[1]
+    assert "visible label" in both and "no `title`, no tooltip" in both
+    label = _row(section, '`"label"`')[1]
+    for marker in ("no icon spans", "no host icon classes", "no icon-swap attributes"):
+        assert marker in label, marker
+    for marker in (
+        "The label stays the same",
+        "The default label Filter is translated",
+        "label_template / label_template_code replace it",
+        "receives the resolved cv_label_mode and owns its markup",
+    ):
+        assert marker in flat, marker
+
+    # links: canonical resolution, settings table, JS contract, never folded, host placement; all anchors exist
+    for target in (
+        "(action_menus.md#context-label-mode-resolution)",
+        "(settings.md#label-mode-configuration)",
+        "(javascript.md#the-filter-toggle-contract)",
+        "(action_menus.md#what-is-never-folded)",
+        "(icons.md#host-placement)",
+    ):
+        assert target in section, target
+        page, anchor = target.strip("()").split("#")
+        assert anchor in _anchors(CONTEXT_BUTTONS_MD.parent / page), target
+    assert "the-filter-toggle" in _anchors(CONTEXT_BUTTONS_MD)
+
+    # the custom-template paragraph no longer names the filter as icon-only by construction
+    custom = _flat(_section(text, "## ContextButton").split("### The filter toggle")[0])
+    assert "the way the bundled" not in custom
+    assert "context_action_filter.html passes its resolved cv_label_mode" in custom
+
+    # the diagram's CUSTOM node: a whole-button template gets the resolved data and owns its markup
+    rendered = _section(text, "## How a context button is rendered")
+    node = re.search(r'CUSTOM\(\["([^"]*)"\]\)', rendered).group(1)
+    assert "nothing below applies" not in node
+    assert "cv_label_mode" in node and "owns the markup" in node and "filter toggle" in node
+
+    # buttons.md: the filter passes its resolved mode to the class lookup; child fallback is icon-bearing only
+    buttons = _flat(BUTTONS_MD.read_text())
+    assert 'passes "icon", so context:<variant>:icon' not in buttons
+    assert "and so does the filter toggle" in buttons and "context:<variant>:<mode> reaches it" in buttons
+    host = _flat(_section(BUTTONS_MD.read_text(), "### Container element and label"))
+    assert 'icon-bearing modes ("icon" and "both")' in host
+    assert 'In "label" mode it renders no icons at all' in host and 'None and "" included' in host

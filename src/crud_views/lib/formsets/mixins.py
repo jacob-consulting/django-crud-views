@@ -36,37 +36,46 @@ class FormSetMixinBase:
 
     def get(self, request, *args, **kwargs):
         """
-        GET also handles AJAX requests for formset templates
+        GET also handles AJAX requests for formset templates.
+
+        A fragment request resolves and authorizes its real target before anything renders, exactly like the
+        full page: object views load ``self.object`` through the cooperative ``get_object()`` (Guardian object
+        permission and action-state gates, missing or wrong-parent targets 404); create and other no-object
+        views use ``None`` after dispatch has run their parent and permission gates. The full editor is not
+        built for a fragment.
         """
         template = request.GET.get("template", None)
         if template:
+            self.object = self.get_object() if self.cv_object else None
             data = self.get_template_html(request)
             return JsonResponse(data)
         return super().get(request, *args, **kwargs)
 
     def get_template_html(self, request):
+        """
+        Render one empty row of the requested formset as ``{"html", "rows"}``.
 
+        Runs after ``get()`` resolved and authorized the endpoint object. The key path, ``num``, ``pk`` and
+        ``formset_parent_prefix_key`` are validated against the declaration and the persisted ancestry rooted at
+        that object before anything renders; any mismatch is a 400.
+        """
         key_path = request.GET.get("template").split("|")
         pk = request.GET.get("pk", "None")
         num = request.GET.get("num")
         formset_parent_prefix_key = request.GET.get("formset_parent_prefix_key")
 
-        if num is None or not num.isdigit():
-            raise BadRequest("num must be an integer")
-
         formsets = self.cv_get_formsets()
         if formsets is None:
             raise BadRequest("view has no formsets")
 
-        # validate the key path before rendering
-        node = formsets.get(key_path[0])
-        for key in key_path[1:]:
-            node = node.children.get(key) if node else None
-        if node is None:
-            raise BadRequest(f"unknown formset template {request.GET.get('template')}")
-
-        data = formsets.get_template(key_path=key_path, pk=pk, num=int(num), parent_prefix=formset_parent_prefix_key)
-        return data
+        pk, num, parent_prefix = formsets._cv_validate_fragment_coordinates(
+            key_path=key_path,
+            pk=pk,
+            num=num,
+            parent_prefix=formset_parent_prefix_key,
+            root=getattr(self, "object", None),
+        )
+        return formsets.get_template(key_path=key_path, pk=pk, num=num, parent_prefix=parent_prefix)
 
     def cv_form_is_valid(self, context: dict) -> bool:
         """

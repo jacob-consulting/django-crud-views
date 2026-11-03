@@ -7,5 +7,4 @@ class CrudViewsGuardianConfig(AppConfig):
     label = "cvg"
 
     def ready(self):
-        # nothing to wire up at startup; kept as the extension point for app initialisation
-        pass
+        import crud_views_guardian.checks  # noqa: F401

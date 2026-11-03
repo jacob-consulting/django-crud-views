@@ -34,6 +34,13 @@ class Publisher(models.Model):
         return self.name
 
 
+class PublisherProxy(Publisher):
+    """Exercise the proxy-root content-type mode of the Guardian label lookup."""
+
+    class Meta:
+        proxy = True
+
+
 class Book(models.Model):
     title = models.CharField(max_length=200)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name="books")
@@ -75,6 +82,19 @@ class Contract(models.Model):
 
     class Meta:
         ordering = ["title"]
+
+    def __str__(self):
+        return self.title
+
+
+class Royalty(models.Model):
+    """CR-01 protected-list model without a view_ permission; RESTRICT also exercises 06.2-08's write path."""
+
+    publisher = models.ForeignKey(Publisher, on_delete=models.RESTRICT, related_name="royalties")
+    title = models.CharField(max_length=100)
+
+    class Meta:
+        default_permissions = ("add", "change", "delete")
 
     def __str__(self):
         return self.title
@@ -196,3 +216,24 @@ class ProfileItem(models.Model):
 
     def __str__(self):
         return self.label
+
+
+class UUIDFragmentRow(models.Model):
+    """Test-only UUID-keyed inline row of an Author (formset fragment ancestry, Phase 6.2 B2)."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="fragment_rows")
+    text = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.text
+
+
+class UUIDFragmentLeaf(models.Model):
+    """Test-only inline leaf of a UUIDFragmentRow (nested formset fragment ancestry, Phase 6.2 B2)."""
+
+    row = models.ForeignKey(UUIDFragmentRow, on_delete=models.CASCADE, related_name="leaves")
+    text = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.text

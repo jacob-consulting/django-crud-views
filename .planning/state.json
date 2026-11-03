@@ -39,15 +39,20 @@
       "status": "complete"
     },
     {
+      "number": "6.2",
+      "name": "Request authorization and write integrity",
+      "status": "in_progress"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "/gsd-progress --next",
-    "label": "Advance to the next step (plan phase 7)",
-    "reason": "Phase 8 of 8 — needs a plan"
+    "command": "$gsd-execute-phase 06.2",
+    "label": "Resume phase gates after UI-review choice",
+    "reason": "Phase 8 of 9; 9/9 plans executed; UI review choice pending before final verification"
   },
-  "updated_at": "2026-10-29T05:32:55.897Z"
+  "updated_at": "2026-10-30T07:51:22.129Z"
 }

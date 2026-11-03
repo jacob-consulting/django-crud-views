@@ -1,20 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.3"
+current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: planning
-stopped_at: Phase 06.1 complete, ready to plan Phase 7
-last_updated: "2026-10-29T05:32:55.886Z"
-last_activity: 2026-10-29
-last_activity_desc: Phase 06.1 complete, transitioned to Phase 7
-state_head: 726cfc8a3a153a982b1be4592c19b6fb79bf790e
+stopped_at: Phase 06.2 complete, ready to plan Phase 06.3
+last_updated: "2026-10-30T10:15:22.191Z"
+last_activity: 2026-10-30
+last_activity_desc: Phase 06.2 complete, transitioned to Phase 06.3
+state_head: d45cfe6ef8df93f7f55b1e1cfd4bedc468e44a03
 progress:
-  total_phases: 8
-  completed_phases: 7
-  total_plans: 27
-  completed_plans: 27
-  percent: 88
+  total_phases: 10
+  completed_phases: 8
+  total_plans: 36
+  completed_plans: 36
+  percent: 80
 milestone_name: milestone
 ---
 
@@ -22,25 +22,25 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-29)
+See: .planning/PROJECT.md (updated 2026-10-30)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.3 — Delete protection and write-boundary integrity (#282), including bounded Guardian policy review; ready to plan.
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.3 — Delete protection and write-boundary integrity — issue #282
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-29 — Phase 06.1 complete, transitioned to Phase 7
+Last activity: 2026-10-30 — Phase 06.2 complete, transitioned to Phase 06.3
 
-Progress: 27/27 plans executed ([█████████░] 88%); 7/8 phases complete
+Progress: 36/36 plans executed; 8/10 phases complete (80%); Phase 6.2 complete for retained scope; Phase 6.3 ready to plan.
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 27
+- Total plans completed: 36
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -55,6 +55,7 @@ Progress: 27/27 plans executed ([█████████░] 88%); 7/8 phase
 | 05 | 3 | - | - |
 | 06 | 10 | - | - |
 | 06.1 | 3 | - | - |
+| 06.2 | 9 | - | - |
 
 **Recent Trend:**
 
@@ -93,6 +94,15 @@ Progress: 27/27 plans executed ([█████████░] 88%); 7/8 phase
 | Phase 06.1 P01 | 12 min | 3 tasks | 12 files |
 | Phase 06.1 P02 | 8 min | 2 tasks | 4 files |
 | Phase 06.1 P03 | 9 min | 2 tasks | 7 files |
+| Phase 06.2 P01 | 16 min | 3 tasks | 8 files |
+| Phase 06.2 P02 | 30 min | 3 tasks | 9 files |
+| Phase 06.2 P03 | 30 min | 2 tasks | 7 files |
+| Phase 06.2 P04 | 14 min | 2 tasks | 6 files |
+| Phase 06.2 P05 | 16min | 2 tasks | 2 files |
+| Phase 06.2 P06 | 31 min | 3 tasks | 10 files |
+| Phase 06.2 P07 | 5min | 2 tasks | 3 files |
+| Phase 06.2 P08 | 15min | 3 tasks | 9 files |
+| Phase 06.2 P09 | 26min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -175,6 +185,27 @@ Recent decisions affecting current work:
 - [Phase 06.1]: 06.1-03: tag= keyword change recorded in the existing Form buttons Breaking entry with paired migrating-1.0.md guidance; cancel links are an Added entry
 - [Phase 06.1]: 06.1-03: real-browser cancel-link acceptance (no-JS, new tab, disabled) left pending for end-of-phase UAT; jsdom proves handler noninterference only
 - [Phase 06.1]: UAT 3/3 passed via automated Chromium (JS-disabled click/Enter/middle-click, disabled fallback, JS-on non-interception), user-confirmed; verification canonicalized to passed
+- [Phase 06.2]: HTTP DELETE rejected by a private dispatch guard (_DeleteMethodGuardMixin) between CrudView and Django DeleteView; _allowed_methods drops DELETE from 405 Allow/OPTIONS; DeletionMixin.delete identity kept (no Django 4.2 warning)
+- [Phase 06.2]: Delete previews expose has_protected_objects (from the unfiltered collection) and only permitted protected_objects; core filters by model view permission, Guardian by object grant with per-view global fallback (no core re-filter)
+- [Phase 06.2]: 06.2-02: Guardian parent-None (permission key None) skips only the permission check; dispatch still resolves the URL parent (404) and runs cv_action_enabled with it; create helpers share the dispatch resolver and accept only the parent or a single-FK own child (M2M/unrelated deny)
+- [Phase 06.2]: 06.2-02: Inactive authenticated actors are denied in every Guardian request gate and callable helper (querysets .none(), helpers False, _PermittedPks empty, strict ViewSet helper empty); active superuser semantics unchanged (D-05)
+- [Phase 06.2]: 06.2-02: Rendered controls compute state via private CrudView._cv_action_enabled_for_context (ContextButton classes, card branches, view context); Guardian nested create overrides it to pass the resolved parent; request dispatch keeps calling cv_action_enabled directly
+- [Phase 06.2]: Fragment requests resolve self.object via get_object() (None for create) before rendering; Guardian object/state gates apply and missing or wrong-parent targets 404
+- [Phase 06.2]: Private FormSets._cv_validate_fragment_coordinates validates key path, pk grammar, endpoint root, top/child indices, FK ancestry (exists()) and guarded ASCII indices; failures are 400 before rendering and only canonical values render
+- [Phase 06.2]: FormSet.init renders unsaved instances as None even with a default UUID pk (A14); integer-pk output unchanged
+- [Phase 06.2]: formset.js pk regex anchored after '-' so multi-digit integer pks are no longer truncated (Rule 1 fix)
+- [Phase 06.2]: A19 non-first child emitted-index mismatch stays deferred to proposed 6.3; both siblings keep authorization and ancestry checks
+- [Phase 06.2]: 06.2-04: GuardianViewSet.cv_guardian_accept_global_perms removed; a mode=before Mapping-guarded validator rejects the key (ValidationError naming the per-view replacement) before registration; unrelated extras still ignored
+- [Phase 06.2]: 06.2-04: Manage reports guardian_config.get_objects_for_user from STRICT_HELPER_POLICY (the same values the helper passes to guardian) and views[key].guardian_policy per view; applicable = object/queryset views, or parent-only views with a parent and a non-None resolved parent permission
+- [Phase 06.2]: 06.2-05: the A10 actor matrix and six native template overrides are replayed as test-only evidence (582 tests) with no production change; strict and global-accepting Guardian families are the same views with the per-view flag set per test
+- [Phase 06.2]: 06.2-05: manage stays its own administrative gate in the matrix (D-06); its mode/group/DEBUG cells are replayed under the patched singleton rather than under object-view inactive policy
+- [Phase 06.2]: 06.2-06: Breaking (paired with migrating-1.0.md): HTTP DELETE 405, removed GuardianViewSet key, filtered protected_objects + has_protected_objects, Guardian manage context, nested Guardian create helper contract
+- [Phase 06.2]: 06.2-06: Fixed (not Breaking): fragment authorization/400 coordinates, unsaved UUID None prefixes, formset.js multi-digit keys, parent-None gates, inactive Guardian denial
+- [Phase 06.2]: 06.2-06: Supported-version evidence limited to cached Django 6.0/4.2 crispy-floor envs; Django 5.2 and Python 3.13-3.15 nox sessions not run (no installs, T-06.2-SC)
+- [Phase 06.2]: 06.2-07: Guardian preview uses its own content type and bare view codename; through rows bypass ContentType access and retain active authenticated superuser visibility with whole-model PK caching.
+- [Phase 06.2]: 06.2-08: Blocked deletion state is unconditional; one existing full NestedObjects/write-router collection per context supplies only the boolean when previews are off.
+- [Phase 06.2]: 06.2-08: Translate only pre-call native graph plus exact target Model.delete/Collector.collect provenance; custom handlers, SET/defaults, loaders, hooks, signals and committed callback failures propagate.
+- [Phase 06.2]: 06.2-08: Hidden-label notices use colon-free heading plus generic sentence; labelled heading remains unchanged. German MO now compiled with polib 1.2.0.
 
 ### Pending Todos
 
@@ -195,11 +226,23 @@ None yet.
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
+- Phase 06.2 retained scope complete: CR-02–CR-04 unresolved, deferred to Phase 6.3 / issue #282; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transferred unresolved to 6.3 GUA-01; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 261030-bqk | Reconcile 06.2 closure with #282: defer unresolved CR-02–CR-04 to 6.3, split acceptance, retain older open findings; documentation only | 2026-10-30 | 491ae9c | [261030-bqk-reconcile-phase-06-2-closure-with-issue-](./quick/261030-bqk-reconcile-phase-06-2-closure-with-issue-/) |
+| 261030-csg | Fix Phase 06.2 WR-01 core nested-create control state; supported-version regressions pass | 2026-10-30 | bd31992 | [261030-csg-fix-phase-06-2-wr-01-core-nested-create-](./quick/261030-csg-fix-phase-06-2-wr-01-core-nested-create-/) |
 
 ### Roadmap Evolution
 
+- Phase 06.3 scope extended by user decision: GUA-01 owns bounded AUTH-06 residual review plus IN-02/IN-03. Completed AUTH-06 evidence stays in 6.2; transfer remains unresolved; WR-01 fixed separately in quick task 261030-csg.
+
 - Phase 06 edited: User decision D-18: verify completed Phase 1/2 contracts on executing working branch before spec; main merge no longer prerequisite
 - Phase 6.1 inserted after Phase 6: Cancel form button as a link (#275); complete before Phase 7 freezes the theme surface (URGENT)
+- Phase 6.2 inserted after Phase 6.1: Request authorization and write integrity (analysis B1–B7); complete before Phase 7 freezes the theme surface (URGENT)
+- Phase 06.3 inserted after Phase 6: Delete protection and write-boundary integrity — issue #282 (URGENT)
 
 ## Deferred Items
 
@@ -209,6 +252,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-29T05:40:00Z
-Stopped at: Phase 06.1 complete, ready to plan Phase 7
+Last session: 2026-10-30T10:16:10.727324+00:00
+Stopped at: Phase 06.2 complete, ready to plan Phase 06.3
 Resume file: None

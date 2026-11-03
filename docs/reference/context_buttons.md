@@ -479,7 +479,7 @@ same context as the configured buttons, so access and the `cv_action_enabled` st
 |-------------------------------------------|------------------------------------------------------|
 | `{% cv_context_button "key" %}`           | Rendered button markup, or **nothing** when no access |
 | `{% cv_context_url "key" as url %}`       | The target URL string, or `None` when no access      |
-| `view\|cv_context_has_permission:"key"`   | `True`/`False` — may the user access the key?        |
+| `view\|cv_context_has_permission:"key"`   | `True`/`False` — may the user access the key? (permission only, see below) |
 | `{% cv_context_action_form "key" %}`      | Hidden POST form for a POST-only key, else nothing   |
 
 In every case the object defaults to the view's current object; pass a second argument to
@@ -540,6 +540,30 @@ To render wrappers, headings, or separators only when the user may access a key,
     <div class="toolbar">{% cv_context_button "update" %}</div>
 {% endif %}
 ```
+
+The filter answers the **permission** question only: it calls the target view's `cv_has_access(user, obj)` with the
+view's current object (`None` on list pages). It does not look at the action state, so it can be `True` while
+`cv_action_enabled` is `False` and `cv_context_button` renders nothing for the same key (or a disabled button under
+[disable mode](inaccessible_actions.md)). Gate the wrapper on the filter only when an empty wrapper is acceptable, or
+use the [resolved button loop](../faq.md#render-a-custom-loop-of-buttons), which yields only buttons that render.
+
+For the `create` key of a nested Guardian ViewSet with a `ForeignKey` parent, a child page passes its own object,
+and the filter resolves that object's actual parent through the configured attribute. On a Book detail page,
+`view|cv_context_has_permission:"create"` is therefore `True` exactly when the user may create under that Book's
+Publisher. Pass the child object as it is; do not swap in its parent yourself. The resolved create control works
+the same way: a custom `cv_action_enabled` hook on the create view receives the Publisher, while the button's label
+template still sees the page's own object (the Book).
+
+Two cases stay `False`, because the filter has no URL parent to work with:
+
+- **A child list page.** The page has no current object, so the filter gets `None` and returns `False` for a child
+  `create`. The toolbar's create control does resolve the parent from the URL, so place it with
+  `{% cv_context_button "create" %}` or the resolved button loop instead of gating on the filter.
+- **A `ManyToMany` child page** (`many_to_many_through_attribute`). The child can belong to several parents, so its
+  object cannot say which URL parent a create would use, and object-only helpers, filters and controls deny. Creating
+  under an authorized URL parent still works through the child list's create control and the create URL itself, and
+  `cv_has_access` with an explicit parent instance keeps working. See
+  [What the create access helpers accept](guardian.md#what-the-create-access-helpers-accept).
 
 ### Rendering a custom loop of buttons
 

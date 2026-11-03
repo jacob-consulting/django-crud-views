@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from contextlib import nullcontext, suppress
+from contextlib import nullcontext
 from functools import cached_property
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
@@ -833,31 +833,39 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @classmethod
     def _cv_cancel_target_available(cls, user, obj, rendering_view):
-        target_obj = obj if cls.cv_object else None
-        if not cls.cv_has_access(user, target_obj):
+        if cls.cv_object:
+            if not cls.cv_has_access(user, obj):
+                return False
+            return cls._cv_action_enabled_for_rendering(user, obj, rendering_view)
+        if not cls.cv_has_access(user, None):
             return False
-        action_obj = target_obj
-        if not cls.cv_object and cls.cv_viewset.has_parent:
+        action_obj = None
+        if cls.cv_viewset.has_parent:
             action_obj = rendering_view._cv_cancel_parent_object()
             if action_obj is None:
                 return False
         return cls._cv_action_enabled_for_rendering(user, action_obj, rendering_view)
 
-    def cv_get_cancel_url(self, obj=None, user=None, request=None):
-        """Return an accessible sibling URL with captured query state, or None."""
+    def _cv_cancel_owner(self, request):
+        """Bind an override only to a shallow, request-local copy."""
+        from copy import copy
+
         request = request if request is not None else getattr(self, "request", None)
         if request is None:
             raise ImproperlyConfigured("cv_get_cancel_url requires a request")
+        owner = copy(self)
+        owner.request = request
+        return owner
+
+    def cv_get_cancel_url(self, obj=None, user=None, request=None):
+        """Return an accessible sibling URL with captured query state, or None."""
+        owner = self._cv_cancel_owner(request)
+        request = owner.request
         user = request.user if user is None else user
         if obj is None:
             obj = getattr(self, "object", None)
         if not self.cv_object or getattr(getattr(obj, "_state", None), "adding", False):
             obj = None
-        # A request override is local; do not mutate the bound view or cache across requests.
-        from copy import copy
-
-        owner = copy(self)
-        owner.request = request
         availability = {}
 
         def available(target):
@@ -865,25 +873,36 @@ class CrudView(metaclass=CrudViewMetaClass):
                 availability[target] = target._cv_cancel_target_available(user, obj, owner)
             return availability[target]
 
-        capture = read_cancel_state(owner) if effective_cancel_keys(self) else None
-        if capture and capture.origin in effective_cancel_keys(self):
-            try:
-                target = self.cv_get_cls(capture.origin)
-            except ViewSetKeyFoundError:
-                target = None
-            url = None
-            if target and (not target.cv_object or obj is not None):
-                # An unusable request origin falls back; configured route failures below are errors.
-                with suppress(NoReverseMatch):
-                    url = self.cv_get_url(capture.origin, obj)
-            if url is not None and available(target):
-                if capture.query is not None:
-                    query = capture.query
-                    if is_cancel_list_destination(target):
-                        query += ("&" if query else "") + urlencode({navigation_params()[2]: "1"})
-                    if query:
-                        url += "?" + query
-                return url
+        origin_url = self._cv_cancel_origin_url(owner, obj, available)
+        if origin_url is not None:
+            return origin_url
+        target, fallback_url = self._cv_cancel_fallback(obj)
+        return fallback_url if available(target) else None
+
+    def _cv_cancel_origin_url(self, owner, obj, available):
+        keys = effective_cancel_keys(self)
+        capture = read_cancel_state(owner) if keys else None
+        if capture is None or capture.origin not in keys:
+            return None
+        try:
+            target = self.cv_get_cls(capture.origin)
+        except ViewSetKeyFoundError:
+            return None
+        if target.cv_object and obj is None:
+            return None
+        # An unusable request origin falls back; configured route failures are errors.
+        try:
+            url = self.cv_get_url(capture.origin, obj)
+        except NoReverseMatch:
+            return None
+        if not available(target):
+            return None
+        query = capture.query
+        if query is not None and is_cancel_list_destination(target):
+            query += ("&" if query else "") + urlencode({navigation_params()[2]: "1"})
+        return url + "?" + query if query else url
+
+    def _cv_cancel_fallback(self, obj):
         fallback_key = self.cv_cancel_key or self.cv_key
         message = self._cv_cancel_configuration_message(fallback_key)
         try:
@@ -896,9 +915,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             fallback_url = self.cv_get_url(fallback_key, obj)
         except NoReverseMatch as exc:
             raise ImproperlyConfigured(message) from exc
-        if not available(target):
-            return None
-        return fallback_url
+        return target, fallback_url
 
     def cv_get_success_key(self, obj: Model | None = None) -> str | None:
         """The key the success redirect goes to: a validated origin, else cv_success_key.

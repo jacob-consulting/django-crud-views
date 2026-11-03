@@ -1,7 +1,5 @@
 """Private, bounded sibling-navigation transport. Signatures are not access grants."""
 
-import binascii
-import json
 from dataclasses import dataclass
 from urllib.parse import parse_qsl
 
@@ -67,19 +65,23 @@ def _valid_payload(payload):
     origin, query, identity, parents = (payload[key] for key in ("origin", "query", "viewset", "parents"))
     if type(origin) is not str or not 0 < len(origin) <= 128:
         return False
-    if type(identity) is not list or len(identity) != 2:
-        return False
-    if any(type(item) is not str or len(item) > 256 for item in identity):
-        return False
-    if type(parents) is not dict or len(parents) > 16:
-        return False
-    if any(type(k) is not str or type(v) is not str or len(k) > 512 or len(v) > 512 for k, v in parents.items()):
+    if not _valid_identity(identity, parents):
         return False
     if query is not None:
         if type(query) is not str or len(query.encode("utf-8")) > MAX_QUERY:
             return False
         parse_qsl(query, keep_blank_values=True, max_num_fields=MAX_PAIRS)
     return True
+
+
+def _valid_identity(identity, parents):
+    if type(identity) is not list or len(identity) != 2:
+        return False
+    if any(type(item) is not str or len(item) > 256 for item in identity):
+        return False
+    if type(parents) is not dict or len(parents) > 16:
+        return False
+    return all(type(k) is str and type(v) is str and len(k) <= 512 and len(v) <= 512 for k, v in parents.items())
 
 
 def encode_cancel_state(view, origin, query):
@@ -95,7 +97,7 @@ def encode_cancel_state(view, origin, query):
             return None
         token = signing.Signer(salt=SALT).sign_object(payload, compress=False)
         return token if len(token.encode("ascii")) <= MAX_TOKEN else None
-    except (ValueError, UnicodeError):
+    except ValueError:
         return None
 
 
@@ -115,7 +117,19 @@ def read_cancel_state(view):
     if not tokens:
         origin = view.cv_get_origin_key()
         return CancelCapture(origin, None) if origin else None
-    token = tokens[0]
+    payload = _read_payload(tokens[0])
+    if payload is None or payload["viewset"] != [view.cv_viewset.app or "", view.cv_viewset.name]:
+        return None
+    if origins and origins[0] != payload["origin"]:
+        return None
+    # Coordinate/hook/programming errors are not malformed browser input.
+    if payload["parents"] != _coordinates(view):
+        return None
+    return CancelCapture(payload["origin"], payload["query"])
+
+
+def _read_payload(token):
+    """Decode bounded browser input without including application hooks in the catch."""
     try:
         if len(token) > MAX_TOKEN or not token.isascii() or token.startswith("."):
             return None
@@ -126,16 +140,9 @@ def read_cancel_state(view):
         payload = signing.Signer(salt=SALT).unsign_object(token)
         if not _valid_payload(payload):
             return None
-        if payload["viewset"] != [view.cv_viewset.app or "", view.cv_viewset.name]:
-            return None
-        if origins and origins[0] != payload["origin"]:
-            return None
         captured = payload["query"]
         if captured is not None:
             captured = clean_navigation_query(QueryDict(captured)).urlencode()
-    except (signing.BadSignature, ValueError, UnicodeError, binascii.Error, json.JSONDecodeError):
+    except (signing.BadSignature, ValueError):
         return None
-    # Coordinate/hook/programming errors are not malformed browser input.
-    if payload["parents"] != _coordinates(view):
-        return None
-    return CancelCapture(payload["origin"], captured)
+    return {**payload, "query": captured}

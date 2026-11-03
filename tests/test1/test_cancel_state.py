@@ -241,8 +241,9 @@ def test_parent_binding_and_programming_errors(cv_book):
     other = encode_cancel_state(view, "list", "x=1")
     assert other != token
     view.kwargs = {}
+    bind(view, token)
     with pytest.raises(KeyError):
-        read_cancel_state(bind(view, token))
+        read_cancel_state(view)
 
 
 @pytest.mark.django_db

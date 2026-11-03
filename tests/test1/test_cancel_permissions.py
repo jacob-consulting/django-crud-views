@@ -99,7 +99,8 @@ def test_registered_cancel_fallback_inventory(monkeypatch, record_property):
                 errors = fallback_errors(cls)
                 assert bool(errors) is expected[identity], (identity, inventory[identity], errors)
                 if expected[identity]:
-                    assert len(errors) == 1 and isinstance(errors[0], Error)
+                    assert len(errors) == 1
+                    assert isinstance(errors[0], Error)
                     assert cls.__name__ in errors[0].msg
                     assert "cv_cancel_key='list'" in errors[0].msg
                     # These diagnostic-only fixtures intentionally have no list.
@@ -264,8 +265,9 @@ def test_core_state_errors_propagate(cv_publisher, user_publisher_view, monkeypa
         raise error("state hook")
 
     monkeypatch.setattr(cv_publisher.get_view_class("list"), "cv_action_enabled", classmethod(fail))
+    view = bound(cv_publisher.get_view_class("create"), user_publisher_view)
     with pytest.raises(error, match="state hook"):
-        bound(cv_publisher.get_view_class("create"), user_publisher_view).cv_get_cancel_url()
+        view.cv_get_cancel_url()
 
 
 @pytest.mark.django_db
@@ -296,7 +298,8 @@ def test_core_custom_create_and_rendering_adapter(cv_publisher, user_publisher_a
     assert events == [("adapter", None), ("state", None)]
     events.clear()
     context = owner.cv_get_context(key="create", obj=None, user=user_publisher_add, request=owner.request)
-    assert context["cv_access"] is True and context["cv_action_enabled"] is enabled
+    assert context["cv_access"] is True
+    assert context["cv_action_enabled"] is enabled
     assert events == [("adapter", None), ("state", None)]
     events.clear()
     client.force_login(user_publisher_add)
@@ -346,8 +349,9 @@ def test_core_nested_no_object_state_receives_url_parent(cv_book, user_book_view
 def test_core_structurally_impossible_fallback_is_configuration_error(cv_publisher, user_publisher_view, monkeypatch):
     target = cv_publisher.get_view_class("list")
     monkeypatch.setattr(target, "cv_get_url_extra_kwargs", classmethod(lambda cls: {"unexpected": "argument"}))
+    view = bound(cv_publisher.get_view_class("create"), user_publisher_view)
     with pytest.raises(ImproperlyConfigured, match="registered usable destination"):
-        bound(cv_publisher.get_view_class("create"), user_publisher_view).cv_get_cancel_url()
+        view.cv_get_cancel_url()
 
 
 @pytest.mark.django_db
@@ -503,7 +507,8 @@ def test_guardian_parent_only_and_create_targets(
 
     user = _user("cancel_parent_only")
     assign_perm("view_publisher", user, publisher_a)
-    assert not user.has_perm("app.view_book") and not user.has_perm("app.add_book")
+    assert not user.has_perm("app.view_book")
+    assert not user.has_perm("app.add_book")
     monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", permission)
     monkeypatch.setattr(pn.BookCreate, "cv_cancel_keys", [key])
     monkeypatch.setattr(pn.BookCreate, "cv_cancel_key", key)

@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: Use --case owned-form|label-floor|all
+    at options (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption.cjs:58:5)
+    at configuration (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption.cjs:64:18)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption.cjs:367:18)

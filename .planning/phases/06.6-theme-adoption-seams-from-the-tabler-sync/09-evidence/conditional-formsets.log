@@ -1,0 +1,4 @@
+PASS stock:lifecycle (10 assertions)
+PASS native:lifecycle (10 assertions)
+CONDITIONAL_EVIDENCE_OK 2 cases
+

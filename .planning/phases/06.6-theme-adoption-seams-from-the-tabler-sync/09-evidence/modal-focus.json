@@ -1,0 +1,1314 @@
+{
+  "captured": "2026-11-02T23:57:16.253Z",
+  "revision": "d29855dac55017b8acec3461d381199a711a593b",
+  "sourceHashes": {
+    "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+    "src/crud_views/static/crud_views/js/adapters.js": "6134473b5f0fb183aae7f4b035ad38a56a902b8f58c8b5c688c9638d1cef2580",
+    "tests/js/modal.test.js": "a0013f564e4b09b14bc087e75ab93adc20a5377952fb9e02894c4df4aaa324bb",
+    "tests/js/adapters.test.js": "d62b08bb9fd113b5cbdf83b1a9922b864b4d702e3011cc515a8f32116c68121c",
+    "CHANGELOG.md": "92a0a7b1138d9aa64343eca58c14bf468e32d9b734195c22881246027478994c",
+    "docs/migrating-1.0.md": "c60f3aac54f75ebcc3f070e2cf33b1b1b2751253a8d74e5304d55fc4543f92d1",
+    "src/crud_views/lib/deletion.py": "91b3464f8337006d79b839e4af344dd223fcf12e2ee536f14d0545c3f36280b6",
+    "src/crud_views/lib/views/delete.py": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e",
+    "src/crud_views/templates/crud_views/view_delete.content.html": "63c6fae38dbaf038eed76f7269ce333b88816b121908f73aa08cf131174c3c66",
+    "tests/test1/app/templates/app/base.html": "f2f325b993a2e91be2f7cd235f0f1bcab8f3cfa9f51c5709c4e4f15ff85f1c08",
+    "tests/browser/modal-focus.cjs": "925595ba32db569d02946e932047e96ddb2dd7dd92e6b2cd4287426fa28e48d0",
+    "tests/test1/app/views.py": "3e769cdfa8909d45af9eec4fa1054638907ab5c3148f5a4d3847f08b7339c6ae",
+    "docs/reference/javascript.md": "0cff443ab7f343dba17fdd84ca69256c59d57d9617b81becbce867da8739f403",
+    "docs/reference/modals.md": "1db9b5176a5b5e8e9067f5ba42b0900f079577764e03a5ea655117b9c47af573",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/17-evidence/server.py": "19160e33bd34943829258db4faf4560e840a0f598cd8717b1822ccd9314ede67",
+    "src/crud_views/templates/crud_views/modal/shell.html": "bc5b91977d517671b9c246cbbbce5a813a0d8bc10caf36f8c78f214df15328ee",
+    "src/crud_views/templates/crud_views/modal/content.html": "0c537498854336c1ff8179f5d8f87df0e567beab72ba8a57c50c7d3651b02257",
+    "package-lock.json": "567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e"
+  },
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs",
+    "--output",
+    ".planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/09-evidence/modal-focus.json"
+  ],
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\n5.2.18",
+    "pythonPath": ".nox/tests-3-12-django-5-2/bin/python",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "browser": "149.0.7827.55"
+  },
+  "completed": true,
+  "passed": true,
+  "cases": [
+    {
+      "id": "unchecked",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "real HTTP status",
+          "passed": true
+        },
+        {
+          "name": "invalid confirmation retains keyboard focus",
+          "passed": true
+        },
+        {
+          "name": "one visible form and field error",
+          "passed": true
+        },
+        {
+          "name": "row retained and zero custom callbacks",
+          "passed": true
+        },
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-unchecked-unchecked.png",
+          "sha256": "c14e1894d3543e942b0823007abc0d5d6203cb16354d4fb682d1c1e3743b97bd"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-unchecked-dismiss-1.png",
+          "sha256": "f02ceaa33af9b22f8375313ed5ecfd2ade1f84fb1317b2b90d7103c81fe71d9d"
+        }
+      ],
+      "observations": [
+        {
+          "label": "unchecked",
+          "tag": "INPUT",
+          "id": "id_confirm",
+          "name": "confirm",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": true,
+          "main": false,
+          "outline": "rgb(0, 0, 0) none 0px",
+          "boxShadow": "rgba(220, 53, 69, 0.25) 0px 0px 0px 4px"
+        },
+        {
+          "label": "dismiss-1",
+          "tag": "A",
+          "id": "launch",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "statuses": [
+        422
+      ],
+      "state": {
+        "exists": true,
+        "events": []
+      },
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "launch",
+            "main": false
+          }
+        ]
+      ]
+    },
+    {
+      "id": "blocked",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "real protection added",
+          "passed": true
+        },
+        {
+          "name": "real HTTP status",
+          "passed": true
+        },
+        {
+          "name": "blocked response focuses Close",
+          "passed": true
+        },
+        {
+          "name": "blocked focus remains visible",
+          "passed": true
+        },
+        {
+          "name": "both notices remain and form is absent",
+          "passed": true
+        },
+        {
+          "name": "filtered hidden label stays hidden",
+          "passed": true
+        },
+        {
+          "name": "row retained and zero custom callbacks",
+          "passed": true
+        },
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-blocked-blocked.png",
+          "sha256": "63008d7bb932010f30ca7132766b666c3335cbdf3137e9444825b9248026c59e"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-blocked-dismiss-1.png",
+          "sha256": "f02ceaa33af9b22f8375313ed5ecfd2ade1f84fb1317b2b90d7103c81fe71d9d"
+        }
+      ],
+      "observations": [
+        {
+          "label": "blocked",
+          "tag": "BUTTON",
+          "id": "",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": true,
+          "main": false,
+          "outline": "rgb(0, 0, 0) none 0px",
+          "boxShadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+        },
+        {
+          "label": "dismiss-1",
+          "tag": "A",
+          "id": "launch",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "statuses": [
+        422
+      ],
+      "state": {
+        "exists": true,
+        "events": []
+      },
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "launch",
+            "main": false
+          }
+        ]
+      ]
+    },
+    {
+      "id": "close",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-close-dismiss-0.png",
+          "sha256": "f02ceaa33af9b22f8375313ed5ecfd2ade1f84fb1317b2b90d7103c81fe71d9d"
+        }
+      ],
+      "observations": [
+        {
+          "label": "dismiss-0",
+          "tag": "A",
+          "id": "launch",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "launch",
+            "main": false
+          }
+        ]
+      ]
+    },
+    {
+      "id": "escape",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-escape-dismiss-0.png",
+          "sha256": "f02ceaa33af9b22f8375313ed5ecfd2ade1f84fb1317b2b90d7103c81fe71d9d"
+        }
+      ],
+      "observations": [
+        {
+          "label": "dismiss-0",
+          "tag": "A",
+          "id": "launch",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "launch",
+            "main": false
+          }
+        ]
+      ]
+    },
+    {
+      "id": "removed-opener",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-removed-opener-dismiss-0.png",
+          "sha256": "96481191ffebb228798a1be97614efce78ca74f31c50f745a58ebc43cafb7d93"
+        }
+      ],
+      "observations": [
+        {
+          "label": "dismiss-0",
+          "tag": "MAIN",
+          "id": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": true,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "",
+            "main": true
+          }
+        ]
+      ]
+    },
+    {
+      "id": "disabled-opener",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-disabled-opener-dismiss-0.png",
+          "sha256": "26995c3c37575b41807eb69ff117633565f2513dcb97bab1e9f22f2837300354"
+        }
+      ],
+      "observations": [
+        {
+          "label": "dismiss-0",
+          "tag": "MAIN",
+          "id": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": true,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "",
+            "main": true
+          }
+        ]
+      ]
+    },
+    {
+      "id": "hidden-opener",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-hidden-opener-dismiss-0.png",
+          "sha256": "96481191ffebb228798a1be97614efce78ca74f31c50f745a58ebc43cafb7d93"
+        }
+      ],
+      "observations": [
+        {
+          "label": "dismiss-0",
+          "tag": "MAIN",
+          "id": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": true,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "",
+            "main": true
+          }
+        ]
+      ]
+    },
+    {
+      "id": "repeated-open",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "rapid reopen survives the previous hide transition",
+          "passed": true
+        },
+        {
+          "name": "real HTTP status",
+          "passed": true
+        },
+        {
+          "name": "reopened session still recovers replacement focus",
+          "passed": true
+        },
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-repeated-open-dismiss-0.png",
+          "sha256": "f02ceaa33af9b22f8375313ed5ecfd2ade1f84fb1317b2b90d7103c81fe71d9d"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-repeated-open-dismiss-1.png",
+          "sha256": "dd78e9689deccf46f740f940db4fc64e592ba1598badf22124f9b3a2a861e442"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-repeated-open-dismiss-2.png",
+          "sha256": "b6f9f978362b03d3a7f66b4197e199f7c5e7997508e0b7e63eeaef5451c64593"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-repeated-open-dismiss-3.png",
+          "sha256": "dd78e9689deccf46f740f940db4fc64e592ba1598badf22124f9b3a2a861e442"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-repeated-open-dismiss-4.png",
+          "sha256": "dd78e9689deccf46f740f940db4fc64e592ba1598badf22124f9b3a2a861e442"
+        }
+      ],
+      "observations": [
+        {
+          "label": "dismiss-0",
+          "tag": "A",
+          "id": "launch",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        },
+        {
+          "label": "dismiss-1",
+          "tag": "A",
+          "id": "alternate",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        },
+        {
+          "label": "dismiss-2",
+          "tag": "A",
+          "id": "launch",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        },
+        {
+          "label": "dismiss-3",
+          "tag": "A",
+          "id": "alternate",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        },
+        {
+          "label": "dismiss-4",
+          "tag": "A",
+          "id": "alternate",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "launch",
+            "main": false
+          }
+        ],
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "alternate",
+            "main": false
+          }
+        ],
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "launch",
+            "main": false
+          }
+        ],
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "alternate",
+            "main": false
+          }
+        ],
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "alternate",
+            "main": false
+          }
+        ]
+      ],
+      "statuses": [
+        422
+      ]
+    },
+    {
+      "id": "native-dialog",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "real HTTP status",
+          "passed": true
+        },
+        {
+          "name": "invalid confirmation retains keyboard focus",
+          "passed": true
+        },
+        {
+          "name": "one visible form and field error",
+          "passed": true
+        },
+        {
+          "name": "row retained and zero custom callbacks",
+          "passed": true
+        },
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-native-dialog-unchecked.png",
+          "sha256": "72b3c7131bcf59991b546d741d0e8543508ea1c88425b9964cc2b73655739e3e"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-native-dialog-dismiss-1.png",
+          "sha256": "f02ceaa33af9b22f8375313ed5ecfd2ade1f84fb1317b2b90d7103c81fe71d9d"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-native-dialog-dismiss-2.png",
+          "sha256": "f02ceaa33af9b22f8375313ed5ecfd2ade1f84fb1317b2b90d7103c81fe71d9d"
+        }
+      ],
+      "observations": [
+        {
+          "label": "unchecked",
+          "tag": "INPUT",
+          "id": "id_confirm",
+          "name": "confirm",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": true,
+          "main": false,
+          "outline": "rgb(0, 0, 0) none 0px",
+          "boxShadow": "rgba(220, 53, 69, 0.25) 0px 0px 0px 4px"
+        },
+        {
+          "label": "dismiss-1",
+          "tag": "A",
+          "id": "launch",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        },
+        {
+          "label": "dismiss-2",
+          "tag": "A",
+          "id": "launch",
+          "name": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "statuses": [
+        422
+      ],
+      "state": {
+        "exists": true,
+        "events": []
+      },
+      "hideEvents": [
+        [
+          {
+            "kind": "return",
+            "id": "launch",
+            "main": false
+          },
+          {
+            "kind": "hidden",
+            "visible": false
+          }
+        ],
+        [
+          {
+            "kind": "return",
+            "id": "launch",
+            "main": false
+          },
+          {
+            "kind": "hidden",
+            "visible": false
+          }
+        ]
+      ]
+    },
+    {
+      "id": "pending-close",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "late real GET succeeds",
+          "passed": true
+        },
+        {
+          "name": "late replacement leaves dismissed modal closed",
+          "passed": true
+        },
+        {
+          "name": "late replacement preserves fallback focus",
+          "passed": true
+        },
+        {
+          "name": "row retained and zero custom callbacks",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-pending-close-dismiss-0.png",
+          "sha256": "26995c3c37575b41807eb69ff117633565f2513dcb97bab1e9f22f2837300354"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-pending-close-late-response.png",
+          "sha256": "26995c3c37575b41807eb69ff117633565f2513dcb97bab1e9f22f2837300354"
+        }
+      ],
+      "observations": [
+        {
+          "label": "dismiss-0",
+          "tag": "MAIN",
+          "id": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": true,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        },
+        {
+          "label": "late-response",
+          "tag": "MAIN",
+          "id": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": true,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "",
+            "main": true
+          }
+        ]
+      ],
+      "state": {
+        "exists": true,
+        "events": []
+      }
+    },
+    {
+      "id": "native-pending-close",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": true
+        },
+        {
+          "name": "return focus is visible and outside dialog",
+          "passed": true
+        },
+        {
+          "name": "hidden event observes completed hiding",
+          "passed": true
+        },
+        {
+          "name": "restore after completed hide",
+          "passed": true
+        },
+        {
+          "name": "late real GET succeeds",
+          "passed": true
+        },
+        {
+          "name": "late replacement leaves dismissed modal closed",
+          "passed": true
+        },
+        {
+          "name": "late replacement preserves fallback focus",
+          "passed": true
+        },
+        {
+          "name": "row retained and zero custom callbacks",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-native-pending-close-dismiss-0.png",
+          "sha256": "26995c3c37575b41807eb69ff117633565f2513dcb97bab1e9f22f2837300354"
+        },
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-native-pending-close-late-response.png",
+          "sha256": "26995c3c37575b41807eb69ff117633565f2513dcb97bab1e9f22f2837300354"
+        }
+      ],
+      "observations": [
+        {
+          "label": "dismiss-0",
+          "tag": "MAIN",
+          "id": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": true,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        },
+        {
+          "label": "late-response",
+          "tag": "MAIN",
+          "id": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": false,
+          "main": true,
+          "outline": "rgb(16, 16, 16) auto 1px",
+          "boxShadow": "none"
+        }
+      ],
+      "hideEvents": [
+        [
+          {
+            "kind": "return",
+            "id": "launch",
+            "main": false
+          },
+          {
+            "kind": "hidden",
+            "visible": false
+          },
+          {
+            "kind": "return",
+            "id": "",
+            "main": true
+          }
+        ]
+      ],
+      "state": {
+        "exists": true,
+        "events": []
+      }
+    },
+    {
+      "id": "controls",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Cancel navigates to configured URL",
+          "passed": true
+        },
+        {
+          "name": "Cancel destination renders successfully",
+          "passed": true
+        },
+        {
+          "name": "row retained and zero custom callbacks",
+          "passed": true
+        },
+        {
+          "name": "Space checks confirmation",
+          "passed": true
+        },
+        {
+          "name": "real HTTP status",
+          "passed": true
+        },
+        {
+          "name": "Delete destination renders successfully",
+          "passed": true
+        },
+        {
+          "name": "confirmed Delete removes row and calls real custom handler",
+          "passed": true
+        },
+        {
+          "name": "no page errors",
+          "passed": true
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/modal-focus-controls-confirmed.png",
+          "sha256": "eac80f98b7cd4ee023cf37d323c0d2c026c12fbd1a959d5b4f9e7c2a851c7674"
+        }
+      ],
+      "observations": [
+        {
+          "label": "confirmed",
+          "tag": "INPUT",
+          "id": "id_confirm",
+          "name": "confirm",
+          "connected": true,
+          "visible": true,
+          "focusVisible": true,
+          "inModal": true,
+          "main": false,
+          "outline": "rgb(0, 0, 0) none 0px",
+          "boxShadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+        }
+      ],
+      "state": {
+        "exists": true,
+        "events": []
+      },
+      "statuses": [
+        204
+      ],
+      "deletedState": {
+        "exists": false,
+        "events": [
+          {
+            "kind": "custom_notes",
+            "using": "default"
+          }
+        ]
+      }
+    }
+  ],
+  "pageErrors": []
+}

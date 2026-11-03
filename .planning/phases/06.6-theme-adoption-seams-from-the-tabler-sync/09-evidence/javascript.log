@@ -1,0 +1,20 @@
+
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+
+ Test Files  10 passed (10)
+      Tests  363 passed (363)
+   Start at  23:56:53
+   Duration  12.24s (tests 73%, environment 22%, setup 2%, transform 1%)
+
+    Isolate  10 workers spawned · ~622ms startup each (spawn + environment, per file)
+             at least ~2.49s faster with isolate: false — reuses workers across files instead of one per file
+
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document

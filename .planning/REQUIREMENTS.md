@@ -172,7 +172,7 @@ Source: issue #302 and Phase 06.7 CONTEXT.md D-01–D-16. These are pending impl
 - [x] **CAN-02**: Emitted sibling links capture bounded query state with repeated/blank values, filters, ordering and pagination; validated captures remain independent across tabs and parent contexts, bind to the same ViewSet/current parent coordinates, and strip internal navigation fields without accepting return URLs.
 - [x] **CAN-03**: Cancel restores nonempty or explicitly empty list state before session fallback; enabled persistence remembers the restored query or clears old filters, disabled persistence never writes or clears memory, and ordinary bare-list behavior remains intact.
 - [ ] **CAN-04**: Invalid submissions retain the original capture across create/update/delete and both custom-form families, supported modal replacements and polymorphic selector-to-create forwarding.
-- [ ] **CAN-05**: Allowed usable accessible origin wins, then accessible configured fallback, then omission; malformed/disallowed input falls back safely, missing configured fallback produces an actionable configuration diagnostic, and core/Guardian object, queryset, parent and state policies remain authoritative.
+- [x] **CAN-05**: Allowed usable accessible origin wins, then accessible configured fallback, then omission; malformed/disallowed input falls back safely, missing configured fallback produces an actionable configuration diagnostic, and core/Guardian object, queryset, parent and state policies remain authoritative.
 - [ ] **CAN-06**: Crispy buttons, native anchors and a documented cancel URL helper share destination and omission; copied key-only cancel templates migrate immediately, with dynamic/static examples, settings/limits and paired Breaking/migration guidance.
 - [ ] **CAN-07**: Real request/browser acceptance proves all five issue flows without writes on Cancel and preserves save/delete success redirects, form ownership/CSRF/escaping, conditional/formset/modal contracts and existing protected-delete omission; no cross-ViewSet/history, browser-state capture or additional modal support is introduced.
 
@@ -221,7 +221,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CAN-02 | Phase 6.7 | Complete |
 | CAN-03 | Phase 6.7 | Complete |
 | CAN-04 | Phase 6.7 | Pending |
-| CAN-05 | Phase 6.7 | Pending |
+| CAN-05 | Phase 6.7 | Complete |
 | CAN-06 | Phase 6.7 | Pending |
 | CAN-07 | Phase 6.7 | Pending |
 | THEME-01 | Phase 6.6 | Complete |

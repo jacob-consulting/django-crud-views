@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.7"
 current_phase_name: Dynamic cancel navigation and origin query state
 status: executing
-stopped_at: Phase 06.7 plan 01 complete; post-wave UI gate requires UI-SPEC.md before wave 2
-last_updated: "2026-11-03T16:16:33.248Z"
+stopped_at: Completed 06.7-02-PLAN.md; plans 03-05 and human UI consideration remain pending
+last_updated: "2026-11-03T16:43:56.172Z"
 last_activity: 2026-11-03
 last_activity_desc: Phase 06.7 execution started
-state_head: 8fa7b7d667354450a3fb9392045df6c35baea6c7
+state_head: 05db385fe074aa12f0a662204e6cf6f844bed303
 progress:
   total_phases: 14
   completed_phases: 12
   total_plans: 106
-  completed_plans: 102
+  completed_plans: 103
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-03)
 ## Current Position
 
 Phase: 06.7 (Dynamic cancel navigation and origin query state) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-11-03 — Phase 06.7 execution started
 
@@ -40,8 +40,9 @@ Next: $gsd-execute-phase 06.7
 
 - Plan 01 complete: 189 focused and 918 migration tests pass, Ruff clean, golden files unchanged.
 - Post-wave source compilation and JavaScript regression pass (363 tests across 10 files).
-- Schema gate clear; codebase mapping drift advisory. UI gate blocks: UI-SPEC.md missing; scope attribution degraded (no-task-commit-rows).
-- Plans 02–05 remain unexecuted. Next: $gsd-ui-phase 6.7, then $gsd-execute-phase 6.7.
+- Plan 02 complete: E256 fallback diagnostics and Guardian target policy; 297 core/Guardian and 676 permission/Crispy tests pass, plus 52 new cases on each cached Django 4.2/6.0 runtime.
+- Schema gate clear; codebase mapping drift advisory. UI-SPEC now exists and checker passed 7/7 per orchestrator; human UI consideration confirmation remains pending.
+- Plans 03–05 remain unexecuted. Next: continue $gsd-execute-phase 6.7 with plan 03; preserve pending phase-wide acceptance.
 - Existing configuration and untracked review artifacts preserved. No phase completion, merge or publication.
 
 ### Phase 06.7 plan convergence — 2026-11-03
@@ -418,6 +419,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.6 P10 | 18min | 3 tasks | 13 files |
 | Phase 06.6 P09 | 48min | 2 tasks | 78 files |
 | Phase 06.7 P01 | 12min | 3 tasks | 19 files |
+| Phase 06.7 P02 | 14min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -572,6 +574,8 @@ Recent decisions affecting current work:
 - [Phase 06.6]: Plan10 delivered the exact five-file Tabler adaptation in companion3315eef over preserved user commit0b3baa8; core evidence67aca38 binds fresh provisional/committed probes and snapshot-independent preservation. Phase-wide acceptance remains plan09.
 - [Phase 06.6]: Plan 09 automated gates pass against final source; retain unchanged companion failures and current-pack Django 6.0 absence; human visual/AT acceptance remains pending.
 - [Phase 06.7]: 01: Bound signed cancellation to current ViewSet/parent coordinates; clean all list-family controls before persistence, and validate navigation before golden normalization.
+- [Phase 06.7]: 02: Guardian cancel destinations apply target parent/object/queryset policy before one rendering-state evaluation; parent-only routes require no child/model grant.
+- [Phase 06.7]: 02: E256 diagnoses missing usable form fallbacks; share Cancel context only within Crispy button construction, preserving kwargs hooks and fresh subsequent evaluation.
 
 ### Pending Todos
 
@@ -593,7 +597,7 @@ None yet.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
 - Phase 06.2 retained scope complete: CR-02–CR-04 transferred to Phase 6.3 / issue #282 and closed by its 2026-11-01 verification; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transfer completed within 6.3 GUA-01 scope; broader Guardian identity compatibility remains in #286; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
-- Phase 06.7 post-wave UI gate blocked: missing UI-SPEC.md. Plan 01 complete; run $gsd-ui-phase 6.7 before remaining plans.
+- Phase 06.7: UI-SPEC existence/checker gate is clear per orchestrator; human UI consideration confirmation remains pending. Plans 01–02 complete; plans 03–05 and phase-wide acceptance remain pending.
 
 ### Quick Tasks Completed
 
@@ -623,6 +627,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-03T16:16:31.689Z
-Stopped at: Phase 06.7 plan 01 complete; post-wave UI gate requires UI-SPEC.md before wave 2
-Resume file: .planning/phases/06.7-dynamic-cancel-navigation-and-origin-query-state/06.7-01-SUMMARY.md
+Last session: 2026-11-03T16:43:54.564Z
+Stopped at: Completed 06.7-02-PLAN.md; plans 03-05 and human UI consideration remain pending
+Resume file: None

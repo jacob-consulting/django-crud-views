@@ -1,0 +1,676 @@
+{
+  "schema": 1,
+  "lanes": {
+    "code": {
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "packet_sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd",
+      "verdict": "passed-bounded",
+      "runs": [
+        {
+          "name": "clean-aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json"
+          ],
+          "returncode": 0,
+          "stdout": "PHASE64_MATRIX_OK 20 gates source=5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d\n",
+          "stderr": "",
+          "started": "2026-11-01T20:56:03.794173+00:00",
+          "finished": "2026-11-01T20:56:08.083304+00:00",
+          "matched": true
+        },
+        {
+          "name": "clean-handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json"
+          ],
+          "returncode": 0,
+          "stdout": "{\"disposition\": \"not-ready\", \"ready\": false, \"structurally_valid\": true}\n",
+          "stderr": "",
+          "started": "2026-11-01T20:56:08.083361+00:00",
+          "finished": "2026-11-01T20:56:13.081173+00:00",
+          "matched": true
+        },
+        {
+          "name": "width-overflow:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/width-overflow.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture icon observations invalid: desktop\n",
+          "started": "2026-11-01T20:56:14.070531+00:00",
+          "finished": "2026-11-01T20:56:15.215524+00:00",
+          "matched": true
+        },
+        {
+          "name": "width-overflow:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/width-overflow-handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture icon observations invalid: desktop\n",
+          "started": "2026-11-01T20:56:15.215543+00:00",
+          "finished": "2026-11-01T20:56:16.394690+00:00",
+          "matched": true
+        },
+        {
+          "name": "height-overflow:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/height-overflow.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture icon observations invalid: desktop\n",
+          "started": "2026-11-01T20:56:17.345166+00:00",
+          "finished": "2026-11-01T20:56:18.471254+00:00",
+          "matched": true
+        },
+        {
+          "name": "height-overflow:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/height-overflow-handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture icon observations invalid: desktop\n",
+          "started": "2026-11-01T20:56:18.471288+00:00",
+          "finished": "2026-11-01T20:56:19.624184+00:00",
+          "matched": true
+        },
+        {
+          "name": "original-missing-controls:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/original-missing-controls.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Checker control evidence inventory incomplete\n",
+          "started": "2026-11-01T20:56:20.605729+00:00",
+          "finished": "2026-11-01T20:56:24.837370+00:00",
+          "matched": true
+        },
+        {
+          "name": "original-missing-controls:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/original-missing-controls-handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Checker control evidence inventory incomplete\n",
+          "started": "2026-11-01T20:56:24.837453+00:00",
+          "finished": "2026-11-01T20:56:29.032781+00:00",
+          "matched": true
+        },
+        {
+          "name": "original-all-success:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/original-all-success.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Checker control exit invalid: exit-code\n",
+          "started": "2026-11-01T20:56:29.934056+00:00",
+          "finished": "2026-11-01T20:56:34.188663+00:00",
+          "matched": true
+        },
+        {
+          "name": "original-all-success:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/original-all-success-handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Checker control exit invalid: exit-code\n",
+          "started": "2026-11-01T20:56:34.188694+00:00",
+          "finished": "2026-11-01T20:56:38.451008+00:00",
+          "matched": true
+        },
+        {
+          "name": "original-empty-stock:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/original-empty-stock.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture inventory invalid: stock\n",
+          "started": "2026-11-01T20:56:39.473347+00:00",
+          "finished": "2026-11-01T20:56:40.583639+00:00",
+          "matched": true
+        },
+        {
+          "name": "original-empty-stock:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/original-empty-stock-handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture inventory invalid: stock\n",
+          "started": "2026-11-01T20:56:40.583670+00:00",
+          "finished": "2026-11-01T20:56:41.767314+00:00",
+          "matched": true
+        },
+        {
+          "name": "original-stale-stock:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/original-stale-stock.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture digest mismatch: desktop\n",
+          "started": "2026-11-01T20:56:42.696791+00:00",
+          "finished": "2026-11-01T20:56:43.846891+00:00",
+          "matched": true
+        },
+        {
+          "name": "original-stale-stock:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/code-25-owned-492imy6z/original-stale-stock-handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture digest mismatch: desktop\n",
+          "started": "2026-11-01T20:56:43.846924+00:00",
+          "finished": "2026-11-01T20:56:45.035740+00:00",
+          "matched": true
+        }
+      ],
+      "continuity": {
+        "paths": 824,
+        "unchanged": 822,
+        "changed": [
+          ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py"
+        ],
+        "added": [],
+        "removed": [],
+        "retained_gate_ids": [
+          "conditional-browser",
+          "django4.2-disabled-full",
+          "django4.2-enabled-full",
+          "django4.2-focused",
+          "django4.2-missing-runtime",
+          "django5.2-disabled-full",
+          "django5.2-enabled-full",
+          "django5.2-focused",
+          "django5.2-missing-runtime",
+          "django6.0-disabled-full",
+          "django6.0-enabled-full",
+          "django6.0-focused",
+          "django6.0-missing-runtime",
+          "javascript",
+          "javascript-integration",
+          "modal-browser",
+          "strict-docs"
+        ],
+        "effective_selections_equal": true
+      },
+      "fresh_self_tests": {
+        "selected": [
+          "test_runner.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory",
+          "test_runner.CheckerControlEvidence.test_complete_packet_cli_and_pending_handoff_positive",
+          "test_runner.CheckerControlEvidence.test_contradictory_success_outcomes_reject_everywhere",
+          "test_runner.CheckerControlEvidence.test_duplicate_keys_reject_at_both_cli_entry_points",
+          "test_runner.CheckerControlEvidence.test_exact_summary_and_detail_inventory",
+          "test_runner.CheckerControlEvidence.test_internal_payload_result_cannot_supply_final_acceptance",
+          "test_runner.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections",
+          "test_runner.CheckerControlEvidence.test_missing_detailed_inventory_rejects_cli_aggregate_and_handoff",
+          "test_runner.CheckerControlEvidence.test_real_staged_controls_and_final_positive",
+          "test_runner.ConditionalCaptureEvidence.test_changed_deleted_or_non_png_owned_bytes_reject_without_touching_originals",
+          "test_runner.ConditionalCaptureEvidence.test_current_three_stock_and_explicit_empty_native_are_valid",
+          "test_runner.ConditionalCaptureEvidence.test_device_viewport_and_containment_observations",
+          "test_runner.ConditionalCaptureEvidence.test_dimension_numeric_contract",
+          "test_runner.ConditionalCaptureEvidence.test_exact_stock_and_native_inventories",
+          "test_runner.ConditionalCaptureEvidence.test_historical_human_markers_stay_pending",
+          "test_runner.ConditionalCaptureEvidence.test_missing_capture_inventory_rejects_aggregate_cli_and_handoff",
+          "test_runner.ConditionalCaptureEvidence.test_missing_or_false_rendered_icon_observations",
+          "test_runner.ConditionalCaptureEvidence.test_overflow_controls_use_capture_diagnostic",
+          "test_runner.ConditionalCaptureEvidence.test_oversized_glyph_height_rejects_cli_and_handoff",
+          "test_runner.ConditionalCaptureEvidence.test_oversized_glyph_width_rejects_cli_and_handoff",
+          "test_runner.ConditionalCaptureEvidence.test_paths_are_bounded_and_distinct",
+          "test_runner.ConditionalCaptureEvidence.test_stale_digest_rejects_despite_historical_canonical_success",
+          "test_runner.CurrentCapture.test_all_invalid_selections_fail_before_any_process",
+          "test_runner.CurrentCapture.test_changed_valid_browser_selection_reruns_affected_gate",
+          "test_runner.CurrentCapture.test_effective_selections_affect_only_relevant_gates",
+          "test_runner.CurrentCapture.test_matching_selection_reuses_real_docs_and_historical_check_ignores_current_overrides",
+          "test_runner.CurrentCapture.test_wr02_invalid_python_fails_before_unrelated_command",
+          "test_runner.CurrentCapture.test_wr02_invalid_runtime_subprocess_preserves_output",
+          "test_runner.EvidenceRefresh.test_changed_effective_selection_rejects_before_output_writes",
+          "test_runner.EvidenceRefresh.test_changed_product_input_and_command_reject_real_refresh_cli",
+          "test_runner.EvidenceRefresh.test_invalid_runtime_preflight_preserves_outputs",
+          "test_runner.EvidenceRefresh.test_missing_fresh_gates_controls_and_forged_timestamps_reject_everywhere",
+          "test_runner.EvidenceRefresh.test_mutated_origin_and_missing_manifest_reject_everywhere",
+          "test_runner.EvidenceRefresh.test_original_gate_survives_real_refresh_cli_check_and_handoff",
+          "test_runner.EvidenceRefresh.test_source_continuity_rejects_product_runtime_and_path_set_changes",
+          "test_runner.HandoffEvidence.test_false_readiness_rejects",
+          "test_runner.HandoffEvidence.test_malformed_packet_subprocess_rejects",
+          "test_runner.HandoffEvidence.test_missing_case_reference_rejects",
+          "test_runner.HandoffEvidence.test_missing_findings_and_links_reject",
+          "test_runner.HandoffEvidence.test_missing_human_state_or_prohibition_rejects",
+          "test_runner.HandoffEvidence.test_pending_packet_is_structurally_valid_but_not_ready",
+          "test_runner.HandoffEvidence.test_stale_report_hash_rejects",
+          "test_runner.HandoffEvidence.test_stale_source_provenance_rejects",
+          "test_runner.HandoffEvidence.test_unattributed_human_approval_rejects",
+          "test_runner.HandoffEvidence.test_unreviewed_finding_cannot_close",
+          "test_runner.HandoffEvidence.test_wr05_is_required_for_g6",
+          "test_runner.HistoricalCounterexamples.test_focused_accepts_strengthened_reclean_identity_family",
+          "test_runner.HistoricalCounterexamples.test_wr01_rejects_filtered_javascript_with_consistent_green_counts",
+          "test_runner.HistoricalCounterexamples.test_wr01_rejects_non_strict_docs",
+          "test_runner.QualityEvidence.test_duplicate_case",
+          "test_runner.QualityEvidence.test_duplicate_file",
+          "test_runner.QualityEvidence.test_failed_case",
+          "test_runner.QualityEvidence.test_false_console",
+          "test_runner.QualityEvidence.test_false_counts",
+          "test_runner.QualityEvidence.test_filtered_collection_command",
+          "test_runner.QualityEvidence.test_filtered_command",
+          "test_runner.QualityEvidence.test_missing_case",
+          "test_runner.QualityEvidence.test_missing_file",
+          "test_runner.QualityEvidence.test_real_complete_ordinary_capture",
+          "test_runner.QualityEvidence.test_required_bridge_is_independent",
+          "test_runner.QualityEvidence.test_required_integration_case_missing",
+          "test_runner.QualityEvidence.test_scoped_copy_checks_but_cannot_claim_complete",
+          "test_runner.QualityEvidence.test_skipped_case",
+          "test_runner.QualityEvidence.test_stale_collection_source",
+          "test_runner.QualityEvidence.test_wrong_lint_subcommands_and_flags",
+          "test_runner.QualityEvidence.test_wrong_node_executable",
+          "test_runner.QualityEvidence.test_wrong_vitest_subcommand"
+        ],
+        "observed_ok": 67,
+        "started": "2026-11-01T20:37:34.134784+00:00",
+        "finished": "2026-11-01T20:48:05.433651+00:00",
+        "returncode": 0
+      },
+      "controls": [
+        "capture-digest",
+        "capture-height-overflow",
+        "capture-missing",
+        "capture-observation",
+        "capture-width-overflow",
+        "control-missing-evidence",
+        "control-missing-summary",
+        "control-success-outcome",
+        "control-wrong-command",
+        "control-wrong-diagnostic",
+        "disabled-node-absence",
+        "disabled-opt-in",
+        "docs-non-strict",
+        "exit-code",
+        "inline-clear-assertion",
+        "integration-missing",
+        "js-duplicate-case",
+        "js-duplicate-file",
+        "js-failed-case",
+        "js-false-counts",
+        "js-filtered-command",
+        "js-missing-case",
+        "js-missing-file",
+        "js-skipped-case",
+        "js-wrong-executable",
+        "negative-control-setup-error",
+        "raw-balance-assertion",
+        "required-case-list",
+        "ruff-format-missing-check",
+        "ruff-wrong-subcommand",
+        "source-hash",
+        "tracer-absent",
+        "tracer-failed",
+        "tracer-skipped",
+        "tracer-zero-selected"
+      ],
+      "protected_hashes": {
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py": "a37d5e636ad612d9e4b3a330392bd61e31ca6290c04ba6f3fa0692a09903e7bf",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/source-manifest.json": "160d004bec9883e920b78ea5eacb8c98e1d42903b8b88ec8da9362d47b78f4cf",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/source-manifest.json": "7dc2541183e999d8709d4c173a9db50f21a0bab52312e22767db896b80a0bf9b",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced",
+        ".planning/ui-reviews/06.4-gap-repair/tablet.png": "55c2ee11a8e16140abb64a9fe37f55feb07428322e5fa6a4ed9e76f33be16282",
+        ".planning/ui-reviews/06.4-gap-repair/mobile.png": "314006515ef104b3a93a7b390aec27addf67733df5b37fc53752e447b731edfe",
+        ".planning/ui-reviews/06.4-gap-repair/desktop.png": "6af0369c076c37eb02a9e132e6da01fd1b04a52bc1ec428f7e2fc59f8f2b81ef"
+      },
+      "recipe_authorship": "Adapted by /root/execute_25/code_25 from plan22 code-controls/probe.py and current test_runner.py; every execution below belongs to this lane.",
+      "protected_unchanged": true,
+      "additional_checks": {
+        "numeric": {
+          "positive": 10,
+          "negative": 32
+        },
+        "original_controls_preserved": 33,
+        "current_controls": 35,
+        "decisions": 19,
+        "flagged_unresolved": 31,
+        "scope": "Direct capture validator, both dimensions; original33 registry/diagnostics AST comparison; actual handoff decision/flag/H1/H2 inspection.",
+        "returncode": 0
+      },
+      "transport": "Owned complete packets under repository .git/code-25-owned-* (removed after execution), required by bound_file ROOT containment; no source changes or validator patch."
+    },
+    "security": {
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "packet_sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd",
+      "verdict": "OPEN_THREATS",
+      "runs": [
+        {
+          "name": "clean-aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json"
+          ],
+          "returncode": 0,
+          "stdout": "PHASE64_MATRIX_OK 20 gates source=5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d\n",
+          "stderr": "",
+          "started": "2026-11-01T20:56:41.078542+00:00",
+          "finished": "2026-11-01T20:56:45.288198+00:00"
+        },
+        {
+          "name": "clean-handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json"
+          ],
+          "returncode": 0,
+          "stdout": "{\"disposition\": \"not-ready\", \"ready\": false, \"structurally_valid\": true}\n",
+          "stderr": "",
+          "started": "2026-11-01T20:56:45.288256+00:00",
+          "finished": "2026-11-01T20:56:50.383997+00:00"
+        },
+        {
+          "name": "width-overflow:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/width-overflow/results.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture icon observations invalid: desktop\n",
+          "started": "2026-11-01T20:56:50.384057+00:00",
+          "finished": "2026-11-01T20:56:51.487264+00:00"
+        },
+        {
+          "name": "width-overflow:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/width-overflow/handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture icon observations invalid: desktop\n",
+          "started": "2026-11-01T20:56:51.487312+00:00",
+          "finished": "2026-11-01T20:56:52.658179+00:00"
+        },
+        {
+          "name": "height-overflow:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/height-overflow/results.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture icon observations invalid: desktop\n",
+          "started": "2026-11-01T20:56:52.658243+00:00",
+          "finished": "2026-11-01T20:56:53.785667+00:00"
+        },
+        {
+          "name": "height-overflow:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/height-overflow/handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture icon observations invalid: desktop\n",
+          "started": "2026-11-01T20:56:53.785730+00:00",
+          "finished": "2026-11-01T20:56:54.964465+00:00"
+        },
+        {
+          "name": "original-missing-controls:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/original-missing-controls/results.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Checker control evidence inventory incomplete\n",
+          "started": "2026-11-01T20:56:54.964527+00:00",
+          "finished": "2026-11-01T20:56:59.229562+00:00"
+        },
+        {
+          "name": "original-missing-controls:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/original-missing-controls/handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Checker control evidence inventory incomplete\n",
+          "started": "2026-11-01T20:56:59.229625+00:00",
+          "finished": "2026-11-01T20:57:03.467215+00:00"
+        },
+        {
+          "name": "original-all-success:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/original-all-success/results.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Checker control exit invalid: exit-code\n",
+          "started": "2026-11-01T20:57:03.467307+00:00",
+          "finished": "2026-11-01T20:57:07.673015+00:00"
+        },
+        {
+          "name": "original-all-success:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/original-all-success/handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Checker control exit invalid: exit-code\n",
+          "started": "2026-11-01T20:57:07.673075+00:00",
+          "finished": "2026-11-01T20:57:12.011213+00:00"
+        },
+        {
+          "name": "original-empty-stock:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/original-empty-stock/results.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture inventory invalid: stock\n",
+          "started": "2026-11-01T20:57:12.011272+00:00",
+          "finished": "2026-11-01T20:57:13.179968+00:00"
+        },
+        {
+          "name": "original-empty-stock:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/original-empty-stock/handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture inventory invalid: stock\n",
+          "started": "2026-11-01T20:57:13.180009+00:00",
+          "finished": "2026-11-01T20:57:14.337877+00:00"
+        },
+        {
+          "name": "original-stale-stock:aggregate",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check",
+            "--output",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/original-stale-stock/results.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture digest mismatch: desktop\n",
+          "started": "2026-11-01T20:57:14.337937+00:00",
+          "finished": "2026-11-01T20:57:15.450320+00:00"
+        },
+        {
+          "name": "original-stale-stock:handoff",
+          "command": [
+            "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+            "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "--check-handoff",
+            "/home/alex/projects/alex/django-crud-views/.git/gsd-plan25-security-fixtures/original-stale-stock/handoff.json"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "MATRIX_REJECTED: Conditional capture digest mismatch: desktop\n",
+          "started": "2026-11-01T20:57:15.450478+00:00",
+          "finished": "2026-11-01T20:57:16.620890+00:00"
+        }
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "recipe_authorship": "Executor /root/execute_25 prepared six complete fixtures using plan23 test_runner.py and plan22 code-controls/probe.py recipes. Independent auditor /root/execute_25/security_25 verified exact mutation equality, byte-identical sidecars and matching-digest-only handoff differences, then executed all fourteen observations.",
+      "transport": "Owned repo-contained .git/gsd-plan25-security-fixtures paths satisfy bound_file ROOT containment; no source mutation or validator patch.",
+      "assessment_recorded": "2026-11-01T20:58:37.009973+00:00",
+      "open_threat_ids": [
+        "T-06.4-35",
+        "T-06.4-36",
+        "T-06.4-40",
+        "T-06.4-43"
+      ],
+      "closed_threat_ids": [
+        "T-06.4-01",
+        "T-06.4-02",
+        "T-06.4-03",
+        "T-06.4-04",
+        "T-06.4-05",
+        "T-06.4-06",
+        "T-06.4-07",
+        "T-06.4-08",
+        "T-06.4-09",
+        "T-06.4-10",
+        "T-06.4-11",
+        "T-06.4-12",
+        "T-06.4-13",
+        "T-06.4-14",
+        "T-06.4-15",
+        "T-06.4-16",
+        "T-06.4-17",
+        "T-06.4-18",
+        "T-06.4-19",
+        "T-06.4-20",
+        "T-06.4-21",
+        "T-06.4-22",
+        "T-06.4-23",
+        "T-06.4-24",
+        "T-06.4-25",
+        "T-06.4-26",
+        "T-06.4-27",
+        "T-06.4-28",
+        "T-06.4-29",
+        "T-06.4-30",
+        "T-06.4-31",
+        "T-06.4-32",
+        "T-06.4-33",
+        "T-06.4-34",
+        "T-06.4-37",
+        "T-06.4-38",
+        "T-06.4-39",
+        "T-06.4-41",
+        "T-06.4-42",
+        "T-06.4-SC"
+      ],
+      "threat_dispositions": {
+        "T-06.4-35": "OPEN/high: attribution/readiness guards exist, but genuine H1/H2 and final independent acceptance outcomes remain absent.",
+        "T-06.4-36": "OPEN/high: H2 has no genuine enforcement descriptor/RED\u2013GREEN route or attributed human disposition; native reference/storage tests do not supply it.",
+        "T-06.4-38": "CLOSED/medium within original capture-integrity bounds: inventories, confined distinct paths, current PNG bytes/digests and viewport/containment/glyph observations remain enforced. Former diagnostic defect did not demonstrate acceptance bypass.",
+        "T-06.4-40": "OPEN/high: current-source final canonical verification and final report-hash rebind remain pending; reviewed canonical digest identifies previous result.",
+        "T-06.4-41": "CLOSED/medium as authored: local overflow refusal, both dimensions, registered controls and mandatory WR05/G6 links independently verified through four exact CLI refusals.",
+        "T-06.4-42": "CLOSED/high within refresh bounds: exact824/822/2 source continuity,17 retained objects/runtime equality,67/35 fresh identities and historical handoff preservation independently checked.",
+        "T-06.4-43": "OPEN/high: independent observations supplied, but stable final review binding, immutable pre-replacement replay, successor canonical output and post-summary final rebind/check have not occurred at auditor snapshot.",
+        "T-06.4-SC": "CLOSED/high within no-install scope: existing runtime paths and dependency/lock inputs unchanged; no install occurred; future-install gate unexercised."
+      }
+    }
+  }
+}

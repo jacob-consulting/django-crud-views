@@ -1,0 +1,618 @@
+{
+  "actor": "/root/verify_64_final",
+  "recorded": "2026-11-02T07:20:52.576684+00:00",
+  "plan_results": [
+    {
+      "plan": "06.4-01-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 9,
+        "total": 9,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": "src/crud_views/lib/conditional/layout.py",
+            "to": "src/crud_views/static/crud_views/js/toggle.js",
+            "via": "cv_toggle_field -> cv-data-toggle-field exact bound-name matching",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "src/crud_views/lib/formsets/formsets.py",
+            "to": "src/crud_views/lib/formsets/render_tree.py",
+            "via": "FormSet.init owning form -> cv_bound_toggle_field -> template projection",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-02-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 5,
+        "total": 5,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 3,
+        "failures": [
+          {
+            "from": "src/crud_views/lib/conditional/group.py",
+            "to": "src/crud_views/lib/formsets/render_tree.py",
+            "via": "private _cv_conditional_requires_save state augments the existing-row save predicate after full validation",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "src/crud_views/lib/conditional/group.py",
+            "to": "Django ModelForm._post_clean",
+            "via": "resolved scalar/file state applied before inherited construction/model validation",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "src/crud_views/lib/conditional/group.py",
+            "to": "Django save_m2m",
+            "via": "M2M cleaned_data uses existing relation persistence",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-03-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 5,
+        "total": 5,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 1,
+        "failures": [
+          {
+            "from": "src/crud_views/checks.py",
+            "to": "src/crud_views/lib/conditional/group.py",
+            "via": "same resolve_conditional_empty_value result for static and runtime validation",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-04-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 5,
+        "total": 5,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": "src/crud_views/lib/formsets/render_tree.py",
+            "to": "src/crud_views/lib/formsets/formsets.py",
+            "via": "mandatory policy errors feed both passes of all_valid before cv_form_valid",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "src/crud_views/lib/formsets/formsets.py",
+            "to": "src/crud_views/lib/formsets/mixins.py",
+            "via": "all_valid rejects before routed atomic save entry",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-05-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": "src/crud_views/static/crud_views/js/toggle.js",
+            "to": "HTML form controls",
+            "via": "external disabled mutations + inactive ancestor owners -> effective property",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "src/crud_views/static/crud_views/js/toggle.js",
+            "to": "src/crud_views/static/crud_views/js/modal.js",
+            "via": "loaded synchronization precedes existing replacement-focus recovery",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-06-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 7,
+        "total": 7,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": "src/crud_views/static/crud_views/js/formset.js",
+            "to": "src/crud_views/static/crud_views/js/modal.js",
+            "via": "form submit reorder -> document submit FormData, honoring defaultPrevented",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "src/crud_views/templates/crud_views/formsets/control.html",
+            "to": "src/crud_views/static/crud_views/js/formset.js",
+            "via": "each formset edit_only/capability flags govern stock and custom native buttons",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-07-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 4,
+        "total": 4,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": "src/crud_views/lib/formsets/formsets.py",
+            "to": "src/crud_views/templates/crud_views/formsets/formset.html",
+            "via": "selected declaration index -> fragment rows/prefix markup",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "src/crud_views/static/crud_views/js/formset.js",
+            "to": "src/crud_views/lib/formsets/mixins.py",
+            "via": "unchanged request coordinates -> authorized fragment -> management POST",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-08-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 8,
+        "total": 8,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 1,
+        "total": 2,
+        "failures": [
+          {
+            "from": "tests/browser/templates/conditional_formsets/native_formset.html",
+            "to": "src/crud_views/static/crud_views/js/formset.js",
+            "via": "documented semantic projection -> real action lifecycle",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-09-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 8,
+        "total": 8,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": "docs/reference/conditional.md",
+            "to": "tests/test1/test_conditional_migration_docs.py",
+            "via": "actual fenced recipe -> rendered/persisted behavior",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "docs/reference/formsets.md",
+            "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-PUBLIC-SURFACE.md",
+            "via": "explicit projection and supported initializer inventory -> Phase 7",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-10-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 7,
+        "total": 7,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": "10-evidence/run.py",
+            "to": "10-evidence/results.json",
+            "via": "subprocess statuses/test totals/runtime versions/source hashes -> validation",
+            "verified": false,
+            "detail": "Source file not found (from: must be a relative file path; describe components/endpoints in via:)"
+          },
+          {
+            "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-ACCEPTANCE.md",
+            "to": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md",
+            "via": "successful A19 evidence qualifies only that handoff",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-11-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 3,
+        "total": 3,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": "src/crud_views/lib/formsets/render_tree.py",
+            "to": "src/crud_views/lib/formsets/formsets.py",
+            "via": "XFormSet.is_valid traversed on both aggregate passes",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "src/crud_views/lib/formsets/formsets.py",
+            "to": "src/crud_views/lib/formsets/mixins.py",
+            "via": "all_valid rejection precedes cv_form_valid saves",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-12-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 4,
+        "total": 4,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    },
+    {
+      "plan": "06.4-13-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 3,
+        "total": 3,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 1,
+        "total": 2,
+        "failures": [
+          {
+            "from": "src/crud_views/templates/crud_views/formsets/control.html",
+            "to": "src/crud_views/static/crud_views/js/formset.js",
+            "via": "native DELETE availability plus stable prefix/INITIAL_FORMS capability",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-14-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 1,
+        "failures": [
+          {
+            "from": "src/crud_views/static/crud_views/js/toggle.js",
+            "to": "tests/js/toggle.test.js",
+            "via": "cv.initConditional drives DOM state, native checkValidity and FormData",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-15-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 1,
+        "total": 2,
+        "failures": [
+          {
+            "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "via": "capture/check against output-adjacent manifest and effective runtime contracts",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-16-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 4,
+        "total": 4,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": "tests/browser/conditional_formsets_server.py",
+            "to": "tests/browser/conditional-formsets.cjs",
+            "via": "actual authenticated CSRF HTTP and refreshed database",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": "tests/browser/templates/conditional_formsets/native_control.html",
+            "to": "src/crud_views/templates/crud_views/formsets/control.html",
+            "via": "same native DELETE availability contract",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-17-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 4,
+        "total": 4,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    },
+    {
+      "plan": "06.4-18-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      },
+      "links": {
+        "exit": 1,
+        "passed": 0,
+        "total": 2,
+        "failures": [
+          {
+            "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+            "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "via": "source-bound exact gate validation",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          },
+          {
+            "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/10-evidence/results.json",
+            "via": "explicit historical baseline rather than overwritten outcomes",
+            "verified": false,
+            "detail": "Target not referenced in source"
+          }
+        ]
+      }
+    },
+    {
+      "plan": "06.4-19-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 3,
+        "total": 3,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    },
+    {
+      "plan": "06.4-20-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    },
+    {
+      "plan": "06.4-21-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 5,
+        "total": 5,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    },
+    {
+      "plan": "06.4-22-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 4,
+        "total": 4,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    },
+    {
+      "plan": "06.4-23-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    },
+    {
+      "plan": "06.4-24-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 5,
+        "total": 5,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    },
+    {
+      "plan": "06.4-25-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 5,
+        "total": 5,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    },
+    {
+      "plan": "06.4-26-PLAN.md",
+      "artifacts": {
+        "exit": 0,
+        "passed": 6,
+        "total": 6,
+        "failures": []
+      },
+      "links": {
+        "exit": 0,
+        "passed": 2,
+        "total": 2,
+        "failures": []
+      }
+    }
+  ],
+  "decisions": {
+    "exit": 0,
+    "stdout": "{\n  \"skipped\": false,\n  \"blocking\": false,\n  \"total\": 19,\n  \"honored\": 19,\n  \"not_honored\": [],\n  \"message\": \"All trackable CONTEXT.md decisions are honored by shipped artifacts.\"\n}",
+    "stderr": ""
+  },
+  "roadmap": {
+    "exit": 0,
+    "stdout": "### Phase 06.4: Conditional and formset correctness/lifecycle (INSERTED)\n\n**Goal**: Conditional groups and formsets bind to the correct row, preserve disabled-state ownership, enforce\nserver-side save semantics and initialize reliably across page/modal/dynamic-row lifecycles before Phase 7 freezes\ntheir theme contracts.\n**Source**: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` §4 (A1–A7), §8 slice 6.4 and §9 item 2.\n**Requirements**: COND-01, COND-02, COND-03, COND-04, COND-05, FSET-01, FSET-02, FSET-03, LIFE-01, LIFE-02, AUTH-02 (A19 handoff only).\n**Depends on**: Phase 6.3; retain Phase 6.2's formset-fragment authorization and request/write boundaries.\n**Parallel with**: None in the current roadmap.\n**Research/spec**: Settle bound toggle identity and copied-template compatibility, disabled-state ownership,\nsupported field-clearing semantics, and successful initialization/root/visibility contracts. The source recommends\nnative immediate visibility; decide whether a downstream theme needs a presentation-only callback/adapter before\nthe freeze. That seam must not own disabled-state or authorization decisions. Recommendations are not locked design.\n**Success Criteria** (what must be TRUE):\n\n  1. A1: Each conditional group binds to its own intended toggle across sibling/nested rows, shared suffixes,\n     prefixes, multiple forms, modal content and dynamically added rows; compatibility for old markup is explicit.\n  2. A2/A3: Baseline disabled reasons and all enclosing groups compose correctly in both nesting orders. Native\n     reset recomputes state after a non-cancelled reset, remains scoped to its form and preserves management inputs.\n  3. A4: Inactive supported fields clear with correct persistence semantics, including existing FileField references\n     (without promising storage-file deletion), explicit empty values, Boolean and M2M cases. Unsupported shapes\n     have an explicit guard. Documentation accurately describes inherited clean/model validation and suppressed errors.\n  4. A5: Active `edit_only` formsets cannot create rows through forged extras, including custom control templates;\n     stock Add controls agree with server policy and ordinary edits still work. Assess forged initial-row IDs and\n     document reject/ignore behavior without claiming an unproven cross-parent mutation.\n  5. A6/A7: Formsets and toggles initialize automatically and idempotently on initial load, modal load/422 replacement\n     and nested added rows. Initialization can retry after a missing toggle appears, includes supported root elements\n     and handles scripts loaded after DOMContentLoaded. Add/delete/order/submit and widget lifecycle work without\n     duplicate bindings or reliance on undocumented controller constructors/private flags.\n  6. Stock and minimal non-Bootstrap crispy/group/formset templates pass lifecycle and keyboard/focus acceptance,\n     including two forms, disabled widgets, reset, hidden-content focus, management POST/re-render and JS-off/tampered\n     POST. Preserve fragment authorization, parent denial, restricted querysets, atomic rollback and documented\n     skip/opt-in aggregate purge semantics. Keep jQuery in this slice; the #210 port remains deferred.\n  7. Document the usable formset template projection and any changed identity/root/visibility hooks for Phase 7.\n     Preserve event detail `{prefix, rows}`, one event per outer inserted row, request coordinates and `{html, rows}`.\n     Pair any Breaking changelog entry with `docs/migrating-1.0.md`. A8 `commit=False` public/internal classification\n     remains a final-policy decision; it is not silently added to this repair scope.\n\n**Plans**:26/26 executed. Plans23–26 closed G6/WR-05 within scope. Human UAT complete: Chrome/Orca checks pass and H2 bounded contract accepted. Independent security44/44closed at ASVS1. Canonical verification and final handoff reconciliation remain pending. Next: `$gsd-execute-phase 06.4`.\n\nPlans:\n**Wave 1**\n- [x] 06.4-01-PLAN.md — Exact conditional identity from rendered form to submitted values (wave 1)\n\n**Wave 2** *(blocked on Wave 1 completion)*\n- [x] 06.4-02-PLAN.md — Field-aware conditional persistence (wave 2)\n- [x] 06.4-05-PLAN.md — Composed conditional state, native reset and focus (wave 2)\n\n**Wave 3** *(blocked on Wave 2 completion)*\n- [x] 06.4-03-PLAN.md — Static and runtime clearing configuration contract (wave 3)\n- [x] 06.4-04-PLAN.md — Mandatory active formset row-policy validation (wave 3)\n\n**Wave 4** *(blocked on Wave 3 completion)*\n- [x] 06.4-06-PLAN.md — Form-scoped formset initialization and modal submit ordering (wave 4)\n\n**Wave 5** *(blocked on Wave 4 completion)*\n- [x] 06.4-07-PLAN.md — Successful non-first sibling fragment round trips (wave 5)\n\n**Wave 6** *(blocked on Wave 5 completion)*\n- [x] 06.4-08-PLAN.md — Real HTTP and browser conditional/formset acceptance (wave 6)\n\n**Wave 7** *(blocked on Wave 6 completion)*\n- [x] 06.4-09-PLAN.md — Tested migration and Phase 7 public contract handoff (wave 7)\n\n**Wave 8** *(blocked on Wave 7 completion)*\n- [x] 06.4-10-PLAN.md — Supported-series regression evidence and acceptance handoff (wave 8)\n\n**Wave 9** *(gap closure; dependencies in PLAN frontmatter)*\n- [x] 06.4-11-PLAN.md — Reapply mandatory row policy after native recleaning (wave 9)\n- [x] 06.4-12-PLAN.md — Separate the mandatory Django bridge from ordinary Node tests (wave 9)\n- [x] 06.4-14-PLAN.md — Preserve conditional ownership while a binding is unresolved (wave 9)\n\n**Wave 10** *(gap closure; dependencies in PLAN frontmatter)*\n- [x] 06.4-13-PLAN.md — Keep row deletion eligibility stable through insertion and reordering (wave 10)\n- [x] 06.4-15-PLAN.md — Enforce evidence selection and current runtime requests (wave 10)\n\n**Wave 11** *(gap closure; dependencies in PLAN frontmatter)*\n- [x] 06.4-16-PLAN.md — Exercise repaired lifecycle in a representative browser host (wave 11)\n- [x] 06.4-17-PLAN.md — Reconcile repaired contracts and required test commands in documentation (wave 11)\n\n**Wave 12** *(gap closure; dependencies in PLAN frontmatter)*\n- [x] 06.4-18-PLAN.md — Capture and validate current-source gap repair evidence (wave 12)\n\n**Wave 13** *(gap closure; dependencies in PLAN frontmatter)*\n- [x] 06.4-19-PLAN.md — Reconcile independent reviews and gather the outstanding human dispositions (wave 13)\n\n**Wave 14** *(blocked on Wave 13 completion)*\n- [x] 06.4-20-PLAN.md — Reject missing control records and stale conditional captures\n\n**Wave 15** *(blocked on Wave 14 completion)*\n- [x] 06.4-21-PLAN.md — Refresh affected evidence with verified source applicability and original provenance\n\n**Wave 16** *(blocked on Wave 15 completion)*\n- [x] 06.4-22-PLAN.md — Independent reassessment and end-of-phase acceptance handoff\n\n**Wave 17** *(blocked on Wave 16 completion)*\n- [x] 06.4-23-PLAN.md — Reject oversized capture dimensions with exact diagnostics through both CLIs\n\n**Wave 18** *(blocked on Wave 17 completion)*\n- [x] 06.4-24-PLAN.md — Refresh checker evidence with immutable source and gate provenance\n\n**Wave 19** *(blocked on Wave 18 completion)*\n- [x] 06.4-25-PLAN.md — Obtain independent code/security reviews and reconcile validation\n\n**Wave 20** *(blocked on Wave 19 completion)*\n- [x] 06.4-26-PLAN.md — Replay canonical controls, reassess and rebind the final handoff\n\n**WR-05 execution result (2026-11-01):** Plans23–26/nine tasks complete. Checker67/Ruff/35controls/clean positive pass,17original gates retained; two independent14-probe reviews and14canonical observations close G6/WR-05. Canonical human_needed9/10, final handoff structurally valid/not-ready; H1/H2 and31flags remain. Security40/44closed with4highopen at independent snapshot. Two UAT checks pending; no Phase7 advancement. Next: `$gsd-verify-work 06.4`.\n\n**WR-05 planning result (2026-11-01):** Plans 23–26 / nine tasks passed independent checking after one revision. Coverage: 11/11 requirements, 19/19 decisions. Canonical gaps_found, H1/H2, 31 flags and open security obligations remain explicit. Next: `$gsd-execute-phase 06.4 --gaps-only`.\n\n**Execution result (2026-11-01):** Plans 20–22 complete; WR-03/04 independently closed, new WR-05 remains fail-closed diagnostic gap. Canonical 8/10; security 38/41 closed with 3 high open; H1/H2 and 31 flags unresolved. Final handoff structurally valid and not ready. Next: `$gsd-plan-phase 06.4 --gaps`.\n\n**Planning result (2026-11-01):** Plans 20–22 passed the independent checker. Canonical verification remains gaps_found (8/10 merged truths): G6/WR-03/04, H1/H2 and six security obligations (five high) remain open. No phase acceptance is inferred. Next: `$gsd-execute-phase 06.4 --gaps-only`.\n\nShared-path sequencing: 01 precedes 02, then 04 (render tree/formsets); 01 precedes 05 (toggle JS);\n02 precedes 03 (clearing); 06 precedes 07 (formset JS tests). Browser 08 integrates all repairs,\n09 publishes tested contracts, and 10 records the final supported-series evidence.",
+    "stderr": ""
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "status": "invalidated-before-control-fixture-correction",
+  "accepted": false,
+  "reason": "Two historical synthetic control-template fixtures omitted the actual DELETE field required by the repaired template; all existing button-count, class and accessibility assertions are retained in the correction.",
+  "completed_failure": "django4.2-enabled-full",
+  "counts": {"passed": 7818, "failed": 2, "error": 0, "skipped": 1, "deselected": 1},
+  "owned_capture_pid": 2050755,
+  "terminated_owned_pytest_pids": [2057530, 2073255],
+  "interrupted_unclaimed": ["django5.2-enabled-full", "django6.0-enabled-full"],
+  "not_started": ["django4.2-disabled-full", "django5.2-disabled-full", "django6.0-disabled-full"],
+  "invalidation": "The fixture changes alter the source manifest. No completed or interrupted record from this attempt is reused as final current-source acceptance."
+}

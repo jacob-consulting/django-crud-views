@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="17" time="0.176" timestamp="2026-11-01T15:13:19.221333+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[False-False-False-False]" time="0.018" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[False-False-False-True]" time="0.002" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[False-False-True-False]" time="0.002"><failure message="AssertionError: assert ('cv-form-ctrl-delete' in {'cv-form-ctrl-add': {'type': 'button', 'class': 'btn btn-light cv-form-ctrl-add', 'title': 'Add row', 'data-cv-toolti... 'btn btn-light cv-form-ctrl-delete', 'data-cv-class': 'btn btn-light', 'data-cv-class-danger': 'btn btn-danger', ...}}) is ((True and False))">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7aaa05c15400&gt;
+edit_only = False, can_delete = True, can_order = False
+can_delete_extra = False
+
+    @pytest.mark.parametrize("edit_only", [False, True])
+    @pytest.mark.parametrize("can_delete", [False, True])
+    @pytest.mark.parametrize("can_order", [False, True])
+    @pytest.mark.parametrize("can_delete_extra", [False, True])
+    def test_stock_controls_render_real_formset_capabilities(monkeypatch, edit_only, can_delete, can_order, can_delete_extra):
+        # Exercise the supported optional-ordered-model configuration. The template's
+        # capability projection is independent of the startup model-ordering check.
+        monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
+        klass = type(
+            "ControlFormSet",
+            (BookFormSet,),
+            {"edit_only": edit_only, "can_delete": can_delete, "can_order": can_order, "can_delete_extra": can_delete_extra},
+        )
+        declaration = FormSet(title="Books", klass=klass)
+        runtime = klass(formset=declaration, instance=Publisher(), prefix="line-items-None-0")
+        form = runtime.empty_form
+        buttons = Buttons(
+            render_to_string(
+                "crud_views/formsets/control.html",
+                {
+                    "formset": declaration,
+                    "form": form,
+                },
+            )
+        ).buttons
+        controls = {next(c for c in button["class"].split() if c.startswith("cv-form-ctrl-")): button for button in buttons}
+        assert ("cv-form-ctrl-add" in controls) is (not edit_only)
+&gt;       assert ("cv-form-ctrl-delete" in controls) is (can_delete and can_delete_extra)
+E       AssertionError: assert ('cv-form-ctrl-delete' in {'cv-form-ctrl-add': {'type': 'button', 'class': 'btn btn-light cv-form-ctrl-add', 'title': 'Add row', 'data-cv-toolti... 'btn btn-light cv-form-ctrl-delete', 'data-cv-class': 'btn btn-light', 'data-cv-class-danger': 'btn btn-danger', ...}}) is ((True and False))
+
+tests/test1/test_formsets_controls.py:52: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[False-False-True-True]" time="0.003"><failure message="AssertionError: assert ('cv-form-ctrl-delete' in {'cv-form-ctrl-delete': {'type': 'button', 'class': 'btn btn-light cv-form-ctrl-delete', 'data-cv-class': 'btn btn-light', 'data-cv-class-danger': 'btn btn-danger', ...}}) is ((True and False))">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7aaa05c9e7e0&gt;
+edit_only = True, can_delete = True, can_order = False, can_delete_extra = False
+
+    @pytest.mark.parametrize("edit_only", [False, True])
+    @pytest.mark.parametrize("can_delete", [False, True])
+    @pytest.mark.parametrize("can_order", [False, True])
+    @pytest.mark.parametrize("can_delete_extra", [False, True])
+    def test_stock_controls_render_real_formset_capabilities(monkeypatch, edit_only, can_delete, can_order, can_delete_extra):
+        # Exercise the supported optional-ordered-model configuration. The template's
+        # capability projection is independent of the startup model-ordering check.
+        monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
+        klass = type(
+            "ControlFormSet",
+            (BookFormSet,),
+            {"edit_only": edit_only, "can_delete": can_delete, "can_order": can_order, "can_delete_extra": can_delete_extra},
+        )
+        declaration = FormSet(title="Books", klass=klass)
+        runtime = klass(formset=declaration, instance=Publisher(), prefix="line-items-None-0")
+        form = runtime.empty_form
+        buttons = Buttons(
+            render_to_string(
+                "crud_views/formsets/control.html",
+                {
+                    "formset": declaration,
+                    "form": form,
+                },
+            )
+        ).buttons
+        controls = {next(c for c in button["class"].split() if c.startswith("cv-form-ctrl-")): button for button in buttons}
+        assert ("cv-form-ctrl-add" in controls) is (not edit_only)
+&gt;       assert ("cv-form-ctrl-delete" in controls) is (can_delete and can_delete_extra)
+E       AssertionError: assert ('cv-form-ctrl-delete' in {'cv-form-ctrl-delete': {'type': 'button', 'class': 'btn btn-light cv-form-ctrl-delete', 'data-cv-class': 'btn btn-light', 'data-cv-class-danger': 'btn btn-danger', ...}}) is ((True and False))
+
+tests/test1/test_formsets_controls.py:52: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[False-True-False-False]" time="0.003" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[False-True-False-True]" time="0.002" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[False-True-True-False]" time="0.002"><failure message="AssertionError: assert ('cv-form-ctrl-delete' in {'cv-form-ctrl-up': {'type': 'button', 'class': 'btn btn-light cv-form-ctrl-up', 'title': 'Move up', 'data-cv-tooltip'... 'btn btn-light cv-form-ctrl-delete', 'data-cv-class': 'btn btn-light', 'data-cv-class-danger': 'btn btn-danger', ...}}) is ((True and False))">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7aaa05cbb860&gt;
+edit_only = False, can_delete = True, can_order = True, can_delete_extra = False
+
+    @pytest.mark.parametrize("edit_only", [False, True])
+    @pytest.mark.parametrize("can_delete", [False, True])
+    @pytest.mark.parametrize("can_order", [False, True])
+    @pytest.mark.parametrize("can_delete_extra", [False, True])
+    def test_stock_controls_render_real_formset_capabilities(monkeypatch, edit_only, can_delete, can_order, can_delete_extra):
+        # Exercise the supported optional-ordered-model configuration. The template's
+        # capability projection is independent of the startup model-ordering check.
+        monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
+        klass = type(
+            "ControlFormSet",
+            (BookFormSet,),
+            {"edit_only": edit_only, "can_delete": can_delete, "can_order": can_order, "can_delete_extra": can_delete_extra},
+        )
+        declaration = FormSet(title="Books", klass=klass)
+        runtime = klass(formset=declaration, instance=Publisher(), prefix="line-items-None-0")
+        form = runtime.empty_form
+        buttons = Buttons(
+            render_to_string(
+                "crud_views/formsets/control.html",
+                {
+                    "formset": declaration,
+                    "form": form,
+                },
+            )
+        ).buttons
+        controls = {next(c for c in button["class"].split() if c.startswith("cv-form-ctrl-")): button for button in buttons}
+        assert ("cv-form-ctrl-add" in controls) is (not edit_only)
+&gt;       assert ("cv-form-ctrl-delete" in controls) is (can_delete and can_delete_extra)
+E       AssertionError: assert ('cv-form-ctrl-delete' in {'cv-form-ctrl-up': {'type': 'button', 'class': 'btn btn-light cv-form-ctrl-up', 'title': 'Move up', 'data-cv-tooltip'... 'btn btn-light cv-form-ctrl-delete', 'data-cv-class': 'btn btn-light', 'data-cv-class-danger': 'btn btn-danger', ...}}) is ((True and False))
+
+tests/test1/test_formsets_controls.py:52: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[False-True-True-True]" time="0.002"><failure message="AssertionError: assert ('cv-form-ctrl-delete' in {'cv-form-ctrl-up': {'type': 'button', 'class': 'btn btn-light cv-form-ctrl-up', 'title': 'Move up', 'data-cv-tooltip'... 'btn btn-light cv-form-ctrl-delete', 'data-cv-class': 'btn btn-light', 'data-cv-class-danger': 'btn btn-danger', ...}}) is ((True and False))">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7aaa05cbbe30&gt;
+edit_only = True, can_delete = True, can_order = True, can_delete_extra = False
+
+    @pytest.mark.parametrize("edit_only", [False, True])
+    @pytest.mark.parametrize("can_delete", [False, True])
+    @pytest.mark.parametrize("can_order", [False, True])
+    @pytest.mark.parametrize("can_delete_extra", [False, True])
+    def test_stock_controls_render_real_formset_capabilities(monkeypatch, edit_only, can_delete, can_order, can_delete_extra):
+        # Exercise the supported optional-ordered-model configuration. The template's
+        # capability projection is independent of the startup model-ordering check.
+        monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
+        klass = type(
+            "ControlFormSet",
+            (BookFormSet,),
+            {"edit_only": edit_only, "can_delete": can_delete, "can_order": can_order, "can_delete_extra": can_delete_extra},
+        )
+        declaration = FormSet(title="Books", klass=klass)
+        runtime = klass(formset=declaration, instance=Publisher(), prefix="line-items-None-0")
+        form = runtime.empty_form
+        buttons = Buttons(
+            render_to_string(
+                "crud_views/formsets/control.html",
+                {
+                    "formset": declaration,
+                    "form": form,
+                },
+            )
+        ).buttons
+        controls = {next(c for c in button["class"].split() if c.startswith("cv-form-ctrl-")): button for button in buttons}
+        assert ("cv-form-ctrl-add" in controls) is (not edit_only)
+&gt;       assert ("cv-form-ctrl-delete" in controls) is (can_delete and can_delete_extra)
+E       AssertionError: assert ('cv-form-ctrl-delete' in {'cv-form-ctrl-up': {'type': 'button', 'class': 'btn btn-light cv-form-ctrl-up', 'title': 'Move up', 'data-cv-tooltip'... 'btn btn-light cv-form-ctrl-delete', 'data-cv-class': 'btn btn-light', 'data-cv-class-danger': 'btn btn-danger', ...}}) is ((True and False))
+
+tests/test1/test_formsets_controls.py:52: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[True-False-False-False]" time="0.004" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[True-False-False-True]" time="0.001" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[True-False-True-False]" time="0.001" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[True-False-True-True]" time="0.001" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[True-True-False-False]" time="0.001" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[True-True-False-True]" time="0.001" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[True-True-True-False]" time="0.001" /><testcase classname="tests.test1.test_formsets_controls" name="test_stock_controls_render_real_formset_capabilities[True-True-True-True]" time="0.001" /><testcase classname="tests.test1.test_formsets_controls" name="test_formset_declaration_keys_keep_existing_grammar" time="0.001" /></testsuite></testsuites>

@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from types import SimpleNamespace
 
+import pytest
 from django import forms
 from django.forms.models import inlineformset_factory
 
@@ -265,7 +266,7 @@ def test_purge_conflict_message_formatting():
     msgs = _conditional_messages(
         nested_conditionals=[],
         missing_toggles=[],
-        non_nullable_clears=[],
+        unsupported_clears=[],
         purge_conflicts=[("items", "can_delete=False")],
     )
     assert any(m.id == "crud_views.W321" for m in msgs)
@@ -275,7 +276,7 @@ def test_nested_conditional_formset_flagged():
     msgs = _conditional_messages(
         nested_conditionals=[("child", ConditionalFormSet(toggle=ModelFieldToggle("x")))],
         missing_toggles=[],
-        non_nullable_clears=[],
+        unsupported_clears=[],
     )
     assert any(m.id == "crud_views.E310" for m in msgs)
 
@@ -284,18 +285,18 @@ def test_missing_toggle_field_flagged():
     msgs = _conditional_messages(
         nested_conditionals=[],
         missing_toggles=[("SomeForm", "with_x")],
-        non_nullable_clears=[],
+        unsupported_clears=[],
     )
     assert any(m.id == "crud_views.E311" for m in msgs)
 
 
-def test_non_nullable_clear_warned():
+def test_unsupported_clear_is_configuration_error():
     msgs = _conditional_messages(
         nested_conditionals=[],
         missing_toggles=[],
-        non_nullable_clears=[("SomeForm", "email")],
+        unsupported_clears=[("SomeForm", "enabled", "email")],
     )
-    assert any(m.id == "crud_views.W320" for m in msgs)
+    assert any(m.id == "crud_views.E312" and "empty_values" in m.hint for m in msgs)
 
 
 # ── registry-level branches, run against an isolated fake registry ────────────
@@ -369,14 +370,12 @@ class _NonNullableClearGroupForm(forms.ModelForm):
         fields = ["name", "email", "with_contact"]
 
 
-def test_group_clearing_non_nullable_field_warns_w320_and_skips_unknown_fields(monkeypatch):
-    """`name` is NOT NULL → W320; `email` is null+blank → fine; `no_such_field`
-    is not a model field → skipped rather than crashing the check."""
+def test_unsupported_nonblank_text_errors_and_skips_unknown_fields(monkeypatch):
     messages = _run_check_with(monkeypatch, _NonNullableClearGroupForm)
-    w320 = [m for m in messages if m.id == "crud_views.W320"]
-    assert len(w320) == 1, messages
-    assert "name" in w320[0].msg, messages
-    assert not any("email" in m.msg or "no_such_field" in m.msg for m in w320), messages
+    errors = [m for m in messages if m.id == "crud_views.E312"]
+    assert len(errors) == 1, messages
+    assert "name" in errors[0].msg and "with_contact" in errors[0].msg, messages
+    assert not any(m.id == "crud_views.W320" for m in messages)
 
 
 def test_group_field_with_empty_value_does_not_warn_w320(monkeypatch):
@@ -391,3 +390,99 @@ def test_group_field_with_empty_value_does_not_warn_w320(monkeypatch):
 
     messages = _run_check_with(monkeypatch, _Form)
     assert not [m for m in messages if m.id == "crud_views.W320"], messages
+
+
+def test_inline_namespaces_and_nested_custom_classes_are_independent(monkeypatch):
+    class Main(ConditionalGroupFormMixin, forms.Form):
+        main_only = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(UIFieldToggle("main_injected"), ["main_only"])]
+
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("startup must not instantiate forms")
+
+    class ValidInline(ConditionalGroupFormMixin, forms.Form):
+        inline_toggle = forms.BooleanField(required=False)
+        inline_only = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("inline_toggle"), ["inline_only"])]
+
+    class InvalidInline(ConditionalGroupFormMixin, forms.Form):
+        unsupported = forms.JSONField()
+        cv_conditional_groups = [
+            ConditionalGroup(ModelFieldToggle("main_only"), ["unsupported"]),
+            ConditionalGroup(ModelFieldToggle("main_injected"), []),
+            ConditionalGroup(ModelFieldToggle("inline_toggle"), []),
+        ]
+
+    def declaration(form_class, children=None):
+        # A real native custom formset subclass, not the library's InlineFormSet.
+        class Custom(forms.BaseInlineFormSet):
+            form = form_class
+            can_delete = True
+            edit_only = False
+
+        return SimpleNamespace(klass=Custom, children=children or {}, conditional=None)
+
+    first = declaration(ValidInline, {"nested": declaration(InvalidInline)})
+    second = declaration(InvalidInline)
+    for declarations in ({"first": first, "second": second}, {"second": second, "first": first}):
+        messages = _run_check_with(monkeypatch, Main, declarations)
+        e311 = [m for m in messages if m.id == "crud_views.E311"]
+        assert len(e311) == 3, messages
+        assert all("InvalidInline" in m.msg for m in e311)
+        assert all(any(name in m.msg for m in e311) for name in ("main_only", "main_injected", "inline_toggle"))
+        e312 = [m for m in messages if m.id == "crud_views.E312"]
+        assert len(e312) == 1, messages
+        assert all(name in e312[0].msg for name in ("InvalidInline", "main_only", "unsupported"))
+
+
+@pytest.mark.parametrize("empty", [False, None, "", []])
+def test_custom_field_explicit_falsy_override_resolves_static_error(monkeypatch, empty):
+    class Custom(forms.CharField):
+        pass
+
+    class CustomForm(ConditionalGroupFormMixin, forms.Form):
+        value = Custom()
+        cv_conditional_groups = [ConditionalGroup(UIFieldToggle("enabled"), ["value"])]
+
+    messages = _run_check_with(monkeypatch, CustomForm)
+    assert len([m for m in messages if m.id == "crud_views.E312"]) == 1
+    CustomForm.cv_conditional_groups[0].empty_values["value"] = empty
+    assert _run_check_with(monkeypatch, CustomForm) == []
+
+
+def test_supported_model_pairs_and_disabled_custom_field_have_no_warning(monkeypatch):
+    from tests.test1.app.models import ConditionalPersistenceRecord
+
+    class Supported(ConditionalGroupFormMixin, forms.ModelForm):
+        protected = forms.JSONField(disabled=True)
+        cv_conditional_groups = [
+            ConditionalGroup(UIFieldToggle("enabled"), ["flag", "blank_text", "tags", "protected"])
+        ]
+
+        class Meta:
+            model = ConditionalPersistenceRecord
+            fields = ["flag", "blank_text", "tags"]
+
+    assert _run_check_with(monkeypatch, Supported) == []
+
+
+@pytest.mark.parametrize("name", ["parent", "number", "blank_text"])
+def test_unsupported_model_pair_uses_shared_resolver(monkeypatch, name):
+    from tests.test1.app.models import ConditionalPersistenceRecord
+
+    class CustomModelField(forms.CharField):
+        pass
+
+    class Unsupported(ConditionalGroupFormMixin, forms.ModelForm):
+        cv_conditional_groups = [ConditionalGroup(UIFieldToggle("enabled"), [name])]
+
+        class Meta:
+            model = ConditionalPersistenceRecord
+            fields = [name]
+
+    if name == "number":
+        monkeypatch.setattr(ConditionalPersistenceRecord._meta.get_field(name), "null", False)
+    elif name == "blank_text":
+        Unsupported.base_fields[name] = CustomModelField()
+    messages = _run_check_with(monkeypatch, Unsupported)
+    assert len([m for m in messages if m.id == "crud_views.E312" and name in m.msg]) == 1

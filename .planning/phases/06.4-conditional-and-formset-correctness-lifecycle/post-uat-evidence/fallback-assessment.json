@@ -1,0 +1,843 @@
+{
+  "actor": "/root/verify_64_final",
+  "recorded": "2026-11-02T07:23:49Z",
+  "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+  "purpose": "Independent per-ID assessment against authored Phase06.4 requirements and D-01–D-19; original flags preserved. Recommendations are evidence-based scoped dispositions, not a scope waiver or a claim that a historical skipped probe ran.",
+  "scope_rule": "GAP-COVERAGE explicitly binds generic detector language to existing locked scope and disclaims distributed locking/new PK support. The unclassified COND-03 prompt is expressly not a backstop truth. Evidence below establishes the actual contract; broader guarantees remain unproven and are not phase requirements.",
+  "evidence_provenance": "24 results are actual retained/fresh executions validated by this verifier against current source; verifier-checks records three fresh named transition tests plus current aggregate/handoff and historical replay validation. H1/H2 are actual attributed user responses in UAT, not verifier-generated approval.",
+  "summary": {
+    "total": 31,
+    "scoped_verified": 31,
+    "required_behavior_missing": 0,
+    "original_flagged_unresolved": 31,
+    "recommended_handoff_verified": 31
+  },
+  "items": [
+    {
+      "id": 1,
+      "requirement": "AUTH-02",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "A19 only: existing per-request authorization/ancestry and atomic boundaries; repeated/interleaved requests remain isolated (12/16/18), no new concurrency API.",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_parent_ownership_change_applies_on_next_request"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "A19 request authorization and ancestry are re-evaluated on each request; mutable declaration trees are cloned per view.",
+      "context": "A19 request authorization and ancestry are re-evaluated on each request; mutable declaration trees are cloned per view. Limits: Parallel transaction serialization and isolation-level guarantees are not authored requirements.",
+      "implementation": "formsets/formsets.py:539; formsets/mixins.py:49",
+      "unsupported_expansion_or_limit": "Parallel transaction serialization and isolation-level guarantees are not authored requirements.",
+      "required_missing_property": null
+    },
+    {
+      "id": 2,
+      "requirement": "COND-01",
+      "category": "boundary",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Zero, one and multiple matches retain or recover the correct local owned state.",
+      "context": "Zero, one and multiple matches retain or recover the correct local owned state.",
+      "implementation": "js/toggle.js:23,137",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 3,
+      "requirement": "COND-01",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js binds sibling and nested row prefixes independently despite shared suffixes"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Adjacent sibling/nested prefixes and other forms do not supply a fallback match.",
+      "context": "Adjacent sibling/nested prefixes and other forms do not supply a fallback match.",
+      "implementation": "js/toggle.js:23",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 4,
+      "requirement": "COND-01",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js includes an Element root and retries late checkboxes without duplicate handlers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Missing checkbox leaves an unbound group untouched and later unique binding retries.",
+      "context": "Missing checkbox leaves an unbound group untouched and later unique binding retries.",
+      "implementation": "js/toggle.js:148,156",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 5,
+      "requirement": "COND-01",
+      "category": "encoding",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js supports DocumentFragments and names containing selector punctuation"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bound names are escaped at rendering and compared as literal DOM data.",
+      "context": "Bound names are escaped at rendering and compared as literal DOM data. Limits: No normalization or arbitrary encoding-conversion guarantee is introduced.",
+      "implementation": "conditional/layout.py:29; conditional/toggle_group.html:5; js/toggle.js:27",
+      "unsupported_expansion_or_limit": "No normalization or arbitrary encoding-conversion guarantee is introduced.",
+      "required_missing_property": null
+    },
+    {
+      "id": 6,
+      "requirement": "COND-01",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js does not bind by suffix or to a checkbox owned by another form"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Binding uses exact owner/name equality rather than document position or suffix.",
+      "context": "Binding uses exact owner/name equality rather than document position or suffix.",
+      "implementation": "js/toggle.js:23",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 7,
+      "requirement": "COND-01",
+      "category": "precision",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js finds the checkbox by its exact bound name"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Identity is a string comparison; no numeric conversion or rounding occurs in toggle matching.",
+      "context": "Identity is a string comparison; no numeric conversion or rounding occurs in toggle matching. Limits: Numeric-range rounding/overflow APIs are inapplicable to this string identity contract.",
+      "implementation": "js/toggle.js:27",
+      "unsupported_expansion_or_limit": "Numeric-range rounding/overflow APIs are inapplicable to this string identity contract.",
+      "required_missing_property": null
+    },
+    {
+      "id": 8,
+      "requirement": "COND-02",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership composes nested owners in inner-first order and retains baseline"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Every ancestor contributes disabled ownership; unrelated groups remain independent.",
+      "context": "Every ancestor contributes disabled ownership; unrelated groups remain independent.",
+      "implementation": "js/toggle.js:99",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 9,
+      "requirement": "COND-02",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js does not let an unresolved nested group bypass its bound ancestor"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Unresolved groups do not invent a state or release an enclosing disabled owner.",
+      "context": "Unresolved groups do not invent a state or release an enclosing disabled owner. Limits: Empty DOM/control collections are harmless iteration inputs, not a promised synthetic state.",
+      "implementation": "js/toggle.js:88,103",
+      "unsupported_expansion_or_limit": "Empty DOM/control collections are harmless iteration inputs, not a promised synthetic state.",
+      "required_missing_property": null
+    },
+    {
+      "id": 10,
+      "requirement": "COND-02",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership composes nested owners in outer-first order and retains baseline"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Both nesting orders preserve baseline and unsaved entries; own temporary writes are not recaptured.",
+      "context": "Both nesting orders preserve baseline and unsaved entries; own temporary writes are not recaptured.",
+      "implementation": "js/toggle.js:78,135",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 11,
+      "requirement": "COND-03",
+      "category": "unclassified",
+      "status": "flagged-unresolved",
+      "contract": "UNCLASSIFIED flagged assumption: locked cancellable native reset after default action, scoped owning form, dynamic management preserved; retained05/14/16/18 prove concrete contract; no inferred new reset policy.",
+      "evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "stock:native-reset-user-cancelled"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Native reset waits until default action, observes cancellation, scopes the form and retains management rows.",
+      "context": "Native reset waits until default action, observes cancellation, scopes the form and retains management rows. Limits: Unclassified is a manual-review prompt, not an additional backstop requirement; H1 confirms actual reset usability.",
+      "implementation": "js/toggle.js:121",
+      "unsupported_expansion_or_limit": "Unclassified is a manual-review prompt, not an additional backstop requirement; H1 confirms actual reset usability.",
+      "required_missing_property": null
+    },
+    {
+      "id": 12,
+      "requirement": "COND-04",
+      "category": "idempotency",
+      "status": "flagged-unresolved",
+      "contract": "Retain native repeated-save/file-reference/M2M behavior and routed atomic rollback; consuming-application storage hooks remain H2 scope (retained02;18/19).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_revalidation_keeps_the_persisted_change_until_saved"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Repeated validation preserves the effective existing-row change; already-empty relationships do not force save.",
+      "context": "Repeated validation preserves the effective existing-row change; already-empty relationships do not force save. Limits: Not an exactly-once custom save-hook guarantee. H2 explicitly accepts native storage-reference limits.",
+      "implementation": "conditional/group.py:152,169; formsets/render_tree.py:333",
+      "unsupported_expansion_or_limit": "Not an exactly-once custom save-hook guarantee. H2 explicitly accepts native storage-reference limits.",
+      "required_missing_property": null
+    },
+    {
+      "id": 13,
+      "requirement": "COND-04",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Retain native repeated-save/file-reference/M2M behavior and routed atomic rollback; consuming-application storage hooks remain H2 scope (retained02;18/19).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_formset.py::test_purge_rolls_back_when_sibling_formset_save_fails"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Existing routed atomic save protects main/purge/sibling effects from partial failure.",
+      "context": "Existing routed atomic save protects main/purge/sibling effects from partial failure. Limits: No simultaneous-writer conflict resolution promised; custom storage hooks remain outside H2's accepted native-reference contract.",
+      "implementation": "formsets/mixins.py:114",
+      "unsupported_expansion_or_limit": "No simultaneous-writer conflict resolution promised; custom storage hooks remain outside H2's accepted native-reference contract.",
+      "required_missing_property": null
+    },
+    {
+      "id": 14,
+      "requirement": "COND-05",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_checks.py::test_inline_namespaces_and_nested_custom_classes_are_independent"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Main/inline/nested declaration namespaces remain independent and unsupported fields are diagnosed locally.",
+      "context": "Main/inline/nested declaration namespaces remain independent and unsupported fields are diagnosed locally.",
+      "implementation": "checks.py:134,146",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 15,
+      "requirement": "COND-05",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_checks.py::test_custom_field_explicit_falsy_override_resolves_static_error[False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_checks.py::test_custom_field_explicit_falsy_override_resolves_static_error[None]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_checks.py::test_custom_field_explicit_falsy_override_resolves_static_error[]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Explicit falsy values are detected by key membership; unsupported automatic empty values fail descriptively.",
+      "context": "Explicit falsy values are detected by key membership; unsupported automatic empty values fail descriptively.",
+      "implementation": "conditional/group.py:17,74",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 16,
+      "requirement": "COND-05",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_model_clean_sees_final_state_and_blocks_persistence"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Resolved state precedes inherited model validation; nonfield/model invariants can reject it.",
+      "context": "Resolved state precedes inherited model validation; nonfield/model invariants can reject it.",
+      "implementation": "conditional/group.py:140,163,184",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 17,
+      "requirement": "FSET-01",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-identity-siblings]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Sibling or child cleaning cannot erase row-policy rejection before the write branch.",
+      "context": "Sibling or child cleaning cannot erase row-policy rejection before the write branch.",
+      "implementation": "formsets/render_tree.py:202; formsets/formsets.py:379",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 18,
+      "requirement": "FSET-01",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_permitted_new_rows_save_with_blank_id[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_permitted_new_rows_save_with_blank_id[native]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Legitimate blank-ID new rows remain valid; nonblank edit-only extras reject before saving.",
+      "context": "Legitimate blank-ID new rows remain valid; nonblank edit-only extras reject before saving. Limits: Blank extras and inactive skip/purge retain their separate policies.",
+      "implementation": "formsets/render_tree.py:227,247",
+      "unsupported_expansion_or_limit": "Blank extras and inactive skip/purge retain their separate policies.",
+      "required_missing_property": null
+    },
+    {
+      "id": 19,
+      "requirement": "FSET-01",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-identity-siblings]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Both aggregate traversals precede the write branch; later cleaning errors are recollected.",
+      "context": "Both aggregate traversals precede the write branch; later cleaning errors are recollected.",
+      "implementation": "formsets/formsets.py:379; formsets/mixins.py:103",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 20,
+      "requirement": "FSET-01",
+      "category": "idempotency",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_preserves_native_and_custom_nonform_errors[package-custom_clean]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_preserves_native_and_custom_nonform_errors[package-too_few_forms]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_preserves_native_and_custom_nonform_errors[native-custom_clean]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Recleaning reinstates mandatory errors without discarding or multiplying native/custom errors.",
+      "context": "Recleaning reinstates mandatory errors without discarding or multiplying native/custom errors.",
+      "implementation": "formsets/render_tree.py:202,257",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 21,
+      "requirement": "FSET-01",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_authorized_membership_uses_queryset_database[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_authorized_membership_uses_queryset_database[native]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Policy is per-bound-tree, rechecked against its authorized selected-database queryset before saving.",
+      "context": "Policy is per-bound-tree, rechecked against its authorized selected-database queryset before saving. Limits: Database-wide concurrent edit serialization is not promised by FSET-01.",
+      "implementation": "formsets/render_tree.py:223; formsets/mixins.py:114",
+      "unsupported_expansion_or_limit": "Database-wide concurrent edit serialization is not promised by FSET-01.",
+      "required_missing_property": null
+    },
+    {
+      "id": 22,
+      "requirement": "FSET-02",
+      "category": "idempotency",
+      "status": "flagged-unresolved",
+      "contract": "Repeated initialization, interleaved modal/row lifecycle and single event ownership remain form-scoped; stable bound capability independent of display order (13/14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js CrudViewsFormset initializes same-prefix forms repeatedly through automatic page and modal events"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Repeated page/modal/root initialization creates one controller and one action binding per owning form.",
+      "context": "Repeated page/modal/root initialization creates one controller and one action binding per owning form.",
+      "implementation": "js/formset.js:507,602",
+      "unsupported_expansion_or_limit": "",
+      "required_missing_property": null
+    },
+    {
+      "id": 23,
+      "requirement": "FSET-02",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Repeated initialization, interleaved modal/row lifecycle and single event ownership remain form-scoped; stable bound capability independent of display order (13/14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/modal.test.js::modal focus lifecycle cancels a pending visible replacement on completed hide before body"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Interleaved page/modal lifecycles remain isolated and modal session cancellation prevents stale replacement.",
+      "context": "Interleaved page/modal lifecycles remain isolated and modal session cancellation prevents stale replacement. Limits: No new concurrent Add request queue or network race API is specified; existing synchronous formset fragment behavior is retained.",
+      "implementation": "js/formset.js:507,621; js/modal.js",
+      "unsupported_expansion_or_limit": "No new concurrent Add request queue or network race API is specified; existing synchronous formset fragment behavior is retained.",
+      "required_missing_property": null
+    },
+    {
+      "id": 24,
+      "requirement": "FSET-03",
+      "category": "boundary",
+      "status": "flagged-unresolved",
+      "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_uuid_second_child_fragment_posts_to_its_emitted_parent[saved]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_uuid_second_child_fragment_posts_to_its_emitted_parent[extra]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_uuid_second_child_fragment_posts_to_its_emitted_parent[create]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Saved/unsaved integer and UUID parents plus non-first/deeper siblings round-trip exact coordinates.",
+      "context": "Saved/unsaved integer and UUID parents plus non-first/deeper siblings round-trip exact coordinates. Limits: Only the declared integer/UUID protocol; custom/slug identities remain excluded.",
+      "implementation": "formsets/formsets.py:455,528",
+      "unsupported_expansion_or_limit": "Only the declared integer/UUID protocol; custom/slug identities remain excluded.",
+      "required_missing_property": null
+    },
+    {
+      "id": 25,
+      "requirement": "FSET-03",
+      "category": "precision",
+      "status": "flagged-unresolved",
+      "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_multi_digit_integer_pks_round_trip_and_truncated_pks_are_rejected"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Identity grammar and native PK conversion retain complete multi-digit/UUID identities; bound row indices reject unsafe integers.",
+      "context": "Identity grammar and native PK conversion retain complete multi-digit/UUID identities; bound row indices reject unsafe integers. Limits: No arbitrary custom-PK/backend or unbounded JavaScript-index guarantee.",
+      "implementation": "formsets/formsets.py:508,515; js/formset.js:10",
+      "unsupported_expansion_or_limit": "No arbitrary custom-PK/backend or unbounded JavaScript-index guarantee.",
+      "required_missing_property": null
+    },
+    {
+      "id": 26,
+      "requirement": "FSET-03",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_revoked_guardian_grant_denies_next_fragment[False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_revoked_guardian_grant_denies_next_fragment[True]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Authorization changes affect the next fragment; sibling requests cannot borrow a different ancestor.",
+      "context": "Authorization changes affect the next fragment; sibling requests cannot borrow a different ancestor. Limits: No cross-request locking/atomic snapshot guarantee is added to A19.",
+      "implementation": "formsets/formsets.py:492; formsets/mixins.py:49",
+      "unsupported_expansion_or_limit": "No cross-request locking/atomic snapshot guarantee is added to A19.",
+      "required_missing_property": null
+    },
+    {
+      "id": 27,
+      "requirement": "LIFE-01",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
+      "evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "native:lifecycle"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Stock/native adjacent forms and nested controls have actual browser evidence and accepted human usability.",
+      "context": "Stock/native adjacent forms and nested controls have actual browser evidence and accepted human usability. Limits: Chrome/Orca versions and distribution unspecified; no physical-device certification.",
+      "implementation": "tests/browser/conditional-formsets.cjs; 06.4-UAT.md",
+      "unsupported_expansion_or_limit": "Chrome/Orca versions and distribution unspecified; no physical-device certification.",
+      "required_missing_property": null
+    },
+    {
+      "id": 28,
+      "requirement": "LIFE-01",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
+      "evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "native:gap-capability"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Empty collection, missing/late binding and optional DELETE lifecycle are exercised in both hosts.",
+      "context": "Empty collection, missing/late binding and optional DELETE lifecycle are exercised in both hosts. Limits: Native screenshots remain empty; actual native human evaluation is recorded.",
+      "implementation": "tests/browser/conditional-formsets.cjs; 06.4-UAT.md",
+      "unsupported_expansion_or_limit": "Native screenshots remain empty; actual native human evaluation is recorded.",
+      "required_missing_property": null
+    },
+    {
+      "id": 29,
+      "requirement": "LIFE-01",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
+      "evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "native:native-reset-user-default"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Reset/default/cancellation, modal replacement, submission order and focus are exercised and human accepted.",
+      "context": "Reset/default/cancellation, modal replacement, submission order and focus are exercised and human accepted. Limits: Human acceptance supplements automated records; no fabricated fresh capture.",
+      "implementation": "js/modal.js:227; 06.4-UAT.md",
+      "unsupported_expansion_or_limit": "Human acceptance supplements automated records; no fabricated fresh capture.",
+      "required_missing_property": null
+    },
+    {
+      "id": 30,
+      "requirement": "LIFE-02",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Missing evidence/runtime and malformed/encoded records fail explicitly; complete docs/projection and escaping contracts remain (15/17/18/19).",
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Missing required records/runtime and malformed packets fail closed; required public docs/projection are present.",
+      "context": "Missing required records/runtime and malformed packets fail closed; required public docs/projection are present. Limits: All67 named self-tests and35 controls are retained actual executions; no new run asserted.",
+      "implementation": "15-evidence/run.py:675,1152,1172; test_runner.py",
+      "unsupported_expansion_or_limit": "All67 named self-tests and35 controls are retained actual executions; no new run asserted.",
+      "required_missing_property": null
+    },
+    {
+      "id": 31,
+      "requirement": "LIFE-02",
+      "category": "encoding",
+      "status": "flagged-unresolved",
+      "contract": "Missing evidence/runtime and malformed/encoded records fail explicitly; complete docs/projection and escaping contracts remain (15/17/18/19).",
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged.",
+      "original_status": "flagged-unresolved",
+      "assessment": "verified-within-authored-scope",
+      "recommended_handoff_status": "verified",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Strict JSON decoding rejects duplicate/malformed records; DOM names and rendered projection remain escaped/literal.",
+      "context": "Strict JSON decoding rejects duplicate/malformed records; DOM names and rendered projection remain escaped/literal. Limits: No arbitrary Unicode normalization contract; exact encoded inputs and public escaping are the bounded claim.",
+      "implementation": "15-evidence/run.py:194; conditional/toggle_group.html",
+      "unsupported_expansion_or_limit": "No arbitrary Unicode normalization contract; exact encoded inputs and public escaping are the bounded claim.",
+      "required_missing_property": null
+    }
+  ],
+  "handoff_instructions": "Preserve every original id/requirement/category/contract/status/evidence in history or original_status before applying recommended status. Attribute each current disposition to this actor/time/source and response/context, bind evidence_files to this assessment, verifier-checks.json and results.json (plus UAT for IDs11–13/27–29). This recommendation is independent verification of the scoped contract, not user acceptance of new scope. Do not change original records or old helper."
+}

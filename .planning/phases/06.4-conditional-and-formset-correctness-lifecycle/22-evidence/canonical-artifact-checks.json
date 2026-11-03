@@ -1,0 +1,1441 @@
+[
+  {
+    "plan": "06.4-01-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 9,
+      "total": 9,
+      "artifacts": [
+        {
+          "path": "src/crud_views/lib/conditional/layout.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/static/crud_views/js/toggle.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/templates/crud_views/conditional/toggle_group.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_layout.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/js/toggle.test.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/lib/formsets/formsets.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/lib/formsets/render_tree.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/templates/crud_views/formsets/formsets.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_formset.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-01-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "src/crud_views/lib/conditional/layout.py",
+          "to": "src/crud_views/static/crud_views/js/toggle.js",
+          "via": "cv_toggle_field -> cv-data-toggle-field exact bound-name matching",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "src/crud_views/lib/formsets/formsets.py",
+          "to": "src/crud_views/lib/formsets/render_tree.py",
+          "via": "FormSet.init owning form -> cv_bound_toggle_field -> template projection",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-02-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 5,
+      "total": 5,
+      "artifacts": [
+        {
+          "path": "src/crud_views/lib/formsets/render_tree.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/lib/conditional/group.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/app/models.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_persistence.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_group.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-02-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 3,
+      "links": [
+        {
+          "from": "src/crud_views/lib/conditional/group.py",
+          "to": "src/crud_views/lib/formsets/render_tree.py",
+          "via": "private _cv_conditional_requires_save state augments the existing-row save predicate after full validation",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "src/crud_views/lib/conditional/group.py",
+          "to": "Django ModelForm._post_clean",
+          "via": "resolved scalar/file state applied before inherited construction/model validation",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "src/crud_views/lib/conditional/group.py",
+          "to": "Django save_m2m",
+          "via": "M2M cleaned_data uses existing relation persistence",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-03-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 5,
+      "total": 5,
+      "artifacts": [
+        {
+          "path": "src/crud_views/checks.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/lib/conditional/group.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_checks.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_persistence.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_group.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-03-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 1,
+      "links": [
+        {
+          "from": "src/crud_views/checks.py",
+          "to": "src/crud_views/lib/conditional/group.py",
+          "via": "same resolve_conditional_empty_value result for static and runtime validation",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-04-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 5,
+      "total": 5,
+      "artifacts": [
+        {
+          "path": "src/crud_views/lib/formsets/render_tree.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/lib/formsets/formsets.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_formsets_policy.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_formsets_validation_gate.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_formset.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-04-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "src/crud_views/lib/formsets/render_tree.py",
+          "to": "src/crud_views/lib/formsets/formsets.py",
+          "via": "mandatory policy errors feed both passes of all_valid before cv_form_valid",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "src/crud_views/lib/formsets/formsets.py",
+          "to": "src/crud_views/lib/formsets/mixins.py",
+          "via": "all_valid rejects before routed atomic save entry",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-05-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 2,
+      "total": 2,
+      "artifacts": [
+        {
+          "path": "src/crud_views/static/crud_views/js/toggle.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/js/toggle.test.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-05-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "src/crud_views/static/crud_views/js/toggle.js",
+          "to": "HTML form controls",
+          "via": "external disabled mutations + inactive ancestor owners -> effective property",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "src/crud_views/static/crud_views/js/toggle.js",
+          "to": "src/crud_views/static/crud_views/js/modal.js",
+          "via": "loaded synchronization precedes existing replacement-focus recovery",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-06-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 7,
+      "total": 7,
+      "artifacts": [
+        {
+          "path": "tests/test1/test_formsets_controls.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/static/crud_views/js/formset.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/templates/crud_views/formsets/control.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/js/formset.test.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/static/crud_views/js/modal.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/js/modal.test.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/js/helpers/dom.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-06-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "src/crud_views/static/crud_views/js/formset.js",
+          "to": "src/crud_views/static/crud_views/js/modal.js",
+          "via": "form submit reorder -> document submit FormData, honoring defaultPrevented",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "src/crud_views/templates/crud_views/formsets/control.html",
+          "to": "src/crud_views/static/crud_views/js/formset.js",
+          "via": "each formset edit_only/capability flags govern stock and custom native buttons",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-07-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 4,
+      "total": 4,
+      "artifacts": [
+        {
+          "path": "src/crud_views/lib/formsets/formsets.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_fragment_authorization.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/templates/crud_views/formsets/formset.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/js/formset.test.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-07-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "src/crud_views/lib/formsets/formsets.py",
+          "to": "src/crud_views/templates/crud_views/formsets/formset.html",
+          "via": "selected declaration index -> fragment rows/prefix markup",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "src/crud_views/static/crud_views/js/formset.js",
+          "to": "src/crud_views/lib/formsets/mixins.py",
+          "via": "unchanged request coordinates -> authorized fragment -> management POST",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-08-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 8,
+      "total": 8,
+      "artifacts": [
+        {
+          "path": "tests/browser/conditional-formsets.cjs",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/browser/conditional_formsets_server.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/browser/templates/conditional_formsets/page.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/08-browser-results.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/browser/templates/conditional_formsets/native_toggle_group.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/browser/templates/conditional_formsets/native_formsets.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/browser/templates/conditional_formsets/native_formset.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/browser/templates/conditional_formsets/native_control.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-08-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 1,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "tests/browser/conditional-formsets.cjs",
+          "to": "tests/browser/conditional_formsets_server.py",
+          "via": "owned fixture process -> actual CSRF/session HTTP -> source-bound assertions",
+          "verified": true,
+          "detail": "Target referenced in source"
+        },
+        {
+          "from": "tests/browser/templates/conditional_formsets/native_formset.html",
+          "to": "src/crud_views/static/crud_views/js/formset.js",
+          "via": "documented semantic projection -> real action lifecycle",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-09-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 8,
+      "total": 8,
+      "artifacts": [
+        {
+          "path": "examples/bootstrap5/conditional/models.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "docs/reference/conditional.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "docs/reference/formsets.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "docs/reference/javascript.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_migration_docs.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "CHANGELOG.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "docs/migrating-1.0.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-PUBLIC-SURFACE.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-09-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "docs/reference/conditional.md",
+          "to": "tests/test1/test_conditional_migration_docs.py",
+          "via": "actual fenced recipe -> rendered/persisted behavior",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "docs/reference/formsets.md",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-PUBLIC-SURFACE.md",
+          "via": "explicit projection and supported initializer inventory -> Phase 7",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-10-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 7,
+      "total": 7,
+      "artifacts": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/10-evidence/run.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/10-evidence/results.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/10-evidence/source-manifest.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-MATRIX.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-ACCEPTANCE.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-10-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "10-evidence/run.py",
+          "to": "10-evidence/results.json",
+          "via": "subprocess statuses/test totals/runtime versions/source hashes -> validation",
+          "verified": false,
+          "detail": "Source file not found (from: must be a relative file path; describe components/endpoints in via:)"
+        },
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-ACCEPTANCE.md",
+          "to": ".planning/phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md",
+          "via": "successful A19 evidence qualifies only that handoff",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-11-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 3,
+      "total": 3,
+      "artifacts": [
+        {
+          "path": "src/crud_views/lib/formsets/render_tree.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_formsets_policy.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_formsets_validation_gate.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-11-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "src/crud_views/lib/formsets/render_tree.py",
+          "to": "src/crud_views/lib/formsets/formsets.py",
+          "via": "XFormSet.is_valid traversed on both aggregate passes",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "src/crud_views/lib/formsets/formsets.py",
+          "to": "src/crud_views/lib/formsets/mixins.py",
+          "via": "all_valid rejection precedes cv_form_valid saves",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-12-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 4,
+      "total": 4,
+      "artifacts": [
+        {
+          "path": "tests/js-integration/formset.test.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "vitest.integration.config.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/js/runtime-contract.test.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "package.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-12-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 0,
+    "data": {
+      "all_verified": true,
+      "verified": 2,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "package.json",
+          "to": "vitest.integration.config.js",
+          "via": "mandatory test:integration command",
+          "verified": true,
+          "detail": "Target referenced in source"
+        },
+        {
+          "from": "tests/js-integration/formset.test.js",
+          "to": "tests/test1/test_fragment_authorization.py",
+          "via": "CV_FRAGMENT_DRIVER/CV_FRAGMENT_NODE/CV_FRAGMENT_RESULTS actual round trip",
+          "verified": true,
+          "detail": "Target referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-13-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 3,
+      "total": 3,
+      "artifacts": [
+        {
+          "path": "src/crud_views/static/crud_views/js/formset.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "src/crud_views/templates/crud_views/formsets/control.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/js/helpers/dom.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-13-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 1,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "src/crud_views/templates/crud_views/formsets/control.html",
+          "to": "src/crud_views/static/crud_views/js/formset.js",
+          "via": "native DELETE availability plus stable prefix/INITIAL_FORMS capability",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "tests/js-integration/formset.test.js",
+          "to": "tests/test1/test_fragment_authorization.py",
+          "via": "actual rendered capability markup and POST round trip",
+          "verified": true,
+          "detail": "Target referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-14-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 2,
+      "total": 2,
+      "artifacts": [
+        {
+          "path": "src/crud_views/static/crud_views/js/toggle.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/js/toggle.test.js",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-14-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 1,
+      "links": [
+        {
+          "from": "src/crud_views/static/crud_views/js/toggle.js",
+          "to": "tests/js/toggle.test.js",
+          "via": "cv.initConditional drives DOM state, native checkValidity and FormData",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-15-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 2,
+      "total": 2,
+      "artifacts": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-15-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 1,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "to": "vitest.integration.config.js",
+          "via": "separate required integration command with explicit CV_FRAGMENT_PYTHON",
+          "verified": true,
+          "detail": "Target referenced in source"
+        },
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+          "via": "capture/check against output-adjacent manifest and effective runtime contracts",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-16-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 4,
+      "total": 4,
+      "artifacts": [
+        {
+          "path": "tests/browser/conditional-formsets.cjs",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/browser/templates/conditional_formsets/page.html",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/16-evidence/capability.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/16-evidence/ambiguity.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-16-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "tests/browser/conditional_formsets_server.py",
+          "to": "tests/browser/conditional-formsets.cjs",
+          "via": "actual authenticated CSRF HTTP and refreshed database",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": "tests/browser/templates/conditional_formsets/native_control.html",
+          "to": "src/crud_views/templates/crud_views/formsets/control.html",
+          "via": "same native DELETE availability contract",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-17-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 4,
+      "total": 4,
+      "artifacts": [
+        {
+          "path": "docs/reference/formsets.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "docs/reference/javascript.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": "tests/test1/test_conditional_migration_docs.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-PUBLIC-SURFACE.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-17-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 0,
+    "data": {
+      "all_verified": true,
+      "verified": 2,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": "tests/test1/test_conditional_migration_docs.py",
+          "to": "docs/reference/formsets.md",
+          "via": "actual native rendered capability example",
+          "verified": true,
+          "detail": "Target referenced in source"
+        },
+        {
+          "from": "CHANGELOG.md",
+          "to": "docs/migrating-1.0.md",
+          "via": "paired changed-contract guidance per D-19",
+          "verified": true,
+          "detail": "Target referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-18-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 2,
+      "total": 2,
+      "artifacts": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/source-manifest.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-18-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 1,
+    "data": {
+      "all_verified": false,
+      "verified": 0,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+          "via": "source-bound exact gate validation",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        },
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/10-evidence/results.json",
+          "via": "explicit historical baseline rather than overwritten outcomes",
+          "verified": false,
+          "detail": "Target not referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-19-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 3,
+      "total": 3,
+      "artifacts": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/handoff.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-19-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 0,
+    "data": {
+      "all_verified": true,
+      "verified": 2,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/handoff.json",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+          "via": "hash-bound case/gate references",
+          "verified": true,
+          "detail": "Target referenced in source"
+        },
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/handoff.json",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "via": "independent high-threat disposition and actual report hashes",
+          "verified": true,
+          "detail": "Target referenced in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-20-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 2,
+      "total": 2,
+      "artifacts": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-20-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 0,
+    "data": {
+      "all_verified": true,
+      "verified": 2,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "via": "validate_handoff calls the same complete validate path as --check",
+          "verified": true,
+          "detail": "Pattern found in source"
+        },
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "to": "tests/browser/conditional-formsets.cjs",
+          "via": "Exact stock/native gap-ambiguity capture contract and present source hashes",
+          "verified": true,
+          "detail": "Pattern found in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-21-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 5,
+      "total": 5,
+      "artifacts": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/source-manifest.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-21-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 0,
+    "data": {
+      "all_verified": true,
+      "verified": 2,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+          "via": "Hash-bound origin and byte-identical retained gate records",
+          "verified": true,
+          "detail": "Pattern found in source"
+        },
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py",
+          "via": "Fresh complete evidence-self-tests gate and exact selected test identities",
+          "verified": true,
+          "detail": "Pattern found in source"
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-22-PLAN.md",
+    "kind": "verify.artifacts",
+    "exit": 0,
+    "data": {
+      "all_passed": true,
+      "passed": 4,
+      "total": 4,
+      "artifacts": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
+          "exists": true,
+          "issues": [],
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "plan": "06.4-22-PLAN.md",
+    "kind": "verify.key-links",
+    "exit": 0,
+    "data": {
+      "all_verified": true,
+      "verified": 2,
+      "pending": 0,
+      "total": 2,
+      "links": [
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "via": "Current packet path/hash and concrete gate/case evidence",
+          "verified": true,
+          "detail": "Pattern found in source"
+        },
+        {
+          "from": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
+          "to": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+          "via": "Orchestrator-owned canonical report hash rebound after verification",
+          "verified": true,
+          "detail": "Pattern found in source"
+        }
+      ]
+    }
+  }
+]

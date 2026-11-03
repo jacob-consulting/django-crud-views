@@ -1,0 +1,116 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_reclean_edit_only_extra_stays_invalid[package] ______________
+
+policy_routes = namespace(client=<django.test.client.Client object at 0x799bcfb54bc0>, routes={True: namespace(vs=ViewSet(policy96e179...formsets=[], js_data={}, scripts=True))}, family=<class 'tests.test1.test_formsets_policy.PolicyPackageInlineFormSet'>)
+policy_world = namespace(parent=<Publisher: Original>, book=<Book: book>, sibling=<Book: sibling original>, note=<BookNote: original note>)
+
+    def test_reclean_edit_only_extra_stays_invalid(policy_routes, policy_world):
+        _, payload = editor(policy_routes, policy_world)
+        payload[f"books-{policy_world.parent.pk}-0-1-title"] = "forged"
+        tree = runtime(policy_routes, policy_world, payload)
+        assert tree.all_valid() is False
+        for _ in range(2):
+            tree.x_formsets[0].instance.full_clean()
+            for _ in range(2):
+>               assert tree.all_valid() is False
+E               AssertionError: assert True is False
+E                +  where True = all_valid()
+E                +    where all_valid = FormSets(formsets=OrderedDict({'books': FormSet(Books), 'siblings': FormSet(Siblings)}), cv_view=None, x_formsets=[XFormSet(books-1-0,1-0,0), XFormSet(siblings-1-0,1-0,0)], js_data={}, scripts=True).all_valid
+
+tests/test1/test_formsets_policy.py:286: AssertionError
+______________ test_reclean_edit_only_extra_stays_invalid[native] ______________
+
+policy_routes = namespace(client=<django.test.client.Client object at 0x799bcf215a00>, routes={True: namespace(vs=ViewSet(policy2d08a3..._formsets=[], js_data={}, scripts=True))}, family=<class 'tests.test1.test_formsets_policy.PolicyNativeInlineFormSet'>)
+policy_world = namespace(parent=<Publisher: Original>, book=<Book: book>, sibling=<Book: sibling original>, note=<BookNote: original note>)
+
+    def test_reclean_edit_only_extra_stays_invalid(policy_routes, policy_world):
+        _, payload = editor(policy_routes, policy_world)
+        payload[f"books-{policy_world.parent.pk}-0-1-title"] = "forged"
+        tree = runtime(policy_routes, policy_world, payload)
+        assert tree.all_valid() is False
+        for _ in range(2):
+            tree.x_formsets[0].instance.full_clean()
+            for _ in range(2):
+>               assert tree.all_valid() is False
+E               AssertionError: assert True is False
+E                +  where True = all_valid()
+E                +    where all_valid = FormSets(formsets=OrderedDict({'books': FormSet(Books), 'siblings': FormSet(Siblings)}), cv_view=None, x_formsets=[XFormSet(books-1-0,1-0,0), XFormSet(siblings-1-0,1-0,0)], js_data={}, scripts=True).all_valid
+
+tests/test1/test_formsets_policy.py:286: AssertionError
+______________ test_reclean_http_rejects_before_any_save[package] ______________
+
+policy_routes = namespace(client=<django.test.client.Client object at 0x799bcf089280>, routes={True: namespace(vs=ViewSet(policybcf7c4...formsets=[], js_data={}, scripts=True))}, family=<class 'tests.test1.test_formsets_policy.PolicyPackageInlineFormSet'>)
+policy_world = namespace(parent=<Publisher: Original>, book=<Book: book>, sibling=<Book: sibling original>, note=<BookNote: original note>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x799bcf039130>
+
+    def test_reclean_http_rejects_before_any_save(policy_routes, policy_world, monkeypatch):
+        # A consuming view may deliberately revalidate after native/custom cleaning.
+        from django.urls import resolve
+    
+        url, payload = editor(policy_routes, policy_world)
+        view = resolve(url).func.view_class
+        original = view.cv_form_is_valid
+    
+        def revalidate(self, context):
+            original(self, context)
+            context["formsets"].x_formsets[0].instance.full_clean()
+            return original(self, context)
+    
+        monkeypatch.setattr(view, "cv_form_is_valid", revalidate)
+        payload["name"] = "Positive reclean control"
+        assert policy_routes.client.post(url, payload).status_code == 302
+        _, payload = editor(policy_routes, policy_world)
+        payload["name"] = "Must not save"
+        payload[f"books-{policy_world.parent.pk}-0-0-title"] = "must not edit"
+        payload[f"siblings-{policy_world.parent.pk}-0-0-title"] = "sibling must not edit"
+        payload[f"books-notes-{policy_world.parent.pk}-0-0-{policy_world.book.pk}-0-0-note"] = "must not edit"
+        payload[f"books-{policy_world.parent.pk}-0-1-title"] = "forged"
+        saves = observe_saves(monkeypatch)
+        response = policy_routes.client.post(url, payload)
+>       assert response.status_code == 200
+E       assert 302 == 200
+E        +  where 302 = <HttpResponseRedirect status_code=302, "text/html; charset=utf-8", url="/policybcf7c4cf932f490fa27fce36da209e13/">.status_code
+
+tests/test1/test_formsets_policy.py:317: AssertionError
+______________ test_reclean_http_rejects_before_any_save[native] _______________
+
+policy_routes = namespace(client=<django.test.client.Client object at 0x799bcef13b00>, routes={True: namespace(vs=ViewSet(policy712f1f..._formsets=[], js_data={}, scripts=True))}, family=<class 'tests.test1.test_formsets_policy.PolicyNativeInlineFormSet'>)
+policy_world = namespace(parent=<Publisher: Original>, book=<Book: book>, sibling=<Book: sibling original>, note=<BookNote: original note>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x799bcee6e450>
+
+    def test_reclean_http_rejects_before_any_save(policy_routes, policy_world, monkeypatch):
+        # A consuming view may deliberately revalidate after native/custom cleaning.
+        from django.urls import resolve
+    
+        url, payload = editor(policy_routes, policy_world)
+        view = resolve(url).func.view_class
+        original = view.cv_form_is_valid
+    
+        def revalidate(self, context):
+            original(self, context)
+            context["formsets"].x_formsets[0].instance.full_clean()
+            return original(self, context)
+    
+        monkeypatch.setattr(view, "cv_form_is_valid", revalidate)
+        payload["name"] = "Positive reclean control"
+        assert policy_routes.client.post(url, payload).status_code == 302
+        _, payload = editor(policy_routes, policy_world)
+        payload["name"] = "Must not save"
+        payload[f"books-{policy_world.parent.pk}-0-0-title"] = "must not edit"
+        payload[f"siblings-{policy_world.parent.pk}-0-0-title"] = "sibling must not edit"
+        payload[f"books-notes-{policy_world.parent.pk}-0-0-{policy_world.book.pk}-0-0-note"] = "must not edit"
+        payload[f"books-{policy_world.parent.pk}-0-1-title"] = "forged"
+        saves = observe_saves(monkeypatch)
+        response = policy_routes.client.post(url, payload)
+>       assert response.status_code == 200
+E       assert 302 == 200
+E        +  where 302 = <HttpResponseRedirect status_code=302, "text/html; charset=utf-8", url="/policy712f1fe598b745b09f3b5d1bc2011567/">.status_code
+
+tests/test1/test_formsets_policy.py:317: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]
+FAILED tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]
+FAILED tests/test1/test_formsets_policy.py::test_reclean_http_rejects_before_any_save[package]
+FAILED tests/test1/test_formsets_policy.py::test_reclean_http_rejects_before_any_save[native]
+4 failed, 100 deselected in 1.98s

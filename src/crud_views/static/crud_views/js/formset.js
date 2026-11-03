@@ -1,3 +1,27 @@
+(function () {
+if (globalThis.__cvFormsetInit) {
+    globalThis.cv.initFormsets();
+    return;
+}
+globalThis.__cvFormsetInit = true;
+const controllers = new WeakMap();
+
+// Bound identity belongs to the owning formset; DOM position is only for movement.
+function boundRowIndex(formset, prefix) {
+    const start = `${formset.prefix}-`;
+    const suffix = typeof prefix === "string" && prefix.startsWith(start) ? prefix.slice(start.length) : "";
+    const index = Number(suffix);
+    if (!/^\d+$/.test(suffix) || !Number.isSafeInteger(index)) {
+        throw new Error("invalid bound form index");
+    }
+    return index;
+}
+
+function canDeleteRow(formset, prefix) {
+    const index = boundRowIndex(formset, prefix);
+    return formset.can_delete && (formset.can_delete_extra || index < formset.get_initial_forms());
+}
+
 /**
  * CVFSConst
  *
@@ -50,9 +74,14 @@ class XBase {
      * @returns {*}
      */
     sel(selector, msg) {
-        let selection = $(selector),
+        let selection = $(this.form || this.ctl?.form || document.querySelector("form.cv-form") || document).find(selector),
             message = msg || `${selector} not found`;
         return this.assert_sel(selection, message);
+    }
+
+    exact(selector, attribute, value, at) {
+        const selection = at ? at.find(selector) : this.sel(selector);
+        return this.assert_sel(selection.filter((_, el) => el.getAttribute(attribute) === value), `${value} not found`);
     }
 
     /**
@@ -127,7 +156,7 @@ class XFormset extends XBase {
     constructor(ctl, prefix) {
         super(ctl);
 
-        this.selection = this.sel(`${CVFSConst.sel.content}[${CVFSConst.attr.formset_prefix}="${prefix}"]`, "formset not found");
+        this.selection = this.exact(CVFSConst.sel.content, CVFSConst.attr.formset_prefix, prefix);
         this.json = this.selection.attr(CVFSConst.attr.formset_data);
         this.data = JSON.parse(this.json);
 
@@ -162,7 +191,8 @@ class XFormset extends XBase {
         this.index = index;
 
         // rows
-        this.rows = this.selection.find(`${CVFSConst.sel.row}[${CVFSConst.attr.formset_prefix}=${this.prefix}]`);
+        this.rows = this.selection.find(CVFSConst.sel.row)
+            .filter((_, el) => el.getAttribute(CVFSConst.attr.formset_prefix) === this.prefix);
     }
 
     new() {
@@ -170,16 +200,14 @@ class XFormset extends XBase {
     }
 
     get_management_form_value(key) {
-        let selector = `input[name="${this.prefix}-${key}"]`,
-            selection = this.sel(selector),
-            value = selection.attr('value');
+        let selection = this.exact("input", "name", `${this.prefix}-${key}`),
+            value = selection.val();
         return Number.parseInt(value);
     }
 
     set_management_form_value(key, value) {
-        let selector = `input[name="${this.prefix}-${key}"]`,
-            selection = this.sel(selector);
-        selection.attr('value', value);
+        let selection = this.exact("input", "name", `${this.prefix}-${key}`);
+        selection.val(value).attr("value", value);
     }
 
     get_total_forms() {
@@ -227,33 +255,28 @@ class XFormset extends XBase {
 
             let row = $(r);
 
-            let inputs = row.find(`input[name^="${this.prefix}"]`, "no inputs found");
+            const prefix = row.attr(CVFSConst.attr.form_prefix);
+            const inputs = row.find("input, select, textarea");
+            const field = name => inputs.toArray().find(el => el.name === `${prefix}-${name}`);
 
             // every row must carry its pk input
-            this.assert_def(inputs.toArray().find((el) => el.name.endsWith(`-${pk_name}`)));
+            this.assert_def(field(pk_name));
 
-            let order = this.assert_def(inputs.toArray().find((el) => el.name.endsWith("-ORDER"))),
+            let order = this.assert_def(field("ORDER")),
                 // get delete input (maybe checkbox or hidden)
-                del = this.assert_def(inputs.toArray().find((el) => el.name.endsWith("-DELETE"))),
+                del = canDeleteRow(this, prefix) ? this.assert_def(field("DELETE")) : null,
                 // get empty fields defined by suffix in options.empty_fields
-                fields = inputs.toArray().filter((el) => {
-                    let some = empty_fields_check.some((suffix) => {
-                        return el.name.endsWith(`-${suffix}`);
-                    });
-                    return some;
-                }),
+                fields = empty_fields_check.map(field).filter(Boolean),
                 // are all fields empty?
                 empty = fields.map((field) => {
-                    if (field.type === "text" || field.type === "hidden") {
-                        return field.value.trim() === "";
-                    }
-                    throw new Error("not implemented");
+                    if (field.type === "checkbox" || field.type === "radio") return !field.checked;
+                    return field.value.trim() === "";
                 }),
                 all_empty = empty.every(Boolean),
                 // is row deleted? (depends on input type)
                 // DELETE may render as a hidden input (crud_views default, value "1"/"0")
                 // or as Django's checkbox
-                deleted = del.type === "checkbox" ? del.checked : del.value === "1";
+                deleted = del ? (del.type === "checkbox" ? del.checked : del.value === "1") : false;
 
             // set order depending on visibility
             if (all_empty || deleted) {
@@ -277,7 +300,7 @@ class XForm extends XBase {
 
     constructor(ctl, prefix) {
         super(ctl);
-        this.row = this.sel(`${CVFSConst.sel.row}[${CVFSConst.attr.form_prefix}="${prefix}"]`, "form not found");
+        this.row = this.exact(CVFSConst.sel.row, CVFSConst.attr.form_prefix, prefix);
         this.json = this.row.attr(CVFSConst.attr.form_data);
         this.data = JSON.parse(this.json);
 
@@ -303,7 +326,8 @@ class XForm extends XBase {
         this.row_last = this.formset.rows.last();
 
         // get delete input
-        this.delete_input = this.formset.can_delete ? this.row.find(`input[name="${this.prefix}-DELETE"]`) : null;
+        this.can_delete = canDeleteRow(this.formset, this.prefix);
+        this.delete_input = this.can_delete ? this.exact("input", "name", `${this.prefix}-DELETE`, this.row) : null;
 
         this.debug("form", this);
     }
@@ -314,6 +338,7 @@ class XForm extends XBase {
     }
 
     add() {
+        if (this.formset.edit_only) return;
         this.debug("add");
 
         let data = {
@@ -328,6 +353,9 @@ class XForm extends XBase {
             type: "get",                // HTTP method (GET, POST, etc.)
             data: data,
             success: (response) => {    // Callback on success
+                // A response for replaced/closed modal content must not mutate
+                // a detached form or dispatch events into a newer session.
+                if (!this.row[0].isConnected) return;
                 // insert row at right position
                 let html = response.html,
                     rows = response.rows;
@@ -344,7 +372,7 @@ class XForm extends XBase {
                 // highlight created rows
                 rows.forEach((row) => {
                     console.log("highlight", row);
-                    let hl = this.row.parent('div.cv-formset-content').find(`div.cv-formset-row[${CVFSConst.attr.form_prefix}="${row}"]`).find("input");
+                    let hl = this.exact(CVFSConst.sel.row, CVFSConst.attr.form_prefix, row).find("input");
                     this.highlight_add(hl);
                 });
 
@@ -368,8 +396,9 @@ class XForm extends XBase {
      */
     dispatch_row_added(rows) {
         let elements = rows
-            .map((prefix) => document.querySelector(`${CVFSConst.sel.row}[${CVFSConst.attr.form_prefix}="${prefix}"]`))
-            .filter((el) => el !== null);
+            .map((prefix) => this.sel(CVFSConst.sel.row).toArray()
+                .find(el => el.getAttribute(CVFSConst.attr.form_prefix) === prefix))
+            .filter(Boolean);
         elements
             .filter((el) => !elements.some((other) => other !== el && other.contains(el)))
             .forEach((el) => {
@@ -421,6 +450,7 @@ class XForm extends XBase {
     }
 
     delete() {
+        if (!this.can_delete) return;
         this.debug("delete");
         let deleted = this.get_delete(),
             sel_highlight = this.get_inputs();
@@ -432,11 +462,14 @@ class XForm extends XBase {
     }
 
     get_delete() {
-        return this.delete_input.attr("value") === "1";
+        if (!this.can_delete) return false;
+        return this.delete_input[0].type === "checkbox" ? this.delete_input[0].checked : this.delete_input.val() === "1";
     }
 
     set_delete(value) {
-        let button = this.row.find(`button.cv-form-ctrl-delete[${CVFSConst.attr.form_prefix}="${this.prefix}"]`);
+        if (!this.can_delete) return;
+        let button = this.row.find("button.cv-form-ctrl-delete")
+            .filter((_, el) => el.getAttribute(CVFSConst.attr.form_prefix) === this.prefix);
         // class strings come from the template (data attributes), never from literals here
         let normal = button.attr("data-cv-class");
         let danger = button.attr("data-cv-class-danger");
@@ -449,7 +482,8 @@ class XForm extends XBase {
                 button.addClass(normal);
             }
         }
-        this.delete_input.attr("value", value === true ? "1" : "0");
+        if (this.delete_input[0].type === "checkbox") this.delete_input.prop("checked", value);
+        else this.delete_input.val(value ? "1" : "0").attr("value", value ? "1" : "0");
     }
 
 
@@ -470,176 +504,122 @@ class CrudViewsFormset extends XBase {
         };
     }
 
-    constructor() {
+    constructor(form = document.querySelector("form.cv-form")) {
         super();
-        this.add_form_control_events();
-        this.sel(`form.cv-form`).on("submit", (event) => {
-            this.debug("submit");
-            let reorder_success = null;
-            try {
-                reorder_success = this.reorder_formsets();
-            } catch (error) {
-                console.error("error", error.message);
-                reorder_success = false;
+        if (!form) throw new Error("owning form not found");
+        if (controllers.has(form)) return controllers.get(form);
+        this.form = form;
+        controllers.set(form, this);
+        this.onClick = event => {
+            const button = event.target.closest?.("button.cv-form-ctrl-add, button.cv-form-ctrl-delete, button.cv-form-ctrl-up, button.cv-form-ctrl-down");
+            if (!button || button.form !== this.form || event.defaultPrevented) return;
+            event.preventDefault();
+            if (button.type !== "button" || button.matches(":disabled") || !button.isConnected) return;
+            for (let node = button; node; node = node.parentElement) {
+                if (node.hidden || node.hasAttribute("inert") || node.getAttribute("aria-disabled") === "true" ||
+                    node.getAttribute("aria-hidden") === "true" || getComputedStyle(node).display === "none" ||
+                    ["hidden", "collapse"].includes(getComputedStyle(node).visibility)) return;
             }
-            if (!reorder_success) {
-                event.preventDefault();
-                return false;
-            }
-        });
-    }
-
-    /**
-     * Get form context from element
-     *
-     * @param element
-     * @returns {XForm}
-     */
-    get_form_context(element) {
-        let form_prefix = element.attr(CVFSConst.attr.form_prefix),
-            form = new XForm(this, form_prefix);
-        return form;
-    }
-
-    /**
-     * Attach form control events to new rows
-     *
-     * @param rows
-     */
-    add_form_control_for_new_rows(rows) {
-        rows.forEach((prefix) => {
-            let row_selection = this.sel(`${CVFSConst.sel.row}[${CVFSConst.attr.form_prefix}="${prefix}"]`, "row not found");
-            this.add_form_control_events(row_selection);
-        });
-    }
-
-    /**
-     * Add form control events to
-     * - selection
-     * - or all form control elements
-     *
-     * @param selection
-     */
-    add_form_control_events(selection) {
-        let controls = selection === undefined
-            ? this.find_page_form_controls()
-            : this.find_row_form_controls(selection);
-        for (const [action, control] of Object.entries(controls)) {
-            this.bind_form_control(control, action);
-        }
-    }
-
-    /**
-     * Form controls of every formset on the page (global init pass).
-     *
-     * The page may mix orderable with non-orderable (or deletable with edit-only)
-     * formsets, so a control type can legitimately be absent page-wide - e.g. a page
-     * whose only formset is non-orderable has no up/down buttons. Look controls up
-     * WITHOUT asserting: binding a click handler to an empty jQuery set is a harmless
-     * no-op, whereas the asserting sel_at would throw and abort the whole controller,
-     * leaving even add/delete unbound.
-     */
-    find_page_form_controls() {
-        let sel = this.sel(`form.cv-form`);
-        return this.lookup_form_controls(
-            {can_delete: true, can_order: true, edit_only: false},
-            (s) => sel.find(s),
-        );
-    }
-
-    /**
-     * Form controls of one row. Keeps the asserting lookup, since the row's own
-     * formset context guarantees the control exists.
-     */
-    find_row_form_controls(selection) {
-        let flags = this.get_form_context(selection).formset;
-        return this.lookup_form_controls(flags, (s, msg) => this.sel_at(selection, s, msg));
-    }
-
-    /**
-     * Look every control up before any gets bound, so a failing per-row lookup binds nothing.
-     */
-    lookup_form_controls(flags, find) {
-        let c = CrudViewsFormset.const;
-        return {
-            delete: flags.can_delete ? find(c.form_control_delete, "delete not found") : null,
-            add: flags.edit_only === false ? find(c.form_control_add, "add not found") : null,
-            up: flags.can_order ? find(c.form_control_up, "up not found") : null,
-            down: flags.can_order ? find(c.form_control_down, "down not found") : null,
-        };
-    }
-
-    /**
-     * Bind clicks on form controls to the XForm method named by action
-     * (delete, add, up or down).
-     *
-     * @param controls jQuery selection, or null to skip
-     * @param action
-     */
-    bind_form_control(controls, action) {
-        if (!controls) {
-            return;
-        }
-        controls.click((event) => {
             try {
-                let form = this.get_form_context($(event.currentTarget));
-                form[action]();
+                const row = this.get_form_context($(button));
+                const action = Object.keys(CrudViewsFormset.const).find(key =>
+                    button.matches(CrudViewsFormset.const[key])).replace("form_control_", "");
+                const flags = row.formset;
+                if (action === "add" && flags.edit_only) return;
+                if (action === "delete" && !row.can_delete) return;
+                if ((action === "up" || action === "down") && !flags.can_order) return;
+                row[action]();
             } catch (error) {
                 this.debug("error", error);
             }
-            event.preventDefault();
+        };
+        this.onSubmit = event => {
+            if (event.defaultPrevented) return;
+            try {
+                if (!this.reorder_formsets()) event.preventDefault();
+            } catch (error) {
+                console.error("crud_views formset.js: reorder failed", error);
+                event.preventDefault();
+            }
+        };
+        form.addEventListener("click", this.onClick);
+        // The owning-form listener runs before modal.js's document serializer.
+        form.addEventListener("submit", this.onSubmit);
+    }
+
+    get_form_context(element) {
+        return new XForm(this, element.attr(CVFSConst.attr.form_prefix));
+    }
+
+    // Internal compatibility seam. Delegation already covers newly inserted
+    // descendants, including nested formsets with no separate row-added event.
+    add_form_control_for_new_rows(rows) {
+        rows.forEach(prefix => {
+            const row = this.exact(CVFSConst.sel.row, CVFSConst.attr.form_prefix, prefix);
+            globalThis.cv.initFormsets(row[0]);
         });
     }
 
-    /**
-     * Reorder all formset
-     */
     reorder_formsets() {
-        this.debug("reorder_formsets");
-
-        this.sel(`form.cv-form`).find(CVFSConst.sel.content).each((index, content) => {
-            let formset = new XFormset(this, $(content).attr(CVFSConst.attr.formset_prefix));
+        for (const content of this.sel(CVFSConst.sel.content).toArray()) {
             try {
+                const formset = new XFormset(this, $(content).attr(CVFSConst.attr.formset_prefix));
                 formset.reorder();
             } catch (error) {
                 this.debug("error", error);
                 return false;
             }
-        });
-        this.debug("reorder_formsets done");
+        }
         return true;
     }
 
+    dispose() {
+        this.form.removeEventListener("click", this.onClick);
+        this.form.removeEventListener("submit", this.onSubmit);
+        controllers.delete(this.form);
+    }
 }
 
-// Test seam: expose the formset classes on a shared namespace. In the browser
-// these are top-level lexical globals reachable by other classic scripts but
-// not inspectable via globalThis; this adds namespaced access for the unit tests.
+// Internal test seams; cv.initFormsets is the supported public entry point.
 globalThis.cv = globalThis.cv || {};
 Object.assign(globalThis.cv, {CVFSConst, XBase, XFormset, XForm, CrudViewsFormset});
 
-(function () {
-    let retried = false;
-    function start() {
-        if (!document.querySelector(".cv-formset-content")) {
-            return;
-        }
-        if (!globalThis.$?.fn?.jquery) {
-            if (document.readyState !== "complete" && !retried) {
-                // deferred scripts run while "interactive": a deferred jQuery may still follow
-                retried = true;
-                globalThis.addEventListener("load", start, {once: true});
-                return;
-            }
+let retried = false;
+let reported = false;
+
+function owningForms(root) {
+    const owners = new Set();
+    if (root.matches?.("form")) owners.add(root);
+    const owner = root.form || root.closest?.("form");
+    if (owner) owners.add(owner);
+    root.querySelectorAll("form").forEach(form => owners.add(form));
+    return owners;
+}
+
+function initFormsets(root = document) {
+    const owners = [...owningForms(root)].filter(form => form.querySelector(CVFSConst.sel.content));
+    if (!owners.length) return;
+    if (!globalThis.$?.fn?.jquery) {
+        if (document.readyState !== "complete" && !retried) {
+            retried = true;
+            globalThis.addEventListener("load", () => initFormsets(document), {once: true});
+        } else if (!reported) {
+            reported = true;
             console.error("crud_views formset.js: pages with formsets need jQuery; load it before DOMContentLoaded.");
-            return;
         }
-        // the page's controller: its constructor binds all formset events
-        globalThis.cv.formsetController = new CrudViewsFormset();
+        return;
     }
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", start);
-    } else {
-        start();
-    }
+    owners.forEach(form => {
+        if (!controllers.has(form)) new CrudViewsFormset(form);
+    });
+}
+
+globalThis.cv.initFormsets = initFormsets;
+document.addEventListener("DOMContentLoaded", () => initFormsets());
+if (document.readyState !== "loading") initFormsets();
+document.addEventListener("cv:modal:loaded", event => initFormsets(event.target));
+document.addEventListener(CVFSConst.event.row_added, event => initFormsets(event.target));
+document.addEventListener("cv:modal:unload", event => {
+    owningForms(event.target).forEach(form => controllers.get(form)?.dispose());
+});
 })();

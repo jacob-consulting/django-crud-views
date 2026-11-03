@@ -1,0 +1,34 @@
+{
+  "plan": "06.4-11",
+  "captured_at": "2026-11-01T14:52:34.508624+00:00",
+  "source_base": "98aa776b9d61a03b2499da925656b9949e41d909",
+  "django": "6.0.9",
+  "python": "Python 3.12.3",
+  "final_gate": {
+    "command": "PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_formsets_policy.py tests/test1/test_formsets_validation_gate.py tests/test1/test_conditional_formset.py -q -p no:cacheprovider --junitxml=.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/11-evidence/final-green.xml",
+    "exit_code": 0,
+    "tests": 183,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "console_summary": "183 passed in 47.65s"
+  },
+  "tracer": {
+    "selection": "tests/test1/test_formsets_policy.py -k reclean -q -p no:cacheprovider",
+    "before_expansion": "4 passed, 100 deselected in 1.89s",
+    "gate_rerun": "4 passed, 100 deselected in 1.97s"
+  },
+  "quality": {
+    "pre_commit": "ruff check Passed; ruff format Passed",
+    "ruff_check": "All checks passed!",
+    "ruff_format": "4 files already formatted",
+    "git_diff_check": "exit 0"
+  },
+  "sha256": {
+    "src/crud_views/lib/formsets/render_tree.py": "af32f4b3cb4745cbc972a6db5eb72eae91be05c58fe8b919f2aa7db5b097d2eb",
+    "src/crud_views/lib/formsets/formsets.py": "27d9b999020bddc50bda435e248d84775a48db3597ba1747596c81faa590d48f",
+    "tests/test1/test_formsets_policy.py": "7e3dc043ed9151ff839f1d699a03b5766fffe77c5f0a3bf004d44bdda1d89d5e",
+    "tests/test1/test_formsets_validation_gate.py": "3125c8e79243a6e8a44458507a45effd254e88fa22aaae486f60846b9a70e5d4"
+  },
+  "limits": "Bounded plan11 regression evidence only. Supported-series/current-source acceptance belongs to plan18; independent reviews and H1/H2 belong to plan19. Shared state and requirements are owned by the parent orchestrator."
+}

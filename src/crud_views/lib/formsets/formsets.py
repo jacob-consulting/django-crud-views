@@ -12,7 +12,7 @@ from django.forms.forms import BaseForm
 from django.forms.models import BaseInlineFormSet, ModelForm
 from django.http.request import HttpRequest
 from django.template.loader import render_to_string
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, PrivateAttr, model_validator
 
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.lazy import LazyStr
@@ -166,6 +166,11 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                 formset=self,
                 parent=parent,
                 management_form=formset_instance.management_form,
+                cv_bound_toggle_field=(
+                    form.add_prefix(self.conditional.toggle.field_name())
+                    if level == 0 and self.conditional is not None
+                    else ""
+                ),
             )
 
             for formset_instance_form_index, formset_instance_form in enumerate(formset_instance.forms):
@@ -204,6 +209,11 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
         Similar to init, but this will be called to render the template.
         Yes, it's similar to init but not the same.
         """
+
+        # A fragment can be inserted into a modal hosted at a different URL. Nested
+        # actions must keep the authorized editor endpoint just like initialized rows.
+        if self.cv_view is not None:
+            self.path = self.cv_view.request.path
 
         # get parent prefix with -
         parent_prefix_ = f"{parent_prefix}-" if parent_prefix else ""
@@ -288,6 +298,7 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
     x_formsets: list[XFormSet] = Field(default_factory=lambda: [])
     js_data: dict = Field(default_factory=lambda: {})
     scripts: bool = True
+    _cv_main_form: BaseForm | None = PrivateAttr(default=None)
 
     @model_validator(mode="before")
     @classmethod
@@ -357,16 +368,19 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
         Two-phase and order-independent: a child formset's clean() may add_error() to a
         parent form, but in a single traversal the parent's validity is collected before
         the child's clean() runs. Phase 1 triggers every clean(); phase 2 re-derives
-        validity from the now-complete (shared) error state. Django's is_valid() runs
-        full_clean only once, so phase 2 re-runs no clean() and does no DB work, and it
-        delegates to Django's own per-formset validity (which already skips DELETE-marked
-        and empty extra forms).
+        validity from the now-complete (shared) error state. Django's is_valid() normally
+        uses cached cleaning results. Mandatory row policy still rechecks the authorized
+        queryset on each traversal, restoring policy errors if custom cleaning replaced
+        a native error cache. Django's own per-formset validity already skips DELETE-marked
+        and empty extra forms; mandatory row policy also checks those rows.
         """
         # Phase 1: trigger every formset's clean() (where cross-form add_error happens).
         # Discard results — collected in hierarchy order, before later cleans ran.
         list(self.is_valid())
         # Phase 2: re-collect; reflects errors added to any form during phase 1.
-        return all(valid for _, valid in self.is_valid())
+        formsets_valid = all(valid for _, valid in self.is_valid())
+        main_valid = self._cv_main_form is None or not self._cv_main_form.is_bound or self._cv_main_form.is_valid()
+        return formsets_valid and main_valid
 
     def save(self, commit: bool = True):
         for x_formset in self.x_formsets:
@@ -383,6 +397,7 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
             x_formset.save(commit=commit)
 
     def init(self, request: HttpRequest, form: ModelForm):
+        self._cv_main_form = form
         for _key, formset in self.items():
             x_formsets = list(formset.init(request=request, forms=[form]))
             self.x_formsets.extend(x_formsets)
@@ -414,8 +429,8 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
 
         Returns the canonical ``(pk, num, parent_prefix)`` passed to ``get_template``.
 
-        Note: ``get_template`` still emits index 0 for the selected formset itself, so a fragment of a non-first
-        child declaration does not extend that formset's initialized prefix (known limitation, A19).
+        ``get_template`` uses the selected child's position in its parent's ordered declaration, matching
+        ``FormSet.init``; a top-level declaration uses index 0.
         """
         chain: list[FormSet] = []
         node = None
@@ -510,7 +525,8 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
         for level, key in enumerate(key_path):
             formset = self.get(key) if level == 0 else formset.children[key]
 
-        x_formsets = list(formset.template(index=0, parent_prefix=parent_prefix, force_form_index=num, pk=pk))
+        index = 0 if formset.parent is None else list(formset.parent.children).index(formset.original_key)
+        x_formsets = list(formset.template(index=index, parent_prefix=parent_prefix, force_form_index=num, pk=pk))
         assert len(x_formsets) == 1
         x_formset = x_formsets[0]
         data = {"x_formset": x_formset}

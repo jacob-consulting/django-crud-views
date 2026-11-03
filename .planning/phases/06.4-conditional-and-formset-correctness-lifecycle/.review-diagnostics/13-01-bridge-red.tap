@@ -1,0 +1,539 @@
+TAP version 13
+1..1
+not ok 1 - tests/js-integration/formset.test.js # time=10026.81ms {
+    1..2
+    not ok 1 - real Django fragment insertion # time=8863.04ms {
+        1..1
+        not ok 1 - inserts outer and second-sibling fragments and POSTs their real FormData # time=8861.94ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "CV_FRAGMENT_PYTHON=/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python
+..FFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_________ test_server_fragment_dom_round_trip[native-unordered-outer] __________
+tests/test1/test_fragment_authorization.py:1353: in test_server_fragment_dom_round_trip
+    result = subprocess.run(
+/usr/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/home/alex/.nvm/versions/node/v24.21.0/bin/node', '/tmp/cv-fragment-zpQjPg/driver.cjs']' returned non-zero exit status 1.
+------------------------------ Captured log call -------------------------------
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookForm'. Choices are: contract, id, publisher, title.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookForm'. Choices are: contract, id, publisher, title.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+_________ test_server_fragment_dom_round_trip[native-unordered-nested] _________
+tests/test1/test_fragment_authorization.py:1353: in test_server_fragment_dom_round_trip
+    result = subprocess.run(
+/usr/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/home/alex/.nvm/versions/node/v24.21.0/bin/node', '/tmp/cv-fragment-zpQjPg/driver.cjs']' returned non-zero exit status 1.
+------------------------------ Captured log call -------------------------------
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookForm'. Choices are: contract, id, publisher, title.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: book, contract, id, note.\"
+__________ test_server_fragment_dom_round_trip[native-ordered-outer] ___________
+tests/test1/test_fragment_authorization.py:1353: in test_server_fragment_dom_round_trip
+    result = subprocess.run(
+/usr/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/home/alex/.nvm/versions/node/v24.21.0/bin/node', '/tmp/cv-fragment-zpQjPg/driver.cjs']' returned non-zero exit status 1.
+------------------------------ Captured log call -------------------------------
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookForm'. Choices are: ORDER, contract, id, publisher, title.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookForm'. Choices are: ORDER, contract, id, publisher, title.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+__________ test_server_fragment_dom_round_trip[native-ordered-nested] __________
+tests/test1/test_fragment_authorization.py:1353: in test_server_fragment_dom_round_trip
+    result = subprocess.run(
+/usr/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/home/alex/.nvm/versions/node/v24.21.0/bin/node', '/tmp/cv-fragment-zpQjPg/driver.cjs']' returned non-zero exit status 1.
+------------------------------ Captured log call -------------------------------
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookForm'. Choices are: ORDER, contract, id, publisher, title.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+WARNING  root:utils.py:98 Could not resolve form field 'DELETE'.
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 183, in __getitem__
+    field = self.fields[name]
+            ~~~~~~~~~~~^^^^^^
+KeyError: 'DELETE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/utils.py\", line 69, in render_field
+    bound_field = form[field]
+                  ~~~~^^^^^^^
+  File \"/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/forms.py\", line 185, in __getitem__
+    raise KeyError(
+KeyError: \"Key 'DELETE' not found in 'BookNoteForm'. Choices are: ORDER, book, contract, id, note.\"
+=========================== short test summary info ============================
+FAILED tests/test1/test_fragment_authorization.py::test_server_fragment_dom_round_trip[native-unordered-outer]
+FAILED tests/test1/test_fragment_authorization.py::test_server_fragment_dom_round_trip[native-unordered-nested]
+FAILED tests/test1/test_fragment_authorization.py::test_server_fragment_dom_round_trip[native-ordered-outer]
+FAILED tests/test1/test_fragment_authorization.py::test_server_fragment_dom_round_trip[native-ordered-nested]
+4 failed, 2 passed, 87 deselected in 7.97s
+
+: expected 1 to be +0 // Object.is equality"
+            at: "/home/alex/projects/alex/django-crud-views/tests/js-integration/formset.test.js:139:103"
+            actual: "1"
+            expected: "0"
+            ...
+    }
+    ok 2 - integration runtime selection # time=1161.58ms {
+        1..1
+        ok 1 - rejects an explicitly invalid interpreter without falling back # time=1155.88ms
+    }
+}

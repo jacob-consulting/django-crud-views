@@ -1,0 +1,15 @@
+{
+  "command": [
+    ".nox/crispy_floor-3-12-django-6-0/bin/python",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py",
+    "EvidenceRefresh.test_invalid_runtime_preflight_preserves_outputs",
+    "-v"
+  ],
+  "exitCode": 1,
+  "output": "test_invalid_runtime_preflight_preserves_outputs (__main__.EvidenceRefresh.test_invalid_runtime_preflight_preserves_outputs) ... FAIL\n\n======================================================================\nFAIL: test_invalid_runtime_preflight_preserves_outputs (__main__.EvidenceRefresh.test_invalid_runtime_preflight_preserves_outputs)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py\", line 657, in test_invalid_runtime_preflight_preserves_outputs\n    self.assertEqual(result.returncode, 1, result.stderr)\nAssertionError: 2 != 1 : usage: run.py [-h] (--run | --check | --check-handoff JSON) [--output OUTPUT]\n              [--only {django4.2-focused,django4.2-enabled-full,django4.2-disabled-full,django4.2-missing-runtime,django5.2-focused,django5.2-enabled-full,django5.2-disabled-full,django5.2-missing-runtime,django6.0-focused,django6.0-enabled-full,django6.0-disabled-full,django6.0-missing-runtime,javascript,javascript-integration,strict-docs,ruff-check,ruff-format,evidence-self-tests,conditional-browser,modal-browser}]\nrun.py: error: one of the arguments --run --check --check-handoff is required\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.425s\n\nFAILED (failures=1)\n",
+  "targetTest": "test_invalid_runtime_preflight_preserves_outputs",
+  "targetFile": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py",
+  "expected": "Refresh resolves invalid selected Python before writes and reports runtime-specific rejection",
+  "actual": "CLI rejects absent refresh mode with argparse status 2",
+  "semanticAssessment": "Named test executed and failed its planned exit-code assertion because refresh mode is absent; no import/setup/discovery failure."
+}

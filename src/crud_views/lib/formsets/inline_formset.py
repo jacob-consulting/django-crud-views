@@ -110,6 +110,11 @@ class InlineFormSet(BaseInlineFormSet):
 
     def clean(self):
         super().clean()
+        # Django has already recorded the management error. Accessing
+        # self.cleaned_data below would recurse into is_valid() and raise
+        # AttributeError instead of preserving that correctable error.
+        if not self.management_form.is_valid():
+            return
         # Only nested formsets (level > 0) receive a parent_form; top-level
         # formsets attach to the view's object, not to a parent row. A grandchild
         # row with data needs a saved parent to hold its foreign key.

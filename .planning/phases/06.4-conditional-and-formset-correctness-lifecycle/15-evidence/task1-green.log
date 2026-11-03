@@ -1,0 +1,25 @@
+test_wr01_rejects_filtered_javascript_with_consistent_green_counts (test_runner.HistoricalCounterexamples.test_wr01_rejects_filtered_javascript_with_consistent_green_counts) ... ok
+test_wr01_rejects_non_strict_docs (test_runner.HistoricalCounterexamples.test_wr01_rejects_non_strict_docs) ... ok
+test_duplicate_case (test_runner.QualityEvidence.test_duplicate_case) ... ok
+test_duplicate_file (test_runner.QualityEvidence.test_duplicate_file) ... ok
+test_failed_case (test_runner.QualityEvidence.test_failed_case) ... ok
+test_false_console (test_runner.QualityEvidence.test_false_console) ... ok
+test_false_counts (test_runner.QualityEvidence.test_false_counts) ... ok
+test_filtered_collection_command (test_runner.QualityEvidence.test_filtered_collection_command) ... ok
+test_filtered_command (test_runner.QualityEvidence.test_filtered_command) ... ok
+test_missing_case (test_runner.QualityEvidence.test_missing_case) ... ok
+test_missing_file (test_runner.QualityEvidence.test_missing_file) ... ok
+test_real_complete_ordinary_capture (test_runner.QualityEvidence.test_real_complete_ordinary_capture) ... ok
+test_required_bridge_is_independent (test_runner.QualityEvidence.test_required_bridge_is_independent) ... ok
+test_required_integration_case_missing (test_runner.QualityEvidence.test_required_integration_case_missing) ... ok
+test_scoped_copy_checks_but_cannot_claim_complete (test_runner.QualityEvidence.test_scoped_copy_checks_but_cannot_claim_complete) ... ok
+test_skipped_case (test_runner.QualityEvidence.test_skipped_case) ... ok
+test_stale_collection_source (test_runner.QualityEvidence.test_stale_collection_source) ... ok
+test_wrong_lint_subcommands_and_flags (test_runner.QualityEvidence.test_wrong_lint_subcommands_and_flags) ... ok
+test_wrong_node_executable (test_runner.QualityEvidence.test_wrong_node_executable) ... ok
+test_wrong_vitest_subcommand (test_runner.QualityEvidence.test_wrong_vitest_subcommand) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 27.522s
+
+OK

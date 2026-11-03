@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: planning
-stopped_at: Phase 06.3 complete, ready to plan Phase 7
-last_updated: "2026-11-01T08:03:45.918Z"
+current_phase: "06.4"
+current_phase_name: Conditional and formset correctness/lifecycle
+status: gaps_found
+stopped_at: Phase 06.4 execution complete; canonical verification gaps_found, 5 blockers and 2 warnings
+last_updated: "2026-11-01T14:23:16.419450+00:00"
 last_activity: 2026-11-01
-last_activity_desc: Phase 06.3 complete, transitioned to Phase 7
-state_head: 1b9f49a9312a124bd4a3ce87d1e32d61e3122478
+last_activity_desc: Phase 06.4 canonical verification gaps_found; gap planning required
+state_head: 0a65fb0e3f6659f026091e97ef503676418267f8
 progress:
-  total_phases: 10
+  total_phases: 11
   completed_phases: 9
-  total_plans: 56
-  completed_plans: 56
-  percent: 90
+  total_plans: 66
+  completed_plans: 66
 milestone_name: milestone
 ---
 
@@ -25,17 +24,27 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-30)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy (requires its spec/maintainer decisions before planning)
+**Current focus:** Phase 06.4 — Conditional and formset correctness/lifecycle
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-11-01 — Phase 06.3 complete, transitioned to Phase 7
+Phase: 06.4 (Conditional and formset correctness/lifecycle) — GAPS FOUND
+Plan: 10 of 10
+Status: 10/10 plans executed — 4/10 goal truths verified; gap repairs required
+Last activity: 2026-11-01 — Independent verification reproduced five blockers and two checker warnings
 
-Progress: [█████████░] 90%
-Next: Define/specify Phase 7 before planning. Phase 06.3 is complete; broader Guardian identity compatibility remains unverified in issue #286. No Phase 7 work has started.
+Progress: [████████░░] 82%
+Next: $gsd-plan-phase 06.4 --gaps. Phase 7 waits for repaired and verified 6.4; proposed 6.5/6.6 remain unscheduled.
+
+### Phase 06.4 execution and canonical verification — 2026-11-01
+
+- Ten plans / twenty tasks executed and committed on `gsd/phase-06.4-conditional-and-formset-correctness-lifecycle`.
+- Recorded matrix: 47,617 Python passes across focused and enabled/Node-free full suites on Django 4.2/5.2/6.0; JavaScript 309; conditional Chromium 20 cases/126 assertions; retained modal 12/133; docs/Ruff pass. Only prescribed prior exclusions.
+- Independent deep review and verifier reproduced CR-01–05 and WR-01/02: recleaning policy bypass, clean JS CI runtime coupling, absent DELETE fields, reorder capability identity, ambiguous-binding state loss, incomplete quality-gate validation and stale runtime-override reuse.
+- Canonical VERIFICATION is `gaps_found`, 4/10 merged goal truths. SECURITY reopened six obligations (three high blockers); no risks accepted. VALIDATION is partial after counterexamples.
+- COND-01/02, FSET-01/02 and LIFE-02 require repairs. LIFE-01 human UI judgment and the descriptor-less prohibition remain explicit; passing subcontracts and scoped A19 evidence are retained.
+- No phase.complete, phase advancement, release or merge. Resume with `$gsd-plan-phase 06.4 --gaps`; do not rerun unchanged completed plans.
+- Existing ROADMAP/state.json/config and unrelated workspace edits were preserved; updated ROADMAP/state.json remain unstaged because they contained pre-existing changes.
 
 ### Phase 06.3 completed — 2026-11-01
 
@@ -194,6 +203,16 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.3 P15 | 5min | 2 tasks | 10 files |
 | Phase 06.3 P16 | 24min | 2 tasks | 66 files |
 | Phase 06.3 P17 | 6min measured artifact window; initial reads excluded | 2 tasks | 13 files |
+| Phase 06.4 P01 | 6min | 2 tasks | 9 files |
+| Phase 06.4 P02 | 8min | 2 tasks | 4 files |
+| Phase 06.4 P05 | 5min | 2 tasks | 2 files |
+| Phase 06.4 P03 | 5min | 2 tasks | 5 files |
+| Phase 06.4 P04 | 12min | 2 tasks | 6 files |
+| Phase 06.4 P06 | 9min | 2 tasks | 7 files |
+| Phase 06.4 P07 | 9min | 2 tasks | 4 files |
+| Phase 06.4 P08 | 16min | 2 tasks | 10 files |
+| Phase 06.4 P09 | 9min | 2 tasks | 8 files |
+| Phase 06.4 P10 | 60min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -315,6 +334,28 @@ Recent decisions affecting current work:
 - [Phase 06.3]: 17: Four concrete repair candidates await independent review; canonical verification and the current security gate remain open.
 - [Phase 06.3]: 17: All twelve final human dispositions remain pending; actual design approval authorizes the bound repair delta only.
 - [Phase 06.3]: 17: Real cached Chromium captures reveal UI-F01 focus loss after 422 on unchanged modal JS; keep it open without unreviewed product scope.
+- [Phase 06.4]: 01: Exact bound checkbox names use actual owning-form equality; cv.initConditional is repeat-safe and the Node/jsdom persistence tracer is opt-in only.
+- [Phase 06.4]: 01: FSET-02 remains globally pending until later automatic formset lifecycle work is verified.
+- [Phase 06.4]: Keep conditional resolver/save signal private; preserve native False-clear/None-no-change file semantics.
+- [Phase 06.4]: ImageField evidence is reference-only; disabled-image initial=None uses native no-change without altering production validation or installing Pillow.
+- [Phase 06.4]: COND-04 persistence demonstrated across Django 4.2/5.2/6.0; COND-05 remains pending plan 03 static diagnostics.
+- [Phase 06.4]: 05: Observe external disabled writes with pending-record drains; compose independent baseline and all bound ancestors without capturing temporary state.
+- [Phase 06.4]: 05: Native reset sync uses a macrotask with late-cancellation check; stranded focus remains within owning form; unload releases observation for retained-content reuse.
+- [Phase 06.4]: Retire W320 in favor of E312 using the shared resolver on main and inline form classes; server-disabled fields are exempt.
+- [Phase 06.4]: Validate clearing configuration in clean before inherited clean, even for active submissions, so request-added unsupported fields cannot reach save.
+- [Phase 06.4]: 04: Enforce edit-only and submitted-ID policy after custom clean in the shared XFormSet runtime gate; require authorized queryset membership and exact persisted-instance agreement.
+- [Phase 06.4]: 04: Recheck bound main-form errors after child clean; preserve selected-database membership, conditional persistence and inactive managed-queryset skip/purge.
+- [Phase 06.4]: 06: cv.initFormsets owns one private controller per actual form; exact DOM prefix/name equality and guarded native actions preserve independent same-prefix forms.
+- [Phase 06.4]: 06: Owning-form reorder precedes document modal FormData; cancelled submits and genuine child reorder failures invoke zero fetches, retaining existing modal focus/session authority.
+- [Phase 06.4]: 07: Derive selected child fragment indices from ordered declarations; retain authorized coordinates and exact request/response keys.
+- [Phase 06.4]: 07: Match raw wrapper predicates with render_rows_only; JavaScript supplies an isolated real-fragment/FormData/POST driver while ordinary Python remains Node-free.
+- [Phase 06.4]: 08: Real HTTP/Chromium acceptance passes 20 stock/native cases and 126 assertions; ImageField remains reference-only while real multipart FileField upload discard is verified.
+- [Phase 06.4]: 08: New fragment descendants retain the authorized editor path for nested modal actions; focused 89-test fragment suite passes cached Django 4.2/5.2/6.0.
+- [Phase 06.4]: 09: Executable bound-wrapper/file-image reference/JSON projection recipes pass all three cached Django series; retain image-byte decoding and final Phase 7 stability limits.
+- [Phase 06.4]: 09: Publish root initialization and template-data projection without promoting render-tree/controller constructors or save methods.
+- [Phase 06.4]: 09: Requirement readiness is 0/7 pending later-plan acceptance; leave global shared requirements unchanged.
+- [Phase 06.4]: 10: Reuse exact-source passing gates; distinguish enabled tracer, Node-free full suites and expected missing-runtime controls in each cached Django series.
+- [Phase 06.4]: 10: A19 successful sibling/deeper round trips reconcile only that handoff; canonical prohibition and independent review remain pending, with A8/A25/Guardian and jQuery exclusions retained.
 
 ### Pending Todos
 
@@ -352,6 +393,7 @@ None yet.
 - Phase 6.1 inserted after Phase 6: Cancel form button as a link (#275); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 6.2 inserted after Phase 6.1: Request authorization and write integrity (analysis B1–B7); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.3 inserted after Phase 6: Delete protection and write-boundary integrity — issue #282 (URGENT)
+- Phase 6.4 inserted after Phase 6.3: Conditional and formset correctness/lifecycle (analysis A1–A7); complete before Phase 7 freezes the theme surface (URGENT)
 
 ## Deferred Items
 
@@ -361,6 +403,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-31T00:49:42.341013+00:00
-Stopped at: Phase 06.3 complete, ready to plan Phase 7
+Last session: 2026-11-01T13:41:54.617Z
+Stopped at: Completed 06.4-10-PLAN.md; independent verification/security/review pending
 Resume file: None

@@ -1,0 +1,36 @@
+[
+  {
+    "command": [
+      "node",
+      "tests/browser/conditional-formsets.cjs",
+      "--check-evidence",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/16-evidence/capability.json"
+    ],
+    "exitCode": 1,
+    "output": "AssertionError [ERR_ASSERTION]: Evidence must match exact requested scope\n+ actual - expected\n\n+ 'gap-capability'\n- 'all'\n\n    at validateEvidence (/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:86:12)\n    at checkEvidence (/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:66:5)\n    at /home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:584:65 {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: 'gap-capability',\n  expected: 'all',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+  },
+  {
+    "command": [
+      "node",
+      "tests/browser/conditional-formsets.cjs",
+      "--case",
+      "gap-ambiguity",
+      "--check-evidence",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/16-evidence/capability.json"
+    ],
+    "exitCode": 1,
+    "output": "AssertionError [ERR_ASSERTION]: Evidence must match exact requested scope\n+ actual - expected\n\n+ 'gap-capability'\n- 'gap-ambiguity'\n       ^\n\n    at validateEvidence (/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:86:12)\n    at checkEvidence (/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:66:5)\n    at /home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:584:65 {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: 'gap-capability',\n  expected: 'gap-ambiguity',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+  },
+  {
+    "command": [
+      "node",
+      "tests/browser/conditional-formsets.cjs",
+      "--case",
+      "gap-capability",
+      "--check-evidence",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/16-evidence/ambiguity.json"
+    ],
+    "exitCode": 1,
+    "output": "AssertionError [ERR_ASSERTION]: Evidence must match exact requested scope\n+ actual - expected\n\n+ 'gap-ambiguity'\n- 'gap-capability'\n       ^\n\n    at validateEvidence (/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:86:12)\n    at checkEvidence (/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:66:5)\n    at /home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:584:65 {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: 'gap-ambiguity',\n  expected: 'gap-capability',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+  }
+]

@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="53" failures="8" errors="0" time="0.288853979">
+    <testsuite name="tests/js/formset.test.js" timestamp="2026-11-01T15:14:31.355Z" hostname="weaver-dev" tests="53" failures="8" errors="0" skipped="43" time="0.288853979">
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; parses config, pk and index from the fixture" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; parses a concrete parent pk" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; parses multi-digit and UUID parent pks with the server&apos;s pk grammar" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; reads and writes the management form" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; renumbers ORDER inputs 1..n in DOM order" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; blanks ORDER for empty rows" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; blanks ORDER for delete-marked rows (hidden DELETE input)" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; blanks ORDER for delete-marked rows (checkbox DELETE input)" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; does nothing when the formset is not orderable" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; computes row position facts" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; delete() toggles the hidden DELETE input and button styling" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; delete() keeps a token shared by both class strings in both directions" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; delete() still recolours when one class string is empty" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; delete() without data-cv-class attributes only toggles the input" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; up() moves the row before its predecessor and renumbers" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; up() on the first row is a no-op" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; down() moves the row after its successor and renumbers" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; down() on the last row is a no-op" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; requests a new row with the formset&apos;s coordinates" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; appends after the last row, bumps TOTAL_FORMS and wires controls" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; dispatches a bubbling cv:formset:row-added event on the inserted row" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; dispatches no separate event for nested rows inside a new parent row" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; inserts before the next row when adding from a middle row" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; rejects a custom Add on an edit-only formset at activation" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; initializes same-prefix forms repeatedly through automatic page and modal events" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; blocks disabled, inactive and non-button override actions including synthetic clicks" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; rechecks Delete and Reorder capabilities on each activation" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; uses exact names and prefixes through deep ancestry with pk 12" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; uses exact names and prefixes through deep ancestry with pk 0a1b2c3d-0000-4000-8000-00000000000a" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; initializes on a non-orderable formset without aborting (regression)" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; initializes on an edit-only formset without an add button" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; wires the control buttons to row actions" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; binds each control of a row added after init exactly once" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; delegates remaining native actions when an override omits order buttons" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; reorders all formsets on submit and lets the submit proceed" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; blocks the submit when reordering fails outright" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; allows Add and submit without extra DELETE (ordered=true)" time="0.128024142">
+            <failure message="expected undefined to be defined" type="AssertionError">
+AssertionError: expected undefined to be defined
+ ❯ tests/js/formset.test.js:541:34
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; allows Add and submit without extra DELETE (ordered=false)" time="0.031438892">
+            <failure message="expected undefined to be defined" type="AssertionError">
+AssertionError: expected undefined to be defined
+ ❯ tests/js/formset.test.js:541:34
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; keeps an initial row deletable after an extra moves above it" time="0.020864486">
+            <failure message="expected &apos;0&apos; to be &apos;1&apos; // Object.is equality" type="AssertionError">
+AssertionError: expected &apos;0&apos; to be &apos;1&apos; // Object.is equality
+
+Expected: &quot;1&quot;
+Received: &quot;0&quot;
+
+ ❯ tests/js/formset.test.js:554:48
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; refuses custom extra Delete after upward movement (direct)" time="0.008034748">
+            <failure message="expected &apos;1&apos; to be &apos;0&apos; // Object.is equality" type="AssertionError">
+AssertionError: expected &apos;1&apos; to be &apos;0&apos; // Object.is equality
+
+Expected: &quot;0&quot;
+Received: &quot;1&quot;
+
+ ❯ tests/js/formset.test.js:564:48
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; refuses custom extra Delete after upward movement (delegated)" time="0.015603182">
+            <failure message="expected &apos;1&apos; to be &apos;0&apos; // Object.is equality" type="AssertionError">
+AssertionError: expected &apos;1&apos; to be &apos;0&apos; // Object.is equality
+
+Expected: &quot;0&quot;
+Received: &quot;1&quot;
+
+ ❯ tests/js/formset.test.js:564:48
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; moves a native extra above an initial row and then deletes the initial row" time="0.030442991">
+            <failure message="expected &lt;div class=&quot;cv-formset-row&quot; …(3)&gt;…(1)&lt;/div&gt; to be &lt;div class=&quot;cv-formset-row&quot; …(3)&gt;…(1)&lt;/div&gt; // Object.is equality" type="AssertionError">
+AssertionError: expected &lt;div class=&quot;cv-formset-row&quot; …(3)&gt;…(1)&lt;/div&gt; to be &lt;div class=&quot;cv-formset-row&quot; …(3)&gt;…(1)&lt;/div&gt; // Object.is equality
+
+- Expected
++ Received
+
+@@ -1,71 +1,58 @@
+  &lt;div
+    class=&quot;cv-formset-row&quot;
+-   cv-data-formset-form=&quot;{\&quot;key\&quot;:\&quot;book\&quot;,\&quot;prefix\&quot;:\&quot;book-None-0-0\&quot;,\&quot;prefix_key\&quot;:\&quot;None-0-0\&quot;,\&quot;formset_prefix\&quot;:\&quot;book-None-0\&quot;,\&quot;pk\&quot;:\&quot;None\&quot;}&quot;
+-   cv-data-formset-form-prefix=&quot;book-None-0-0&quot;
++   cv-data-formset-form=&quot;{\&quot;key\&quot;:\&quot;book\&quot;,\&quot;prefix\&quot;:\&quot;book-None-0-2\&quot;,\&quot;prefix_key\&quot;:\&quot;None-0-2\&quot;,\&quot;formset_prefix\&quot;:\&quot;book-None-0\&quot;,\&quot;pk\&quot;:\&quot;None\&quot;}&quot;
++   cv-data-formset-form-prefix=&quot;book-None-0-2&quot;
+    cv-data-formset-prefix=&quot;book-None-0&quot;
+  &gt;
+    
+              
+    &lt;div
+      class=&quot;cv-formset-form&quot;
+    &gt;
+      
+                  
+      &lt;input
+-       name=&quot;book-None-0-0-id&quot;
++       name=&quot;book-None-0-2-id&quot;
+        type=&quot;hidden&quot;
+        value=&quot;&quot;
+      /&gt;
+      
+                  
+      &lt;input
+-       name=&quot;book-None-0-0-name&quot;
++       name=&quot;book-None-0-2-name&quot;
+        type=&quot;text&quot;
+-       value=&quot;row 0&quot;
++       value=&quot;row 2&quot;
+      /&gt;
+      
+                  
+      &lt;input
+-       name=&quot;book-None-0-0-ORDER&quot;
++       name=&quot;book-None-0-2-ORDER&quot;
+        type=&quot;hidden&quot;
+-       value=&quot;1&quot;
++       value=&quot;3&quot;
+      /&gt;
+      
+                  
+-     &lt;input
+-       name=&quot;book-None-0-0-DELETE&quot;
+-       type=&quot;hidden&quot;
+-       value=&quot;0&quot;
+-     /&gt;
+-     
+                  
+      &lt;div
+        class=&quot;cv-form-ctrl&quot;
+      &gt;
+        &lt;button
+          class=&quot;btn btn-light cv-form-ctrl-up&quot;
+-         cv-data-formset-form-prefix=&quot;book-None-0-0&quot;
++         cv-data-formset-form-prefix=&quot;book-None-0-2&quot;
+          type=&quot;button&quot;
+        /&gt;
+        
+             
+        &lt;button
+          class=&quot;btn btn-light cv-form-ctrl-down&quot;
+-         cv-data-formset-form-prefix=&quot;book-None-0-0&quot;
++         cv-data-formset-form-prefix=&quot;book-None-0-2&quot;
+          type=&quot;button&quot;
+        /&gt;
+        &lt;button
+          class=&quot;btn btn-light cv-form-ctrl-add&quot;
+-         cv-data-formset-form-prefix=&quot;book-None-0-0&quot;
+-         type=&quot;button&quot;
+-       /&gt;
+-       &lt;button
+-         class=&quot;x-ctrl cv-form-ctrl-delete&quot;
+-         cv-data-formset-form-prefix=&quot;book-None-0-0&quot;
+-         data-cv-class=&quot;x-ctrl&quot;
+-         data-cv-class-danger=&quot;x-danger&quot;
++         cv-data-formset-form-prefix=&quot;book-None-0-2&quot;
+          type=&quot;button&quot;
+        /&gt;
+      &lt;/div&gt;
+      
+              
+
+ ❯ tests/js/formset.test.js:571:49
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; inserts an extra before an initial row without renumbering bound prefixes" time="0.039246648">
+            <failure message="expected &apos;0&apos; to be &apos;1&apos; // Object.is equality" type="AssertionError">
+AssertionError: expected &apos;0&apos; to be &apos;1&apos; // Object.is equality
+
+Expected: &quot;1&quot;
+Received: &quot;0&quot;
+
+ ❯ tests/js/formset.test.js:589:52
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects missing DELETE on eligible rows (ordered=true)" time="0.005699365">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects missing DELETE on eligible rows (ordered=false)" time="0.002012855">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; permits ordered rows when deletion is disabled entirely" time="0.003640591">
+            <failure message="expected [Function] to not throw an error but &apos;TypeError: Cannot read properties of …&apos; was thrown" type="AssertionError">
+AssertionError: expected [Function] to not throw an error but &apos;TypeError: Cannot read properties of …&apos; was thrown
+
+- Expected:
+undefined
+
++ Received:
+&quot;TypeError: Cannot read properties of null (reading &apos;0&apos;)&quot;
+
+ ❯ tests/js/formset.test.js:607:53
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; starts automatically when executed after the page is ready" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; stays silent on a page without formsets" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; reports missing jQuery once and supports an explicit late retry" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; waits for DOMContentLoaded so jQuery can load later" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; retries on window load for deferred jQuery" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; reports missing jQuery once after the load retry" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; initializes a DocumentFragment and root formset/control elements" time="0">
+            <skipped/>
+        </testcase>
+    </testsuite>
+</testsuites>

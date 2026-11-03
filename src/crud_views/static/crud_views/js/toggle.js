@@ -11,57 +11,216 @@
     // error once the user re-enables the toggle. The server ignores an off
     // formset's data anyway.
     const MGMT_FIELD = /-(TOTAL_FORMS|INITIAL_FORMS|MIN_NUM_FORMS|MAX_NUM_FORMS)$/;
+    const bindings = new WeakMap();
+    // An unresolved binding releases its listener, not its last owned state.
+    // Absence means this group has never resolved and owns no conditional state.
+    const ownedStates = new WeakMap();
+    const forms = new WeakMap();
+    const baselines = new WeakMap();
+    const GROUP = "[cv-data-toggle-group]";
+    const CONTROLS = "input, select, textarea, button";
 
-    function findCheckbox(scope, name) {
-        // Match the toggle checkbox within the nearest form/row scope.
-        const escaped = globalThis.CSS?.escape ? CSS.escape(name) : name;
-        return scope.querySelector(
-            'input[type="checkbox"][name="' + escaped + '"], input[type="checkbox"][name$="-' + escaped + '"]'
-        );
-    }
-
-    function apply(group, checkbox) {
-        const on = checkbox.checked;
-        group.style.display = on ? "" : "none";
-        group.querySelectorAll("input, select, textarea").forEach(function (el) {
-            if (MGMT_FIELD.test(el.name || "")) {
-                return;
-            }
-            el.disabled = !on;
+    function findCheckboxes(form, name) {
+        // Form ownership includes controls using form= and excludes controls
+        // reassigned to another form. Names are data, never selector syntax.
+        return Array.from(form.elements).filter(function (el) {
+            return el.tagName === "INPUT" && el.type === "checkbox" && el.form === form && el.name === name;
         });
     }
 
-    function wireGroups(root) {
-        root.querySelectorAll("[cv-data-toggle-group]").forEach(function (group) {
-            if (group.__cvToggleWired) {
-                return;
+    function rememberExternal(records) {
+        records.forEach(function ({ target }) {
+            if (baselines.has(target)) baselines.set(target, target.hasAttribute("disabled"));
+        });
+    }
+
+    function observe(state) {
+        state.observer.observe(state.form, { subtree: true, attributes: true,
+            attributeFilter: ["disabled"], attributeOldValue: true });
+    }
+
+    function usable(el) {
+        if (!(el instanceof HTMLElement) || !el.isConnected || !el.getClientRects().length) return false;
+        for (let node = el; node; node = node.parentElement) {
+            if (node.hidden || node.hasAttribute("inert") || node.inert ||
+                node.getAttribute("aria-hidden") === "true" || node.getAttribute("aria-disabled") === "true" ||
+                node.matches(":disabled")) return false;
+            const style = getComputedStyle(node);
+            if (style.display === "none" || style.visibility === "hidden" || style.visibility === "collapse") return false;
+        }
+        return true;
+    }
+
+    function focus(el, temporary = false) {
+        if (!usable(el)) return false;
+        const added = temporary && !el.hasAttribute("tabindex");
+        const clean = function () {
+            if (added && el.getAttribute("tabindex") === "-1") el.removeAttribute("tabindex");
+            el.removeEventListener("blur", clean);
+        };
+        if (added) el.setAttribute("tabindex", "-1");
+        el.focus();
+        if (document.activeElement !== el) { clean(); return false; }
+        if (added) el.addEventListener("blur", clean, { once: true });
+        return true;
+    }
+
+    function recoverFocus(state, hidden) {
+        for (const group of hidden) {
+            for (let node = group; node && node !== state.form; node = node.parentElement) {
+                const binding = bindings.get(node);
+                if (binding && binding.checkbox.form === state.form && focus(binding.checkbox)) return;
             }
-            group.__cvToggleWired = true;
-            const name = group.getAttribute("cv-data-toggle-field");
-            const scope = group.closest("form") || document;
-            const checkbox = findCheckbox(scope, name);
-            if (!checkbox) {
-                return;
-            }
-            apply(group, checkbox);
-            checkbox.addEventListener("change", function () {
-                apply(group, checkbox);
+        }
+        focus(state.form, true);
+    }
+
+    function sync(state) {
+        // A same-value external `disabled = true` still creates a record. Drain
+        // it before disconnecting, so our temporary writes never become baseline.
+        rememberExternal(state.observer.takeRecords());
+        state.observer.disconnect();
+        const active = document.activeElement;
+        const hidden = [];
+        try {
+            state.groups.forEach(function (group) {
+                const binding = bindings.get(group);
+                if (binding) ownedStates.set(group, binding.checkbox.checked);
+                if (ownedStates.has(group)) {
+                    const enabled = ownedStates.get(group);
+                    if (!enabled && group.style.display !== "none" && group.contains(active)) hidden.push(group);
+                    group.style.display = enabled ? "" : "none";
+                }
+                group.querySelectorAll(CONTROLS).forEach(function (el) {
+                    if (!baselines.has(el)) baselines.set(el, el.disabled);
+                    state.controls.add(el);
+                });
             });
-        });
+            state.controls.forEach(function (el) {
+                let inactive = false;
+                if (!MGMT_FIELD.test(el.name || "")) {
+                    for (let group = el.parentElement; group && group !== state.form; group = group.parentElement) {
+                        if (ownedStates.get(group) === false) inactive = true;
+                    }
+                }
+                const disabled = baselines.get(el) || inactive;
+                if (el.disabled !== disabled) el.disabled = disabled;
+            });
+        } finally {
+            observe(state);
+        }
+        if (hidden.length) recoverFocus(state, hidden.reverse());
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        wireGroups(document);
+    function initForm(form) {
+        let state = forms.get(form);
+        if (!state) {
+            state = { form, groups: new Set(), controls: new Set() };
+            state.observer = new MutationObserver(function (records) {
+                rememberExternal(records);
+                sync(state);
+            });
+            forms.set(form, state);
+            state.onReset = function (event) {
+                // Native defaults run after event dispatch. A task also observes
+                // preventDefault() by listeners later in the propagation path.
+                setTimeout(function () {
+                    if (!event.defaultPrevented && forms.get(form) === state) initForm(form);
+                }, 0);
+            };
+            form.addEventListener("reset", state.onReset);
+            observe(state);
+        }
+        rememberExternal(state.observer.takeRecords());
+        // Discover the complete form before writing, so nesting order cannot
+        // snapshot another group's temporary disabled property as baseline.
+        const groups = new Set(form.querySelectorAll(GROUP));
+        state.groups.forEach(function (group) {
+            if (!groups.has(group)) {
+                const previous = bindings.get(group);
+                previous?.checkbox.removeEventListener("change", previous.onChange);
+                bindings.delete(group);
+                ownedStates.delete(group);
+            }
+        });
+        state.groups = groups;
+        groups.forEach(function (group) {
+            const name = group.getAttribute("cv-data-toggle-field");
+            const matches = findCheckboxes(form, name);
+            const previous = bindings.get(group);
+            const checkbox = matches.length === 1 ? matches[0] : null;
+            if (previous && previous.checkbox !== checkbox) {
+                previous.checkbox.removeEventListener("change", previous.onChange);
+                bindings.delete(group);
+            }
+            if (!checkbox) {
+                if (matches.length > 1) {
+                    console.warn("crud_views: ambiguous conditional toggle", name);
+                }
+                return;
+            }
+            if (!bindings.has(group)) {
+                const onChange = function () { sync(state); };
+                bindings.set(group, { checkbox, onChange });
+                checkbox.addEventListener("change", onChange);
+            }
+        });
+        sync(state);
+    }
+
+    function initConditional(root = document) {
+        const owners = new Set();
+        if (root.matches?.("form")) owners.add(root);
+        const owner = root.closest?.("form") || root.form;
+        if (owner) owners.add(owner);
+        root.querySelectorAll("form").forEach(form => owners.add(form));
+        root.querySelectorAll(GROUP).forEach(group => {
+            const form = group.closest("form");
+            if (form) owners.add(form);
+        });
+        owners.forEach(initForm);
+    }
+
+    globalThis.cv = globalThis.cv || {};
+    globalThis.cv.initConditional = initConditional;
+
+    document.addEventListener("DOMContentLoaded", function () { initConditional(document); });
+    if (document.readyState !== "loading") initConditional(document);
+
+    document.addEventListener("cv:modal:unload", function (event) {
+        const owners = new Set(event.target.querySelectorAll("form"));
+        if (event.target.matches?.("form")) owners.add(event.target);
+        owners.forEach(function (form) {
+            const state = forms.get(form);
+            if (!state) return;
+            rememberExternal(state.observer.takeRecords());
+            state.observer.disconnect();
+            form.removeEventListener("reset", state.onReset);
+            // Release only our temporary state before forgetting ownership. A
+            // theme may retain and later reinsert this exact detached content.
+            state.controls.forEach(function (el) {
+                const disabled = baselines.get(el);
+                if (el.disabled !== disabled) el.disabled = disabled;
+                baselines.delete(el);
+            });
+            state.groups.forEach(function (group) {
+                const binding = bindings.get(group);
+                binding?.checkbox.removeEventListener("change", binding.onChange);
+                bindings.delete(group);
+                ownedStates.delete(group);
+            });
+            forms.delete(form);
+        });
     });
 
     // Modal content is injected via innerHTML after DOMContentLoaded; modal.js
     // dispatches this event exactly so scripts can re-initialize inside it.
     document.addEventListener("cv:modal:loaded", function (event) {
-        wireGroups(event.target);
+        initConditional(event.target);
     });
 
     // Same for formset rows added by formset.js after page load.
     document.addEventListener("cv:formset:row-added", function (event) {
-        wireGroups(event.target);
+        initConditional(event.target);
     });
 })();

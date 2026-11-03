@@ -66,7 +66,7 @@
     {
       "number": "6.7",
       "name": "Dynamic cancel navigation and origin query state",
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "number": "7",
@@ -75,9 +75,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-plan-phase 06.7",
-    "label": "Plan Phase 06.7",
-    "reason": "Phase 06.7 inserted for approved issue #302; plan before the Phase 7 stability freeze"
+    "command": "$gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 17 of 19 · executing"
   },
-  "updated_at": "2026-11-03T13:02:17.889Z"
+  "updated_at": "2026-11-03T15:06:12.675Z"
 }

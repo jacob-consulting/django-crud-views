@@ -135,7 +135,10 @@
       "grok-review",
       "gemini-review"
     ],
-    "parallel_lanes": true
+    "parallel_lanes": true,
+    "timeouts": {
+      "opencode": 1200
+    }
   },
   "models": {
     "planning": "opus",

@@ -44,6 +44,8 @@ EXPECTED_KEYS = {
     "form:delete",
     "form:filter-submit",
     "form:filter-reset",
+    "form:actions",
+    "form:filter-actions",
     # the element of an eligible cancel (Phase 6.1): a structural value, "button" or "a", never classes
     "form:cancel-tag",
     "formset:control",
@@ -73,6 +75,8 @@ EXPECTED_KEYS = {
     "alert:success",
     "alert:info",
     "alert:debug",
+    "alert:dismissible",
+    "alert:close",
     "context:icon-host",
     "list:icon-host",
     "card:icon-host",
@@ -102,7 +106,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 84
+    assert len(EXPECTED_KEYS) == 88
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"

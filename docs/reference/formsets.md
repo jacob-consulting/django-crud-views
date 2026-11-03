@@ -86,8 +86,8 @@ cv_formsets: FormSets = FormSets(
 ### The parent form
 
 The parent's own `CrispyModelForm` only needs to place a `Formsets()` layout element where the
-child formsets should render, and turn off `form_tag` — the formsets render their own form
-tags:
+child formsets should render. The inherited library helper already uses `form_tag=False`;
+the page owns the outer form and its CSRF token:
 
 <!-- cv-sync: formsets/views.py -->
 ```python
@@ -99,12 +99,6 @@ class QuestionnaireForm(CrispyModelForm):
     def get_layout_fields(self):
         return [Row(Column8("title")), Formsets()]
 
-    @property
-    def helper(self) -> FormHelper:
-        # the formsets render their own form tags
-        h = super().helper
-        h.form_tag = False
-        return h
 ```
 
 ### The view

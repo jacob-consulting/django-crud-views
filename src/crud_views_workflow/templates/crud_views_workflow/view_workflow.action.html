@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load crispy_forms_tags %}
 {% load crud_views %}
 
 
@@ -12,7 +11,7 @@
         {{ form.non_form_errors }}
 
         <!-- the form itself with crispy -->
-        {% crispy form form.helper %}
+        {% cv_render_form %}
     </form>
 {% else %}
     {% translate "There are no workflow steps available from the current state." %}

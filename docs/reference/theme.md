@@ -121,6 +121,43 @@ register_button_classes(
 
 See [Button row as a list](buttons.md#button-row-as-a-list).
 
+## Theme label defaults
+
+Themes may set per-location label floors without a project setting. Effective defaults merge **package → theme →
+project**, per key. Package values remain context/list `"icon"`, card `"both"`, form `"label"`.
+Explicit button/view modes and selected owner maps still take precedence over this floor; owner maps are selected
+whole, not merged. See the existing [resolution steps](action_menus.md#label-mode).
+
+### Register theme defaults
+
+Call the public registrations from your theme's `AppConfig.ready()`:
+
+```python
+def ready(self):
+    from crud_views.lib.button_classes import register_button_classes
+    from crud_views.lib.view.label_mode import register_label_mode_defaults
+
+    register_label_mode_defaults({"form": "both"})
+    register_button_classes({
+        "form:actions": "d-flex flex-wrap gap-2",
+        "form:filter-actions": "d-flex flex-wrap gap-1",
+        "alert:dismissible": "notice-dismissible",
+        "alert:close": "notice-close",
+    })
+```
+
+Supply CSS for the example notice classes. Later registration calls win per key; app `ready()` order follows
+`INSTALLED_APPS`. This differs from template lookup, where the first matching app wins. Registration copies the
+input and validates the entire dict before changing anything: unknown locations or modes, non-string entries,
+or a non-dict raise `ValueError` in every mode, without partial registration.
+
+`register_label_mode_defaults()` accepts only `context`, `list`, `card`, `form` and the modes `label`, `icon`, `both`.
+`default_label_mode(location)` reads project settings on every call: `override_settings` and restoration work
+without resetting a cache. Invalid project values raise `ValueError` in strict mode; otherwise they log once per
+location/value and fall back to the theme, then the package. E108 still reports malformed project configuration.
+An explicit valid owner mode wins without consulting an invalid lower floor. Registration does not rename
+`cv_context_action_label_mode` or the distinct plural owner-map APIs.
+
 ## Heading presentation
 
 Heading semantic levels follow `CRUD_VIEWS_HEADER_LEVEL`; visual sizing and icon presentation use the same
@@ -289,6 +326,159 @@ handling stay upstream's. A modal request carries the `X-CV-Modal: true` header;
 {% endblock %}
 ```
 
+## Page-owned form helpers
+
+Within an actionable CRUD content region, the page owns one outer form and one CSRF input. Auxiliary sibling forms
+keep their independent tokens; no nested form is valid, including an unclassed form. Protected deletion and
+full-page workflows with no available choices intentionally omit their confirmation form. Supported workflow
+modals retain the inherited custom-form body, including its form when no choices remain. Create/update, including
+parent formsets, remain outside modal HTTP support; opting in still fails E251.
+
+Library helpers now set `form_tag=False`. For application helpers this is mandatory when using `cv_render_form`:
+`form_tag=True` raises `ImproperlyConfigured` even when strict mode is off. The page owns method, action, id,
+enctype and other outer attributes. The renderer never transfers helper wrapper attributes to it.
+
+### Computed helper recipe
+
+Computed properties may return a fresh helper. Keep layout/field settings here and wrapper settings on the page:
+
+```python
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
+from django import forms
+from crud_views.lib.crispy import Submit
+
+
+class ContactForm(forms.Form):
+    name = forms.CharField()
+
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_tag = False
+        helper.layout = Layout("name", Submit("submit", "Send", icon="save"))
+        return helper
+```
+
+`cv_render_form` selects `form.helper` once, including falsey helper objects, and exposes its render-local
+adaptation as `cv_form_helper`. An absent/None helper gets a nonwrapping default. The source helper and layout
+are not mutated: inner CSRF suppression applies only at this boundary, preserving custom helper hooks.
+
+### Page-owned form recipe
+
+In a copied content template, keep the enclosing page's attributes and token. For a custom endpoint, supply
+`form_id` in context and retain the request, form and normal Django CSRF context:
+
+```django
+{% load crud_views %}
+<form class="cv-form" id="{{ form_id }}" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% cv_render_form %}
+</form>
+```
+
+Do not add `safe` to caller-controlled attribute or field values. The stock create/update/custom forms retain
+multipart and their explicit current-page action; deletion keeps its existing attributes. Overriding only
+`snippets/form_frame.html` remains sufficient when the theme only changes surrounding decoration.
+
+### Copied inner form template
+
+If your theme copied `crud_views/tags/form.html`, replace its helper lookup with this complete inner template:
+
+```django
+{% load crispy_forms_tags %}
+{% crispy form cv_form_helper %}
+```
+
+Do not resolve `form.helper` again or use the implicit `{% crispy form %}` path here. A legacy copy ignoring
+`cv_form_helper` bypasses token suppression, may emit duplicate tokens, and cannot be automatically diagnosed.
+No rendered-HTML rewriting or global crispy-template override repairs such copies.
+
+### Copied workflow action template
+
+Migrate a copied `crud_views_workflow/view_workflow.action.html` from direct crispy to the same boundary, retaining
+the full-page branch and implicit current-page target. Remove its unused `crispy_forms_tags` load:
+
+```django
+{% load i18n crud_views %}
+{% if has_workflow_choices %}
+    {% cv_heading level=5 %}{% translate "Workflow Action" %}{% endcv_heading %}
+    <form class="cv-form" method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_form_errors }}
+        {% cv_render_form %}
+    </form>
+{% else %}
+    {% translate "There are no workflow steps available from the current state." %}
+{% endif %}
+```
+
+This recipe does not change `WorkflowView.cv_content_template`: its supported modal response still uses
+`crud_views/view_custom_form.content.html`, not this full-page workflow branch.
+
+### Wrapper diagnostics
+
+With `form_tag=False`, nonempty raw `form_action`, `form_id`, `attrs`, `form_class`, and `form_method` other than
+`"post"` are detectable unused outer configuration. Rendering logs a warning in non-strict mode and raises
+`ImproperlyConfigured` in strict mode. Move the intended attributes to the page template. Ordinary defaults
+are quiet; explicitly assigning a default value is not promised detectable. The action is checked without
+resolving its URL. Helper method/classes may still affect pack internals; field/label/media/layout options are
+outside these wrapper diagnostics. These are render-time diagnostics, not a new startup form-construction check.
+
+A redundant parent-form `helper` override used only to set `form_tag=False` can be removed when inheriting the
+library helper. Inherited library providers recover static W292 missing-icon inspection. Intentional custom
+helper/provider overrides keep the existing non-instantiating diagnostic boundary.
+
+### Standalone library form recipe
+
+Standalone `{% crispy form %}` for a library `CrispyModelForm` now emits fields and its existing token, without
+the former helper-owned form wrapper. Add a caller-owned wrapper, but **do not add another CSRF tag**:
+
+```django
+{% load crispy_forms_tags %}
+<form class="cv-form" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
+    {% crispy form form.helper %}
+</form>
+```
+
+Use a normal request/CSRF context and retain the helper's token behavior on this standalone POST path. This differs
+from `cv_render_form`, where the page emits the token and the inner renderer suppresses it. Standalone custom
+helpers and GET filters keep their own policy. The ownership correction intentionally changes DOM: the reviewed
+create/update/custom/delete frames lose their inner form and duplicate token; standalone library forms lose only
+their helper wrapper. Field/control attributes and the outer page form remain intact. See
+[immediate migration](../migrating-1.0.md#page-owned-forms-and-helpers).
+
+## Action-group classes
+
+`form:actions` styles the default ordinary/delete action group; `form:filter-actions` independently styles the
+default filter group. Both package defaults are empty strings. They are base-only utility keys, not form kinds
+or label-mode keys. See the [complete class inventory](buttons.md#the-class-table).
+
+Classes are resolved each render and added alongside the active pack's own wrapper classes. Empty defaults
+preserve that pack's bytes. Current crispy 2.7 / crispy-bootstrap5 2026.9 and the declared crispy 2.0 /
+crispy-bootstrap5 2023.10 floor have been tested separately. The latter uses a library-local bridge only for
+the exact audited source resolved from the installed Bootstrap pack. Different origins, modified templates
+and custom packs keep their own rendering; they must consume `formactions.css_class` to display the utility.
+There is no generic pack fallback, global template replacement or dependency-floor increase.
+
+### Custom action-group opt-in
+
+Retain the library group through `super()` and add your own class without importing private bridge machinery:
+
+```python
+class SpacedActions:
+    def get_form_actions(self):
+        group = super().get_form_actions()
+        group.css_class = " ".join(value for value in (group.css_class, "theme-actions") if value)
+        return group
+```
+
+Place this mixin before your library form or `ListViewFilterFormHelper` base. A custom hook returning a separate
+layout, `None` or an empty group retains ownership and does not automatically consume these keys. The existing
+[replacement/removal recipes](list_view.md#custom-filter-helpers) and tutorial guidance remain valid; retain the filter's
+separate hidden sort/order/direction inputs. Pack layout and custom CSS remain the theme's responsibility.
+
 ## Alerts
 
 Every alert in the package (flash messages, the delete page's protection and related-objects alerts, the guardian
@@ -307,9 +497,10 @@ frame's context.
 
 ### Custom alert frame
 
-The frame's own classes (`alert-dismissible fade show`, `btn-close`) are literal Bootstrap CSS. To style them your
-way, ship `templates/crud_views/tags/alert.html` in your theme app. A complete replacement with its own `notice`
-classes:
+The default frame consumes `alert:dismissible` (default `alert-dismissible fade show`) and `alert:close`
+(default `btn-close`). Register replacements, or use `None`/`""` to omit those contributions, without copying
+the frame. Level classes, role, translated accessible name, conditional close control and dismissal hooks remain.
+To change markup itself, ship `templates/crud_views/tags/alert.html`. A complete replacement with `notice` classes:
 
 ```django
 {% load crud_views i18n %}

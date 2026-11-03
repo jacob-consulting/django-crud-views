@@ -1,0 +1,18 @@
+{
+  "argv": [
+    ".nox/tests-3-12-django-5-2/bin/python",
+    "tests/browser/theme_adoption_sources.py",
+    "--verify-replay",
+    "--delivered-source",
+    "recorded",
+    "--require-committed",
+    "--output",
+    "/home/alex/projects/alex/django-crud-views/.planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/10-companion-delivery.json"
+  ],
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "duration_seconds": 37.458,
+  "exit_code": 2,
+  "log_sha256": "d2b812b1f672f7cfa8312e351d87b31635aae3683d2a50368dabd3077113a79f",
+  "stderr": "",
+  "stdout": "{\"status\": \"blocked\", \"error\": \"stale delivery source/runtime/config hashes\"}\n"
+}

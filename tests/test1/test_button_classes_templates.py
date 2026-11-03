@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 from django.contrib.auth.models import User
+from django.forms import BooleanField
 from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.test import Client, RequestFactory, override_settings
@@ -59,7 +60,12 @@ def test_every_literal_slot_in_templates_is_a_default_key():
 def _render_formset_controls():
     tpl = Template('{% include "crud_views/formsets/control.html" %}')
     rendered = tpl.render(
-        Context({"formset": SimpleNamespace(can_order=True, can_delete=True), "form": SimpleNamespace(prefix="p-0")})
+        Context(
+            {
+                "formset": SimpleNamespace(can_order=True, can_delete=True),
+                "form": SimpleNamespace(prefix="p-0", fields={"DELETE": BooleanField(required=False)}),
+            }
+        )
     )
     return html.fromstring(rendered)
 

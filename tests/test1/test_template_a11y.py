@@ -1,6 +1,7 @@
 """Accessible markup of the action, filter-toggle and formset-control templates."""
 
 import pytest
+from django.forms import BooleanField
 from django.template import Context, Template
 from lxml import html
 
@@ -97,7 +98,12 @@ def test_formset_controls_have_labels_and_hidden_icons():
 
     tpl = Template('{% include "crud_views/formsets/control.html" %}')
     rendered = tpl.render(
-        Context({"formset": SimpleNamespace(can_order=True, can_delete=True), "form": SimpleNamespace(prefix="p-0")})
+        Context(
+            {
+                "formset": SimpleNamespace(can_order=True, can_delete=True),
+                "form": SimpleNamespace(prefix="p-0", fields={"DELETE": BooleanField(required=False)}),
+            }
+        )
     )
     doc = html.fromstring(rendered)
     groups = doc.cssselect("fieldset.btn-group")

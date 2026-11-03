@@ -23,8 +23,10 @@ import json
 from collections.abc import Iterable
 from typing import Any
 
+from django.core.exceptions import ValidationError
 from django.forms.forms import BaseForm
 from django.forms.formsets import BaseFormSet
+from django.utils.translation import gettext_lazy as _
 from pydantic import BaseModel, Field
 
 from crud_views.lib.exceptions import CrudViewError
@@ -95,6 +97,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     prefix_key: str
     formset: Any
     cv_active: bool = True
+    cv_bound_toggle_field: str = ""
     instance: BaseFormSet
     management_form: Any
     forms: list[XForm] = Field(default_factory=lambda: [])
@@ -194,13 +197,70 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
 
     @property
     def cv_toggle_field(self) -> str:
-        conditional = self.formset.conditional
-        return conditional.toggle.field_name() if conditional is not None else ""
+        return self.cv_bound_toggle_field
 
     def is_valid(self) -> Iterable[tuple[Any, bool]]:
-        yield self, self.instance.is_valid()
+        valid = self.instance.is_valid()
+        self._cv_validate_row_policy()
+        yield self, valid and not self.instance.non_form_errors()
         for x_form in self.forms:
             yield from x_form.is_valid()
+
+    def _cv_validate_row_policy(self):
+        """Enforce row capabilities for every accepted inline formset class.
+
+        Run after normal Django/custom cleaning on every traversal, including
+        on DELETE-marked rows: full_clean() can replace the native error cache.
+        Inactive top-level trees never enter this validation traversal.
+        """
+        if not self.instance.is_bound:
+            return
+        if not self.instance.management_form.is_valid():
+            return
+        initial = self.instance.initial_form_count()
+        total = self.instance.management_form.cleaned_data["TOTAL_FORMS"]
+        invalid_row = not 0 <= initial <= total
+        pk_field = self.instance.model._meta.pk
+        queryset = self.instance.get_queryset()
+        # Evaluate the managed queryset on its own selected alias. Never consult
+        # the PK ModelChoiceField, whose queryset may include unrelated rows.
+        authorized_ids = set(queryset.values_list("pk", flat=True))
+        for index, row in enumerate(self.forms):
+            form = row.form
+            raw_pk = form.data.get(form.add_prefix(pk_field.name))
+            persisted = not form.instance._state.adding
+            if index < initial or raw_pk not in (None, "") or persisted:
+                try:
+                    submitted_pk = pk_field.to_python(raw_pk)
+                except (ValidationError, ValueError, TypeError):
+                    invalid_row = True
+                    continue
+                if (
+                    submitted_pk is None
+                    or submitted_pk not in authorized_ids
+                    or not persisted
+                    or submitted_pk != form.instance.pk
+                ):
+                    invalid_row = True
+        if invalid_row:
+            self._cv_add_policy_error("cv_invalid_row", _("Invalid row."))
+        if self.formset.edit_only:
+            extras = self.forms[initial:]
+            if any(self._cv_row_has_data(row) for row in extras):
+                self._cv_add_policy_error("cv_additions_not_allowed", _("Additions are not allowed."))
+
+    @staticmethod
+    def _cv_row_has_data(row):
+        # A nested-only addition is still an addition to this extra parent.
+        # has_changed includes DELETE even where Django ignores deleted forms.
+        return row.form.has_changed() or any(
+            XFormSet._cv_row_has_data(child_row) for child in row.formsets for child_row in child.forms
+        )
+
+    def _cv_add_policy_error(self, code, message):
+        errors = self.instance.non_form_errors()
+        if not any(error.code == code for error in errors.as_data()):
+            errors.append(ValidationError(message, code=code))
 
     def _get_x_form(self, form):
         for x_form in self.forms:
@@ -256,7 +316,12 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
         for form in update_forms:
             # just make sure x-form exists for this form
             self._get_x_form(form)
-            if form.has_changed():
+            conditional_change = (
+                not form.instance._state.adding
+                and not form.errors
+                and getattr(form, "_cv_conditional_requires_save", False)
+            )
+            if form.has_changed() or conditional_change:
                 self._save_changed_form(form, can_order)
 
         # now save the x_forms

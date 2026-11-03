@@ -1,0 +1,66 @@
+test_command_identity_normalizes_only_transport_directory (__main__.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory) ... ok
+test_complete_packet_cli_and_pending_handoff_positive (__main__.CheckerControlEvidence.test_complete_packet_cli_and_pending_handoff_positive) ... ok
+test_contradictory_success_outcomes_reject_everywhere (__main__.CheckerControlEvidence.test_contradictory_success_outcomes_reject_everywhere) ... ok
+test_duplicate_keys_reject_at_both_cli_entry_points (__main__.CheckerControlEvidence.test_duplicate_keys_reject_at_both_cli_entry_points) ... ok
+test_exact_summary_and_detail_inventory (__main__.CheckerControlEvidence.test_exact_summary_and_detail_inventory) ... ok
+test_internal_payload_result_cannot_supply_final_acceptance (__main__.CheckerControlEvidence.test_internal_payload_result_cannot_supply_final_acceptance) ... ok
+test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) ... ok
+test_missing_detailed_inventory_rejects_cli_aggregate_and_handoff (__main__.CheckerControlEvidence.test_missing_detailed_inventory_rejects_cli_aggregate_and_handoff) ... ok
+test_real_staged_controls_and_final_positive (__main__.CheckerControlEvidence.test_real_staged_controls_and_final_positive) ... REJECTED corruption exit-code
+REJECTED corruption required-case-list
+REJECTED corruption raw-balance-assertion
+REJECTED corruption inline-clear-assertion
+REJECTED corruption source-hash
+REJECTED corruption tracer-absent
+REJECTED corruption tracer-skipped
+REJECTED corruption tracer-failed
+REJECTED corruption tracer-zero-selected
+REJECTED corruption disabled-opt-in
+REJECTED corruption disabled-node-absence
+REJECTED corruption negative-control-setup-error
+REJECTED corruption js-filtered-command
+REJECTED corruption js-wrong-executable
+REJECTED corruption js-missing-file
+REJECTED corruption js-duplicate-file
+REJECTED corruption js-missing-case
+REJECTED corruption js-duplicate-case
+REJECTED corruption js-failed-case
+REJECTED corruption js-skipped-case
+REJECTED corruption js-false-counts
+REJECTED corruption integration-missing
+REJECTED corruption docs-non-strict
+REJECTED corruption ruff-wrong-subcommand
+REJECTED corruption ruff-format-missing-check
+REJECTED corruption capture-missing
+REJECTED corruption capture-digest
+REJECTED corruption capture-observation
+REJECTED corruption control-missing-evidence
+REJECTED corruption control-missing-summary
+REJECTED corruption control-success-outcome
+REJECTED corruption control-wrong-command
+REJECTED corruption control-wrong-diagnostic
+ok
+test_changed_deleted_or_non_png_owned_bytes_reject_without_touching_originals (__main__.ConditionalCaptureEvidence.test_changed_deleted_or_non_png_owned_bytes_reject_without_touching_originals) ... ok
+test_current_three_stock_and_explicit_empty_native_are_valid (__main__.ConditionalCaptureEvidence.test_current_three_stock_and_explicit_empty_native_are_valid) ... ok
+test_device_viewport_and_containment_observations (__main__.ConditionalCaptureEvidence.test_device_viewport_and_containment_observations) ... ok
+test_exact_stock_and_native_inventories (__main__.ConditionalCaptureEvidence.test_exact_stock_and_native_inventories) ... ok
+test_historical_human_markers_stay_pending (__main__.ConditionalCaptureEvidence.test_historical_human_markers_stay_pending) ... ok
+test_missing_capture_inventory_rejects_aggregate_cli_and_handoff (__main__.ConditionalCaptureEvidence.test_missing_capture_inventory_rejects_aggregate_cli_and_handoff) ... ok
+test_missing_or_false_rendered_icon_observations (__main__.ConditionalCaptureEvidence.test_missing_or_false_rendered_icon_observations) ... ok
+test_paths_are_bounded_and_distinct (__main__.ConditionalCaptureEvidence.test_paths_are_bounded_and_distinct) ... ok
+test_stale_digest_rejects_despite_historical_canonical_success (__main__.ConditionalCaptureEvidence.test_stale_digest_rejects_despite_historical_canonical_success) ... ok
+test_false_readiness_rejects (__main__.HandoffEvidence.test_false_readiness_rejects) ... ok
+test_malformed_packet_subprocess_rejects (__main__.HandoffEvidence.test_malformed_packet_subprocess_rejects) ... ok
+test_missing_case_reference_rejects (__main__.HandoffEvidence.test_missing_case_reference_rejects) ... ok
+test_missing_findings_and_links_reject (__main__.HandoffEvidence.test_missing_findings_and_links_reject) ... ok
+test_missing_human_state_or_prohibition_rejects (__main__.HandoffEvidence.test_missing_human_state_or_prohibition_rejects) ... ok
+test_pending_packet_is_structurally_valid_but_not_ready (__main__.HandoffEvidence.test_pending_packet_is_structurally_valid_but_not_ready) ... ok
+test_stale_report_hash_rejects (__main__.HandoffEvidence.test_stale_report_hash_rejects) ... ok
+test_stale_source_provenance_rejects (__main__.HandoffEvidence.test_stale_source_provenance_rejects) ... ok
+test_unattributed_human_approval_rejects (__main__.HandoffEvidence.test_unattributed_human_approval_rejects) ... ok
+test_unreviewed_finding_cannot_close (__main__.HandoffEvidence.test_unreviewed_finding_cannot_close) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 283.443s
+
+OK

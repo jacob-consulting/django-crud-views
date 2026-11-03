@@ -1,7 +1,197 @@
 import $ from "jquery";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { loadScript, nav, resetNav } from "./helpers/load.js";
-import { modalSkeleton } from "./helpers/dom.js";
+import { formsetFixture, formsetHtml, formsetModalHtml, modalSkeleton, rowHtml } from "./helpers/dom.js";
+describe("composed formset conditional and modal listeners", () => {
+    let html, modal, content, adapter, hidden;
+    beforeAll(async () => {
+        await loadScript("formset");
+        await loadScript("toggle");
+    });
+    beforeEach(() => {
+        html = formsetModalHtml();
+        formsetFixture();
+        const page = document.querySelector("form").outerHTML;
+        modalSkeleton();
+        document.body.insertAdjacentHTML("beforeend", page);
+        modal = document.getElementById("cv-modal");
+        content = document.getElementById("cv-modal-content");
+        hidden = null;
+        adapter = {
+            show: vi.fn(() => modal.removeAttribute("aria-hidden")),
+            hide: vi.fn(() => { modal.setAttribute("aria-hidden", "true"); hidden?.(); }),
+            setSize: vi.fn(),
+            onHidden: vi.fn((_el, callback) => { hidden = callback; return () => { hidden = null; }; }),
+        };
+        window.cv.adapters = { modal: adapter };
+        document.dispatchEvent(new Event("DOMContentLoaded"));
+    });
+    afterEach(() => {
+        modal.dispatchEvent(new CustomEvent("cv:modal:unload", { bubbles: true }));
+        vi.restoreAllMocks();
+    });
+    async function open(markup = html) {
+        stubFetch(textResponse(markup));
+        adapter.show.mockClear();
+        window.cv.cvModalOpen("/formsets/edit/", "");
+        await vi.waitFor(() => expect(adapter.show).toHaveBeenCalledTimes(1));
+        return content.querySelector("form");
+    }
+    function submit(form) {
+        form.dispatchEvent(new SubmitEvent("submit", { bubbles: true, cancelable: true,
+            submitter: form.querySelector('[type="submit"]') }));
+    }
+
+    it("honors an earlier cancelled submit without fetching", async () => {
+        const form = await open();
+        form.addEventListener("submit", event => event.preventDefault());
+        const fetchMock = stubFetch(textResponse("", { status: 204 }));
+        submit(form);
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("stops fetch when a real child reorder fails", async () => {
+        const form = await open();
+        // The parent remains valid; a malformed nested child must poison the
+        // aggregate rather than disappearing in jQuery.each's return value.
+        const fixture = document.createElement("div");
+        fixture.innerHTML = formsetHtml({ key: "book-notes" });
+        const child = fixture.querySelector("fieldset");
+        child.querySelector('input[name$="-ORDER"]').remove();
+        form.querySelector(".cv-formset-row").append(child);
+        modal.dispatchEvent(new CustomEvent("cv:modal:loaded", { bubbles: true }));
+        const fetchMock = stubFetch(textResponse("", { status: 204 }));
+        submit(form);
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("reorders an orderable formset with no delete capability before serialization", async () => {
+        const fixture = document.createElement("div");
+        fixture.innerHTML = formsetHtml({ canDelete: false });
+        const form = await open(fixture.innerHTML);
+        form.querySelectorAll('input[name$="-ORDER"]').forEach(input => { input.value = "99"; });
+        const fetchMock = stubFetch(textResponse("", { status: 204 }));
+        submit(form);
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(fetchMock.mock.calls[0][1].body.get("book-None-0-0-ORDER")).toBe("1");
+        expect(fetchMock.mock.calls[0][1].body.get("book-None-0-1-ORDER")).toBe("2");
+    });
+
+    it("serializes final owning-form row order and management before modal fetch", async () => {
+        const form = await open();
+        form.querySelector(".cv-form-ctrl-down").click();
+        form.querySelectorAll('input[name$="-ORDER"]').forEach(input => { input.value = "99"; });
+        const fetchMock = stubFetch(textResponse("", { status: 204 }));
+        submit(form);
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        const body = fetchMock.mock.calls[0][1].body;
+        expect(body.get("book-None-0-1-ORDER")).toBe("1");
+        expect(body.get("book-None-0-0-ORDER")).toBe("2");
+        expect(body.get("book-None-0-TOTAL_FORMS")).toBe("2");
+        expect(body.get("book-None-0-INITIAL_FORMS")).toBe("2");
+        expect(body.get("save")).toBe("yes");
+        expect(document.querySelector('body > form input[name="book-None-0-0-ORDER"]').value).toBe("1");
+    });
+
+    it("replaces 422 content once, tears down old controls while attached and supports close then reopen", async () => {
+        const form = await open();
+        const oldDelete = form.querySelector(".cv-form-ctrl-delete");
+        const oldToggle = form.querySelector('[name="with_items"]');
+        const oldGroup = form.querySelector("[cv-data-toggle-group]");
+        const seen = [];
+        const unload = () => seen.push(["unload", form.isConnected]);
+        const loaded = () => seen.push(["loaded", content.querySelector("form") !== form]);
+        modal.addEventListener("cv:modal:unload", unload);
+        modal.addEventListener("cv:modal:loaded", loaded);
+        stubFetch(textResponse(html.replace("row 0", "invalid replacement"), { ok: false, status: 422 }));
+        submit(form);
+        await vi.waitFor(() => expect(content.querySelector("form")).not.toBe(form));
+        expect(seen).toEqual([["unload", true], ["loaded", true]]);
+        modal.removeEventListener("cv:modal:unload", unload);
+        modal.removeEventListener("cv:modal:loaded", loaded);
+        oldDelete.click();
+        expect(form.querySelector('input[name="book-None-0-0-DELETE"]').value).toBe("0");
+        oldToggle.checked = false;
+        oldToggle.dispatchEvent(new Event("change", { bubbles: true }));
+        expect(oldGroup.style.display).toBe("");
+        oldDelete.disabled = true;
+        await Promise.resolve();
+        expect(form.querySelector('input[type="text"]').disabled).toBe(false);
+        const replacement = content.querySelector("form");
+        window.cv.initFormsets(content);
+        window.cv.initConditional(content);
+        replacement.querySelector(".cv-form-ctrl-delete").click();
+        expect(replacement.querySelector('input[name="book-None-0-0-DELETE"]').value).toBe("1");
+        replacement.querySelector('[name="with_items"]').checked = false;
+        replacement.querySelector('[name="with_items"]').dispatchEvent(new Event("change", { bubbles: true }));
+        expect(replacement.querySelector(".cv-form-ctrl-add").disabled).toBe(true);
+        const ajax = vi.spyOn($, "ajax").mockImplementation(() => {});
+        replacement.querySelector(".cv-form-ctrl-add").dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+        expect(ajax).not.toHaveBeenCalled();
+        ajax.mockRestore();
+        adapter.hide(modal);
+        const closedAjax = vi.spyOn($, "ajax").mockImplementation(() => {});
+        replacement.querySelector('[name="with_items"]').checked = true;
+        replacement.querySelector('[name="with_items"]').dispatchEvent(new Event("change", { bubbles: true }));
+        replacement.querySelector(".cv-form-ctrl-add").dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+        expect(closedAjax).not.toHaveBeenCalled();
+        closedAjax.mockRestore();
+        const reopened = await open();
+        reopened.querySelector(".cv-form-ctrl-delete").click();
+        expect(reopened.querySelector('input[name="book-None-0-0-DELETE"]').value).toBe("1");
+        expect(document.querySelector('body > form input[name="book-None-0-0-DELETE"]').value).toBe("0");
+    });
+
+    it("emits one outer widget event while initializing all nested actions and conditional controls", async () => {
+        const form = await open();
+        // Build a nested package-shaped child and move it into the outer AJAX
+        // row without dispatching any synthetic nested initialization event.
+        const fixture = document.createElement("div");
+        fixture.innerHTML = formsetHtml({ key: "book-notes", rows: 1 });
+        const child = fixture.querySelector("fieldset").outerHTML;
+        const outer = rowHtml(2).replace(/<\/div>\s*$/, child + "</div>");
+        const widgets = [];
+        const onWidget = event => {
+            widgets.push([event.target, Object.keys(event.detail).sort(), event.detail]);
+            expect(event.target.querySelector(".cv-formset-content")).not.toBeNull();
+        };
+        document.addEventListener("cv:formset:row-added", onWidget);
+        const ajax = vi.spyOn($, "ajax").mockImplementation(options => options.success({
+            html: outer, rows: ["book-None-0-2", "book-notes-None-0-0"],
+        }));
+        form.querySelector(".cv-form-ctrl-add").click();
+        document.removeEventListener("cv:formset:row-added", onWidget);
+        expect(widgets).toHaveLength(1);
+        expect(widgets[0][1]).toEqual(["prefix", "rows"]);
+        expect(widgets[0][2]).toEqual({ prefix: "book-None-0-2", rows: ["book-None-0-2", "book-notes-None-0-0"] });
+        expect(widgets[0][0]).toBe(form.querySelectorAll(".cv-formset-row")[1]);
+        const nested = widgets[0][0].querySelector(".cv-formset-content");
+        nested.querySelector(".cv-form-ctrl-delete").click();
+        expect(nested.querySelector('input[name$="-DELETE"]').value).toBe("1");
+        const toggle = form.querySelector('[name="with_items"]');
+        toggle.checked = false;
+        toggle.dispatchEvent(new Event("change", { bubbles: true }));
+        expect(nested.querySelector(".cv-form-ctrl-add").disabled).toBe(true);
+        expect(new FormData(form).get("book-notes-None-0-TOTAL_FORMS")).toBe("1");
+        ajax.mockRestore();
+    });
+
+    it("ignores an outstanding Add response after its owning form is replaced", async () => {
+        const form = await open();
+        let respond;
+        const ajax = vi.spyOn($, "ajax").mockImplementation(options => { respond = options.success; });
+        form.querySelector(".cv-form-ctrl-add").click();
+        window.cv.cvModalInject(html);
+        const widgets = vi.fn();
+        document.addEventListener("cv:formset:row-added", widgets);
+        respond({ html: rowHtml(2), rows: ["book-None-0-2"] });
+        document.removeEventListener("cv:formset:row-added", widgets);
+        expect(widgets).not.toHaveBeenCalled();
+        expect(content.querySelectorAll(".cv-formset-row")).toHaveLength(2);
+        expect(content.querySelector('input[name="book-None-0-TOTAL_FORMS"]').value).toBe("2");
+        ajax.mockRestore();
+    });
+});
 
 function textResponse(html, { ok = true, status = 200, headers = {} } = {}) {
     return {

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="2" failures="1" errors="0" time="5.98214732">
+    <testsuite name="tests/js-integration/formset.test.js" timestamp="2026-11-01T14:57:05.777Z" hostname="weaver-dev" tests="2" failures="1" errors="0" skipped="1" time="5.98214732">
+        <testcase classname="tests/js-integration/formset.test.js" name="real Django fragment insertion &gt; inserts outer and second-sibling fragments and POSTs their real FormData" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js-integration/formset.test.js" name="integration runtime selection &gt; rejects an explicitly invalid interpreter without falling back" time="5.979154166">
+            <failure message="
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 1 skipped (2)
+   Start at  14:57:00
+   Duration  5.51s (tests 86%, environment 11%, transform 1%, setup 1%)
+
+(!) Your Vite config uses features that are unsupported by `configLoader: &apos;native&apos;`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.integration.config.js:1:1). Use a `.mjs` extension or set `&quot;type&quot;: &quot;module&quot;` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+: expected +0 not to be +0 // Object.is equality" type="AssertionError">
+AssertionError: 
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 1 skipped (2)
+   Start at  14:57:00
+   Duration  5.51s (tests 86%, environment 11%, transform 1%, setup 1%)
+
+(!) Your Vite config uses features that are unsupported by `configLoader: &apos;native&apos;`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.integration.config.js:1:1). Use a `.mjs` extension or set `&quot;type&quot;: &quot;module&quot;` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+: expected +0 not to be +0 // Object.is equality
+ ❯ tests/js-integration/formset.test.js:124:66
+            </failure>
+        </testcase>
+    </testsuite>
+</testsuites>

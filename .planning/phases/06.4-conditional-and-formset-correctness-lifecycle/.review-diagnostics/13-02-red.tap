@@ -1,0 +1,274 @@
+TAP version 13
+1..1
+not ok 1 - tests/js/formset.test.js # time=221.63ms {
+    1..1
+    not ok 1 - formset.js # time=220.98ms {
+        1..5
+        ok 1 - XFormset # SKIP {
+            1..9
+            ok 1 - parses config, pk and index from the fixture # SKIP
+            ok 2 - parses a concrete parent pk # SKIP
+            ok 3 - parses multi-digit and UUID parent pks with the server's pk grammar # SKIP
+            ok 4 - reads and writes the management form # SKIP
+            ok 5 - renumbers ORDER inputs 1..n in DOM order # SKIP
+            ok 6 - blanks ORDER for empty rows # SKIP
+            ok 7 - blanks ORDER for delete-marked rows (hidden DELETE input) # SKIP
+            ok 8 - blanks ORDER for delete-marked rows (checkbox DELETE input) # SKIP
+            ok 9 - does nothing when the formset is not orderable # SKIP
+        }
+        ok 2 - XForm # SKIP {
+            1..10
+            ok 1 - computes row position facts # SKIP
+            ok 2 - delete() toggles the hidden DELETE input and button styling # SKIP
+            ok 3 - delete() keeps a token shared by both class strings in both directions # SKIP
+            ok 4 - delete() still recolours when one class string is empty # SKIP
+            ok 5 - delete() without data-cv-class attributes only toggles the input # SKIP
+            ok 6 - up() moves the row before its predecessor and renumbers # SKIP
+            ok 7 - up() on the first row is a no-op # SKIP
+            ok 8 - down() moves the row after its successor and renumbers # SKIP
+            ok 9 - down() on the last row is a no-op # SKIP
+            ok 10 - add() # SKIP {
+                1..5
+                ok 1 - requests a new row with the formset's coordinates # SKIP
+                ok 2 - appends after the last row, bumps TOTAL_FORMS and wires controls # SKIP
+                ok 3 - dispatches a bubbling cv:formset:row-added event on the inserted row # SKIP
+                ok 4 - dispatches no separate event for nested rows inside a new parent row # SKIP
+                ok 5 - inserts before the next row when adding from a middle row # SKIP
+            }
+        }
+        ok 3 - CrudViewsFormset # SKIP {
+            1..13
+            ok 1 - rejects a custom Add on an edit-only formset at activation # SKIP
+            ok 2 - initializes same-prefix forms repeatedly through automatic page and modal events # SKIP
+            ok 3 - blocks disabled, inactive and non-button override actions including synthetic clicks # SKIP
+            ok 4 - rechecks Delete and Reorder capabilities on each activation # SKIP
+            ok 5 - uses exact names and prefixes through deep ancestry with pk 12 # SKIP
+            ok 6 - uses exact names and prefixes through deep ancestry with pk 0a1b2c3d-0000-4000-8000-00000000000a # SKIP
+            ok 7 - initializes on a non-orderable formset without aborting (regression) # SKIP
+            ok 8 - initializes on an edit-only formset without an add button # SKIP
+            ok 9 - wires the control buttons to row actions # SKIP
+            ok 10 - binds each control of a row added after init exactly once # SKIP
+            ok 11 - delegates remaining native actions when an override omits order buttons # SKIP
+            ok 12 - reorders all formsets on submit and lets the submit proceed # SKIP
+            ok 13 - blocks the submit when reordering fails outright # SKIP
+        }
+        not ok 4 - native row deletion eligibility # time=218.81ms {
+            1..10
+            not ok 1 - allows Add and submit without extra DELETE (ordered=true) # time=125.72ms
+                ---
+                error:
+                    name: "AssertionError"
+                    message: "expected undefined to be defined"
+                at: "/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:541:34"
+                ...
+            not ok 2 - allows Add and submit without extra DELETE (ordered=false) # time=15.92ms
+                ---
+                error:
+                    name: "AssertionError"
+                    message: "expected undefined to be defined"
+                at: "/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:541:34"
+                ...
+            not ok 3 - keeps an initial row deletable after an extra moves above it # time=25.81ms
+                ---
+                error:
+                    name: "AssertionError"
+                    message: "expected '0' to be '1' // Object.is equality"
+                at: "/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:554:48"
+                actual: "0"
+                expected: "1"
+                ...
+            not ok 4 - refuses custom extra Delete after upward movement (direct) # time=4.63ms
+                ---
+                error:
+                    name: "AssertionError"
+                    message: "expected '1' to be '0' // Object.is equality"
+                at: "/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:564:48"
+                actual: "1"
+                expected: "0"
+                ...
+            not ok 5 - refuses custom extra Delete after upward movement (delegated) # time=8.77ms
+                ---
+                error:
+                    name: "AssertionError"
+                    message: "expected '1' to be '0' // Object.is equality"
+                at: "/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:564:48"
+                actual: "1"
+                expected: "0"
+                ...
+            not ok 6 - moves a native extra above an initial row and then deletes the initial row # time=12.01ms
+                ---
+                error:
+                    name: "AssertionError"
+                    message: "expected <div class=\"cv-formset-row\" …(3)>…(1)</div> to be <div class=\"cv-formset-row\" …(3)>…(1)</div> // Object.is equality"
+                at: "/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:571:49"
+                actual: "<div
+  class=\"cv-formset-row\"
+  cv-data-formset-form=\"{\\"key\\":\\"book\\",\\"prefix\\":\\"book-None-0-2\\",\\"prefix_key\\":\\"None-0-2\\",\\"formset_prefix\\":\\"book-None-0\\",\\"pk\\":\\"None\\"}\"
+  cv-data-formset-form-prefix=\"book-None-0-2\"
+  cv-data-formset-prefix=\"book-None-0\"
+>
+  
+            
+  <div
+    class=\"cv-formset-form\"
+  >
+    
+                
+    <input
+      name=\"book-None-0-2-id\"
+      type=\"hidden\"
+      value=\"\"
+    />
+    
+                
+    <input
+      name=\"book-None-0-2-name\"
+      type=\"text\"
+      value=\"row 2\"
+    />
+    
+                
+    <input
+      name=\"book-None-0-2-ORDER\"
+      type=\"hidden\"
+      value=\"3\"
+    />
+    
+                
+                
+    <div
+      class=\"cv-form-ctrl\"
+    >
+      <button
+        class=\"btn btn-light cv-form-ctrl-up\"
+        cv-data-formset-form-prefix=\"book-None-0-2\"
+        type=\"button\"
+      />
+      
+           
+      <button
+        class=\"btn btn-light cv-form-ctrl-down\"
+        cv-data-formset-form-prefix=\"book-None-0-2\"
+        type=\"button\"
+      />
+      <button
+        class=\"btn btn-light cv-form-ctrl-add\"
+        cv-data-formset-form-prefix=\"book-None-0-2\"
+        type=\"button\"
+      />
+    </div>
+    
+            
+  </div>
+  
+        
+</div>"
+                expected: "<div
+  class=\"cv-formset-row\"
+  cv-data-formset-form=\"{\\"key\\":\\"book\\",\\"prefix\\":\\"book-None-0-0\\",\\"prefix_key\\":\\"None-0-0\\",\\"formset_prefix\\":\\"book-None-0\\",\\"pk\\":\\"None\\"}\"
+  cv-data-formset-form-prefix=\"book-None-0-0\"
+  cv-data-formset-prefix=\"book-None-0\"
+>
+  
+            
+  <div
+    class=\"cv-formset-form\"
+  >
+    
+                
+    <input
+      name=\"book-None-0-0-id\"
+      type=\"hidden\"
+      value=\"\"
+    />
+    
+                
+    <input
+      name=\"book-None-0-0-name\"
+      type=\"text\"
+      value=\"row 0\"
+    />
+    
+                
+    <input
+      name=\"book-None-0-0-ORDER\"
+      type=\"hidden\"
+      value=\"1\"
+    />
+    
+                
+    <input
+      name=\"book-None-0-0-DELETE\"
+      type=\"hidden\"
+      value=\"0\"
+    />
+    
+                
+    <div
+      class=\"cv-form-ctrl\"
+    >
+      <button
+        class=\"btn btn-light cv-form-ctrl-up\"
+        cv-data-formset-form-prefix=\"book-None-0-0\"
+        type=\"button\"
+      />
+      
+           
+      <button
+        class=\"btn btn-light cv-form-ctrl-down\"
+        cv-data-formset-form-prefix=\"book-None-0-0\"
+        type=\"button\"
+      />
+      <button
+        class=\"btn btn-light cv-form-ctrl-add\"
+        cv-data-formset-form-prefix=\"book-None-0-0\"
+        type=\"button\"
+      />
+      <button
+        class=\"x-ctrl cv-form-ctrl-delete\"
+        cv-data-formset-form-prefix=\"book-None-0-0\"
+        data-cv-class=\"x-ctrl\"
+        data-cv-class-danger=\"x-danger\"
+        type=\"button\"
+      />
+    </div>
+    
+            
+  </div>
+  
+        
+</div>"
+                ...
+            not ok 7 - inserts an extra before an initial row without renumbering bound prefixes # time=16.54ms
+                ---
+                error:
+                    name: "AssertionError"
+                    message: "expected '0' to be '1' // Object.is equality"
+                at: "/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:589:52"
+                actual: "0"
+                expected: "1"
+                ...
+            ok 8 - rejects missing DELETE on eligible rows (ordered=true) # time=3.84ms
+            ok 9 - rejects missing DELETE on eligible rows (ordered=false) # time=1.73ms
+            not ok 10 - permits ordered rows when deletion is disabled entirely # time=3.23ms
+                ---
+                error:
+                    name: "AssertionError"
+                    message: "expected [Function] to not throw an error but 'TypeError: Cannot read properties of …' was thrown"
+                at: "/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:607:53"
+                actual: "\"TypeError: Cannot read properties of null (reading '0')\""
+                expected: "undefined"
+                ...
+        }
+        ok 5 - start-up guard # SKIP {
+            1..7
+            ok 1 - starts automatically when executed after the page is ready # SKIP
+            ok 2 - stays silent on a page without formsets # SKIP
+            ok 3 - reports missing jQuery once and supports an explicit late retry # SKIP
+            ok 4 - waits for DOMContentLoaded so jQuery can load later # SKIP
+            ok 5 - retries on window load for deferred jQuery # SKIP
+            ok 6 - reports missing jQuery once after the load retry # SKIP
+            ok 7 - initializes a DocumentFragment and root formset/control elements # SKIP
+        }
+    }
+}

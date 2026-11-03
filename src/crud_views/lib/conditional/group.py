@@ -2,16 +2,87 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from django import forms
+from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
+from django.db import models
 from django.forms import BooleanField
 
 from .toggle import ToggleSource
 
 
+def resolve_conditional_empty_value(form_field, model_field, group, field_name):
+    """Resolve a native off value for a bounded, standard Django field pair.
+
+    Private runtime/checks seam. Callers must handle trusted disabled fields first.
+    Explicit values are native persistence instructions, including falsy values.
+    """
+    if field_name in group.empty_values:
+        return group.empty_values[field_name]
+
+    text_forms = (forms.CharField, forms.EmailField, forms.URLField, forms.SlugField, forms.RegexField)
+    text_models = (models.CharField, models.TextField, models.EmailField, models.URLField, models.SlugField)
+    scalar_pairs = {
+        models.IntegerField: forms.IntegerField,
+        models.SmallIntegerField: forms.IntegerField,
+        models.BigIntegerField: forms.IntegerField,
+        models.PositiveIntegerField: forms.IntegerField,
+        models.PositiveSmallIntegerField: forms.IntegerField,
+        models.PositiveBigIntegerField: forms.IntegerField,
+        models.FloatField: forms.FloatField,
+        models.DecimalField: forms.DecimalField,
+        models.DateField: forms.DateField,
+        models.TimeField: forms.TimeField,
+        models.DateTimeField: forms.DateTimeField,
+        models.DurationField: forms.DurationField,
+        models.UUIDField: forms.UUIDField,
+        models.ForeignKey: forms.ModelChoiceField,
+    }
+    if model_field is None:
+        if type(form_field) in text_forms:
+            return form_field.empty_value
+        if type(form_field) is forms.MultipleChoiceField:
+            return []
+        if type(form_field) is forms.BooleanField:
+            return False
+        if type(form_field) is forms.NullBooleanField:
+            return None
+    else:
+        # Exact classes plus native hooks: custom subclasses/overrides need an explicit value.
+        native_hook = getattr(type(model_field), "save_form_data", None)
+        hook = getattr(model_field.save_form_data, "__func__", None)
+        if hook is native_hook:
+            if type(model_field) in text_models and type(form_field) in text_forms:
+                if model_field.null:
+                    return None
+                if model_field.blank:
+                    return ""
+            if type(model_field) is models.BooleanField:
+                expected = forms.NullBooleanField if model_field.null else forms.BooleanField
+                if type(form_field) is expected:
+                    return None if model_field.null else False
+            if (
+                type(model_field) in scalar_pairs
+                and type(form_field) is scalar_pairs[type(model_field)]
+                and model_field.null
+            ):
+                return None
+            file_pairs = {models.FileField: forms.FileField, models.ImageField: forms.ImageField}
+            if type(model_field) in file_pairs and type(form_field) is file_pairs[type(model_field)]:
+                return False
+            if type(model_field) is models.ManyToManyField and type(form_field) is forms.ModelMultipleChoiceField:
+                return []
+    raise ImproperlyConfigured(
+        f"Conditional group '{group.toggle.field_name()}' field '{field_name}' has no supported automatic "
+        "empty value; configure empty_values explicitly."
+    )
+
+
 class ConditionalGroup:
     """A group of form fields governed by a single boolean toggle.
 
-    When the toggle is on, ``required`` fields are enforced. When off, every
-    field in the group is cleared to its empty value and never validated.
+    When the toggle is on, ``required`` fields are enforced. When off, editable
+    fields are cleared and their ordinary field errors suppressed. Inherited
+    nonfield errors and model validation still apply to the resulting state.
     """
 
     def __init__(
@@ -49,6 +120,7 @@ class ConditionalGroupFormMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._cv_conditional_original_values = {}
         for group in self.cv_conditional_groups:
             # Inject transient UI toggle fields that are not model fields.
             tname = group.toggle.field_name()
@@ -56,10 +128,17 @@ class ConditionalGroupFormMixin:
                 self.fields[tname] = BooleanField(required=False)
             # Disarm Django's premature field-level required check; clean() owns it.
             for name in group.fields:
-                if name in self.fields:
+                if name in self.fields and not self.fields[name].disabled:
                     self.fields[name].required = False
 
     def clean(self):
+        # Configuration must support switching off even for an active submission.
+        # Run here to include fields added by request-dependent subclass __init__
+        # methods, without constructing arbitrary forms during startup checks.
+        for group in self.cv_conditional_groups:
+            for name in group.fields:
+                if name in self.fields and not self.fields[name].disabled:
+                    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
         cleaned = super().clean()
         for group in self.cv_conditional_groups:
             if group.is_on(self):
@@ -67,6 +146,42 @@ class ConditionalGroupFormMixin:
             else:
                 self._cv_clear_group(group, cleaned)
         return cleaned
+
+    def full_clean(self):
+        self._cv_conditional_values = {}
+        self._cv_conditional_requires_save = False
+        return super().full_clean()
+
+    def _cv_model_field(self, name):
+        if not isinstance(self, forms.ModelForm):
+            return None
+        try:
+            return self._meta.model._meta.get_field(name)
+        except FieldDoesNotExist:
+            return None
+
+    def _post_clean(self):
+        # Native ModelForm construction can skip omitted empty fields with defaults.
+        # Set their resolved state first, so model clean/uniqueness sees the final value.
+        if isinstance(self, forms.ModelForm):
+            for name, value in self._cv_conditional_values.items():
+                field = self._cv_model_field(name)
+                if field is not None and field.many_to_many:
+                    if not self.instance._state.adding:
+                        previous = self._cv_conditional_original_values.setdefault(
+                            name, {obj.pk for obj in field.value_from_object(self.instance)}
+                        )
+                        resolved = {getattr(obj, "pk", obj) for obj in value}
+                        if previous != resolved:
+                            self._cv_conditional_requires_save = True
+                elif field is not None:
+                    previous = self._cv_conditional_original_values.setdefault(
+                        name, field.value_from_object(self.instance)
+                    )
+                    field.save_form_data(self.instance, value)
+                    if previous != field.value_from_object(self.instance):
+                        self._cv_conditional_requires_save = True
+        super()._post_clean()
 
     def _cv_enforce_required(self, group, cleaned):
         for name in group.required_fields:
@@ -77,11 +192,13 @@ class ConditionalGroupFormMixin:
 
     def _cv_clear_group(self, group, cleaned):
         for name in group.fields:
-            if name in self.fields:
+            if name in self.fields and not self.fields[name].disabled:
                 # Off skips validation entirely: drop field-level errors too,
                 # the submitted value is discarded either way.
                 self.errors.pop(name, None)
-                cleaned[name] = group.empty_value_for(name)
+                value = resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+                cleaned[name] = value
+                self._cv_conditional_values[name] = value
 
 
 from crud_views.lib.crispy import CrispyModelForm  # noqa: E402  (placed at end to avoid cycle)

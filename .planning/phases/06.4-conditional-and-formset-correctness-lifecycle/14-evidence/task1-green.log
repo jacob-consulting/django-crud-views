@@ -1,0 +1,12 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 38 skipped (39)
+   Start at  15:05:37
+   Duration  875ms (environment 72%, tests 13%, transform 8%, setup 6%, import 1%, worker 1%)
+

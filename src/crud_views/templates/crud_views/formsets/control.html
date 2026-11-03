@@ -16,11 +16,13 @@
             </fieldset>
         {% endif %}
         <fieldset class="{% cv_button_class 'formset' 'container' %}" aria-label="{% translate 'Add or delete' %}">
+            {% if not formset.edit_only %}
             <button type="button" class="{% cv_button_class 'formset' 'control' %} cv-form-ctrl-add" title="{% translate 'Add row' %}" data-cv-tooltip="formset" aria-label="{% translate 'Add row' %}"
                     cv-data-formset-form-prefix="{{ form.prefix }}">
                 {% cv_icon "formset-add" %}
             </button>
-            {% if formset.can_delete %}
+            {% endif %}
+            {% if 'DELETE' in form.fields %}
                 <button type="button" class="{% cv_button_class 'formset' 'control' %} cv-form-ctrl-delete" data-cv-class="{% cv_button_class 'formset' 'control' %}"
                         data-cv-class-danger="{% cv_button_class 'formset' 'control-danger' %}" title="{% translate 'Delete row' %}" data-cv-tooltip="formset" aria-label="{% translate 'Delete row' %}"
                         cv-data-formset-form-prefix="{{ form.prefix }}">

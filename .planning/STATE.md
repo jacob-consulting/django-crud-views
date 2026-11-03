@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.6"
-current_phase_name: Theme-adoption seams from the Tabler sync
-status: executing
-stopped_at: Phase 06.6 plan convergence complete (8 cycles)
-last_updated: "2026-11-02T20:25:15.835Z"
-last_activity: 2026-11-02
-last_activity_desc: Phase 06.6 planning complete
-state_head: f6f59a5b9b0f8107fc7399dc53b4796c1e7ad6c3
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.6 complete, ready to plan Phase 7
+last_updated: "2026-11-03T06:42:23.598Z"
+last_activity: 2026-11-03
+last_activity_desc: Phase 06.6 complete, transitioned to Phase 7
+state_head: a3081128b07bdaa9fbc5bcd71a5429ddab7a41eb
 progress:
   total_phases: 13
-  completed_phases: 11
+  completed_phases: 12
   total_plans: 101
-  completed_plans: 91
+  completed_plans: 101
+  percent: 92
 milestone_name: milestone
 ---
 
@@ -21,20 +22,30 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-02)
+See: .planning/PROJECT.md (updated 2026-11-03)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.6 — Theme-adoption seams from the Tabler sync
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.6 (Theme-adoption seams from the Tabler sync) — READY TO EXECUTE
+Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-11-02 — Phase 06.6 planning complete
+Status: Ready to plan
+Last activity: 2026-11-03 — Phase 06.6 complete, transitioned to Phase 7
 
-Progress: [████████░░] 85%
-Next: $gsd-execute-phase 06.6
+Progress: [█████████░] 92%
+Next: $gsd-discuss-phase 7
+
+### Phase 06.6 completion — 2026-11-03
+
+- All10 plans complete; THEME-01–06 accepted. Canonical verification25/25, human UAT7/7 and security27/27 passed.
+- Parent formset success redirect repaired and user-retested; ignored/untracked IDE metadata classified without weakening source/settings/index checks.
+- Fresh final matrix8720/8720/8719/8720 passes; JS363/example301/browser/docs/quality gates pass. Existing skip/exclusion and three unchanged companion failures remain explicit.
+- Companion3315eef remains locally committed; user settings and IDE metadata preserved. No merge, push or publication.
+- Completion scanner warnings concern command strings, logical template names and relative evidence paths; canonical verifier resolved actual artifacts. Browser/version unspecified and AT untested.
+- GSD requirement writer did not find root THEME rows; root checkbox/traceability rows reconciled directly against the passing canonical report.
+- Earlier pending-human/source-binding notes below are historical. Phase7 needs discussion; no Phase7 execution started.
 
 ### Phase 06.6 plan convergence — 2026-11-02
 
@@ -292,7 +303,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 91
+- Total plans completed: 101
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -311,6 +322,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.3 | 20 | - | - |
 | 06.4 | 26 | - | - |
 | 06.5 | 9 | - | - |
+| 06.6 | 10 | - | - |
 
 **Recent Trend:**
 
@@ -379,6 +391,16 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.4 P08 | 16min | 2 tasks | 10 files |
 | Phase 06.4 P09 | 9min | 2 tasks | 8 files |
 | Phase 06.4 P10 | 60min | 2 tasks | 7 files |
+| Phase 06.6 P01 | 8min | 3 tasks | 11 files |
+| Phase 06.6 P04 | 2min | 2 tasks | 6 files |
+| Phase 06.6 P06 | 32min | 2 tasks | 5 files |
+| Phase 06.6 P02 | 3min | 2 tasks | 6 files |
+| Phase 06.6 P03 | 7min | 3 tasks | 9 files |
+| Phase 06.6 P05 | 5min | 2 tasks | 5 files |
+| Phase 06.6 P07 | 31min | 3 tasks | 9 files |
+| Phase 06.6 P08 | 5min | 2 tasks | 7 files |
+| Phase 06.6 P10 | 18min | 3 tasks | 13 files |
+| Phase 06.6 P09 | 48min | 2 tasks | 78 files |
 
 ## Accumulated Context
 
@@ -522,6 +544,16 @@ Recent decisions affecting current work:
 - [Phase 06.4]: 09: Requirement readiness is 0/7 pending later-plan acceptance; leave global shared requirements unchanged.
 - [Phase 06.4]: 10: Reuse exact-source passing gates; distinguish enabled tracer, Node-free full suites and expected missing-runtime controls in each cached Django series.
 - [Phase 06.4]: 10: A19 successful sibling/deeper round trips reconcile only that handoff; canonical prohibition and independent review remain pending, with A8/A25/Guardian and jQuery exclusions retained.
+- [Phase 06.6]: 01: Forward FormHelper hooks and override only a fresh get_attributes mapping for render-local CSRF suppression; copy aliases/raising hooks/read-only properties retain compatibility.
+- [Phase 06.6]: 04: Alert dismissal utilities preserve default bytes; empty/None dismissal adds no separator, close retains class="", nonempty whitespace is preserved; registry count now 86 before plan03.
+- [Phase 06.6]: 06: Keep pinned885dfc7 baseline while preserving user settings-only descendant0b3baa8; ancestry and complete non-settings byte continuity replace live-HEAD equality.
+- [Phase 06.6]: 02: Publish validated copied label-mode theme maps by locked rebind; resolve invalid settings via a settings-free theme/package snapshot while retaining owner-first strict errors.
+- [Phase 06.6]: 03: Limit the action-group bridge to bootstrap5 plus installed-distribution origin and exact audited2023.10 source; resolve classes per render on a copy and retain custom pack/provider ownership.
+- [Phase 06.6]: Plan05 proves workflow full-page ownership separately from inherited custom-form modal bodies; create/update modal support stays false and E251 remains.
+- [Phase 06.6]: Plan 07 preserves the live companion settings commit and source/index; exact five-file Tabler patch passed fresh eight-family replay with 205 required purposes unchanged and three source-identical baseline failures retained.
+- [Phase 06.6]: Plan08 publishes executable theme defaults, page/helper/copy/standalone migrations with paired Breaking links; strict docs passed, no live companion delivery claim.
+- [Phase 06.6]: Plan10 delivered the exact five-file Tabler adaptation in companion3315eef over preserved user commit0b3baa8; core evidence67aca38 binds fresh provisional/committed probes and snapshot-independent preservation. Phase-wide acceptance remains plan09.
+- [Phase 06.6]: Plan 09 automated gates pass against final source; retain unchanged companion failures and current-pack Django 6.0 absence; human visual/AT acceptance remains pending.
 
 ### Pending Todos
 
@@ -571,6 +603,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-02T16:22:53.912Z
-Stopped at: Phase 06.6 context gathered
-Resume file: .planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-CONTEXT.md
+Last session: 2026-11-03T06:43:07.801739+00:00
+Stopped at: Phase 06.6 complete, ready to discuss Phase 7
+Resume file: None

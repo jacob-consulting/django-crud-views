@@ -15,9 +15,9 @@ from typing import Self
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.http import Http404
 from django.db import router, transaction
 from django.db.models import Model
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template import Context as TemplateContext
 from django.template import Template
@@ -49,11 +49,15 @@ from .action_menu import (
     cv_split_actions,
 )
 from .buttons import ContextButton, context_button_checks, cv_form_icon_mode_checks, cv_icon_mode_checks
-from .context import ViewContext
 from .cancel import (
-    capture_cancel_state, clean_navigation_query, effective_cancel_keys,
-    is_cancel_list_destination, navigation_params, read_cancel_state,
+    capture_cancel_state,
+    clean_navigation_query,
+    effective_cancel_keys,
+    is_cancel_list_destination,
+    navigation_params,
+    read_cancel_state,
 )
+from .context import ViewContext
 from .label_mode import default_label_mode, form_label_mode, label_mode_check
 from .meta import CrudViewMetaClass
 from .variant import variant_check
@@ -814,6 +818,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             obj = None
         # A request override is local; do not mutate the bound view or cache across requests.
         from copy import copy
+
         owner = copy(self)
         owner.request = request
         capture = read_cancel_state(owner) if effective_cancel_keys(self) else None
@@ -822,16 +827,19 @@ class CrudView(metaclass=CrudViewMetaClass):
                 target = self.cv_get_cls(capture.origin)
             except ViewSetKeyFoundError:
                 target = None
-            if target and (not target.cv_object or obj is not None):
-                if target._cv_cancel_target_available(user, obj, owner):
-                    url = self.cv_get_url(capture.origin, obj)
-                    if capture.query is not None:
-                        query = capture.query
-                        if is_cancel_list_destination(target):
-                            query += ("&" if query else "") + urlencode({navigation_params()[2]: "1"})
-                        if query:
-                            url += "?" + query
-                    return url
+            if (
+                target
+                and (not target.cv_object or obj is not None)
+                and target._cv_cancel_target_available(user, obj, owner)
+            ):
+                url = self.cv_get_url(capture.origin, obj)
+                if capture.query is not None:
+                    query = capture.query
+                    if is_cancel_list_destination(target):
+                        query += ("&" if query else "") + urlencode({navigation_params()[2]: "1"})
+                    if query:
+                        url += "?" + query
+                return url
         try:
             target = self.cv_get_cls(self.cv_cancel_key)
         except ViewSetKeyFoundError as exc:

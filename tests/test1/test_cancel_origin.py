@@ -5,10 +5,13 @@ Spec: superpowers/specs/2026-09-08-cancel-button-origin-design.md
 """
 
 import re
+from html import unescape
 
 import pytest
 from django.template import Context, Template
 from django.urls import reverse
+
+from tests.test1.test_cancel_navigation import checked_action_url
 
 PARAM = "cv_from"
 
@@ -22,11 +25,14 @@ def cancel_url(response) -> str:
     """The URL the crispy cancel button navigates to (data-cv-cancel-url)."""
     match = re.search(r'data-cv-cancel-url="([^"]+)"', response.content.decode())
     assert match, "no cancel button rendered"
-    return match.group(1)
+    return unescape(match.group(1))
 
 
 def hrefs(response) -> list[str]:
-    return re.findall(r'href="([^"]+)"', response.content.decode())
+    return [
+        checked_action_url(link, response.context["view"], keep_origin=True)
+        for link in re.findall(r'href="([^"]+)"', response.content.decode())
+    ]
 
 
 def render_cancel_tag(response) -> str:
@@ -44,21 +50,22 @@ def render_cancel_tag(response) -> str:
 
 
 @pytest.mark.django_db
-def test_default_without_cancel_keys_is_unchanged(client_user_author_change, cv_author, author_douglas_adams):
+def test_explicit_static_cancel_keys(client_user_author_origin, cv_author, author_douglas_adams, monkeypatch):
     """A view without cv_cancel_keys ignores the parameter entirely."""
     pk = author_douglas_adams.pk
-    response = client_user_author_change.get(url(cv_author, "update", pk), {PARAM: "detail"})
+    monkeypatch.setattr(cv_author.get_view_class("update"), "cv_cancel_keys", None)
+    response = client_user_author_origin.get(url(cv_author, "update", pk), {PARAM: "detail"})
     assert response.status_code == 200
     assert cancel_url(response) == url(cv_author, "list")
     assert response.context["view"].cv_cancel_keys is None
 
 
 @pytest.mark.django_db
-def test_default_without_cancel_keys_is_unchanged_int_pk(client_user_publisher_change, cv_publisher, publisher_penguin):
+def test_default_cancel_hidden_without_view_permission(client_user_publisher_change, cv_publisher, publisher_penguin):
     pk = publisher_penguin.pk
     response = client_user_publisher_change.get(url(cv_publisher, "update", pk), {PARAM: "detail"})
     assert response.status_code == 200
-    assert cancel_url(response) == url(cv_publisher, "list")
+    assert "data-cv-cancel-url" not in response.content.decode()
 
 
 @pytest.mark.django_db
@@ -338,7 +345,10 @@ def test_cv_context_url_tag_carries_origin(client_user_author_origin, cv_author_
     response = client_user_author_origin.get(url(cv_author_origin, "detail", pk))
     tpl = Template("{% load crud_views %}{% cv_context_url 'update' as u %}{{ u }}")
     out = tpl.render(Context({"view": response.context["view"], "request": response.context["request"]}))
-    assert out == f"{url(cv_author_origin, 'update', pk)}?{PARAM}=detail"
+    assert (
+        checked_action_url(out, response.context["view"], keep_origin=True)
+        == f"{url(cv_author_origin, 'update', pk)}?{PARAM}=detail"
+    )
 
 
 @pytest.mark.django_db

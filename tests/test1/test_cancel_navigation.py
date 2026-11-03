@@ -1,8 +1,8 @@
 """Request-level cancel navigation, following the links actually rendered to users."""
 
-from html import unescape
 import re
-from urllib.parse import parse_qs, urlsplit
+from html import unescape
+from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 import pytest
 from django.core import signing
@@ -11,6 +11,82 @@ from django_filters import FilterSet
 from crud_views.lib.session import SessionData
 from crud_views.lib.views.mixins import ListViewTableFilterMixin
 from tests.test1.app.models import Author
+
+
+def checked_action_url(value, view, *, keep_origin=False):
+    """Validate actual navigation transport before normalizing only its reserved fields."""
+    from django.urls import Resolver404, resolve
+
+    from crud_views.lib.view.cancel import clean_navigation_query, effective_cancel_keys, navigation_params
+
+    value = unescape(value)
+    parts = urlsplit(value)
+    if parts.scheme or parts.netloc or not parts.path.startswith("/"):
+        return value
+    names = navigation_params()
+    query = parse_qs(parts.query, keep_blank_values=True)
+    try:
+        match = resolve(parts.path)
+    except Resolver404:
+        return value
+    target = getattr(match.func, "view_class", None)
+    if target is None or not hasattr(target, "cv_cancel_keys") or target.cv_viewset is not view.cv_viewset:
+        return value
+    expected_origin = view.cv_get_link_origin_key(target)
+    if not expected_origin or expected_origin not in effective_cancel_keys(target):
+        assert names[1] not in query
+        return value
+    assert names[1] in query, f"missing captured origin on {value}"
+    assert query[names[0]] == [expected_origin]
+    assert len(query[names[1]]) == 1
+    payload = signing.Signer(salt="crud_views.cancel.v1").unsign_object(query[names[1]][0])
+    assert payload == {
+        "v": 1,
+        "origin": expected_origin,
+        "query": clean_navigation_query(view.request.GET).urlencode(),
+        "viewset": [view.cv_viewset.app or "", view.cv_viewset.name],
+        "parents": {key: str(view.kwargs[key]) for key in view.cv_viewset.get_parent_url_args()},
+    }
+    for name in names[1:] if keep_origin else names:
+        query.pop(name, None)
+    return urlunsplit(parts._replace(query=urlencode(query, doseq=True)))
+
+
+def checked_action_markup(response):
+    from html import escape
+
+    view = response.context["view"]
+    return re.sub(
+        r'href="([^"]+)"',
+        lambda match: 'href="' + escape(checked_action_url(match[1], view), quote=True) + '"',
+        response.content.decode(),
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("source", "target"),
+    [("list", "update"), ("list", "create"), ("list", "delete"), ("detail", "update"), ("detail", "delete")],
+)
+def test_default_five_routes(client_user_author_origin, cv_author, author_douglas_adams, source, target):
+    from django.urls import reverse
+
+    before = list(Author.objects.values())
+    kwargs = {"pk": author_douglas_adams.pk}
+    origin = reverse(cv_author.get_router_name(source), kwargs=kwargs if source == "detail" else {})
+    destination = reverse(cv_author.get_router_name(target), kwargs={} if target == "create" else kwargs)
+    page = client_user_author_origin.get(origin + "?sort=last_name&x=&x=two")
+    link = emitted_link(page, destination)
+    assert parse_qs(urlsplit(link).query)["cv_from"] == [source]
+    form = client_user_author_origin.get(link)
+    assert form.context["view"].cv_cancel_keys == "auto"
+    cancel = rendered_cancel(form)
+    assert urlsplit(cancel).path == origin
+    query = parse_qs(urlsplit(cancel).query, keep_blank_values=True)
+    assert query["x"] == ["", "two"]
+    assert query.get("cv_from_restore") == (["1"] if source == "list" else None)
+    assert client_user_author_origin.get(cancel).status_code == 200
+    assert list(Author.objects.values()) == before
 
 
 def emitted_link(response, path):
@@ -22,6 +98,59 @@ def rendered_cancel(response):
     node = re.search(r'data-cv-cancel-url="([^"]+)"', response.content.decode())
     assert node is not None, "resolved Cancel must be rendered"
     return unescape(node.group(1))
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("keys", [None, [], ["detail", "detail"]])
+def test_explicit_keys_are_fresh_and_repeatable(
+    client_user_author_origin, cv_author, author_douglas_adams, keys, monkeypatch
+):
+    from crud_views.lib.view.cancel import effective_cancel_keys
+
+    cls = cv_author.get_view_class("update")
+    monkeypatch.setattr(cls, "cv_cancel_keys", keys)
+    page = client_user_author_origin.get(f"/author/{author_douglas_adams.pk}/detail/?x=1")
+    link = emitted_link(page, f"/author/{author_douglas_adams.pk}/update/")
+    query = parse_qs(urlsplit(link).query)
+    assert ("cv_from_cancel" in query) is bool(keys)
+    form = client_user_author_origin.get(link)
+    view = form.context["view"]
+    expected = f"/author/{author_douglas_adams.pk}/detail/?x=1" if keys else "/author/"
+    assert view.cv_get_cancel_url() == view.cv_get_cancel_url() == expected
+    assert effective_cancel_keys(view) == (("detail",) if keys else ())
+    assert cls.cv_cancel_keys == keys
+    view.cv_cancel_keys = None
+    assert effective_cancel_keys(view) == ()
+    assert cls.cv_cancel_keys == keys
+
+
+def test_auto_defaults_follow_registration_and_mro(cv_author, monkeypatch):
+    from crud_views.lib.view.cancel import effective_cancel_keys
+    from crud_views.lib.views import ListView, UpdateView
+    from crud_views.lib.viewset import ViewSet
+    from tests.test1.test_cancel_origin import check_ids
+
+    viewset = ViewSet(model=Author, name="cancel_late_registry")
+
+    class LateForm(UpdateView):
+        cv_viewset = viewset
+        fields = ["first_name"]
+
+    assert effective_cancel_keys(LateForm) == ()
+
+    class LateList(ListView):
+        cv_viewset = viewset
+
+    assert effective_cancel_keys(LateForm) == ("list",)
+    assert "viewset.E252" not in check_ids(LateForm)
+    assert LateList.cv_cancel_keys is None
+    assert LateForm.cv_cancel_keys == "auto"
+    instance = LateForm()
+    instance.cv_cancel_keys = None
+    assert effective_cancel_keys(instance) == ()
+    for invalid in ("detail", [1], {"list": True}):
+        monkeypatch.setattr(LateForm, "cv_cancel_keys", invalid)
+        assert "viewset.E252" in check_ids(LateForm)
 
 
 @pytest.mark.django_db
@@ -44,12 +173,17 @@ def test_emitted_list_update_round_trip(
 
     monkeypatch.setattr(FilteredAuthors, "cv_viewset", cv_author_origin)
     monkeypatch.setattr(cv_author_origin.get_view_class("update"), "cv_cancel_keys", "auto")
-    from tests.test1.app.urls import urlpatterns
     from django.urls import reverse
+
+    from tests.test1.app.urls import urlpatterns
 
     before = list(Author.objects.order_by("pk").values())
     list_url = reverse(cv_author_origin.get_router_name("list"))
-    with override_settings(ROOT_URLCONF=type("URLs", (), {"urlpatterns": [path(list_url.lstrip("/"), FilteredAuthors.as_view()), *urlpatterns]})):
+    with override_settings(
+        ROOT_URLCONF=type(
+            "URLs", (), {"urlpatterns": [path(list_url.lstrip("/"), FilteredAuthors.as_view()), *urlpatterns]}
+        )
+    ):
         response = client_user_author_origin.get(list_url + "?last_name=Adams")
         assert response.status_code == 200
         view = response.context["view"]

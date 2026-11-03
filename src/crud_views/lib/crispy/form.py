@@ -55,7 +55,9 @@ class CrispyFormMixin:
         raise NotImplementedError
 
     def get_form_actions(self) -> FormActions:
-        return _ThemedFormActions(*[button for button in (self.get_submit_button(), self.get_cancel_button()) if button is not None])
+        return _ThemedFormActions(
+            *[button for button in (self.get_submit_button(), self.get_cancel_button()) if button is not None]
+        )
 
     def get_submit_button_kwargs(self) -> dict:
         return {"name": "submit", "value": self.submit_label}

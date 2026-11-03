@@ -370,7 +370,9 @@ class ListViewTableFilterMixin(FilterView):
 
         with SessionData.from_view(self) as sd:
             # get stored query string and request query string
-            stored_query_string = clean_navigation_query(QueryDict(sd.get(self.cv_session_key_querystring, ""))).urlencode()
+            stored_query_string = clean_navigation_query(
+                QueryDict(sd.get(self.cv_session_key_querystring, ""))
+            ).urlencode()
             query_string = self.request.META["QUERY_STRING"]
 
             if getattr(request, "_cv_cancel_restored", False):

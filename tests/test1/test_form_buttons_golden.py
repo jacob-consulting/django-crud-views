@@ -134,9 +134,21 @@ CONTROL_CASES = {
 }
 
 
+def _cancel_client(request, spec):
+    from django.contrib.auth.models import User
+
+    from tests.lib.helper.user import user_viewset_permission
+    from tests.test1.app.views import cv_author, cv_campaign
+
+    client = request.getfixturevalue(spec.client)
+    user = User.objects.get(pk=client.session["_auth_user_id"])
+    user_viewset_permission(user, cv_campaign if "campaign" in spec.path else cv_author, "view")
+    return client
+
+
 def _page_controls(request, case: str) -> list[str]:
     spec = CONTROL_CASES[case]
-    client: Client = request.getfixturevalue(spec.client)
+    client: Client = _cancel_client(request, spec)
     pk = request.getfixturevalue(spec.obj).pk if spec.obj else None
     with translation.override("en"):
         response = client.get(spec.path.format(pk=pk))
@@ -376,7 +388,7 @@ CANCEL_ID = "button-id-reset"
 
 def _page_markup(request, case: str) -> str:
     spec = CONTROL_CASES[case]
-    client: Client = request.getfixturevalue(spec.client)
+    client: Client = _cancel_client(request, spec)
     pk = request.getfixturevalue(spec.obj).pk if spec.obj else None
     with translation.override("en"):
         response = client.get(spec.path.format(pk=pk))
@@ -441,7 +453,12 @@ def test_configured_page_restores_the_button_after_settings_cleanup(request, cas
 
 
 @pytest.mark.django_db
-def test_configured_delete_page_still_deletes_with_its_clicked_submitter(client_user_author_delete, golden_author):
+def test_configured_delete_page_still_deletes_with_its_clicked_submitter(
+    client_user_author_delete, golden_author, user_author_delete, cv_author
+):
+    from tests.lib.helper.user import user_viewset_permission
+
+    user_viewset_permission(user_author_delete, cv_author, "view")
     """The configured delete page renders a cancel link, and its native delete submitter still deletes."""
     from tests.test1.app.models import Author
 

@@ -45,7 +45,8 @@ def effective_cancel_keys(owner):
         return ()
     candidates = ("list", "card", "detail") if owner.cv_object else ("list", "card")
     return tuple(
-        key for key in candidates
+        key
+        for key in candidates
         if viewset.is_view_registered(key) or (key == "list" and viewset.is_view_registered("card"))
     )
 
@@ -83,8 +84,11 @@ def _valid_payload(payload):
 
 def encode_cancel_state(view, origin, query):
     payload = {
-        "v": 1, "origin": origin, "query": query,
-        "viewset": [view.cv_viewset.app or "", view.cv_viewset.name], "parents": _coordinates(view),
+        "v": 1,
+        "origin": origin,
+        "query": query,
+        "viewset": [view.cv_viewset.app or "", view.cv_viewset.name],
+        "parents": _coordinates(view),
     }
     try:
         if not _valid_payload(payload) or len(signing.JSONSerializer().dumps(payload)) > MAX_JSON:

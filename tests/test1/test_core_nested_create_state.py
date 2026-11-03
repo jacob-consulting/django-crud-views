@@ -98,9 +98,12 @@ def _view(cls, kwargs=None):
     from types import SimpleNamespace
 
     from django.contrib.auth.models import AnonymousUser
+    from django.http import QueryDict
 
     view = cls()
-    view.request = SimpleNamespace(user=AnonymousUser(), GET={}, resolver_match=SimpleNamespace(url_name="test"))
+    view.request = SimpleNamespace(
+        user=AnonymousUser(), GET=QueryDict(), resolver_match=SimpleNamespace(url_name="test")
+    )
     view.kwargs = kwargs or {}
     return view
 

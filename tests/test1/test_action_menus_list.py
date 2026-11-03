@@ -30,7 +30,9 @@ def menu_list(monkeypatch):
 def _rows(client):
     resp = client.get(reverse(cv_author.get_router_name("list")))
     assert resp.status_code == 200
-    doc = lxml_html.fromstring(resp.content)
+    from tests.test1.test_cancel_navigation import checked_action_markup
+
+    doc = lxml_html.fromstring(checked_action_markup(resp))
     return doc.xpath("//td[.//fieldset[@cv-list-container]]")
 
 

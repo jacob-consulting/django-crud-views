@@ -91,13 +91,15 @@ def test_custom_actions_recipe(
     )
     mixin = python_recipe(recipe_name)[mixin_name]
     monkeypatch.setattr(target, "form_class", type("DocumentedForm", (mixin, target.form_class), {}))
-    for key in ("list", "card"):
+    for destination in ("list", "card"):
         monkeypatch.setattr(
-            cv_author_origin.get_view_class(key), "cv_has_access", classmethod(lambda cls, user, obj=None: allowed)
+            cv_author_origin.get_view_class(destination), "cv_has_access", classmethod(lambda cls, user, obj=None: allowed)
         )
     path = "/author_origin/create/" if key == "create" else f"/author_origin/{author_douglas_adams.pk}/delete/"
     response = client_user_author_origin.get(path)
     assert response.status_code == 200
+    assert type(response.context["view"]) is target
+    assert type(response.context["form"]) is target.form_class
     assert_owner(response)
     nodes = html.fromstring(response.content).xpath("//form//*[@id='button-id-reset']")
     assert bool(nodes) is allowed

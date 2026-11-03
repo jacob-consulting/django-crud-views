@@ -1,8 +1,8 @@
 # Phase 06.6 final regression evidence
 
-**Automated gates passed; human visual/AT observations and phase-level acceptance remain pending.**
+**Automated gates passed; all seven scoped human checks passed in 06.6-UAT.md. Final canonical verification remains orchestrator-owned.**
 
-Final source inventory SHA-256: `9e09d0c5ca8fdd00f651f1b23cb50791fe187b9ca5c05f72020c8263648ef36e`. The exact per-file inventory,
+Final source inventory SHA-256: `c5af7b9e294793cdc165744314f219ed7c2072afb43f846a263f4856aa247e7c`. The exact per-file inventory,
 embedded stdout/stderr, JUnit, commands, measured duration, interpreter/package/module/template origins,
 environment selections and browser evidence are retained in [09-final-evidence.json](09-final-evidence.json).
 The report has no self-hash. `--check-final` independently revalidates actual sources and both repositories.
@@ -11,20 +11,20 @@ The report has no self-hash. `--check-final` independently revalidates actual so
 
 | Gate | Result | Duration (seconds) |
 | --- | --- | --- |
-| conditional-formsets | 2 cases passed | 14.184 |
-| configuration | 21 passed | 16.439 |
-| django42-current | 8716 passed; 1 skipped | 143.179 |
-| django42-floor | 8715 passed; 1 skipped | 141.985 |
-| django52-current | 8716 passed; 1 skipped | 198.883 |
-| django60-floor | 8716 passed; 0 skipped | 237.19 |
-| docs | passed | 1.264 |
-| example | 301 passed; 0 skipped | 13.253 |
-| format | passed | 0.026 |
-| fragments | 2 passed | 9.988 |
-| javascript | 363 passed | 12.589 |
-| lint | passed | 0.018 |
-| modal-focus | 12 cases passed | 24.406 |
-| whitespace | passed | 0.164 |
+| conditional-formsets | 2 cases passed | 14.307 |
+| configuration | 21 passed | 16.959 |
+| django42-current | 8716 passed; 1 skipped | 146.809 |
+| django42-floor | 8715 passed; 1 skipped | 143.734 |
+| django52-current | 8716 passed; 1 skipped | 200.81 |
+| django60-floor | 8716 passed; 0 skipped | 240.561 |
+| docs | passed | 1.508 |
+| example | 301 passed; 0 skipped | 12.954 |
+| format | passed | 0.029 |
+| fragments | 2 passed | 10.287 |
+| javascript | 363 passed | 12.92 |
+| lint | passed | 0.028 |
+| modal-focus | 12 cases passed | 23.856 |
+| whitespace | passed | 0.181 |
 
 ## Exact commands
 
@@ -67,7 +67,7 @@ The independently recorded Python 3.14.7 / Django 6.1.2 companion runtime remain
 Fresh final-source candidate and exact-patch replay each pass all eight real browser families, 11 focused native/class-table/parity/package tests, and 34 companion pytest cases.
 The broad Django suite retains its actual failed status: 114 tests / three unchanged baseline failures, compared with 109 / four at the pinned baseline. Complete failing classes and identities are checked, and passing suites cannot hide reduced collection or newly skipped cases.
 The source inventories retain 167 paths, nine shadows and 205 required customization purposes. No required override grows or is retired without proof.
-Actual companion commit: `3315eef6671f502d859bba877322a5853388c508`. Current two-file core delivery evidence commit: `c3d0e39d7a69ff626da6a57a09468a6700cc3a54`.
+Actual companion commit: `3315eef6671f502d859bba877322a5853388c508`. Current two-file core delivery evidence commit: `5590c94f75e0caf1b007ea6da65416a369f1d8ef`.
 Private settings, unrelated source/index bytes and the five-file patch are unchanged. Provisional/committed probes, refreshed CSRF denied POSTs, complete cancel activations and native assets are retained in the canonical reports.
 Chromium 149.0.7827.55 exercised Tabler 1.6.1 CSS/theme/main JS and the existing jQuery 3.7.1 fixture asset. Each observed asset has hashes/SRI; equality uses unique URL/content records, not network completion order.
 
@@ -82,5 +82,16 @@ The stale parent-helper fence in docs/reference/formsets.md was synchronized wit
 
 ## Acceptance limits
 
-No new unresolved implementation stub, missing mandatory automatic command, scenario waiver or skipped required theme case is accepted. Human visual usability, screen-reader/AT behavior, other browser engines, mobile/touch and high-contrast modes remain untested here.
+No new unresolved implementation stub, missing mandatory automatic command, scenario waiver or skipped required theme case is accepted. Seven human usability checks passed, including the corrected parent formset save destination; W1 spacing was accepted. Browser/version was not supplied. Screen-reader/AT behavior, other engines, mobile/touch devices and high-contrast modes remain unverified.
 Independent security/code review and canonical phase verification remain orchestrator-owned. See [acceptance](06.6-ACCEPTANCE.md) and [public surface](06.6-PUBLIC-SURFACE.md). Phase 7 stability classification is not performed.
+
+
+## Post-UAT fixture correction
+
+User UAT found that successful parent create/update redirected to a fixture list whose ID LinkDetailColumn called an unregistered detail view. Commit f237abd uses a plain ID column and adds enforced-CSRF POST redirect GET assertions for both create and update. Both assertions failed before the fix; all 12 focused formset tests passed afterward, and the user retested successfully.
+
+The final validator binds every gate to the complete source inventory and exact command/JUnit contract. All 14 gates were therefore freshly executed after the two-file fixture/test change; no prior test result was rebound. The parent separately ran 5.2 without JUnit (8716 passed, one existing skip); its log is retained but does not replace the canonical gate. All original matrix evidence remains in prior-gates-8f8dae91557c.json.
+
+Fresh candidate and exact-patch replay passed all eight families, followed by provisional and committed actual-source probes. The first attempt to reuse the old delivered slot was correctly rejected as stale; its complete commands/error are retained in delivery-post-uat-stale-attempt.json. The successful refresh rebuilt both slots. Companion source and user settings remain unchanged.
+
+Seven human checks passed and W1 spacing was accepted in [06.6-UAT.md](06.6-UAT.md). The checker itself validates automated evidence only and retains its fixed pending-human-observations return value; the separate human_acceptance record stores the actual UAT result and artifact hash. Browser/version was not supplied; no assistive-technology claim is inferred.

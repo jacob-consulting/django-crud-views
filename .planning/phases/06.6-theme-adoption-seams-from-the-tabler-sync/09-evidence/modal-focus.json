@@ -1,6 +1,6 @@
 {
-  "captured": "2026-11-02T23:57:16.253Z",
-  "revision": "d29855dac55017b8acec3461d381199a711a593b",
+  "captured": "2026-11-03T06:16:15.183Z",
+  "revision": "5590c94f75e0caf1b007ea6da65416a369f1d8ef",
   "sourceHashes": {
     "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
     "src/crud_views/static/crud_views/js/adapters.js": "6134473b5f0fb183aae7f4b035ad38a56a902b8f58c8b5c688c9638d1cef2580",

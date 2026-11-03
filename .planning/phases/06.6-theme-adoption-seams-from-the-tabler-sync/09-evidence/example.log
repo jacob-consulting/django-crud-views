@@ -2,8 +2,8 @@ bringing up nodes...
 bringing up nodes...
 
 ........................................................................ [ 23%]
-........................................................................ [ 47%]
-u..uuuuu.uuuu.uuu....uuuu.uuuuuuuuu.......uuuu.uuuuuuuu.u...uu.......... [ 58%]
+........................................................uuuuuu..uuu.u.u. [ 44%]
+u..u........uuuuuuuuuuuuuuuuuuuuuuuu.uu....uu........................... [ 58%]
 ........................................................................ [ 82%]
 ......................................................                   [100%]
 =============================== warnings summary ===============================
@@ -14,15 +14,15 @@ u..uuuuu.uuuu.uuu....uuuu.uuuuuuuuu.......uuuu.uuuuuuuu.u...uu.......... [ 58%]
   /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1148: RemovedInDjango60Warning: The default scheme will be changed from 'http' to 'https' in Django 6.0. Pass the forms.URLField.assume_scheme argument to silence this warning, or set the FORMS_URLFIELD_ASSUME_HTTPS transitional setting to True to opt into using 'https' as the new default scheme.
     return form_class(**defaults)
 
-project/tests.py::ExampleAboutTest::test_every_feature_page_shows_about
 project/tests.py::HomePageTest::test_every_feature_landing_page_renders
-project/tests.py::BreadcrumbAdoptionTest::test_every_feature_landing_page_shows_breadcrumb
+project/tests.py::ExampleAboutTest::test_every_feature_page_shows_about
 project/tests.py::DocRefsPanelTest::test_every_feature_page_lists_its_doc_refs
+project/tests.py::BreadcrumbAdoptionTest::test_every_feature_landing_page_shows_breadcrumb
 project/tests.py::NavGroupsTest::test_feature_page_marks_its_group_active
 workflow/tests.py::CampaignWorkflowTest::test_list_renders_with_snippets
   /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/list.py:91: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'workflow.models.Campaign'> QuerySet.
     return self.paginator_class(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-301 passed, 10 warnings, 41 subtests passed in 12.65s
+301 passed, 10 warnings, 41 subtests passed in 12.30s
 

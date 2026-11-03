@@ -2,127 +2,127 @@ TAP version 13
 # Subtest: shared recorded interpreter resolver exists without starting the CLI
 ok 1 - shared recorded interpreter resolver exists without starting the CLI
   ---
-  duration_ms: 5.585684
+  duration_ms: 5.909101
   type: 'test'
   ...
 # Subtest: asset capture reads each actual URL once and retains body errors without an unhandled rejection
 ok 2 - asset capture reads each actual URL once and retains body errors without an unhandled rejection
   ---
-  duration_ms: 1.204326
+  duration_ms: 1.172559
   type: 'test'
   ...
 # Subtest: real Tabler create uses the native check icon from its registered form floor
 ok 3 - real Tabler create uses the native check icon from its registered form floor
   ---
-  duration_ms: 8133.621773
+  duration_ms: 8358.341431
   type: 'test'
   ...
 # Subtest: fresh process resolves the recorded executable with both overrides absent
 ok 4 - fresh process resolves the recorded executable with both overrides absent
   ---
-  duration_ms: 176.455981
+  duration_ms: 195.140375
   type: 'test'
   ...
 # Subtest: actual CLI rejects invalid port "" first
 ok 5 - actual CLI rejects invalid port "" first
   ---
-  duration_ms: 40.810478
+  duration_ms: 42.346269
   type: 'test'
   ...
 # Subtest: actual CLI rejects invalid port "bad" first
 ok 6 - actual CLI rejects invalid port "bad" first
   ---
-  duration_ms: 41.652578
+  duration_ms: 66.176165
   type: 'test'
   ...
 # Subtest: actual CLI rejects invalid port "8143" first
 ok 7 - actual CLI rejects invalid port "8143" first
   ---
-  duration_ms: 64.81431
+  duration_ms: 71.218469
   type: 'test'
   ...
 # Subtest: actual CLI rejects invalid port "8144" first
 ok 8 - actual CLI rejects invalid port "8144" first
   ---
-  duration_ms: 43.335376
+  duration_ms: 54.680458
   type: 'test'
   ...
 # Subtest: actual CLI rejects invalid port "1023" first
 ok 9 - actual CLI rejects invalid port "1023" first
   ---
-  duration_ms: 39.207931
+  duration_ms: 42.620121
   type: 'test'
   ...
 # Subtest: actual CLI rejects invalid port "65536" first
 ok 10 - actual CLI rejects invalid port "65536" first
   ---
-  duration_ms: 38.321003
+  duration_ms: 38.46813
   type: 'test'
   ...
 # Subtest: actual CLI rejects invalid port "8145.1" first
 ok 11 - actual CLI rejects invalid port "8145.1" first
   ---
-  duration_ms: 39.871611
+  duration_ms: 41.190386
   type: 'test'
   ...
 # Subtest: CV_THEME_PYTHON rejects ""
 ok 12 - CV_THEME_PYTHON rejects ""
   ---
-  duration_ms: 10.537993
+  duration_ms: 9.963495
   type: 'test'
   ...
 # Subtest: CV_THEME_PYTHON rejects "relative"
 ok 13 - CV_THEME_PYTHON rejects "relative"
   ---
-  duration_ms: 7.100849
+  duration_ms: 6.679672
   type: 'test'
   ...
 # Subtest: CV_THEME_PYTHON rejects "/wrong/python"
 ok 14 - CV_THEME_PYTHON rejects "/wrong/python"
   ---
-  duration_ms: 6.573022
+  duration_ms: 6.291067
   type: 'test'
   ...
 # Subtest: CV_FOCUS_PYTHON rejects ""
 ok 15 - CV_FOCUS_PYTHON rejects ""
   ---
-  duration_ms: 4.639317
+  duration_ms: 5.471592
   type: 'test'
   ...
 # Subtest: CV_FOCUS_PYTHON rejects "relative"
 ok 16 - CV_FOCUS_PYTHON rejects "relative"
   ---
-  duration_ms: 4.868893
+  duration_ms: 5.777252
   type: 'test'
   ...
 # Subtest: CV_FOCUS_PYTHON rejects "/wrong/python"
 ok 17 - CV_FOCUS_PYTHON rejects "/wrong/python"
   ---
-  duration_ms: 2.567261
+  duration_ms: 4.812358
   type: 'test'
   ...
 # Subtest: presentation collision preserves the existing listener
 ok 18 - presentation collision preserves the existing listener
   ---
-  duration_ms: 64.757662
+  duration_ms: 80.054233
   type: 'test'
   ...
 # Subtest: recorded root and runtime resolve from an isolated script location with spaces, independently of cwd and siblings
 ok 19 - recorded root and runtime resolve from an isolated script location with spaces, independently of cwd and siblings
   ---
-  duration_ms: 733.980353
+  duration_ms: 702.951923
   type: 'test'
   ...
 # Subtest: partial delivery form writer preserves every other slot and cannot certify completion
 ok 20 - partial delivery form writer preserves every other slot and cannot certify completion
   ---
-  duration_ms: 2.919713
+  duration_ms: 3.259935
   type: 'test'
   ...
 # Subtest: browser startup failure cleans up its owned server and temporary copies
 ok 21 - browser startup failure cleans up its owned server and temporary copies
   ---
-  duration_ms: 6823.924846
+  duration_ms: 7042.107648
   type: 'test'
   ...
 1..21
@@ -133,5 +133,5 @@ ok 21 - browser startup failure cleans up its owned server and temporary copies
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 16372.798536
+# duration_ms 16887.706957
 

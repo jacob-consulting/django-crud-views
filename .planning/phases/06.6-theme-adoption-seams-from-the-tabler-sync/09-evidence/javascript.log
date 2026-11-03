@@ -4,11 +4,11 @@
 
  Test Files  10 passed (10)
       Tests  363 passed (363)
-   Start at  23:56:53
-   Duration  12.24s (tests 73%, environment 22%, setup 2%, transform 1%)
+   Start at  06:15:51
+   Duration  12.49s (tests 71%, environment 25%, setup 2%, transform 2%)
 
-    Isolate  10 workers spawned · ~622ms startup each (spawn + environment, per file)
-             at least ~2.49s faster with isolate: false — reuses workers across files instead of one per file
+    Isolate  10 workers spawned · ~693ms startup each (spawn + environment, per file)
+             at least ~2.77s faster with isolate: false — reuses workers across files instead of one per file
 
 
 (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:

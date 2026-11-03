@@ -281,7 +281,9 @@ below the grid; its links preserve the active filter and order.
 The previous and next arrows are the `page-previous` and `page-next` [icons](icons.md), so a theme swaps them through
 `CRUD_VIEWS_ICONS` or `register_icons()` without overriding the template. Each arrow carries a visually hidden,
 translated label; the current page has `aria-current="page"`, and a disabled end is a link without `href` and with
-`aria-disabled="true"`.
+`aria-disabled="true"`. The label's class is the `pagination:hidden-label` key of the
+[class table](buttons.md#the-class-table) (default `visually-hidden`), shared with the
+[table pagination](list_view.md#pagination).
 
 ```python
 class BookCardListView(CardListViewPermissionRequired):

@@ -1,44 +1,44 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 5
-current_phase_name: Table pagination parity
+current_phase: 6
+current_phase_name: Form-button leaf
 status: planning
-stopped_at: Phase 04 complete, ready to plan Phase 5
-last_updated: "2026-10-26T21:09:38.322Z"
-last_activity: 2026-10-26
-last_activity_desc: Phase 04 complete, transitioned to Phase 5
-state_head: e603d534d98d0d4731a8cb3ff72c3aa248d8bab6
+stopped_at: Phase 05 complete, ready to plan Phase 6
+last_updated: "2026-10-27T13:54:06.447Z"
+last_activity: 2026-10-27
+last_activity_desc: Phase 05 complete, transitioned to Phase 6
+state_head: a6a6cb9da9114f9153f5f5eff4ce022f2cb5ceff
 progress:
   total_phases: 7
-  completed_phases: 4
-  total_plans: 11
-  completed_plans: 11
-  percent: 57
+  completed_phases: 5
+  total_plans: 14
+  completed_plans: 14
+  percent: 71
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-26)
+See: .planning/PROJECT.md (updated 2026-10-27)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 5 — Table pagination parity
+**Current focus:** Phase 6 — Form-button leaf
 
 ## Current Position
 
-Phase: 5 — Table pagination parity
+Phase: 6 — Form-button leaf
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-26 — Phase 04 complete, transitioned to Phase 5
+Last activity: 2026-10-27 — Phase 05 complete, transitioned to Phase 6
 
-Progress: [██████░░░░] 57%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 11
+- Total plans completed: 14
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -50,6 +50,7 @@ Progress: [██████░░░░] 57%
 | 02 | 1 | - | - |
 | 03 | 2 | - | - |
 | 04 | 3 | - | - |
+| 05 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -72,6 +73,9 @@ Progress: [██████░░░░] 57%
 | Phase 04 P01 | 5 min | 3 tasks | 7 files |
 | Phase 04 P02 | 5 min | 2 tasks | 2 files |
 | Phase 04 P03 | 10 min | 3 tasks | 9 files |
+| Phase 05 P01 | 5 min | 3 tasks | 10 files |
+| Phase 05 P02 | 8 min | 2 tasks | 2 files |
+| Phase 05 P03 | 9 min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -109,6 +113,13 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-03: theme.md '### Custom alert frame' recipe is executable (test_documented_alert_frame_override); core data-bs-* confined to the dropdown allowlist by a tmp_path-tested guard
 - [Phase 04]: 04-03: browser A/B/C acceptance observed in headless Chrome 156 against the example; ruff format --check stays red on 8 pre-existing .planning files
 - [Phase 04]: UAT 2/2 passed; review WR-01/IN-03 fixed in b7b49ae (theme.md data-bs-* claim scoped to core, object-detail layouts named; messages.md TypeError wording); re-verification 21/21 passed
+- [Phase 05]: 05-01: table pagination direction blocks enclose their own has_previous/has_next guards; disabled ends render aria-disabled anchors without href/tabindex; pagination:hidden-label (visually-hidden) shared by table and card; table baseline be7daa5, card raw baseline 0275218
+- [Phase 05]: 05-01: table template-origin check resolves the package path from crud_views.__file__ so it holds for editable checkouts and nox installs
+- [Phase 05]: 05-02: no production change needed; tests prove inherited pagination.previous/next overrides run on disabled ends without page-number calls, pin the 11-block contract, and hold card and table to one accessibility contract on a real three-page card endpoint
+- [Phase 05]: 05-02: invalid page inputs keep framework semantics (django-tables2 RequestConfig: non-integer -> 1, empty -> last; Django ListView: missing -> 1, last -> last, out of range/non-integer -> 404); _render_table_pagination is the reusable isolated-Engine override recipe for 05-03
+- [Phase 05]: 05-03: table pagination Breaking entry and migrating-1.0.md 'Table pagination overrides' share commit 09549b2; the guarded myproject/table.html recipe (DJANGO_TABLES2_TEMPLATE at startup) is extracted and rendered by tests/test1/test_pagination_docs.py on pages 1/2/3 with class/icon overrides
+- [Phase 05]: 05-03: German catalog keeps only the pagination/previous/next reference updates for both templates; django.mo byte-identical to a fresh msgfmt build; unrelated makemessages churn deferred (deferred-items.md)
+- [Phase 05]: UAT 2/2 passed; all 7 review findings fixed after review (WR-01/WR-02, IN-01..IN-05, incl. disabled `...` range items and whitespace-free range anchors); re-verification 19/19 passed
 
 ### Pending Todos
 
@@ -120,9 +131,9 @@ None yet.
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
 - Phases 6 and 7: each needs a spec or maintainer decision before planning.
 - Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
-- Phase 5: confirm the hidden-label key name (`pagination:hidden-label` vs `table:hidden-label`) before Phase 7.
-- Phases 5 and 6 must commit before-change goldens. Today's goldens contain no form buttons or table pagination
-  (Phase 4 committed the dismissible alert golden first, f6982bf).
+- Phase 7: carry the Phase 5 class key `pagination:hidden-label` into the stability surface.
+- Phase 6 must commit before-change goldens; today's goldens contain no form buttons (Phase 4 committed the
+  dismissible alert golden first, f6982bf; Phase 5 the table pagination goldens, be7daa5).
 - [Phase 4] Four open Info review findings (IN-01 `[role~="alert"]`, IN-02 hand-copied allowlist, IN-04 no guard for
   the non-core data-bs-* sentence, IN-05 missing-script enumeration) — see 04-REVIEW-DISPOSITION.md; candidates for Phase 7.
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
@@ -135,6 +146,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-26T20:40:59.651Z
-Stopped at: Phase 04 complete, ready to plan Phase 5
+Last session: 2026-10-27T14:00:00Z
+Stopped at: Phase 05 complete, ready to plan Phase 6
 Resume file: None

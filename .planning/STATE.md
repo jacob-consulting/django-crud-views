@@ -5,9 +5,9 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 status: "Phase 06.7 shipped — PR #303"
 stopped_at: Phase 06.7 complete, ready to plan Phase 7
-last_updated: "2026-11-03T19:55:58.076Z"
+last_updated: "2026-11-03T20:49:28.173Z"
 last_activity: 2026-11-03
-state_head: 422ef6982272e705cfb2f7fe8cd3c112532591aa
+state_head: 82fe1881169fe0197b14b0f67c41ee59403ce327
 progress:
   total_phases: 14
   completed_phases: 13
@@ -643,6 +643,7 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 261030-bqk | Reconcile 06.2 closure with #282: defer unresolved CR-02–CR-04 to 6.3, split acceptance, retain older open findings; documentation only | 2026-10-30 | 491ae9c | [261030-bqk-reconcile-phase-06-2-closure-with-issue-](./quick/261030-bqk-reconcile-phase-06-2-closure-with-issue-/) |
 | 261030-csg | Fix Phase 06.2 WR-01 core nested-create control state; supported-version regressions pass | 2026-10-30 | bd31992 | [261030-csg-fix-phase-06-2-wr-01-core-nested-create-](./quick/261030-csg-fix-phase-06-2-wr-01-core-nested-create-/) |
+| 261103-sag | Fix SonarQube and Codecov failures on PR 303 (local gates passed; remote confirmation pending) | 2026-11-03 | 82fe188 | [261103-sag-fix-sonarqube-and-codecov-failures-on-pr](./quick/261103-sag-fix-sonarqube-and-codecov-failures-on-pr/) |
 
 ### Roadmap Evolution
 

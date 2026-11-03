@@ -1,0 +1,55 @@
+{
+  "requested_pr_base": "af0dac2502e4aec3eb3a6a5cb9d6509e4a4fe394",
+  "merge_base": "af0dac2502e4aec3eb3a6a5cb9d6509e4a4fe394",
+  "head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+  "covered": 357,
+  "executable": 357,
+  "percent": 100.0,
+  "target": 96.92,
+  "passes_local_estimate": true,
+  "remote_codecov_status": "pending; local estimate uses one Django 5.2 run",
+  "files": {
+    "src/crud_views/lib/crispy/form.py": {
+      "covered": 20,
+      "executable": 20,
+      "missing_lines": [],
+      "existing_excluded_changed_lines": []
+    },
+    "src/crud_views/lib/view/base.py": {
+      "covered": 133,
+      "executable": 133,
+      "missing_lines": [],
+      "existing_excluded_changed_lines": []
+    },
+    "src/crud_views/lib/view/cancel.py": {
+      "covered": 106,
+      "executable": 106,
+      "missing_lines": [],
+      "existing_excluded_changed_lines": []
+    },
+    "src/crud_views/lib/views/mixins.py": {
+      "covered": 26,
+      "executable": 26,
+      "missing_lines": [],
+      "existing_excluded_changed_lines": []
+    },
+    "src/crud_views/templatetags/crud_views.py": {
+      "covered": 8,
+      "executable": 8,
+      "missing_lines": [],
+      "existing_excluded_changed_lines": []
+    },
+    "src/crud_views_guardian/lib/mixins.py": {
+      "covered": 37,
+      "executable": 37,
+      "missing_lines": [],
+      "existing_excluded_changed_lines": []
+    },
+    "src/crud_views_polymorphic/lib/create_select.py": {
+      "covered": 27,
+      "executable": 27,
+      "missing_lines": [],
+      "existing_excluded_changed_lines": []
+    }
+  }
+}

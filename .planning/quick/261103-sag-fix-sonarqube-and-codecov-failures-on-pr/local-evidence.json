@@ -1,0 +1,176 @@
+{
+  "captured": "2026-11-03T20:44:07.021416+00:00",
+  "source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+  "pr_base": "af0dac2502e4aec3eb3a6a5cb9d6509e4a4fe394",
+  "private_evidence_directory": "/tmp/cancel-quality.RX30jn8O",
+  "runtime_environment": {
+    "CV_CANCEL_PYTHON": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+    "CV_CANCEL_ASSETS_DIR": "/home/alex/.cache/django-crud-views/cancel-assets-06.7",
+    "PYTHONPATH": "src:."
+  },
+  "commands": [
+    {
+      "command": "PYTHONPATH=src:. /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_cancel_quality.py tests/test1/test_cancel_state.py tests/test1/test_cancel_permissions.py -n 4 -q",
+      "exit": 0,
+      "passed": 138,
+      "log": "/tmp/cancel-quality.RX30jn8O/task1-pytest.log"
+    },
+    {
+      "command": "PYTHONPATH=src:. /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_cancel_quality.py tests/test1/test_cancel_rendering.py tests/test1/test_cancel_docs.py tests/test1/test_cancel_polymorphic.py tests/test1/test_cancel_permissions.py tests/test1/test_cancel_state.py tests/test1/test_success_origin.py -n 4 -q",
+      "exit": 0,
+      "passed": 263,
+      "log": "/tmp/cancel-quality.RX30jn8O/task2-pytest.log"
+    },
+    {
+      "command": "PYTHONPATH=src:. COVERAGE_FILE=/tmp/cancel-quality.RX30jn8O/final.coverage /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python -m pytest tests -n 4 -q --cov --cov-report=xml:/tmp/cancel-quality.RX30jn8O/coverage.xml --cov-report=json:/tmp/cancel-quality.RX30jn8O/coverage.json --cov-report=term-missing",
+      "exit": 0,
+      "passed": 8987,
+      "skipped": 1,
+      "skip_reason": "Existing built-in CSP middleware test requires Django6.0",
+      "duration_seconds": 271.54,
+      "log": "/tmp/cancel-quality.RX30jn8O/final-pytest.log",
+      "package_source_commit": "c867f7e976d2124b932a4f9ad01eb83c0b522468",
+      "package_source_continuity_to_final_head": "git diff c867f7e HEAD -- src is empty; fixture-only repair independently tested"
+    },
+    {
+      "command": "PYTHONPATH=src:. /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_cancel_quality.py -q",
+      "exit": 0,
+      "passed": 18,
+      "reason_serial": "Tiny isolated socket/behavior selection; avoid worker startup overhead",
+      "log": "/tmp/cancel-quality.RX30jn8O/quality-socket-final.log"
+    },
+    {
+      "command": "node --test --test-reporter=tap tests/browser/cancel-navigation.test.cjs",
+      "exit": 0,
+      "passed": 16,
+      "reason_serial": "Lifecycle/sequencing tests exercise ordered process teardown",
+      "log": "/tmp/cancel-quality.RX30jn8O/browser-unit-final.log"
+    },
+    {
+      "command": "/home/alex/projects/alex/django-crud-views/.venv/bin/ruff check .",
+      "exit": 0,
+      "version": "0.17.3",
+      "log": "/tmp/cancel-quality.RX30jn8O/ruff-check.log"
+    },
+    {
+      "command": "/home/alex/projects/alex/django-crud-views/.venv/bin/ruff format --check .",
+      "exit": 0,
+      "formatted_files": 568,
+      "log": "/tmp/cancel-quality.RX30jn8O/ruff-format.log"
+    }
+  ],
+  "browser": {
+    "browser-current": {
+      "status": "passed",
+      "execution_revision": "c867f7e976d2124b932a4f9ad01eb83c0b522468",
+      "committed_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+      "source_hashes_match_committed_files": true,
+      "cases": 28,
+      "cancel_clicks": 30,
+      "cleanup": {
+        "pid": 1000453,
+        "exitCode": 0,
+        "signal": null,
+        "stopped": true,
+        "databaseRemoved": true
+      },
+      "runtime": {
+        "node": "v24.21.0",
+        "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+        "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+        "playwright": "1.64.1",
+        "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "django": "5.2.18",
+        "packagePath": "/home/alex/.codex/worktrees/181e/django-crud-views/src/crud_views/__init__.py",
+        "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+        "chromium": "149.0.7827.55"
+      },
+      "command": [
+        "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+        "/home/alex/.codex/worktrees/181e/django-crud-views/tests/browser/cancel-navigation.cjs",
+        "--output",
+        "/tmp/cancel-quality.RX30jn8O/browser-current.json"
+      ],
+      "duration_seconds": 31.557,
+      "exit": 0,
+      "private_report": "/tmp/cancel-quality.RX30jn8O/browser-current.json"
+    },
+    "browser-smoke-current": {
+      "status": "passed",
+      "execution_revision": "c867f7e976d2124b932a4f9ad01eb83c0b522468",
+      "committed_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+      "source_hashes_match_committed_files": true,
+      "cases": 1,
+      "cancel_clicks": 1,
+      "cleanup": {
+        "pid": 1000268,
+        "exitCode": 0,
+        "signal": null,
+        "stopped": true,
+        "databaseRemoved": true
+      },
+      "runtime": {
+        "node": "v24.21.0",
+        "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+        "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+        "playwright": "1.64.1",
+        "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "django": "5.2.18",
+        "packagePath": "/home/alex/.codex/worktrees/181e/django-crud-views/src/crud_views/__init__.py",
+        "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+        "chromium": "149.0.7827.55"
+      },
+      "command": [
+        "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+        "/home/alex/.codex/worktrees/181e/django-crud-views/tests/browser/cancel-navigation.cjs",
+        "--case",
+        "smoke",
+        "--output",
+        "/tmp/cancel-quality.RX30jn8O/browser-smoke-current.json"
+      ],
+      "duration_seconds": 2.955,
+      "exit": 0,
+      "private_report": "/tmp/cancel-quality.RX30jn8O/browser-smoke-current.json"
+    }
+  },
+  "coverage_totals": {
+    "covered_lines": 7307,
+    "num_statements": 7527,
+    "percent_covered": 97.07718878703335,
+    "percent_covered_display": "97",
+    "missing_lines": 220,
+    "excluded_lines": 15,
+    "percent_statements_covered": 97.07718878703335,
+    "percent_statements_covered_display": "97"
+  },
+  "existing_example_service": {
+    "url": "http://127.0.0.1:9000/",
+    "status": 200,
+    "not_reconfigured": true
+  },
+  "historical_failures": [
+    {
+      "kind": "success_redirect_race",
+      "private_report": "/tmp/cancel-quality.RX30jn8O/browser-full.json",
+      "repair": "Await real redirect navigation after save and fixture restoration"
+    },
+    {
+      "kind": "idle_socket_starvation",
+      "private_report": "/tmp/cancel-quality.RX30jn8O/browser-head.json",
+      "repair": "Bound accepted socket timeout while preserving serialized application handling"
+    },
+    {
+      "kind": "idle_socket_regression_red",
+      "private_report": "/tmp/cancel-quality.RX30jn8O/idle-socket-red.log",
+      "result": "Expected body assertion failed before transport fix; passes after fix"
+    }
+  ],
+  "remote_status": "Pending push, final-head CI/SonarCloud/Codecov and canonical06.7refresh",
+  "metrics": {
+    "commits": 4,
+    "tokens": 16300,
+    "files": 14
+  }
+}

@@ -1,4 +1,5 @@
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 from django.conf import settings
@@ -7,6 +8,7 @@ from django.template.loader import get_template
 from django.test import override_settings
 from lxml import html as lxml_html
 
+import crud_views_object_detail
 from crud_views_object_detail.lib.resolvers import ResolvedGroup, ResolvedProperty
 
 
@@ -131,8 +133,10 @@ def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
     ]
     with override_settings(TEMPLATES=templates):
         fallback = get_template("crud_views_object_detail/object_detail.html")
-        assert fallback.origin.name.endswith(
-            "src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html"
+        # the package's own template, wherever the package is installed (src/ or site-packages)
+        assert Path(fallback.origin.name).resolve() == (
+            Path(crud_views_object_detail.__file__).resolve().parent
+            / "templates/crud_views_object_detail/object_detail.html"
         )
         tpl = Template(
             "{% load crud_views_object_detail %}"

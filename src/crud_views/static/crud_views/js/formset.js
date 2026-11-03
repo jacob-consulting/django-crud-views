@@ -610,7 +610,7 @@ function initFormsets(root = document) {
         return;
     }
     owners.forEach(form => {
-        if (!controllers.has(form)) new CrudViewsFormset(form);
+        if (!controllers.has(form)) new CrudViewsFormset(form);  // NOSONAR S1848: the constructor registers itself in `controllers`
     });
 }
 

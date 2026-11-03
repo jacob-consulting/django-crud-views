@@ -156,7 +156,7 @@ def test_form_button_baselines(request, case):
 @pytest.mark.django_db
 @pytest.mark.parametrize("case", sorted(CONTROL_CASES))
 def test_form_button_baselines_are_deterministic(request, case):
-    assert _golden_bytes(_page_controls(request, case)) == _golden_bytes(_page_controls(request, case))
+    assert _golden_bytes(_page_controls(request, case)) == _golden_bytes(_page_controls(request, case))  # NOSONAR S5863
 
 
 @pytest.mark.django_db

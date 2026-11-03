@@ -98,7 +98,6 @@ class QuestionnaireForm(CrispyModelForm):
 
     def get_layout_fields(self):
         return [Row(Column8("title")), Formsets()]
-
 ```
 
 ### The view

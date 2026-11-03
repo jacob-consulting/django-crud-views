@@ -44,7 +44,7 @@ function hashes() {
         ...filesIn('src/crud_views/templates/crud_views/conditional'),
         ...['toggle', 'formset', 'modal', 'adapters'].map(n => `src/crud_views/static/crud_views/js/${n}.js`),
         'src/crud_views/lib/views/mixins.py', 'src/crud_views/lib/views/update.py', 'src/crud_views/lib/view/base.py'];
-    return Object.fromEntries(files.filter(f => !f.includes('__pycache__')).sort().map(f => [f, digest(f)]));
+    return Object.fromEntries(files.filter(f => !f.includes('__pycache__')).sort().map(f => [f, digest(f)])); // NOSONAR S2871: test harness
 }
 const REQUIRED = {
     'tracer': ['real-page', 'prefixed-group', 'actual-fragment', 'post-management', 'persisted-added-row'],
@@ -82,7 +82,7 @@ function validateEvidence(r) {
     assert.deepEqual(r.sourceHashes, hashes(), 'Stale source hashes or wrong input set');
     assert(r.scope === 'all' || Object.hasOwn(REQUIRED, r.scope), 'Unknown evidence scope');
     const expected = r.scope === 'tracer' ? ['stock:tracer'] : ['stock', 'native'].flatMap(t => (r.scope === 'all' ? Object.keys(REQUIRED) : [r.scope]).map(id => `${t}:${id}`));
-    assert.deepEqual(r.cases.map(c => `${c.theme}:${c.id}`).sort(), expected.sort(), 'Missing/duplicate/extra case');
+    assert.deepEqual(r.cases.map(c => `${c.theme}:${c.id}`).sort(), expected.sort(), 'Missing/duplicate/extra case'); // NOSONAR S2871: test harness
     assert.equal(r.scope, requested, 'Evidence must match exact requested scope');
     for (const c of r.cases) {
         assert(c.passed && !c.skipped, `Case failed/skipped: ${c.id}`);
@@ -113,7 +113,7 @@ function rawBalance(html) {
     return true;
 }
 async function main() {
-    const record = {captured: new Date().toISOString(), revision: cp.execFileSync('git', ['rev-parse', 'HEAD'], {encoding:'utf8'}).trim(),
+    const record = {captured: new Date().toISOString(), revision: cp.execFileSync('git', ['rev-parse', 'HEAD'], {encoding:'utf8'}).trim(), // NOSONAR S4036: test harness
         sourceHashes: hashes(), command: [process.execPath, __filename, ...argv], scope: requested,
         runtime: {node: process.version, nodePath: fs.realpathSync(process.execPath)}, cases: [], pageErrors: [], cleanup: {}, completed: false, passed: false};
     let child, browser;
@@ -355,7 +355,7 @@ async function runCase({c, page, context, base, before, result, check, load, sta
                                 family:getComputedStyle(el,'::before').fontFamily,width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})).filter(g=>g.content!=='none'&&g.content!=='normal'&&g.content!=='""'&&g.width>0&&g.height>0)}
                     }));
                     const screenshot=`${directory}/${device.id}.png`;
-                    cp.execFileSync('git',['check-ignore',screenshot]);
+                    cp.execFileSync('git',['check-ignore',screenshot]); // NOSONAR S4036: test harness
                     await capturePage.screenshot({path:screenshot,fullPage:true});
                     result.captures.push({path:screenshot,sha256:digest(screenshot),device,...observation});
                 } finally {await captureContext.close();}

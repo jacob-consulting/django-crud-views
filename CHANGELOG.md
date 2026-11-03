@@ -597,6 +597,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Internal
 
+- CI is green again after landing the pre-1.0 phases: ruff skips `.planning/`, three docs pages are formatted,
+  three tests compare template paths against the installed package instead of `src/`, and SonarCloud false positives
+  are marked `NOSONAR` with a reason.
 - Example app: the seed data now paginates both list styles so table and card pagination can be compared in the
   browser. `library` seeds 25 authors (the author table paginates at 10 by default, so three pages), and the
   showcase `RecipeCardListView` sets `paginate_by = 6` over 14 seeded recipes (three pages).

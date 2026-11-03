@@ -6,6 +6,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Dynamic Cancel navigation and copied Cancel templates.** Standard form views now default to
+  `cv_cancel_keys="auto"`, returning to accessible list/card/detail origins with captured query state.
+  Cancel is omitted when neither origin nor fallback is accessible; invalid configured fallbacks report
+  `viewset.E256` / `ImproperlyConfigured`. Copied key-only Cancel templates must migrate immediately to
+  guarded `cv_cancel_url`, and custom helpers must filter omitted buttons. Explicit `cv_cancel_keys=None`
+  preserves static cancellation. See [the migration](docs/migrating-1.0.md#dynamic-cancel-navigation).
+
 - **Page-owned forms and helpers.** `cv_render_form` always rejects application `form_tag=True`. With compatible
   helpers, detectable unused wrapper settings warn normally and raise in strict mode; outer attributes are
   never transferred. Migrate immediately using the [helper/page recipe](docs/migrating-1.0.md#page-owned-forms-and-helpers).

@@ -99,3 +99,29 @@ def test_custom_actions_recipe(
     assert_owner(response)
     nodes = html.fromstring(response.content).xpath("//form//*[@id='button-id-reset']")
     assert bool(nodes) is allowed
+
+
+def test_migration_pair_and_current_recipe():
+    migration = (ROOT / "docs/migrating-1.0.md").read_text()
+    changelog = (ROOT / "CHANGELOG.md").read_text().split("### Breaking", 1)[1].split("### ", 1)[0]
+    assert "docs/migrating-1.0.md#dynamic-cancel-navigation" in changelog
+    assert recipe("guarded-template") in migration
+    old = "{% cv_context_url view.cv_get_cancel_key as url %}"
+    before = migration.split("**Before — unsupported key-only Cancel integration:**", 1)[1].split("**After", 1)[0]
+    assert old in before
+    for path in (ROOT / "docs").rglob("*.md"):
+        if path.name != "migrating-1.0.md":
+            assert old not in path.read_text(), path
+
+
+def test_documented_transport_limits_and_parameters(monkeypatch):
+    from crud_views.lib.view import cancel
+
+    settings_doc = (ROOT / "docs/reference/settings.md").read_text()
+    for value in (cancel.MAX_TOKEN, cancel.MAX_JSON, cancel.MAX_QUERY, cancel.MAX_PAIRS):
+        assert f"{value:,}" in settings_doc
+    assert cancel.navigation_params() == ("cv_from", "cv_from_cancel", "cv_from_restore")
+    monkeypatch.setattr(cancel.crud_views_settings, "origin_param", "back")
+    assert cancel.navigation_params() == ("back", "back_cancel", "back_restore")
+    for term in ("query=null", 'query=""', "SECRET_KEY_FALLBACKS", "414/400", "do not encrypt"):
+        assert term in settings_doc

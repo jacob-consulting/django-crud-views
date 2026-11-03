@@ -181,10 +181,11 @@ class CrudView(metaclass=CrudViewMetaClass):
             expression=not cls.cv_modal or cls.cv_modal_supported,
             msg="cv_modal is not supported for this view type (phase 1: delete, detail and custom form views)",
         )
+        cancel_keys_valid = cls.cv_cancel_keys == "auto" or cls.cv_origin_keys_registered(cls.cv_cancel_keys)
         yield CheckExpression(
             context=cls,
             id="E252",
-            expression=cls.cv_cancel_keys == "auto" or cls.cv_origin_keys_registered(cls.cv_cancel_keys),
+            expression=cancel_keys_valid,
             msg=f"cv_cancel_keys entries must be registered view keys, got {cls.cv_cancel_keys!r}",
         )
         yield CheckExpression(
@@ -198,7 +199,7 @@ class CrudView(metaclass=CrudViewMetaClass):
                 context=cls,
                 id="E256",
                 expression=cls._cv_cancel_key_usable(cls.cv_cancel_key or cls.cv_key)
-                or any(cls._cv_cancel_key_usable(key) for key in effective_cancel_keys(cls)),
+                or (cancel_keys_valid and any(cls._cv_cancel_key_usable(key) for key in effective_cancel_keys(cls))),
                 msg=cls._cv_cancel_configuration_message(),
             )
         yield CheckExpression(

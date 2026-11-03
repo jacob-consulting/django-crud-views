@@ -145,6 +145,36 @@ def test_core_fallback_startup_diagnostic(cv_publisher, monkeypatch, static, exp
     assert not fallback_errors(cls)
 
 
+@pytest.mark.parametrize("keys", [[{}], [[]], 42], ids=["dict-entry", "list-entry", "noniterable"])
+@pytest.mark.parametrize("fallback", ["missing", "list"])
+def test_core_fallback_diagnostic_handles_malformed_keys(cv_publisher, monkeypatch, keys, fallback):
+    cls = cv_publisher.get_view_class("update")
+    monkeypatch.setattr(cls, "cv_cancel_key", fallback)
+    monkeypatch.setattr(cls, "cv_cancel_keys", keys)
+    monkeypatch.setattr(cls, "cv_inaccessible_actions", "invalid")
+    messages = [message for check in cls.checks() for message in check.messages()]
+    ids = [message.id for message in messages]
+    assert ids.count("viewset.E252") == 1
+    assert ids.count("viewset.E256") == (1 if fallback == "missing" else 0)
+    assert "viewset.E207" in ids  # A later independent diagnostic must still run.
+
+
+def test_core_fallback_diagnostic_propagates_application_errors(cv_publisher, monkeypatch):
+    cls = cv_publisher.get_view_class("update")
+    monkeypatch.setattr(cls, "cv_cancel_key", "missing")
+    monkeypatch.setattr(cls, "cv_cancel_keys", ["list"])
+    original = cls._cv_cancel_key_usable
+
+    def usable(cls, key):
+        if key == "list":
+            raise TypeError("application route failure")
+        return original(key)
+
+    monkeypatch.setattr(cls, "_cv_cancel_key_usable", classmethod(usable))
+    with pytest.raises(TypeError, match="application route failure"):
+        list(cls.checks())
+
+
 def test_core_fallback_diagnostic_scoped_to_forms(cv_publisher, monkeypatch):
     for key in ("detail", "list"):
         cls = cv_publisher.get_view_class(key)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 07:34+0000\n"
+"POT-Creation-Date: 2026-11-04 07:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,8 @@ msgstr ""
 
 #: action_menus/models.py:7 breadcrumbs/models.py:18 conditional/models.py:40
 #: context_buttons/models.py:11 delete_demo/models.py:7
-#: delete_demo/models.py:26 delete_demo/models.py:44 formsets/models.py:7
+#: delete_demo/models.py:26 delete_demo/models.py:44
+#: disabled_actions/models.py:6 formsets/models.py:7
 #: formsets_conditional/models.py:26 guardian_demo/models.py:7
 #: library/models.py:26
 msgid "title"
@@ -41,7 +42,7 @@ msgstr "Aufgabe"
 msgid "chores"
 msgstr "Aufgaben"
 
-#: action_menus/models.py:21 formsets/models.py:22
+#: action_menus/models.py:21 flash_messages/models.py:8 formsets/models.py:22
 msgid "text"
 msgstr "Text"
 
@@ -65,7 +66,8 @@ msgstr "Bearbeiten"
 msgid "Done"
 msgstr "Erledigt"
 
-#: action_menus/views.py:75 action_menus/views.py:138 action_menus/views.py:139
+#: action_menus/views.py:75 action_menus/views.py:138
+#: action_menus/views.py:139
 msgid "Archive"
 msgstr "Archivieren"
 
@@ -358,11 +360,11 @@ msgstr "Beschreibung"
 msgid "priority"
 msgstr "Priorität"
 
-#: context_buttons/models.py:17
+#: context_buttons/models.py:17 disabled_actions/models.py:11
 msgid "ticket"
 msgstr "Ticket"
 
-#: context_buttons/models.py:18
+#: context_buttons/models.py:18 disabled_actions/models.py:12
 msgid "tickets"
 msgstr "Tickets"
 
@@ -418,15 +420,15 @@ msgstr "Gefahrenzone"
 msgid "The danger zone is only shown to users who may delete."
 msgstr "Die Gefahrenzone sehen nur Benutzer, die löschen dürfen."
 
-#: context_buttons/views.py:77
+#: context_buttons/views.py:77 disabled_actions/views.py:58
 msgid "Created ticket “{{ object }}”"
 msgstr "Ticket »{{ object }}« erstellt"
 
-#: context_buttons/views.py:83
+#: context_buttons/views.py:83 disabled_actions/views.py:70
 msgid "Updated ticket “{{ object }}”"
 msgstr "Ticket »{{ object }}« aktualisiert"
 
-#: context_buttons/views.py:90
+#: context_buttons/views.py:90 disabled_actions/views.py:81
 msgid "Deleted ticket “{{ object }}”"
 msgstr "Ticket »{{ object }}« gelöscht"
 
@@ -551,6 +553,99 @@ msgstr ""
 #: delete_demo/views.py:101
 msgid "Task"
 msgstr "Aufgabe"
+
+#: disabled_actions/models.py:7
+msgid "locked"
+msgstr "gesperrt"
+
+#: disabled_actions/views.py:51
+msgid "Ticket"
+msgstr "Ticket"
+
+#: disabled_actions/views.py:97 disabled_actions/views.py:98
+msgid "Lock / unlock"
+msgstr "Sperren / entsperren"
+
+#: disabled_actions/views.py:99
+msgid "Toggled lock for “{{ object }}”"
+msgstr "Sperre für „{{ object }}“ umgeschaltet"
+
+#: disabled_actions/views.py:100
+msgid "Could not toggle lock for “{{ object }}”"
+msgstr "Sperre für „{{ object }}“ konnte nicht umgeschaltet werden"
+
+#: flash_messages/models.py:11
+msgid "notice"
+msgstr "Hinweis"
+
+#: flash_messages/models.py:12
+msgid "notices"
+msgstr "Hinweise"
+
+#: flash_messages/templates/flash_messages/compose.html:6
+msgid "Inline alert:"
+msgstr "Eingebetteter Hinweis:"
+
+#: flash_messages/templates/flash_messages/compose.html:7
+msgid ""
+"this box is drawn by the cv_alert tag in the template, not queued with "
+"django.contrib.messages, so it shows on every visit and has no close button."
+msgstr ""
+"Dieser Kasten wird vom Tag cv_alert im Template gezeichnet und nicht über "
+"django.contrib.messages eingereiht – er erscheint daher bei jedem Aufruf und "
+"hat keine Schließen-Schaltfläche."
+
+#: flash_messages/views.py:25
+msgid "Send message"
+msgstr "Nachricht senden"
+
+#: flash_messages/views.py:28
+msgid "Level"
+msgstr "Stufe"
+
+#: flash_messages/views.py:31
+msgid "Debug"
+msgstr "Debug"
+
+#: flash_messages/views.py:32
+msgid "Info"
+msgstr "Info"
+
+#: flash_messages/views.py:33
+msgid "Success"
+msgstr "Erfolg"
+
+#: flash_messages/views.py:34
+msgid "Warning"
+msgstr "Warnung"
+
+#: flash_messages/views.py:35 workflow/models.py:13
+msgid "Error"
+msgstr "Fehler"
+
+#: flash_messages/views.py:38
+msgid "Text"
+msgstr "Text"
+
+#: flash_messages/views.py:56
+msgid "Compose message"
+msgstr "Nachricht verfassen"
+
+#: flash_messages/views.py:57
+msgid "Compose"
+msgstr "Verfassen"
+
+#: flash_messages/views.py:58
+msgid "Flash messages"
+msgstr "Flash-Nachrichten"
+
+#: flash_messages/views.py:59
+msgid ""
+"Pick a level and a text; the message appears above the page after the "
+"redirect"
+msgstr ""
+"Stufe und Text wählen; die Nachricht erscheint nach der Weiterleitung oben "
+"auf der Seite"
 
 #: formsets/models.py:11 formsets/models.py:20
 msgid "questionnaire"
@@ -1188,15 +1283,15 @@ msgctxt "feature group"
 msgid "Extensions"
 msgstr "Erweiterungen"
 
-#: project/settings.py:115
+#: project/settings.py:117
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:116
+#: project/settings.py:118
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:135
+#: project/settings.py:137
 msgid "Home"
 msgstr "Startseite"
 
@@ -1220,12 +1315,12 @@ msgstr ""
 
 #: project/templates/project/base.html:51
 msgid ""
-"Public demo — data resets daily and after inactivity. Log in as <code>alice/"
-"alice</code> or <code>bob/bob</code>."
+"Public demo — data resets daily and after inactivity. Log in as "
+"<code>alice/alice</code> or <code>bob/bob</code>."
 msgstr ""
 "Öffentliche Demo — die Daten werden täglich und nach Inaktivität "
-"zurückgesetzt. Melden Sie sich als <code>alice/alice</code> oder <code>bob/"
-"bob</code> an."
+"zurückgesetzt. Melden Sie sich als <code>alice/alice</code> oder "
+"<code>bob/bob</code> an."
 
 #: project/templates/project/example_about.html:6
 #, python-format
@@ -1242,8 +1337,8 @@ msgstr "Live-Demo"
 
 #: project/templates/project/home.html:10
 msgid ""
-"One self-contained example app per feature. Every page shows the code behind "
-"it."
+"One self-contained example app per feature. Every page shows the code behind"
+" it."
 msgstr ""
 "Eine eigenständige Beispielanwendung pro Funktion. Jede Seite zeigt den "
 "dazugehörigen Code."
@@ -1258,15 +1353,15 @@ msgstr "Öffnen"
 
 #: project/templates/project/home.html:42
 msgid ""
-"Demo users (created by <code>manage.py seed</code>): <code>alice/alice</"
-"code> and <code>bob/bob</code> (regular users — bob may only view in Context "
-"Buttons and Action Menus, and the Guardian example shows them different "
-"documents)."
+"Demo users (created by <code>manage.py seed</code>): "
+"<code>alice/alice</code> and <code>bob/bob</code> (regular users — bob may "
+"only view in Context Buttons and Action Menus, and the Guardian example "
+"shows them different documents)."
 msgstr ""
-"Demo-Benutzer (angelegt mit <code>manage.py seed</code>): <code>alice/alice</"
-"code> und <code>bob/bob</code> (normale Benutzer — bob darf in Context "
-"Buttons und Action Menus nur ansehen, und das Guardian-Beispiel zeigt ihnen "
-"unterschiedliche Dokumente)."
+"Demo-Benutzer (angelegt mit <code>manage.py seed</code>): "
+"<code>alice/alice</code> und <code>bob/bob</code> (normale Benutzer — bob "
+"darf in Context Buttons und Action Menus nur ansehen, und das Guardian-"
+"Beispiel zeigt ihnen unterschiedliche Dokumente)."
 
 #: project/templates/project/nav.html:37
 msgid "Log Out"
@@ -1363,10 +1458,6 @@ msgstr "Abgeschlossen"
 #: workflow/models.py:12
 msgid "Cancelled"
 msgstr "Abgebrochen"
-
-#: workflow/models.py:13
-msgid "Error"
-msgstr "Fehler"
 
 #: workflow/models.py:27 workflow/views.py:36
 msgid "state"

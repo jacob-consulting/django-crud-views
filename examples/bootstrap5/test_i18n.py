@@ -77,6 +77,8 @@ EXAMPLE_APPS = [
     "delete_demo",
     "custom_form",
     "label_modes",
+    "flash_messages",
+    "disabled_actions",
 ]
 
 

@@ -11,6 +11,11 @@ already passed. The two hooks answer different questions:
 A typical use case: a "locked" group that prevents members from being added or removed, even
 though the user would normally have permission to do so.
 
+!!! example "Try it live"
+    The [Disabled Actions example](https://django-crud-views-demo.onrender.com/disabled-actions/lockable_ticket/) in the
+    live demo disables update and delete for locked tickets — log in as `alice` / `alice`. See
+    [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Default and Override Signature
 
 ```python

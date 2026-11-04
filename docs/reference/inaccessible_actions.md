@@ -8,6 +8,11 @@ see that the action exists.
 The mode applies to every place an action is rendered: the context-button toolbar, the manual placement tags
 (`cv_context_button`, `cv_get_context_buttons`), list row actions and card actions, including child card actions.
 
+!!! example "Try it live"
+    The [Disabled Actions example](https://django-crud-views-demo.onrender.com/disabled-actions/lockable_ticket/) in the
+    live demo shows a disabled and a hidden action side by side — log in as `alice` / `alice`. See
+    [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Configuration
 
 | Where | Attribute | Values |

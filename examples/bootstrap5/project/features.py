@@ -496,6 +496,65 @@ FEATURES: list[Feature] = [
         ),
     ),
     Feature(
+        app="flash_messages",
+        group="ui",
+        title="Messages",
+        description="Queue a flash message at any level and see it rendered as a Bootstrap alert.",
+        about=(
+            "Pick a level and a text and send: the view queues it with messages.add_message and redirects back, "
+            "where {% cv_messages %} in the base template renders it as a dismissible alert, coloured by level. "
+            "Debug messages are queued too but never shown: Django's default MESSAGE_LEVEL is INFO, and this "
+            "demo does not lower it. The blue box above the form is a single {% cv_alert %} drawn by the "
+            "template itself, through the same alert frame."
+        ),
+        look_at=(
+            "NoticeComposeView.cv_form_valid in views.py (a CustomFormNoObjectView) and the cv_alert tag in "
+            "templates/flash_messages/compose.html; {% cv_messages %} sits in project/base.html."
+        ),
+        url_name="notice-compose",
+        icon="fa-regular fa-comment-dots",
+        docs=(
+            DocRef(page="reference/messages.md", label="Flash messages — levels", anchor="levels"),
+            DocRef(
+                page="reference/messages.md",
+                label="Flash messages — a single alert: cv_alert",
+                anchor="a-single-alert-cv_alert",
+            ),
+        ),
+    ),
+    Feature(
+        app="disabled_actions",
+        group="ui",
+        title="Disabled Actions",
+        description="Disable an action by object state — and hide or grey it out, side by side.",
+        about=(
+            "A locked ticket can be neither edited nor deleted, although you have the permission: "
+            "cv_action_enabled says no for its state. Update renders the action disabled (greyed out, "
+            'data-cv-disabled="state"), delete hides it — the same gate, the two inaccessible-action modes. '
+            "Opening the update or delete URL of a locked ticket directly answers 403. Lock / unlock is always "
+            "enabled, so you can flip the state and watch both buttons change. For actions disabled by "
+            "permission, see Action Menus."
+        ),
+        look_at=(
+            "cv_action_enabled on TicketUpdateView and TicketDeleteView in views.py, and "
+            'TicketUpdateView.cv_inaccessible_actions = "disable" next to the delete view\'s default "hide".'
+        ),
+        url_name="lockable_ticket-list",
+        icon="fa-solid fa-lock",
+        docs=(
+            DocRef(
+                page="reference/action_enabled.md",
+                label="Disabling an action — signature",
+                anchor="default-and-override-signature",
+            ),
+            DocRef(
+                page="reference/inaccessible_actions.md",
+                label="Hide or disable — configuration",
+                anchor="configuration",
+            ),
+        ),
+    ),
+    Feature(
         app="delete_demo",
         group="basics",
         title="Delete",

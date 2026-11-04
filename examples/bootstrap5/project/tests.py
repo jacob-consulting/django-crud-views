@@ -297,7 +297,7 @@ class FeatureGroupsTest(SimpleTestCase):
             {
                 "basics": ["library", "card_view", "nested", "resources", "delete_demo"],
                 "forms": ["formsets", "conditional", "formsets_conditional", "custom_form"],
-                "ui": ["breadcrumbs", "context_buttons", "action_menus"],
+                "ui": ["breadcrumbs", "context_buttons", "action_menus", "label_modes"],
                 "extensions": ["workflow", "polymorphic_demo", "guardian_demo", "object_detail"],
             },
         )

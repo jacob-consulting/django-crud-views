@@ -7,6 +7,11 @@ template tag, `{% cv_icon %}`.
 
 The public module is `crud_views.lib.icons`.
 
+!!! example "Try it live"
+    The [Label Modes & Icons example](https://django-crud-views-demo.onrender.com/label-modes/gadget/) in the live demo
+    shows the default action icons in every label mode — log in as `alice` / `alice`. See
+    [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Icon values
 
 Wherever the package accepts an icon (`cv_icon_action`, `cv_icon_header`, `ViewSet(icon_header=...)`, the `icon` of an

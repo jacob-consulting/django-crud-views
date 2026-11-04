@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 07:29+0000\n"
+"POT-Creation-Date: 2026-11-04 07:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -136,10 +136,10 @@ msgstr "Schritt „{{ object }}“ gelöscht"
 #: breadcrumbs/models.py:6 conditional/models.py:6 conditional/models.py:25
 #: conditional/models.py:53 custom_form/models.py:6
 #: formsets_conditional/models.py:6 formsets_conditional/models.py:39
-#: nested/models.py:6 nested/models.py:22 nested/models.py:37
-#: nested/models.py:51 object_detail/models.py:38 object_detail/models.py:66
-#: object_detail/models.py:78 polymorphic_demo/models.py:7
-#: workflow/models.py:26
+#: label_modes/models.py:6 nested/models.py:6 nested/models.py:22
+#: nested/models.py:37 nested/models.py:51 object_detail/models.py:38
+#: object_detail/models.py:66 object_detail/models.py:78
+#: polymorphic_demo/models.py:7 workflow/models.py:26
 msgid "name"
 msgstr "Name"
 
@@ -688,6 +688,30 @@ msgstr "Dokument »{{ object }}« aktualisiert"
 msgid "Deleted document “{{ object }}”"
 msgstr "Dokument »{{ object }}« gelöscht"
 
+#: label_modes/models.py:10
+msgid "gadget"
+msgstr "Werkzeug"
+
+#: label_modes/models.py:11
+msgid "gadgets"
+msgstr "Werkzeuge"
+
+#: label_modes/views.py:51
+msgid "Gadget"
+msgstr "Werkzeug"
+
+#: label_modes/views.py:58
+msgid "Created gadget “{{ object }}”"
+msgstr "Werkzeug »{{ object }}« erstellt"
+
+#: label_modes/views.py:64
+msgid "Updated gadget “{{ object }}”"
+msgstr "Werkzeug »{{ object }}« aktualisiert"
+
+#: label_modes/views.py:70
+msgid "Deleted gadget “{{ object }}”"
+msgstr "Werkzeug »{{ object }}« gelöscht"
+
 #: library/models.py:9
 msgid "ID"
 msgstr "ID"
@@ -1164,15 +1188,15 @@ msgctxt "feature group"
 msgid "Extensions"
 msgstr "Erweiterungen"
 
-#: project/settings.py:114
+#: project/settings.py:115
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:115
+#: project/settings.py:116
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:134
+#: project/settings.py:135
 msgid "Home"
 msgstr "Startseite"
 

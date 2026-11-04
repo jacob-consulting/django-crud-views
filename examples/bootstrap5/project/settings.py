@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "action_menus",
     "delete_demo",
     "custom_form",
+    "label_modes",
 ]
 
 MIDDLEWARE = [

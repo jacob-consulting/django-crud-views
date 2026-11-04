@@ -468,6 +468,34 @@ FEATURES: list[Feature] = [
         ),
     ),
     Feature(
+        app="label_modes",
+        group="ui",
+        title="Label Modes & Icons",
+        description="The same actions as text only, icon and text, and icon only with a tooltip — side by side.",
+        about=(
+            "Every action button has one of three label modes. 'label' shows the short label as text, 'both' "
+            "adds the action's icon, 'icon' shows the icon alone: its full label (\"Delete Gadget …\") stays in "
+            'the page as visually hidden text for screen readers, and the short label ("Delete") becomes the '
+            "hover tooltip. Labelled buttons get no tooltip, their visible text already names them. The list "
+            "rows and the detail toolbar each show Detail/List as label, Update as both and Delete as icon."
+        ),
+        look_at=(
+            "cv_list_actions_label_mode on GadgetListView and cv_context_actions_label_mode on GadgetDetailView "
+            "in views.py; the icons are the package defaults (list, detail, update, delete), see the Icons reference."
+        ),
+        url_name="gadget-list",
+        icon="fa-solid fa-tags",
+        docs=(
+            DocRef(page="reference/buttons.md", label="Buttons — variants", anchor="variants"),
+            DocRef(page="reference/icons.md", label="Icons — default table", anchor="default-table"),
+            DocRef(
+                page="reference/settings.md",
+                label="Settings — label-mode configuration",
+                anchor="label-mode-configuration",
+            ),
+        ),
+    ),
+    Feature(
         app="delete_demo",
         group="basics",
         title="Delete",

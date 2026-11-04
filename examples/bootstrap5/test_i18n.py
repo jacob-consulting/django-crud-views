@@ -79,6 +79,7 @@ EXAMPLE_APPS = [
     "label_modes",
     "flash_messages",
     "disabled_actions",
+    "theming",
 ]
 
 

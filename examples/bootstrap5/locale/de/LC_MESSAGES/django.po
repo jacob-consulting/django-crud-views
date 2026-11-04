@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 07:41+0000\n"
+"POT-Creation-Date: 2026-11-04 07:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,8 +175,8 @@ msgid ""
 msgstr ""
 "Diese Seite steht für eine bestehende Anwendung, in die django-crud-views "
 "eingebettet ist. Die Breadcrumb-Einträge, die hierher verweisen, fügt "
-"<code>HostNavBreadcrumbMixin</code> über <code>cv_breadcrumb_prefix()</code> "
-"ein — die crud-views-Seiten dieser App zeigen <em>Startseite › Host-"
+"<code>HostNavBreadcrumbMixin</code> über <code>cv_breadcrumb_prefix()</code>"
+" ein — die crud-views-Seiten dieser App zeigen <em>Startseite › Host-"
 "Anwendung › Arbeitsbereiche › …</em>."
 
 #: breadcrumbs/templates/breadcrumbs/host.html:14
@@ -409,8 +409,8 @@ msgstr "Dieses Ticket bearbeiten"
 #: context_buttons/templates/context_buttons/ticket_detail.html:35
 msgid "No URL — you may not edit this ticket, so the tile is not rendered."
 msgstr ""
-"Keine URL — Sie dürfen dieses Ticket nicht bearbeiten, daher wird die Kachel "
-"nicht angezeigt."
+"Keine URL — Sie dürfen dieses Ticket nicht bearbeiten, daher wird die Kachel"
+" nicht angezeigt."
 
 #: context_buttons/templates/context_buttons/ticket_detail.html:42
 msgid "Danger zone"
@@ -592,8 +592,8 @@ msgid ""
 "django.contrib.messages, so it shows on every visit and has no close button."
 msgstr ""
 "Dieser Kasten wird vom Tag cv_alert im Template gezeichnet und nicht über "
-"django.contrib.messages eingereiht – er erscheint daher bei jedem Aufruf und "
-"hat keine Schließen-Schaltfläche."
+"django.contrib.messages eingereiht – er erscheint daher bei jedem Aufruf und"
+" hat keine Schließen-Schaltfläche."
 
 #: flash_messages/views.py:25
 msgid "Send message"
@@ -1283,15 +1283,15 @@ msgctxt "feature group"
 msgid "Extensions"
 msgstr "Erweiterungen"
 
-#: project/settings.py:117
+#: project/settings.py:118
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:118
+#: project/settings.py:119
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:137
+#: project/settings.py:138
 msgid "Home"
 msgstr "Startseite"
 
@@ -1384,6 +1384,7 @@ msgid "References to documentation"
 msgstr "Verweise auf die Dokumentation"
 
 #: project/templates/project/snippet_panels.html:29
+#: theming/templates/theming/index.html:29
 msgid "(opens in a new tab)"
 msgstr "(öffnet in einem neuen Tab)"
 
@@ -1446,6 +1447,60 @@ msgstr "Zeitstempel von »{{ object }}« aktualisiert"
 #: resources/views.py:120
 msgid "Touch failed for “{{ object }}”"
 msgstr "Touch für »{{ object }}« fehlgeschlagen"
+
+#: theming/templates/theming/index.html:13 theming/views.py:27
+msgid "Theme"
+msgstr "Theme"
+
+#: theming/templates/theming/index.html:14
+msgid ""
+"A theme restyles every crud_views page by overriding templates, buttons and "
+"icons."
+msgstr ""
+"Ein Theme gestaltet jede crud_views-Seite um, indem es Templates, Buttons "
+"und Icons überschreibt."
+
+#: theming/templates/theming/index.html:17
+msgid "Where it is documented"
+msgstr "Wo es dokumentiert ist"
+
+#: theming/templates/theming/index.html:24
+msgid "A second theme: Tabler"
+msgstr "Ein zweites Theme: Tabler"
+
+#: theming/templates/theming/index.html:25
+msgid ""
+"The same views, restyled with Tabler instead of Bootstrap 5 — a theme app "
+"that overrides templates, button classes and icons and swaps the JavaScript "
+"adapters."
+msgstr ""
+"Dieselben Views, gestaltet mit Tabler statt Bootstrap 5 — eine Theme-App, "
+"die Templates, Button-Klassen und Icons überschreibt und die JavaScript-"
+"Adapter austauscht."
+
+#: theming/templates/theming/index.html:28
+msgid "Open the Tabler theme demo"
+msgstr "Tabler-Theme-Demo öffnen"
+
+#: theming/templates/theming/index.html:33
+msgid "The Tabler theme demo is coming soon."
+msgstr "Die Tabler-Theme-Demo folgt in Kürze."
+
+#: theming/views.py:14
+msgid "Custom themes"
+msgstr "Eigene Themes"
+
+#: theming/views.py:15
+msgid "Base template"
+msgstr "Basis-Template"
+
+#: theming/views.py:16
+msgid "Buttons"
+msgstr "Buttons"
+
+#: theming/views.py:17
+msgid "Icons"
+msgstr "Icons"
 
 #: workflow/models.py:9
 msgid "Draft"

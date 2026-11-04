@@ -594,6 +594,37 @@ FEATURES: list[Feature] = [
             DocRef(page="reference/modals.md", label="Modals"),
         ),
     ),
+    Feature(
+        app="theming",
+        group="ui",
+        title="Theme",
+        description="Restyle every page by overriding templates, buttons and icons — with a second theme to try.",
+        about=(
+            "Everything you see is the bootstrap5 theme that ships with crud_views; a theme is just an app whose "
+            "templates, button classes and icons win over the stock ones. This page has no CRUD of its own: it "
+            "points to the reference pages and to the Tabler theme demo, the same views restyled by a theme app."
+        ),
+        look_at=(
+            "ThemeIndexView in views.py: a plain TemplateView that supplies its own breadcrumb, "
+            "and TABLER_DEMO_URL, the one constant that switches the placeholder to the demo link."
+        ),
+        url_name="theming-index",
+        icon="fa-solid fa-swatchbook",
+        docs=(
+            DocRef(page="reference/theme.md", label="Custom themes", anchor="how-resolution-works"),
+            DocRef(page="reference/templates.md", label="Base template", anchor="what-to-put-in-it"),
+            DocRef(
+                page="reference/buttons.md",
+                label="Buttons — registering classes from a theme",
+                anchor="registering-classes-from-a-theme",
+            ),
+            DocRef(
+                page="reference/icons.md",
+                label="Icons — registering icons from a theme",
+                anchor="registering-icons-from-a-theme",
+            ),
+        ),
+    ),
 ]
 
 

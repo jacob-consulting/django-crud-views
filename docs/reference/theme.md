@@ -11,6 +11,10 @@ template override by name, resolved through Django's app template loader.
     extend (your site chrome), use `cv_extends` instead — see
     [Base template](templates.md).
 
+!!! example "Try it live"
+    The [Theme example](https://django-crud-views-demo.onrender.com/theming/) in the live demo points from here to the
+    Tabler theme demo — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## How resolution works
 
 Every crud_views template lives under a `crud_views/` directory, e.g.

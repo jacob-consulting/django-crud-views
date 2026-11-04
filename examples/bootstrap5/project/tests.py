@@ -304,6 +304,7 @@ class FeatureGroupsTest(SimpleTestCase):
                     "label_modes",
                     "flash_messages",
                     "disabled_actions",
+                    "theming",
                 ],
                 "extensions": ["workflow", "polymorphic_demo", "guardian_demo", "object_detail"],
             },

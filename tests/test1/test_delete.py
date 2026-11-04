@@ -661,10 +661,67 @@ def test_blocked_state_without_related_preview(client_user_publisher_delete, pub
     assert response.context["has_protected_objects"] is blocked
     assert "protected_objects" not in response.context
     assert "related_summary" not in response.context
+    assert "delete_preview_truncated" not in response.context
     assert ("<form" in response.content.decode()) is not blocked
     response = client_user_publisher_delete.post(url, {"confirm": True})
     assert response.status_code == (200 if blocked else 302)
     assert Publisher.objects.filter(pk=publisher_penguin.pk).exists() is blocked
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("limit", [50, None])
+@pytest.mark.parametrize("visible", [False, True])
+@pytest.mark.parametrize("preview", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+def test_delete_preview_limit_blocking(
+    client_user_publisher_cascade_delete,
+    user_publisher_cascade_delete,
+    publisher_penguin,
+    monkeypatch,
+    limit,
+    visible,
+    preview,
+    modal,
+):
+    from django.contrib.auth.models import Permission
+
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import PublisherCascadeDeleteView
+
+    blockers = [Contract.objects.create(title=f"BLOCKER-{i:03d}", publisher=publisher_penguin) for i in range(60)]
+    if visible:
+        user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    view = PublisherCascadeDeleteView
+    monkeypatch.setattr(view, "cv_delete_preview_limit", limit)
+    monkeypatch.setattr(view, "cv_show_related_objects", preview)
+    monkeypatch.setattr(view, "cv_link_related_objects", True)
+    monkeypatch.setattr(view, "cv_modal", modal)
+    monkeypatch.setattr(view, "cv_get_related_object_url", lambda *a: pytest.fail("No cascade row is visible"))
+    if not preview:
+        monkeypatch.setattr(view, "cv_filter_related_objects", lambda *a: pytest.fail("Preview-off filtering"))
+        monkeypatch.setattr(view, "_cv_select_delete_preview", lambda *a: pytest.fail("Preview-off selection"))
+    for method in ("get", "get", "post"):
+        response = getattr(client_user_publisher_cascade_delete, method)(
+            f"/publisher_cascade/{publisher_penguin.pk}/delete/",
+            {"confirm": "on"},
+            HTTP_X_CV_MODAL="true" if modal else "false",
+        )
+        assert response.status_code == (422 if modal and method == "post" else 200)
+        assert response.context["has_protected_objects"] is True
+        content = response.content.decode()
+        assert "<form" not in content
+        expected = blockers[:limit] if preview and visible else []
+        if preview:
+            assert response.context["protected_objects"] == [{"obj": obj, "url": None} for obj in expected]
+            assert response.context["related_objects"] == []
+            assert response.context["delete_preview_truncated"] is (visible and limit == 50)
+        else:
+            for key in ("protected_objects", "related_objects", "related_summary", "delete_preview_truncated"):
+                assert key not in response.context
+        for obj in blockers:
+            assert (obj.title in content) is (obj in expected)
+        publisher_penguin.refresh_from_db()
+        assert Contract.objects.filter(publisher=publisher_penguin).count() == 60
 
 
 @pytest.mark.django_db

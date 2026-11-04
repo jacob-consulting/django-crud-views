@@ -812,13 +812,12 @@ def test_partial_native_template_context_shape(
             )
             assert ("partial counts" in content) is not business
             assert context["protected_objects"] == [{"obj": obj, "url": None} for obj in blockers]
-            (root,) = context["related_objects"]
-            assert root["obj"] is None and root["url"] is None
-            assert [node["obj"] for node in root["children"]] == [
-                obj if obj in books else None for obj in (native_book, provider_book)
-            ]
+            # Hidden roots consume no row; permitted children are promoted in order.
+            assert [node["obj"] for node in context["related_objects"]] == books
+            assert all(node["url"] is None and node["children"] == [] for node in context["related_objects"])
+            assert context["delete_preview_truncated"] is False
         else:
-            for key in ("related_summary", "related_objects", "protected_objects"):
+            for key in ("related_summary", "related_objects", "protected_objects", "delete_preview_truncated"):
                 assert key not in context
             assert "partial counts" not in content
         assert _context_pks(response, Book) == ({obj.pk for obj in books} if details else set())

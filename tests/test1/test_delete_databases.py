@@ -63,9 +63,10 @@ def test_protected_guardian_original_actor_guards(
 
 
 @pytest.mark.parametrize("guardian", [False, True])
-@pytest.mark.parametrize("size", [0, 1, 4, 8])
+@pytest.mark.parametrize("size", [0, 1, 2, 3, 4, 8])
+@pytest.mark.parametrize("limit", [3, None])
 @pytest.mark.parametrize("preview,link", [(False, False), (False, True), (True, False), (True, True)])
-def test_delete_preview_component_costs(request, database_routes, monkeypatch, guardian, size, preview, link):
+def test_delete_preview_component_costs(request, database_routes, monkeypatch, guardian, size, preview, link, limit):
     """Measure real inspection/filter/presentation separately, across both aliases."""
     import hashlib
     import json
@@ -105,6 +106,7 @@ def test_delete_preview_component_costs(request, database_routes, monkeypatch, g
             view.object = parent
             view.cv_show_related_objects = preview
             view.cv_link_related_objects = link
+            view.cv_delete_preview_limit = limit
             return view
 
         # Warm auth/content-type/URL caches, then discard the inspection instance.
@@ -136,6 +138,8 @@ def test_delete_preview_component_costs(request, database_routes, monkeypatch, g
 
         def url(obj):
             (protected_calls if isinstance(obj, Contract) else cascade_calls).append(obj)
+            # Controlled application hook: exactly one query per selected occurrence.
+            assert type(obj).objects.filter(pk=obj.pk).exists()
             return native_url(obj)
 
         def setup(self, *args, **kwargs):
@@ -147,19 +151,23 @@ def test_delete_preview_component_costs(request, database_routes, monkeypatch, g
         context = measure("presentation", view.get_context_data)
         assert context["has_protected_objects"] is bool(size)
         if preview:
-            assert len(context["protected_objects"]) == size
+            assert len(context["protected_objects"]) == (size if limit is None else min(size, limit))
             assert all(item["url"] is None for item in context["protected_objects"])
+            assert context["delete_preview_truncated"] is (limit is not None and size + 1 > limit)
         else:
             assert "protected_objects" not in context
-        assert len(cascade_calls) == (len(list(view._walk_nested(filtered.tree))) if preview and link else 0)
+            assert "delete_preview_truncated" not in context
+        expected_calls = int(preview and link and (limit is None or size < limit))
+        assert len(cascade_calls) == expected_calls
         assert protected_calls == destination_calls == []
-        assert measurements["presentation"]["queries"] == dict.fromkeys(ALIASES, 0)
+        assert measurements["presentation"]["queries"] == {"default": expected_calls, "shard": 0}
         print(
             "COMPONENT "
             + json.dumps(
                 {
                     "guardian": guardian,
                     "size": size,
+                    "limit": limit,
                     "preview": preview,
                     "link": link,
                     "python": platform.python_version(),
@@ -175,6 +183,62 @@ def test_delete_preview_component_costs(request, database_routes, monkeypatch, g
                 sort_keys=True,
             )
         )
+
+
+@pytest.mark.parametrize("limit", [1, 3, None])
+@pytest.mark.parametrize("blockers", [0, 3])
+@pytest.mark.parametrize("link", [False, True])
+def test_delete_preview_component_costs_occurrences(protected_destination, monkeypatch, limit, blockers, link):
+    """Controlled post-filter shape isolates repeated/hidden occurrence presentation cost."""
+    import json
+    from contextlib import ExitStack
+
+    from django.test.utils import CaptureQueriesContext
+
+    from crud_views.lib.deletion import DeleteInspection, RelatedObjects
+
+    case = protected_destination
+    view = case.source
+    root = view.object
+    related = RelatedObjects([None, [root, [None, [root, root]], root]], {}, [case.blocker] * blockers)
+    monkeypatch.setattr(view, "_cv_inspect_deletion", lambda: DeleteInspection(related, ()))
+    monkeypatch.setattr(view, "cv_filter_related_objects", lambda user, original: original)
+    view.cv_delete_preview_limit = limit
+    view.cv_link_related_objects = link
+    calls = []
+
+    def querying_url(obj):
+        assert obj is root
+        calls.append(obj)
+        assert Publisher.objects.filter(pk=obj.pk).exists()
+        return f"/occurrence/{len(calls)}/"
+
+    monkeypatch.setattr(view, "cv_get_related_object_url", querying_url)
+    view.get_context_data()  # warm ordinary context work independently
+    calls.clear()
+    with ExitStack() as stack:
+        captures = {alias: stack.enter_context(CaptureQueriesContext(connections[alias])) for alias in ALIASES}
+        context = view.get_context_data()
+    selected = 4 if limit is None else min(4, max(0, limit - blockers))
+    expected = selected if link else 0
+    assert len(calls) == expected
+    assert {alias: len(capture) for alias, capture in captures.items()} == {"default": expected, "shard": 0}
+    assert context["delete_preview_truncated"] is (limit is not None and blockers + 4 > limit)
+    assert related.tree == [None, [root, [None, [root, root]], root]]
+    print(
+        "OCCURRENCE "
+        + json.dumps(
+            {
+                "limit": limit,
+                "blockers": blockers,
+                "link": link,
+                "selected_cascades": selected,
+                "hook_calls": len(calls),
+                "default_queries": len(captures["default"]),
+                "shard_queries": len(captures["shard"]),
+            }
+        )
+    )
 
 
 def _world(using, *, protected=False):

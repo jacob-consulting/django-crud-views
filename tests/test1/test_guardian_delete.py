@@ -143,6 +143,86 @@ def test_plain_protected_guardian_requests(
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("limit", [50, None])
+@pytest.mark.parametrize("visible", [False, True])
+@pytest.mark.parametrize("preview", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+def test_guardian_delete_preview_limit_blocking(
+    client_guardian, user_guardian, publisher_a, monkeypatch, limit, visible, preview, modal
+):
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView, cv_guardian_publisher_cascade
+
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher_cascade, "delete", publisher_a)
+    blockers = [_contract(publisher_a, f"BLOCKER-{i:03d}") for i in range(60)]
+    if visible:
+        for obj in blockers:
+            _grant_contract(user_guardian, obj)
+    hidden = _contract(publisher_a, "HIDDEN-BLOCKER")
+    view = GuardianPublisherCascadeDeleteView
+    monkeypatch.setattr(view, "cv_delete_preview_limit", limit)
+    monkeypatch.setattr(view, "cv_show_related_objects", preview)
+    monkeypatch.setattr(view, "cv_link_related_objects", True)
+    monkeypatch.setattr(view, "cv_modal", modal)
+    monkeypatch.setattr(view, "cv_get_related_object_url", lambda *a: pytest.fail("No cascade row is visible"))
+    if not preview:
+        monkeypatch.setattr(view, "cv_filter_related_objects", lambda *a: pytest.fail("Preview-off filtering"))
+        monkeypatch.setattr(view, "_cv_select_delete_preview", lambda *a: pytest.fail("Preview-off selection"))
+    for method in ("get", "get", "post"):
+        response = getattr(client_guardian, method)(
+            f"/guardian_publisher_cascade/{publisher_a.pk}/delete/",
+            {"confirm": "on"},
+            HTTP_X_CV_MODAL="true" if modal else "false",
+        )
+        assert response.status_code == (422 if modal and method == "post" else 200)
+        assert response.context["has_protected_objects"] is True
+        content = response.content.decode()
+        assert "<form" not in content and hidden.title not in content
+        expected = blockers[:limit] if preview and visible else []
+        if preview:
+            assert response.context["protected_objects"] == [{"obj": obj, "url": None} for obj in expected]
+            assert response.context["related_objects"] == []
+            assert response.context["delete_preview_truncated"] is (visible and limit == 50)
+        else:
+            for key in ("protected_objects", "related_objects", "related_summary", "delete_preview_truncated"):
+                assert key not in response.context
+        for obj in blockers:
+            assert (obj.title in content) is (obj in expected)
+        publisher_a.refresh_from_db()
+        assert Contract.objects.filter(publisher=publisher_a).count() == 61
+
+
+@pytest.mark.django_db
+def test_delete_preview_selection_interleaved_guardian_actors(user_guardian, publisher_a):
+    from django.contrib.auth.models import User
+    from django.test import RequestFactory
+
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView
+
+    other = User.objects.create_user(username="other-preview-actor")
+    blockers = [_contract(publisher_a, f"Actor-specific {i}") for i in range(3)]
+    for obj in blockers[:2]:
+        _grant_contract(user_guardian, obj)
+    _grant_contract(other, blockers[2])
+    views = []
+    for actor, limit in ((user_guardian, 1), (other, None)):
+        request = RequestFactory().get("/preview/")
+        request.user = actor
+        view = GuardianPublisherCascadeDeleteView()
+        view.setup(request, pk=publisher_a.pk)
+        view.object = publisher_a
+        view.cv_delete_preview_limit = limit
+        views.append(view)
+    for view, expected, shortened in [(views[0], blockers[:1], True), (views[1], blockers[2:], False)] * 2:
+        context = view.get_context_data()
+        assert context["protected_objects"] == [{"obj": obj, "url": None} for obj in expected]
+        assert context["related_objects"] == []
+        assert context["delete_preview_truncated"] is shortened
+        assert context["has_protected_objects"] is True
+        assert len(view._cv_inspect_deletion().related.protected) == 3
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("superuser", [False, True])
 @pytest.mark.parametrize("details", [False, True])
 def test_partial_provider_no_view_and_through_projection(

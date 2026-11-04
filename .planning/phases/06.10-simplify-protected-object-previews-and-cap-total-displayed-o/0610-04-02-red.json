@@ -6,5 +6,8 @@
   "targetFile": "examples/bootstrap5/delete_demo/tests.py",
   "expected": "Demo and tutorials 5/6 describe plain protected labels",
   "actual": "demo.md lacks plain text teaching",
-  "semanticAssessment": "Target executed and failed the planned missing plain-text instruction assertion. Removed the subTest wrapper after pytest emitted a multi-failure testcase inconsistent with JUnit suite counts; all three document assertions remain. No implementation edits preceded successful classifier validation."
+  "semanticAssessment": "Target executed and failed the planned missing plain-text instruction assertion. Removed the subTest wrapper after pytest emitted a multi-failure testcase inconsistent with JUnit suite counts; all three document assertions remain. No implementation edits preceded successful classifier validation.",
+  "reportPath": "/tmp/0610-04-02-red-final.xml",
+  "runStartedAt": "2026-11-04T21:16:03.822204+00:00",
+  "reportModifiedAt": "2026-11-04T21:16:05.313320+00:00"
 }

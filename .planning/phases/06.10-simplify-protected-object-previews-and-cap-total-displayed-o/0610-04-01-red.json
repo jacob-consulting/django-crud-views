@@ -6,5 +6,8 @@
   "targetFile": "examples/bootstrap5/library/tests.py",
   "expected": "Live feature and tutorial exercise teach plain text blockers and Book links",
   "actual": "Live feature has no plain text instruction",
-  "semanticAssessment": "Target executed; assertion failed because stale live feature still teaches a protected Contract link."
+  "semanticAssessment": "Target executed; assertion failed because stale live feature still teaches a protected Contract link.",
+  "reportPath": "/tmp/0610-04-01-red.xml",
+  "runStartedAt": "2026-11-04T21:13:26.417750+00:00",
+  "reportModifiedAt": "2026-11-04T21:13:28.170075+00:00"
 }

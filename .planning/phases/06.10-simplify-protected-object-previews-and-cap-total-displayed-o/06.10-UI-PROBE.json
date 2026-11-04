@@ -1,0 +1,298 @@
+{
+  "phase": "06.10",
+  "stage": "post-checker-step-9.5",
+  "executed_at": "2026-11-04T20:49:29.658Z",
+  "engine": "/home/alex/.codex/gsd-core/bin/lib/ui-consideration-probe.cjs",
+  "checker": {
+    "status": "VERIFIED",
+    "reviewed_at": "2026-11-04T20:48:39Z",
+    "pass": 6,
+    "flag": 1,
+    "flag_detail": "Inherited Close label; preserve convention"
+  },
+  "human_kind_confirmation": "pending-end-of-phase",
+  "human_presentation_acceptance": "pending-end-of-phase",
+  "resolution_basis": "Existing settled phase decisions and preserved accepted baseline; explicit means specified, not newly human-tested",
+  "elements": [
+    {
+      "id": "E1",
+      "text": "Protected and cascade preview list with object labels",
+      "elements": [
+        "list-collection",
+        "static-content"
+      ]
+    },
+    {
+      "id": "E2",
+      "text": "Native cascade navigation links from page and modal",
+      "elements": [
+        "nav",
+        "interactive-control"
+      ]
+    },
+    {
+      "id": "E3",
+      "text": "Static alert headings and warning text",
+      "elements": [
+        "static-content"
+      ]
+    },
+    {
+      "id": "E4",
+      "text": "Delete confirmation form and buttons",
+      "elements": [
+        "form",
+        "interactive-control"
+      ]
+    }
+  ],
+  "classification": [
+    {
+      "id": "E1",
+      "detected": [
+        "list-collection",
+        "static-content"
+      ],
+      "authored": [
+        "list-collection",
+        "static-content"
+      ],
+      "human_confirmation": "pending-end-of-phase"
+    },
+    {
+      "id": "E2",
+      "detected": [
+        "nav"
+      ],
+      "authored": [
+        "nav",
+        "interactive-control"
+      ],
+      "human_confirmation": "pending-end-of-phase"
+    },
+    {
+      "id": "E3",
+      "detected": [
+        "static-content"
+      ],
+      "authored": [
+        "static-content"
+      ],
+      "human_confirmation": "pending-end-of-phase"
+    },
+    {
+      "id": "E4",
+      "detected": [
+        "form",
+        "interactive-control"
+      ],
+      "authored": [
+        "form",
+        "interactive-control"
+      ],
+      "human_confirmation": "pending-end-of-phase"
+    }
+  ],
+  "pending_checks": [
+    {
+      "requirement_id": "E1",
+      "category": "long-text",
+      "statement": "Confirm readable full labels in the changed capped stock/copied page/modal composition at end of phase; planner treats inherited wrapping as an assumption until reviewed."
+    },
+    {
+      "requirement_id": "E3",
+      "category": "overflow",
+      "statement": "Confirm one new notice above lists remains readable and the danger blocked heading prominent in stock/copied page/modal views; end-of-phase human check pending."
+    },
+    {
+      "requirement_id": "E3",
+      "category": "long-text",
+      "statement": "Confirm translated shortening text reflows without clipping or obscuring the separate incomplete warning; end-of-phase human check pending."
+    }
+  ],
+  "result": {
+    "items": [
+      {
+        "requirement_id": "E1",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "D-15 omits empty cascade detail; D-16 keeps the generic blocked branch when labels are hidden; use Copywriting Contract.",
+        "reason": null,
+        "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "E1",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Preserve synchronous server-rendered preview and existing page/modal loading feedback.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "E1",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "D-16 preserves custom protection/error branches; unexpected failures do not become empty success.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "E1",
+        "category": "populated",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "D-05–D-10 specify ordered plain blockers then selected depth-first cascade lists, with root/repeats counted.",
+        "reason": null,
+        "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+      },
+      {
+        "requirement_id": "E1",
+        "category": "partial",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "D-12–D-14 retain independent full summaries, truthful cap notice and inspection-incomplete state.",
+        "reason": null,
+        "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+      },
+      {
+        "requirement_id": "E1",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "D-13 displays one notice only for omitted visible occurrences; None retains ordinary scrolling without a cap notice.",
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "E1",
+        "category": "zero-one-many",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "D-08/D-15 preserve each occurrence, omit empty detail and render a selected solo root even without summary.",
+        "reason": null,
+        "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+      },
+      {
+        "requirement_id": "E1",
+        "category": "long-text",
+        "status": "unresolved",
+        "verification": null,
+        "resolution": null,
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "E2",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Preserve ordinary document navigation/loading from page and modal; no new AJAX interaction.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "E2",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "The actual destination request keeps existing denial/redirect/error behavior; no replacement destination certification.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "E2",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Preserve inherited inline-anchor wrapping and page/modal scrolling without ellipsis or fixed width.",
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "E2",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "The full selected object representation remains the anchor's visible and accessible name.",
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "E3",
+        "category": "overflow",
+        "status": "unresolved",
+        "verification": null,
+        "resolution": null,
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "E3",
+        "category": "long-text",
+        "status": "unresolved",
+        "verification": null,
+        "resolution": null,
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "E4",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "D-16 omits the entire blocked form; otherwise retain the existing confirmation workflow.",
+        "reason": null,
+        "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "E4",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Preserve existing submit and modal lifecycle feedback; no optimistic deletion.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "E4",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "D-16 retains server protection, custom errors and actual blocked POST behavior independently of displayed labels.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "E4",
+        "category": "partial",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Display truncation never makes a partial confirmation form or weakens write validation.",
+        "reason": null,
+        "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+      },
+      {
+        "requirement_id": "E4",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Preserve translated full captions, existing action wrapping and ordinary confirmation object text.",
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      }
+    ],
+    "coverage": {
+      "applicable": 19,
+      "resolved": 16,
+      "unresolved": 3,
+      "unclassified": 0,
+      "byVerification": {
+        "explicit": 16,
+        "backstop": 0
+      }
+    }
+  }
+}

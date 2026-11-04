@@ -117,6 +117,11 @@ Default list actions for list view.
 
 ### Label-mode configuration
 
+!!! example "Try it live"
+    The [Label Modes & Icons example](https://django-crud-views-demo.onrender.com/label-modes/gadget/) in the live demo
+    sets a list and a toolbar map to label, both and icon — log in as `alice` / `alice`. See
+    [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 A button shows its label as text only (`"label"`), as an icon with a visually hidden label and a tooltip (`"icon"`) or
 as both (`"both"`). Several knobs choose the mode, and they do not combine the same way: the defaults setting is
 merged per location, every per-action map replaces the layer below it whole.

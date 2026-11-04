@@ -1,0 +1,10 @@
+{% extends "crud_views/view_custom_form.content.html" %}
+{% load crud_views i18n %}
+
+{% block cv_form_frame %}
+    {# one alert drawn by the template itself, through the same frame as the flash messages #}
+    {% translate "Inline alert:" as alert_heading %}
+    {% translate "this box is drawn by the cv_alert tag in the template, not queued with django.contrib.messages, so it shows on every visit and has no close button." as alert_text %}
+    {% cv_alert "info" heading=alert_heading text=alert_text %}
+    {{ block.super }}
+{% endblock cv_form_frame %}

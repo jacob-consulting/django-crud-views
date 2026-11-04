@@ -1,0 +1,41 @@
+{% extends "project/base.html" %}
+
+{% load crud_views example_tags i18n %}
+
+{% block content %}
+
+    {% example_about %}
+
+    {% cv_breadcrumb %}
+
+    <div class="card">
+        <div class="card-header">
+            <h1 class="h3 mb-0"><i class="fa-solid fa-swatchbook" aria-hidden="true"></i> {% translate "Theme" %}</h1>
+            <p class="text-body-secondary mb-0 mt-2">{% translate "A theme restyles every crud_views page by overriding templates, buttons and icons." %}</p>
+        </div>
+        <div class="card-body">
+            <h2 class="h5">{% translate "Where it is documented" %}</h2>
+            <ul>
+                {% for title, url in doc_links %}
+                    <li><a href="{{ url }}" target="_blank" rel="noopener">{{ title }}</a></li>
+                {% endfor %}
+            </ul>
+
+            <h2 class="h5 mt-4">{% translate "A second theme: Tabler" %}</h2>
+            <p>{% translate "The same views, restyled with Tabler instead of Bootstrap 5 — a theme app that overrides templates, button classes and icons and swaps the JavaScript adapters." %}</p>
+            {% if tabler_demo_url %}
+                <a id="tabler-demo-link" class="btn btn-primary" href="{{ tabler_demo_url }}" target="_blank" rel="noopener">
+                    {% translate "Open the Tabler theme demo" %}
+                    <i class="fa-solid fa-arrow-up-right-from-square small" aria-hidden="true"></i><span class="visually-hidden">{% translate "(opens in a new tab)" %}</span></a>
+            {% else %}
+                <div id="tabler-demo-coming-soon" class="alert alert-secondary mb-0">
+                    <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+                    {% translate "The Tabler theme demo is coming soon." %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% snippet_panels %}
+
+{% endblock content %}

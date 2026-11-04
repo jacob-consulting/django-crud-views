@@ -4,7 +4,7 @@ Views can opt in to Bootstrap 5 modal rendering: action buttons then open the vi
 dialog instead of navigating to a full page.
 
 !!! example "Try it live"
-    The [Showcase example](https://django-crud-views-demo.onrender.com/showcase/recipe/) in the live demo shows this in
+    The [Delete example](https://django-crud-views-demo.onrender.com/delete/project/) in the live demo shows this in
     action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
 
 ```python

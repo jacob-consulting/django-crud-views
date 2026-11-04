@@ -10,6 +10,8 @@ except in:
   may not use disappear, or, in Action Menus, show disabled ("Archive").
 - **Guardian**, which uses per-object permissions: each user sees their own documents plus the ones the other shared
   with them.
+- **Delete**, which also uses per-object permissions: each user sees their own projects and tasks. One of alice's
+  projects is blocked by a task of bob's that she cannot see.
 
 Things to know:
 

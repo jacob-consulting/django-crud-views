@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ShowcaseConfig(AppConfig):
+class LabelModesConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "showcase"
+    name = "label_modes"

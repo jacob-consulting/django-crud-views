@@ -296,6 +296,113 @@ def test_protected_adapter_off_zero_work(protected_destination, monkeypatch, pre
     assert len(source_queries) > 0  # Inspection is measured separately from adapter work.
 
 
+@pytest.mark.parametrize("guardian", [False, True])
+@pytest.mark.parametrize("size", [0, 1, 4, 8])
+def test_delete_preview_component_costs(request, database_routes, monkeypatch, guardian, size):
+    """Measure real inspection/filter/presentation separately, across both aliases."""
+    import hashlib
+    import json
+    import platform
+    from contextlib import ExitStack
+    from pathlib import Path
+    from time import perf_counter
+
+    import django
+    from django.test.utils import CaptureQueriesContext
+
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView
+
+    with database_routes("default"):
+        if guardian:
+            parent = _world("default", protected=True)
+            actor = _actor("default")
+            blocker = Contract.objects.get(pk=81)
+            case = request.getfixturevalue("guardian_protected_destination")(actor, blocker)
+            source_class = GuardianPublisherCascadeDeleteView
+            _grant(actor, parent, "view_publisher")
+        else:
+            case = request.getfixturevalue("protected_destination")
+            parent = case.source.object
+            actor = case.source.request.user
+            actor.user_permissions.add(Permission.objects.get(codename="view_publisher"))
+            source_class = type(case.source)
+        Contract.objects.filter(publisher=parent).delete()
+        for index in range(size):
+            row = Contract.objects.create(title=f"Component {index}", publisher=parent)
+            if guardian:
+                _grant(actor, row, "view_contract")
+
+        def fresh_view():
+            view = source_class()
+            view.setup(case.source.request, pk=parent.pk)
+            view.object = parent
+            view.cv_show_related_objects = view.cv_link_related_objects = True
+            return view
+
+        # Warm auth/content-type/URL caches, then discard the inspection instance.
+        fresh_view().get_context_data()
+        view = fresh_view()
+        measurements = {}
+
+        def measure(name, callback):
+            with ExitStack() as stack:
+                captures = {alias: stack.enter_context(CaptureQueriesContext(connections[alias])) for alias in ALIASES}
+                started = perf_counter()
+                result = callback()
+                elapsed = perf_counter() - started
+            measurements[name] = {
+                "queries": {alias: len(capture) for alias, capture in captures.items()},
+                "seconds": elapsed,
+            }
+            return result
+
+        inspection = measure("inspection", view._cv_inspect_deletion)
+        filtered = measure("filter", lambda: view.cv_filter_related_objects(actor, inspection.related))
+        assert len(filtered.protected) == size
+        monkeypatch.setattr(view, "cv_filter_related_objects", lambda user, related: filtered)
+        protected_calls, cascade_calls, destination_calls = [], [], []
+        native_url, native_setup = view.cv_get_related_object_url, case.target.setup
+
+        def url(obj):
+            (protected_calls if isinstance(obj, Contract) else cascade_calls).append(obj)
+            return native_url(obj)
+
+        def setup(self, *args, **kwargs):
+            destination_calls.append(self)
+            return native_setup(self, *args, **kwargs)
+
+        monkeypatch.setattr(view, "cv_get_related_object_url", url)
+        monkeypatch.setattr(case.target, "setup", setup)
+        context = measure("presentation", view.get_context_data)
+        assert len(context["protected_objects"]) == size
+        assert len(cascade_calls) == len(list(view._walk_nested(filtered.tree)))
+        # The baseline uses the same harness. After retirement this becomes the
+        # regression assertion; it does not bound inspection or visibility work.
+        if not hasattr(DeleteView, "_cv_get_protected_object_url"):
+            assert protected_calls == destination_calls == []
+            assert measurements["presentation"]["queries"] == dict.fromkeys(ALIASES, 0)
+            assert all(item["url"] is None for item in context["protected_objects"])
+        print(
+            "COMPONENT "
+            + json.dumps(
+                {
+                    "guardian": guardian,
+                    "size": size,
+                    "python": platform.python_version(),
+                    "django": django.get_version(),
+                    "delete_sha256": hashlib.sha256(
+                        Path("src/crud_views/lib/views/delete.py").read_bytes()
+                    ).hexdigest(),
+                    "components": measurements,
+                    "protected_hook_calls": len(protected_calls),
+                    "destination_calls": len(destination_calls),
+                    "cascade_hook_calls": len(cascade_calls),
+                },
+                sort_keys=True,
+            )
+        )
+
+
 def _world(using, *, protected=False):
     root = Publisher.objects.using(using).create(pk=41, name=f"{using} publisher")
     Book.objects.using(using).create(pk=71, publisher_id=root.pk, title=f"{using} child")

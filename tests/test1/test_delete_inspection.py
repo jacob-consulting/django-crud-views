@@ -59,7 +59,8 @@ def test_protected_preview_read_only(protected_destination, client_user_publishe
         assert template in [item.name for item in response.templates]
         if method == "post":
             assert response.context["form"].is_valid()
-        assert response.context["protected_objects"] == [{"obj": case.blocker, "url": case.url}]
+        assert response.context["protected_objects"] == [{"obj": case.blocker, "url": None}]
+        assert case.url not in response.content.decode()
         assert "<form" not in response.content.decode()
         assert not any(q["sql"].lstrip().upper().startswith(("INSERT", "UPDATE", "DELETE")) for q in queries)
         assert events == []

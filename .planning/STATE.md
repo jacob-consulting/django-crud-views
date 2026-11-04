@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.10"
 current_phase_name: Simplify protected-object previews and cap total displayed objects
-status: executing
-stopped_at: Completed 06.10-04-PLAN.md; continue with Plan 05
-last_updated: "2026-11-04T21:20:21.806Z"
+status: verifying
+stopped_at: Completed 06.10-05-PLAN.md; independent phase reviews and human acceptance pending
+last_updated: "2026-11-04T21:34:52.656Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.10 Plan 04 complete; Plan 05 next
-state_head: c22f75dad85e7ae9f84503d4c48ae8055392f1f4
+last_activity_desc: Phase 06.10 Plan 05 complete; independent reviews and human acceptance pending
+state_head: 609ee3a2d2cac37f297c3ab079a42b229515ee26
 progress:
   total_phases: 17
   completed_phases: 15
   total_plans: 118
-  completed_plans: 117
+  completed_plans: 118
 milestone_name: milestone
 ---
 
@@ -28,12 +28,19 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 
 ## Current Position
 
-Phase: 06.10 (Simplify protected-object previews and cap total displayed objects) — EXECUTING
+Phase: 06.10 (Simplify protected-object previews and cap total displayed objects) — AWAITING VERIFICATION
 Plan: 5 of 5
-Status: Ready to execute
-Last activity: 2026-11-04 — Phase 06.10 Plan 04 complete; Plan 05 next
+Status: All plans executed; phase verification and human acceptance pending
+Last activity: 2026-11-04 — Phase 06.10 Plan 05 complete; final automated gates passed
 
-Next: $gsd-execute-phase 06.10
+Next: Independent phase/code/security/validation reviews and normal end-of-phase human acceptance
+
+### Phase 06.10 Plan 05 execution — 2026-11-04
+
+- Existing browser harness now verifies plain blockers, real visible/hidden Books, shared limits 2/3/4/None, preserved book:2 summaries, empty-detail omission and ordinary full-document Book click/Enter navigation. Final 45-case stock/copied page/modal report binds 557 source inputs, exact recipes and two screenshots; owned process/database cleanup passed.
+- Required gates passed: full Python 3.12 / Django 5.2: 9,671 passed, 1 expected Django-6-only skip; focused 4.2/6.0: 2,555 each; examples: 409 plus 100 subtests; JS: 365; fragments: 2; Node: 29; whole-tree Ruff and strict MkDocs. Broad Python runs used four workers. The isolated skipped CSP test passed on 6.0; WINDOWS 33 records that coverage.
+- Acceptance and raw output artifacts disclose Django 6.0 crispy-floor pins, cached Vitest 5.0.3 versus declared ^5.0.5, and unrun Python/full Cartesian coverage. No dependency install, production change, push or merge occurred in this plan.
+- Plan execution is 5/5; phase and shared DPV completion remain pending independent review. Human visual/keyboard/UI-kind acceptance and three presentation checks remain pending (WINDOWS 34); nyquist_compliant and wave_0_complete remain false. SDK roadmap update kept In Progress; unscoped progress update declined. Existing state.json and unrelated user changes were preserved.
 
 ### Phase 06.10 Plan 04 execution — 2026-11-04
 
@@ -568,6 +575,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.10 P02 | 8min | 3 tasks | 14 files |
 | Phase 06.10 P03 | 6min | 3 tasks | 9 files |
 | Phase 06.10 P04 | 6min | 3 tasks | 15 files |
+| Phase 06.10 P05 | 12min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -744,6 +752,7 @@ Recent decisions affecting current work:
 - [Phase 06.10]: Plan 02 resolves inherited view-first finite/None display policy with a private sentinel and independent raw project diagnostics; protected-first local selection precedes per-occurrence cascade URLs while full inspection and visibility remain complete.
 - [Phase 06.10]: Plan 03 preserves exact copied-recipe markers and null-URL bodies, migrates independent guards/notices, and documents selected-only presentation costs separately from full inspection/filtering.
 - [Phase 06.10]: Plan 04 retains example defaults/models/grants/seeds, uses test-local finite/None overrides, and teaches plain protected labels separately from ordinary Book navigation; German notice uses existing polib regeneration.
+- [Phase 06.10]: Final browser acceptance binds current source and exact recipes; human and independent phase/security/Nyquist reviews remain pending.
 
 ### Pending Todos
 
@@ -801,6 +810,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T21:20:19.613Z
-Stopped at: Completed 06.10-04-PLAN.md; continue with Plan 05
+Last session: 2026-11-04T21:34:50.538Z
+Stopped at: Completed 06.10-05-PLAN.md; independent phase reviews and human acceptance pending
 Resume file: None

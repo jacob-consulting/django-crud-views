@@ -919,14 +919,14 @@ entries with `url=None`, existing summary policy, and one shared truncation noti
 5. Stock/copied templates, full pages and modals follow the decided contract. Before/after measurements separate inspection, visibility and presentation and demonstrate removal of adapter cost without claiming bounded total inspection cost.
 6. Delete reference, examples and copied-template guidance are updated. Any documented breaking contract change has paired CHANGELOG.md and docs/migrating-1.0.md guidance; Phase 7 inventories the final public configuration and template surface.
 
-**Plans:** 4/5 plans executed — implementation in progress; external plan review converged.
+**Plans:** 5/5 plans executed — final automated gates passed; independent verification and human acceptance pending. Phase remains In Progress.
 
 Plans:
 - [x] 06.10-01-PLAN.md — Plain protected-blocker tracer, adapter removal and component measurements (wave 1)
 - [x] 06.10-02-PLAN.md — Strict finite/None configuration, visible selection and enforcement regressions (wave 2)
 - [x] 06.10-03-PLAN.md — Executable copied recipes, public guidance and Phase 7 handoff (wave 3)
 - [x] 06.10-04-PLAN.md — Runnable examples and translated shortened notice (wave 3, parallel with 03)
-- [ ] 06.10-05-PLAN.md — Existing browser harness migration and final source-bound acceptance (wave 4)
+- [x] 06.10-05-PLAN.md — Existing browser harness migration and final source-bound acceptance (wave 4)
 
 **UI hint:** yes (plain-text protected blockers and truncated delete previews across full pages and modals).
 
@@ -1015,5 +1015,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.7. Dynamic cancel navigation and origin query state | 5/5 | Complete    | 2026-11-03 |
 | 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
-| 6.10. Simplify protected-object previews and cap total displayed objects | 4/5 | In Progress | - |
+| 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

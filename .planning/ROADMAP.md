@@ -907,13 +907,15 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.10-03-PLAN.md — Guardian destination-parent access and undeclared-permission diagnostics (wave 3)
-- [ ] 06.10-04-PLAN.md — Multilevel delete-preview candidates and independent certification (wave 3)
 
-**Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.10-05-PLAN.md — Executable caller migrations and Phase 7 public-surface handoff (wave 4)
+**Wave 4** *(blocked on Wave 3; verifies the shared certified-parent access seam)*
+- [ ] 06.10-04-PLAN.md — Multilevel delete-preview candidates and independent certification (wave 4)
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 06.10-06-PLAN.md — Stock/custom browser acceptance and complete regression evidence (wave 5)
+- [ ] 06.10-05-PLAN.md — Executable caller migrations and Phase 7 public-surface handoff (wave 5)
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 06.10-06-PLAN.md — Stock/custom browser acceptance and complete regression evidence (wave 6)
 
 ### Phase 7: Theme-surface stability policy
 

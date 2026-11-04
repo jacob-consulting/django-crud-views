@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.9"
 current_phase_name: Protected delete-preview object links
-status: Planned
-stopped_at: Phase 06.9 plan review converged in 3 cycles; ready for execution
-last_updated: "2026-11-04T09:56:00.629Z"
+status: executing
+stopped_at: Completed 06.9-01-PLAN.md; plans 02-04 remain
+last_updated: "2026-11-04T10:12:28.919Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.9 converged in three external review cycles; zero unresolved HIGH/actionable non-HIGH findings
-state_head: fb59e41fd8bc77f5c87b8421c481ade4fe5d4e40
+last_activity_desc: Phase 06.9 execution started
+state_head: ebf5bed789e736ca055bbc1c4ec8e1b8587257f8
 progress:
   total_phases: 16
   completed_phases: 13
   total_plans: 113
-  completed_plans: 109
+  completed_plans: 110
 milestone_name: milestone
 ---
 
@@ -28,10 +28,10 @@ See: .planning/PROJECT.md (updated 2026-11-03)
 
 ## Current Position
 
-Phase: 06.9 (Protected delete-preview object links) — READY TO EXECUTE
-Plan: 0/4 executed; all four plans reviewed and ready
-Status: Planned
-Last activity: 2026-11-04 — Phase 06.9 converged in three external review cycles; zero unresolved HIGH/actionable non-HIGH findings
+Phase: 06.9 (Protected delete-preview object links) — EXECUTING
+Plan: 2 of 4
+Status: Ready to execute
+Last activity: 2026-11-04 — Phase 06.9 execution started
 
 Next: $gsd-execute-phase 06.9 — four plans in four waves; external review converged in 3 cycles with no unresolved actionable findings.
 
@@ -479,6 +479,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.8 P01 | 5min | 3 tasks | 17 files |
 | Phase 06.8 P02 | 6min | 2 tasks | 8 files |
 | Phase 06.8 P03 | 22min | 2 tasks | 20 files |
+| Phase 06.9 P01 | 10min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -647,6 +648,7 @@ Recent decisions affecting current work:
 - [Phase 06.8]: Plan 03 verifies 49 Chromium cases / 97 controls using exact recipes and retained screenshots; guard stale Bootstrap callbacks by instance identity while preserving animation and synchronous disposal, with private-hook compatibility disclosed.
 - [Phase 06.8]: Use exact documentation bodies with request-local uncached loaders and verify stock/custom/stock plus actual AJAX replacement identities.
 - [Phase 06.8]: Retain cached Python 3.12 runtime limits, sole existing floor exclusion and pending human acceptance; do not infer full CI or phase approval.
+- [Phase 06.9]: 01: Preserve shared first-match URL hook/cascade behavior; protected candidates use native row identity and one destination-bound access/state evaluation.
 
 ### Pending Todos
 
@@ -702,6 +704,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T09:55:45.738Z
-Stopped at: Phase 06.9 plan review converged in 3 cycles; ready for execution
-Resume file: .planning/phases/06.9-protected-delete-preview-object-links/06.9-REVIEWS.md
+Last session: 2026-11-04T10:12:27.320Z
+Stopped at: Completed 06.9-01-PLAN.md; plans 02-04 remain
+Resume file: None

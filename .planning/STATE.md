@@ -7,7 +7,7 @@ status: "Phase 06.8 shipped — PR #305"
 stopped_at: Phase 06.8 UAT passed; preparing shipping branch on current main
 last_updated: "2026-11-04T06:30:19.839Z"
 last_activity: 2026-11-04
-last_activity_desc: Completed quick task 261104-8v8; Sonar remote confirmation pending
+last_activity_desc: Completed quick task 261104-8v8; Sonar quality gate passed; zero unresolved issues
 state_head: 7d4cf1dd3f40d04bef08c41b9abe29fdb3ad87e9
 progress:
   total_phases: 15
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-11-03)
 Phase: 06.8 (Action tooltips: short captions and visible-label suppression) — SHIPPING PREPARATION
 Plan: 3/3 complete
 Status: Phase 06.8 shipped — PR #305
-Last activity: 2026-11-04 — Completed quick task 261104-8v8; Sonar remote confirmation pending
+Last activity: 2026-11-04 — Completed quick task 261104-8v8; Sonar quality gate passed; zero unresolved issues
 
 Next: Review PR #305 and merge after CI passes; then discuss Phase 7.
 

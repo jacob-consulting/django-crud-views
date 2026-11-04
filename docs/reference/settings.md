@@ -16,6 +16,26 @@ named exactly as shown — there is no `CRUD_VIEWS = {...}` dict.
 | CRUD_VIEWS_BREADCRUMB_PREFIX | List of dicts with `title`, `url_name`, optional `args`/`kwargs` prepended to every breadcrumb (see [Breadcrumb](breadcrumb.md)); malformed entries fail system check `crud_views.E102`. | `list` | `[]` |
 | CRUD_VIEWS_STRICT | Strict mode: misconfigurations that are otherwise logged and skipped raise instead (an unregistered key in a button tag, an icon-only button without an icon). pytest-django runs tests with `DEBUG=False`, so set it to `True` in your test settings to make such mistakes fail the tests. | `bool` | `DEBUG` |
 
+## Delete preview
+
+| Key | Description | Type | Default |
+|---|---|---|---|
+| CRUD_VIEWS_DELETE_PREVIEW_LIMIT | Shared maximum displayed protected/cascade occurrences after visibility filtering; explicit `None` means unlimited. | positive `int` or `None` | `50` |
+
+An unset `cv_delete_preview_limit` inherits the project value. Ordinary base-view inheritance applies, including
+an inherited explicit `None`; `None` never means inherit. Like the other package settings, the project value is
+captured at startup, not hot-reloaded on requests. Only raw positive integers or `None` are valid: booleans, strings,
+floats, zero, negative values and containers are rejected without coercion.
+`crud_views.E109` always diagnoses an invalid project value, even when a valid explicit view override remains usable.
+`viewset.E265` diagnoses invalid explicit/inherited view values. An invalid effective value raises
+`ImproperlyConfigured` before GET/POST context preparation, including preview-off and non-strict operation.
+
+The cap applies protected-first, then depth-first to visible cascade occurrences, including repeats and the root.
+It leaves full summaries, inspection and deletion enforcement unchanged. Unlimited mode renders every permitted
+occurrence and may increase label/URL/rendering costs; neither policy bounds total graph memory, filtering cost or
+total queries. See [Delete preview display limit](delete_view.md#display-limit) and the
+[copied-template migration](../migrating-1.0.md#copied-delete-templates-with-incomplete-previews).
+
 ## Session
 
 Session settings.

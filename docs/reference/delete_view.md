@@ -145,6 +145,46 @@ When enabled, the delete confirmation page displays:
 - Warnings for protected relationships (`on_delete=PROTECT` / `RESTRICT`)
 - Partial-count headings when some effects remain undescribed
 
+### Display limit
+
+`CRUD_VIEWS_DELETE_PREVIEW_LIMIT` defaults to **50**. An unset `cv_delete_preview_limit` inherits that project
+setting; ordinary Python base-view inheritance preserves an explicit value. Set a positive integer to cap displayed
+occurrences, or explicitly set `None` for unlimited details. `None` never means inherit. Project settings are
+captured at startup, not re-read per request. For example:
+
+```python
+class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_publisher
+    cv_show_related_objects = True
+    cv_delete_preview_limit = 20  # omit to inherit; None explicitly selects unlimited
+```
+
+Only raw positive `int` values and `None` are accepted: zero, negative integers, booleans, strings, floats and
+containers are invalid, with no coercion or silent fallback. `crud_views.E109` always diagnoses invalid project
+configuration, even when a valid explicit view override remains usable. `viewset.E265` diagnoses invalid explicit
+or inherited view values. An invalid effective value raises `ImproperlyConfigured` before GET/POST context
+preparation, even with previews disabled or non-strict operation; correct the configuration before retrying.
+
+The effective core/Guardian/application visibility filter runs first. One shared budget selects visible protected
+objects first in their existing order, then cascade objects depth-first with the remaining slots. Every displayed
+occurrence counts, including repeated objects, ancestors and the root; there is no deduplication or per-model limit.
+Hidden nodes consume no slot and have no placeholder; their permitted children are promoted in order, also in
+unlimited mode. Optional cascade URL hooks run only for selected occurrences when linking is enabled.
+
+`related_summary` and `related_summary_items` retain full filtered counts and any application redaction independently
+of selection. Selected details still render with an empty summary, including a solo root. Root alone at limit one
+is exact-at-cap; root plus a visible child exceeds it. No selected cascade nodes means no detail heading or empty list.
+
+Detailed context includes `delete_preview_truncated`, true only when a further **visible** occurrence is omitted.
+The template shows exactly one translated notice above the object lists:
+"This preview is shortened. Additional objects are not shown."
+Exactly filling the cap or having only a hidden remainder produces no notice; unlimited mode never truncates.
+This flag is absent when previews are off. It is independent of `delete_preview_incomplete`, which describes
+uninspected custom effects, is always present and can produce a separate warning at the same time.
+Full inspection, blocking decisions and writes are unchanged. Unlimited mode restores all permitted details and
+their optional URL/rendering costs; neither mode bounds total graph memory, filtering cost or total queries.
+
 ### Linking Related Objects
 
 !!! example "Try it live"
@@ -152,14 +192,15 @@ When enabled, the delete confirmation page displays:
     demonstrates protected publishing contracts when running this example revision.
     After migrating and seeding locally, sign in as `alice` / `alice`, filter the
     author list's last name by `Guin`, and open Ursula Le Guin's Delete action.
-    Follow `Earthsea publishing contract` to its full detail page from the modal,
+    Read `Earthsea publishing contract` as a plain protected label in the modal,
     or visit `/library/author/<author-pk>/delete/` directly for the full-page preview.
     Compare `bob` / `bob`: he sees only the generic blocked notice, with no Contract
-    name or URL. Other seeded authors still demonstrate Book cascades. See the
+    name or URL. Other seeded authors demonstrate independent Book cascade navigation:
+    follow a displayed Book link to its full detail page, including from a modal. See the
     [tutorial setup](../getting_started/tutorial-6-books.md#a-protected-publishing-contract)
     for the model, route, and local startup commands; the hosted demo may run an older release.
 
-Optionally render related objects as links to their detail views:
+Optionally render selected cascade objects as links to their detail views:
 
 ```python
 class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
@@ -173,38 +214,20 @@ The shared `cv_get_related_object_url(self, obj) -> str | None` hook selects the
 object's model with a `detail` view and reverses its URL. Its signature, first-match behavior and cascade-tree
 behavior are unchanged. There is no fallback registry scan if that candidate cannot be used.
 
-Protected blockers have an additional destination check **after** label visibility filtering. Only inspectable
-local registered detail callbacks for the same concrete model, typed PK and database alias are eligible. The
-destination's queryset must contain the row, its parent coordinates must resolve correctly, and its own access,
-parent permission and action-state policy must allow the request. Source visibility and destination access are
-independent: a visible blocker remains plain text when its detail destination is unavailable or disabled.
-Guardian destinations additionally require supported co-located actor/child/parent and permission-route topology;
-unsupported user, group, auth, content-type or object-grant routing yields plain text. Original anonymous/inactive
-actors cannot gain eligibility through stored anonymous grants. Parent topology still matters with parent
-permission checks disabled.
+Protected blockers always render plain text with `url=None`; they never call this hook or construct a destination
+request. Applications may continue overriding the cascade hook; no new URL policy or authorization API is added.
+Missing cascade destinations render as text. A cascade link is navigation, not an access grant: the actual request
+enforces its destination's permissions and lookup policy.
 
-Candidates must be root-relative paths under the active script mount. Both raw and percent-decoded paths reject
-network-path URLs, backslashes and controls; encoded slashes/backslashes are rejected. Resolution uses the decoded
-path without the mount, while the original eligible URL (including its query) is retained in the anchor. External,
-unregistered, non-detail, missing-row, wrong-model/PK/alias and uninspectable candidates yield `url=None`.
-Callback init overrides that change policy, including `permission_required`, cannot be certified and yield text.
-Expected access denial yields text; unexpected application queryset, converter, configuration or operational
-errors propagate rather than silently producing a successful preview.
-
-Eligibility binds a separate destination GET with its own URL kwargs/query and without the source modal header.
-It does not dispatch a request or run arbitrary middleware, dispatch or custom `get_object` overrides. Those
-checks, plus permission/row changes after preview, belong to the actual destination request. A link is navigation,
-not an authorization grant. The private adapter is not a new public authorization extension API.
-
-Both cascade and protected anchors perform ordinary full-page navigation. Activating one from a delete modal
-leaves the modal, even if the destination supports modals; no modal/AJAX action attributes are added.
+Cascade anchors perform ordinary full-page navigation. Activating one from a delete modal leaves the modal,
+even if the destination supports modals; no modal/AJAX action attributes are added.
 
 ### Permission Filtering
 
 Related objects are filtered based on the current user's permissions:
 
-- Objects the user has `view` permission for: shown with full details
-- Objects the user lacks `view` permission for: shown as aggregated counts (e.g., "3 book objects")
+- Objects the user has `view` permission for: eligible for selection within the display budget
+- Objects the user lacks `view` permission for: no labels or placeholders; existing aggregate counts remain
 
 This hides individual object labels but intentionally reveals model names and aggregate counts, even for models
 whose rows the user cannot view. Applications that consider those aggregates confidential must override
@@ -229,7 +252,9 @@ deleting it." Hidden labels never change the blocked state.
 | Key | Contents |
 |---|---|
 | `has_protected_objects` | Present on every delete GET/POST context, computed from the unfiltered protected collection. Use it for the notice and form guard. |
-| `protected_objects` | Present only with previews enabled: filtered ordered entries with exactly `obj` (model instance) and `url` (eligible detail URL or `None`). It can be empty while the flag is true; linking disabled keeps the shape with every `url=None`. |
+| `protected_objects` | Present only with previews enabled: selected, filtered ordered entries with exactly `obj` (model instance) and `url` (always `None`). It can be empty while the flag is true; linking enabled still leaves every `url=None`. |
+| `related_objects` | Selected cascade nodes with `obj`, optional `url` and nested `children`. Hidden ancestors are omitted and permitted children promoted. |
+| `delete_preview_truncated` | Detailed-preview-only boolean for actual visible overflow, independent of `delete_preview_incomplete`. |
 
 A confirmed POST stopped by the early check returns the protection page with **200**, or **422** in a modal,
 without executing deletion. Inspection merges native and provider blockers before permission filtering.
@@ -245,14 +270,17 @@ signals. Application providers and display filters are trusted code; the package
 Inspection is cached for the view instance; an allowed POST additionally performs fresh write collection. Large
 cascades materialize full rows, tree and counts; there is no large-graph performance bound.
 
-Protected linking adds destination lookup and applicable parent, authorization and action-state work **per visible
-blocker**, separately from collection/rendering cost. Measured on stock fixtures with warmed permission caches:
-for 0/1/4/8 candidates, unparented core used 0/1/4/8 queries; parented Guardian used 0/8/32/64. The regression bounds
-are core `Q(N)<=N` and Guardian `Q(N)<=12*N+4`, with at most 12 additional queries per added candidate. These are
-fixture measurements and regression bounds, not promises about arbitrary application hooks. Guardian work includes
-child lookup, actor certification, parent lookup and parent/child user/group permissions. Disabled preview or
-linking adds **zero adapter query cost**, but does not disable deletion inspection. No bulk cache or constant-query
-preview is promised; custom querysets and hooks can add their own queries.
+Protected presentation performs no destination lookup or URL-hook work. In the core/Guardian component fixtures
+(`tests/test1/test_delete_databases.py::test_delete_preview_component_costs`, Python 3.12 / Django 5.2), a deliberately
+querying cascade hook performs one query per selected cascade occurrence. With limit 3 and three or more visible
+blockers, no cascade occurrence is selected and presentation SQL is zero. With two blockers and a visible root,
+one hook call/query remains. Unlimited mode selects the root regardless of blocker count. These are attributed
+presentation measurements, not a total-query bound: complete inspection still used 5 core / 6 Guardian queries;
+effective filtering used 0 core / 4–6 Guardian queries in these warmed-cache fixtures.
+Inspection and visibility process complete relationships before selection. Rendering selected labels, custom
+filters and URL hooks may add arbitrary queries. The cap bounds displayed occurrences and optional selected
+presentation work, not total graph memory, filtering cost or total queries. Preview off bypasses filtering and
+presentation, but full inspection still runs; linking off only bypasses optional cascade URL work.
 
 `cv_get_related_objects()` remains a read-only compatibility accessor returning `RelatedObjects(tree, summary,
 protected)`. **Overrides are rejected immediately**, without calling them: `viewset.E263` at startup and
@@ -355,7 +383,7 @@ The related objects display uses three overridable templates:
 - `crud_views/snippets/delete/related_objects.html` — main container with summary, tree, and warnings
 - `crud_views/snippets/delete/related_objects_tree.html` — recursive nested tree of individual objects
 - `crud_views/snippets/delete/protected_objects.html` — independent flat protected body consuming caller-context
-  `items` entries (`obj`/`url`), with explicit autoescape and ordinary anchors/plain text
+  `items` entries (`obj`/`url=None`), with explicit autoescape and plain text
 
 Each alert in `related_objects.html` is a `{% cv_alert %}` call, so it renders through the one alert frame,
 `crud_views/tags/alert.html` (see [Flash messages](messages.md)). The summary alert lists
@@ -364,12 +392,17 @@ dict) stays in the context for overrides that read it.
 
 Override these in your project's template directory to customize the rendering. Keep the independent incomplete
 warning outside both protection branches, even with previews disabled. A copy of
-`crud_views/view_delete.content.html` must include the snippet when `related_summary or has_protected_objects`, and a
+`crud_views/view_delete.content.html` must include the snippet when
+`related_summary or has_protected_objects or related_objects or delete_preview_truncated`, and a
 copy of `related_objects.html` must use both notice branches: colon heading with caller-context
 `{% with items=protected_objects %}` and `body_template="crud_views/snippets/delete/protected_objects.html"` when
 labels exist, colon-free heading with the generic `text=` sentence otherwise. Do not pass entries as generic alert
 `items=protected_objects`; access model fields through `item.obj.field`. A copy that still tests
 `protected_objects` loses the notice whenever every label is hidden. Guard the entire confirmation form too:
+
+Show one shortening notice for `delete_preview_truncated` above the lists. Guard summaries with `related_summary`
+and details separately with `related_objects`; selected solo-root details remain visible with an empty summary,
+and no empty detail frame is rendered. These rules apply with finite limits and explicit `None` alike.
 
 ```django
 {% if not has_protected_objects %}
@@ -390,16 +423,19 @@ The following inventory is the contract for copied templates and the Phase 7 sta
 
 | Public name | Contract |
 |---|---|
-| `protected_objects` | Ordered, filtered entries with exactly `obj` (model instance) and `url` (string or `None`); present only when `cv_show_related_objects=True`. No parallel legacy collection. |
+| `protected_objects` | Selected, ordered, filtered entries with exactly `obj` (model instance) and `url` (always `None`); present only when `cv_show_related_objects=True`. No parallel legacy collection. |
 | `has_protected_objects` | Independent unfiltered blocking boolean on every delete context, including preview-off and all-hidden cases; preserves whole-form omission. |
 | `crud_views/snippets/delete/protected_objects.html` | Independently overridable body; reads caller-context `items` containing `obj`/`url`. Explicit autoescape; model fields use `item.obj.field`. |
 | `crud_views/snippets/delete/related_objects.html` | Binds `items=protected_objects` in caller context and selects the protected body through `cv_alert body_template`; shared alert frame retains heading, icon, role and dismissal. |
-| `cv_get_related_object_url(self, obj) -> str \| None` | Existing public candidate hook, unchanged signature and first-match/cascade behavior; protected candidates additionally undergo private destination eligibility checks. |
-| Ordinary `<a href>` | Full-page navigation in the current browsing context, including from modals and to modal-capable destinations; no modal/AJAX action metadata. |
+| `cv_get_related_object_url(self, obj) -> str \| None` | Existing cascade hook, unchanged signature and first-match behavior; called only for selected cascade occurrences with linking enabled, never for protected entries. |
+| Ordinary cascade `<a href>` | Full-page navigation in the current browsing context, including from modals and to modal-capable destinations; no modal/AJAX action metadata. |
+| `CRUD_VIEWS_DELETE_PREVIEW_LIMIT` / `cv_delete_preview_limit` | Default 50; unset view inherits project, ordinary base-view inheritance applies; positive integer or explicit `None` for unlimited. Raw validation uses `crud_views.E109`, `viewset.E265` and effective-value `ImproperlyConfigured`. |
+| `delete_preview_truncated` | Detailed-preview-only actual visible-overflow boolean; one notice, independent of `delete_preview_incomplete`. |
+| `related_summary` / `related_summary_items` | Full summary and application redaction stay independent of selected details. Solo root renders even with empty summary and consumes a slot. |
 
-`cv_link_related_objects=False` retains the same entries with `url=None`; `cv_show_related_objects=False` omits the
-detailed collection. Collector/provider/filter inputs remain model instances. The private eligibility adapter
-is not a new public authorization extension API, and no generic alert-item API or modal-routing setting is added.
+Protected entries always retain `url=None`, regardless of `cv_link_related_objects`; `cv_show_related_objects=False`
+omits detailed collections and truncation state. Collector/provider/filter inputs remain model instances. This is
+not a new public authorization extension API, and no generic alert-item API or modal-routing setting is added.
 
 ## Delete Protection
 

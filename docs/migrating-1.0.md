@@ -128,6 +128,8 @@ the message:
 | `viewset.E250` | `cv_modal_size` is a Bootstrap class such as `"modal-lg"` | use the token: `""`, `"sm"`, `"lg"` or `"xl"` |
 | `viewset.E263` | an effective `cv_get_related_objects()` override remains | use the [safe provider and display filter](#safe-deletion-preview-overrides); runtime rejects it without invocation |
 | `viewset.E264` | an inspectable model `delete` cannot bind keyword `using` | accept/forward `using` or `**kwargs`; [opaque methods fail at runtime](#delete-method-signatures-and-database-selection) |
+| `crud_views.E109` | invalid raw `CRUD_VIEWS_DELETE_PREVIEW_LIMIT`, even with a valid view override | use a positive integer or explicit `None`; project value is startup-captured |
+| `viewset.E265` | invalid explicit/inherited `cv_delete_preview_limit` | use a positive integer, explicit `None`, or omit to inherit project; invalid effective values also raise `ImproperlyConfigured` on GET/POST |
 | `viewset.W246` **[0.30]** | an object detail group `icon` uses a `prefix:` that is not registered | register the library in `CRUD_VIEWS_ICON_LIBRARIES`, or fix the prefix |
 
 Two removals raise at runtime instead, the first time the page renders:
@@ -803,7 +805,7 @@ with `accept_global_perms=True`. See [Strict Mode](reference/guardian.md#strict-
 ### Delete previews and protected objects
 
 With `cv_show_related_objects`, `protected_objects` now holds ordered `obj`/`url` entries for protected objects the
-user may view. `obj` is the model instance; `url` is an eligible detail URL or `None`. Preview
+user may view, selected within the display budget. `obj` is the model instance; `url` is always `None`. Preview
 labels, tree and summary keys still depend on that option. `has_protected_objects` is now present on every delete
 GET/POST context regardless of the option, and combines native and provider blockers before permission filtering.
 `delete_preview_incomplete` is also always present. Inspection reads supported metadata without executing deletion
@@ -811,9 +813,33 @@ handlers, factories or model deletion. Unknown/custom effects leave boundaries a
 ordinary ordered-model Author and polymorphic Car pages. The aggregate disclosure policy is unchanged; incomplete
 summaries qualify their integer counts in the heading. See the [provider contract](reference/delete_view.md#inspection-and-provider-api).
 
+The shared `CRUD_VIEWS_DELETE_PREVIEW_LIMIT` now defaults to **50**. An unset `cv_delete_preview_limit` inherits the
+project setting; ordinary base-view inheritance preserves explicit values. Set a positive integer or explicit
+`None` for unlimited, which never means inherit. The project value is startup-captured. Raw booleans, strings,
+floats, zero, negative integers and containers are invalid: `crud_views.E109` always reports invalid project
+configuration, while a valid explicit view override remains usable. `viewset.E265` reports invalid view values;
+an invalid effective value raises `ImproperlyConfigured` before GET/POST context preparation even with previews
+off or non-strict operation.
+
+Visibility filtering precedes protected-first selection and depth-first cascades. Every displayed occurrence,
+including repeated objects and the root, consumes a slot. Hidden rows have no placeholder and their permitted
+children are promoted in order. Full summaries and application redaction remain independent of selected details.
+Only selected cascade entries call the existing optional URL hook. Protected navigation is removed; selected
+cascade links retain ordinary full-page navigation. `delete_preview_truncated` is detailed-preview-only and emits
+one translated "This preview is shortened. Additional objects are not shown." notice for actual visible overflow,
+not an exact cap or hidden-only tail. Unlimited mode never emits it. Keep the independent incomplete warning.
+Selected solo-root details render with an empty summary: root alone at limit one fills the cap, while root plus a
+visible child exceeds it. Omit the detail frame when no cascade occurrence is selected.
+
+The cap reduces selected presentation work; it does not bound total graph memory, filtering cost or total queries.
+Full inspection and visibility filtering still run. Unlimited mode restores all permitted labels and optional URL
+work. See [component costs and overrides](reference/delete_view.md#collection-cost-and-overrides) for attributed
+core/Guardian measurements and application-hook limits. Deletion authority and complete blocking remain unchanged.
+
 - **A copied `crud_views/view_delete.content.html`**: include the snippet on the new flag as well. A copy that still
   tests `related_summary or protected_objects` drops the whole snippet when the user may view no protected object.
-  Use `related_summary or has_protected_objects` and keep the incomplete warning independent of that include.
+  Use `related_summary or has_protected_objects or related_objects or delete_preview_truncated` and keep the
+  incomplete warning independent of that include.
 
 - **A copied `crud_views/snippets/delete/related_objects.html`**: show the blocked notice on the flag and list only
   `protected_objects`, which is already filtered. Bind it as caller-context `items` and use the dedicated body
@@ -841,7 +867,7 @@ Every delete page now has `has_protected_objects`, derived from native plus prov
 `cv_show_related_objects = False`. The stock content template omits the entire confirmation form while blocked,
 including its checkbox, submit and form-contained cancel control, matching the custom-protection page. In a copied
 `crud_views/view_delete.content.html`, keep the custom-protection branch and snippet include guard
-`{% if related_summary or has_protected_objects %}`, and wrap the entire form in
+`{% if related_summary or has_protected_objects or related_objects or delete_preview_truncated %}`, and wrap the entire form in
 `{% if not has_protected_objects %}`. The complete content/snippet recipe below also retains the independent
 incomplete warning, custom-protection branch and hidden-label notice.
 

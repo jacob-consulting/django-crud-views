@@ -6,13 +6,22 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
-- **Protected delete-preview entries** (#307): with previews enabled, `protected_objects` now contains filtered
-  ordered `obj`/`url` entries, where `obj` is the model instance and `url` is an eligible detail URL or `None`.
+- **Protected delete-preview entries** (#307, #316): with previews enabled, `protected_objects` contains filtered,
+  selected ordered `obj`/`url` entries, where `obj` is the model instance and `url` is always `None`: plain labels.
   Copied generic alert-items snippets must migrate immediately to the independent
   `crud_views/snippets/delete/protected_objects.html` body inside the shared alert frame. There is no legacy
   model-instance context collection. Keep the independent `has_protected_objects` guard and whole-form omission,
-  including with hidden labels or previews disabled. Ordinary links navigate to full pages from modals too.
-  Provider/filter model-instance inputs and cascade URL behavior remain unchanged. See the executable
+  including with hidden labels or previews disabled. Selected cascade links navigate to full pages from modals too.
+  The shared `CRUD_VIEWS_DELETE_PREVIEW_LIMIT` defaults to 50; unset `cv_delete_preview_limit` inherits, positive
+  integers cap and explicit `None` is unlimited. Strict raw diagnostics are `crud_views.E109` / `viewset.E265`;
+  invalid effective values raise `ImproperlyConfigured`, including preview-off/non-strict requests.
+  Selection is protected-first then depth-first, counting every visible occurrence including repeats/root and
+  promoting permitted children of hidden nodes. `delete_preview_truncated` adds one truthful shortening notice;
+  full summaries/redaction and `delete_preview_incomplete` remain independent. Render solo-root details even with
+  empty summaries; root alone at limit one fills the cap, root plus a visible child overflows. Omit empty detail frames.
+  Copied outer guards must include `related_objects` and `delete_preview_truncated`. Full inspection/filtering and
+  deletion enforcement remain unchanged; the cap does not bound total graph memory or total queries. Provider/filter
+  model-instance inputs and the selected cascade URL hook remain unchanged. See the executable
   [content/snippet/body migration](docs/migrating-1.0.md#copied-delete-templates-with-incomplete-previews).
 
 - **Action tooltips** (#304): context/list icon-only `cv_title` now uses the existing short caption with full-caption
@@ -256,13 +265,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `GuardianViewSet.get_objects_for_user()` stays strict and has no global-permission option. See
   [Migrating to 1.0.0](docs/migrating-1.0.md#the-guardianviewset-global-permission-key).
 - **Delete previews and protected objects.** With `cv_show_related_objects`, `protected_objects` now holds filtered
-  ordered `obj`/`url` entries: `obj` is a protected model instance the user may view, and `url` is an eligible detail
-  URL or `None` (core label visibility: model-level `view_<model>`; Guardian: object or group grants, plus a
+  selected ordered `obj`/`url` entries: `obj` is a protected model instance the user may view, and `url` is always
+  `None` (core label visibility: model-level `view_<model>`; Guardian: object or group grants, plus a
   global permission when the delete view's `cv_guardian_accept_global_perms` allows it). The new
   `has_protected_objects` says whether protected objects block the deletion at all. The stock templates show one
   generic blocked notice from it, also when every label is hidden. A copy of `view_delete.content.html` or
   `snippets/delete/related_objects.html` that tests `protected_objects` loses the notice when the user may view none of
-  them: test `related_summary or has_protected_objects` around the include and `has_protected_objects` around the
+  them: test `related_summary or has_protected_objects or related_objects or delete_preview_truncated` around the include and `has_protected_objects` around the
   notice. A custom `cv_filter_related_objects` must now filter `related.protected` too, starting from `super()`.
   Inspection is read-only and supported-path counts may be partial; `delete_preview_incomplete` is always present.
   Copies of the content/snippet/body templates must use the structured entries and preserve the independent

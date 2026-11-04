@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.9"
 current_phase_name: Protected delete-preview object links
 status: executing
-stopped_at: Completed 06.9-02-PLAN.md; plans 03-04 remain
-last_updated: "2026-11-04T10:32:10.086Z"
+stopped_at: Completed 06.9-03-PLAN.md; plan 04 remains
+last_updated: "2026-11-04T10:41:47.297Z"
 last_activity: 2026-11-04
 last_activity_desc: Phase 06.9 execution started
-state_head: 9f3142a3ca9531ee26c4954359506b40ade590d9
+state_head: 7aa8ad79ffcc5c1456fe368eb6898cb667b15416
 progress:
   total_phases: 16
   completed_phases: 13
   total_plans: 113
-  completed_plans: 111
+  completed_plans: 112
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-03)
 ## Current Position
 
 Phase: 06.9 (Protected delete-preview object links) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-11-04 — Phase 06.9 execution started
 
@@ -481,6 +481,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.8 P03 | 22min | 2 tasks | 20 files |
 | Phase 06.9 P01 | 10min | 2 tasks | 7 files |
 | Phase 06.9 P02 | 10min | 2 tasks | 5 files |
+| Phase 06.9 P03 | 10min | 2 tasks | 6 files |
+| Phase 06.9 P03 | 7min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -651,6 +653,7 @@ Recent decisions affecting current work:
 - [Phase 06.8]: Retain cached Python 3.12 runtime limits, sole existing floor exclusion and pending human acceptance; do not infer full CI or phase approval.
 - [Phase 06.9]: 01: Preserve shared first-match URL hook/cascade behavior; protected candidates use native row identity and one destination-bound access/state evaluation.
 - [Phase 06.9]: 02: Protected Guardian links certify actor/child/parent/permission-route topology only after native identity, composition and original-actor guards; shared request policy remains unchanged.
+- [Phase 06.9]: 03: Publish exact uniquely adjacent UTF-8/LF recipe fences and hashes; keep protected visibility, destination eligibility and actual-request authority distinct.
 
 ### Pending Todos
 
@@ -706,6 +709,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T10:32:08.275Z
-Stopped at: Completed 06.9-02-PLAN.md; plans 03-04 remain
+Last session: 2026-11-04T10:41:16.174Z
+Stopped at: Completed 06.9-03-PLAN.md; plan 04 remains
 Resume file: None

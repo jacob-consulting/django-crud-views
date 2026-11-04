@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.10"
-current_phase_name: Simplify protected-object previews and cap total displayed objects (INSERTED)
+current_phase_name: Simplify protected-object previews and cap total displayed objects
 status: executing
-stopped_at: Phase 06.10 plan review converged; ready to execute
-last_updated: "2026-11-04T20:31:01.340Z"
+stopped_at: Completed 06.10-01-PLAN.md; continue with Plan 02 display cap
+last_updated: "2026-11-04T20:42:29.793Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.10 plan review converged in four cycles; zero unresolved concerns
-state_head: 157aa73cf017a955fee1c83e81569c629e7e7b4c
+last_activity_desc: Phase 06.10 Plan 01 complete; Plan 02 display cap next
+state_head: dfedf153842dac642a971f7f1462cf167266156f
 progress:
   total_phases: 17
   completed_phases: 15
   total_plans: 118
-  completed_plans: 113
+  completed_plans: 114
 milestone_name: milestone
 ---
 
@@ -28,12 +28,19 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 
 ## Current Position
 
-Phase: 06.10 (Simplify protected-object previews and cap total displayed objects (INSERTED)) — READY TO EXECUTE
-Plan: Not started
+Phase: 06.10 (Simplify protected-object previews and cap total displayed objects) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-11-04 — Phase 06.10 plan review converged in four cycles; zero unresolved concerns
+Last activity: 2026-11-04 — Phase 06.10 Plan 01 complete; Plan 02 display cap next
 
 Next: $gsd-execute-phase 06.10
+
+### Phase 06.10 Plan 01 execution — 2026-11-04
+
+- Plain protected entries preserve obj/url=None and escaped labels; private destination adapter removed. Shared cascade URL, inspection, Guardian, Cancel and body-template source is unchanged.
+- Real page/modal GET/POST tracer and read-only provider/write checks pass. Preserved delete/authorization-template gate: 1,453 passed with four workers; final scoped projection/Guardian/component gate: 70 passed.
+- Fresh before/after component evidence covers core/Guardian sizes 0/1/4/8 and all preview/link flags. Protected hook/setup calls and presentation queries are zero; full inspection/filter costs remain separate and unbounded.
+- Plan 01 summary committed. Plan 02 owns the cap; shared DPV requirements stay unchecked until later obligations are verified. Phase remains In Progress; no browser/human acceptance or full runtime matrix inferred.
 
 ### Phase 06.10 plan convergence — 2026-11-04
 
@@ -536,6 +543,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.9 P03 | 10min | 2 tasks | 6 files |
 | Phase 06.9 P03 | 7min | 2 tasks | 6 files |
 | Phase 06.9 P04 | 17min | 2 tasks | 10 files |
+| Phase 06.10 P01 | 6min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -708,6 +716,7 @@ Recent decisions affecting current work:
 - [Phase 06.9]: 02: Protected Guardian links certify actor/child/parent/permission-route topology only after native identity, composition and original-actor guards; shared request policy remains unchanged.
 - [Phase 06.9]: 03: Publish exact uniquely adjacent UTF-8/LF recipe fences and hashes; keep protected visibility, destination eligibility and actual-request authority distinct.
 - [Phase 06.9]: 04: Exact copied recipes and real page/modal anchors pass seventeen Chromium cases; focused Enter and document requests are required, with cached runtime limits and independent audits retained.
+- [Phase 06.10]: Plan 01 removes only protected destination certification; preserves shared cascade, Guardian, Cancel and inspection paths. Plain ordered obj/url=None entries are measured separately from complete inspection/filter costs.
 
 ### Pending Todos
 
@@ -765,6 +774,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T18:26:42.965Z
-Stopped at: Phase 06.10 plan review converged; ready to execute
-Resume file: .planning/phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-REVIEWS.md
+Last session: 2026-11-04T20:42:27.951Z
+Stopped at: Completed 06.10-01-PLAN.md; continue with Plan 02 display cap
+Resume file: None

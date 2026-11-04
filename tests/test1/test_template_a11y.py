@@ -13,14 +13,12 @@ def _doc(response):
     return html.fromstring(response.content)
 
 
-def _assert_icon_action_named(el):
-    """Icon-only action: the name comes from visually hidden text matching the title,
-    not from aria-label (an aria-label that differs from the visible content is what
-    WCAG 2.5.3 / Sonar S7927 flag)."""
+def _assert_icon_action_named(el, expected_full, expected_title):
+    """The full hidden name and concise tooltip are independently specified."""
     assert el.get("aria-label") is None
     (hidden,) = el.cssselect("span.visually-hidden")
-    assert hidden.text_content().strip()
-    assert hidden.text_content().strip() == el.get("title")
+    assert hidden.text_content().strip() == expected_full
+    assert el.get("title") == expected_title
     assert all(i.get("aria-hidden") == "true" for i in el.cssselect("i"))
 
 
@@ -31,10 +29,15 @@ def test_context_actions_are_labelled_links_without_button_role(
     doc = _doc(client_user_author_view.get(f"/author/{author_douglas_adams.pk}/detail/"))
     actions = doc.cssselect("[cv-context-container] a[cv-key]")
     assert actions
+    captions = {
+        "list": ("List of all Authors", "List"),
+        "detail": ("Show Author “Douglas Adams” detail.", "Detail"),
+        "manage": ("ViewSet author details.", "Manage"),
+    }
     for a in actions:
         assert a.get("href")
         assert a.get("role") is None
-        _assert_icon_action_named(a)
+        _assert_icon_action_named(a, *captions[a.get("cv-key")])
 
 
 @pytest.mark.django_db
@@ -47,7 +50,8 @@ def test_get_list_actions_are_labelled_links_without_button_role(
     for a in links:
         assert a.get("href")
         assert a.get("role") is None
-        _assert_icon_action_named(a)
+        assert a.get("cv-key") == "detail"
+        _assert_icon_action_named(a, "Show Author “Douglas Adams” detail.", "Detail")
 
 
 @pytest.mark.django_db
@@ -67,7 +71,7 @@ def test_post_list_action_is_a_button_that_submits_its_form(client, cv_author, a
     assert up.tag == "button"
     assert up.get("type") == "button"
     assert up.get("data-cv-action") == "submit-form"
-    _assert_icon_action_named(up)
+    _assert_icon_action_named(up, "Move Author up", "Up")
     assert doc.cssselect(f"form#{up.get('data-cv-target')}"), "the targeted POST form must exist"
     (detail,) = doc.cssselect('[cv-list-container] [cv-key="detail"]')
     assert detail.tag == "a"
@@ -90,7 +94,7 @@ def test_filter_toggle_is_a_labelled_button(client):
     assert toggle.get("role") is None
     assert toggle.get("aria-expanded") in ("true", "false")
     assert toggle.get("aria-controls") == "filter-collapse"
-    _assert_icon_action_named(toggle)
+    _assert_icon_action_named(toggle, "Filter", "Filter")
 
 
 def test_formset_controls_have_labels_and_hidden_icons():

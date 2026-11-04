@@ -420,10 +420,10 @@ keys are `LEAF_KEYS`:
 | `cv_modal_size` | the semantic modal size (`""`, `"sm"`, `"lg"`, `"xl"`) |
 | `cv_active` | the target is the current view; the leaf adds the `<location>:active` classes; never true for a disabled button |
 | `cv_key` | the action key, rendered as `cv-key` |
-| `cv_label` | the label the leaf prints: on cards the explicit `label`, else the short label, else the key; on `context` and `list` the full label in `icon` mode (hidden text and `title`) and the short label in `label` / `both` (the visible text) |
-| `cv_short_label` | the short label, used for menu items |
+| `cv_label` | the label the leaf prints: on cards the explicit `label`, else the short caption, else the full caption, else the key; on `context` and `list` the full hidden caption in `icon` mode and the resolved short caption in `label` / `both` (visible text) |
+| `cv_short_label` | the resolved short caption with full-caption fallback, used for icon titles and menu text; on cards it is the resolved card caption, including an explicit `label` |
 | `cv_label_mode` | how the label shows: `"label"` (text only), `"icon"` (icon with a hidden label, classes `<location>:hidden-label`) or `"both"` (icon and text); always present. On `"context"` it is the view's resolved mode for the key, see [Context label-mode resolution](action_menus.md#context-label-mode-resolution); on `"list"` see [List label-mode resolution](action_menus.md#list-label-mode-resolution); on cards it is the resolved [card action label mode](card-list-view.md#label-mode), and an empty label forces `"icon"`. An `"icon"` mode with an empty icon (`None` or `""`) raises `ValueError` under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings), otherwise it becomes `"label"` and a warning is logged (menu items always show their label and are not affected) |
-| `cv_title` | the `title` text, which also marks the button with `data-cv-tooltip="<cv_location>"` for `tooltip.js`; present only when `cv_label_mode` is `"icon"` |
+| `cv_title` | the resolved short caption with full fallback (the resolved card caption on cards); present only in effective `"icon"` mode. Emit `title` and `data-cv-tooltip="<cv_location>"` only when nonempty. Menu leaves ignore this field and emit neither attribute |
 | `cv_icon` | the icon value (see [Icons](icons.md)) |
 | `cv_variant` | the resolved variant; falls back to `"secondary"` |
 | `cv_flex` | the leaf adds the `card:flex` classes; true only on cards |
@@ -760,11 +760,69 @@ with its key in the label mode map.
 When you do override the leaf, for markup that differs, remember it is shared by the context toolbar, list rows and
 cards: branch on `cv_label_mode` (`"icon"`, `"both"` and `"label"`; the bundled leaf treats `"label"` as the fallback
 branch and shows the icon in `"both"` only when `cv_icon` is set), and keep `cv_active` and `cv_flex` through their
-table keys and `cv_title`, as the bundled `crud_views/tags/button/action.html` does. `cv_title` is present only in
-`"icon"` mode; the visible label is the accessible name otherwise. Keep the
+table keys and `cv_title`, as the bundled `crud_views/tags/button/action.html` does. `cv_title` is the resolved short
+caption in effective `"icon"` mode, with full-caption fallback; emit its attributes only when nonempty. Keep the
+full hidden `cv_label` independent of this short tooltip; the visible label is the accessible name otherwise. Keep the
 `data-cv-*` attributes and `cv-key`: the bundled scripts use them; `data-cv-tooltip="{{ cv_location }}"` next to
 `title` is what gives the button a tooltip through `cv.adapters.tooltip`, see [JavaScript](javascript.md#tooltips). Keep the `cv_disabled` handling when you
 override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTIONS = "disable"` looks enabled.
+
+### Copied action leaf
+
+Copy this complete leaf to your theme's `tags/button/action.html` override. It consumes the flat
+[leaf contract](#the-leaf-contract) after permission/state and effective-mode resolution. It preserves full hidden
+captions, short nonempty icon titles, active/disabled state, host icons and link/POST/modal hooks. Effective visible
+modes, including a missing-icon fallback to visible text, have no generated title or tooltip marker.
+
+<!-- tooltip-recipe: action-leaf -->
+```django
+{% load crud_views %}<{{ cv_tag }}{% if cv_tag == "a" %} href="{{ cv_href }}"{% else %} type="button"{% endif %}
+    class="{% cv_button_class cv_location cv_variant cv_label_mode %}{% if cv_active %} {% cv_button_class cv_location 'active' %}{% endif %}{% if cv_flex %} {% cv_button_class 'card' 'flex' %}{% endif %}{% if cv_icon_class %} {{ cv_icon_class }}{% endif %}"
+    {% if cv_disabled %}disabled data-cv-disabled="{{ cv_disabled_reason }}"{% endif %}
+    {% if cv_submit_target %}data-cv-action="submit-form" data-cv-target="{{ cv_submit_target }}"{% endif %}
+    {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
+    {% if cv_active %}aria-current="page"{% endif %}
+    {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="{{ cv_location }}"{% endif %}
+    data-tooltip-recipe="action-leaf" cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% if cv_icon_inline is not False %}{% cv_icon cv_icon %}{% endif %}<span class="{% cv_button_class cv_location 'hidden-label' %}">{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon and cv_icon_inline is not False %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
+```
+
+### Copied menu leaf
+
+Copy this complete leaf to your theme's `tags/button/menu_item.html` override. Every menu location shows the resolved
+short caption, regardless of inline label mode; remove any native-title branch from an older copy. The shared label
+fragment uses `cv_short_label` and the resolved icon. The overflow toggle and its interactions remain unchanged.
+
+<!-- tooltip-recipe: menu-leaf -->
+```django
+{% load crud_views %}<{{ cv_tag }}{% if cv_tag == "a" %} href="{{ cv_href }}"{% else %} type="button"{% endif %}
+    class="{% cv_button_class 'menu' 'item' %}{% if cv_active %} {% cv_button_class 'menu' 'active' %}{% endif %}{% if cv_icon_class %} {{ cv_icon_class }}{% endif %}"
+    {% if cv_disabled %}disabled data-cv-disabled="{{ cv_disabled_reason }}"{% endif %}
+    {% if cv_submit_target %}data-cv-action="submit-form" data-cv-target="{{ cv_submit_target }}"{% endif %}
+    {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
+    {% if cv_active %}aria-current="page"{% endif %}
+    data-tooltip-recipe="menu-leaf" cv-key="{{ cv_key }}">{% include "crud_views/tags/button/menu_item_label.html" %}</{{ cv_tag }}>
+```
+
+The `data-tooltip-recipe` attributes identify these example copies for tests; they are optional theme metadata,
+not package APIs. Both complete leaves render their own root elements and rely on Django autoescaping for caption
+text and quoted attributes. Do not mark untrusted labels safe or interpolate them into template source.
+
+### Raw ContextButton template
+
+A `ContextButton(template=...)` or `template_code` receives raw action data, including `cv_label_mode`, rather than
+the flat leaf fields. Use this as the complete custom template to reach the existing permission/state resolver and
+normalizer. Do not directly include a flat leaf or expect `cv_title`, `cv_tag` or `cv_href` to exist yet.
+
+<!-- tooltip-recipe: raw-context -->
+```django
+{% load crud_views %}<div data-app-action="custom">{% cv_button "context" %}</div>
+```
+
+The application owns the wrapper's attributes. The tag emits no control for hidden actions, preserves disabled
+controls without POST/modal hooks, and uses the custom `label_template` / `label_template_code` caption when set.
+Custom templates still own any attributes they emit themselves; core does not strip application-owned tooltips.
+Full-caption APIs and unrelated template helpers remain available. Form buttons keep their separate
+[resolved-caption and extra-attribute contract](#the-form-leaf-contract).
 
 ## System checks
 

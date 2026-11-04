@@ -160,6 +160,44 @@ describe("adapters.js", () => {
         expect(ns.Tooltip.getOrCreateInstance).not.toHaveBeenCalled();
     });
 
+    it("tooltip transition callbacks stop after disposal or instance replacement", async () => {
+        await loadScript("adapters");
+        const trigger = document.getElementById("t"), queued = [], live = vi.fn();
+        let current;
+        const first = {
+            _queueCallback(callback, element, animated) { queued.push({callback, element, animated}); return "queued"; },
+            dispose() { current = null; },
+        };
+        const Tooltip = {getOrCreateInstance: () => current ??= first, getInstance: () => current};
+        const adapter = window.cv.bootstrapAdapters({Tooltip}).tooltip;
+        adapter.init(trigger); adapter.init(trigger);
+        expect(first._queueCallback(live, trigger, true)).toBe("queued");
+        queued[0].callback(); expect(live).toHaveBeenCalledTimes(1);
+        expect(queued[0].element).toBe(trigger); expect(queued[0].animated).toBe(true);
+        first._queueCallback(live, trigger, true);
+        adapter.dispose(trigger); queued[1].callback();
+        expect(live).toHaveBeenCalledTimes(1);
+        current = {}; queued[1].callback();
+        expect(live).toHaveBeenCalledTimes(1);
+    });
+
+    it("live tooltip callback context arguments return and errors are preserved", async () => {
+        await loadScript("adapters");
+        const trigger = document.getElementById("t"), receiver = {}, calls = [];
+        const instance = {_queueCallback(callback, ...args) {
+            expect(this).toBe(instance); calls.push(args); return callback.call(receiver, "event", 3);
+        }};
+        const adapter = window.cv.bootstrapAdapters({Tooltip: {
+            getOrCreateInstance: () => instance, getInstance: () => instance,
+        }}).tooltip;
+        adapter.init(trigger);
+        const result = instance._queueCallback(function(...args) {
+            expect(this).toBe(receiver); expect(args).toEqual(["event", 3]); return 7;
+        }, trigger, false, "extension");
+        expect(result).toBe(7); expect(calls).toEqual([[trigger, false, "extension"]]);
+        expect(() => instance._queueCallback(() => {throw Error("live error");}, trigger, true)).toThrow("live error");
+    });
+
     it("tooltip.hide / dispose are silent without an instance and without Tooltip", async () => {
         await loadScript("adapters");
         const ns = fakeNamespace(), t = document.getElementById("t");

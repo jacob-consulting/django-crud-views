@@ -1,0 +1,46 @@
+{
+  "recorded": "2026-11-03T23:30:35.399Z",
+  "browserEvidence": {
+    "path": "06.8-browser.json",
+    "sha256": "e89b25e2772243b3028656fe7cdf2052b25d33beebe392f1f35310eeec53695a",
+    "executedRevision": "34fb1a2fd95ec8e946f518313a650446b39773dc",
+    "cases": 49,
+    "controls": 97,
+    "rerun": false
+  },
+  "unchangedSourceHashes": 553,
+  "changedSourceHashes": [
+    {
+      "path": "tests/browser/action-tooltips.test.cjs",
+      "executedSha256": "a1516d4413bac13ae768d80ffd901216369780b09ea5fc931014268ab593a481",
+      "currentSha256": "829d6376a02059bfbc1348449649476e0da30fa49bfa9fcbc3cc33283d46fe93"
+    }
+  ],
+  "screenshotHashesUnchanged": 6,
+  "reason": "WR-02 changes only the Node test fixture. Optional browser runtime and asset prerequisites are substituted inside isolated subprocesses; real Python validation, OS spawning, main catch/finally, failed JSON overwrite, and owned cleanup remain exercised. The retained browser execution predates this test-only change; its hashes are not rewritten.",
+  "red": {
+    "command": "CV_CANCEL_PLAYWRIGHT=/missing/review-playwright node --test --test-reporter=tap --test-name-pattern='OS spawn failure|fixture exiting' tests/browser/action-tooltips.test.cjs",
+    "exitCode": 1,
+    "passed": 0,
+    "failed": 2,
+    "observed": "Both assertions received Missing CV_CANCEL_PLAYWRIGHT rather than ENOENT or Fixture startup failed."
+  },
+  "green": [
+    {
+      "command": "CV_CANCEL_PLAYWRIGHT=/missing/review-playwright CV_CANCEL_CHROMIUM=/missing/review-chromium CV_CANCEL_ASSETS_DIR=/missing/review-assets node --test tests/browser/action-tooltips.test.cjs tests/browser/cancel-navigation.test.cjs",
+      "exitCode": 0,
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 2249.859016
+    },
+    {
+      "command": "node --test tests/browser/action-tooltips.test.cjs tests/browser/cancel-navigation.test.cjs",
+      "exitCode": 0,
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 2178.437068
+    }
+  ]
+}

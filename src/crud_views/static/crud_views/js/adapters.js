@@ -12,6 +12,22 @@ globalThis.cv = globalThis.cv || {};
     // One lifecycle observer per shell, shared by factory instances. Callback subscriptions
     // are removed per session; the WeakMap and shell-owned listeners do not retain detached shells.
     const modalLifecycles = new WeakMap();
+    const guardedTooltips = new WeakSet();
+    function guardTooltipTransitions(Tooltip, instance, el) {
+        if (!instance || guardedTooltips.has(instance) || typeof instance._queueCallback !== "function" ||
+            typeof Tooltip.getInstance !== "function") return;
+        // Bootstrap 5.3 queues transition completions that outlive dispose(), which
+        // nulls their instance state. Guard this instance's private queue seam only:
+        // animations and live callbacks are unchanged, disposal stays synchronous.
+        // A replacement instance on the same trigger must not revive the old work.
+        const queue = instance._queueCallback;
+        instance._queueCallback = function (callback, ...args) {
+            return queue.call(this, function (...callbackArgs) {
+                if (Tooltip.getInstance(el) === instance) return callback.apply(this, callbackArgs);
+            }, ...args);
+        };
+        guardedTooltips.add(instance);
+    }
     function modalLifecycle(modalEl) {
         let state = modalLifecycles.get(modalEl);
         if (state) return state;
@@ -75,7 +91,10 @@ globalThis.cv = globalThis.cv || {};
                 },
             },
             tooltip: {
-                init(el) { component(ns, "Tooltip")?.getOrCreateInstance(el); },
+                init(el) {
+                    const Tooltip = component(ns, "Tooltip");
+                    if (Tooltip) guardTooltipTransitions(Tooltip, Tooltip.getOrCreateInstance(el), el);
+                },
                 // getInstance, not getOrCreateInstance: a trigger that was never initialised gains nothing here.
                 hide(el) { component(ns, "Tooltip")?.getInstance(el)?.hide(); },
                 dispose(el) { component(ns, "Tooltip")?.getInstance(el)?.dispose(); },

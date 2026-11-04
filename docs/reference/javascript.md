@@ -100,7 +100,7 @@ the marker's value names where the trigger sits:
 | `location` | Trigger |
 |---|---|
 | `context` | icon-only context toolbar buttons, the filter toggle included (in `"icon"` mode only) |
-| `list` | list row buttons |
+| `list` | icon-only list row buttons with nonempty titles |
 | `card` | icon-only card buttons (a card button with a visible label has no marker) |
 | `card-order` | the ascending / descending toggles of the card ordering bar |
 | `formset` | the formset row controls (move up, move down, add, delete) |
@@ -108,7 +108,15 @@ the marker's value names where the trigger sits:
 | `form` | icon-only crispy form buttons (in `"icon"` mode only, see [Forms](buttons.md#forms)) |
 | `""` | a bare `data-cv-tooltip` in your own templates |
 
-Menu items and the `⋯` toggle carry no marker. With Bootstrap's JavaScript loaded, the default adapter turns every
+Context/list icon-only actions use the existing short caption with full-caption fallback for `title`, while their
+full hidden caption stays unchanged. Effective visible modes and empty titles emit no generated tooltip attributes.
+Cards keep their resolved card captions; form buttons keep their resolved form labels and extra-attribute ownership.
+This caption rule does not change filter toggles, property detail, formset controls or card-order controls.
+Application-owned tooltips and custom-template attributes remain application-owned; the package does not strip them.
+Copied action/menu leaves must follow the [immediate migration](../migrating-1.0.md#action-tooltips).
+
+Menu items carry neither an automatic `title` nor a marker, regardless of inline mode; the `⋯` toggle is unchanged
+and carries no marker. With Bootstrap's JavaScript loaded, the default adapter turns every
 marked `title` into a Bootstrap tooltip. To keep the browser's native tooltips instead:
 
 ```javascript

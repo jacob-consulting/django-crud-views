@@ -176,6 +176,18 @@ Source: issue #302 and Phase 06.7 CONTEXT.md D-01–D-16. These are pending impl
 - [x] **CAN-06**: Crispy buttons, native anchors and a documented cancel URL helper share destination and omission; copied key-only cancel templates migrate immediately, with dynamic/static examples, settings/limits and paired Breaking/migration guidance.
 - [x] **CAN-07**: Real request/browser acceptance proves all five issue flows without writes on Cancel and preserves save/delete success redirects, form ownership/CSRF/escaping, conditional/formset/modal contracts and existing protected-delete omission; no cross-ViewSet/history, browser-state capture or additional modal support is introduced.
 
+### Action tooltips (Phase 06.8, #304)
+
+Source: Phase 06.8 CONTEXT.md D-01–D-11 and issue #304. The confirmed observation is long icon-only
+list captions in the stock example and an unspecified other application; a separate visible-label defect
+has not been reproduced. External-application verification is outside this phase's completion gate.
+
+- [x] **TIP-01**: Context/list icon-only actions use the existing nonempty short caption with full-caption fallback, retain the full hidden accessible label, and emit neither generated title nor marker for empty tooltip text; no new caption API or action renaming.
+- [x] **TIP-02**: Effective label/both modes and non-strict missing-icon visible fallbacks have no generated tooltip. Every visibly labelled overflow item in context/list/card omits automatic title and marker regardless of inline mode, retaining short menu text and toggle behavior.
+- [x] **TIP-03**: Preserve card-caption precedence, resolved form captions, custom ContextButton labels and app-owned tooltip attributes; retain lazy translations, escaping, permissions, disabled/active state, links, POST/modal hooks, label-mode precedence and tooltip initialization, hover/focus, hide/disposal behavior.
+- [x] **TIP-04**: Require immediate copied action/menu template migration through executable documented recipes; describe changed cv_title semantics and removed menu titles in paired Breaking changelog and migrating-1.0.md guidance while retaining unrelated full-caption/helper APIs.
+- [x] **TIP-05**: Real-browser stock Bootstrap and migrated custom-template fixtures prove short icon tooltips, full accessible labels and absent generated tooltips on visible actions/menus; record mixed-mode investigation outcomes honestly and report actual runtime/browser limits without requiring the affected external application.
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -217,6 +229,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| TIP-01 | Phase 6.8 | Complete |
+| TIP-02 | Phase 6.8 | Complete |
+| TIP-03 | Phase 6.8 | Complete |
+| TIP-04 | Phase 6.8 | Complete |
+| TIP-05 | Phase 6.8 | Complete |
 | CAN-01 | Phase 6.7 | Complete |
 | CAN-02 | Phase 6.7 | Complete |
 | CAN-03 | Phase 6.7 | Complete |
@@ -304,8 +321,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 84 total (77 prior requirements plus seven CAN requirements)
-- Mapped to phases: 84
+- v1 requirements: 89 total (84 prior requirements plus five TIP requirements)
+- Mapped to phases: 89
 - Unmapped: 0 ✓
 
 ---

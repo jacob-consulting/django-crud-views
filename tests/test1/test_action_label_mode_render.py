@@ -1,4 +1,4 @@
-"""#216: labelled context and list buttons as rendered by crud_views/tags/button/action.html."""
+"""Context/list buttons: short icon titles, full hidden captions and labelled-mode suppression."""
 
 import uuid
 
@@ -18,6 +18,7 @@ from tests.test1.app.views import (
     AuthorCustomDetailListView,
     AuthorDetailView,
     AuthorListView,
+    AuthorUpdateView,
     GuardianAuthorListView,
     cv_author,
     cv_author_custom_detail,
@@ -74,6 +75,17 @@ def _button(container, key):
 
 
 @pytest.mark.django_db
+def test_icon_tooltip_request_tracer(author_douglas_adams):
+    (td,) = _rows(_client([AUTHOR_FULL]))
+    update = _button(td.cssselect("fieldset")[0], "update")
+    (hidden,) = update.cssselect("span.visually-hidden")
+    assert hidden.text_content() == "Update Author “Douglas Adams”"
+    assert update.get("aria-label") is None
+    assert update.get("data-cv-tooltip") == "list"
+    assert update.get("title") == "Update"
+
+
+@pytest.mark.django_db
 def test_toolbar_labelled_create_leaves_the_other_buttons_byte_identical(author_douglas_adams, monkeypatch):
     client = _client([AUTHOR_FULL])
     url = reverse(cv_author.get_router_name("list"))
@@ -120,10 +132,28 @@ def test_row_labelled_detail_next_to_icon_only_update(author_douglas_adams, monk
     fieldset = td.cssselect("fieldset")[0]
     detail = _button(fieldset, "detail")
     assert detail.get("title") is None
+    assert detail.get("data-cv-tooltip") is None
     assert [s.text for s in detail.xpath("./span")] == ["Detail"]
     update = _button(fieldset, "update")
-    assert update.get("title")
-    assert update.xpath("./span[contains(@class, 'visually-hidden')]")
+    assert update.get("title") == "Update"
+    assert update.get("data-cv-tooltip") == "list"
+    (hidden,) = update.cssselect("span.visually-hidden")
+    assert hidden.text_content() == "Update Author “Douglas Adams”"
+
+
+@pytest.mark.django_db
+def test_caption_template_interpolates_untrusted_text(author_douglas_adams, monkeypatch):
+    payload = '" onmouseover="alert(1)"><script>雪 & café</script>'
+    author_douglas_adams.first_name = payload
+    author_douglas_adams.save()
+    monkeypatch.setattr(AuthorUpdateView, "cv_action_label_template_code", "Full {{ object.first_name }}")
+    monkeypatch.setattr(AuthorUpdateView, "cv_action_short_label_template_code", "Short {{ object.first_name }}")
+    (td,) = _rows(_client([AUTHOR_FULL]))
+    update = _button(td.cssselect("fieldset")[0], "update")
+    assert update.get("title") == f"Short {payload}"
+    assert update.cssselect("span.visually-hidden")[0].text_content() == f"Full {payload}"
+    assert update.get("onmouseover") is None
+    assert update.cssselect("script") == []
 
 
 @pytest.mark.django_db
@@ -150,7 +180,7 @@ def test_labelled_post_row_action_keeps_submit_target(author_douglas_adams, monk
 
 
 @pytest.mark.django_db
-def test_folded_labelled_key_has_no_title_and_icon_key_keeps_it(author_douglas_adams, monkeypatch):
+def test_folded_labelled_and_icon_keys_have_no_tooltips(author_douglas_adams, monkeypatch):
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["home", "detail", "update", "delete"])
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", ["update"])
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions_label_mode", {"detail": "both"})
@@ -158,7 +188,10 @@ def test_folded_labelled_key_has_no_title_and_icon_key_keeps_it(author_douglas_a
     detail = toolbar.cssselect('.dropdown-item[cv-key="detail"]')[0]
     assert detail.get("title") is None
     assert "Detail" in detail.text_content()
-    assert toolbar.cssselect('.dropdown-item[cv-key="delete"]')[0].get("title")
+    delete = toolbar.cssselect('.dropdown-item[cv-key="delete"]')[0]
+    assert delete.get("title") is None
+    assert delete.text_content().strip() == "Delete"
+    assert all(el.get("data-cv-tooltip") is None for el in toolbar.cssselect(".dropdown-item"))
 
 
 @pytest.mark.django_db

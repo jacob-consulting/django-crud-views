@@ -430,11 +430,12 @@ FEATURES: list[Feature] = [
         ),
         look_at=(
             "cv_list_actions_inline, cv_context_actions_inline and cv_card_actions_inline in views.py, and "
-            "ChoreArchiveView.cv_inaccessible_actions."
+            "ChoreArchiveView.cv_inaccessible_actions; ChoreDoneView is the custom ActionView (a POST toggle)."
         ),
         url_name="chore-list",
         icon="fa-solid fa-ellipsis",
         docs=(
+            DocRef(page="reference/action_view.md", label="ActionView — custom actions"),
             DocRef(page="reference/action_menus.md", label="Action menus — configuration", anchor="configuration"),
             DocRef(
                 page="reference/action_menus.md", label="Action menus — hide and disable", anchor="hide-and-disable"

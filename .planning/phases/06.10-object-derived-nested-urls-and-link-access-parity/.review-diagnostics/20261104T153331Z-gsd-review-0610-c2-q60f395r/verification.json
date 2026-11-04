@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-04T15:34:22.421283+00:00",
+  "lane_success": 3,
+  "exact_plan_headings": 18,
+  "all_plan_hashes_unchanged": true,
+  "prior_history_preserved": true,
+  "conflict_slot_byte_preserved": true,
+  "git_diff_check_exit": 0,
+  "current_high": 0,
+  "current_actionable": 5,
+  "product_tests_run": false
+}

@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.10"
+current_phase_name: Object-derived nested URLs and link-access parity
 status: planning
-stopped_at: Phase 06.9 complete, ready to plan Phase 7
-last_updated: "2026-11-04T13:07:34.533Z"
+stopped_at: Phase 06.10 context gathered
+last_updated: "2026-11-04T13:59:14.016Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.9 complete, transitioned to Phase 7
-state_head: 82eff57d84af936c8436c39a0d71543b6ec70729
+last_activity_desc: "Inserted Phase 06.10 for issues #311 and #312 before the stability freeze"
+state_head: d9e97b5332bbb25aef37e82489fc9a09126eb848
 progress:
-  total_phases: 16
+  total_phases: 17
   completed_phases: 15
   total_plans: 113
   completed_plans: 113
-  percent: 94
 milestone_name: milestone
 ---
 
@@ -25,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-04)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.10 — Object-derived nested URLs and link-access parity
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.10 — Object-derived nested URLs and link-access parity
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-04 — Phase 06.9 shipped for review in PR #313
+Last activity: 2026-11-04 — Inserted Phase 06.10 for issues #311 and #312 before the stability freeze
 
-Next: $gsd-discuss-phase 7 — gather context for the theme-surface stability policy.
+Next: $gsd-plan-phase 06.10 — plan issue #311 and companion #312 before Phase 7.
 
 ### Phase 06.9 shipping — 2026-11-04
 
@@ -749,6 +748,7 @@ None yet.
 - Phase 06.7 inserted after Phase 06.6: Dynamic cancel navigation and origin query state (#302); approved scope and defaults; complete before Phase 7 freezes the public surface (URGENT)
 - Phase 06.8 inserted after Phase 06.7: Action tooltips: short captions and visible-label suppression (#304); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.9 inserted after Phase 06.8: Protected delete-preview object links (#307); user insertion schedules the issue before Phase 7 freezes the affected contracts (URGENT)
+- Phase 06.10 inserted after Phase 06.9: Object-derived nested URLs (#311) and companion link-access parity (#312); shared resolver first, complete before Phase 7 freezes the public surface (URGENT)
 
 ## Deferred Items
 
@@ -758,6 +758,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T13:07:34Z
-Stopped at: Phase 06.9 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-04T13:59:12.221Z
+Stopped at: Phase 06.10 context gathered
+Resume file: .planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-CONTEXT.md

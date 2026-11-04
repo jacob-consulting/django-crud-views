@@ -197,7 +197,10 @@ class ProtectedDeletePreviewTest(LibraryTestCase):
         for label, override in (
             ("disabled", patch.object(AuthorDeleteView, "cv_link_related_objects", False)),
             ("missing", patch.dict(cv_contract._views, {}, clear=True)),
-            ("inaccessible", patch.object(ContractDetailView, "queryset", type(self.contract).objects.none())),
+            (
+                "inaccessible",
+                patch.object(ContractDetailView, "get_queryset", lambda view: type(self.contract).objects.none()),
+            ),
         ):
             with self.subTest(fallback=label), override:
                 for modal in (False, True):

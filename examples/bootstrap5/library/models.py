@@ -33,3 +33,15 @@ class Book(OrderedModel):
 
     def __str__(self):
         return self.title
+
+
+class Contract(models.Model):
+    title = models.CharField(_("title"), max_length=150)
+    author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name="contracts", verbose_name=_("author"))
+
+    class Meta:
+        verbose_name = _("contract")
+        verbose_name_plural = _("contracts")
+
+    def __str__(self):
+        return self.title

@@ -20,7 +20,7 @@ from crud_views.lib.views import (
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
-from library.models import Author, Book
+from library.models import Author, Book, Contract
 
 # --------------------------------------------------------------------------- Author
 
@@ -101,11 +101,11 @@ class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteVie
     cv_viewset = cv_author
     form_class = CrispyDeleteForm
     cv_message_template_code = _("Deleted author “{{ object }}”")
-    # Book.author uses CASCADE: this example previews books, not protected blockers.
-    # cv_show_related_objects enables details; opt into cv_link_related_objects for detail links.
-    # Visible protected blockers link only to eligible destinations, otherwise remaining plain text.
-    # Both kinds navigate to full pages, including from modals. See docs/reference/delete_view.md.
+    # Books cascade; publishing Contracts protect their Author from deletion.
+    # Authorized preview links open full detail pages, including from this modal.
     cv_show_related_objects = True
+    cv_link_related_objects = True
+    cv_modal = True
     cv_cancel_keys = ["list", "detail"]
 
 
@@ -169,3 +169,15 @@ class BookUpView(BreadcrumbMixin, MessageMixin, OrderedUpViewPermissionRequired)
 class BookDownView(BreadcrumbMixin, MessageMixin, OrderedUpDownPermissionRequired):
     cv_viewset = cv_book
     cv_message_template_code = _("Moved book “{{ object }}” down")
+
+
+# --------------------------------------------------------------------------- Contract
+
+cv_contract = ViewSet(model=Contract, name="contract", icon_header="fa-solid fa-file-contract")
+
+
+class ContractDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_contract
+    cv_property_display = [
+        {"title": _("Contract"), "icon": "fas:file-contract", "properties": ["id", "title", "author"]},
+    ]

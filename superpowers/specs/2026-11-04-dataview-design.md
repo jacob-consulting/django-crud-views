@@ -103,8 +103,9 @@ class DataView:
         mode: str | None = None,  # "table" | "card"; None: "card" for CardListView, else "table"
         view_attrs: dict | None = None,   # instance attributes, validated like as_view() initkwargs
         row_actions: bool = True, # False: no action column / no card actions
-        list_link: bool = True,   # the "all …" link to the full list page, when resolvable and accessible
-        empty_text=None,          # None: the package's translated "No items found."
+        list_link: bool = True,   # the "all …" link to the ViewSet's list page, when resolvable and accessible
+        empty_text=None,          # None: the package's translated "No items found."; honoured in both modes
+        id: str | None = None,    # element-id namespace; None: "dv<N>" per request
     ): ...
 
     @classmethod
@@ -123,20 +124,37 @@ class DataView:
 
     @property
     def cv_list_url(self) -> str | None:
-        """view.cv_get_url(view.cv_key) when list_link, resolvable (ValueError → None) and cv_access; else None."""
+        """The ViewSet's list page, never the widget's own URL: view.cv_get_url("list") ("list" falls back to
+        "card" as everywhere), when list_link is set, the key is registered, the URL is resolvable (ValueError →
+        None: a nested ViewSet without kwargs) and the *list view class* passes cv_has_access(user, None) and
+        cv_action_enabled(user, None). A registered widget view (cv_key "widget_recent") therefore links to the
+        same page as a derived one."""
+
+    id: str
+    """Per-page namespace for element ids: the ``id=`` argument, else "dv<N>" counted per request (the counter
+    lives on the request object). Two widgets of one ViewSet on one page would otherwise emit the same
+    ``cv_form_<oid>`` ids: cv_get_oid is ``<viewset>_<key>_<pk>`` because a crud page shows one list."""
 
     def get_context(self) -> dict:
         """{"view", "request", "object_list", "cv_dataview", and "table" in table mode}."""
 ```
 
 Binding, in order: `view = view_class()`, `view.setup(request, **kwargs)`, apply `view_attrs`, then
-`view.cv_link_origin = False`, `view.paginate_by = None`, `view.table_pagination = False`, `view.cv_order_fields = []`,
-then the queryset: `queryset if queryset is not None else view.get_queryset()`, sliced to `limit`, stored as
-`view.object_list`. Table mode builds the table once in `get_context()` through the view's own
-`get_table(orderable=False, **get_table_kwargs())`, so `get_table_kwargs` overrides and `table_class` apply;
-`row_actions=False` adds `exclude=("actions",)` to the table kwargs (the convention of `crud_views.lib.table.Table`)
-and sets `cv_card_actions = []` in card mode. `empty_text` goes to `Table(empty_text=…)`; the card content template
-already renders the translated empty state.
+`view.cv_link_origin = False`, `view.cv_oid_prefix = self.id`, `view.paginate_by = None`,
+`view.table_pagination = False`, `view.cv_order_fields = []`, then the queryset:
+`queryset if queryset is not None else view.get_queryset()`, sliced to `limit`, stored as `view.object_list`. Table
+mode builds the table once in `get_context()` through the view's own `get_table(orderable=False, **get_table_kwargs())`,
+so `get_table_kwargs` overrides and `table_class` apply; `row_actions=False` adds `exclude=("actions",)` to the table
+kwargs (the convention of `crud_views.lib.table.Table`) and sets `cv_card_actions = []` in card mode.
+
+`empty_text` is honoured in both modes: `Table(empty_text=…)` for tables; for cards the DataView puts it into the
+leaf context as `cv_empty_text`, and the stock `view_card.content.html` renders `cv_empty_text` when set, else its
+translated "No items found." (a one-line change to that stock template; list pages never set the variable, so the
+card goldens stay byte-identical; the Tabler override of that template gets the same line as a downstream follow-up).
+
+Element ids: a new `CrudView` attribute `cv_oid_prefix: str | None = None`; `cv_get_oid` returns
+`<prefix>_<viewset>_<key>_<pk>` when it is set, else today's value. The DataView sets it on the bound instance, so
+hidden POST forms and their `form=` buttons stay paired per widget. The frame root carries `id="cv-dataview-<id>"`.
 
 `view_attrs` are validated like Django's `as_view()` initkwargs: every key must be an existing attribute of the
 class, else `TypeError`. This is the per-widget knob for `cv_list_actions`, `cv_list_actions_inline`,
@@ -172,7 +190,7 @@ One overridable template with blocks, like `tags/card.html` (#243):
 
 ```django
 {% load crud_views %}
-<div class="{% cv_button_class 'dataview' 'root' %}" cv-dataview="{{ view.cv_viewset.name }}:{{ view.cv_key }}">
+<div id="cv-dataview-{{ cv_dataview.id }}" class="{% cv_button_class 'dataview' 'root' %}" cv-dataview="{{ view.cv_viewset.name }}:{{ view.cv_key }}">
   {% block dataview_header %}
   <div class="{% cv_button_class 'dataview' 'header' %}">
     {% cv_button_class 'dataview' 'title' as cv_title_class %}{% cv_heading level=3 class=cv_title_class %}{% block dataview_title %}{{ cv_dataview.title }}{% endblock %}{% endcv_heading %}
@@ -194,9 +212,9 @@ Class keys, added to `DEFAULT_BUTTON_CLASSES` (Bootstrap 5 defaults): `dataview:
 (`card-title mb-0`), `dataview:body` (`card-body p-0`), `dataview:link` (`btn btn-link btn-sm`). Themes register
 their values from `ready()`; projects override per key.
 
-Leaf context contract (documented): `cv_dataview` (`title`, `mode`, `limit`, `cv_list_url`, `cv_access`), `view`,
-`request`, `object_list`, `table` (table mode). The attribute `cv-dataview="<viewset>:<key>"` on the root is the
-hook a later lazy-load path and tests use.
+Leaf context contract (documented): `cv_dataview` (`id`, `title`, `mode`, `limit`, `cv_list_url`, `cv_access`),
+`view`, `request`, `object_list`, `table` (table mode), `cv_empty_text` (card mode, when set). The root's `id` and the
+attribute `cv-dataview="<viewset>:<key>"` are the hooks a later lazy-load path and tests use.
 
 ### 4. From scratch
 
@@ -248,9 +266,10 @@ Parity with the request gate for Guardian child links and undeclared permission 
   from-scratch shapes, the permission table above, the leaf contract, the class keys, the nested/`kwargs` rule and
   the "all" link rule, `view_attrs`.
 - `docs/reference/templates.md` base-template table: `{% cv_dataview %}` next to `cv_breadcrumb`.
-- `docs/reference/context_buttons.md`: `cv_link_origin`.
+- `docs/reference/context_buttons.md`: `cv_link_origin`; `docs/reference/action_view.md` (hidden POST forms):
+  `cv_oid_prefix`.
 - `docs/development/stability.md`: `DataView`, `cv_dataview`, `cv_dataview_for`, `tags/dataview.html` and the five
-  keys listed as **provisional**; `cv_link_origin` under `CrudView`.
+  keys listed as **provisional**; `cv_link_origin` and `cv_oid_prefix` under `CrudView`.
 - `CHANGELOG.md` `### Added`.
 - Example: one "Dashboard" page in the Bootstrap 5 example project with a table widget and a card widget
   (author table, author cards), placed by the maintainer of the examples restructure where it fits.
@@ -264,24 +283,39 @@ Parity with the request gate for Guardian child links and undeclared permission 
 - Unit: construction on `RequestFactory` requests with a user; `from_viewset`; mode detection and the
   `ImproperlyConfigured` cases; `view_attrs` validation; `limit` slicing; `cv_access` for a user with/without the
   permission and for a Guardian list view (signed-in rule); `cv_list_url` for top-level, nested without kwargs
-  (None), nested with kwargs.
+  (None), nested with kwargs, a registered widget view (points at the ViewSet's list, gated by the list class), a
+  ViewSet without a list/card view (None); `id` explicit and auto-counted across two widgets on one request.
 - Rendering: a test page view in `tests/test1/app` embedding an author table widget, an author card widget and a
   nested book widget with a supplied cross-parent queryset; assert no pager, no sort links, no order bar, the
-  row/card actions of the source view, the `cv-dataview` root attribute, no `cv_origin` in links, nothing rendered
-  without access, `row_actions=False`, `empty_text`.
+  row/card actions of the source view, the root `id` and `cv-dataview` attribute, distinct `cv_form_*` ids and
+  `form=` targets across the two author widgets (one POST action key in `view_attrs`), no `cv_origin` in links,
+  nothing rendered without access, `row_actions=False`, `empty_text` in both modes.
 - Goldens under `tests/test1/golden/dataview/` for the stock frame in both modes (same harness as
   `test_action_menus_golden.py`).
 - Query count: a widget over a Guardian list view costs the same queries as the list page minus pagination; pinned
   with `django_assert_num_queries`.
-- Cross-parent row links are asserted once #311 is in; until then that test is marked as depending on it.
-- Existing goldens stay byte-identical (no stock template changes other than the new leaf).
+- The nested book widget asserts cross-parent row links (#311 is a precondition, below).
+- Existing goldens stay byte-identical: the only stock template changes are the new leaf and the guarded
+  `cv_empty_text` line in `view_card.content.html`.
 
-## Sequencing
+## Sequencing and preconditions
 
-Build after the #311/#312 phase and after 1.0, as a provisional surface (navigation decision 5 applied). The
-DataView code itself does not depend on either issue, but its headline use case (cross-parent rows) does on #311,
-and its visibility promise on #312. One GSD phase: plan 1 core class, tag, leaf and keys with tests; plan 2 docs,
-example, changelog, stability. The Tabler follow-ups are separate work in `tabler-test`.
+The plan is executed against a tree where all of the following are in; it lists them as preconditions and does not
+work around any of them:
+
+1. **#311 merged.** The nested book widget's row links need the object-derived parent pks; without it every row
+   action in that fixture raises `ValueError`.
+2. **#312 merged.** The widget's visibility promise ("the same rule as the toolbar") is only true once link
+   visibility agrees with the request gate.
+3. **1.0.0 released**, so Phase 7 has landed and `docs/development/stability.md` has the provisional tier the new
+   names are listed under (navigation decision 5 applied: provisional until the core example and the Tabler theme
+   have both rendered it). Building earlier would mean inventing that section and colliding with Phase 7's guard
+   test.
+4. **The examples restructure merged**, so the dashboard example has a home.
+
+The planning artefact is therefore a GSD phase in the first post-1.0 milestone (GitHub milestone 1.1.0), not a
+`superpowers/plans` document: plan 1 core class, tag, leaf, keys, the two `CrudView` attributes and tests; plan 2
+docs, example, changelog, stability. The Tabler follow-ups are separate work in `tabler-test`.
 
 ## Left to the maintainer (answers change what gets built)
 

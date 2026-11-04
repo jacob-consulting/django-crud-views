@@ -1,10 +1,13 @@
 import re
+from pathlib import Path
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from guardian.models import UserObjectPermission
+from lxml import html
 
 from delete_demo.models import Milestone, Project, Task
 
@@ -25,6 +28,53 @@ class DeleteDemoTestCase(TestCase):
 
 
 class BlockedCasesTest(DeleteDemoTestCase):
+    def test_finite_and_unlimited_previews_keep_plain_blockers_and_rows(self):
+        from delete_demo.views import ProjectDeleteView
+
+        notice = "This preview is shortened. Additional objects are not shown."
+        before = {model: set(model.objects.values_list("pk", flat=True)) for model in (Project, Task, Milestone)}
+        for title in ("Website relaunch", "Office move"):
+            visible = title == "Website relaunch"
+            for limit in (1, None):
+                for modal in (False, True):
+                    for method in ("get", "post"):
+                        with (
+                            self.subTest(title=title, limit=limit, modal=modal, method=method),
+                            patch.object(ProjectDeleteView, "cv_delete_preview_limit", limit),
+                        ):
+                            response = getattr(self.client, method)(
+                                self.delete_url(title), {"confirm": True}, **(MODAL if modal else {})
+                            )
+                            self.assertEqual(response.status_code, 422 if modal and method == "post" else 200)
+                            self.assertTrue(response.context["has_protected_objects"])
+                            entries = response.context["protected_objects"]
+                            self.assertEqual(len(entries), (1 if limit == 1 else 2) if visible else 0)
+                            self.assertTrue(all(entry["url"] is None for entry in entries))
+                            document = html.fromstring(response.content)
+                            self.assertEqual(document.text_content().count(notice), int(visible and limit == 1))
+                            self.assertFalse(document.xpath('//form[.//*[@name="confirm"]]'))
+                            for task in Task.objects.filter(project__title=title):
+                                self.assertFalse(
+                                    document.xpath(
+                                        "//a[@href=$url]", url=reverse("task-detail", kwargs={"pk": task.pk})
+                                    )
+                                )
+                                if not visible:
+                                    self.assertNotIn(task.title, document.text_content())
+                            for model, pks in before.items():
+                                self.assertEqual(set(model.objects.values_list("pk", flat=True)), pks)
+
+    def test_demo_and_tutorials_teach_plain_blockers_and_cascade_links(self):
+        docs = Path(__file__).resolve().parents[3] / "docs/getting_started"
+        for name in ("demo.md", "tutorial-5-filters-permissions.md", "tutorial-6-books.md"):
+            with self.subTest(document=name):
+                text = (docs / name).read_text()
+                self.assertIn("plain text", text)
+                self.assertIn("Book links", text)
+                self.assertNotIn("linked Contract", text)
+                self.assertNotIn("entry point is the protected link", text)
+                self.assertNotIn("links to a full detail page, even from the modal", text)
+
     def test_case1_lists_own_blocking_tasks(self):
         resp = self.client.get(self.delete_url("Website relaunch"))
         self.assertEqual(resp.status_code, 200)

@@ -153,7 +153,35 @@ class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionReq
     cv_link_related_objects = True  # link to detail views when available
 ```
 
-Links are only rendered for related objects whose model has a registered ViewSet with a `detail` view.
+The shared `cv_get_related_object_url(self, obj) -> str | None` hook selects the first registered ViewSet for the
+object's model with a `detail` view and reverses its URL. Its signature, first-match behavior and cascade-tree
+behavior are unchanged. There is no fallback registry scan if that candidate cannot be used.
+
+Protected blockers have an additional destination check **after** label visibility filtering. Only inspectable
+local registered detail callbacks for the same concrete model, typed PK and database alias are eligible. The
+destination's queryset must contain the row, its parent coordinates must resolve correctly, and its own access,
+parent permission and action-state policy must allow the request. Source visibility and destination access are
+independent: a visible blocker remains plain text when its detail destination is unavailable or disabled.
+Guardian destinations additionally require supported co-located actor/child/parent and permission-route topology;
+unsupported user, group, auth, content-type or object-grant routing yields plain text. Original anonymous/inactive
+actors cannot gain eligibility through stored anonymous grants. Parent topology still matters with parent
+permission checks disabled.
+
+Candidates must be root-relative paths under the active script mount. Both raw and percent-decoded paths reject
+network-path URLs, backslashes and controls; encoded slashes/backslashes are rejected. Resolution uses the decoded
+path without the mount, while the original eligible URL (including its query) is retained in the anchor. External,
+unregistered, non-detail, missing-row, wrong-model/PK/alias and uninspectable candidates yield `url=None`.
+Callback init overrides that change policy, including `permission_required`, cannot be certified and yield text.
+Expected access denial yields text; unexpected application queryset, converter, configuration or operational
+errors propagate rather than silently producing a successful preview.
+
+Eligibility binds a separate destination GET with its own URL kwargs/query and without the source modal header.
+It does not dispatch a request or run arbitrary middleware, dispatch or custom `get_object` overrides. Those
+checks, plus permission/row changes after preview, belong to the actual destination request. A link is navigation,
+not an authorization grant. The private adapter is not a new public authorization extension API.
+
+Both cascade and protected anchors perform ordinary full-page navigation. Activating one from a delete modal
+leaves the modal, even if the destination supports modals; no modal/AJAX action attributes are added.
 
 ### Permission Filtering
 
@@ -185,7 +213,7 @@ deleting it." Hidden labels never change the blocked state.
 | Key | Contents |
 |---|---|
 | `has_protected_objects` | Present on every delete GET/POST context, computed from the unfiltered protected collection. Use it for the notice and form guard. |
-| `protected_objects` | Present only with previews enabled: the protected objects the user may view, in original order. It can be empty while the flag is true. |
+| `protected_objects` | Present only with previews enabled: filtered ordered entries with exactly `obj` (model instance) and `url` (eligible detail URL or `None`). It can be empty while the flag is true; linking disabled keeps the shape with every `url=None`. |
 
 A confirmed POST stopped by the early check returns the protection page with **200**, or **422** in a modal,
 without executing deletion. Inspection merges native and provider blockers before permission filtering.
@@ -200,6 +228,15 @@ deletion or delete signals. Ordinary ORM reads can still run managers, converter
 signals. Application providers and display filters are trusted code; the package cannot prove their purity.
 Inspection is cached for the view instance; an allowed POST additionally performs fresh write collection. Large
 cascades materialize full rows, tree and counts; there is no large-graph performance bound.
+
+Protected linking adds destination lookup and applicable parent, authorization and action-state work **per visible
+blocker**, separately from collection/rendering cost. Measured on stock fixtures with warmed permission caches:
+for 0/1/4/8 candidates, unparented core used 0/1/4/8 queries; parented Guardian used 0/8/32/64. The regression bounds
+are core `Q(N)<=N` and Guardian `Q(N)<=12*N+4`, with at most 12 additional queries per added candidate. These are
+fixture measurements and regression bounds, not promises about arbitrary application hooks. Guardian work includes
+child lookup, actor certification, parent lookup and parent/child user/group permissions. Disabled preview or
+linking adds **zero adapter query cost**, but does not disable deletion inspection. No bulk cache or constant-query
+preview is promised; custom querysets and hooks can add their own queries.
 
 `cv_get_related_objects()` remains a read-only compatibility accessor returning `RelatedObjects(tree, summary,
 protected)`. **Overrides are rejected immediately**, without calling them: `viewset.E263` at startup and
@@ -279,6 +316,10 @@ must keep these guarantees:
   cannot hide the block.
 - Keep the summary counts as they are, unless you deliberately change the aggregate policy for your view.
 
+The collector, provider contributions and this filter continue to use model-instance collections in `protected`.
+Only the filtered template context projects them into `obj`/`url` entries, after this hook returns. Do not return
+template dictionaries from the provider or filter, or recompute hidden labels in a template.
+
 ```python
 class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
@@ -293,10 +334,12 @@ class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionReq
 
 ### Template Customization
 
-The related objects display uses two overridable templates:
+The related objects display uses three overridable templates:
 
 - `crud_views/snippets/delete/related_objects.html` — main container with summary, tree, and warnings
 - `crud_views/snippets/delete/related_objects_tree.html` — recursive nested tree of individual objects
+- `crud_views/snippets/delete/protected_objects.html` — independent flat protected body consuming caller-context
+  `items` entries (`obj`/`url`), with explicit autoescape and ordinary anchors/plain text
 
 Each alert in `related_objects.html` is a `{% cv_alert %}` call, so it renders through the one alert frame,
 `crud_views/tags/alert.html` (see [Flash messages](messages.md)). The summary alert lists
@@ -306,8 +349,10 @@ dict) stays in the context for overrides that read it.
 Override these in your project's template directory to customize the rendering. Keep the independent incomplete
 warning outside both protection branches, even with previews disabled. A copy of
 `crud_views/view_delete.content.html` must include the snippet when `related_summary or has_protected_objects`, and a
-copy of `related_objects.html` must use both notice branches: colon heading with `items=protected_objects` when
-labels exist, colon-free heading with the generic `text=` sentence otherwise. A copy that still tests
+copy of `related_objects.html` must use both notice branches: colon heading with caller-context
+`{% with items=protected_objects %}` and `body_template="crud_views/snippets/delete/protected_objects.html"` when
+labels exist, colon-free heading with the generic `text=` sentence otherwise. Do not pass entries as generic alert
+`items=protected_objects`; access model fields through `item.obj.field`. A copy that still tests
 `protected_objects` loses the notice whenever every label is hidden. Guard the entire confirmation form too:
 
 ```django
@@ -319,7 +364,7 @@ labels exist, colon-free heading with the generic `text=` sentence otherwise. A 
 {% endif %}
 ```
 
-Keep the existing custom-protection branch around this content. The complete executable content/snippet recipe is
+Keep the existing custom-protection branch around this content. The complete executable content/snippet/body recipe is
 in [Copied delete templates](../migrating-1.0.md#copied-delete-templates-with-incomplete-previews); a copied alert leaf must render `alert.text` or
 `alert.body_template` as well as its heading and items.
 

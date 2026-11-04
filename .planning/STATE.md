@@ -3,12 +3,12 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.9"
 current_phase_name: Protected delete-preview object links
-status: executing
-stopped_at: Completed 06.9-04-PLAN.md; independent verification and human acceptance remain
-last_updated: "2026-11-04T11:02:40.413Z"
+status: verifying
+stopped_at: Phase 06.9 verified 31/31; one UI confirmation pending
+last_updated: "2026-11-04T11:44:25.271220+00:00"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.9 plans executed; independent verification pending
-state_head: 8d72c9fca610158336ddfd1c1467ecb30a92eaf9
+last_activity_desc: Phase 06.9 canonical verification human_needed; one grouped UI confirmation remains
+state_head: c078c882f7e457bbaa4334900e2350602938aa31
 progress:
   total_phases: 16
   completed_phases: 13
@@ -28,12 +28,20 @@ See: .planning/PROJECT.md (updated 2026-11-03)
 
 ## Current Position
 
-Phase: 06.9 (Protected delete-preview object links) — EXECUTING
+Phase: 06.9 (Protected delete-preview object links) — HUMAN CONFIRMATION PENDING
 Plan: 4 of 4
-Status: Plans executed — awaiting independent verification
-Last activity: 2026-11-04 — Phase 06.9 plan 04 automated acceptance passed
+Status: 4/4 plans executed; canonical31/31; human_needed
+Last activity: 2026-11-04 — independent audits and repair verification passed; one UI confirmation pending
 
-Next: Orchestrator independent code/security/UI/validation/canonical verification for Phase 06.9; human acceptance remains pending.
+Next: $gsd-verify-work 06.9 — resolve the single grouped confirmation of 19 UI state considerations in 06.9-UAT.md.
+
+### Phase 06.9 canonical verification — 2026-11-04
+
+- All4plans committed; canonical31/31, status human_needed for one grouped explicit UI classification/state confirmation. No implementation gaps; phase not marked complete.
+- Independent code review repaired class/inherited permission eligibility and actual modal/confirmed POST test coverage; rereview closed both with116tests+17descriptor probes. Fixer980passed per cached Django4.2/5.2/6.0; verifier114focused tests pass.
+- Current browser17/17 refreshed against repaired source with556hashes, exact recipes,12assets and two screenshots. Original acceptance retained under history/pre-review; prior9439-test full runs are not claimed as final-source reruns. FinalJS365passed.
+- Security15/15closed and reassessed after fixes; validation compliant6requirements/8tasks; UI23/24, nonblocking inherited contrast warning and optional visual evidence recommendations.
+- Single confirmation persisted in06.9-UAT.md; no human response, risk acceptance or screen-reader observation inferred. Existing config/state.json and unrelated artifacts preserved. No merge, push or publication.
 
 ### Phase 06.9 automated execution — 2026-11-04
 

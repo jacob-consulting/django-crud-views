@@ -1,0 +1,55 @@
+{
+  "reviewed_commit": "b5d33a1c133b3b46a5ce73f62d06ccacea48fe11",
+  "plans_unchanged": true,
+  "plan_coverage": {
+    "fable-review": {
+      "complete": true,
+      "missing_ids": [],
+      "total": 6,
+      "exact_sections": [
+        "06.10-01",
+        "06.10-02",
+        "06.10-03",
+        "06.10-04",
+        "06.10-05",
+        "06.10-06"
+      ],
+      "source_citations": true,
+      "discount_marker": false
+    },
+    "grok-review": {
+      "complete": true,
+      "missing_ids": [],
+      "total": 6,
+      "exact_sections": [
+        "06.10-01",
+        "06.10-02",
+        "06.10-03",
+        "06.10-04",
+        "06.10-05",
+        "06.10-06"
+      ],
+      "source_citations": true,
+      "discount_marker": false
+    },
+    "gemini-review": {
+      "complete": true,
+      "missing_ids": [],
+      "total": 6,
+      "exact_sections": [
+        "06.10-01",
+        "06.10-02",
+        "06.10-03",
+        "06.10-04",
+        "06.10-05",
+        "06.10-06"
+      ],
+      "source_citations": true,
+      "discount_marker": false
+    }
+  },
+  "conflict_slot_unchanged": true,
+  "open_conflicts": 0,
+  "product_tests_run": false,
+  "preparation_retry": "Initial assembly used 6.10 instead of roadmap heading 06.10 and stopped before writing prompt. Empty invocations are diagnostic-only; rerun used complete fingerprinted prompt and all three returned real reviews."
+}

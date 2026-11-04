@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "breadcrumbs",
     "context_buttons",
     "action_menus",
+    "delete_demo",
 ]
 
 MIDDLEWARE = [

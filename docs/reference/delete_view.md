@@ -3,6 +3,10 @@
 The `DeleteView` handles deleting model instances. It renders a confirmation form before
 deleting.
 
+!!! example "Try it live"
+    The [Delete example](https://django-crud-views-demo.onrender.com/delete/project/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Basic Usage
 
 ```python

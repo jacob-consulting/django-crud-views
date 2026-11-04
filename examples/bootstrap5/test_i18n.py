@@ -74,6 +74,7 @@ EXAMPLE_APPS = [
     "object_detail",
     "breadcrumbs",
     "conditional",
+    "delete_demo",
 ]
 
 

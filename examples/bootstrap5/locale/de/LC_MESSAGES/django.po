@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 07:12+0000\n"
+"POT-Creation-Date: 2026-11-04 07:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: action_menus/models.py:7 breadcrumbs/models.py:18 conditional/models.py:40
-#: context_buttons/models.py:11 formsets/models.py:7 guardian_demo/models.py:7
-#: library/models.py:26 showcase/models.py:11
+#: context_buttons/models.py:11 delete_demo/models.py:7
+#: delete_demo/models.py:26 delete_demo/models.py:44 formsets/models.py:7
+#: guardian_demo/models.py:7 library/models.py:26 showcase/models.py:11
 msgid "title"
 msgstr "Titel"
 
@@ -427,6 +428,62 @@ msgstr "Ticket »{{ object }}« aktualisiert"
 msgid "Deleted ticket “{{ object }}”"
 msgstr "Ticket »{{ object }}« gelöscht"
 
+#: delete_demo/models.py:9 delete_demo/models.py:42 guardian_demo/models.py:10
+msgid "owner"
+msgstr "Eigentümer"
+
+#: delete_demo/models.py:11
+msgid "shared"
+msgstr "geteilt"
+
+#: delete_demo/models.py:15 delete_demo/models.py:25 delete_demo/models.py:40
+msgid "project"
+msgstr "Projekt"
+
+#: delete_demo/models.py:16
+msgid "projects"
+msgstr "Projekte"
+
+#: delete_demo/models.py:30
+msgid "milestone"
+msgstr "Meilenstein"
+
+#: delete_demo/models.py:31
+msgid "milestones"
+msgstr "Meilensteine"
+
+#: delete_demo/models.py:48
+msgid "task"
+msgstr "Aufgabe"
+
+#: delete_demo/models.py:49
+msgid "tasks"
+msgstr "Aufgaben"
+
+#: delete_demo/views.py:49
+msgid "Project"
+msgstr "Projekt"
+
+#: delete_demo/views.py:56
+msgid "Created project “{{ object }}”"
+msgstr "Projekt »{{ object }}« erstellt"
+
+#: delete_demo/views.py:69
+msgid "Updated project “{{ object }}”"
+msgstr "Projekt »{{ object }}« aktualisiert"
+
+#: delete_demo/views.py:75
+msgid "Deleted project “{{ object }}”"
+msgstr "Projekt »{{ object }}« gelöscht"
+
+#: delete_demo/views.py:82
+msgid "A shared project cannot be deleted. Stop sharing it first."
+msgstr "Ein geteiltes Projekt kann nicht gelöscht werden. Beenden Sie zuerst das Teilen."
+
+#: delete_demo/views.py:101
+msgid "Task"
+msgstr "Aufgabe"
+
 #: formsets/models.py:11 formsets/models.py:20
 msgid "questionnaire"
 msgstr "Fragebogen"
@@ -486,10 +543,6 @@ msgstr "Fragebogen »{{ object }}« gelöscht"
 #: guardian_demo/models.py:8
 msgid "body"
 msgstr "Inhalt"
-
-#: guardian_demo/models.py:10
-msgid "owner"
-msgstr "Eigentümer"
 
 #: guardian_demo/models.py:12 library/models.py:13 object_detail/models.py:89
 #: showcase/models.py:16
@@ -1004,15 +1057,15 @@ msgctxt "feature group"
 msgid "Extensions"
 msgstr "Erweiterungen"
 
-#: project/settings.py:112
+#: project/settings.py:113
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:113
+#: project/settings.py:114
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:132
+#: project/settings.py:133
 msgid "Home"
 msgstr "Startseite"
 

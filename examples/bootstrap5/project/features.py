@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 
-from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
 
 #: Read the Docs version linked from the demo. "stable" is the newest release tag, which is what the demo runs.
@@ -58,7 +57,6 @@ class Feature:
     look_at: str  # one-sentence code pointer shown next to "The code behind this page"
     url_name: str  # URL name of the app's landing page, e.g. "author-list"
     icon: str  # font-awesome classes
-    badge: str = ""  # optional small badge shown next to the title on the home page card
     docs: tuple[DocRef, ...] = ()  # documentation sections listed under "References to documentation"
 
 
@@ -106,6 +104,32 @@ FEATURES: list[Feature] = [
                 page="reference/delete_view.md",
                 label="DeleteView — protected and cascading object links",
                 anchor="linking-related-objects",
+            ),
+        ),
+    ),
+    Feature(
+        app="card_view",
+        group="basics",
+        title="Card View",
+        description="The Library authors as a card grid: signed ordering in one combo, paging and card actions.",
+        about=(
+            "The same authors as in Library, listed as cards instead of a table. A second ViewSet over the "
+            "Author model uses CardListView, whose toolbar is a single ordering combo: the direction is part of "
+            "each choice, so there are no ascending/descending buttons. Six cards per page, with detail, edit "
+            "and delete actions on every card."
+        ),
+        look_at=(
+            "AuthorCardListView in views.py: cv_order_fields with signed choices, cv_order_default, "
+            "paginate_by and cv_card_actions; cv_author_card is a second ViewSet on library.models.Author."
+        ),
+        url_name="author_card-card",
+        icon="fa-solid fa-table-cells-large",
+        docs=(
+            DocRef(page="reference/card-list-view.md", label="CardListView"),
+            DocRef(
+                page="reference/card-list-view.md",
+                label="CardListView — signed ordering",
+                anchor="signed-choices-single-combo-no-buttons",
             ),
         ),
     ),
@@ -253,40 +277,6 @@ FEATURES: list[Feature] = [
         docs=(DocRef(page="reference/resources.md", label="Resources — non-ORM data in ViewSets"),),
     ),
     Feature(
-        app="showcase",
-        group="ui",
-        title="Showcase",
-        description="Presentation extras: card list with signed ordering, fieldsets, modal delete, custom actions.",
-        about=(
-            "Presentation building blocks gathered in one place. Recipes are shown as a grid of cards instead "
-            "of a table, ordered by a single combo whose choices carry the direction ('Newest first', "
-            "'Title Z-A') so no asc/desc buttons are needed, the detail page groups fields into labelled "
-            "fieldsets, deletion happens in a modal, and a custom 'favorite' action toggles a flag straight "
-            "from the list. Mix these into your own views as needed."
-        ),
-        look_at=(
-            "RecipeCardListView (the card grid, its paginate_by and its signed cv_order_fields), the "
-            "cv_property_display fieldset groups on RecipeDetailView, cv_modal on RecipeDeleteView, and the "
-            "RecipeFavoriteView custom action in views.py."
-        ),
-        url_name="recipe-card",
-        icon="fa-solid fa-wand-magic-sparkles",
-        docs=(
-            DocRef(
-                page="reference/card-list-view.md",
-                label="CardListView — signed ordering choices",
-                anchor="signed-choices-single-combo-no-buttons",
-            ),
-            DocRef(
-                page="reference/object_detail_view.md",
-                label="ObjectDetailView — the cv_property_display DSL",
-                anchor="the-cv_property_display-dsl",
-            ),
-            DocRef(page="reference/modals.md", label="Modals"),
-            DocRef(page="reference/action_view.md", label="ActionView — custom actions"),
-        ),
-    ),
-    Feature(
         app="object_detail",
         group="extensions",
         title="Object Detail",
@@ -315,7 +305,6 @@ FEATURES: list[Feature] = [
         app="breadcrumbs",
         group="ui",
         title="Breadcrumbs",
-        badge=_("NEW"),
         description="ViewSet-aware breadcrumbs, plus injecting a host application's navigation as prefix items.",
         about=(
             "Every page in these examples renders a breadcrumb via CrudViewBreadcrumbMixin and the "
@@ -344,7 +333,6 @@ FEATURES: list[Feature] = [
         app="conditional",
         group="forms",
         title="Conditional",
-        badge=_("NEW"),
         description="A checkbox toggle reveals a field-group or an entire formset, enforced server-side.",
         about=(
             "Two ways a checkbox can govern what's on the form. Registration reveals a fieldset of company "
@@ -372,6 +360,65 @@ FEATURES: list[Feature] = [
                 label="Conditional formsets",
                 anchor="kind-2-conditional-formset",
             ),
+        ),
+    ),
+    Feature(
+        app="formsets_conditional",
+        group="forms",
+        title="Formsets + Conditional",
+        description="Nested formsets behind a toggle, plus a conditional field-group on the same form.",
+        about=(
+            "Formsets and conditional toggles on one form. A conference reveals its billing fields only when "
+            "'Invoice a company' is ticked, and clears them on save when it is not. Its Sessions formset has a "
+            "nested Speakers formset per session; 'This conference has sessions' gates the Sessions formset "
+            "with on_off='purge', so untoggling deletes the sessions and, with them, their speakers. Only a "
+            "first-level formset may be conditional: a ConditionalFormSet on the nested Speakers formset would "
+            "fail system check crud_views.E310. Putting the toggle on the first level and letting the "
+            "nested formset follow it is the supported way to combine the two."
+        ),
+        look_at=(
+            "ConferenceForm.cv_conditional_groups (ModelFieldToggle) in views.py, and cv_conference_formsets: "
+            "the ConditionalFormSet on sessions and the speakers FormSet under its children, which has none."
+        ),
+        url_name="conference-list",
+        icon="fa-solid fa-people-group",
+        docs=(
+            DocRef(page="reference/formsets.md", label="Formsets"),
+            DocRef(
+                page="reference/conditional.md",
+                label="Conditional formsets",
+                anchor="kind-2-conditional-formset",
+            ),
+            DocRef(
+                page="reference/conditional.md",
+                label="Conditional formsets — scope constraint",
+                anchor="scope-constraint",
+            ),
+        ),
+    ),
+    Feature(
+        app="custom_form",
+        group="forms",
+        title="Custom Form View",
+        description="A free-standing form that acts on one object, and one that needs no object at all.",
+        about=(
+            "Forms that are not create, update or delete. 'Remind' is an object-based custom form: it loads "
+            "the contact from the URL, asks for a required note and, in cv_form_valid, stamps "
+            "last_reminded_dt; MessageMixin flashes the success message. 'Invite' is a non-object custom form "
+            "with no pk in its URL: it takes an email address and creates a new contact. Remind sits in the "
+            "list's row actions, Invite in its context actions, because an object view cannot be linked "
+            "without an object."
+        ),
+        look_at=(
+            "ContactRemindView (CustomFormViewPermissionRequired) and ContactInviteView "
+            "(CustomFormNoObjectViewPermissionRequired) in views.py: cv_key / cv_path register them, "
+            "cv_form_valid does the work, and cv_list_actions vs cv_context_actions on ContactListView."
+        ),
+        url_name="contact-list",
+        icon="fa-regular fa-address-book",
+        docs=(
+            DocRef(page="reference/custom_form_view.md", label="CustomFormView", anchor="basic-usage"),
+            DocRef(page="reference/custom_form_view.md", label="Non-object view", anchor="non-object-view"),
         ),
     ),
     Feature(
@@ -418,14 +465,176 @@ FEATURES: list[Feature] = [
         ),
         look_at=(
             "cv_list_actions_inline, cv_context_actions_inline and cv_card_actions_inline in views.py, and "
-            "ChoreArchiveView.cv_inaccessible_actions."
+            "ChoreArchiveView.cv_inaccessible_actions; ChoreDoneView is the custom ActionView (a POST toggle)."
         ),
         url_name="chore-list",
         icon="fa-solid fa-ellipsis",
         docs=(
+            DocRef(page="reference/action_view.md", label="ActionView — custom actions"),
             DocRef(page="reference/action_menus.md", label="Action menus — configuration", anchor="configuration"),
             DocRef(
                 page="reference/action_menus.md", label="Action menus — hide and disable", anchor="hide-and-disable"
+            ),
+        ),
+    ),
+    Feature(
+        app="label_modes",
+        group="ui",
+        title="Label Modes & Icons",
+        description=(
+            "Three actions, one per label mode: text only, icon and text, icon only with a tooltip — in list rows "
+            "and the detail toolbar."
+        ),
+        about=(
+            "Every action button has one of three label modes. 'label' shows the short label as text, 'both' "
+            "adds the action's icon, 'icon' shows the icon alone: its full label (\"Delete Gadget …\") stays in "
+            'the page as visually hidden text for screen readers, and the short label ("Delete") becomes the '
+            "hover tooltip. Labelled buttons get no tooltip, their visible text already names them. The list "
+            "rows and the detail toolbar each show Detail/List as label, Update as both and Delete as icon."
+        ),
+        look_at=(
+            "cv_list_actions_label_mode on GadgetListView and cv_context_actions_label_mode on GadgetDetailView "
+            "in views.py; the icons are the package defaults (list, detail, update, delete), see the Icons reference."
+        ),
+        url_name="gadget-list",
+        icon="fa-solid fa-tags",
+        docs=(
+            DocRef(page="reference/buttons.md", label="Buttons — variants", anchor="variants"),
+            DocRef(page="reference/icons.md", label="Icons — default table", anchor="default-table"),
+            DocRef(
+                page="reference/settings.md",
+                label="Settings — label-mode configuration",
+                anchor="label-mode-configuration",
+            ),
+        ),
+    ),
+    Feature(
+        app="flash_messages",
+        group="ui",
+        title="Messages",
+        description="Queue a flash message at any level and see it rendered as a Bootstrap alert.",
+        about=(
+            "Pick a level and a text and send: the view queues it with messages.add_message and redirects back, "
+            "where {% cv_messages %} in the base template renders it as a dismissible alert, coloured by level. "
+            "Debug messages are dropped, not queued: Django's default MESSAGE_LEVEL is INFO, so add_message ignores "
+            "anything below it, and this demo does not lower it. The blue box above the form is a single "
+            "{% cv_alert %} drawn by the template itself, through the same alert frame."
+        ),
+        look_at=(
+            "NoticeComposeView.cv_form_valid in views.py (a CustomFormNoObjectView) and the cv_alert tag in "
+            "templates/flash_messages/compose.html; {% cv_messages %} sits in project/base.html."
+        ),
+        url_name="notice-compose",
+        icon="fa-regular fa-comment-dots",
+        docs=(
+            DocRef(page="reference/messages.md", label="Flash messages — levels", anchor="levels"),
+            DocRef(
+                page="reference/messages.md",
+                label="Flash messages — a single alert: cv_alert",
+                anchor="a-single-alert-cv_alert",
+            ),
+        ),
+    ),
+    Feature(
+        app="disabled_actions",
+        group="ui",
+        title="Disabled Actions",
+        description="Disable an action by object state — and hide or grey it out, side by side.",
+        about=(
+            "A locked ticket can be neither edited nor deleted, although you have the permission: "
+            "cv_action_enabled says no for its state. Update renders the action disabled (greyed out, "
+            'data-cv-disabled="state"), delete hides it — the same gate, the two inaccessible-action modes. '
+            "Opening the update or delete URL of a locked ticket directly answers 403. Lock / unlock is always "
+            "enabled, so you can flip the state and watch both buttons change. For actions disabled by "
+            "permission, see Action Menus."
+        ),
+        look_at=(
+            "cv_action_enabled on TicketUpdateView and TicketDeleteView in views.py, and "
+            'TicketUpdateView.cv_inaccessible_actions = "disable" next to the delete view\'s default "hide".'
+        ),
+        url_name="lockable_ticket-list",
+        icon="fa-solid fa-lock",
+        docs=(
+            DocRef(
+                page="reference/action_enabled.md",
+                label="Disabling an action — signature",
+                anchor="default-and-override-signature",
+            ),
+            DocRef(
+                page="reference/inaccessible_actions.md",
+                label="Hide or disable — configuration",
+                anchor="configuration",
+            ),
+        ),
+    ),
+    Feature(
+        app="delete_demo",
+        group="basics",
+        title="Delete",
+        description="A delete page that previews the cascade and explains why a deletion is blocked.",
+        about=(
+            "What a delete page shows before anything is removed. alice has four projects: deleting Old "
+            "prototype previews the two milestones that go with it. The other three are blocked: Website "
+            "relaunch by her own tasks, listed by name; Office move is blocked by objects you cannot see (a "
+            "task of bob's), so the page only says that other objects still reference it; and Annual report by "
+            "a business rule, because it is shared. A blocked page shows no confirmation form, and the delete "
+            "opens in a modal."
+        ),
+        look_at=(
+            "ProjectDeleteView in views.py: cv_show_related_objects, cv_modal and cv_check_delete_protection; "
+            "on_delete=CASCADE (Milestone) vs PROTECT (Task) in models.py; the Guardian grants in seed.py."
+        ),
+        url_name="project-list",
+        icon="fa-solid fa-trash-can",
+        docs=(
+            DocRef(
+                page="reference/delete_view.md",
+                label="DeleteView — cascading deletes display",
+                anchor="cascading-deletes-display",
+            ),
+            DocRef(
+                page="reference/delete_view.md",
+                label="DeleteView — permission filtering",
+                anchor="permission-filtering",
+            ),
+            DocRef(page="reference/delete_view.md", label="DeleteView — protected objects", anchor="protected-objects"),
+            DocRef(page="reference/delete_view.md", label="DeleteView — delete protection", anchor="delete-protection"),
+            DocRef(
+                page="reference/guardian.md",
+                label="Guardian — cascading deletes with per-object permissions",
+                anchor="cascading-deletes-with-per-object-permissions",
+            ),
+            DocRef(page="reference/modals.md", label="Modals"),
+        ),
+    ),
+    Feature(
+        app="theming",
+        group="ui",
+        title="Theme",
+        description="Restyle every page by overriding templates, buttons and icons — with a second theme to try.",
+        about=(
+            "Everything you see is the bootstrap5 theme that ships with crud_views; a theme is just an app whose "
+            "templates, button classes and icons win over the stock ones. This page has no CRUD of its own: it "
+            "points to the reference pages and to the Tabler theme demo, the same views restyled by a theme app."
+        ),
+        look_at=(
+            "ThemeIndexView in views.py: a plain TemplateView that supplies its own breadcrumb, "
+            "and TABLER_DEMO_URL, the one constant that switches the placeholder to the demo link."
+        ),
+        url_name="theming-index",
+        icon="fa-solid fa-swatchbook",
+        docs=(
+            DocRef(page="reference/theme.md", label="Custom themes", anchor="how-resolution-works"),
+            DocRef(page="reference/templates.md", label="Base template", anchor="what-to-put-in-it"),
+            DocRef(
+                page="reference/buttons.md",
+                label="Buttons — registering classes from a theme",
+                anchor="registering-classes-from-a-theme",
+            ),
+            DocRef(
+                page="reference/icons.md",
+                label="Icons — registering icons from a theme",
+                anchor="registering-icons-from-a-theme",
             ),
         ),
     ),

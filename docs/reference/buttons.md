@@ -7,6 +7,12 @@ one-line **logic templates** and three presentation-only **leaves**.
 
 The public module is `crud_views.lib.button_classes`.
 
+!!! example "Try it live"
+    The [Label Modes & Icons example](https://django-crud-views-demo.onrender.com/label-modes/gadget/) in the live demo
+    shows label, icon and both modes side by side — log in as `alice` / `alice`. See
+    [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+    The [Theme example](https://django-crud-views-demo.onrender.com/theming/) points to how a theme restyles them.
+
 ## Variants
 
 A variant says how prominent or dangerous an action is, independent of the theme. The four values are the members of

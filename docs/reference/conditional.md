@@ -6,8 +6,10 @@ purges its managed queryset when explicitly configured. JavaScript provides imme
 disabled controls; server validation and persistence remain authoritative, including for tampered or JS-off POSTs.
 
 !!! example "Try it live"
-    The [Conditional example](https://django-crud-views-demo.onrender.com/conditional/registration/) in the live demo shows this in
-    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+    The [Conditional example](https://django-crud-views-demo.onrender.com/conditional/registration/) and the
+    [Formsets + Conditional example](https://django-crud-views-demo.onrender.com/formsets-conditional/conference/)
+    in the live demo show this in action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md)
+    for data resets and wake-up time.
 
 `toggle.js` ships automatically via the `cv_js` asset registry (`crud_views_settings.javascript()`); no template changes are needed. It also re-initializes inside Bootstrap modals (`cv_modal = True` views) via the `cv:modal:loaded` event.
 

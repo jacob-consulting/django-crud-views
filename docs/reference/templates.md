@@ -4,6 +4,10 @@ Every crud_views frontend template renders `{% extends cv_extends %}`, where
 `cv_extends` is resolved per view. This lets you control which base template
 your CRUD pages extend — globally, per ViewSet, or per view.
 
+!!! example "Try it live"
+    The [Theme example](https://django-crud-views-demo.onrender.com/theming/) in the live demo points to this page and, once it is live, to
+    the Tabler theme demo — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## What to put in it
 
 The base template is yours; crud_views only extends it. A few of its features are rendered by

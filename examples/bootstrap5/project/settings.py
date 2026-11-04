@@ -43,18 +43,25 @@ INSTALLED_APPS = [
     "project",
     # example feature apps (one per crud_views feature)
     "library",
+    "card_view",
     "nested",
     "formsets",
     "workflow",
     "polymorphic_demo",
     "guardian_demo",
     "resources",
-    "showcase",
     "object_detail",
     "conditional",
+    "formsets_conditional",
     "breadcrumbs",
     "context_buttons",
     "action_menus",
+    "delete_demo",
+    "custom_form",
+    "label_modes",
+    "flash_messages",
+    "disabled_actions",
+    "theming",
 ]
 
 MIDDLEWARE = [

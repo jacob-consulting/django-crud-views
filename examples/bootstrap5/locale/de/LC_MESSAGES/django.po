@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 15:01+0000\n"
+"POT-Creation-Date: 2026-11-04 07:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,9 +17,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: action_menus/models.py:7 breadcrumbs/models.py:18 conditional/models.py:39
-#: context_buttons/models.py:11 formsets/models.py:7 guardian_demo/models.py:7
-#: library/models.py:26 showcase/models.py:11
+#: action_menus/models.py:7 breadcrumbs/models.py:18 conditional/models.py:40
+#: context_buttons/models.py:11 delete_demo/models.py:7
+#: delete_demo/models.py:26 delete_demo/models.py:44
+#: disabled_actions/models.py:6 formsets/models.py:7
+#: formsets_conditional/models.py:26 guardian_demo/models.py:7
+#: library/models.py:26
 msgid "title"
 msgstr "Titel"
 
@@ -39,7 +42,7 @@ msgstr "Aufgabe"
 msgid "chores"
 msgstr "Aufgaben"
 
-#: action_menus/models.py:21 formsets/models.py:22
+#: action_menus/models.py:21 flash_messages/models.py:8 formsets/models.py:22
 msgid "text"
 msgstr "Text"
 
@@ -51,12 +54,11 @@ msgstr "Schritt"
 msgid "steps"
 msgstr "Schritte"
 
-#: action_menus/views.py:72 showcase/views.py:40 showcase/views.py:60
-#: showcase/views.py:78
+#: action_menus/views.py:72 card_view/views.py:36
 msgid "Details"
 msgstr "Details"
 
-#: action_menus/views.py:73 showcase/views.py:61
+#: action_menus/views.py:73 card_view/views.py:37
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -64,7 +66,8 @@ msgstr "Bearbeiten"
 msgid "Done"
 msgstr "Erledigt"
 
-#: action_menus/views.py:75 action_menus/views.py:138 action_menus/views.py:139
+#: action_menus/views.py:75 action_menus/views.py:138
+#: action_menus/views.py:139
 msgid "Archive"
 msgstr "Archivieren"
 
@@ -132,8 +135,10 @@ msgstr "Schritt „{{ object }}“ aktualisiert"
 msgid "Deleted step “{{ object }}”"
 msgstr "Schritt „{{ object }}“ gelöscht"
 
-#: breadcrumbs/models.py:6 conditional/models.py:6 conditional/models.py:24
-#: conditional/models.py:52 nested/models.py:6 nested/models.py:22
+#: breadcrumbs/models.py:6 conditional/models.py:6 conditional/models.py:25
+#: conditional/models.py:53 custom_form/models.py:6
+#: formsets_conditional/models.py:6 formsets_conditional/models.py:39
+#: label_modes/models.py:6 nested/models.py:6 nested/models.py:22
 #: nested/models.py:37 nested/models.py:51 object_detail/models.py:38
 #: object_detail/models.py:66 object_detail/models.py:78
 #: polymorphic_demo/models.py:7 workflow/models.py:26
@@ -170,8 +175,8 @@ msgid ""
 msgstr ""
 "Diese Seite steht für eine bestehende Anwendung, in die django-crud-views "
 "eingebettet ist. Die Breadcrumb-Einträge, die hierher verweisen, fügt "
-"<code>HostNavBreadcrumbMixin</code> über <code>cv_breadcrumb_prefix()</code> "
-"ein — die crud-views-Seiten dieser App zeigen <em>Startseite › Host-"
+"<code>HostNavBreadcrumbMixin</code> über <code>cv_breadcrumb_prefix()</code>"
+" ein — die crud-views-Seiten dieser App zeigen <em>Startseite › Host-"
 "Anwendung › Arbeitsbereiche › …</em>."
 
 #: breadcrumbs/templates/breadcrumbs/host.html:14
@@ -190,59 +195,92 @@ msgstr "Arbeitsbereich"
 msgid "Board"
 msgstr "Board"
 
+#: card_view/views.py:29
+msgid "Newest first"
+msgstr "Neueste zuerst"
+
+#: card_view/views.py:30
+msgid "Oldest first"
+msgstr "Älteste zuerst"
+
+#: card_view/views.py:31
+msgid "Last name A-Z"
+msgstr "Nachname A-Z"
+
+#: card_view/views.py:32
+msgid "Last name Z-A"
+msgstr "Nachname Z-A"
+
+#: card_view/views.py:46 library/views.py:70
+msgid "Author"
+msgstr "Autor"
+
+#: card_view/views.py:56 library/views.py:90
+msgid "Created author “{{ object }}”"
+msgstr "Autor »{{ object }}« erstellt"
+
+#: card_view/views.py:62 library/views.py:96
+msgid "Updated author “{{ object }}”"
+msgstr "Autor »{{ object }}« aktualisiert"
+
+#: card_view/views.py:68 library/views.py:103
+msgid "Deleted author “{{ object }}”"
+msgstr "Autor »{{ object }}« gelöscht"
+
 #: conditional/models.py:7
 msgid "I represent a company"
 msgstr "Ich vertrete ein Unternehmen"
 
-#: conditional/models.py:9
+#: conditional/models.py:10
 msgid "company name"
 msgstr "Firmenname"
 
-#: conditional/models.py:10
+#: conditional/models.py:11
 msgid "VAT ID"
 msgstr "USt-IdNr."
 
-#: conditional/models.py:12
+#: conditional/models.py:13
 msgid "note"
 msgstr "Notiz"
 
-#: conditional/models.py:16
+#: conditional/models.py:17
 msgid "registration"
 msgstr "Anmeldung"
 
-#: conditional/models.py:17
+#: conditional/models.py:18
 msgid "registrations"
 msgstr "Anmeldungen"
 
-#: conditional/models.py:25
+#: conditional/models.py:26
 msgid "This event has sessions"
 msgstr "Diese Veranstaltung hat Sessions"
 
-#: conditional/models.py:26
+#: conditional/models.py:27
 msgid "Show speaker line-up"
 msgstr "Referenten anzeigen"
 
-#: conditional/models.py:30 conditional/models.py:38 conditional/models.py:51
+#: conditional/models.py:31 conditional/models.py:39 conditional/models.py:52
 msgid "event"
 msgstr "Veranstaltung"
 
-#: conditional/models.py:31
+#: conditional/models.py:32
 msgid "events"
 msgstr "Veranstaltungen"
 
-#: conditional/models.py:43
+#: conditional/models.py:44 formsets_conditional/models.py:30
+#: formsets_conditional/models.py:38
 msgid "session"
 msgstr "Session"
 
-#: conditional/models.py:44
+#: conditional/models.py:45 formsets_conditional/models.py:31
 msgid "sessions"
 msgstr "Sessions"
 
-#: conditional/models.py:56
+#: conditional/models.py:57 formsets_conditional/models.py:43
 msgid "speaker"
 msgstr "Referent"
 
-#: conditional/models.py:57
+#: conditional/models.py:58 formsets_conditional/models.py:44
 msgid "speakers"
 msgstr "Referenten"
 
@@ -270,11 +308,11 @@ msgstr "Anmeldung »{{ object }}« aktualisiert"
 msgid "Deleted registration “{{ object }}”"
 msgstr "Anmeldung »{{ object }}« gelöscht"
 
-#: conditional/views.py:188
+#: conditional/views.py:188 formsets_conditional/views.py:111
 msgid "Sessions"
 msgstr "Sessions"
 
-#: conditional/views.py:197
+#: conditional/views.py:197 formsets_conditional/views.py:122
 msgid "Speakers"
 msgstr "Referenten"
 
@@ -282,11 +320,11 @@ msgstr "Referenten"
 msgid "Event"
 msgstr "Veranstaltung"
 
-#: conditional/views.py:230
+#: conditional/views.py:230 formsets_conditional/views.py:158
 msgid "Number of sessions"
 msgstr "Anzahl Sessions"
 
-#: conditional/views.py:232
+#: conditional/views.py:232 formsets_conditional/views.py:159
 msgid "Number of speakers"
 msgstr "Anzahl Referenten"
 
@@ -315,7 +353,6 @@ msgid "High"
 msgstr "Hoch"
 
 #: context_buttons/models.py:12 object_detail/models.py:79
-#: showcase/models.py:12
 msgid "description"
 msgstr "Beschreibung"
 
@@ -323,11 +360,11 @@ msgstr "Beschreibung"
 msgid "priority"
 msgstr "Priorität"
 
-#: context_buttons/models.py:17
+#: context_buttons/models.py:17 disabled_actions/models.py:11
 msgid "ticket"
 msgstr "Ticket"
 
-#: context_buttons/models.py:18
+#: context_buttons/models.py:18 disabled_actions/models.py:12
 msgid "tickets"
 msgstr "Tickets"
 
@@ -372,8 +409,8 @@ msgstr "Dieses Ticket bearbeiten"
 #: context_buttons/templates/context_buttons/ticket_detail.html:35
 msgid "No URL — you may not edit this ticket, so the tile is not rendered."
 msgstr ""
-"Keine URL — Sie dürfen dieses Ticket nicht bearbeiten, daher wird die Kachel "
-"nicht angezeigt."
+"Keine URL — Sie dürfen dieses Ticket nicht bearbeiten, daher wird die Kachel"
+" nicht angezeigt."
 
 #: context_buttons/templates/context_buttons/ticket_detail.html:42
 msgid "Danger zone"
@@ -383,17 +420,232 @@ msgstr "Gefahrenzone"
 msgid "The danger zone is only shown to users who may delete."
 msgstr "Die Gefahrenzone sehen nur Benutzer, die löschen dürfen."
 
-#: context_buttons/views.py:76
+#: context_buttons/views.py:77 disabled_actions/views.py:58
 msgid "Created ticket “{{ object }}”"
 msgstr "Ticket »{{ object }}« erstellt"
 
-#: context_buttons/views.py:82
+#: context_buttons/views.py:83 disabled_actions/views.py:70
 msgid "Updated ticket “{{ object }}”"
 msgstr "Ticket »{{ object }}« aktualisiert"
 
-#: context_buttons/views.py:89
+#: context_buttons/views.py:90 disabled_actions/views.py:81
 msgid "Deleted ticket “{{ object }}”"
 msgstr "Ticket »{{ object }}« gelöscht"
+
+#: custom_form/models.py:7 nested/models.py:38
+msgid "email"
+msgstr "E-Mail"
+
+#: custom_form/models.py:8
+msgid "last reminded"
+msgstr "Zuletzt erinnert"
+
+#: custom_form/models.py:12
+msgid "contact"
+msgstr "Kontakt"
+
+#: custom_form/models.py:13
+msgid "contacts"
+msgstr "Kontakte"
+
+#: custom_form/views.py:38
+msgid "Contact"
+msgstr "Kontakt"
+
+#: custom_form/views.py:46
+msgid "Send reminder"
+msgstr "Erinnerung senden"
+
+#: custom_form/views.py:48
+msgid "Note"
+msgstr "Notiz"
+
+#: custom_form/views.py:62 custom_form/views.py:63
+msgid "Remind"
+msgstr "Erinnern"
+
+#: custom_form/views.py:65
+msgid "Reminded contact “{{ object }}”"
+msgstr "Kontakt »{{ object }}« erinnert"
+
+#: custom_form/views.py:67
+msgid "Remind contact"
+msgstr "Kontakt erinnern"
+
+#: custom_form/views.py:68
+msgid "Send a reminder note to this contact"
+msgstr "Eine Erinnerungsnotiz an diesen Kontakt senden"
+
+#: custom_form/views.py:78 custom_form/views.py:94 custom_form/views.py:95
+msgid "Invite"
+msgstr "Einladen"
+
+#: custom_form/views.py:80
+msgid "Email"
+msgstr "E-Mail"
+
+#: custom_form/views.py:97
+msgid "Invited “{{ form.cleaned_data.email }}”"
+msgstr "»{{ form.cleaned_data.email }}« eingeladen"
+
+#: custom_form/views.py:99
+msgid "Invite contact"
+msgstr "Kontakt einladen"
+
+#: custom_form/views.py:100
+msgid "Add a new contact by email address"
+msgstr "Einen neuen Kontakt per E-Mail-Adresse hinzufügen"
+
+#: delete_demo/models.py:9 delete_demo/models.py:42 guardian_demo/models.py:10
+msgid "owner"
+msgstr "Eigentümer"
+
+#: delete_demo/models.py:11
+msgid "shared"
+msgstr "geteilt"
+
+#: delete_demo/models.py:15 delete_demo/models.py:25 delete_demo/models.py:40
+msgid "project"
+msgstr "Projekt"
+
+#: delete_demo/models.py:16
+msgid "projects"
+msgstr "Projekte"
+
+#: delete_demo/models.py:30
+msgid "milestone"
+msgstr "Meilenstein"
+
+#: delete_demo/models.py:31
+msgid "milestones"
+msgstr "Meilensteine"
+
+#: delete_demo/models.py:48
+msgid "task"
+msgstr "Aufgabe"
+
+#: delete_demo/models.py:49
+msgid "tasks"
+msgstr "Aufgaben"
+
+#: delete_demo/views.py:49
+msgid "Project"
+msgstr "Projekt"
+
+#: delete_demo/views.py:56
+msgid "Created project “{{ object }}”"
+msgstr "Projekt »{{ object }}« erstellt"
+
+#: delete_demo/views.py:69
+msgid "Updated project “{{ object }}”"
+msgstr "Projekt »{{ object }}« aktualisiert"
+
+#: delete_demo/views.py:75
+msgid "Deleted project “{{ object }}”"
+msgstr "Projekt »{{ object }}« gelöscht"
+
+#: delete_demo/views.py:82
+msgid "A shared project cannot be deleted. Stop sharing it first."
+msgstr ""
+"Ein geteiltes Projekt kann nicht gelöscht werden. Beenden Sie zuerst das "
+"Teilen."
+
+#: delete_demo/views.py:101
+msgid "Task"
+msgstr "Aufgabe"
+
+#: disabled_actions/models.py:7
+msgid "locked"
+msgstr "gesperrt"
+
+#: disabled_actions/views.py:51
+msgid "Ticket"
+msgstr "Ticket"
+
+#: disabled_actions/views.py:97 disabled_actions/views.py:98
+msgid "Lock / unlock"
+msgstr "Sperren / entsperren"
+
+#: disabled_actions/views.py:99
+msgid "Toggled lock for “{{ object }}”"
+msgstr "Sperre für „{{ object }}“ umgeschaltet"
+
+#: disabled_actions/views.py:100
+msgid "Could not toggle lock for “{{ object }}”"
+msgstr "Sperre für „{{ object }}“ konnte nicht umgeschaltet werden"
+
+#: flash_messages/models.py:11
+msgid "notice"
+msgstr "Hinweis"
+
+#: flash_messages/models.py:12
+msgid "notices"
+msgstr "Hinweise"
+
+#: flash_messages/templates/flash_messages/compose.html:6
+msgid "Inline alert:"
+msgstr "Eingebetteter Hinweis:"
+
+#: flash_messages/templates/flash_messages/compose.html:7
+msgid ""
+"this box is drawn by the cv_alert tag in the template, not queued with "
+"django.contrib.messages, so it shows on every visit and has no close button."
+msgstr ""
+"Dieser Kasten wird vom Tag cv_alert im Template gezeichnet und nicht über "
+"django.contrib.messages eingereiht – er erscheint daher bei jedem Aufruf und"
+" hat keine Schließen-Schaltfläche."
+
+#: flash_messages/views.py:25
+msgid "Send message"
+msgstr "Nachricht senden"
+
+#: flash_messages/views.py:28
+msgid "Level"
+msgstr "Stufe"
+
+#: flash_messages/views.py:31
+msgid "Debug"
+msgstr "Debug"
+
+#: flash_messages/views.py:32
+msgid "Info"
+msgstr "Info"
+
+#: flash_messages/views.py:33
+msgid "Success"
+msgstr "Erfolg"
+
+#: flash_messages/views.py:34
+msgid "Warning"
+msgstr "Warnung"
+
+#: flash_messages/views.py:35 workflow/models.py:13
+msgid "Error"
+msgstr "Fehler"
+
+#: flash_messages/views.py:38
+msgid "Text"
+msgstr "Text"
+
+#: flash_messages/views.py:56
+msgid "Compose message"
+msgstr "Nachricht verfassen"
+
+#: flash_messages/views.py:57
+msgid "Compose"
+msgstr "Verfassen"
+
+#: flash_messages/views.py:58
+msgid "Flash messages"
+msgstr "Flash-Nachrichten"
+
+#: flash_messages/views.py:59
+msgid ""
+"Pick a level and a text; the message appears above the page after the "
+"redirect"
+msgstr ""
+"Stufe und Text wählen; die Nachricht erscheint nach der Weiterleitung oben "
+"auf der Seite"
 
 #: formsets/models.py:11 formsets/models.py:20
 msgid "questionnaire"
@@ -423,44 +675,83 @@ msgstr "Antwortoption"
 msgid "choices"
 msgstr "Antwortoptionen"
 
-#: formsets/views.py:95
+#: formsets/views.py:87
 msgid "Questions"
 msgstr "Fragen"
 
-#: formsets/views.py:101
+#: formsets/views.py:93
 msgid "Choices"
 msgstr "Antwortoptionen"
 
-#: formsets/views.py:126
+#: formsets/views.py:118
 msgid "Questionnaire"
 msgstr "Fragebogen"
 
-#: formsets/views.py:128
+#: formsets/views.py:120
 msgid "Number of questions"
 msgstr "Anzahl Fragen"
 
-#: formsets/views.py:142
+#: formsets/views.py:134
 msgid "Created questionnaire “{{ object }}”"
 msgstr "Fragebogen »{{ object }}« erstellt"
 
-#: formsets/views.py:151
+#: formsets/views.py:143
 msgid "Updated questionnaire “{{ object }}”"
 msgstr "Fragebogen »{{ object }}« aktualisiert"
 
-#: formsets/views.py:157
+#: formsets/views.py:149
 msgid "Deleted questionnaire “{{ object }}”"
 msgstr "Fragebogen »{{ object }}« gelöscht"
+
+#: formsets_conditional/models.py:7
+msgid "Invoice a company"
+msgstr "Rechnung an ein Unternehmen"
+
+#: formsets_conditional/models.py:9
+msgid "billing company"
+msgstr "Rechnungsempfänger"
+
+#: formsets_conditional/models.py:10
+msgid "billing VAT ID"
+msgstr "USt-IdNr. des Rechnungsempfängers"
+
+#: formsets_conditional/models.py:11
+msgid "This conference has sessions"
+msgstr "Diese Konferenz hat Sessions"
+
+#: formsets_conditional/models.py:15 formsets_conditional/models.py:24
+msgid "conference"
+msgstr "Konferenz"
+
+#: formsets_conditional/models.py:16
+msgid "conferences"
+msgstr "Konferenzen"
+
+#: formsets_conditional/views.py:55
+msgid "Billing details"
+msgstr "Rechnungsdaten"
+
+#: formsets_conditional/views.py:149
+msgid "Conference"
+msgstr "Konferenz"
+
+#: formsets_conditional/views.py:175
+msgid "Created conference “{{ object }}”"
+msgstr "Konferenz „{{ object }}“ angelegt"
+
+#: formsets_conditional/views.py:182
+msgid "Updated conference “{{ object }}”"
+msgstr "Konferenz „{{ object }}“ aktualisiert"
+
+#: formsets_conditional/views.py:188
+msgid "Deleted conference “{{ object }}”"
+msgstr "Konferenz „{{ object }}“ gelöscht"
 
 #: guardian_demo/models.py:8
 msgid "body"
 msgstr "Inhalt"
 
-#: guardian_demo/models.py:10
-msgid "owner"
-msgstr "Eigentümer"
-
 #: guardian_demo/models.py:12 library/models.py:13 object_detail/models.py:89
-#: showcase/models.py:16
 msgid "created"
 msgstr "Erstellt"
 
@@ -491,6 +782,30 @@ msgstr "Dokument »{{ object }}« aktualisiert"
 #: guardian_demo/views.py:73
 msgid "Deleted document “{{ object }}”"
 msgstr "Dokument »{{ object }}« gelöscht"
+
+#: label_modes/models.py:10
+msgid "gadget"
+msgstr "Werkzeug"
+
+#: label_modes/models.py:11
+msgid "gadgets"
+msgstr "Werkzeuge"
+
+#: label_modes/views.py:51
+msgid "Gadget"
+msgstr "Werkzeug"
+
+#: label_modes/views.py:58
+msgid "Created gadget “{{ object }}”"
+msgstr "Werkzeug »{{ object }}« erstellt"
+
+#: label_modes/views.py:64
+msgid "Updated gadget “{{ object }}”"
+msgstr "Werkzeug »{{ object }}« aktualisiert"
+
+#: label_modes/views.py:70
+msgid "Deleted gadget “{{ object }}”"
+msgstr "Werkzeug »{{ object }}« gelöscht"
 
 #: library/models.py:9
 msgid "ID"
@@ -532,47 +847,31 @@ msgstr "Buch"
 msgid "books"
 msgstr "Bücher"
 
-#: library/views.py:70
-msgid "Author"
-msgstr "Autor"
-
 #: library/views.py:77
 msgid "Number of books (computed on the view)"
 msgstr "Anzahl Bücher (in der View berechnet)"
 
-#: library/views.py:90
-msgid "Created author “{{ object }}”"
-msgstr "Autor »{{ object }}« erstellt"
-
-#: library/views.py:96
-msgid "Updated author “{{ object }}”"
-msgstr "Autor »{{ object }}« aktualisiert"
-
-#: library/views.py:104
-msgid "Deleted author “{{ object }}”"
-msgstr "Autor »{{ object }}« gelöscht"
-
-#: library/views.py:139
+#: library/views.py:138
 msgid "Book"
 msgstr "Buch"
 
-#: library/views.py:146
+#: library/views.py:145
 msgid "Created book “{{ object }}”"
 msgstr "Buch »{{ object }}« erstellt"
 
-#: library/views.py:152
+#: library/views.py:151
 msgid "Updated book “{{ object }}”"
 msgstr "Buch »{{ object }}« aktualisiert"
 
-#: library/views.py:158
+#: library/views.py:157
 msgid "Deleted book “{{ object }}”"
 msgstr "Buch »{{ object }}« gelöscht"
 
-#: library/views.py:163
+#: library/views.py:162
 msgid "Moved book “{{ object }}” up"
 msgstr "Buch »{{ object }}« nach oben verschoben"
 
-#: library/views.py:168
+#: library/views.py:167
 msgid "Moved book “{{ object }}” down"
 msgstr "Buch »{{ object }}« nach unten verschoben"
 
@@ -595,10 +894,6 @@ msgstr "Abteilung"
 #: nested/models.py:27
 msgid "departments"
 msgstr "Abteilungen"
-
-#: nested/models.py:38
-msgid "email"
-msgstr "E-Mail"
 
 #: nested/models.py:42
 msgid "employee"
@@ -844,7 +1139,7 @@ msgstr "Produkt »{{ object }}« erstellt"
 msgid "Supplier"
 msgstr "Lieferant"
 
-#: object_detail/views.py:191 showcase/views.py:72
+#: object_detail/views.py:191
 msgid "Basics"
 msgstr "Grunddaten"
 
@@ -968,39 +1263,35 @@ msgstr "Auswählen"
 msgid "Vehicle"
 msgstr "Fahrzeug"
 
-#: project/features.py:42
+#: project/features.py:41
 msgctxt "feature group"
 msgid "Basics"
 msgstr "Grundlagen"
 
-#: project/features.py:45
+#: project/features.py:44
 msgctxt "feature group"
 msgid "Forms"
 msgstr "Formulare"
 
-#: project/features.py:46
+#: project/features.py:45
 msgctxt "feature group"
 msgid "UI"
 msgstr "Oberfläche"
 
-#: project/features.py:47
+#: project/features.py:46
 msgctxt "feature group"
 msgid "Extensions"
 msgstr "Erweiterungen"
 
-#: project/features.py:307 project/features.py:336
-msgid "NEW"
-msgstr "NEU"
-
-#: project/settings.py:107
+#: project/settings.py:118
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:108
+#: project/settings.py:119
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:127
+#: project/settings.py:138
 msgid "Home"
 msgstr "Startseite"
 
@@ -1008,7 +1299,7 @@ msgstr "Startseite"
 msgid "Too many changes"
 msgstr "Zu viele Änderungen"
 
-#: project/templates/project/429.html:4 project/templates/project/base.html:14
+#: project/templates/project/429.html:4 project/templates/project/base.html:13
 #: project/templates/project/home.html:8
 #: project/templates/registration/login.html:5
 msgid "django-crud-views examples"
@@ -1022,14 +1313,14 @@ msgstr ""
 "Diese öffentliche Demo begrenzt, wie oft ein Besucher speichern kann. Bitte "
 "versuchen Sie es in einer Minute erneut."
 
-#: project/templates/project/base.html:48
+#: project/templates/project/base.html:51
 msgid ""
-"Public demo — data resets daily and after inactivity. Log in as <code>alice/"
-"alice</code> or <code>bob/bob</code>."
+"Public demo — data resets daily and after inactivity. Log in as "
+"<code>alice/alice</code> or <code>bob/bob</code>."
 msgstr ""
 "Öffentliche Demo — die Daten werden täglich und nach Inaktivität "
-"zurückgesetzt. Melden Sie sich als <code>alice/alice</code> oder <code>bob/"
-"bob</code> an."
+"zurückgesetzt. Melden Sie sich als <code>alice/alice</code> oder "
+"<code>bob/bob</code> an."
 
 #: project/templates/project/example_about.html:6
 #, python-format
@@ -1046,8 +1337,8 @@ msgstr "Live-Demo"
 
 #: project/templates/project/home.html:10
 msgid ""
-"One self-contained example app per feature. Every page shows the code behind "
-"it."
+"One self-contained example app per feature. Every page shows the code behind"
+" it."
 msgstr ""
 "Eine eigenständige Beispielanwendung pro Funktion. Jede Seite zeigt den "
 "dazugehörigen Code."
@@ -1056,27 +1347,27 @@ msgstr ""
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: project/templates/project/home.html:35
+#: project/templates/project/home.html:32
 msgid "Open"
 msgstr "Öffnen"
 
-#: project/templates/project/home.html:45
+#: project/templates/project/home.html:42
 msgid ""
-"Demo users (created by <code>manage.py seed</code>): <code>alice/alice</"
-"code> and <code>bob/bob</code> (regular users — bob may only view in Context "
-"Buttons and Action Menus, and the Guardian example shows them different "
-"documents)."
+"Demo users (created by <code>manage.py seed</code>): "
+"<code>alice/alice</code> and <code>bob/bob</code> (regular users — bob may "
+"only view in Context Buttons and Action Menus, and the Guardian example "
+"shows them different documents)."
 msgstr ""
-"Demo-Benutzer (angelegt mit <code>manage.py seed</code>): <code>alice/alice</"
-"code> und <code>bob/bob</code> (normale Benutzer — bob darf in Context "
-"Buttons und Action Menus nur ansehen, und das Guardian-Beispiel zeigt ihnen "
-"unterschiedliche Dokumente)."
+"Demo-Benutzer (angelegt mit <code>manage.py seed</code>): "
+"<code>alice/alice</code> und <code>bob/bob</code> (normale Benutzer — bob "
+"darf in Context Buttons und Action Menus nur ansehen, und das Guardian-"
+"Beispiel zeigt ihnen unterschiedliche Dokumente)."
 
-#: project/templates/project/nav.html:38
+#: project/templates/project/nav.html:37
 msgid "Log Out"
 msgstr "Abmelden"
 
-#: project/templates/project/nav.html:41 project/urls.py:17
+#: project/templates/project/nav.html:40 project/urls.py:17
 msgid "Log In"
 msgstr "Anmelden"
 
@@ -1093,6 +1384,7 @@ msgid "References to documentation"
 msgstr "Verweise auf die Dokumentation"
 
 #: project/templates/project/snippet_panels.html:29
+#: theming/templates/theming/index.html:29
 msgid "(opens in a new tab)"
 msgstr "(öffnet in einem neuen Tab)"
 
@@ -1156,94 +1448,59 @@ msgstr "Zeitstempel von »{{ object }}« aktualisiert"
 msgid "Touch failed for “{{ object }}”"
 msgstr "Touch für »{{ object }}« fehlgeschlagen"
 
-#: showcase/models.py:7
-msgid "Easy"
-msgstr "Leicht"
+#: theming/templates/theming/index.html:13 theming/views.py:27
+msgid "Theme"
+msgstr "Theme"
 
-#: showcase/models.py:8
-msgid "Medium"
-msgstr "Mittel"
+#: theming/templates/theming/index.html:14
+msgid ""
+"A theme restyles every crud_views page by overriding templates, buttons and "
+"icons."
+msgstr ""
+"Ein Theme gestaltet jede crud_views-Seite um, indem es Templates, Buttons "
+"und Icons überschreibt."
 
-#: showcase/models.py:9
-msgid "Hard"
-msgstr "Schwer"
+#: theming/templates/theming/index.html:17
+msgid "Where it is documented"
+msgstr "Wo es dokumentiert ist"
 
-#: showcase/models.py:13
-msgid "difficulty"
-msgstr "Schwierigkeit"
+#: theming/templates/theming/index.html:24
+msgid "A second theme: Tabler"
+msgstr "Ein zweites Theme: Tabler"
 
-#: showcase/models.py:14
-msgid "servings"
-msgstr "Portionen"
+#: theming/templates/theming/index.html:25
+msgid ""
+"The same views, restyled with Tabler instead of Bootstrap 5 — a theme app "
+"that overrides templates, button classes and icons and swaps the JavaScript "
+"adapters."
+msgstr ""
+"Dieselben Views, gestaltet mit Tabler statt Bootstrap 5 — eine Theme-App, "
+"die Templates, Button-Klassen und Icons überschreibt und die JavaScript-"
+"Adapter austauscht."
 
-#: showcase/models.py:15
-msgid "favorite"
-msgstr "Favorit"
+#: theming/templates/theming/index.html:28
+msgid "Open the Tabler theme demo"
+msgstr "Tabler-Theme-Demo öffnen"
 
-#: showcase/models.py:20
-msgid "recipe"
-msgstr "Rezept"
+#: theming/templates/theming/index.html:33
+msgid "The Tabler theme demo is coming soon."
+msgstr "Die Tabler-Theme-Demo folgt in Kürze."
 
-#: showcase/models.py:21
-msgid "recipes"
-msgstr "Rezepte"
+#: theming/views.py:14
+msgid "Custom themes"
+msgstr "Eigene Themes"
 
-#: showcase/views.py:52
-msgid "Newest first"
-msgstr "Neueste zuerst"
+#: theming/views.py:15
+msgid "Base template"
+msgstr "Basis-Template"
 
-#: showcase/views.py:53
-msgid "Oldest first"
-msgstr "Älteste zuerst"
+#: theming/views.py:16
+msgid "Buttons"
+msgstr "Buttons"
 
-#: showcase/views.py:54
-msgid "Title A-Z"
-msgstr "Titel A-Z"
-
-#: showcase/views.py:55
-msgid "Title Z-A"
-msgstr "Titel Z-A"
-
-#: showcase/views.py:62 showcase/views.py:126 showcase/views.py:127
-msgid "Favorite"
-msgstr "Favorit"
-
-#: showcase/views.py:74
-msgid "What and how much"
-msgstr "Was und wie viel"
-
-#: showcase/views.py:80
-msgid "Preparation and metadata"
-msgstr "Zubereitung und Metadaten"
-
-#: showcase/views.py:84
-msgid "Computed on the view"
-msgstr "In der View berechnet"
-
-#: showcase/views.py:90
-#, python-format
-msgid "%(title)s — %(difficulty)s, serves %(servings)s"
-msgstr "%(title)s — %(difficulty)s, für %(servings)s Personen"
-
-#: showcase/views.py:101
-msgid "Created recipe “{{ object }}”"
-msgstr "Rezept »{{ object }}« erstellt"
-
-#: showcase/views.py:108
-msgid "Updated recipe “{{ object }}”"
-msgstr "Rezept »{{ object }}« aktualisiert"
-
-#: showcase/views.py:115
-msgid "Deleted recipe “{{ object }}”"
-msgstr "Rezept »{{ object }}« gelöscht"
-
-#: showcase/views.py:128
-msgid "Toggled favorite for “{{ object }}”"
-msgstr "Favorit für »{{ object }}« umgeschaltet"
-
-#: showcase/views.py:129
-msgid "Could not toggle favorite for “{{ object }}”"
-msgstr "Favorit für »{{ object }}« konnte nicht umgeschaltet werden"
+#: theming/views.py:17
+msgid "Icons"
+msgstr "Icons"
 
 #: workflow/models.py:9
 msgid "Draft"
@@ -1256,10 +1513,6 @@ msgstr "Abgeschlossen"
 #: workflow/models.py:12
 msgid "Cancelled"
 msgstr "Abgebrochen"
-
-#: workflow/models.py:13
-msgid "Error"
-msgstr "Fehler"
 
 #: workflow/models.py:27 workflow/views.py:36
 msgid "state"
@@ -1308,3 +1561,67 @@ msgstr "Kampagne »{{ object }}« aktualisiert"
 #: workflow/views.py:78
 msgid "Deleted campaign “{{ object }}”"
 msgstr "Kampagne »{{ object }}« gelöscht"
+
+#~ msgid "Easy"
+#~ msgstr "Leicht"
+
+#~ msgid "Medium"
+#~ msgstr "Mittel"
+
+#~ msgid "Hard"
+#~ msgstr "Schwer"
+
+#~ msgid "difficulty"
+#~ msgstr "Schwierigkeit"
+
+#~ msgid "servings"
+#~ msgstr "Portionen"
+
+#~ msgid "favorite"
+#~ msgstr "Favorit"
+
+#~ msgid "recipe"
+#~ msgstr "Rezept"
+
+#~ msgid "recipes"
+#~ msgstr "Rezepte"
+
+#~ msgid "Title A-Z"
+#~ msgstr "Titel A-Z"
+
+#~ msgid "Title Z-A"
+#~ msgstr "Titel Z-A"
+
+#~ msgid "Favorite"
+#~ msgstr "Favorit"
+
+#~ msgid "What and how much"
+#~ msgstr "Was und wie viel"
+
+#~ msgid "Preparation and metadata"
+#~ msgstr "Zubereitung und Metadaten"
+
+#~ msgid "Computed on the view"
+#~ msgstr "In der View berechnet"
+
+#, python-format
+#~ msgid "%(title)s — %(difficulty)s, serves %(servings)s"
+#~ msgstr "%(title)s — %(difficulty)s, für %(servings)s Personen"
+
+#~ msgid "Created recipe “{{ object }}”"
+#~ msgstr "Rezept »{{ object }}« erstellt"
+
+#~ msgid "Updated recipe “{{ object }}”"
+#~ msgstr "Rezept »{{ object }}« aktualisiert"
+
+#~ msgid "Deleted recipe “{{ object }}”"
+#~ msgstr "Rezept »{{ object }}« gelöscht"
+
+#~ msgid "Toggled favorite for “{{ object }}”"
+#~ msgstr "Favorit für »{{ object }}« umgeschaltet"
+
+#~ msgid "Could not toggle favorite for “{{ object }}”"
+#~ msgstr "Favorit für »{{ object }}« konnte nicht umgeschaltet werden"
+
+#~ msgid "NEW"
+#~ msgstr "NEU"

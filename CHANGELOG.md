@@ -345,6 +345,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- The delete form's confirm checkbox now spans the full row (`col-md-12` instead of `col-md-4`), so its label
+  no longer wraps in narrow containers such as modals (#308).
+
 - Bootstrap tooltip transitions no longer run stale completion callbacks after modal content disposes their
   instance. Normal hover/focus animation, click hide and synchronous instance removal remain unchanged.
 
@@ -634,6 +637,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - The docs render Mermaid diagrams (`pymdownx.superfences` with Mermaid from the jsDelivr CDN). The first one,
   "How a context button is rendered" in `docs/reference/context_buttons.md`, traces where a toolbar button's label
   mode, label and icon come from.
+- Example app restructure for 1.0: the Showcase is removed (its card list is now the Card View example over the
+  Library authors, its modal delete the Delete example, its ActionView docs the Action Menus example, fieldsets
+  already shown by Object Detail) and the NEW badges are gone. New examples: Card View, Delete (cascade preview, protected objects
+  including ones the user cannot see, business-rule protection, modal), Formsets + Conditional, Custom Form View,
+  Label Modes & Icons, Messages, Disabled Actions and a Theme pointer page with a Tabler placeholder. Every example
+  links to its docs page and every referenced docs page links back.
 
 ## 0.30.0
 

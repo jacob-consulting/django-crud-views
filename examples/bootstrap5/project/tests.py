@@ -295,9 +295,17 @@ class FeatureGroupsTest(SimpleTestCase):
         self.assertEqual(
             grouped,
             {
-                "basics": ["library", "nested", "resources"],
-                "forms": ["formsets", "conditional"],
-                "ui": ["showcase", "breadcrumbs", "context_buttons", "action_menus"],
+                "basics": ["library", "card_view", "nested", "resources", "delete_demo"],
+                "forms": ["formsets", "conditional", "formsets_conditional", "custom_form"],
+                "ui": [
+                    "breadcrumbs",
+                    "context_buttons",
+                    "action_menus",
+                    "label_modes",
+                    "flash_messages",
+                    "disabled_actions",
+                    "theming",
+                ],
                 "extensions": ["workflow", "polymorphic_demo", "guardian_demo", "object_detail"],
             },
         )
@@ -395,11 +403,9 @@ class NavGroupsTest(TestCase):
         self.assertIsNone(result["active_app"])
         self.assertEqual([group.key for group, _ in result["groups"]], ["basics", "forms", "ui", "extensions"])
 
-    def test_badges_shown_in_dropdown(self):
-        nav = navbar_html(self.client.get(reverse("home")))
-        with_badge = [f for f in FEATURES if f.badge]
-        self.assertTrue(with_badge, "no feature has a badge any more; drop this test")
-        self.assertEqual(nav.count('class="badge text-bg-success ms-1"'), len(with_badge))
+    def test_no_badges_rendered(self):
+        for url in (reverse("home"), reverse("chore-list")):
+            self.assertNotIn('class="badge text-bg-success', self.client.get(url).content.decode())
 
     def test_empty_group_not_rendered_in_nav(self):
         from unittest import mock

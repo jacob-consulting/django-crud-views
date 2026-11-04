@@ -70,10 +70,16 @@ EXAMPLE_APPS = [
     "polymorphic_demo",
     "guardian_demo",
     "resources",
-    "showcase",
     "object_detail",
     "breadcrumbs",
     "conditional",
+    "formsets_conditional",
+    "delete_demo",
+    "custom_form",
+    "label_modes",
+    "flash_messages",
+    "disabled_actions",
+    "theming",
 ]
 
 

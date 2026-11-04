@@ -1,8 +1,9 @@
-# DataView: embedded tables and card lists — design
+# DataPanel: embedded tables and card lists — design
 
 Date: 2026-11-04. Status: draft for approval. Concept exploration with code references:
 `superpowers/notes/2026-11-04-dataview-concept-exploration.md`. Prerequisite issues: #311 (parent pks derived from the
-object) and #312 (link visibility agrees with the request gate). Working name `DataView`; see "Left to the maintainer".
+object) and #312 (link visibility agrees with the request gate). Name decided 2026-11-04: `DataPanel` (the concept
+note uses the working name DataView); see "Decisions".
 
 ## Intent
 
@@ -22,13 +23,13 @@ defined, and a dashboard should consume that definition rather than copy it.
 
 ## Goals
 
-- A DataView built from an existing `ListView` (django-tables2) or `CardListView` of a ViewSet in one expression,
+- A DataPanel built from an existing `ListView` (django-tables2) or `CardListView` of a ViewSet in one expression,
   bound to the current request, inheriting the view's table or card template, row/card actions, Guardian queryset
   scope and the theme.
-- A DataView "from scratch": a small view declared for the widget alone, with its own table or card configuration,
+- A DataPanel "from scratch": a small view declared for the widget alone, with its own table or card configuration,
   without copying any package machinery.
 - A fixed number of rows (`limit`), no pagination, no sort links, no card-order bar.
-- Several DataViews on one page, each with a frame (title, body, optional link to the full list), themable through
+- Several DataPanels on one page, each with a frame (title, body, optional link to the full list), themable through
   the class table and one overridable leaf.
 - Widget visibility follows the same rule as a toolbar button pointing at the list view: `cv_has_access` and
   `cv_action_enabled` of the source view, evaluated for the request's user.
@@ -37,22 +38,22 @@ defined, and a dashboard should consume that definition rather than copy it.
 
 ## Non-goals
 
-- Paging, ordering, filtering inside a DataView. A user who wants those follows the "all" link to the list page.
+- Paging, ordering, filtering inside a DataPanel. A user who wants those follows the "all" link to the list page.
 - Lazy loading or refresh through a fetched URL (approach C's second half). The design keeps the door open: a
   from-scratch widget is a registered view and therefore has a URL; the fetch path is a later, separate decision.
-- A request-free label or action API. Labels and actions keep needing a request-bound view; that is why the DataView
+- A request-free label or action API. Labels and actions keep needing a request-bound view; that is why the DataPanel
   is built on one.
-- A navigation component, or any dashboard layout system. The DataView is one box; the page lays out the boxes.
+- A navigation component, or any dashboard layout system. The DataPanel is one box; the page lays out the boxes.
 - Charts, stat tiles, or any non-list widget.
 - Changing the core contract that the parent URL part is checked by scope, not permission (noted in #311).
 
 ## Anti-goals
 
 - A second configuration model that mirrors view attributes (`columns`, `actions`, `permission`) and drifts from the
-  view class. Every row feature stays a view attribute or method; the DataView only binds and frames.
+  view class. Every row feature stays a view attribute or method; the DataPanel only binds and frames.
 - Any new permission vocabulary. Visibility is `cv_has_access` + `cv_action_enabled`; row scope is the queryset.
 - Calling the source view's `get_context_data()`. Foreign mixins on real list views (breadcrumb, filter persistence)
-  assume a dispatched request with URL kwargs; the DataView builds its own minimal context.
+  assume a dispatched request with URL kwargs; the DataPanel builds its own minimal context.
 - Markup of its own for rows. Tables render through `{% render_table %}`, cards through `{% cv_card %}`, so the
   theme's overrides apply unchanged.
 - A new button location. Row and card buttons keep `list` / `card`; `LOCATIONS` stays closed.
@@ -63,7 +64,7 @@ defined, and a dashboard should consume that definition rather than copy it.
   `kwargs` (`base.py:576-609`, `:486`, `:636-665`). Django's `View.setup(request, *args, **kwargs)` is the binding.
 - A nested ViewSet's `get_queryset()` and sibling URLs need parent pks. Without URL kwargs: the queryset must be
   supplied by the page, and row links need #311. The "all" link of a nested list is only resolvable with kwargs.
-- Template tags resolve the view through `context["view"]`; the DataView renders its leaf with its own context in
+- Template tags resolve the view through `context["view"]`; the DataPanel renders its leaf with its own context in
   which `view` is the bound instance, so `{% cv_card %}` and `columns/actions.html` work unchanged.
 - The theme class table warns (`W362`) for keys outside `DEFAULT_BUTTON_CLASSES`; new keys ship in the default table.
 - New public names land after 1.0 as provisional (navigation decision 5): no deprecation obligation until two
@@ -87,10 +88,10 @@ facade or add the request-free API the navigation exploration already found miss
 
 ## The design
 
-### 1. `DataView` (`crud_views/lib/dataview.py`)
+### 1. `DataPanel` (`crud_views/lib/datapanel.py`)
 
 ```python
-class DataView:
+class DataPanel:
     def __init__(
         self,
         view_class: type[CrudView],
@@ -109,7 +110,7 @@ class DataView:
     ): ...
 
     @classmethod
-    def from_viewset(cls, name: str, key: str = "list", **kwargs) -> "DataView":
+    def from_viewset(cls, name: str, key: str = "list", **kwargs) -> "DataPanel":
         """ViewSet.get_viewset(name).get_view_class(key), so a page never imports view modules.
         "list" falls back to "card" as everywhere."""
 
@@ -136,7 +137,7 @@ class DataView:
     ``cv_form_<oid>`` ids: cv_get_oid is ``<viewset>_<key>_<pk>`` because a crud page shows one list."""
 
     def get_context(self) -> dict:
-        """{"view", "request", "object_list", "cv_dataview", and "table" in table mode}."""
+        """{"view", "request", "object_list", "cv_datapanel", and "table" in table mode}."""
 ```
 
 Binding, in order: `view = view_class()`, `view.setup(request, **kwargs)`, apply `view_attrs`, then
@@ -147,14 +148,14 @@ mode builds the table once in `get_context()` through the view's own `get_table(
 so `get_table_kwargs` overrides and `table_class` apply; `row_actions=False` adds `exclude=("actions",)` to the table
 kwargs (the convention of `crud_views.lib.table.Table`) and sets `cv_card_actions = []` in card mode.
 
-`empty_text` is honoured in both modes: `Table(empty_text=…)` for tables; for cards the DataView puts it into the
+`empty_text` is honoured in both modes: `Table(empty_text=…)` for tables; for cards the DataPanel puts it into the
 leaf context as `cv_empty_text`, and the stock `view_card.content.html` renders `cv_empty_text` when set, else its
 translated "No items found." (a one-line change to that stock template; list pages never set the variable, so the
 card goldens stay byte-identical; the Tabler override of that template gets the same line as a downstream follow-up).
 
 Element ids: a new `CrudView` attribute `cv_oid_prefix: str | None = None`; `cv_get_oid` returns
-`<prefix>_<viewset>_<key>_<pk>` when it is set, else today's value. The DataView sets it on the bound instance, so
-hidden POST forms and their `form=` buttons stay paired per widget. The frame root carries `id="cv-dataview-<id>"`.
+`<prefix>_<viewset>_<key>_<pk>` when it is set, else today's value. The DataPanel sets it on the bound instance, so
+hidden POST forms and their `form=` buttons stay paired per widget. The frame root carries `id="cv-datapanel-<id>"`.
 
 `view_attrs` are validated like Django's `as_view()` initkwargs: every key must be an existing attribute of the
 class, else `TypeError`. This is the per-widget knob for `cv_list_actions`, `cv_list_actions_inline`,
@@ -163,42 +164,42 @@ class, else `TypeError`. This is the per-widget knob for `cv_list_actions`, `cv_
 Mode: `"card"` needs a `CardListView` (it has `cv_get_card_action_group` and `cv_card_template`); `"table"` needs
 `get_table` (a `ListViewTableMixin` view). Anything else raises `ImproperlyConfigured` naming both options.
 
-Visibility: a DataView whose `cv_access` is false renders nothing. There is no "disabled frame" variant; the page
+Visibility: a DataPanel whose `cv_access` is false renders nothing. There is no "disabled frame" variant; the page
 can read `cv_access` and render its own placeholder. (Maintainer call; see below.)
 
 Origin: a new `CrudView` attribute `cv_link_origin: bool = True`; `cv_get_link_origin_key` returns `None` when it is
-false. The DataView sets it on the bound instance, so widget links carry neither `cv_origin` nor a cancel token and
+false. The DataPanel sets it on the bound instance, so widget links carry neither `cv_origin` nor a cancel token and
 the targets' static Cancel/success keys apply. Documented in `docs/reference/context_buttons.md` next to the origin
 description.
 
 ### 2. Template tags (`crud_views/templatetags/crud_views.py`)
 
 ```django
-{% cv_dataview widget %}
-{% cv_dataview_for "orders" queryset=orders_to_roast limit=10 title=_("Orders to roast this week") %}
+{% cv_datapanel widget %}
+{% cv_datapanel_for "orders" queryset=orders_to_roast limit=10 title=_("Orders to roast this week") %}
 ```
 
-`cv_dataview` renders a DataView: nothing when `cv_access` is false, else the frame leaf rendered with
-`dataview.get_context()` and `request=context["request"]` (a `RequestContext`, as `cv_card` does, so
-`{% csrf_token %}` inside action forms works). `cv_dataview_for` is sugar: `DataView.from_viewset(name, key, request=
+`cv_datapanel` renders a DataPanel: nothing when `cv_access` is false, else the frame leaf rendered with
+`datapanel.get_context()` and `request=context["request"]` (a `RequestContext`, as `cv_card` does, so
+`{% csrf_token %}` inside action forms works). `cv_datapanel_for` is sugar: `DataPanel.from_viewset(name, key, request=
 context["request"], **options)` then the same rendering; it accepts the constructor's keyword options except
 `view_attrs` (a dict literal has no template syntax; use the page view for that).
 
-### 3. The frame leaf (`crud_views/tags/dataview.html`)
+### 3. The frame leaf (`crud_views/tags/datapanel.html`)
 
 One overridable template with blocks, like `tags/card.html` (#243):
 
 ```django
 {% load crud_views %}
-<div id="cv-dataview-{{ cv_dataview.id }}" class="{% cv_button_class 'dataview' 'root' %}" cv-dataview="{{ view.cv_viewset.name }}:{{ view.cv_key }}">
-  {% block dataview_header %}
-  <div class="{% cv_button_class 'dataview' 'header' %}">
-    {% cv_button_class 'dataview' 'title' as cv_title_class %}{% cv_heading level=3 class=cv_title_class %}{% block dataview_title %}{{ cv_dataview.title }}{% endblock %}{% endcv_heading %}
-    {% block dataview_link %}{% if cv_dataview.cv_list_url %}<a class="{% cv_button_class 'dataview' 'link' %}" href="{{ cv_dataview.cv_list_url }}">{% translate "Show all" %}</a>{% endif %}{% endblock %}
+<div id="cv-datapanel-{{ cv_datapanel.id }}" class="{% cv_button_class 'datapanel' 'root' %}" cv-datapanel="{{ view.cv_viewset.name }}:{{ view.cv_key }}">
+  {% block datapanel_header %}
+  <div class="{% cv_button_class 'datapanel' 'header' %}">
+    {% cv_button_class 'datapanel' 'title' as cv_title_class %}{% cv_heading level=3 class=cv_title_class %}{% block datapanel_title %}{{ cv_datapanel.title }}{% endblock %}{% endcv_heading %}
+    {% block datapanel_link %}{% if cv_datapanel.cv_list_url %}<a class="{% cv_button_class 'datapanel' 'link' %}" href="{{ cv_datapanel.cv_list_url }}">{% translate "Show all" %}</a>{% endif %}{% endblock %}
   </div>
-  {% endblock dataview_header %}
-  {% block dataview_body %}<div class="{% cv_button_class 'dataview' 'body' %}">{% include view.cv_content_template %}</div>{% endblock dataview_body %}
-  {% block dataview_footer %}{% endblock dataview_footer %}
+  {% endblock datapanel_header %}
+  {% block datapanel_body %}<div class="{% cv_button_class 'datapanel' 'body' %}">{% include view.cv_content_template %}</div>{% endblock datapanel_body %}
+  {% block datapanel_footer %}{% endblock datapanel_footer %}
 </div>
 ```
 
@@ -207,14 +208,14 @@ One overridable template with blocks, like `tags/card.html` (#243):
 The heading follows `CRUD_VIEWS_HEADER_LEVEL` like every content heading; `level=3` is the stock level while the
 setting is unset (a widget is a section of its page).
 
-Class keys, added to `DEFAULT_BUTTON_CLASSES` (Bootstrap 5 defaults): `dataview:root` (`card mb-3`),
-`dataview:header` (`card-header d-flex align-items-center justify-content-between`), `dataview:title`
-(`card-title mb-0`), `dataview:body` (`card-body p-0`), `dataview:link` (`btn btn-link btn-sm`). Themes register
+Class keys, added to `DEFAULT_BUTTON_CLASSES` (Bootstrap 5 defaults): `datapanel:root` (`card mb-3`),
+`datapanel:header` (`card-header d-flex align-items-center justify-content-between`), `datapanel:title`
+(`card-title mb-0`), `datapanel:body` (`card-body p-0`), `datapanel:link` (`btn btn-link btn-sm`). Themes register
 their values from `ready()`; projects override per key.
 
-Leaf context contract (documented): `cv_dataview` (`id`, `title`, `mode`, `limit`, `cv_list_url`, `cv_access`),
+Leaf context contract (documented): `cv_datapanel` (`id`, `title`, `mode`, `limit`, `cv_list_url`, `cv_access`),
 `view`, `request`, `object_list`, `table` (table mode), `cv_empty_text` (card mode, when set). The root's `id` and the
-attribute `cv-dataview="<viewset>:<key>"` are the hooks a later lazy-load path and tests use.
+attribute `cv-datapanel="<viewset>:<key>"` are the hooks a later lazy-load path and tests use.
 
 ### 4. From scratch
 
@@ -247,14 +248,14 @@ A widget that is not an existing list or card view is a view declared for it. Tw
       cv_card_actions = [CardAction(key="detail")]
   ```
 
-Either is bound with `DataView(RecentSessions, request, …)` or `DataView.from_viewset("session", "widget_recent", …)`.
+Either is bound with `DataPanel(RecentSessions, request, …)` or `DataPanel.from_viewset("session", "widget_recent", …)`.
 
 ### 5. Permissions, stated once in the docs
 
 | Layer | Rule | Where it comes from |
 |---|---|---|
 | Widget visibility | `cv_has_access(user, None) and cv_action_enabled(user, None)` of the source view | the toolbar's "list" button rule; Guardian list: signed-in and active |
-| Row scope | the queryset the DataView is given, or `view.get_queryset()` (ViewSet parent filter, Guardian filter, the view's own `select_related`) | the page's responsibility when supplied; the docs show `customers_for(user)` style scoping and say why |
+| Row scope | the queryset the DataPanel is given, or `view.get_queryset()` (ViewSet parent filter, Guardian filter, the view's own `select_related`) | the page's responsibility when supplied; the docs show `customers_for(user)` style scoping and say why |
 | Row actions | `cv_get_list_action_group` / `cv_get_card_action_group` → `cv_resolve_action` (hide or disable) | unchanged |
 | Request gate | none for the widget itself; the hosting page's view gates the request; a registered widget view's URL is gated like any view | `docs/reference/theme.md`, "hiding is presentation" |
 
@@ -262,19 +263,19 @@ Parity with the request gate for Guardian child links and undeclared permission 
 
 ### 6. Docs, example, changelog, stability
 
-- `docs/reference/dataview.md` under "Lists & tables" in `docs/reference/.pages`: the two ways to build one, the
+- `docs/reference/datapanel.md` under "Lists & tables" in `docs/reference/.pages`: the two ways to build one, the
   from-scratch shapes, the permission table above, the leaf contract, the class keys, the nested/`kwargs` rule and
   the "all" link rule, `view_attrs`.
-- `docs/reference/templates.md` base-template table: `{% cv_dataview %}` next to `cv_breadcrumb`.
+- `docs/reference/templates.md` base-template table: `{% cv_datapanel %}` next to `cv_breadcrumb`.
 - `docs/reference/context_buttons.md`: `cv_link_origin`; `docs/reference/action_view.md` (hidden POST forms):
   `cv_oid_prefix`.
-- `docs/development/stability.md`: `DataView`, `cv_dataview`, `cv_dataview_for`, `tags/dataview.html` and the five
+- `docs/development/stability.md`: `DataPanel`, `cv_datapanel`, `cv_datapanel_for`, `tags/datapanel.html` and the five
   keys listed as **provisional**; `cv_link_origin` and `cv_oid_prefix` under `CrudView`.
 - `CHANGELOG.md` `### Added`.
 - Example: one "Dashboard" page in the Bootstrap 5 example project with a table widget and a card widget
   (author table, author cards), placed by the maintainer of the examples restructure where it fits.
 - Translations: "Show all" in `crud_views/locale/de`.
-- Downstream, separate repo: `crud_views_tabler` registers the five keys and overrides `tags/dataview.html`
+- Downstream, separate repo: `crud_views_tabler` registers the five keys and overrides `tags/datapanel.html`
   (`.card > .card-header > .card-title`, body `.table-responsive` for tables); the Acme dashboard replaces its two
   hand-written widgets. Both are follow-ups in `tabler-test`, tracked in its findings doc.
 
@@ -287,10 +288,10 @@ Parity with the request gate for Guardian child links and undeclared permission 
   ViewSet without a list/card view (None); `id` explicit and auto-counted across two widgets on one request.
 - Rendering: a test page view in `tests/test1/app` embedding an author table widget, an author card widget and a
   nested book widget with a supplied cross-parent queryset; assert no pager, no sort links, no order bar, the
-  row/card actions of the source view, the root `id` and `cv-dataview` attribute, distinct `cv_form_*` ids and
+  row/card actions of the source view, the root `id` and `cv-datapanel` attribute, distinct `cv_form_*` ids and
   `form=` targets across the two author widgets (one POST action key in `view_attrs`), no `cv_origin` in links,
   nothing rendered without access, `row_actions=False`, `empty_text` in both modes.
-- Goldens under `tests/test1/golden/dataview/` for the stock frame in both modes (same harness as
+- Goldens under `tests/test1/golden/datapanel/` for the stock frame in both modes (same harness as
   `test_action_menus_golden.py`).
 - Query count: a widget over a Guardian list view costs the same queries as the list page minus pagination; pinned
   with `django_assert_num_queries`.
@@ -317,17 +318,26 @@ The planning artefact is therefore a GSD phase in the first post-1.0 milestone (
 `superpowers/plans` document: plan 1 core class, tag, leaf, keys, the two `CrudView` attributes and tests; plan 2
 docs, example, changelog, stability. The Tabler follow-ups are separate work in `tabler-test`.
 
-## Left to the maintainer (answers change what gets built)
+## Decisions (maintainer, 2026-11-04)
 
-1. **Name.** `DataView` reads like a Django view, which it is not (it wraps one). Alternatives: `DataPanel`,
-   `ListPanel`, `EmbeddedList`. The name sets the module, tag and class-key prefix.
-2. **No access: hide, or offer a disabled frame?** The design hides and exposes `cv_access`; a disabled frame would
-   need a sixth key and a decision on what it shows.
+| # | Question | Decision | Why |
+|---|---|---|---|
+| 1 | Approach | **A now, C's lazy fetch later**: a request-bound instance of the existing list/card view, framed; the registered-view shape is the from-scratch form and the reserved path for lazy loading. | Every row feature is a view method; B would duplicate them. |
+| 2 | Timing | **After 1.0, with all four preconditions** (#311, #312, Phase 7, examples restructure); a GSD phase in milestone 1.1.0; provisional surface. | Same rule as the navigation (decision 5); no stability section invented ahead of Phase 7. |
+| 3 | Name | **`DataPanel`**: module `crud_views.lib.datapanel`, tags `cv_datapanel` / `cv_datapanel_for`, keys `datapanel:*`, leaf `tags/datapanel.html`. | Says "a framed box of data" and avoids the clash with Django views. |
+| 4 | No access | **Render nothing**; `cv_access` is exposed for a page-side placeholder. No disabled frame, no sixth key. | Nothing to show and nothing to decide about a notice text. |
+
+Calls made in this document that the maintainer did not decide explicitly (correct them if wrong): the "all" link
+points at the ViewSet's list page and is on by default; widget links carry no origin (`cv_link_origin`); element ids
+get a per-widget prefix (`cv_oid_prefix`, auto `dv<N>` per request); `empty_text` is honoured in both modes through a
+guarded line in the stock card content template; `view_attrs` validated like `as_view()` initkwargs; the frame title
+is a `level=3` content heading; five class keys with Bootstrap card defaults; `row_actions=False` excludes the
+`actions` column / empties `cv_card_actions`.
 
 ## Left to the builder
 
-- Module layout inside `crud_views/lib/dataview.py`, exact exception messages, test names.
+- Module layout inside `crud_views/lib/datapanel.py`, exact exception messages, test names.
 - How `mode` detection is implemented (isinstance vs. duck typing on `get_table`).
-- Whether `cv_dataview_for` accepts `key=` as a keyword or a second positional argument.
+- Whether `cv_datapanel_for` accepts `key=` as a keyword or a second positional argument.
 - The example page's placement in the restructured examples project.
 - The German translation of "Show all".

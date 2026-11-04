@@ -67,13 +67,12 @@ class BlockedCasesTest(DeleteDemoTestCase):
     def test_demo_and_tutorials_teach_plain_blockers_and_cascade_links(self):
         docs = Path(__file__).resolve().parents[3] / "docs/getting_started"
         for name in ("demo.md", "tutorial-5-filters-permissions.md", "tutorial-6-books.md"):
-            with self.subTest(document=name):
-                text = (docs / name).read_text()
-                self.assertIn("plain text", text)
-                self.assertIn("Book links", text)
-                self.assertNotIn("linked Contract", text)
-                self.assertNotIn("entry point is the protected link", text)
-                self.assertNotIn("links to a full detail page, even from the modal", text)
+            text = (docs / name).read_text()
+            self.assertIn("plain text", text, name)
+            self.assertIn("Book links", text, name)
+            self.assertNotIn("linked Contract", text, name)
+            self.assertNotIn("entry point is the protected link", text, name)
+            self.assertNotIn("links to a full detail page, even from the modal", text, name)
 
     def test_case1_lists_own_blocking_tasks(self):
         resp = self.client.get(self.delete_url("Website relaunch"))

@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.9"
-current_phase_name: Protected delete-preview object links
+current_phase: "6.8"
+current_phase_name: "Action tooltips: short captions and visible-label suppression (#304)"
 status: verifying
-stopped_at: Phase 06.9 verified 31/31; one UI confirmation pending
-last_updated: "2026-11-04T11:44:25.271220+00:00"
+stopped_at: Phase 06.9 complete, ready to verify Phase 6.8
+last_updated: "2026-11-04T11:56:14.299Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.9 canonical verification human_needed; one grouped UI confirmation remains
-state_head: c078c882f7e457bbaa4334900e2350602938aa31
+last_activity_desc: Phase 06.9 complete, transitioned to Phase 6.8
+state_head: ed3c7104191062a5d6aa6340d1cc9473f6c4a532
 progress:
   total_phases: 16
-  completed_phases: 13
+  completed_phases: 14
   total_plans: 113
   completed_plans: 113
+  percent: 88
 milestone_name: milestone
 ---
 
@@ -21,19 +22,25 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-03)
+See: .planning/PROJECT.md (updated 2026-11-04)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.9 — Protected delete-preview object links
+**Current focus:** Refresh Phase 06.8 verification before Phase 7 planning
 
 ## Current Position
 
-Phase: 06.9 (Protected delete-preview object links) — HUMAN CONFIRMATION PENDING
-Plan: 4 of 4
-Status: 4/4 plans executed; canonical31/31; human_needed
-Last activity: 2026-11-04 — independent audits and repair verification passed; one UI confirmation pending
+Phase: 6.8 — Action tooltips: short captions and visible-label suppression (#304)
+Plan: 3
+Status: Phase complete — ready for verification
+Last activity: 2026-11-04 — Phase 06.9 complete, transitioned to Phase 6.8
 
-Next: $gsd-verify-work 06.9 — resolve the single grouped confirmation of 19 UI state considerations in 06.9-UAT.md.
+Next: $gsd-execute-phase 06.8 — refresh verification after shared CHANGELOG.md and docs/migrating-1.0.md changed. Phase 06.9 is complete; Phase 7 follows once prior verification is current.
+
+### Phase 06.9 completion — 2026-11-04
+
+- User explicitly answered "pass" for all four UI surfaces and 19 state rules; UAT 1/1 passed, no issues. Canonical31/31 status promoted to passed; completion predicate has no blockers and all four plans are complete.
+- Security15/15 closed. Existing automated evidence remains attributed to its original runs; no new browser, visual or assistive-technology testing is claimed.
+- Earlier pending-confirmation entries below are historical and superseded. The transition tool routes to Phase 06.8 because its verification fingerprint is stale on shared changelog/migration docs; no new implementation failure is inferred.
 
 ### Phase 06.9 canonical verification — 2026-11-04
 
@@ -388,7 +395,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 106
+- Total plans completed: 110
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -409,6 +416,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.5 | 9 | - | - |
 | 06.6 | 10 | - | - |
 | 06.7 | 5 | - | - |
+| 06.9 | 4 | - | - |
 
 **Recent Trend:**
 
@@ -727,6 +735,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T11:02:38.646Z
-Stopped at: Completed 06.9-04-PLAN.md; independent verification and human acceptance remain
+Last session: 2026-11-04T11:56:53.151445+00:00
+Stopped at: Phase 06.9 complete, ready to verify Phase 6.8
 Resume file: None

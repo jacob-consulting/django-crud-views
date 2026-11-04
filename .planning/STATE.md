@@ -5,9 +5,10 @@ current_phase: "06.8"
 current_phase_name: "Action tooltips: short captions and visible-label suppression"
 status: "Phase 06.8 shipped — PR #305"
 stopped_at: Phase 06.8 UAT passed; preparing shipping branch on current main
-last_updated: "2026-11-04T06:19:20.662Z"
+last_updated: "2026-11-04T06:30:19.839Z"
 last_activity: 2026-11-04
-state_head: "0bd9a8c1a1600b1765fbc7e50d210750bf63ab9e"
+last_activity_desc: Completed quick task 261104-8v8; Sonar remote confirmation pending
+state_head: 7d4cf1dd3f40d04bef08c41b9abe29fdb3ad87e9
 progress:
   total_phases: 15
   completed_phases: 13
@@ -30,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-11-03)
 Phase: 06.8 (Action tooltips: short captions and visible-label suppression) — SHIPPING PREPARATION
 Plan: 3/3 complete
 Status: Phase 06.8 shipped — PR #305
-Last activity: 2026-11-04
+Last activity: 2026-11-04 — Completed quick task 261104-8v8; Sonar remote confirmation pending
 
 Next: Review PR #305 and merge after CI passes; then discuss Phase 7.
 
@@ -676,6 +677,7 @@ None yet.
 | 261030-bqk | Reconcile 06.2 closure with #282: defer unresolved CR-02–CR-04 to 6.3, split acceptance, retain older open findings; documentation only | 2026-10-30 | 491ae9c | [261030-bqk-reconcile-phase-06-2-closure-with-issue-](./quick/261030-bqk-reconcile-phase-06-2-closure-with-issue-/) |
 | 261030-csg | Fix Phase 06.2 WR-01 core nested-create control state; supported-version regressions pass | 2026-10-30 | bd31992 | [261030-csg-fix-phase-06-2-wr-01-core-nested-create-](./quick/261030-csg-fix-phase-06-2-wr-01-core-nested-create-/) |
 | 261103-sag | Fix SonarQube and Codecov failures on PR 303 (local gates passed; remote confirmation pending) | 2026-11-03 | 82fe188 | [261103-sag-fix-sonarqube-and-codecov-failures-on-pr](./quick/261103-sag-fix-sonarqube-and-codecov-failures-on-pr/) |
+| 261104-8v8 | Exclude disposable browser harness from Sonar and split six documentation assertions | 2026-11-04 | 7d4cf1d | [261104-8v8-fix-pr-305-sonar-findings-and-exclude-di](./quick/261104-8v8-fix-pr-305-sonar-findings-and-exclude-di/) |
 
 ### Roadmap Evolution
 

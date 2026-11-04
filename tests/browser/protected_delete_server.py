@@ -35,7 +35,13 @@ from django.urls import include, path
 
 import crud_views
 from tests.test1.app.models import Contract, Publisher
-from tests.test1.app.views import ContractDetailView, PublisherCascadeDeleteView, PublisherModalProtectedDeleteView
+from tests.test1.app.views import (
+    ContractDetailView,
+    PublisherCascadeDeleteView,
+    PublisherCascadeTable,
+    PublisherModalProtectedDeleteView,
+    PublisherModalProtectedListView,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 assert Path(crud_views.__file__).resolve().is_relative_to(ROOT / "src"), "Refuse installed wheel"
@@ -90,6 +96,8 @@ class FixtureMiddleware:
         token = CUSTOM.set(custom)
         try:
             with ExitStack() as stack:
+                # This list-only fixture has no sibling detail route for an ID column.
+                stack.enter_context(patch.object(PublisherModalProtectedListView, "table_class", PublisherCascadeTable))
                 for cls in SOURCES:
                     original_filter = cls.cv_filter_related_objects
 

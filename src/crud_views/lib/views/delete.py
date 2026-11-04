@@ -4,10 +4,11 @@ from collections.abc import Iterable
 from contextlib import nullcontext
 from copy import copy
 from functools import partial
-from inspect import signature
+from inspect import getattr_static, signature
 from typing import ClassVar
 from urllib.parse import unquote, urlsplit
 
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.db import connections, router, transaction
 from django.db.models import Model
@@ -260,6 +261,27 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
             or viewset.get_view_class("detail") is not target
         ):
             return None
+        if issubclass(target, CrudViewPermissionRequiredMixin):
+            # The classmethod policy only certifies the stock instance permission
+            # contract. Inspect descriptors without evaluating application code.
+            if any(
+                getattr_static(target, name) is not getattr_static(CrudViewPermissionRequiredMixin, name)
+                for name in ("permission_required", "get_permission_required")
+            ):
+                return None
+            permission_bases = (PermissionRequiredMixin, CrudViewPermissionRequiredMixin)
+            if any(base.__module__ == "crud_views_guardian.lib.mixins" for base in target.__mro__):
+                from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin, GuardianParentPermissionMixin
+
+                permission_bases += (GuardianObjectPermissionMixin, GuardianParentPermissionMixin)
+            # Guardian's parent gate delegates to super(), so certify the inherited
+            # chain too, rather than only the first effective has_permission method.
+            if any(
+                "has_permission" in base.__dict__
+                and not any(base.__dict__["has_permission"] is stock.has_permission for stock in permission_bases)
+                for base in target.__mro__
+            ):
+                return None
         initkwargs = match.func.view_initkwargs
         for name, value in initkwargs.items():
             # Classmethod policy cannot certify instance-only authorization overrides.

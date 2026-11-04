@@ -129,6 +129,69 @@ def test_protected_target_policy_matrix(protected_destination, monkeypatch, poli
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("inherited", [False, True])
+@pytest.mark.parametrize(
+    "policy", ["permission_required", "permission_property", "get_permission_required", "has_permission"]
+)
+def test_protected_uncertifiable_permission_policy(
+    protected_destination, client_user_publisher_cascade_delete, monkeypatch, inherited, policy
+):
+    from django.urls import clear_url_caches
+
+    from crud_views.lib.viewset import ViewSet
+
+    case = protected_destination
+    calls = []
+
+    def required(self):
+        calls.append(policy)
+        return "app.change_contract" if policy == "permission_property" else ("app.change_contract",)
+
+    def denied(self):
+        calls.append(policy)
+        return False
+
+    attribute, value = {
+        "permission_required": ("permission_required", "app.change_contract"),
+        "permission_property": ("permission_required", property(required)),
+        "get_permission_required": ("get_permission_required", required),
+        "has_permission": ("has_permission", denied),
+    }[policy]
+    viewset = ViewSet(model=type(case.blocker), name="custom_protected_policy")
+    attrs = {"cv_viewset": viewset}
+    bases = (case.target,)
+    if inherited:
+        bases = (type("ApplicationPermissionPolicy", (), {attribute: value}), *bases)
+    else:
+        attrs[attribute] = value
+    target = type("CustomDetail", bases, attrs)
+    case.patterns.extend(viewset.urlpatterns)
+    clear_url_caches()
+    url = f"/custom_protected_policy/{case.blocker.pk}/detail/"
+    source_class = type(case.source)
+    monkeypatch.setattr(source_class, "cv_link_related_objects", True)
+    monkeypatch.setattr(source_class, "cv_get_related_object_url", lambda self, obj: url)
+    native_dispatch = target.dispatch
+
+    def dispatch(self, *args, **kwargs):
+        calls.append("dispatch")
+        return native_dispatch(self, *args, **kwargs)
+
+    monkeypatch.setattr(target, "dispatch", dispatch)
+    assert target.cv_has_access(case.source.request.user, case.blocker)
+    assert client_user_publisher_cascade_delete.get(url).status_code == 403
+    assert "dispatch" in calls
+    calls.clear()
+
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{case.source.object.pk}/delete/")
+    assert response.status_code == 200
+    assert response.context["protected_objects"] == [{"obj": case.blocker, "url": None}]
+    assert "Visible blocker" in response.content.decode()
+    assert f'href="{url}"' not in response.content.decode()
+    assert calls == []
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("method,modal", [("get", False), ("get", True), ("post", True)])
 def test_protected_target_binding(protected_destination, monkeypatch, method, modal):
     from django.test import RequestFactory

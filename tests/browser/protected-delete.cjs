@@ -200,6 +200,7 @@ async function main(argv = process.argv.slice(2)) {
             } else {
                 for (const label of [ids.allowedLabel, ids.deniedLabel]) assert(!text.includes(label));
                 assert.equal(await scope.locator('a[href*="/contract/"]').count(), 0);
+                assert(text.includes('Other objects still reference this one; remove or reassign them before deleting it.'));
             }
             return dom;
         }
@@ -248,7 +249,7 @@ async function main(argv = process.argv.slice(2)) {
                 item.dom.linkDisabledText = await scope.locator('.cv-related-objects a').count() === 0;
                 assert(item.dom.linkDisabledText);
             } else if (scenario === 'preview-off') {
-                item.dom.previewDisabledHidden = await scope.locator('.cv-related-objects').count() === 0;
+                item.dom.previewDisabledHidden = await scope.locator('.cv-related-objects ul, .cv-related-objects a').count() === 0;
                 assert(item.dom.previewDisabledHidden);
             }
             item.afterUrl = page.url(); item.passed = true;

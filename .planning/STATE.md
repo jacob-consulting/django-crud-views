@@ -32,9 +32,17 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-04 — Phase 06.9 complete, transitioned to Phase 7
+Last activity: 2026-11-04 — Phase 06.9 shipped for review in PR #313
 
 Next: $gsd-discuss-phase 7 — gather context for the theme-surface stability policy.
+
+### Phase 06.9 shipping — 2026-11-04
+
+- PR #313: https://github.com/jacob-consulting/django-crud-views/pull/313; ship/phase-06.9-protected-delete-links targets main and includes Library quick task 261104-h24.
+- Integrated main cf2bfc0 without conflicts. Refreshed canonical verification passes 31/31; existing UAT 1/1 and security 15/15 closed retained.
+- Integrated checks: 1,484 core/delete/form tests, 406 example tests plus 79 subtests, 16 verifier cases and strict docs pass. Earlier full 9,448-test Python and 365-test JavaScript results remain attributed to their pre-merge source.
+- Retained browser evidence is historical with one source-hash difference for the upstream checkbox-width change; protected previews omit that form. No new browser run or expanded human acceptance claimed.
+- Original checkout and unrelated local changes preserved. PR awaits CI/review; no merge performed.
 
 ### Phase 06.9 verification refresh — 2026-11-04
 

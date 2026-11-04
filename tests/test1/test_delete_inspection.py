@@ -25,6 +25,7 @@ def test_protected_preview_read_only(protected_destination, client_user_publishe
 
     case = protected_destination
     monkeypatch.setattr(type(case.source), "cv_link_related_objects", True)
+    monkeypatch.setattr(type(case.source), "cv_modal", modal)
     events = []
     providers = []
     native_filter = type(case.source).cv_filter_related_objects
@@ -44,18 +45,26 @@ def test_protected_preview_read_only(protected_destination, client_user_publishe
 
     monkeypatch.setattr(type(case.source), "cv_filter_related_objects", filter_rows)
     monkeypatch.setattr(type(case.source), "cv_get_delete_preview", provider)
+    monkeypatch.setattr(type(case.source), "cv_form_valid_process", forbidden)
     monkeypatch.setattr(Publisher, "delete", forbidden)
     monkeypatch.setattr(Contract, "delete", forbidden)
     url = f"/publisher_cascade/{case.source.object.pk}/delete/"
     headers = {"HTTP_X_CV_MODAL": "true"} if modal else {}
     for method in ("get", "get", "post"):
         with CaptureQueriesContext(connection) as queries:
-            response = getattr(client_user_publisher_cascade_delete, method)(url, **headers)
-        assert response.status_code == 200
+            data = {"confirm": "on"} if method == "post" else {}
+            response = getattr(client_user_publisher_cascade_delete, method)(url, data, **headers)
+        assert response.status_code == (422 if modal and method == "post" else 200)
+        template = "crud_views/modal/content.html" if modal else "crud_views/view_delete.html"
+        assert template in [item.name for item in response.templates]
+        if method == "post":
+            assert response.context["form"].is_valid()
         assert response.context["protected_objects"] == [{"obj": case.blocker, "url": case.url}]
         assert "<form" not in response.content.decode()
         assert not any(q["sql"].lstrip().upper().startswith(("INSERT", "UPDATE", "DELETE")) for q in queries)
         assert events == []
+        case.source.object.refresh_from_db()
+        case.blocker.refresh_from_db()
     assert len(providers) == 3
     assert all(alias == "default" for _, alias in providers)
     # A preview is a read-time observation. Later requests enforce current policy and rows.

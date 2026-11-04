@@ -75,6 +75,7 @@ EXAMPLE_APPS = [
     "conditional",
     "formsets_conditional",
     "delete_demo",
+    "custom_form",
 ]
 
 

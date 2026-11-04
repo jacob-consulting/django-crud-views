@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "context_buttons",
     "action_menus",
     "delete_demo",
+    "custom_form",
 ]
 
 MIDDLEWARE = [

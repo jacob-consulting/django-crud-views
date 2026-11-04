@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 07:27+0000\n"
+"POT-Creation-Date: 2026-11-04 07:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -134,11 +134,12 @@ msgid "Deleted step “{{ object }}”"
 msgstr "Schritt „{{ object }}“ gelöscht"
 
 #: breadcrumbs/models.py:6 conditional/models.py:6 conditional/models.py:25
-#: conditional/models.py:53 formsets_conditional/models.py:6
-#: formsets_conditional/models.py:39 nested/models.py:6 nested/models.py:22
-#: nested/models.py:37 nested/models.py:51 object_detail/models.py:38
-#: object_detail/models.py:66 object_detail/models.py:78
-#: polymorphic_demo/models.py:7 workflow/models.py:26
+#: conditional/models.py:53 custom_form/models.py:6
+#: formsets_conditional/models.py:6 formsets_conditional/models.py:39
+#: nested/models.py:6 nested/models.py:22 nested/models.py:37
+#: nested/models.py:51 object_detail/models.py:38 object_detail/models.py:66
+#: object_detail/models.py:78 polymorphic_demo/models.py:7
+#: workflow/models.py:26
 msgid "name"
 msgstr "Name"
 
@@ -429,6 +430,70 @@ msgstr "Ticket »{{ object }}« aktualisiert"
 msgid "Deleted ticket “{{ object }}”"
 msgstr "Ticket »{{ object }}« gelöscht"
 
+#: custom_form/models.py:7 nested/models.py:38
+msgid "email"
+msgstr "E-Mail"
+
+#: custom_form/models.py:8
+msgid "last reminded"
+msgstr "Zuletzt erinnert"
+
+#: custom_form/models.py:12
+msgid "contact"
+msgstr "Kontakt"
+
+#: custom_form/models.py:13
+msgid "contacts"
+msgstr "Kontakte"
+
+#: custom_form/views.py:38
+msgid "Contact"
+msgstr "Kontakt"
+
+#: custom_form/views.py:46
+msgid "Send reminder"
+msgstr "Erinnerung senden"
+
+#: custom_form/views.py:48
+msgid "Note"
+msgstr "Notiz"
+
+#: custom_form/views.py:62 custom_form/views.py:63
+msgid "Remind"
+msgstr "Erinnern"
+
+#: custom_form/views.py:65
+msgid "Reminded contact “{{ object }}”"
+msgstr "Kontakt »{{ object }}« erinnert"
+
+#: custom_form/views.py:67
+msgid "Remind contact"
+msgstr "Kontakt erinnern"
+
+#: custom_form/views.py:68
+msgid "Send a reminder note to this contact"
+msgstr "Eine Erinnerungsnotiz an diesen Kontakt senden"
+
+#: custom_form/views.py:78 custom_form/views.py:94 custom_form/views.py:95
+msgid "Invite"
+msgstr "Einladen"
+
+#: custom_form/views.py:80
+msgid "Email"
+msgstr "E-Mail"
+
+#: custom_form/views.py:97
+msgid "Invited “{{ form.cleaned_data.email }}”"
+msgstr "»{{ form.cleaned_data.email }}« eingeladen"
+
+#: custom_form/views.py:99
+msgid "Invite contact"
+msgstr "Kontakt einladen"
+
+#: custom_form/views.py:100
+msgid "Add a new contact by email address"
+msgstr "Einen neuen Kontakt per E-Mail-Adresse hinzufügen"
+
 #: delete_demo/models.py:9 delete_demo/models.py:42 guardian_demo/models.py:10
 msgid "owner"
 msgstr "Eigentümer"
@@ -710,10 +775,6 @@ msgstr "Abteilung"
 #: nested/models.py:27
 msgid "departments"
 msgstr "Abteilungen"
-
-#: nested/models.py:38
-msgid "email"
-msgstr "E-Mail"
 
 #: nested/models.py:42
 msgid "employee"
@@ -1103,15 +1164,15 @@ msgctxt "feature group"
 msgid "Extensions"
 msgstr "Erweiterungen"
 
-#: project/settings.py:113
+#: project/settings.py:114
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:114
+#: project/settings.py:115
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:133
+#: project/settings.py:134
 msgid "Home"
 msgstr "Startseite"
 

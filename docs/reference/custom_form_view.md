@@ -1,5 +1,10 @@
 # CustomFormView
 
+!!! example "Try it live"
+    The [Custom Form View example](https://django-crud-views-demo.onrender.com/custom-form/contact/) in the live demo
+    shows this in action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets
+    and wake-up time.
+
 The `CustomFormView` provides a custom form attached to an existing model object. Use it when you need a form that operates on an object but does not follow the standard create/update/delete pattern — for example, a contact form, an approval action, or a send-message action.
 
 ## View Classes

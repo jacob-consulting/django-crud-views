@@ -387,6 +387,31 @@ FEATURES: list[Feature] = [
         ),
     ),
     Feature(
+        app="custom_form",
+        group="forms",
+        title="Custom Form View",
+        description="A free-standing form that acts on one object, and one that needs no object at all.",
+        about=(
+            "Forms that are not create, update or delete. 'Remind' is an object-based custom form: it loads "
+            "the contact from the URL, asks for a required note and, in cv_form_valid, stamps "
+            "last_reminded_dt; MessageMixin flashes the success message. 'Invite' is a non-object custom form "
+            "with no pk in its URL: it takes an email address and creates a new contact. Remind sits in the "
+            "list's row actions, Invite in its context actions, because an object view cannot be linked "
+            "without an object."
+        ),
+        look_at=(
+            "ContactRemindView (CustomFormViewPermissionRequired) and ContactInviteView "
+            "(CustomFormNoObjectViewPermissionRequired) in views.py: cv_key / cv_path register them, "
+            "cv_form_valid does the work, and cv_list_actions vs cv_context_actions on ContactListView."
+        ),
+        url_name="contact-list",
+        icon="fa-regular fa-address-book",
+        docs=(
+            DocRef(page="reference/custom_form_view.md", label="CustomFormView", anchor="basic-usage"),
+            DocRef(page="reference/custom_form_view.md", label="Non-object view", anchor="non-object-view"),
+        ),
+    ),
+    Feature(
         app="context_buttons",
         group="ui",
         title="Context Buttons",

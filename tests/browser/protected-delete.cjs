@@ -197,6 +197,13 @@ async function main(argv = process.argv.slice(2)) {
                 assert(item.dom.ordinaryAnchor);
                 if (kind === 'modal' && item.activation === 'click' && opts.case === 'all') {
                     const relative = `screenshots/protected-${mode}-modal.png`, file = path.resolve(path.dirname(opts.output), relative);
+                    await page.mouse.move(0, 800);
+                    await page.locator('.tooltip.show').waitFor({state: 'hidden'});
+                    await page.waitForFunction(() => {
+                        const modal = document.querySelector('#cv-modal.show');
+                        return modal && getComputedStyle(modal).opacity === '1' &&
+                            getComputedStyle(modal.querySelector('.modal-dialog')).transform === 'none';
+                    });
                     fs.mkdirSync(path.dirname(file), {recursive: true}); await page.screenshot({path: file});
                     report.screenshots.push({path: relative, sha256: sha(fs.readFileSync(file))});
                 }

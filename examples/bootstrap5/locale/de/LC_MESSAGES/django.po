@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 07:10+0000\n"
+"POT-Creation-Date: 2026-11-04 07:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -984,29 +984,25 @@ msgstr "Auswählen"
 msgid "Vehicle"
 msgstr "Fahrzeug"
 
-#: project/features.py:42
+#: project/features.py:41
 msgctxt "feature group"
 msgid "Basics"
 msgstr "Grundlagen"
 
-#: project/features.py:45
+#: project/features.py:44
 msgctxt "feature group"
 msgid "Forms"
 msgstr "Formulare"
 
-#: project/features.py:46
+#: project/features.py:45
 msgctxt "feature group"
 msgid "UI"
 msgstr "Oberfläche"
 
-#: project/features.py:47
+#: project/features.py:46
 msgctxt "feature group"
 msgid "Extensions"
 msgstr "Erweiterungen"
-
-#: project/features.py:334 project/features.py:363
-msgid "NEW"
-msgstr "NEU"
 
 #: project/settings.py:112
 msgid "English"
@@ -1072,11 +1068,11 @@ msgstr ""
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: project/templates/project/home.html:35
+#: project/templates/project/home.html:32
 msgid "Open"
 msgstr "Öffnen"
 
-#: project/templates/project/home.html:45
+#: project/templates/project/home.html:42
 msgid ""
 "Demo users (created by <code>manage.py seed</code>): <code>alice/alice</"
 "code> and <code>bob/bob</code> (regular users — bob may only view in Context "
@@ -1088,11 +1084,11 @@ msgstr ""
 "Buttons und Action Menus nur ansehen, und das Guardian-Beispiel zeigt ihnen "
 "unterschiedliche Dokumente)."
 
-#: project/templates/project/nav.html:38
+#: project/templates/project/nav.html:37
 msgid "Log Out"
 msgstr "Abmelden"
 
-#: project/templates/project/nav.html:41 project/urls.py:17
+#: project/templates/project/nav.html:40 project/urls.py:17
 msgid "Log In"
 msgstr "Anmelden"
 
@@ -1316,3 +1312,6 @@ msgstr "Kampagne »{{ object }}« aktualisiert"
 #: workflow/views.py:78
 msgid "Deleted campaign “{{ object }}”"
 msgstr "Kampagne »{{ object }}« gelöscht"
+
+#~ msgid "NEW"
+#~ msgstr "NEU"

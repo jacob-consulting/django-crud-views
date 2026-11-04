@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 
-from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
 
 #: Read the Docs version linked from the demo. "stable" is the newest release tag, which is what the demo runs.
@@ -58,7 +57,6 @@ class Feature:
     look_at: str  # one-sentence code pointer shown next to "The code behind this page"
     url_name: str  # URL name of the app's landing page, e.g. "author-list"
     icon: str  # font-awesome classes
-    badge: str = ""  # optional small badge shown next to the title on the home page card
     docs: tuple[DocRef, ...] = ()  # documentation sections listed under "References to documentation"
 
 
@@ -331,7 +329,6 @@ FEATURES: list[Feature] = [
         app="breadcrumbs",
         group="ui",
         title="Breadcrumbs",
-        badge=_("NEW"),
         description="ViewSet-aware breadcrumbs, plus injecting a host application's navigation as prefix items.",
         about=(
             "Every page in these examples renders a breadcrumb via CrudViewBreadcrumbMixin and the "
@@ -360,7 +357,6 @@ FEATURES: list[Feature] = [
         app="conditional",
         group="forms",
         title="Conditional",
-        badge=_("NEW"),
         description="A checkbox toggle reveals a field-group or an entire formset, enforced server-side.",
         about=(
             "Two ways a checkbox can govern what's on the form. Registration reveals a fieldset of company "

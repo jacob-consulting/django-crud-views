@@ -395,11 +395,9 @@ class NavGroupsTest(TestCase):
         self.assertIsNone(result["active_app"])
         self.assertEqual([group.key for group, _ in result["groups"]], ["basics", "forms", "ui", "extensions"])
 
-    def test_badges_shown_in_dropdown(self):
-        nav = navbar_html(self.client.get(reverse("home")))
-        with_badge = [f for f in FEATURES if f.badge]
-        self.assertTrue(with_badge, "no feature has a badge any more; drop this test")
-        self.assertEqual(nav.count('class="badge text-bg-success ms-1"'), len(with_badge))
+    def test_no_badges_rendered(self):
+        for url in (reverse("home"), reverse("chore-list")):
+            self.assertNotIn('class="badge text-bg-success', self.client.get(url).content.decode())
 
     def test_empty_group_not_rendered_in_nav(self):
         from unittest import mock

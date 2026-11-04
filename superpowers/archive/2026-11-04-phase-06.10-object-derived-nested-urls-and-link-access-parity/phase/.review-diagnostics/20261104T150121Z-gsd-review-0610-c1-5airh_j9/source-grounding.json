@@ -1,0 +1,1716 @@
+{
+  "authority": "intel",
+  "api_surface_symbols": 0,
+  "entries": [
+    {
+      "kind": "flag",
+      "symbol": "--case",
+      "plan_refs": [
+        "06.10-06-PLAN.md:73",
+        "06.10-06-PLAN.md:93",
+        "06.10-06-PLAN.md:112"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "flag",
+      "symbol": "--check",
+      "plan_refs": [
+        "06.10-06-PLAN.md:142"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "flag",
+      "symbol": "--deselect",
+      "plan_refs": [
+        "06.10-06-PLAN.md:130"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "flag",
+      "symbol": "--output",
+      "plan_refs": [
+        "06.10-06-PLAN.md:93",
+        "06.10-06-PLAN.md:112"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "flag",
+      "symbol": "--site-dir",
+      "plan_refs": [
+        "06.10-05-PLAN.md:111",
+        "06.10-06-PLAN.md:138"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "flag",
+      "symbol": "--strict",
+      "plan_refs": [
+        "06.10-05-PLAN.md:111",
+        "06.10-06-PLAN.md:138"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "flag",
+      "symbol": "--test",
+      "plan_refs": [
+        "06.10-06-PLAN.md:91"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "path",
+      "symbol": ".nox/crispy_floor-3-12-django-6-0/bin/python",
+      "plan_refs": [
+        "06.10-06-PLAN.md:130"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".nox/tests-3-12-django-4-2/bin/python",
+      "plan_refs": [
+        "06.10-06-PLAN.md:128"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".nox/tests-3-12-django-5-2/bin/python",
+      "plan_refs": [
+        "06.10-01-PLAN.md:117",
+        "06.10-01-PLAN.md:135",
+        "06.10-01-PLAN.md:154",
+        "06.10-02-PLAN.md:91",
+        "06.10-02-PLAN.md:109",
+        "06.10-02-PLAN.md:111",
+        "06.10-03-PLAN.md:98",
+        "06.10-03-PLAN.md:117",
+        "06.10-03-PLAN.md:135",
+        "06.10-03-PLAN.md:137",
+        "06.10-04-PLAN.md:82",
+        "06.10-04-PLAN.md:84",
+        "06.10-04-PLAN.md:102",
+        "06.10-05-PLAN.md:81",
+        "06.10-05-PLAN.md:94",
+        "06.10-05-PLAN.md:107",
+        "06.10-05-PLAN.md:109",
+        "06.10-06-PLAN.md:126",
+        "06.10-06-PLAN.md:132"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/PROJECT.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:56",
+        "06.10-06-PLAN.md:62",
+        "06.10-06-PLAN.md:123"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/REQUIREMENTS.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:59",
+        "06.10-03-PLAN.md:57"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/ROADMAP.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:57"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/STATE.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:58"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-SUMMARY.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:188",
+        "06.10-02-PLAN.md:56",
+        "06.10-04-PLAN.md:56",
+        "06.10-05-PLAN.md:60"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-02-SUMMARY.md",
+      "plan_refs": [
+        "06.10-02-PLAN.md:144",
+        "06.10-03-PLAN.md:60"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-SUMMARY.md",
+      "plan_refs": [
+        "06.10-03-PLAN.md:172",
+        "06.10-05-PLAN.md:61",
+        "06.10-06-PLAN.md:65"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-04-SUMMARY.md",
+      "plan_refs": [
+        "06.10-04-PLAN.md:135",
+        "06.10-05-PLAN.md:62",
+        "06.10-06-PLAN.md:66"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-05-SUMMARY.md",
+      "plan_refs": [
+        "06.10-05-PLAN.md:142",
+        "06.10-06-PLAN.md:67"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-06-SUMMARY.md",
+      "plan_refs": [
+        "06.10-06-PLAN.md:176"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-ACCEPTANCE.md",
+      "plan_refs": [
+        "06.10-06-PLAN.md:15",
+        "06.10-06-PLAN.md:38",
+        "06.10-06-PLAN.md:122"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-CONTEXT.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:60",
+        "06.10-02-PLAN.md:54",
+        "06.10-03-PLAN.md:58",
+        "06.10-04-PLAN.md:55",
+        "06.10-05-PLAN.md:59",
+        "06.10-06-PLAN.md:63"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-PATTERNS.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:62",
+        "06.10-02-PLAN.md:55"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-RESEARCH.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:61",
+        "06.10-03-PLAN.md:59"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-VALIDATION.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:63",
+        "06.10-06-PLAN.md:16",
+        "06.10-06-PLAN.md:44",
+        "06.10-06-PLAN.md:64",
+        "06.10-06-PLAN.md:122"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-browser.json",
+      "plan_refs": [
+        "06.10-06-PLAN.md:11",
+        "06.10-06-PLAN.md:34",
+        "06.10-06-PLAN.md:102",
+        "06.10-06-PLAN.md:112"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-gates.json",
+      "plan_refs": [
+        "06.10-06-PLAN.md:14",
+        "06.10-06-PLAN.md:36",
+        "06.10-06-PLAN.md:45",
+        "06.10-06-PLAN.md:122"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/screenshots/nested-custom.png",
+      "plan_refs": [
+        "06.10-06-PLAN.md:13",
+        "06.10-06-PLAN.md:102"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/screenshots/nested-stock.png",
+      "plan_refs": [
+        "06.10-06-PLAN.md:12",
+        "06.10-06-PLAN.md:102"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.7-dynamic-cancel-navigation-and-origin-query-state/06.7-CONTEXT.md",
+      "plan_refs": [
+        "06.10-02-PLAN.md:57"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.8-action-tooltips-short-captions-and-visible-label-suppression/06.8-CONTEXT.md",
+      "plan_refs": [
+        "06.10-02-PLAN.md:58"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.9-protected-delete-preview-object-links/06.9-01-SUMMARY.md",
+      "plan_refs": [
+        "06.10-04-PLAN.md:58"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.9-protected-delete-preview-object-links/06.9-02-SUMMARY.md",
+      "plan_refs": [
+        "06.10-04-PLAN.md:59"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.9-protected-delete-preview-object-links/06.9-03-SUMMARY.md",
+      "plan_refs": [
+        "06.10-05-PLAN.md:63"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.9-protected-delete-preview-object-links/06.9-04-SUMMARY.md",
+      "plan_refs": [
+        "06.10-06-PLAN.md:68"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.9-protected-delete-preview-object-links/06.9-CONTEXT.md",
+      "plan_refs": [
+        "06.10-04-PLAN.md:57"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".planning/phases/06.9-protected-delete-preview-object-links/06.9-VERIFICATION.md",
+      "plan_refs": [
+        "06.10-06-PLAN.md:123"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".venv/bin/mkdocs",
+      "plan_refs": [
+        "06.10-05-PLAN.md:111",
+        "06.10-06-PLAN.md:138"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": ".venv/bin/ruff",
+      "plan_refs": [
+        "06.10-06-PLAN.md:140",
+        "06.10-06-PLAN.md:142"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "/home/alex/.codex/gsd-core/templates/summary.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:51",
+        "06.10-02-PLAN.md:49",
+        "06.10-03-PLAN.md:52",
+        "06.10-04-PLAN.md:50",
+        "06.10-05-PLAN.md:54",
+        "06.10-06-PLAN.md:57"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "/home/alex/.codex/gsd-core/workflows/execute-plan.md",
+      "plan_refs": [
+        "06.10-01-PLAN.md:50",
+        "06.10-02-PLAN.md:48",
+        "06.10-03-PLAN.md:51",
+        "06.10-04-PLAN.md:49",
+        "06.10-05-PLAN.md:53",
+        "06.10-06-PLAN.md:56"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "docs/development/stability.md",
+      "plan_refs": [
+        "06.10-05-PLAN.md:14",
+        "06.10-05-PLAN.md:35",
+        "06.10-05-PLAN.md:103"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "docs/migrating-1.0.md",
+      "plan_refs": [
+        "06.10-05-PLAN.md:9",
+        "06.10-05-PLAN.md:31",
+        "06.10-05-PLAN.md:39",
+        "06.10-05-PLAN.md:69",
+        "06.10-05-PLAN.md:77",
+        "06.10-05-PLAN.md:104",
+        "06.10-06-PLAN.md:83",
+        "06.10-06-PLAN.md:89"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "docs/reference/buttons.md",
+      "plan_refs": [
+        "06.10-06-PLAN.md:83",
+        "06.10-06-PLAN.md:89"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "docs/reference/context_buttons.md",
+      "plan_refs": [
+        "06.10-05-PLAN.md:12",
+        "06.10-05-PLAN.md:90"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "docs/reference/delete_view.md",
+      "plan_refs": [
+        "06.10-05-PLAN.md:13",
+        "06.10-05-PLAN.md:103"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "docs/reference/guardian.md",
+      "plan_refs": [
+        "06.10-05-PLAN.md:11",
+        "06.10-05-PLAN.md:41",
+        "06.10-05-PLAN.md:90"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "docs/reference/nested.md",
+      "plan_refs": [
+        "06.10-05-PLAN.md:10",
+        "06.10-05-PLAN.md:42",
+        "06.10-05-PLAN.md:90"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views/lib/resource.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:145"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views/lib/view/base.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:10",
+        "06.10-01-PLAN.md:35",
+        "06.10-01-PLAN.md:107",
+        "06.10-01-PLAN.md:108",
+        "06.10-02-PLAN.md:8",
+        "06.10-02-PLAN.md:37",
+        "06.10-02-PLAN.md:82",
+        "06.10-02-PLAN.md:100",
+        "06.10-03-PLAN.md:8",
+        "06.10-03-PLAN.md:88",
+        "06.10-05-PLAN.md:91"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views/lib/view/buttons.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:9",
+        "06.10-02-PLAN.md:33",
+        "06.10-02-PLAN.md:82",
+        "06.10-02-PLAN.md:101"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views/lib/view/link_context.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:10",
+        "06.10-02-PLAN.md:28",
+        "06.10-02-PLAN.md:34",
+        "06.10-02-PLAN.md:63",
+        "06.10-02-PLAN.md:82",
+        "06.10-02-PLAN.md:100",
+        "06.10-03-PLAN.md:37",
+        "06.10-03-PLAN.md:108"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views/lib/views/card.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:11",
+        "06.10-02-PLAN.md:36",
+        "06.10-02-PLAN.md:82",
+        "06.10-02-PLAN.md:101"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views/lib/views/delete.py",
+      "plan_refs": [
+        "06.10-04-PLAN.md:8",
+        "06.10-04-PLAN.md:27",
+        "06.10-04-PLAN.md:34",
+        "06.10-04-PLAN.md:37",
+        "06.10-04-PLAN.md:38",
+        "06.10-04-PLAN.md:60",
+        "06.10-04-PLAN.md:73",
+        "06.10-04-PLAN.md:93",
+        "06.10-05-PLAN.md:104"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views/lib/viewset/__init__.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:8",
+        "06.10-01-PLAN.md:30",
+        "06.10-01-PLAN.md:38",
+        "06.10-01-PLAN.md:107",
+        "06.10-01-PLAN.md:108",
+        "06.10-01-PLAN.md:126",
+        "06.10-01-PLAN.md:144",
+        "06.10-02-PLAN.md:83",
+        "06.10-03-PLAN.md:89",
+        "06.10-04-PLAN.md:35",
+        "06.10-04-PLAN.md:74",
+        "06.10-05-PLAN.md:78"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views/lib/viewset/parentviewset.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:39",
+        "06.10-01-PLAN.md:108",
+        "06.10-01-PLAN.md:127"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views/lib/viewset/resolution.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:9",
+        "06.10-01-PLAN.md:28",
+        "06.10-01-PLAN.md:36",
+        "06.10-01-PLAN.md:72",
+        "06.10-01-PLAN.md:107",
+        "06.10-01-PLAN.md:126",
+        "06.10-01-PLAN.md:144",
+        "06.10-02-PLAN.md:83",
+        "06.10-03-PLAN.md:108",
+        "06.10-04-PLAN.md:74"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views_guardian/lib/mixins.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:83",
+        "06.10-03-PLAN.md:9",
+        "06.10-03-PLAN.md:29",
+        "06.10-03-PLAN.md:36",
+        "06.10-03-PLAN.md:40",
+        "06.10-03-PLAN.md:61",
+        "06.10-03-PLAN.md:88",
+        "06.10-03-PLAN.md:107",
+        "06.10-03-PLAN.md:126",
+        "06.10-05-PLAN.md:91"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "src/crud_views_guardian/lib/views.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:83",
+        "06.10-03-PLAN.md:10",
+        "06.10-03-PLAN.md:39",
+        "06.10-03-PLAN.md:62",
+        "06.10-03-PLAN.md:88",
+        "06.10-03-PLAN.md:89",
+        "06.10-03-PLAN.md:107",
+        "06.10-04-PLAN.md:94",
+        "06.10-05-PLAN.md:91"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/browser/action-tooltips.cjs",
+      "plan_refs": [
+        "06.10-06-PLAN.md:83"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/browser/cancel-navigation.cjs",
+      "plan_refs": [
+        "06.10-06-PLAN.md:83"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/browser/cancel-navigation.test.cjs",
+      "plan_refs": [
+        "06.10-06-PLAN.md:91"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/browser/protected-delete.cjs",
+      "plan_refs": [
+        "06.10-06-PLAN.md:8",
+        "06.10-06-PLAN.md:32",
+        "06.10-06-PLAN.md:41",
+        "06.10-06-PLAN.md:82",
+        "06.10-06-PLAN.md:93",
+        "06.10-06-PLAN.md:102",
+        "06.10-06-PLAN.md:103",
+        "06.10-06-PLAN.md:112"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/browser/protected-delete.test.cjs",
+      "plan_refs": [
+        "06.10-06-PLAN.md:9",
+        "06.10-06-PLAN.md:82",
+        "06.10-06-PLAN.md:91",
+        "06.10-06-PLAN.md:103"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/browser/protected_delete_server.py",
+      "plan_refs": [
+        "06.10-06-PLAN.md:10",
+        "06.10-06-PLAN.md:42",
+        "06.10-06-PLAN.md:82",
+        "06.10-06-PLAN.md:103"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/app/models.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:11",
+        "06.10-01-PLAN.md:75",
+        "06.10-01-PLAN.md:126",
+        "06.10-01-PLAN.md:145",
+        "06.10-04-PLAN.md:74"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/app/views.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:108",
+        "06.10-01-PLAN.md:127"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/conftest.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:127"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_breadcrumb.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:101",
+        "06.10-02-PLAN.md:111"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_cancel_origin.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:101",
+        "06.10-02-PLAN.md:111"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_card.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:83"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_context_button_permission_filter.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:83"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_delete.py",
+      "plan_refs": [
+        "06.10-04-PLAN.md:9",
+        "06.10-04-PLAN.md:29",
+        "06.10-04-PLAN.md:73",
+        "06.10-04-PLAN.md:82",
+        "06.10-04-PLAN.md:84",
+        "06.10-04-PLAN.md:93",
+        "06.10-04-PLAN.md:102"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_delete_databases.py",
+      "plan_refs": [
+        "06.10-04-PLAN.md:11",
+        "06.10-04-PLAN.md:93",
+        "06.10-04-PLAN.md:102"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_delete_inspection.py",
+      "plan_refs": [
+        "06.10-04-PLAN.md:12",
+        "06.10-04-PLAN.md:93",
+        "06.10-04-PLAN.md:102"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_delete_migration_docs.py",
+      "plan_refs": [
+        "06.10-04-PLAN.md:94",
+        "06.10-05-PLAN.md:78",
+        "06.10-05-PLAN.md:104",
+        "06.10-05-PLAN.md:109"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_form_buttons_golden.py",
+      "plan_refs": [
+        "06.10-06-PLAN.md:130"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_guardian_composition.py",
+      "plan_refs": [
+        "06.10-03-PLAN.md:108",
+        "06.10-03-PLAN.md:127",
+        "06.10-03-PLAN.md:137"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_guardian_delete.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:108",
+        "06.10-03-PLAN.md:108",
+        "06.10-04-PLAN.md:10",
+        "06.10-04-PLAN.md:31",
+        "06.10-04-PLAN.md:73",
+        "06.10-04-PLAN.md:82",
+        "06.10-04-PLAN.md:93",
+        "06.10-04-PLAN.md:102"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_guardian_link_visibility.py",
+      "plan_refs": [
+        "06.10-03-PLAN.md:12",
+        "06.10-03-PLAN.md:33",
+        "06.10-03-PLAN.md:70",
+        "06.10-03-PLAN.md:107",
+        "06.10-03-PLAN.md:117",
+        "06.10-03-PLAN.md:126",
+        "06.10-03-PLAN.md:135",
+        "06.10-06-PLAN.md:83"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_guardian_parent_none.py",
+      "plan_refs": [
+        "06.10-03-PLAN.md:89",
+        "06.10-03-PLAN.md:108",
+        "06.10-03-PLAN.md:127",
+        "06.10-03-PLAN.md:137"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_guardian_policy.py",
+      "plan_refs": [
+        "06.10-03-PLAN.md:89",
+        "06.10-03-PLAN.md:127",
+        "06.10-03-PLAN.md:137"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_link_access_parity.py",
+      "plan_refs": [
+        "06.10-03-PLAN.md:11",
+        "06.10-03-PLAN.md:31",
+        "06.10-03-PLAN.md:70",
+        "06.10-03-PLAN.md:88",
+        "06.10-03-PLAN.md:98"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_nested_url_docs.py",
+      "plan_refs": [
+        "06.10-05-PLAN.md:15",
+        "06.10-05-PLAN.md:33",
+        "06.10-05-PLAN.md:38",
+        "06.10-05-PLAN.md:68",
+        "06.10-05-PLAN.md:77",
+        "06.10-05-PLAN.md:81",
+        "06.10-05-PLAN.md:90",
+        "06.10-05-PLAN.md:94",
+        "06.10-05-PLAN.md:103",
+        "06.10-05-PLAN.md:107"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_nested_url_rendering.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:12",
+        "06.10-02-PLAN.md:30",
+        "06.10-02-PLAN.md:65",
+        "06.10-02-PLAN.md:82",
+        "06.10-02-PLAN.md:91",
+        "06.10-02-PLAN.md:100",
+        "06.10-02-PLAN.md:109",
+        "06.10-06-PLAN.md:83"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_nested_url_resolution.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:12",
+        "06.10-01-PLAN.md:32",
+        "06.10-01-PLAN.md:74",
+        "06.10-01-PLAN.md:107",
+        "06.10-01-PLAN.md:117",
+        "06.10-01-PLAN.md:126",
+        "06.10-01-PLAN.md:135",
+        "06.10-01-PLAN.md:144",
+        "06.10-01-PLAN.md:154",
+        "06.10-04-PLAN.md:74",
+        "06.10-05-PLAN.md:78"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_nested_viewset.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:108"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_resource_views.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:145"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_resource_viewset.py",
+      "plan_refs": [
+        "06.10-01-PLAN.md:145"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_success_origin.py",
+      "plan_refs": [
+        "06.10-02-PLAN.md:101",
+        "06.10-02-PLAN.md:111"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "path",
+      "symbol": "tests/test1/test_viewset.py",
+      "plan_refs": [
+        "06.10-03-PLAN.md:89"
+      ],
+      "verdict": "VERIFIED",
+      "severity": "none",
+      "evidence": "Filesystem existence; source contents reviewed separately"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "ChildContextButton",
+      "plan_refs": [
+        "06.10-02-PLAN.md:86",
+        "06.10-02-PLAN.md:89"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/buttons.py:203"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "ContextButton",
+      "plan_refs": [
+        "06.10-02-PLAN.md:86",
+        "06.10-02-PLAN.md:89"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/buttons.py:29"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "ContextVar",
+      "plan_refs": [
+        "06.10-02-PLAN.md:63",
+        "06.10-02-PLAN.md:70",
+        "06.10-02-PLAN.md:74",
+        "06.10-02-PLAN.md:104",
+        "06.10-02-PLAN.md:129"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "GuardianParentPermissionMixin",
+      "plan_refs": [
+        "06.10-03-PLAN.md:67",
+        "06.10-03-PLAN.md:69",
+        "06.10-05-PLAN.md:70"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views_guardian/lib/mixins.py:215"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "ImproperlyConfigured",
+      "plan_refs": [
+        "06.10-03-PLAN.md:68",
+        "06.10-03-PLAN.md:96"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "NoReverseMatch",
+      "plan_refs": [
+        "06.10-01-PLAN.md:93",
+        "06.10-01-PLAN.md:99",
+        "06.10-01-PLAN.md:150",
+        "06.10-05-PLAN.md:27",
+        "06.10-05-PLAN.md:84",
+        "06.10-05-PLAN.md:92"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "ObjectDoesNotExist",
+      "plan_refs": [
+        "06.10-01-PLAN.md:99",
+        "06.10-01-PLAN.md:150"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "ParentContextButton",
+      "plan_refs": [
+        "06.10-02-PLAN.md:87"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/buttons.py:132"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "ParentViewSet",
+      "plan_refs": [
+        "06.10-01-PLAN.md:133"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/viewset/parentviewset.py:13"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "SiblingContextButton",
+      "plan_refs": [
+        "06.10-02-PLAN.md:87"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/buttons.py:255"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "ViewSet",
+      "plan_refs": [
+        "06.10-01-PLAN.md:46",
+        "06.10-01-PLAN.md:73",
+        "06.10-01-PLAN.md:114",
+        "06.10-02-PLAN.md:70",
+        "06.10-03-PLAN.md:68",
+        "06.10-03-PLAN.md:91",
+        "06.10-03-PLAN.md:96",
+        "06.10-05-PLAN.md:70"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/viewset/__init__.py:47"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_LinkDestinationContext",
+      "plan_refs": [
+        "06.10-02-PLAN.md:63"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_ParentResolution",
+      "plan_refs": [
+        "06.10-01-PLAN.md:72",
+        "06.10-05-PLAN.md:105"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_assemble_destination",
+      "plan_refs": [
+        "06.10-01-PLAN.md:72"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_cv_cancel_target_available",
+      "plan_refs": [
+        "06.10-03-PLAN.md:82",
+        "06.10-03-PLAN.md:115"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/base.py:850, src/crud_views_guardian/lib/mixins.py:46, src/crud_views_guardian/lib/mixins.py:125, src/crud_views_guardian/lib/mixins.py:248"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_cv_get_action_context",
+      "plan_refs": [
+        "06.10-02-PLAN.md:89"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/base.py:735"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_cv_get_protected_object_url",
+      "plan_refs": [
+        "06.10-04-PLAN.md:39",
+        "06.10-04-PLAN.md:80"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/views/delete.py:212"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_cv_guardian_create_parent",
+      "plan_refs": [
+        "06.10-03-PLAN.md:115"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views_guardian/lib/views.py:275"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_get_link_parent_resolution",
+      "plan_refs": [
+        "06.10-02-PLAN.md:64"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_guardian_declared_permission",
+      "plan_refs": [
+        "06.10-03-PLAN.md:68"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_guardian_user_has_parent_perm",
+      "plan_refs": [
+        "06.10-03-PLAN.md:67"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views_guardian/lib/mixins.py:348"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_link_destination_scope",
+      "plan_refs": [
+        "06.10-02-PLAN.md:64"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_publish_link_parent_resolution",
+      "plan_refs": [
+        "06.10-02-PLAN.md:64"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "_resolve_parent_chain",
+      "plan_refs": [
+        "06.10-01-PLAN.md:72",
+        "06.10-01-PLAN.md:114",
+        "06.10-01-PLAN.md:172"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "clear_url_caches",
+      "plan_refs": [
+        "06.10-01-PLAN.md:133"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_create_has_access",
+      "plan_refs": [
+        "06.10-03-PLAN.md:80",
+        "06.10-03-PLAN.md:112"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views_guardian/lib/views.py:310, tests/test1/test_cancel_permissions.py:472"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_get_child_url",
+      "plan_refs": [
+        "06.10-02-PLAN.md:72",
+        "06.10-02-PLAN.md:89"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/base.py:985"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_get_link_url",
+      "plan_refs": [
+        "06.10-01-PLAN.md:114"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/base.py:958"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_get_parent_object",
+      "plan_refs": [
+        "06.10-02-PLAN.md:105"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/base.py:1023"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_get_related_object_url",
+      "plan_refs": [
+        "06.10-04-PLAN.md:36",
+        "06.10-04-PLAN.md:65",
+        "06.10-04-PLAN.md:80",
+        "06.10-05-PLAN.md:105"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/views/delete.py:192"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_get_router_and_args",
+      "plan_refs": [
+        "06.10-01-PLAN.md:37",
+        "06.10-01-PLAN.md:114",
+        "06.10-02-PLAN.md:72",
+        "06.10-02-PLAN.md:103"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/base.py:576"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_get_url",
+      "plan_refs": [
+        "06.10-01-PLAN.md:114",
+        "06.10-02-PLAN.md:103"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/base.py:611"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_get_url_extra_kwargs",
+      "plan_refs": [
+        "06.10-02-PLAN.md:103"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/views/child.py:27, src/crud_views/lib/view/base.py:559"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_guardian_has_parent_access",
+      "plan_refs": [
+        "06.10-03-PLAN.md:67",
+        "06.10-03-PLAN.md:115",
+        "06.10-05-PLAN.md:70"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_has_access",
+      "plan_refs": [
+        "06.10-02-PLAN.md:70",
+        "06.10-02-PLAN.md:76",
+        "06.10-02-PLAN.md:107",
+        "06.10-03-PLAN.md:38",
+        "06.10-03-PLAN.md:69",
+        "06.10-03-PLAN.md:113"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/view/base.py:398, src/crud_views/lib/view/base.py:1085, src/crud_views_guardian/lib/views.py:344, src/crud_views_guardian/lib/mixins.py:85, src/crud_views_guardian/lib/mixins.py:143, tests/test1/test_cancel_quality.py:74"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "cv_object",
+      "plan_refs": [
+        "06.10-01-PLAN.md:80"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "get_attribute",
+      "plan_refs": [
+        "06.10-01-PLAN.md:40"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/viewset/parentviewset.py:62"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "get_objects_for_user",
+      "plan_refs": [
+        "06.10-03-PLAN.md:96"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views_guardian/lib/viewset.py:122"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "get_parent_pks",
+      "plan_refs": [
+        "06.10-01-PLAN.md:31",
+        "06.10-01-PLAN.md:73",
+        "06.10-05-PLAN.md:70"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "get_pk_name",
+      "plan_refs": [
+        "06.10-01-PLAN.md:40"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Supplemental declaration locations: src/crud_views/lib/viewset/parentviewset.py:56"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "get_url",
+      "plan_refs": [
+        "06.10-01-PLAN.md:25",
+        "06.10-01-PLAN.md:31",
+        "06.10-01-PLAN.md:73",
+        "06.10-02-PLAN.md:70",
+        "06.10-04-PLAN.md:22",
+        "06.10-04-PLAN.md:36",
+        "06.10-04-PLAN.md:80",
+        "06.10-05-PLAN.md:70"
+      ],
+      "verdict": "EXCLUDED_NEW",
+      "severity": "none",
+      "evidence": "Declared phase artifact or prior-plan SUMMARY execution output"
+    },
+    {
+      "kind": "symbol",
+      "symbol": "select_related",
+      "plan_refs": [
+        "06.10-01-PLAN.md:133",
+        "06.10-05-PLAN.md:92"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Not indexed by empty intel surface; external/library/field/CLI references not verified by authority"
+    },
+    {
+      "kind": "symbol/field",
+      "symbol": "_PermittedPks",
+      "plan_refs": [
+        "06.10-04-PLAN.md:94"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Python field/library callable/runtime reference is unsupported by empty intel surface; signatures are not verified"
+    },
+    {
+      "kind": "symbol/field",
+      "symbol": "field.target_field",
+      "plan_refs": [
+        "06.10-01-PLAN.md:133"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Python field/library callable/runtime reference is unsupported by empty intel surface; signatures are not verified"
+    },
+    {
+      "kind": "symbol/field",
+      "symbol": "db_column",
+      "plan_refs": [
+        "06.10-01-PLAN.md:75",
+        "06.10-01-PLAN.md:130"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Python field/library callable/runtime reference is unsupported by empty intel surface; signatures are not verified"
+    },
+    {
+      "kind": "symbol/field",
+      "symbol": "attname",
+      "plan_refs": [
+        "06.10-01-PLAN.md:133"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Python field/library callable/runtime reference is unsupported by empty intel surface; signatures are not verified"
+    },
+    {
+      "kind": "symbol/field",
+      "symbol": "inspect.signature",
+      "plan_refs": [
+        "06.10-05-PLAN.md:95"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Python field/library callable/runtime reference is unsupported by empty intel surface; signatures are not verified"
+    },
+    {
+      "kind": "symbol/field",
+      "symbol": "reverse",
+      "plan_refs": [
+        "06.10-01-PLAN.md:25",
+        "06.10-01-PLAN.md:93",
+        "06.10-01-PLAN.md:97",
+        "06.10-01-PLAN.md:114",
+        "06.10-01-PLAN.md:147",
+        "06.10-01-PLAN.md:152",
+        "06.10-01-PLAN.md:168"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Python field/library callable/runtime reference is unsupported by empty intel surface; signatures are not verified"
+    },
+    {
+      "kind": "symbol/field",
+      "symbol": "pk",
+      "plan_refs": [
+        "06.10-01-PLAN.md:133"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Python field/library callable/runtime reference is unsupported by empty intel surface; signatures are not verified"
+    },
+    {
+      "kind": "symbol/field",
+      "symbol": "asyncio",
+      "plan_refs": [
+        "06.10-02-PLAN.md:74",
+        "06.10-02-PLAN.md:104"
+      ],
+      "verdict": "UNCHECKABLE",
+      "severity": "INFO",
+      "evidence": "Python field/library callable/runtime reference is unsupported by empty intel surface; signatures are not verified"
+    }
+  ]
+}

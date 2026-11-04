@@ -36,6 +36,14 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
+## Backlog decisions
+
+The opt-in URL helper is tracked in [#314](https://github.com/jacob-consulting/django-crud-views/issues/314), outside this milestone.
+The integrated URL/access phase was cancelled before implementation. Its plans and discussions remain in the
+[retired archive](../superpowers/archive/2026-11-04-phase-06.10-object-derived-nested-urls-and-link-access-parity/README.md). The [maintainer decision](../superpowers/notes/2026-11-04-opt-in-url-helper-decision.md)
+supersedes the old integration and prerequisite assumptions. #312 remains a separate open bug issue; neither issue
+is a Phase 7 dependency. Phase 7 inventories the implemented surface only.
+
 ## Phase Details
 
 ### Phase 1: Label-mode defaults

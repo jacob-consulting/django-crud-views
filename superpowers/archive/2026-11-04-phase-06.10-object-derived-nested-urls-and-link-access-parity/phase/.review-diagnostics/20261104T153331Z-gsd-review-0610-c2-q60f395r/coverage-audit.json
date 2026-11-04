@@ -1,0 +1,316 @@
+{
+  "decisions_and_requirements": [
+    {
+      "id": "D-01",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:113"
+    },
+    {
+      "id": "D-02",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:132"
+    },
+    {
+      "id": "D-03",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:87"
+    },
+    {
+      "id": "D-04",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:88"
+    },
+    {
+      "id": "D-05",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:153"
+    },
+    {
+      "id": "D-06",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "D-07",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:154"
+    },
+    {
+      "id": "D-08",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "D-09",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:80"
+    },
+    {
+      "id": "D-10",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:80"
+    },
+    {
+      "id": "D-11",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:76"
+    },
+    {
+      "id": "D-12",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:155"
+    },
+    {
+      "id": "D-13",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:152"
+    },
+    {
+      "id": "D-14",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "D-15",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:102"
+    },
+    {
+      "id": "D-16",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-05-PLAN.md:79"
+    },
+    {
+      "id": "NURL-01",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:132"
+    },
+    {
+      "id": "NURL-02",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:155"
+    },
+    {
+      "id": "NURL-03",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-04-PLAN.md:83"
+    },
+    {
+      "id": "AUTH-08",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:95"
+    },
+    {
+      "id": "AUTH-09",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:115"
+    },
+    {
+      "id": "NURL-04",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-06-PLAN.md:135"
+    }
+  ],
+  "failure_directions": [
+    {
+      "id": "F01",
+      "case": "Object page A/row B",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:113"
+    },
+    {
+      "id": "F02",
+      "case": "Explicit conflicting parent strict",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:86"
+    },
+    {
+      "id": "F03",
+      "case": "Explicit conflicting parent optional",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:86"
+    },
+    {
+      "id": "F04",
+      "case": "Collection page wins",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:87"
+    },
+    {
+      "id": "F05",
+      "case": "Collection no-page derives",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:88"
+    },
+    {
+      "id": "F06",
+      "case": "Partial incompatible chain",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:98"
+    },
+    {
+      "id": "F07",
+      "case": "Null object relation cannot repair",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "F08",
+      "case": "Independent collection remains usable",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "F09",
+      "case": "M2M zero/one/two with scope",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "F10",
+      "case": "M2M missing scope strict/optional",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:91"
+    },
+    {
+      "id": "F11",
+      "case": "M2M no membership query",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "F12",
+      "case": "Resource explicit/page scope without introspection",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:154"
+    },
+    {
+      "id": "F13",
+      "case": "Resource leaf-only/subclass",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "F14",
+      "case": "Wrong model/malformed identifiers",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "F15",
+      "case": "Required object/PK and falsey/zero",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:102"
+    },
+    {
+      "id": "F16",
+      "case": "Unknown key/native reverse vs view exceptions",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:102"
+    },
+    {
+      "id": "F17",
+      "case": "Native missing versus custom same-class exceptions",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:157"
+    },
+    {
+      "id": "F18",
+      "case": "to_field/custom PK/registered inherited identity",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:136"
+    },
+    {
+      "id": "F19",
+      "case": "Database mismatch ancestry",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-04-PLAN.md:100"
+    },
+    {
+      "id": "F20",
+      "case": "Unloaded/preloaded/deferred query bounds",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-01-PLAN.md:136"
+    },
+    {
+      "id": "F21",
+      "case": "Guardian opposite A/B grants",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:115"
+    },
+    {
+      "id": "F22",
+      "case": "Immediate-parent only despite unavailable ancestor",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:82"
+    },
+    {
+      "id": "F23",
+      "case": "D09 unresolved child fallback actual request",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:116"
+    },
+    {
+      "id": "F24",
+      "case": "D10 no-object sibling fallback",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:80"
+    },
+    {
+      "id": "F25",
+      "case": "Nested create selected state/access MRO",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:84"
+    },
+    {
+      "id": "F26",
+      "case": "Missing declaration actors and retry",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-03-PLAN.md:101"
+    },
+    {
+      "id": "F27",
+      "case": "Certified parent mandatory gate and override styles",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-04-PLAN.md:81"
+    },
+    {
+      "id": "F28",
+      "case": "Hook counts/errors/context ownership",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-02-PLAN.md:110"
+    },
+    {
+      "id": "F29",
+      "case": "Protected visibility/first-candidate/cascade",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-04-PLAN.md:83"
+    },
+    {
+      "id": "F30",
+      "case": "Paired docs/executable optional errors",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-05-PLAN.md:92"
+    },
+    {
+      "id": "F31",
+      "case": "Browser source/recipe/schema failure rejection",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-06-PLAN.md:100"
+    },
+    {
+      "id": "F32",
+      "case": "Final stale evidence recapture/regression gates",
+      "status": "COVERED_IN_PLAN",
+      "evidence": ".planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-06-PLAN.md:135"
+    }
+  ],
+  "result": "Coverage means an executable plan obligation exists, not implementation success. Reviewer concerns may identify inconsistent or insufficient mechanics despite coverage.",
+  "cross_artifact": {
+    "phase_status": "lag, seam-reported; not finding",
+    "requirements": "All six roadmap IDs appear in task-owning plan frontmatter; no contradictory requirement facts.",
+    "success_criteria": "All four roadmap criteria represented in must_haves across plans; extra tests are sanctioned additions.",
+    "terms": "D01-D16 compared with current plan contracts, no confirmed contradiction; create and no-object qualifications preserved.",
+    "skipped_axes": []
+  }
+}

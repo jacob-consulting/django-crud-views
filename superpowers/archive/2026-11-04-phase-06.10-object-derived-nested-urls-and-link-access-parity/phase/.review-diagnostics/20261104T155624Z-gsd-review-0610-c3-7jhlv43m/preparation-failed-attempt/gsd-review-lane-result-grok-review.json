@@ -1,0 +1,9 @@
+{
+  "slug": "opencode",
+  "ok": true,
+  "stubbed": true,
+  "model": {
+    "value": "openrouter/x-ai/grok-4.7 (reasoning=high)",
+    "source": "pinned"
+  }
+}

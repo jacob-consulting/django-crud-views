@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
+current_phase: "7"
 current_phase_name: Theme-surface stability policy
-status: planning
-stopped_at: Phase 06.9 complete, ready to plan Phase 7
-last_updated: "2026-11-04T13:07:34.533Z"
+status: discussing
+stopped_at: Phase 7 needs maintainer decisions before planning
+last_updated: "2026-11-04T17:10:58.348Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.9 complete, transitioned to Phase 7
-state_head: 82eff57d84af936c8436c39a0d71543b6ec70729
+last_activity_desc: Phase 7 is next; theme-surface tier decisions remain open
+state_head: f2c271a5087eaea370c10bb4da305ae22f06c9e6
 progress:
   total_phases: 16
   completed_phases: 15
   total_plans: 113
   completed_plans: 113
-  percent: 94
 milestone_name: milestone
 ---
 
@@ -29,12 +28,12 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 7 (Theme-surface stability policy) — NEEDS DISCUSSION
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-11-04 — Phase 06.9 shipped for review in PR #313
+Status: Needs maintainer decisions before planning
+Last activity: 2026-11-04 — Phase 7 is next; the implemented theme surface is ready for tier decisions
 
-Next: $gsd-discuss-phase 7 — gather context for the theme-surface stability policy.
+Next: $gsd-discuss-phase 7 — settle the stability tiers and remaining public-surface decisions.
 
 ### Phase 06.9 shipping — 2026-11-04
 
@@ -758,6 +757,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T13:07:34Z
-Stopped at: Phase 06.9 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-04T17:10:58.348Z
+Stopped at: Phase 7 needs maintainer decisions before planning
+Resume file: .planning/ROADMAP.md

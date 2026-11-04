@@ -1,0 +1,19 @@
+{
+  "reviewed_commit": "7581bc0",
+  "cycle": 4,
+  "plan_count": 6,
+  "task_count": 16,
+  "changed_plans_since_cycle3": [
+    "gsd-review-plan-06.10-02.md"
+  ],
+  "unchanged_source_and_context": true,
+  "run_dir": "/tmp/gsd-review-0610-c4-5_xw6kbx",
+  "parallel_lanes": true,
+  "selected_reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "prompt_sha256": "20df63b0398d7c246019ab9f5e7f2286398d5ab07daead836dd4903e0d49d450",
+  "prompt_bytes": 247255
+}

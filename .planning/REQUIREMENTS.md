@@ -209,6 +209,15 @@ The initial spec-less probe skipped visibly while IDs were TBD; planning reruns 
 - [ ] **STAB-05**: The stability doc lists dependency floors (crispy-forms, crispy-bootstrap5, django-tables2, Bootstrap)
 - [ ] **STAB-06**: `theme.md` cross-references "what a theme may rely on"; theme part of #89 closed
 
+## Deferred URL and visibility work
+
+The withdrawn NURL-01–04 and AUTH-08–09 entries are preserved in the
+[pre-retirement requirements snapshot](../superpowers/archive/2026-11-04-phase-06.10-object-derived-nested-urls-and-link-access-parity/planning-before-retirement/REQUIREMENTS.md).
+They are not active v1 requirements and their identifiers are reserved for historical traceability.
+The smaller opt-in helper is backlog [#314](https://github.com/jacob-consulting/django-crud-views/issues/314); the confirmed visibility bugs remain in
+[#312](https://github.com/jacob-consulting/django-crud-views/issues/312) for separate scoping.
+Neither is scheduled by this document. See the [maintainer decision](../superpowers/notes/2026-11-04-opt-in-url-helper-decision.md).
+
 ## v2 Requirements
 
 Deferred; tracked for 1.0.0 outside this milestone.
@@ -339,10 +348,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 95 total (89 prior requirements plus six PDL requirements)
+- v1 requirements: 95 total
 - Mapped to phases: 95
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-25*
-*Last updated: 2026-11-02 — Phase 06.4 canonical10/10, UAT2/2, security44/44 and final handoff ready; scoped exclusions retained*
+*Last updated: 2026-11-04 — retired the unimplemented integrated URL/access phase; retained 95 active v1 requirements*

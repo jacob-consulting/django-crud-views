@@ -1,0 +1,92 @@
+{
+  "current_high": 0,
+  "current_actionable": 5,
+  "findings": [
+    {
+      "id": "C1-M02",
+      "severity": "MEDIUM",
+      "plans": "01,02,05",
+      "change": "Replace the incorrect CrudViewError preservation pin with ViewSetError for cv_get_cls_assert_object; retain separate ViewSetKeyFoundError key behavior and the new public-helper translations. Align compatibility tests and documentation.",
+      "evidence": "src/crud_views/lib/view/base.py:555; src/crud_views/lib/exceptions.py:27; 06.10-01-PLAN.md:102; 06.10-02-PLAN.md:82",
+      "reviewer": "Grok; independently confirmed live. Fable/Gemini closure overstates this one subpart."
+    },
+    {
+      "id": "C2-M01",
+      "severity": "MEDIUM",
+      "plans": "01,02,05",
+      "change": "Add cold, in-scope multilevel view/list and breadcrumb URL-resolution query budgets, including N-row rendering and fresh versus cached relations. State the permitted page-evidence reuse or measured extra cost while preserving D-01 actual ancestry and coherent-chain checks; name the existing ancestor query pin. Do not blindly trust page ancestors merely because the immediate FK agrees.",
+      "evidence": "src/crud_views/lib/view/base.py:598; src/crud_views/lib/breadcrumb.py:168; tests/test1/test_breadcrumb.py:237; tests/test1/test_breadcrumb.py:297; 06.10-01-PLAN.md:136; 06.10-02-PLAN.md:115",
+      "reviewer": "Fable C2-N1. Its claimed inevitable existing-test regression is not established: bc_chain constructs cached note.book/book.publisher. Cold-view coverage gap remains."
+    },
+    {
+      "id": "C2-M02",
+      "severity": "MEDIUM",
+      "plans": "03,05",
+      "change": "Measure same-parent Guardian list pages at N=1/4 separately from distinct-parent cards; pin relation loads and per-action permission SQL, specify safe reuse of an already resolved matching page parent instance, and document the measured delta without a permission-result cache.",
+      "evidence": "src/crud_views_guardian/lib/mixins.py:366; src/crud_views/lib/view/base.py:772; 06.10-03-PLAN.md:139; 06.10-03-PLAN.md:143",
+      "reviewer": "Fable C2-N2. Existing plan measures helper and N-parent-card cases, not the shared-page-parent workload."
+    },
+    {
+      "id": "C2-L01",
+      "severity": "LOW",
+      "plans": "02,03",
+      "change": "Name and invoke the actual cv_context_has_permission template filter for the URL-free access regression, replacing the misleading cv_has_access templatetag wording.",
+      "evidence": "src/crud_views/templatetags/crud_views.py:602; 06.10-03-PLAN.md:80; 06.10-03-PLAN.md:123",
+      "reviewer": "Fable and Gemini; confirmed live."
+    },
+    {
+      "id": "C2-L02",
+      "severity": "LOW",
+      "plans": "01,02",
+      "change": "State the resolver/carrier import boundary explicitly: avoid importing the initializing ViewSet/CrudView classes through package-level cycles; use runtime-local imports or TYPE_CHECKING where required and preserve a normal package-import smoke.",
+      "evidence": "src/crud_views/lib/viewset/__init__.py:23; src/crud_views/lib/views/child.py:6; src/crud_views/lib/viewset/parentviewset.py:2; 06.10-01-PLAN.md:72; 06.10-02-PLAN.md:64",
+      "reviewer": "Fable C2-N6; Gemini related Resource leaf-import caution."
+    }
+  ],
+  "already_incorporated_or_nonactionable": [
+    {
+      "observation": "Fable C2-N3: wrong-model collection migration",
+      "disposition": "Already represented by plan 01 wrong-model rule applying to all public inputs (01:96,104,157), and 05-02 full precedence/error matrix plus executable optional wrong-model ValueError (05:92). The selected decision is retained; no relaxation proposed."
+    },
+    {
+      "observation": "Fable C2-N4: differing tooltip-harness LF hashes",
+      "disposition": "Plan 06:83 explicitly chooses separate exact-body extractors with terminal LF and new tooltip-* keys; both producer/consumer sides match that choice. Old action-tooltips hashes are not compared with the new report. Keep exact-byte rule; differing independent hash domains are not a correctness defect."
+    },
+    {
+      "observation": "Fable C2-N5: untracked scratch files in manifest",
+      "disposition": "Plan 06:81 explicitly chooses all tracked-plus-untracked files under the named source roots and final 06:135 recaptures on identity changes. A changed in-scope file is intentionally stale evidence; limiting to only two new modules would omit other new source/tests. No additional plan change required."
+    },
+    {
+      "observation": "Fable C2-N8: current_task with no loop",
+      "disposition": "Ordinary synchronous render integration and database-free thread/task isolation are already explicit in 02:95,110,115. Implementation must represent no running task safely (normally None); this is covered by existing sync/thread acceptance, not a new missing behavior."
+    },
+    {
+      "observation": "Fable C2-N9: precise blocker injection seam",
+      "disposition": "04:67 explicitly assigns a read-only inspection-result fixture seam while keeping candidate/destination real. DeletePreviewContribution.protected/cv_get_delete_preview is a valid option, but direct test inspection-result injection is not prohibited and need not exercise provider merge validation to prove URL certification. No unsupported assertion that only one fixture technique works."
+    },
+    {
+      "observation": "Fable C2-N10: inventory duplication",
+      "disposition": "05:105 preserves the existing public inventory, names a distinct Phase 06.10 handoff, and 05:109 reruns all test_delete_migration_docs cases, including the existing protected inventory. New helper signature inventory is a different obligation, not a contradictory duplicate."
+    },
+    {
+      "observation": "Gemini synthetic evidence recipe dictionary",
+      "disposition": "06:83 requires the same complete dictionary for old/new selections; 06:93,100 edits the unit-test module and runs old valid-schema tests plus new key failures. Updating evidence(t) is concretely within that requirement; exporting a specific helper is optional implementation detail."
+    },
+    {
+      "observation": "Gemini no-frame supplied create parent reuse",
+      "disposition": "02:115 preserves explicit-parent callable context; 03:84 requires identical selected parent for access/state; certified path exact-instance behavior is explicit in 03:86 and 04:83. No separate missing requirement."
+    },
+    {
+      "observation": "Fable top-level create predicate / Grok public helper recursion warning",
+      "disposition": "03:78 limits the add guard to top-level create, while 03:68,123 explicitly prohibit public-default-to-private recursion and test both override forms. Already represented."
+    },
+    {
+      "observation": "Other suggestions: concrete leaf registration, cascade case, goldens, query spies, no broad reverse catch, action case family",
+      "disposition": "04:67,83 requires real exact-model destinations and preserves cascades/native exception boundaries; 04:100,104 pins intermediate alias/identity and router spies; 02:115 and 06:135 replay labels/goldens/navigation; 06:87,100 validates each browser family. These are already visible to execution; no separate counts. The inherited /tmp/cv-069-docs directory spelling is cosmetic."
+    }
+  ],
+  "prior_highs": "All six independently closed by all three reviewers at plan level.",
+  "prior_nonhighs": "18 closed; C1-M02 partial and counted once.",
+  "new_high_consensus": "No newly raised HIGH findings; overall risk ratings are not HIGH concerns. No suppressed single-reviewer highs.",
+  "product_tests": "Not run: review artifact only, implementation not present."
+}

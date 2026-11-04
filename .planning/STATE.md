@@ -4,13 +4,13 @@ milestone: v1.0
 current_phase: "06.8"
 current_phase_name: "Action tooltips: short captions and visible-label suppression"
 status: "Phase 06.8 shipped — PR #305"
-stopped_at: Phase 06.8 UAT passed; preparing shipping branch on current main
-last_updated: "2026-11-04T06:30:19.839Z"
+stopped_at: Phase 06.9 context gathered
+last_updated: "2026-11-04T08:24:07.848Z"
 last_activity: 2026-11-04
 last_activity_desc: Completed quick task 261104-8v8; Sonar quality gate passed; zero unresolved issues
-state_head: 7d4cf1dd3f40d04bef08c41b9abe29fdb3ad87e9
+state_head: ecf506279ef9de40035431f02c28656447b2bd1a
 progress:
-  total_phases: 15
+  total_phases: 16
   completed_phases: 13
   total_plans: 109
   completed_plans: 109
@@ -33,7 +33,7 @@ Plan: 3/3 complete
 Status: Phase 06.8 shipped — PR #305
 Last activity: 2026-11-04 — Completed quick task 261104-8v8; Sonar quality gate passed; zero unresolved issues
 
-Next: Review PR #305 and merge after CI passes; then discuss Phase 7.
+Next: $gsd-plan-phase 06.9 — protected delete-preview object links (#307); retain PR #305 review/merge follow-up.
 
 ### Phase 06.8 shipping — 2026-11-04
 
@@ -692,6 +692,7 @@ None yet.
 - Phase 06.6 inserted after Phase 06.5: Theme-adoption seams from the Tabler sync (#277–#280); source analysis §8 slice 6.6; complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.7 inserted after Phase 06.6: Dynamic cancel navigation and origin query state (#302); approved scope and defaults; complete before Phase 7 freezes the public surface (URGENT)
 - Phase 06.8 inserted after Phase 06.7: Action tooltips: short captions and visible-label suppression (#304); complete before Phase 7 freezes the theme surface (URGENT)
+- Phase 06.9 inserted after Phase 06.8: Protected delete-preview object links (#307); user insertion schedules the issue before Phase 7 freezes the affected contracts (URGENT)
 
 ## Deferred Items
 
@@ -701,6 +702,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-03T23:06:13.487Z
-Stopped at: Completed 06.8-03-PLAN.md; independent phase and human verification pending
-Resume file: None
+Last session: 2026-11-04T08:24:06.296Z
+Stopped at: Phase 06.9 context gathered
+Resume file: .planning/phases/06.9-protected-delete-preview-object-links/06.9-CONTEXT.md

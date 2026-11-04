@@ -6,9 +6,8 @@ is the rich, structured property-display detail view, shipped as the optional
 property groups — no custom template required.
 
 !!! example "Try it live"
-    The [Object Detail example](https://django-crud-views-demo.onrender.com/object-detail/product/) and the
-    [Showcase example](https://django-crud-views-demo.onrender.com/showcase/recipe/) in the live demo show this in
-    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up
+    The [Object Detail example](https://django-crud-views-demo.onrender.com/object-detail/product/) in the live demo
+    shows this in action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up
     time.
 
 For a simple, fully-custom-template detail view, see [DetailView](detail_view.md).

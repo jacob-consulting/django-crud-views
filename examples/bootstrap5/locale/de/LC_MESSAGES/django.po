@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 07:17+0000\n"
+"POT-Creation-Date: 2026-11-04 07:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: action_menus/models.py:7 breadcrumbs/models.py:18 conditional/models.py:40
 #: context_buttons/models.py:11 delete_demo/models.py:7
 #: delete_demo/models.py:26 delete_demo/models.py:44 formsets/models.py:7
-#: guardian_demo/models.py:7 library/models.py:26 showcase/models.py:11
+#: guardian_demo/models.py:7 library/models.py:26
 msgid "title"
 msgstr "Titel"
 
@@ -52,12 +52,11 @@ msgstr "Schritt"
 msgid "steps"
 msgstr "Schritte"
 
-#: action_menus/views.py:72 card_view/views.py:36 showcase/views.py:40
-#: showcase/views.py:61 showcase/views.py:79
+#: action_menus/views.py:72 card_view/views.py:36
 msgid "Details"
 msgstr "Details"
 
-#: action_menus/views.py:73 card_view/views.py:37 showcase/views.py:62
+#: action_menus/views.py:73 card_view/views.py:37
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -191,11 +190,11 @@ msgstr "Arbeitsbereich"
 msgid "Board"
 msgstr "Board"
 
-#: card_view/views.py:29 showcase/views.py:53
+#: card_view/views.py:29
 msgid "Newest first"
 msgstr "Neueste zuerst"
 
-#: card_view/views.py:30 showcase/views.py:54
+#: card_view/views.py:30
 msgid "Oldest first"
 msgstr "Älteste zuerst"
 
@@ -348,7 +347,6 @@ msgid "High"
 msgstr "Hoch"
 
 #: context_buttons/models.py:12 object_detail/models.py:79
-#: showcase/models.py:12
 msgid "description"
 msgstr "Beschreibung"
 
@@ -478,7 +476,9 @@ msgstr "Projekt »{{ object }}« gelöscht"
 
 #: delete_demo/views.py:82
 msgid "A shared project cannot be deleted. Stop sharing it first."
-msgstr "Ein geteiltes Projekt kann nicht gelöscht werden. Beenden Sie zuerst das Teilen."
+msgstr ""
+"Ein geteiltes Projekt kann nicht gelöscht werden. Beenden Sie zuerst das "
+"Teilen."
 
 #: delete_demo/views.py:101
 msgid "Task"
@@ -545,7 +545,6 @@ msgid "body"
 msgstr "Inhalt"
 
 #: guardian_demo/models.py:12 library/models.py:13 object_detail/models.py:89
-#: showcase/models.py:16
 msgid "created"
 msgstr "Erstellt"
 
@@ -913,7 +912,7 @@ msgstr "Produkt »{{ object }}« erstellt"
 msgid "Supplier"
 msgstr "Lieferant"
 
-#: object_detail/views.py:191 showcase/views.py:73
+#: object_detail/views.py:191
 msgid "Basics"
 msgstr "Grunddaten"
 
@@ -1057,15 +1056,15 @@ msgctxt "feature group"
 msgid "Extensions"
 msgstr "Erweiterungen"
 
-#: project/settings.py:113
+#: project/settings.py:112
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:114
+#: project/settings.py:113
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:133
+#: project/settings.py:132
 msgid "Home"
 msgstr "Startseite"
 
@@ -1221,87 +1220,6 @@ msgstr "Zeitstempel von »{{ object }}« aktualisiert"
 msgid "Touch failed for “{{ object }}”"
 msgstr "Touch für »{{ object }}« fehlgeschlagen"
 
-#: showcase/models.py:7
-msgid "Easy"
-msgstr "Leicht"
-
-#: showcase/models.py:8
-msgid "Medium"
-msgstr "Mittel"
-
-#: showcase/models.py:9
-msgid "Hard"
-msgstr "Schwer"
-
-#: showcase/models.py:13
-msgid "difficulty"
-msgstr "Schwierigkeit"
-
-#: showcase/models.py:14
-msgid "servings"
-msgstr "Portionen"
-
-#: showcase/models.py:15
-msgid "favorite"
-msgstr "Favorit"
-
-#: showcase/models.py:20
-msgid "recipe"
-msgstr "Rezept"
-
-#: showcase/models.py:21
-msgid "recipes"
-msgstr "Rezepte"
-
-#: showcase/views.py:55
-msgid "Title A-Z"
-msgstr "Titel A-Z"
-
-#: showcase/views.py:56
-msgid "Title Z-A"
-msgstr "Titel Z-A"
-
-#: showcase/views.py:63 showcase/views.py:127 showcase/views.py:128
-msgid "Favorite"
-msgstr "Favorit"
-
-#: showcase/views.py:75
-msgid "What and how much"
-msgstr "Was und wie viel"
-
-#: showcase/views.py:81
-msgid "Preparation and metadata"
-msgstr "Zubereitung und Metadaten"
-
-#: showcase/views.py:85
-msgid "Computed on the view"
-msgstr "In der View berechnet"
-
-#: showcase/views.py:91
-#, python-format
-msgid "%(title)s — %(difficulty)s, serves %(servings)s"
-msgstr "%(title)s — %(difficulty)s, für %(servings)s Personen"
-
-#: showcase/views.py:102
-msgid "Created recipe “{{ object }}”"
-msgstr "Rezept »{{ object }}« erstellt"
-
-#: showcase/views.py:109
-msgid "Updated recipe “{{ object }}”"
-msgstr "Rezept »{{ object }}« aktualisiert"
-
-#: showcase/views.py:116
-msgid "Deleted recipe “{{ object }}”"
-msgstr "Rezept »{{ object }}« gelöscht"
-
-#: showcase/views.py:129
-msgid "Toggled favorite for “{{ object }}”"
-msgstr "Favorit für »{{ object }}« umgeschaltet"
-
-#: showcase/views.py:130
-msgid "Could not toggle favorite for “{{ object }}”"
-msgstr "Favorit für »{{ object }}« konnte nicht umgeschaltet werden"
-
 #: workflow/models.py:9
 msgid "Draft"
 msgstr "Entwurf"
@@ -1365,6 +1283,67 @@ msgstr "Kampagne »{{ object }}« aktualisiert"
 #: workflow/views.py:78
 msgid "Deleted campaign “{{ object }}”"
 msgstr "Kampagne »{{ object }}« gelöscht"
+
+#~ msgid "Easy"
+#~ msgstr "Leicht"
+
+#~ msgid "Medium"
+#~ msgstr "Mittel"
+
+#~ msgid "Hard"
+#~ msgstr "Schwer"
+
+#~ msgid "difficulty"
+#~ msgstr "Schwierigkeit"
+
+#~ msgid "servings"
+#~ msgstr "Portionen"
+
+#~ msgid "favorite"
+#~ msgstr "Favorit"
+
+#~ msgid "recipe"
+#~ msgstr "Rezept"
+
+#~ msgid "recipes"
+#~ msgstr "Rezepte"
+
+#~ msgid "Title A-Z"
+#~ msgstr "Titel A-Z"
+
+#~ msgid "Title Z-A"
+#~ msgstr "Titel Z-A"
+
+#~ msgid "Favorite"
+#~ msgstr "Favorit"
+
+#~ msgid "What and how much"
+#~ msgstr "Was und wie viel"
+
+#~ msgid "Preparation and metadata"
+#~ msgstr "Zubereitung und Metadaten"
+
+#~ msgid "Computed on the view"
+#~ msgstr "In der View berechnet"
+
+#, python-format
+#~ msgid "%(title)s — %(difficulty)s, serves %(servings)s"
+#~ msgstr "%(title)s — %(difficulty)s, für %(servings)s Personen"
+
+#~ msgid "Created recipe “{{ object }}”"
+#~ msgstr "Rezept »{{ object }}« erstellt"
+
+#~ msgid "Updated recipe “{{ object }}”"
+#~ msgstr "Rezept »{{ object }}« aktualisiert"
+
+#~ msgid "Deleted recipe “{{ object }}”"
+#~ msgstr "Rezept »{{ object }}« gelöscht"
+
+#~ msgid "Toggled favorite for “{{ object }}”"
+#~ msgstr "Favorit für »{{ object }}« umgeschaltet"
+
+#~ msgid "Could not toggle favorite for “{{ object }}”"
+#~ msgstr "Favorit für »{{ object }}« konnte nicht umgeschaltet werden"
 
 #~ msgid "NEW"
 #~ msgstr "NEU"

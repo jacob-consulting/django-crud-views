@@ -267,40 +267,6 @@ FEATURES: list[Feature] = [
         docs=(DocRef(page="reference/resources.md", label="Resources — non-ORM data in ViewSets"),),
     ),
     Feature(
-        app="showcase",
-        group="ui",
-        title="Showcase",
-        description="Presentation extras: card list with signed ordering, fieldsets, modal delete, custom actions.",
-        about=(
-            "Presentation building blocks gathered in one place. Recipes are shown as a grid of cards instead "
-            "of a table, ordered by a single combo whose choices carry the direction ('Newest first', "
-            "'Title Z-A') so no asc/desc buttons are needed, the detail page groups fields into labelled "
-            "fieldsets, deletion happens in a modal, and a custom 'favorite' action toggles a flag straight "
-            "from the list. Mix these into your own views as needed."
-        ),
-        look_at=(
-            "RecipeCardListView (the card grid, its paginate_by and its signed cv_order_fields), the "
-            "cv_property_display fieldset groups on RecipeDetailView, cv_modal on RecipeDeleteView, and the "
-            "RecipeFavoriteView custom action in views.py."
-        ),
-        url_name="recipe-card",
-        icon="fa-solid fa-wand-magic-sparkles",
-        docs=(
-            DocRef(
-                page="reference/card-list-view.md",
-                label="CardListView — signed ordering choices",
-                anchor="signed-choices-single-combo-no-buttons",
-            ),
-            DocRef(
-                page="reference/object_detail_view.md",
-                label="ObjectDetailView — the cv_property_display DSL",
-                anchor="the-cv_property_display-dsl",
-            ),
-            DocRef(page="reference/modals.md", label="Modals"),
-            DocRef(page="reference/action_view.md", label="ActionView — custom actions"),
-        ),
-    ),
-    Feature(
         app="object_detail",
         group="extensions",
         title="Object Detail",

@@ -70,7 +70,6 @@ EXAMPLE_APPS = [
     "polymorphic_demo",
     "guardian_demo",
     "resources",
-    "showcase",
     "object_detail",
     "breadcrumbs",
     "conditional",

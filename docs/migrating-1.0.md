@@ -5,6 +5,36 @@ the route from **0.29.x** to 1.0.0. The [CHANGELOG](https://github.com/jacob-con
 stays the complete record, ordered by release and issue; this page orders the same changes by what you have to
 touch.
 
+## Action tooltips
+
+Context/list icon-only actions now use the existing nonempty short caption as `cv_title`, with full-caption
+fallback. Their full hidden `cv_label` stays unchanged; shortening the tooltip does not shorten the accessible
+caption. Effective `label` / `both` modes and missing-icon fallbacks to visible text have no generated title or
+tooltip marker. Empty tooltip text emits neither attribute. All visibly labelled context/list/card overflow items
+omit automatic titles and tooltip markers, regardless of the action's inline mode. The overflow toggle is unchanged.
+
+**Copied button and menu leaves must migrate immediately.** Use the complete, executable
+[action leaf](reference/buttons.md#copied-action-leaf) and
+[menu leaf](reference/buttons.md#copied-menu-leaf) recipes. An existing action copy that already consumes guarded
+`cv_title` and full hidden `cv_label` needs no markup edit, but must adopt the changed field semantics in its
+documentation and tests. A copied menu must remove its native-title branch; preserving that historical output is
+not a supported migration path. Keep autoescaping, the hidden full caption, classes and active/disabled handling,
+plus the link, POST and modal hooks shown in the recipes.
+
+Cards retain their caption precedence: explicit card label, short caption, full caption, then key. Form buttons
+retain their separate resolved-caption and extra-attribute ownership: generated icon titles use the form label;
+application-supplied tooltip attributes in visible form modes remain application-owned. A raw custom
+`ContextButton` template must normalize through the existing tag, as in the
+[raw-context recipe](reference/buttons.md#raw-contextbutton-template), before expecting flat leaf fields.
+Custom button labels and application-owned attributes are preserved. Full-caption/helper APIs remain available;
+there is no new tooltip setting or runtime diagnostic.
+
+The confirmed defect was the long tooltip on icon-only list actions. A separate visible-label defect was not
+established; their existing no-generated-tooltip behavior is preserved. The caption changes do not change
+hover/focus behavior, initialization, hide/dispose, adapter opt-out or application-owned tooltips; see
+[Tooltips](reference/javascript.md#tooltips). Filter toggles, property-detail tooltips, formsets and card-order
+controls are outside this action-caption change.
+
 ## Dynamic Cancel navigation
 
 Standard create/update/delete/custom forms now default to `cv_cancel_keys="auto"`. Cancel accepts
@@ -376,6 +406,8 @@ None of these raise anything. Check your stylesheets, your JavaScript selectors 
 - **Tooltip markup** (#202): the formset controls' `title` is the translated text of their `aria-label` ("Move up",
   "Move down", "Add row", "Delete row"), no longer `up` / `down` / `add` / `delete`. The object-detail
   property-detail button uses `title` instead of `data-bs-title`.
+- **Action tooltips** (#304): context/list icon titles use short captions, while full hidden captions remain;
+  context-menu native titles are removed. Update copied leaves and title assertions ([Action tooltips](#action-tooltips)).
 - **Alerts** (#250): the delete page's protection and related-objects alerts and the guardian manage page's config
   alert gain `role="alert"` and an icon before the heading.
 - **Alert close control:** the dismissible alert's close button carries `data-cv-alert-dismiss` instead of
@@ -1456,6 +1488,9 @@ The card pagination (`crud_views/snippets/pagination.html`) has no blocks, and i
 this; its earlier migration is under [CSS and tests that select on markup](#css-and-tests-that-select-on-markup).
 
 ## Silent breaks
+
+- [ ] Short action titles replace full context/list icon titles, and context-menu native titles are removed;
+  migrate copied button/menu leaves and title assertions immediately ([Action tooltips](#action-tooltips)).
 
 Everything that renders differently and raises nothing, as one checklist. A clean `manage.py check` says nothing
 about these.

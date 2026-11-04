@@ -1,0 +1,221 @@
+{
+  "runtimes": {
+    ".nox/tests-3-12-django-5-2/bin/python": {
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+      "package": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+      "django": "5.2.18",
+      "crispy": "2.7",
+      "bootstrap": "2026.9",
+      "pytest": "9.2.0"
+    },
+    ".nox/tests-3-12-django-4-2/bin/python": {
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/bin/python",
+      "package": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+      "django": "4.2.30",
+      "crispy": "2.5",
+      "bootstrap": "2026.3",
+      "pytest": "9.2.0"
+    },
+    ".nox/crispy_floor-3-12-django-6-0/bin/python": {
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "executable": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+      "package": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+      "django": "6.0.9",
+      "crispy": "2.0",
+      "bootstrap": "2023.10",
+      "pytest": "9.2.0"
+    }
+  },
+  "supportedRuntimeGates": [
+    {
+      "name": "django52",
+      "command": [
+        ".nox/tests-3-12-django-5-2/bin/python",
+        "-m",
+        "pytest",
+        "tests",
+        "-n",
+        "4",
+        "-q"
+      ],
+      "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views",
+      "exitCode": 0,
+      "seconds": 248.187,
+      "log": "/tmp/cv-068-django52.log",
+      "tail": "................................................ [ 76%]\n........................................................................ [ 77%]\n........................................................................ [ 78%]\n........................................................................ [ 79%]\n........................................................................ [ 80%]\n........................................................................ [ 80%]\n........................................................................ [ 81%]\n........................................................................ [ 82%]\n........................................................................ [ 83%]\n........................................................................ [ 84%]\n........................................................................ [ 84%]\n........................................................................ [ 85%]\n........................................................................ [ 86%]\n........................................................................ [ 87%]\n........................................................................ [ 87%]\n........................................................................ [ 88%]\n........................................................................ [ 89%]\n........................................................................ [ 90%]\n........................................................................ [ 91%]\n........................................................................ [ 91%]\n........................................................................ [ 92%]\n........................................................................ [ 93%]\n........................................................................ [ 94%]\n........................................................................ [ 95%]\n........................................................................ [ 95%]\n........................................................................ [ 96%]\n........................................................................ [ 97%]\n........................................................................ [ 98%]\n........................................................................ [ 98%]\n........................................................................ [ 99%]\n......................                                                   [100%]\n9165 passed, 1 skipped in 246.66s (0:04:06)\n"
+    },
+    {
+      "name": "django42",
+      "command": [
+        ".nox/tests-3-12-django-4-2/bin/python",
+        "-m",
+        "pytest",
+        "tests",
+        "-n",
+        "4",
+        "-q"
+      ],
+      "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views",
+      "exitCode": 0,
+      "seconds": 163.75,
+      "log": "/tmp/cv-068-django42.log",
+      "tail": "................................................ [ 76%]\n........................................................................ [ 77%]\n........................................................................ [ 78%]\n........................................................................ [ 79%]\n........................................................................ [ 80%]\n........................................................................ [ 80%]\n........................................................................ [ 81%]\n........................................................................ [ 82%]\n........................................................................ [ 83%]\n........................................................................ [ 84%]\n........................................................................ [ 84%]\n........................................................................ [ 85%]\n........................................................................ [ 86%]\n........................................................................ [ 87%]\n........................................................................ [ 87%]\n........................................................................ [ 88%]\n........................................................................ [ 89%]\n........................................................................ [ 90%]\n........................................................................ [ 91%]\n........................................................................ [ 91%]\n........................................................................ [ 92%]\n........................................................................ [ 93%]\n........................................................................ [ 94%]\n........................................................................ [ 95%]\n........................................................................ [ 95%]\n........................................................................ [ 96%]\n........................................................................ [ 97%]\n........................................................................ [ 98%]\n........................................................................ [ 98%]\n........................................................................ [ 99%]\n......................                                                   [100%]\n9165 passed, 1 skipped in 161.22s (0:02:41)\n"
+    },
+    {
+      "name": "django60-floor",
+      "command": [
+        ".nox/crispy_floor-3-12-django-6-0/bin/python",
+        "-m",
+        "pytest",
+        "tests",
+        "-n",
+        "4",
+        "-q",
+        "--deselect",
+        "tests/test1/test_form_buttons_golden.py::test_filter_form_baseline"
+      ],
+      "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views",
+      "exitCode": 0,
+      "seconds": 287.606,
+      "log": "/tmp/cv-068-django60-floor.log",
+      "tail": "........................................................... [ 76%]\n........................................................................ [ 77%]\n........................................................................ [ 78%]\n........................................................................ [ 79%]\n........................................................................ [ 80%]\n........................................................................ [ 80%]\n........................................................................ [ 81%]\n........................................................................ [ 82%]\n........................................................................ [ 83%]\n........................................................................ [ 84%]\n........................................................................ [ 84%]\n........................................................................ [ 85%]\n........................................................................ [ 86%]\n........................................................................ [ 87%]\n........................................................................ [ 87%]\n........................................................................ [ 88%]\n........................................................................ [ 89%]\n........................................................................ [ 90%]\n........................................................................ [ 91%]\n........................................................................ [ 91%]\n........................................................................ [ 92%]\n........................................................................ [ 93%]\n........................................................................ [ 94%]\n........................................................................ [ 95%]\n........................................................................ [ 95%]\n........................................................................ [ 96%]\n........................................................................ [ 97%]\n........................................................................ [ 98%]\n........................................................................ [ 98%]\n........................................................................ [ 99%]\n.....................                                                    [100%]\n9165 passed in 286.14s (0:04:46)\n"
+    }
+  ],
+  "earlierGates": [
+    {
+      "name": "examples",
+      "command": [
+        ".nox/tests-3-12-django-5-2/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "examples/bootstrap5/pytest.ini",
+        "examples/bootstrap5",
+        "-n",
+        "4",
+        "-q"
+      ],
+      "seconds": 14.898,
+      "exitCode": 0,
+      "tail": "bringing up nodes...\nbringing up nodes...\n\n........................................................................ [ 23%]\n..............................................u.u..................uuuuu [ 45%]\nuuuuu.uuu.........uuuu.uu.uuuuuuu....uu...u..uuuuuuu..uuuuu............. [ 57%]\n........................................................................ [ 81%]\n.........................................................                [100%]\n=============================== warnings summary ===============================\n.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1148\n.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1148\n.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1148\n.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1148\n  /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1148: RemovedInDjango60Warning: The default scheme will be changed from 'http' to 'https' in Django 6.0. Pass the forms.URLField.assume_scheme argument to silence this warning, or set the FORMS_URLFIELD_ASSUME_HTTPS transitional setting to True to opt into using 'https' as the new default scheme.\n    return form_class(**defaults)\n\nproject/tests.py::HomePageTest::test_every_feature_landing_page_renders\nproject/tests.py::DocRefsPanelTest::test_every_feature_page_lists_its_doc_refs\nproject/tests.py::ExampleAboutTest::test_every_feature_page_shows_about\nproject/tests.py::NavGroupsTest::test_feature_page_marks_its_group_active\nproject/tests.py::BreadcrumbAdoptionTest::test_every_feature_landing_page_shows_breadcrumb\nworkflow/tests.py::CampaignWorkflowTest::test_list_renders_with_snippets\n  /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/list.py:91: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'workflow.models.Campaign'> QuerySet.\n    return self.paginator_class(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n302 passed, 10 warnings, 43 subtests passed in 14.25s\n"
+    },
+    {
+      "name": "javascript",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "seconds": 13.45,
+      "exitCode": 0,
+      "tail": "\n> django-crud-views-js-tests@1.0.0 test\n> vitest run\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\n RUN  v5.0.3 /home/alex/projects/alex/django-crud-views\n\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\n\n Test Files  10 passed (10)\n      Tests  363 passed (363)\n   Start at  22:54:04\n   Duration  12.96s (tests 66%, environment 28%, setup 3%, transform 3%, import 1%)\n\n"
+    },
+    {
+      "name": "ruff-check",
+      "command": [
+        ".venv/bin/ruff",
+        "check"
+      ],
+      "seconds": 0.038,
+      "exitCode": 1,
+      "tail": "E501 Line too long (123 > 120)\n  --> tests/test1/test_cancel_docs.py:96:121\n   |\n94 |     for destination in (\"list\", \"card\"):\n95 |         monkeypatch.setattr(\n96 |             cv_author_origin.get_view_class(destination), \"cv_has_access\", classmethod(lambda cls, user, obj=None: allowed)\n   |                                                                                                                         ^^^\n97 |         )\n98 |     path = \"/author_origin/create/\" if key == \"create\" else f\"/author_origin/{author_douglas_adams.pk}/delete/\"\n   |\n\nFound 1 error.\n"
+    },
+    {
+      "name": "ruff-format",
+      "command": [
+        ".venv/bin/ruff",
+        "format",
+        "--check"
+      ],
+      "seconds": 0.039,
+      "exitCode": 1,
+      "tail": "unformatted: File would be reformatted\n   --> tests/test1/test_cancel_docs.py:96:58\n   |\n95 |         monkeypatch.setattr(\n   -             cv_author_origin.get_view_class(destination), \"cv_has_access\", classmethod(lambda cls, user, obj=None: allowed)\n96 +             cv_author_origin.get_view_class(destination),\n97 +             \"cv_has_access\",\n98 +             classmethod(lambda cls, user, obj=None: allowed),\n99 |         )\n   |\n\n1 file would be reformatted, 567 files already formatted\n"
+    }
+  ],
+  "finalGates": [
+    {
+      "name": "javascript-final",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "seconds": 12.438,
+      "exitCode": 0,
+      "tail": "\n> django-crud-views-js-tests@1.0.0 test\n> vitest run\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\n RUN  v5.0.3 /home/alex/projects/alex/django-crud-views\n\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\n\n Test Files  10 passed (10)\n      Tests  365 passed (365)\n   Start at  22:56:22\n   Duration  11.96s (tests 67%, environment 27%, setup 2%, transform 2%)\n\n"
+    },
+    {
+      "name": "docs-final",
+      "command": [
+        ".venv/bin/mkdocs",
+        "build",
+        "--strict",
+        "--site-dir",
+        "/tmp/cv-068-docs-final"
+      ],
+      "seconds": 1.285,
+      "exitCode": 0,
+      "tail": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /tmp/cv-068-docs-final\nINFO    -  Documentation built in 1.06 seconds\n"
+    },
+    {
+      "name": "cancel-docs-format",
+      "command": [
+        ".nox/tests-3-12-django-5-2/bin/python",
+        "-m",
+        "pytest",
+        "tests/test1/test_cancel_docs.py",
+        "-n",
+        "2",
+        "-q"
+      ],
+      "seconds": 4.026,
+      "exitCode": 0,
+      "tail": "bringing up nodes...\nbringing up nodes...\n\n................                                                         [100%]\n16 passed in 3.35s\n"
+    },
+    {
+      "name": "runner-final",
+      "command": [
+        "node",
+        "--test",
+        "tests/browser/action-tooltips.test.cjs",
+        "tests/browser/cancel-navigation.test.cjs"
+      ],
+      "seconds": 1.717,
+      "exitCode": 0,
+      "tail": "✔ smoke evidence rejects missing required cases (1.462535ms)\n✔ full evidence rejects smoke-only results (0.229396ms)\n✔ options reject unknown cases and flags (0.395517ms)\n✔ stock delegation cannot satisfy migrated root identity (0.70919ms)\n✔ missing runtime writes failed evidence (83.692512ms)\n✔ browser close failure still stops only the owned child (11.998137ms)\n✔ full validation rejects missing, corrupt or non-durable screenshots (2.706351ms)\n✔ full validation rejects zero modal observations and strict leakage (2.977731ms)\n✔ missing asset manifest fails closed (2.425127ms)\n✔ exact local bytes are accepted and undeclared URLs rejected (1.184867ms)\n✔ missing file and incorrect hash fail closed (1.331878ms)\n✔ SRI is checked against fixture declaration, not a substituted manifest (1.902518ms)\n✔ manifest paths cannot escape through traversal or symlink (1.257377ms)\n✔ CSS dependencies must be declared and unexpected manifest entries are rejected (1.994268ms)\n✔ options reject unknown cases, flags and missing values (0.94865ms)\n✔ explicit unavailable runtime exits nonzero without browser launch (41.267172ms)\n✔ owned process cleanup terminates only the supplied child (11.070397ms)\n✔ browser close rejection still tears down owned server and finalizes the primary failure report (4.923476ms)\n✔ secondary teardown and report errors cannot mask the primary orchestration failure (1.615787ms)\nℹ tests 19\nℹ suites 0\nℹ pass 19\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1679.935847\n"
+    },
+    {
+      "name": "ruff-check-final",
+      "command": [
+        ".venv/bin/ruff",
+        "check"
+      ],
+      "seconds": 0.032,
+      "exitCode": 0,
+      "tail": "All checks passed!\n"
+    },
+    {
+      "name": "ruff-format-final",
+      "command": [
+        ".venv/bin/ruff",
+        "format",
+        "--check"
+      ],
+      "seconds": 0.028,
+      "exitCode": 0,
+      "tail": "568 files already formatted\n"
+    }
+  ],
+  "finalRunner": {
+    "command": [
+      "node",
+      "--test",
+      "tests/browser/action-tooltips.test.cjs",
+      "tests/browser/cancel-navigation.test.cjs"
+    ],
+    "exitCode": 0,
+    "seconds": 1.768,
+    "output": "✔ smoke evidence rejects missing required cases (1.567995ms)\n✔ full evidence rejects smoke-only results (0.287413ms)\n✔ options reject unknown cases and flags (0.306173ms)\n✔ stock delegation cannot satisfy migrated root identity (0.625373ms)\n✔ missing runtime writes failed evidence (97.576962ms)\n✔ browser close failure still stops only the owned child (21.744426ms)\n✔ full validation rejects missing, corrupt or non-durable screenshots (5.975683ms)\n✔ full validation rejects zero modal observations and strict leakage (6.561246ms)\n✔ full validation rejects incorrect nonzero specimen counts (2.017103ms)\n✔ missing asset manifest fails closed (2.494603ms)\n✔ exact local bytes are accepted and undeclared URLs rejected (1.169614ms)\n✔ missing file and incorrect hash fail closed (1.361634ms)\n✔ SRI is checked against fixture declaration, not a substituted manifest (1.927617ms)\n✔ manifest paths cannot escape through traversal or symlink (1.253891ms)\n✔ CSS dependencies must be declared and unexpected manifest entries are rejected (1.417388ms)\n✔ options reject unknown cases, flags and missing values (0.792475ms)\n✔ explicit unavailable runtime exits nonzero without browser launch (62.898949ms)\n✔ owned process cleanup terminates only the supplied child (24.076053ms)\n✔ browser close rejection still tears down owned server and finalizes the primary failure report (10.832217ms)\n✔ secondary teardown and report errors cannot mask the primary orchestration failure (2.782396ms)\nℹ tests 20\nℹ suites 0\nℹ pass 20\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1696.841947\n",
+    "stderr": ""
+  }
+}

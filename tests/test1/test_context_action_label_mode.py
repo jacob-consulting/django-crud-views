@@ -177,7 +177,7 @@ def test_cv_context_button_tag_follows_target(author_douglas_adams, monkeypatch)
 
 @pytest.mark.django_db
 def test_menu_folded_key_keeps_icon_and_short_label(author_douglas_adams, monkeypatch):
-    # a menu item renders icon and short label in every mode; only its title follows the mode, as documented (#216)
+    # A menu item always renders its icon and short label, without a generated tooltip in any inline mode.
     _set_target(monkeypatch, AuthorUpdateView, "label")
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", ["detail"])
     resp = _client([AUTHOR_FULL]).get(_detail_url(author_douglas_adams))
@@ -185,6 +185,7 @@ def test_menu_folded_key_keeps_icon_and_short_label(author_douglas_adams, monkey
     assert item.xpath("./i[@aria-hidden='true']")
     assert item.text_content().strip() == "Update"
     assert item.get("title") is None
+    assert item.get("data-cv-tooltip") is None
 
 
 # checks

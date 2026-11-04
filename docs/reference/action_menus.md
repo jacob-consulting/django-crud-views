@@ -272,9 +272,10 @@ menu item carries `data-cv-action="submit-form"` and `data-cv-target` to submit 
 ## Labels, icons and the active action
 
 Menu items show the target view's icon (fixed width, `cv-icon-fw`) and a visible text label — the short action label
-(`cv_action_short_label`), or `CardAction.label` on cards — in every [label mode](#label-mode). A context menu item
-carries the full label as `title` only when its action is `icon`, so a labelled action has no tooltip inline or
-folded. A context button's own `label_template` / `label_template_code` is also used as its menu item text.
+(`cv_action_short_label`), or `CardAction.label` on cards — in every [label mode](#label-mode). All context, list and
+card menu items have no automatic title or tooltip, regardless of their inline mode. The old context-menu
+native-title branch is unsupported; migrate copied leaves using the [complete recipe](buttons.md#copied-menu-leaf).
+A context button's own `label_template` / `label_template_code` is also used as its menu item text.
 `CardAction.variant`, `flex` and `label_mode` apply to inline card buttons only.
 
 On the context toolbar the current page's action is highlighted: inline with `.active`, inside the menu with

@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: "Phase 06.7 shipped — PR #303"
-stopped_at: Phase 06.7 complete, ready to plan Phase 7
-last_updated: "2026-11-03T20:49:28.173Z"
-last_activity: 2026-11-03
-state_head: 82fe1881169fe0197b14b0f67c41ee59403ce327
+current_phase: "06.8"
+current_phase_name: "Action tooltips: short captions and visible-label suppression"
+status: "Phase 06.8 shipped — PR #305"
+stopped_at: Phase 06.8 UAT passed; preparing shipping branch on current main
+last_updated: "2026-11-04T06:30:19.839Z"
+last_activity: 2026-11-04
+last_activity_desc: Completed quick task 261104-8v8; Sonar quality gate passed; zero unresolved issues
+state_head: 7d4cf1dd3f40d04bef08c41b9abe29fdb3ad87e9
 progress:
-  total_phases: 14
+  total_phases: 15
   completed_phases: 13
-  total_plans: 106
-  completed_plans: 106
-  percent: 93
+  total_plans: 109
+  completed_plans: 109
 milestone_name: milestone
 ---
 
@@ -24,17 +24,41 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-03)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.8 — Action tooltips: short captions and visible-label suppression
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
-Plan: Not started
-Status: Phase 06.7 shipped — PR #303
-Last activity: 2026-11-03
+Phase: 06.8 (Action tooltips: short captions and visible-label suppression) — SHIPPING PREPARATION
+Plan: 3/3 complete
+Status: Phase 06.8 shipped — PR #305
+Last activity: 2026-11-04 — Completed quick task 261104-8v8; Sonar quality gate passed; zero unresolved issues
 
-Progress: [█████████░] 93%
-Next: $gsd-discuss-phase 7 — settle the theme-surface stability policy before planning
+Next: Review PR #305 and merge after CI passes; then discuss Phase 7.
+
+### Phase 06.8 shipping — 2026-11-04
+
+- PR #305: https://github.com/jacob-consulting/django-crud-views/pull/305, branch ship/phase-06.8-action-tooltips, based on merged Phase 06.7 main e0e6e9a.
+- UAT 3/3 passed: all six retained images, all six live stock/custom scenarios, and all 19 UI state considerations. Browser/version unspecified; no screen-reader claim.
+- Fresh integrated checks: 9188 Python passed with one existing Django-6-only skip, 365 JavaScript passed, 28 Node runner tests passed, Ruff/format/strict docs passed. Canonical verification 30/30; all nine threats closed.
+- Historical browser evidence was revalidated with explicit source deltas; no new browser execution or full supported Python matrix is claimed.
+- Prior pending-human entries below are historical and superseded. PR awaits CI/review; no merge performed. Original checkout and its unrelated uncommitted files preserved.
+
+### Phase 06.8 execution and verification — 2026-11-03
+
+- All three plans complete. Short icon tooltips preserve full hidden labels; visible menus omit generated tooltips. Exact copied-template migrations and paired Breaking guidance delivered.
+- Cached Django4.2/5.2/6.0 each9165 passes with documented skip/floor exclusion; examples302+43subtests; JS365; final Node23; browser49cases/97controls; strict docs/Ruff pass.
+- Browser exposed pre-existing Bootstrap disposal callback race: minimal identity guard repaired and independently reviewed; private5.3.3 seam limitation explicit. Runner spawn and hermetic-test review findings fixed/rechecked; zero open code findings.
+- Canonical verification30/30; validation complete, security9/9closed, UI checker7/7/audit22/24. Screenshot typography is confirmed inherited JetBrains fontconfig/FiraCode fallback, not product styling. Test-only evidence continuity disclosed.
+- Three human checks persisted in06.8-UAT.md: six screenshots, live visual/keyboard flows,19 UI considerations. No human approval or screen-reader testing inferred.
+- Existing config/state.json and unrelated untracked artifacts preserved. No phase completion, merge, push or publication.
+
+### Phase 06.8 execution checkpoint — 2026-11-03
+
+- All three plans executed; TIP-01–TIP-05 automated obligations complete. Phase remains In Progress pending independent verification and human acceptance.
+- Plan 03: 49 Chromium cases / 97 controls, exact stock/custom recipes, six retained screenshots and source/asset hashes pass. Each cached Django series passes 9165 tests; existing CSP skips and sole floor exclusion remain explicit. Examples 302 plus 43 subtests, JavaScript 365, runner tests 20, strict docs and Ruff pass.
+- Real modal acceptance exposed stale Bootstrap transition callbacks after disposal. Authorized guarded completion repair preserves animations and synchronous disposal; its private `_queueCallback` seam requires independent review. Original failing evidence and regression RED are retained.
+- UI consideration confirmation, human visual/keyboard review and broader supported Python matrix remain unclaimed. No external application, screen-reader, merge or publication acceptance is inferred.
+- Existing config/state.json edits and unrelated untracked artifacts are preserved. The SDK intentionally leaves the overall progress bar unchanged for unscoped phase completion.
 
 ### Phase 06.7 completion — 2026-11-03
 
@@ -452,6 +476,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.7 P03 | 9min | 2 tasks | 9 files |
 | Phase 06.7 P04 | 5min | 3 tasks | 16 files |
 | Phase 06.7 P05 | 30min | 2 tasks | 17 files |
+| Phase 06.8 P01 | 5min | 3 tasks | 17 files |
+| Phase 06.8 P02 | 6min | 2 tasks | 8 files |
+| Phase 06.8 P03 | 22min | 2 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -614,6 +641,12 @@ Recent decisions affecting current work:
 - [Phase 06.7]: Plan05 verifies Cancel using exact local SRI assets and source-bound Chromium; supported runtime gates pass after scoped compatibility/fixture repairs, while phase and human UI verification remain pending.
 - [Phase 06.7]: Preserve standalone custom Cancel kwargs when cv_view is None; bound views still resolve destination access/state before kwargs and cannot override denial.
 - [Phase 06.7]: Retain unchanged-product browser/full5.2 evidence across the two-file filter fixture correction, explicitly recording continuity and focused5.2 plus full4.2/6.0 replay.
+- [Phase 06.8]: 01: Short icon titles retain exact full hidden captions, including empty-full behavior; visible overflow items omit generated titles independently of inline mode.
+- [Phase 06.8]: 02: Keep complete copied leaves only in buttons.md; migration links to exact tested fences and both existing checklists link to action-tooltips.
+- [Phase 06.8]: 02: Raw ContextButton templates delegate through cv_button; flat copied leaves render their own identified roots.
+- [Phase 06.8]: Plan 03 verifies 49 Chromium cases / 97 controls using exact recipes and retained screenshots; guard stale Bootstrap callbacks by instance identity while preserving animation and synchronous disposal, with private-hook compatibility disclosed.
+- [Phase 06.8]: Use exact documentation bodies with request-local uncached loaders and verify stock/custom/stock plus actual AJAX replacement identities.
+- [Phase 06.8]: Retain cached Python 3.12 runtime limits, sole existing floor exclusion and pending human acceptance; do not infer full CI or phase approval.
 
 ### Pending Todos
 
@@ -644,6 +677,7 @@ None yet.
 | 261030-bqk | Reconcile 06.2 closure with #282: defer unresolved CR-02–CR-04 to 6.3, split acceptance, retain older open findings; documentation only | 2026-10-30 | 491ae9c | [261030-bqk-reconcile-phase-06-2-closure-with-issue-](./quick/261030-bqk-reconcile-phase-06-2-closure-with-issue-/) |
 | 261030-csg | Fix Phase 06.2 WR-01 core nested-create control state; supported-version regressions pass | 2026-10-30 | bd31992 | [261030-csg-fix-phase-06-2-wr-01-core-nested-create-](./quick/261030-csg-fix-phase-06-2-wr-01-core-nested-create-/) |
 | 261103-sag | Fix SonarQube and Codecov failures on PR 303 (local gates passed; remote confirmation pending) | 2026-11-03 | 82fe188 | [261103-sag-fix-sonarqube-and-codecov-failures-on-pr](./quick/261103-sag-fix-sonarqube-and-codecov-failures-on-pr/) |
+| 261104-8v8 | Exclude disposable browser harness from Sonar and split six documentation assertions | 2026-11-04 | 7d4cf1d | [261104-8v8-fix-pr-305-sonar-findings-and-exclude-di](./quick/261104-8v8-fix-pr-305-sonar-findings-and-exclude-di/) |
 
 ### Roadmap Evolution
 
@@ -657,6 +691,7 @@ None yet.
 - Phase 6.5 inserted after Phase 6.4: Remaining presentation contracts and decided cleanup — source analysis §8 (#259, C1/C2, Python no_label and obsolete guard removal) (URGENT)
 - Phase 06.6 inserted after Phase 06.5: Theme-adoption seams from the Tabler sync (#277–#280); source analysis §8 slice 6.6; complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.7 inserted after Phase 06.6: Dynamic cancel navigation and origin query state (#302); approved scope and defaults; complete before Phase 7 freezes the public surface (URGENT)
+- Phase 06.8 inserted after Phase 06.7: Action tooltips: short captions and visible-label suppression (#304); complete before Phase 7 freezes the theme surface (URGENT)
 
 ## Deferred Items
 
@@ -666,6 +701,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-03T19:53:19.147283+00:00
-Stopped at: Phase 06.7 complete, ready to plan Phase 7
+Last session: 2026-11-03T23:06:13.487Z
+Stopped at: Completed 06.8-03-PLAN.md; independent phase and human verification pending
 Resume file: None

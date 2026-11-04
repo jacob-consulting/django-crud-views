@@ -3,7 +3,11 @@ import logging
 import re
 
 import pytest
+from django.template.loader import render_to_string
 from django.test import override_settings
+from django.utils.functional import lazy
+from django.utils.translation import get_language, override
+from lxml import html
 
 from crud_views.lib.view.button_data import FORM_LEAF_KEYS, LEAF_KEYS, cv_button_data
 from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
@@ -46,7 +50,7 @@ def test_get(location):
         assert data["cv_label"] == "Detail"
         assert data["cv_short_label"] == "Detail"
     else:
-        assert data["cv_title"] == "Show"
+        assert data["cv_title"] == "Detail"
         assert data["cv_label"] == "Show"
         assert data["cv_short_label"] == "Detail"
 
@@ -154,11 +158,101 @@ def test_label_mode_stamped_off_cards_shows_short_label(location, mode):
 
 
 @pytest.mark.parametrize("location", ["context", "list"])
-def test_label_mode_icon_off_cards_keeps_full_label_and_title(location):
+def test_label_mode_icon_off_cards_keeps_full_label_and_short_title(location):
     data = cv_button_data(base(cv_label_mode="icon"), location)
     assert data["cv_label_mode"] == "icon"
     assert data["cv_label"] == "Show"
-    assert data["cv_title"] == "Show"
+    assert data["cv_title"] == "Detail"
+
+
+def _action_leaf(data):
+    return html.fromstring(render_to_string("crud_views/tags/button/action.html", data))
+
+
+@pytest.mark.parametrize("location", ["context", "list"])
+@pytest.mark.parametrize("short", ["absent", None, "", "Full"])
+def test_short_caption_fallback_and_equal_caption_render_once(location, short):
+    ctx = base(cv_action_label="Full", cv_action_short_label=short)
+    if short == "absent":
+        del ctx["cv_action_short_label"]
+    before = copy.deepcopy(ctx)
+    data = cv_button_data(ctx, location)
+    el = _action_leaf(data)
+    assert data["cv_label"] == data["cv_title"] == "Full"
+    assert el.get("title") == "Full"
+    assert [s.text_content() for s in el.cssselect("span")] == ["Full"]
+    assert el.get("data-cv-tooltip") == location
+    assert ctx == before
+
+
+@pytest.mark.parametrize("location", ["context", "list"])
+@pytest.mark.parametrize("mode", ["icon", "label", "both"])
+@pytest.mark.parametrize("short", ["", "Short"])
+@pytest.mark.parametrize("icon", ["detail", None])
+def test_empty_full_caption_retains_icon_mode_and_short_title(location, mode, short, icon, caplog):
+    ctx = base(cv_action_label="", cv_action_short_label=short, cv_icon_action=icon, cv_label_mode=mode)
+    before = copy.deepcopy(ctx)
+    # Empty full selects icon mode. Non-strict missing-icon fallback requires a nonempty full label.
+    with override_settings(CRUD_VIEWS_STRICT=False):
+        data = cv_button_data(ctx, location)
+        el = _action_leaf(data)
+    assert data["cv_label_mode"] == "icon"
+    assert data["cv_label"] == ""
+    assert data["cv_title"] == short
+    assert el.get("title") == (short or None)
+    assert el.get("data-cv-tooltip") == (location if short else None)
+    assert [s.text_content() for s in el.cssselect("span.visually-hidden")] == [""]
+    assert el.get("aria-label") is None
+    assert el.text_content() == ""
+    if icon is None:
+        assert el.cssselect("i, svg") == []
+        assert "has neither an icon nor a label" in caplog.text
+    assert ctx == before
+
+
+@pytest.mark.parametrize("location", ["context", "list"])
+@pytest.mark.parametrize("use_lazy", [False, True])
+def test_caption_escaping_active_language_and_render_isolation(location, use_lazy):
+    payload = '" onmouseover="alert(1)"><script>雪 & café</script>'
+
+    def caption(prefix):
+        return f"{get_language()} {prefix} {payload}"
+
+    with override("en"):
+        full = lazy(caption, str)("Full") if use_lazy else caption("Full")
+        short = lazy(caption, str)("Short") if use_lazy else caption("Short")
+        ctx = base(cv_action_label=full, cv_action_short_label=short)
+        before = copy.deepcopy(ctx)
+        for language in ["en", "de", "en"]:
+            with override(language):
+                expected_language = language if use_lazy else "en"
+                icon = _action_leaf(cv_button_data(ctx, location))
+                for mode in ["label", "both"]:
+                    visible = _action_leaf(cv_button_data({**ctx, "cv_label_mode": mode}, location))
+                    assert visible.get("title") is None
+                    assert visible.get("data-cv-tooltip") is None
+                    assert visible.cssselect("span")[0].text_content() == f"{expected_language} Short {payload}"
+                assert icon.get("title") == f"{expected_language} Short {payload}"
+                assert icon.cssselect("span.visually-hidden")[0].text_content() == f"{expected_language} Full {payload}"
+                assert icon.get("onmouseover") is None
+                assert icon.cssselect("script") == []
+                assert html.tostring(icon) == html.tostring(_action_leaf(cv_button_data(ctx, location)))
+        assert ctx == before
+
+
+@pytest.mark.parametrize(
+    "labels,expected",
+    [
+        ({"cv_label": "Explicit"}, "Explicit"),
+        ({"cv_label": ""}, "Detail"),
+        ({"cv_action_short_label": ""}, "Show"),
+        ({"cv_action_short_label": "", "cv_action_label": ""}, "detail"),
+    ],
+)
+def test_card_icon_caption_precedence_is_unchanged(labels, expected):
+    data = cv_button_data(base(cv_label_mode="icon", **labels), "card")
+    assert data["cv_label"] == data["cv_short_label"] == data["cv_title"] == expected
+    assert _action_leaf(data).cssselect("span.visually-hidden")[0].text_content() == expected
 
 
 @pytest.mark.parametrize("location,expected", [("card", True), ("context", False), ("list", False)])

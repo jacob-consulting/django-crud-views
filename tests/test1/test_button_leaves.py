@@ -1,5 +1,7 @@
 """Button leaves: presentation-only templates fed the flat leaf contract, thin logic templates, one container."""
 
+import copy
+
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -7,13 +9,14 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.test import Client, override_settings
 from django.urls import reverse
+from django.utils.functional import lazy
 from lxml import html as lxml_html
 
 from crud_views.lib import button_classes
 from crud_views.lib.button_classes import register_button_classes
 from crud_views.lib.view import CardAction, ContextButton
 from crud_views.lib.view.action_menu import ActionGroup
-from crud_views.lib.view.button_data import LEAF_KEYS
+from crud_views.lib.view.button_data import LEAF_KEYS, cv_button_data
 from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 from tests.lib.helper.user import user_viewset_permission
 from tests.test1.app.views import (
@@ -184,14 +187,83 @@ def test_action_leaf_with_empty_variant_class():
     assert "None" not in markup
 
 
-def test_menu_item_leaf_title_only_for_context():
-    item = _context_get(cv_location="list", cv_active=False)
-    assert _one(render_to_string(MENU_ITEM_LEAF, item), "a.dropdown-item").get("title") is None
-    item["cv_location"] = "context"
-    assert _one(render_to_string(MENU_ITEM_LEAF, item), "a.dropdown-item").get("title") == "Details"
+@pytest.mark.parametrize("location", ["context", "list", "card"])
+@pytest.mark.parametrize("mode", ["icon", "label", "both"])
+def test_menu_item_leaf_has_no_generated_tooltip(location, mode):
+    # The leaf suppresses titles even when icon-mode data supplies one.
+    item = _context_get(cv_location=location, cv_label_mode=mode)
+    el = _one(render_to_string(MENU_ITEM_LEAF, item), "a.dropdown-item")
+    assert el.text_content().strip() == "Details"
+    assert el.get("title") is None
+    assert el.get("data-cv-tooltip") is None
 
 
-# the 0.30 body of tags/actions_menu_item.html, as a project override of it still looks: raw keys, shared label include
+@pytest.mark.parametrize("location", ["context", "list", "card"])
+@pytest.mark.parametrize("mode", ["icon", "label", "both"])
+@pytest.mark.parametrize("state", ["active", "disabled", "modal", "post"])
+def test_menu_state_and_caption_survive_tooltip_suppression(location, mode, state):
+    raw = {
+        "cv_url": "/u/",
+        "cv_key": "detail",
+        "cv_icon_action": "detail",
+        "cv_action_label": "Full caption",
+        "cv_action_short_label": "Short caption",
+        "cv_label_mode": mode,
+        "cv_oid": "o1",
+        "cv_is_active": state == "active",
+        "cv_disabled": state == "disabled",
+        "cv_disabled_reason": "permission",
+        "cv_modal": state == "modal",
+        "cv_modal_size": "lg",
+        "cv_list_action_method": "post" if state == "post" else "get",
+    }
+    before = copy.deepcopy(raw)
+    data = cv_button_data(raw, location, "menu-item")
+    markup = render_to_string(MENU_ITEM_LEAF, data)
+    el = _one(markup, ".dropdown-item")
+    assert markup == render_to_string(MENU_ITEM_LEAF, cv_button_data(raw, location, "menu-item"))
+    assert raw == before
+    assert el.text_content().strip() == "Short caption"
+    assert el.get("title") is None
+    assert el.get("data-cv-tooltip") is None
+    assert len(el.cssselect("i[aria-hidden=true]")) == 1
+    assert el.get("aria-current") == ("page" if state == "active" else None)
+    assert el.get("href") == ("/u/" if state in {"active", "modal"} else None)
+    assert (el.get("disabled") is not None) == (state == "disabled")
+    assert el.get("data-cv-action") == ("submit-form" if state == "post" else None)
+    assert el.get("data-cv-target") == ("cv_form_o1" if state == "post" else None)
+    assert el.get("data-cv-modal") == ("true" if state == "modal" else None)
+    assert el.get("data-cv-modal-size") == ("lg" if state == "modal" else None)
+
+
+@pytest.mark.parametrize("location", ["context", "list", "card"])
+@pytest.mark.parametrize("caption", ["", '雪 & café <script>"quoted"</script>'])
+@pytest.mark.parametrize("use_lazy", [False, True])
+def test_menu_literal_empty_and_lazy_captions(location, caption, use_lazy):
+    value = lazy(lambda: caption, str)() if use_lazy else caption
+    data = _context_get(cv_location=location, cv_short_label=value)
+    el = _one(render_to_string(MENU_ITEM_LEAF, data), ".dropdown-item")
+    assert el.text_content().strip() == caption
+    assert el.cssselect("script") == []
+    assert el.get("title") is None
+    assert el.get("data-cv-tooltip") is None
+
+
+@pytest.mark.parametrize("location", ["context", "list"])
+def test_missing_icon_visible_fallback_has_no_tooltip(location):
+    caption = '雪 & café <script>"quoted"</script>'
+    raw = {"cv_url": "/u/", "cv_key": "detail", "cv_action_label": "Full", "cv_action_short_label": caption}
+    with override_settings(CRUD_VIEWS_STRICT=False):
+        data = cv_button_data(raw, location)
+        el = _one(render_to_string(ACTION_LEAF, data), "a")
+    assert data["cv_label_mode"] == "label"
+    assert el.text_content() == caption
+    assert el.cssselect("script, i, svg") == []
+    assert el.get("title") is None
+    assert el.get("data-cv-tooltip") is None
+
+
+# Historical 0.30 override: its tooltip behavior is unsupported; retain unrelated icon/label helper coverage.
 MENU_ITEM_030 = """{% if cv_disabled %}
 <button type="button" class="dropdown-item" disabled
     data-cv-disabled="{{ cv_disabled_reason }}"
@@ -533,7 +605,7 @@ def test_defaults_setting_reaches_button_leaf():
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={}):
         markup = Template('{% load crud_views %}{% cv_button "context" %}').render(Context(raw))
     a = _one(markup, 'a[href="/author/1/detail/"]')
-    assert a.get("title") == "Details"
+    assert a.get("title") == "Detail"
     assert a.cssselect("span.visually-hidden")[0].text == "Details"
 
 

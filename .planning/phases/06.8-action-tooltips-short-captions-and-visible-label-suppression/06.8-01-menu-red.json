@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=\"$PWD/src:$PWD\" .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_button_leaves.py::test_menu_item_leaf_has_no_generated_tooltip[icon-context] -q --junitxml=.planning/phases/06.8-action-tooltips-short-captions-and-visible-label-suppression/06.8-01-menu-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.254\" timestamp=\"2026-11-03T22:23:23.302764+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_button_leaves\" name=\"test_menu_item_leaf_has_no_generated_tooltip[icon-context]\" time=\"0.016\"><failure message=\"AssertionError: assert 'Details' is None&#10; +  where 'Details' = get('title')&#10; +    where get = &lt;Element a at 0x7a23317dab20&gt;.get\">location = 'context', mode = 'icon'\n\n    @pytest.mark.parametrize(\"location\", [\"context\", \"list\", \"card\"])\n    @pytest.mark.parametrize(\"mode\", [\"icon\", \"label\", \"both\"])\n    def test_menu_item_leaf_has_no_generated_tooltip(location, mode):\n        # The leaf suppresses titles even when icon-mode data supplies one.\n        item = _context_get(cv_location=location, cv_label_mode=mode)\n        el = _one(render_to_string(MENU_ITEM_LEAF, item), \"a.dropdown-item\")\n        assert el.text_content().strip() == \"Details\"\n&gt;       assert el.get(\"title\") is None\nE       AssertionError: assert 'Details' is None\nE        +  where 'Details' = get('title')\nE        +    where get = &lt;Element a at 0x7a23317dab20&gt;.get\n\ntests/test1/test_button_leaves.py:194: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_menu_item_leaf_has_no_generated_tooltip[icon-context]",
+  "targetFile": "tests/test1/test_button_leaves.py",
+  "expected": "no title attribute",
+  "actual": "Details",
+  "reportPath": ".planning/phases/06.8-action-tooltips-short-captions-and-visible-label-suppression/06.8-01-menu-red.xml",
+  "runStartedAt": "2026-11-03T22:23:22Z",
+  "reportModifiedAt": 1793744603.5561802,
+  "semanticAssessment": "Target rendered visible Details caption successfully then failed the planned absence assertion because the context menu still emitted title=Details."
+}

@@ -169,7 +169,7 @@ def cv_button_data(ctx: dict, location: str, kind: str = "action") -> dict:
             logger.warning("%s has neither an icon nor a label and renders empty", where)
     if not card and label_mode != "icon":
         # the visible text of a labelled toolbar or row button is the short label; icon mode keeps the full
-        # label as the hidden text and the title (#216)
+        # label as the hidden text, with the short label reserved for its tooltip
         label = short_label
 
     data = {
@@ -199,7 +199,7 @@ def cv_button_data(ctx: dict, location: str, kind: str = "action") -> dict:
     elif not disabled:
         data["cv_submit_target"] = f"cv_form_{ctx['cv_oid']}"
     if label_mode == "icon":
-        data["cv_title"] = label
+        data["cv_title"] = short_label
     return data
 
 

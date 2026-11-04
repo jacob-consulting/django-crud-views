@@ -50,9 +50,13 @@ def test_active_item_in_menu(client_full, author_douglas_adams, monkeypatch):
     detail = toolbar.cssselect('.dropdown-item[cv-key="detail"]')[0]
     assert "active" in detail.get("class").split()
     assert detail.get("aria-current") == "page"
-    assert detail.get("title")  # cv_action_label as title
+    assert detail.get("title") is None
+    assert detail.get("data-cv-tooltip") is None
     home = toolbar.cssselect('.dropdown-item[cv-key="list"]')[0]
     assert home.get("aria-current") is None
+    assert [el.get("cv-key") for el in toolbar.cssselect(".dropdown-item")] == ["list", "detail", "delete"]
+    assert toggle.get("title") is None
+    assert toggle.get("data-cv-tooltip") is None
 
 
 @pytest.mark.django_db
@@ -76,6 +80,8 @@ def test_disabled_item(client_user_author_view, author_douglas_adams, monkeypatc
     assert delete.get("disabled") is not None
     assert delete.get("data-cv-disabled") == "permission"
     assert delete.get("href") is None
+    assert delete.get("title") is None
+    assert delete.get("data-cv-tooltip") is None
 
 
 @pytest.mark.django_db
@@ -111,6 +117,8 @@ def test_modal_item(client_full, author_douglas_adams, monkeypatch):
     toolbar = _toolbar(client_full, _detail_url(author_douglas_adams))
     delete = toolbar.cssselect('.dropdown-item[cv-key="delete"]')[0]
     assert delete.get("data-cv-modal") == "true"
+    assert delete.get("title") is None
+    assert delete.get("data-cv-tooltip") is None
 
 
 @pytest.mark.django_db
@@ -125,6 +133,8 @@ def test_context_button_own_label_is_menu_item_text(client_full, author_douglas_
     toolbar = _toolbar(client_full, _detail_url(author_douglas_adams))
     item = toolbar.cssselect('.dropdown-item[cv-key="update"]')[0]
     assert item.text_content().strip() == "Custom label"
+    assert item.get("title") is None
+    assert item.get("data-cv-tooltip") is None
 
 
 @pytest.mark.django_db
@@ -139,3 +149,21 @@ def test_context_button_without_label_keeps_target_short_label(client_full, auth
     toolbar = _toolbar(client_full, _detail_url(author_douglas_adams))
     item = toolbar.cssselect('.dropdown-item[cv-key="update"]')[0]
     assert item.text_content().strip() == "Update"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("folded", [False, True])
+def test_empty_or_single_item_menu_keeps_toggle_behavior(client_full, author_douglas_adams, monkeypatch, folded):
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["detail", "update"])
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", ["detail"] if folded else None)
+    toolbar = _toolbar(client_full, _detail_url(author_douglas_adams))
+    items = toolbar.cssselect(".dropdown-item")
+    toggles = toolbar.cssselect(".cv-menu-toggle")
+    assert len(items) == len(toggles) == int(folded)
+    if folded:
+        assert items[0].get("cv-key") == "update"
+        assert items[0].text_content().strip() == "Update"
+        assert toggles[0].get("aria-expanded") == "false"
+        assert toggles[0].get("aria-label") == "More actions"
+        assert toggles[0].get("title") is None
+        assert toggles[0].get("data-cv-tooltip") is None

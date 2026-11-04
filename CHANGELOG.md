@@ -6,6 +6,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Action tooltips** (#304): context/list icon-only `cv_title` now uses the existing short caption with full-caption
+  fallback, while the full hidden `cv_label` stays unchanged. Visibly labelled context/list/card overflow items
+  no longer emit automatic titles, removing the context-menu native-title exception. Copied action/menu leaves
+  must migrate immediately; see the tested [migration](docs/migrating-1.0.md#action-tooltips).
+  Visible inline modes retain their existing no-generated-tooltip behavior; this does not claim a separately
+  reproduced visible-label defect. Card/form captions, application-owned attributes and tooltip lifecycle remain unchanged.
+
 - **Dynamic Cancel navigation and copied Cancel templates.** Standard form views now default to
   `cv_cancel_keys="auto"`, returning to accessible list/card/detail origins with captured query state.
   Cancel is omitted when neither origin nor fallback is accessible; invalid configured fallbacks report
@@ -326,6 +333,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `collapse.toggle` returns `false` while the panel is animating and the filter toggle then leaves its state alone.
 
 ### Fixed
+
+- Bootstrap tooltip transitions no longer run stale completion callbacks after modal content disposes their
+  instance. Normal hover/focus animation, click hide and synchronous instance removal remain unchanged.
 
 - The sdist ships only an allowlist (`src`, `tests`, `docs`, `examples`, `noxfile.py`, `README.md`,
   `CHANGELOG.md`, `LICENSE`, `pyproject.toml`); planning and tooling folders no longer end up on PyPI.

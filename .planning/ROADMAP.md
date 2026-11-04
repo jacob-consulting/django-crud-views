@@ -32,6 +32,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.5: Remaining presentation contracts and decided cleanup (INSERTED)** - analysis #259/C1/C2 and decided alias cleanup before the freeze (completed 2026-11-02)
 - [x] **Phase 6.6: Theme-adoption seams from the Tabler sync (INSERTED)** - issues #277–#280 before the freeze (completed 2026-11-03)
 - [x] **Phase 6.7: Dynamic cancel navigation and origin query state (INSERTED)** - #302: dynamic defaults and reliable origin query restoration before the freeze (completed 2026-11-03)
+- [ ] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -822,19 +823,47 @@ Plans:
 
 **UI hint**: yes (cancel navigation across existing form surfaces; no layout redesign).
 
+### Phase 06.8: Action tooltips: short captions and visible-label suppression (#304) (INSERTED)
+
+**Goal:** Context/list icon-only actions use existing short captions with full-caption fallback, while preserving full hidden accessible labels and suppressing package-generated tooltips on visible labels.
+**Source:** [Issue #304](https://github.com/jacob-consulting/django-crud-views/issues/304) — implementation handoff with existing maintainer decisions and investigation context.
+**Depends on:** Phase 6.7; complete before Phase 7 freezes the theme surface.
+**Requirements**: TIP-01, TIP-02, TIP-03, TIP-04, TIP-05
+**Scope:** Reuse existing caption APIs; preserve card overrides, form captions, translations/escaping, permissions, POST/modal hooks and tooltip lifecycle. Include the issue's recommended removal of automatic titles from visibly labelled overflow items; this recommendation is distinct from the selected short-caption decision.
+**Investigation:** Reproduce the reported labelled list-action tooltip behavior in rendered UI/DOM. It remains unconfirmed; record an unavailable/not-reproduced application observation honestly without blocking the confirmed short-caption improvement.
+**Success Criteria**:
+
+1. Context/list icon tooltips use short captions with full-caption fallback; full hidden captions remain unchanged, and empty tooltips emit neither title nor marker.
+2. Label/both modes and visible missing-icon fallbacks emit no generated tooltip; visibly labelled overflow items omit automatic titles across context/list/card locations.
+3. The labelled list-action report has a documented investigation outcome, with a regression test for any reproduced package defect.
+4. Relevant caption, accessibility, permission, submission, escaping and lifecycle contracts remain covered; affected docs and changelog describe the changed defaults, with migration guidance if classified as breaking.
+
+**Plans:** 3/3 plans executed
+
+Plans:
+**Wave 1**
+- [x] 06.8-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.8-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.8-03-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6.7, Phase 4 and Phase 5 (and so, transitively, Phases 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6.7 only and documents the surface as it is. Include the cancel
+**Depends on**: Phase 6.8, Phase 4 and Phase 5 (and so, transitively, Phases 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phase 6.8 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
 protected-preview and Guardian configuration contracts from Phase 6.2, qualified by the unresolved acceptance
 split above until Phase 6.3 remediation is verified. Include the settled conditional/formset contracts from Phase 6.4.
 Include the settled heading, object-detail ID/context and alias cleanup contracts from Phase 6.5.
 Include the settled form ownership, label-mode registration, action-group and alert contracts from Phase 6.6.
 Include the dynamic cancel defaults, origin query preservation and custom-template URL API settled by Phase 6.7.
+Include the tooltip caption and visible-label rendering contracts settled by Phase 6.8.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -866,7 +895,7 @@ Include the dynamic cancel defaults, origin query preservation and custom-templa
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -880,7 +909,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 8 | 6.5 (analysis #259/C1/C2) | Remaining presentation contracts and decided alias cleanup before the freeze |
 | 9 | 6.6 (#277–#280) | Theme-adoption seams from the Tabler sync before the freeze |
 | 10 | 6.7 (#302) | Dynamic cancel defaults and origin query preservation before the freeze |
-| 11 | 7 (plan 4) | Needs 6.7, 4 and 5 merged; last change before the 1.0.0 bump |
+| 11 | 6.8 (#304) | Short icon tooltips and visible-label suppression before the freeze |
+| 12 | 7 (plan 4) | Needs 6.8, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -899,4 +929,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
 | 6.6. Theme-adoption seams from the Tabler sync | 10/10 | Complete    | 2026-11-03 |
 | 6.7. Dynamic cancel navigation and origin query state | 5/5 | Complete    | 2026-11-03 |
+| 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

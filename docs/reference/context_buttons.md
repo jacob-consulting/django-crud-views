@@ -340,7 +340,7 @@ flowchart TD
     CLABEL --> OUT
 
     OUT{"final mode"}
-    OUT -- "icon" --> RICON(["icon only; the full label is<br/>hidden text and the tooltip"])
+    OUT -- "icon" --> RICON(["icon only; full hidden caption;<br/>short tooltip with full fallback when nonempty"])
     OUT -- "both" --> RBOTH(["icon + short label"])
     OUT -- "label" --> RLABEL(["short label, no icon"])
 

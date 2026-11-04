@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.254" timestamp="2026-11-03T22:23:23.302764+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_button_leaves" name="test_menu_item_leaf_has_no_generated_tooltip[icon-context]" time="0.016"><failure message="AssertionError: assert 'Details' is None&#10; +  where 'Details' = get('title')&#10; +    where get = &lt;Element a at 0x7a23317dab20&gt;.get">location = 'context', mode = 'icon'
+
+    @pytest.mark.parametrize("location", ["context", "list", "card"])
+    @pytest.mark.parametrize("mode", ["icon", "label", "both"])
+    def test_menu_item_leaf_has_no_generated_tooltip(location, mode):
+        # The leaf suppresses titles even when icon-mode data supplies one.
+        item = _context_get(cv_location=location, cv_label_mode=mode)
+        el = _one(render_to_string(MENU_ITEM_LEAF, item), "a.dropdown-item")
+        assert el.text_content().strip() == "Details"
+&gt;       assert el.get("title") is None
+E       AssertionError: assert 'Details' is None
+E        +  where 'Details' = get('title')
+E        +    where get = &lt;Element a at 0x7a23317dab20&gt;.get
+
+tests/test1/test_button_leaves.py:194: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,394 @@
+{
+  "AaGlNx5c3TRbxogAUha9": {
+    "rule": "javascript:S5443",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 12,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUha-": {
+    "rule": "javascript:S3776",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 36,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUha_": {
+    "rule": "javascript:S5443",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 36,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbA": {
+    "rule": "javascript:S6582",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 41,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbB": {
+    "rule": "javascript:S1121",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 63,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbC": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 87,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbD": {
+    "rule": "javascript:S7723",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 89,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbE": {
+    "rule": "javascript:S4036",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 98,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbF": {
+    "rule": "javascript:S3776",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 102,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbG": {
+    "rule": "javascript:S4036",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 105,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbH": {
+    "rule": "javascript:S4036",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 128,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbI": {
+    "rule": "javascript:S3358",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 139,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbJ": {
+    "rule": "javascript:S7761",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 175,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbK": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 186,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbL": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 186,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbM": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 194,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbN": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 195,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbO": {
+    "rule": "javascript:S1121",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 209,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbP": {
+    "rule": "javascript:S3358",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 214,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbQ": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 218,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbR": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 220,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbS": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 225,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbT": {
+    "rule": "javascript:S1121",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 230,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbU": {
+    "rule": "javascript:S7761",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 234,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbV": {
+    "rule": "javascript:S7761",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 236,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbW": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 247,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbX": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 251,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbY": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 256,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbZ": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 263,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhba": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 278,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbb": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 282,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbc": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 283,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbd": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 287,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbe": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 293,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbf": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 294,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbg": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 300,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbh": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 306,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbi": {
+    "rule": "javascript:S3358",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 315,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbj": {
+    "rule": "javascript:S3358",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 316,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbk": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 323,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbl": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 328,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbm": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 336,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNx5c3TRbxogAUhbn": {
+    "rule": "javascript:S9382",
+    "component": "jacob-consulting_django-crud-views:tests/browser/action-tooltips.cjs",
+    "original_line": 341,
+    "disposition": "harness-excluded",
+    "evidence": "User-authorized disposable browser acceptance harness exclusion: sonar.exclusions=**/migrations/**,tests/browser/**; source unchanged.",
+    "remote_status": "pending"
+  },
+  "AaGlNxw-3TRbxogAUha3": {
+    "rule": "python:S9073",
+    "component": "jacob-consulting_django-crud-views:tests/test1/test_action_tooltip_docs.py",
+    "original_line": 179,
+    "disposition": "assertion-split",
+    "evidence": "Compound assertion split into independent assertions; AST comparison preserves every predicate and enclosing structure; focused pytest and Ruff verification recorded in summary.",
+    "remote_status": "pending"
+  },
+  "AaGlNxw-3TRbxogAUha4": {
+    "rule": "python:S9073",
+    "component": "jacob-consulting_django-crud-views:tests/test1/test_action_tooltip_docs.py",
+    "original_line": 190,
+    "disposition": "assertion-split",
+    "evidence": "Compound assertion split into independent assertions; AST comparison preserves every predicate and enclosing structure; focused pytest and Ruff verification recorded in summary.",
+    "remote_status": "pending"
+  },
+  "AaGlNxw-3TRbxogAUha5": {
+    "rule": "python:S9073",
+    "component": "jacob-consulting_django-crud-views:tests/test1/test_action_tooltip_docs.py",
+    "original_line": 204,
+    "disposition": "assertion-split",
+    "evidence": "Compound assertion split into independent assertions; AST comparison preserves every predicate and enclosing structure; focused pytest and Ruff verification recorded in summary.",
+    "remote_status": "pending"
+  },
+  "AaGlNxw-3TRbxogAUha6": {
+    "rule": "python:S9073",
+    "component": "jacob-consulting_django-crud-views:tests/test1/test_action_tooltip_docs.py",
+    "original_line": 207,
+    "disposition": "assertion-split",
+    "evidence": "Compound assertion split into independent assertions; AST comparison preserves every predicate and enclosing structure; focused pytest and Ruff verification recorded in summary.",
+    "remote_status": "pending"
+  },
+  "AaGlNxw-3TRbxogAUha7": {
+    "rule": "python:S9073",
+    "component": "jacob-consulting_django-crud-views:tests/test1/test_action_tooltip_docs.py",
+    "original_line": 219,
+    "disposition": "assertion-split",
+    "evidence": "Compound assertion split into independent assertions; AST comparison preserves every predicate and enclosing structure; focused pytest and Ruff verification recorded in summary.",
+    "remote_status": "pending"
+  },
+  "AaGlNxw-3TRbxogAUha8": {
+    "rule": "python:S9073",
+    "component": "jacob-consulting_django-crud-views:tests/test1/test_action_tooltip_docs.py",
+    "original_line": 231,
+    "disposition": "assertion-split",
+    "evidence": "Compound assertion split into independent assertions; AST comparison preserves every predicate and enclosing structure; focused pytest and Ruff verification recorded in summary.",
+    "remote_status": "pending"
+  }
+}

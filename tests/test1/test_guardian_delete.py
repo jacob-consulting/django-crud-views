@@ -3,6 +3,170 @@ import pytest
 from tests.lib.helper.guardian import user_guardian_object_perm
 
 
+@pytest.fixture
+def guardian_protected_destination(monkeypatch, settings):
+    """Real nested Guardian callback, selected by the unchanged public URL hook."""
+    from types import ModuleType, SimpleNamespace
+
+    from django.http import HttpResponse
+    from django.test import RequestFactory
+    from django.urls import clear_url_caches, resolve
+
+    from crud_views.lib.viewset import _REGISTRY, ParentViewSet
+    from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import PublisherCascadeDeleteView, cv_publisher
+
+    monkeypatch.setattr(
+        "crud_views.lib.viewset._REGISTRY",
+        {name: viewset for name, viewset in _REGISTRY.items() if viewset.model is not Contract},
+    )
+    viewset = GuardianViewSet(
+        model=Contract,
+        name="protected_guardian_target",
+        parent=ParentViewSet(name=cv_publisher.name, attribute="publisher"),
+    )
+    calls = []
+
+    class Detail(GuardianDetailViewPermissionRequired):
+        cv_viewset = viewset
+
+        @classmethod
+        def cv_action_enabled(cls, user, obj=None):
+            calls.append((user, obj))
+            return True
+
+        def render_to_response(self, context, **kwargs):
+            return HttpResponse(f"contract:{self.object.pk}:{self.object._state.db}")
+
+    urlconf = ModuleType("protected_guardian_urls")
+    urlconf.urlpatterns = viewset.urlpatterns
+    settings.ROOT_URLCONF = urlconf
+    clear_url_caches()
+
+    def bind(actor, blocker):
+        request = RequestFactory().post("/different-source/?original=yes", {"confirm": "on"}, HTTP_X_CV_MODAL="true")
+        request.user = actor
+        request.urlconf = urlconf
+        source = PublisherCascadeDeleteView()
+        source.setup(request, unrelated_parent=999)
+        source.object = blocker.publisher
+        source.cv_link_related_objects = True
+        url = source.cv_get_related_object_url(blocker)
+        assert resolve(url).func.view_class is Detail
+        return SimpleNamespace(source=source, target=Detail, blocker=blocker, url=url, calls=calls, viewset=viewset)
+
+    yield bind
+    clear_url_caches()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "policy",
+    [
+        "user",
+        "group",
+        "global",
+        "strict",
+        "superuser",
+        "inactive",
+        "parent-denied",
+        "parent-none",
+        "disabled",
+        "excluded",
+    ],
+)
+def test_guardian_protected_target_policy(
+    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, policy
+):
+    from django.contrib.auth.models import Group, Permission
+    from guardian.shortcuts import assign_perm
+
+    from tests.test1.app.models import Contract
+
+    blocker = Contract.objects.create(title="Visible independently", publisher=publisher_a)
+    actor = user_guardian
+    actor.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    case = guardian_protected_destination(actor, blocker)
+    assign_perm("view_publisher", actor, publisher_a)
+    if policy not in {"strict", "global"}:
+        grantee = actor
+        if policy == "group":
+            grantee = Group.objects.create(name="target readers")
+            actor.groups.add(grantee)
+        assign_perm("view_contract", grantee, blocker)
+    if policy == "global":
+        monkeypatch.setattr(case.target, "cv_guardian_accept_global_perms", True)
+    if policy == "parent-denied":
+        from guardian.shortcuts import remove_perm
+
+        remove_perm("view_publisher", actor, publisher_a)
+    if policy == "parent-none":
+        monkeypatch.setattr(case.viewset, "cv_guardian_parent_permission", None)
+    if policy in {"superuser", "inactive"}:
+        actor.is_superuser = True
+        actor.is_active = policy != "inactive"
+        actor.save()
+    if policy == "disabled":
+        monkeypatch.setattr(case.target, "cv_action_enabled", classmethod(lambda *args: False))
+    if policy == "excluded":
+        monkeypatch.setattr(case.target, "get_queryset", lambda self: Contract.objects.none())
+    permitted = policy not in {"strict", "inactive", "parent-denied", "disabled", "excluded"}
+    assert case.source._cv_get_protected_object_url(blocker) == (case.url if permitted else None)
+    assert len(case.calls) == int(permitted)
+    # An independent real GET retains the original actor, including inactive accounts.
+    from django.core.exceptions import PermissionDenied
+    from django.http import Http404
+    from django.test import RequestFactory
+    from django.urls import resolve
+
+    match = resolve(case.url)
+    request = RequestFactory().get(case.url)
+    request.user = actor
+    request.session = {}
+    if permitted:
+        assert match.func(request, **match.kwargs).status_code == 200
+    else:
+        with pytest.raises(Http404 if policy == "excluded" else PermissionDenied):
+            match.func(request, **match.kwargs)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("error_type", ["parent", "composition", "missing-child"])
+def test_protected_target_error_boundaries(
+    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, error_type
+):
+    from django.core.exceptions import ImproperlyConfigured
+    from django.http import Http404
+
+    from tests.test1.app.models import Contract
+
+    blocker = Contract.objects.create(title="Reachable", publisher=publisher_a)
+    case = guardian_protected_destination(user_guardian, blocker)
+    entered = []
+
+    def parent(self):
+        entered.append("parent")
+        raise Http404("application parent")
+
+    def composition(cls):
+        entered.append("composition")
+        return "invalid composition"
+
+    monkeypatch.setattr(case.target, "cv_get_parent_object", parent)
+    if error_type != "parent":
+        monkeypatch.setattr(case.target, "_guardian_child_composition_error", classmethod(composition))
+    if error_type == "missing-child":
+        monkeypatch.setattr(case.target, "get_queryset", lambda self: Contract.objects.none())
+        assert case.source._cv_get_protected_object_url(blocker) is None
+        assert entered == []
+    else:
+        with pytest.raises(Http404 if error_type == "parent" else ImproperlyConfigured):
+            case.source._cv_get_protected_object_url(blocker)
+        assert entered == [error_type]
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("superuser", [False, True])
 @pytest.mark.parametrize("details", [False, True])

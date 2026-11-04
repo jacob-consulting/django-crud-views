@@ -98,6 +98,94 @@ def test_protected_link_request_tracer(
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("policy", ["allowed", "permission", "state", "queryset", "missing-detail", "missing-route"])
+def test_protected_target_policy_matrix(protected_destination, monkeypatch, policy):
+    from django.urls import clear_url_caches
+
+    from tests.test1.app.models import Contract
+
+    case = protected_destination
+    source_calls, target_calls = [], []
+    monkeypatch.setattr(type(case.source), "cv_action_enabled", classmethod(lambda *a: source_calls.append(a) or True))
+    monkeypatch.setattr(
+        case.target, "cv_action_enabled", classmethod(lambda *a: target_calls.append(a) or policy != "state")
+    )
+    if policy == "permission":
+        monkeypatch.setattr(case.target, "cv_has_access", classmethod(lambda *a: False))
+    if policy == "queryset":
+        monkeypatch.setattr(case.target, "get_queryset", lambda self: Contract.objects.none())
+    if policy == "missing-detail":
+        monkeypatch.setattr(type(case.target.cv_viewset), "is_view_registered", lambda self, key: False)
+    if policy == "missing-route":
+        case.patterns.clear()
+        clear_url_caches()
+    assert case.source._cv_get_protected_object_url(case.blocker) == (case.url if policy == "allowed" else None)
+    assert source_calls == []
+    assert len(target_calls) == int(policy in {"allowed", "state"})
+    if policy == "allowed":
+        client = Client()
+        client.force_login(case.source.request.user)
+        assert client.get(case.url).status_code == 200
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("method,modal", [("get", False), ("get", True), ("post", True)])
+def test_protected_target_binding(protected_destination, monkeypatch, method, modal):
+    from django.test import RequestFactory
+
+    case = protected_destination
+    original_actor = case.source.request.user
+    request = getattr(RequestFactory(), method)("/source/?original=yes", HTTP_X_CV_MODAL="true" if modal else "")
+    request.user = original_actor
+    request.urlconf = case.source.request.urlconf
+    case.source.request = request
+    source_snapshot = (request.META.copy(), request.GET.copy(), request.POST.copy(), case.source.kwargs.copy())
+    candidate = case.url + "?q=caf%C3%A9&q=two#résumé"
+    monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: candidate)
+    calls = []
+
+    def queryset(self):
+        calls.append(self)
+        assert self.request.method == "GET"
+        assert self.request.GET.getlist("q") == ["café", "two"]
+        assert self.request.POST == {}
+        assert "X-CV-Modal" not in self.request.headers
+        assert self.request.path == case.url
+        assert self.request.resolver_match.func.view_class is case.target
+        assert self.kwargs == self.request.resolver_match.kwargs
+        assert int(self.kwargs["pk"]) == case.blocker.pk
+        return type(case.blocker).objects.all()
+
+    monkeypatch.setattr(case.target, "get_queryset", queryset)
+    for _ in range(2):
+        assert case.source._cv_get_protected_object_url(case.blocker) == candidate
+    assert calls[0] is not calls[1]
+    assert (request.META, request.GET, request.POST, case.source.kwargs) == source_snapshot
+    assert request.user is original_actor
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("override", ["dispatch", "get_object"])
+def test_protected_custom_request_remains_authoritative(protected_destination, monkeypatch, override):
+    from django.core.exceptions import PermissionDenied
+
+    case = protected_destination
+    called = []
+
+    def deny(*args, **kwargs):
+        called.append(override)
+        raise PermissionDenied
+
+    monkeypatch.setattr(case.target, override, deny)
+    assert case.source._cv_get_protected_object_url(case.blocker) == case.url
+    assert called == []
+    client = Client()
+    client.force_login(case.source.request.user)
+    assert client.get(case.url).status_code == 403
+    assert called == [override]
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "candidate",
     [

@@ -3,12 +3,11 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.8"
 current_phase_name: "Action tooltips: short captions and visible-label suppression"
-status: verifying
+status: "Phase 06.8 shipped — PR #305"
 stopped_at: Phase 06.8 UAT passed; preparing shipping branch on current main
-last_updated: "2026-11-03T23:39:35.382429+00:00"
-last_activity: 2026-11-03
-last_activity_desc: Phase 06.8 execution started
-state_head: 9296e1f35c8563283fddce9a922c9b9bf626d04c
+last_updated: "2026-11-04T06:19:20.662Z"
+last_activity: 2026-11-04
+state_head: "0bd9a8c1a1600b1765fbc7e50d210750bf63ab9e"
 progress:
   total_phases: 15
   completed_phases: 13
@@ -30,10 +29,18 @@ See: .planning/PROJECT.md (updated 2026-11-03)
 
 Phase: 06.8 (Action tooltips: short captions and visible-label suppression) — SHIPPING PREPARATION
 Plan: 3/3 complete
-Status: UAT 3/3 passed; shipping integration verification pending
-Last activity: 2026-11-03 — Canonical verification human_needed, 30/30 automated must-haves; code review clean, security 9/9 closed.
+Status: Phase 06.8 shipped — PR #305
+Last activity: 2026-11-04
 
-Next: $gsd-ship 06.8
+Next: Review PR #305 and merge after CI passes; then discuss Phase 7.
+
+### Phase 06.8 shipping — 2026-11-04
+
+- PR #305: https://github.com/jacob-consulting/django-crud-views/pull/305, branch ship/phase-06.8-action-tooltips, based on merged Phase 06.7 main e0e6e9a.
+- UAT 3/3 passed: all six retained images, all six live stock/custom scenarios, and all 19 UI state considerations. Browser/version unspecified; no screen-reader claim.
+- Fresh integrated checks: 9188 Python passed with one existing Django-6-only skip, 365 JavaScript passed, 28 Node runner tests passed, Ruff/format/strict docs passed. Canonical verification 30/30; all nine threats closed.
+- Historical browser evidence was revalidated with explicit source deltas; no new browser execution or full supported Python matrix is claimed.
+- Prior pending-human entries below are historical and superseded. PR awaits CI/review; no merge performed. Original checkout and its unrelated uncommitted files preserved.
 
 ### Phase 06.8 execution and verification — 2026-11-03
 

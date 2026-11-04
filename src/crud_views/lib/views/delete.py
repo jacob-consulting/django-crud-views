@@ -1,21 +1,15 @@
 import logging
-import re
 from collections.abc import Iterable
 from contextlib import nullcontext
-from copy import copy
 from functools import partial
-from inspect import getattr_static, signature
+from inspect import signature
 from typing import ClassVar
-from urllib.parse import unquote, urlsplit
 
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from django.core.exceptions import ImproperlyConfigured
 from django.db import connections, router, transaction
 from django.db.models import Model
-from django.http import Http404, QueryDict
-from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve, reverse
+from django.urls import NoReverseMatch, reverse
 from django.views import generic
-from django.views.generic.detail import SingleObjectMixin
 
 from crud_views.lib.check import Check, CheckExpression
 from crud_views.lib.deletion import (
@@ -209,168 +203,6 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
                     return None
         return None
 
-    def _cv_get_protected_object_url(self, obj) -> str | None:
-        """Check the exact candidate's registered detail policy without dispatching it.
-
-        Visibility is already filtered by the caller. The actual detail request still
-        owns application middleware, dispatch and custom get_object enforcement.
-        """
-        from crud_views.lib.viewset import _REGISTRY
-
-        candidate = self.cv_get_related_object_url(obj)
-        if not isinstance(candidate, str) or not candidate:
-            return None
-
-        def local_path(value):
-            return (
-                value.startswith("/")
-                and not value.startswith("//")
-                and "\\" not in value
-                and not any(ord(char) < 32 or ord(char) == 127 for char in value)
-            )
-
-        # urlsplit strips some leading controls: validate the original first.
-        if not local_path(candidate):
-            return None
-        try:
-            parsed = urlsplit(candidate)
-            if parsed.scheme or parsed.netloc or re.search(r"%(?:2f|5c)", parsed.path, re.IGNORECASE):
-                return None
-            path = unquote(parsed.path, errors="strict")
-        except (ValueError, UnicodeError):
-            return None
-        if not local_path(path):
-            return None
-        prefix = get_script_prefix()
-        if not path.startswith(prefix):
-            return None
-        path_info = "/" + path[len(prefix) :]
-        try:
-            match = resolve(path_info, urlconf=getattr(self.request, "urlconf", None))
-        except Resolver404:
-            return None
-        target = getattr(match.func, "view_class", None)
-        viewset = getattr(target, "cv_viewset", None)
-        if (
-            not isinstance(target, type)
-            or not issubclass(target, SingleObjectMixin)
-            or not getattr(target, "cv_object", False)
-            or viewset is None
-            or not any(registered is viewset for registered in _REGISTRY.values())
-            or not viewset.is_view_registered("detail")
-            or viewset.get_view_class("detail") is not target
-        ):
-            return None
-        if issubclass(target, CrudViewPermissionRequiredMixin):
-            # The classmethod policy only certifies the stock instance permission
-            # contract. Inspect descriptors without evaluating application code.
-            if any(
-                getattr_static(target, name) is not getattr_static(CrudViewPermissionRequiredMixin, name)
-                for name in ("permission_required", "get_permission_required")
-            ):
-                return None
-            permission_bases = (PermissionRequiredMixin, CrudViewPermissionRequiredMixin)
-            if any(base.__module__ == "crud_views_guardian.lib.mixins" for base in target.__mro__):
-                from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin, GuardianParentPermissionMixin
-
-                permission_bases += (GuardianObjectPermissionMixin, GuardianParentPermissionMixin)
-            # Guardian's parent gate delegates to super(), so certify the inherited
-            # chain too, rather than only the first effective has_permission method.
-            if any(
-                "has_permission" in base.__dict__
-                and not any(base.__dict__["has_permission"] is stock.has_permission for stock in permission_bases)
-                for base in target.__mro__
-            ):
-                return None
-        initkwargs = match.func.view_initkwargs
-        for name, value in initkwargs.items():
-            # Classmethod policy cannot certify instance-only authorization overrides.
-            if name == "permission_required" or (
-                (name.startswith(("cv_", "_cv_")) or callable(getattr(target, name, None)))
-                and value != getattr(target, name, None)
-            ):
-                return None
-
-        request = copy(self.request)
-        request.META = self.request.META.copy()
-        request.META.pop("HTTP_X_CV_MODAL", None)
-        request.__dict__.pop("headers", None)
-        request.method = "GET"
-        request.path = path
-        request.path_info = path_info
-        request.GET = QueryDict(parsed.query)
-        request.POST = QueryDict()
-        request.META.update(
-            REQUEST_METHOD="GET", PATH_INFO=path_info, SCRIPT_NAME=prefix.rstrip("/"), QUERY_STRING=parsed.query
-        )
-        request.resolver_match = match
-        destination = target(**initkwargs)
-        destination.setup(request, *match.args, **match.kwargs)
-        # Application queryset errors must propagate; only native missing-row lookup
-        # and explicit policy denial mean an unavailable destination.
-        queryset = destination.get_queryset()
-        try:
-            fetched = SingleObjectMixin.get_object(destination, queryset=queryset)
-        except Http404 as error:
-            origin = error.__traceback__
-            while origin.tb_next is not None:
-                origin = origin.tb_next
-            if origin.tb_frame.f_code is not SingleObjectMixin.get_object.__code__:
-                raise
-            return None
-        if (
-            fetched._meta.concrete_model is not obj._meta.concrete_model
-            or type(fetched.pk) is not type(obj.pk)
-            or fetched.pk != obj.pk
-            or fetched._state.db != obj._state.db
-        ):
-            return None
-        destination.object = fetched
-        try:
-            # Only load the optional extension when an actual Guardian base is
-            # already present. Core detail views need no Guardian dependency.
-            if any(base.__module__ == "crud_views_guardian.lib.mixins" for base in target.__mro__):
-                from crud_views_guardian.lib.mixins import (
-                    GuardianObjectPermissionMixin,
-                    GuardianParentPermissionMixin,
-                    _guardian_inactive_actor,
-                )
-                from crud_views_guardian.lib.views import _PermittedPks
-
-                if issubclass(target, (GuardianObjectPermissionMixin, GuardianParentPermissionMixin)):
-                    parented = issubclass(target, GuardianParentPermissionMixin)
-                    if parented:
-                        error = target._guardian_child_composition_error()
-                        if error:
-                            raise ImproperlyConfigured(error)
-                    # Stored anonymous-user grants must never replace the original
-                    # request's authentication gate, even on a supported topology.
-                    if not request.user.is_authenticated or _guardian_inactive_actor(request.user):
-                        return None
-                    using = fetched._state.db
-                    projection = _PermittedPks(request.user, target.cv_guardian_accept_global_perms)
-                    actor = projection._projection_actor(type(fetched), using=using)
-                    if actor is None:
-                        return None
-                    request.user = actor
-                    if parented and viewset.parent is not None:
-                        parent = destination._cv_cancel_parent_object()
-                        if (
-                            parent is None
-                            or parent._state.adding
-                            or parent.pk is None
-                            or parent._state.db != using
-                            or projection._projection_actor(type(parent), using=using) is None
-                        ):
-                            return None
-                        # This fresh instance is used for one candidate only. Reuse
-                        # the certified parent without repeating application hooks.
-                        destination._cv_cancel_parent_object = lambda: parent
-            available = target._cv_cancel_target_available(request.user, fetched, destination)
-        except PermissionDenied:
-            return None
-        return candidate if available else None
-
     @staticmethod
     def _walk_nested(items):
         for item in items:
@@ -443,10 +275,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
             related = self.cv_filter_related_objects(self.request.user, related)
             context["related_summary"] = related.summary
             context["related_summary_items"] = [f"{name}: {count}" for name, count in related.summary.items()]
-            context["protected_objects"] = [
-                {"obj": obj, "url": self._cv_get_protected_object_url(obj) if self.cv_link_related_objects else None}
-                for obj in related.protected
-            ]
+            context["protected_objects"] = [{"obj": obj, "url": None} for obj in related.protected]
 
             urls = {}
             if self.cv_link_related_objects:

@@ -67,6 +67,7 @@ def test_plain_protected_request_tracer(
     from django.contrib.auth.models import Permission
     from django.utils.html import escape
     from lxml import html
+
     from tests.test1.app.models import Contract
 
     case = protected_destination
@@ -305,6 +306,24 @@ def test_protected_body_escaping(outer_autoescape, theme):
         assert "alert-danger" in document.get("class")
         assert document.xpath(".//*[@data-cv-alert-dismiss]")
         assert document.xpath(".//strong")
+
+
+@pytest.mark.parametrize("outer_autoescape", ["on", "off"])
+def test_protected_body_non_null_compatibility_escaping(outer_autoescape):
+    """Copied callers can still supply URLs to the unchanged independently overridable body."""
+    from django.template import Context, Template
+    from lxml import html
+
+    item = {"obj": '<script>alert("bad")</script>', "url": '/detail/?q=" onmouseover="bad&x=1'}
+    template = Template(
+        "{% autoescape " + outer_autoescape + " %}"
+        '{% include "crud_views/snippets/delete/protected_objects.html" %}{% endautoescape %}'
+    )
+    rendered = template.render(Context({"items": [item]}))
+    document = html.fromstring(rendered)
+    assert "<script>" not in rendered
+    assert "&lt;script&gt;" in rendered
+    assert document.xpath(".//a")[0].attrib == {"href": item["url"]}
 
 
 @pytest.mark.django_db

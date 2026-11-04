@@ -192,11 +192,11 @@ has not been reproduced. External-application verification is outside this phase
 
 Decisions: `phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-CONTEXT.md`.
 
-- [ ] **DPV-01**: Remove protected destination certification; preserve ordered escaped obj/url entries with null URLs and existing cascade hook behavior.
-- [ ] **DPV-02**: Default 50; explicit per-view then project setting; explicit None unlimited, unset inherits; reject invalid raw values.
-- [ ] **DPV-03**: One protected-first budget, depth-first cascade order, every occurrence/root counts; promote visible descendants of hidden rows; select before URLs.
+- [x] **DPV-01**: Remove protected destination certification; preserve ordered escaped obj/url entries with null URLs and existing cascade hook behavior.
+- [x] **DPV-02**: Default 50; explicit per-view then project setting; explicit None unlimited, unset inherits; reject invalid raw values.
+- [x] **DPV-03**: One protected-first budget, depth-first cascade order, every occurrence/root counts; promote visible descendants of hidden rows; select before URLs.
 - [ ] **DPV-04**: Keep full summaries and redaction, truthful single translated overflow notice, separate incomplete warning, no empty cascade detail frame.
-- [ ] **DPV-05**: Preserve complete inspection/provider/filter/write contracts, visibility and whole-form blocking across core/Guardian/preview-off/page/modal.
+- [x] **DPV-05**: Preserve complete inspection/provider/filter/write contracts, visibility and whole-form blocking across core/Guardian/preview-off/page/modal.
 - [ ] **DPV-06**: Execute measurements and stock/copied page/modal acceptance; publish paired Breaking/migration guidance, examples and Phase 7 surface handoff.
 
 ### Protected delete-preview object links (Phase 06.9, #307)
@@ -267,11 +267,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PDL-04 | Phase 6.9 | Complete |
 | PDL-05 | Phase 6.9 | Complete |
 | PDL-06 | Phase 6.9 | Complete |
-| DPV-01 | Phase 6.10 | Pending |
-| DPV-02 | Phase 6.10 | Pending |
-| DPV-03 | Phase 6.10 | Pending |
+| DPV-01 | Phase 6.10 | Complete |
+| DPV-02 | Phase 6.10 | Complete |
+| DPV-03 | Phase 6.10 | Complete |
 | DPV-04 | Phase 6.10 | Pending |
-| DPV-05 | Phase 6.10 | Pending |
+| DPV-05 | Phase 6.10 | Complete |
 | DPV-06 | Phase 6.10 | Pending |
 | TIP-01 | Phase 6.8 | Complete |
 | TIP-02 | Phase 6.8 | Complete |

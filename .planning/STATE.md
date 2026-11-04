@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: "06.10"
 current_phase_name: Simplify protected-object previews and cap total displayed objects
 status: verifying
-stopped_at: Completed 06.10-05-PLAN.md; independent phase reviews and human acceptance pending
+stopped_at: Phase 06.10 verified human_needed; seven UAT items pending
 last_updated: "2026-11-04T21:34:52.656Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.10 Plan 05 complete; independent reviews and human acceptance pending
+last_activity_desc: Phase 06.10 independent verification complete; human UAT pending
 state_head: 609ee3a2d2cac37f297c3ab079a42b229515ee26
 progress:
   total_phases: 17
@@ -28,12 +28,20 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 
 ## Current Position
 
-Phase: 06.10 (Simplify protected-object previews and cap total displayed objects) — AWAITING VERIFICATION
+Phase: 06.10 (Simplify protected-object previews and cap total displayed objects) — AWAITING HUMAN ACCEPTANCE
 Plan: 5 of 5
-Status: All plans executed; phase verification and human acceptance pending
-Last activity: 2026-11-04 — Phase 06.10 Plan 05 complete; final automated gates passed
+Status: All plans and independent automated reviews complete; seven human UAT items pending
+Last activity: 2026-11-04 — Phase 06.10 canonical verification human_needed (18/20), no implementation blocker
 
-Next: Independent phase/code/security/validation reviews and normal end-of-phase human acceptance
+Next: $gsd-verify-work 06.10
+
+### Phase 06.10 independent verification — 2026-11-04
+
+- All five plans executed; canonical verification is human_needed, 18/20 deduplicated truths verified, no failed truth or implementation blocker. All 19 decisions honored; 35 original plan truths mapped. Seven human items persisted in 06.10-UAT.md; no approval inferred.
+- Validation covers six requirements and thirteen tasks, compliant; fresh 456 Python/29 Node checks pass. Deep code review of 33 files is clean, with fresh 258 Python/13 Node passes. Final verifier adds 21 named passes; current browser evidence validates all 45 cases/557 source inputs/two screenshots.
+- Security18/18 closed:17 mitigated plus existing maintainer D-12 aggregate-policy acceptance. SC disposition corrected from planned accept to verified cached/no-install mitigation; no new risk acceptance. UI20/24 with visual/keyboard/kind confirmation pending; font attribution remains historical, no product typography defect established.
+- Final-source full5.2 9,671+1expected skip, focused4.2/6.0 2,555 each, examples409+100subtests, JS365, fragments2, Node29, Ruff and strict docs remain current: no product/test/doc changes since acceptance source e59b99a. Runtime and cached Vitest limits remain explicit.
+- Phase remains In Progress; no next-phase advance, push, merge or publication. Unrelated PROJECT/config/CLAUDE/state.json and diagnostics preserved. Earlier pending-independent-review entries below are historical.
 
 ### Phase 06.10 Plan 05 execution — 2026-11-04
 

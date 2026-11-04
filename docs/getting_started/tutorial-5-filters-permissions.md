@@ -101,9 +101,14 @@ full `Author` and `Book` permissions this way. The final example also seeds one
 `Earthsea publishing contract` for Ursula Le Guin and grants only Alice its
 `view` permission via `actions=("view",)`. Import `Contract` alongside `Author`
 and `Book` in `library/seed.py`; Part 6 defines this protected relationship and
-its detail view. Alice sees a linked Contract in the blocked delete preview;
+its detail view. Alice sees the permitted Contract label as plain text in the blocked delete preview;
 Bob sees the generic notice without the Contract title or URL, and its direct
 detail URL returns 403. Both users are prevented from deleting Ursula.
+Other authors demonstrate cascades: Book links still open full detail pages,
+including from delete modals. The default display limit is 50; explicit
+`cv_delete_preview_limit = None` shows every visible entry. Unlimited display can
+make long pages and require more cascade-link work. These display choices change
+neither complete inspection and visibility-filtering cost nor deletion protection.
 
 To see the create button disappear and the 403 for
 yourself, create a superuser (`python manage.py createsuperuser`), revoke one of alice's permissions in

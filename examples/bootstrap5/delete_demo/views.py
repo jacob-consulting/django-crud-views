@@ -73,7 +73,10 @@ class ProjectDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, Guardian
     cv_viewset = cv_project
     form_class = CrispyDeleteForm
     cv_message_template_code = _("Deleted project “{{ object }}”")
-    cv_show_related_objects = True  # cascade preview + labels of the protected tasks the user may view
+    # Permitted protected Task labels are plain text; hidden Tasks still block deletion.
+    # Default 50 shared display slots; cv_delete_preview_limit = None shows all visible entries.
+    # Display policy never limits complete inspection or changes deletion protection.
+    cv_show_related_objects = True
     cv_modal = True
 
     def cv_check_delete_protection(self) -> list[str]:

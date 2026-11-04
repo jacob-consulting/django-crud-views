@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.10"
 current_phase_name: Simplify protected-object previews and cap total displayed objects
 status: executing
-stopped_at: Completed 06.10-02-PLAN.md; continue with Plans 03 and 04
-last_updated: "2026-11-04T21:01:02.392Z"
+stopped_at: Completed 06.10-03-PLAN.md; continue with Plans 04 and 05
+last_updated: "2026-11-04T21:11:01.424Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.10 Plan 02 complete; Plans 03 and 04 next
-state_head: 364e996bd57fb9afcf02e13c2b41468d9910879e
+last_activity_desc: Phase 06.10 Plan 03 complete; Plans 04 and 05 next
+state_head: aeb0d4c953139ecbfa9695dfd5d8b4ba8f6a4538
 progress:
   total_phases: 17
   completed_phases: 15
   total_plans: 118
-  completed_plans: 115
+  completed_plans: 116
 milestone_name: milestone
 ---
 
@@ -29,11 +29,18 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 ## Current Position
 
 Phase: 06.10 (Simplify protected-object previews and cap total displayed objects) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
-Last activity: 2026-11-04 — Phase 06.10 Plan 02 complete; Plans 03 and 04 next
+Last activity: 2026-11-04 — Phase 06.10 Plan 03 complete; Plans 04 and 05 next
 
 Next: $gsd-execute-phase 06.10
+
+### Phase 06.10 Plan 03 execution — 2026-11-04
+
+- Exact copied content/related/body recipes retain byte/hash identity and now render one truthful shortening notice, plain protected labels and independently guarded summaries/details, including an unblocked solo root.
+- Configuration, Breaking/migration, theme and Guardian guidance document default 50, explicit None, strict checks, protected-first visible selection and full inspection/filter cost limits. Phase 7 handoff records final names and pending acceptance.
+- Final migration suite: 129 passed with four workers on current source/Python 3.12/Django 5.2. Strict MkDocs build and scoped Ruff checks passed; RED evidence independently classified RED_EVIDENCE_OK.
+- Three tasks and summary committed; roadmap 3/5, plan position 4/5. Plans 04/05 own examples/locale and final browser/runtime acceptance. Shared DPV requirements and human presentation checks remain open. SDK progress update declined the unscoped phase; scoped plan/roadmap counts advanced without marking the phase complete.
 
 ### Phase 06.10 Plan 02 execution — 2026-11-04
 
@@ -552,6 +559,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.9 P04 | 17min | 2 tasks | 10 files |
 | Phase 06.10 P01 | 6min | 2 tasks | 7 files |
 | Phase 06.10 P02 | 8min | 3 tasks | 14 files |
+| Phase 06.10 P03 | 6min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -726,6 +734,7 @@ Recent decisions affecting current work:
 - [Phase 06.9]: 04: Exact copied recipes and real page/modal anchors pass seventeen Chromium cases; focused Enter and document requests are required, with cached runtime limits and independent audits retained.
 - [Phase 06.10]: Plan 01 removes only protected destination certification; preserves shared cascade, Guardian, Cancel and inspection paths. Plain ordered obj/url=None entries are measured separately from complete inspection/filter costs.
 - [Phase 06.10]: Plan 02 resolves inherited view-first finite/None display policy with a private sentinel and independent raw project diagnostics; protected-first local selection precedes per-occurrence cascade URLs while full inspection and visibility remain complete.
+- [Phase 06.10]: Plan 03 preserves exact copied-recipe markers and null-URL bodies, migrates independent guards/notices, and documents selected-only presentation costs separately from full inspection/filtering.
 
 ### Pending Todos
 
@@ -783,6 +792,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T21:01:00.319Z
-Stopped at: Completed 06.10-02-PLAN.md; continue with Plans 03 and 04
+Last session: 2026-11-04T21:10:59.289Z
+Stopped at: Completed 06.10-03-PLAN.md; continue with Plans 04 and 05
 Resume file: None

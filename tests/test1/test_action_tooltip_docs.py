@@ -176,7 +176,8 @@ def test_raw_context_recipe_normalizes_permissions_and_custom_label(author_dougl
     author_douglas_adams.save()
     view, request = _detail_view(_client([AUTHOR_VIEW]), author_douglas_adams)
     raw = view.cv_get_context("custom", obj=author_douglas_adams, user=request.user, location="context")
-    assert "cv_tag" not in raw and "cv_title" not in raw
+    assert "cv_tag" not in raw
+    assert "cv_title" not in raw
     nodes = rendered("raw-context", raw).xpath(".//*[@cv-key]")
     if policy == "hide":
         assert not nodes
@@ -187,7 +188,8 @@ def test_raw_context_recipe_normalizes_permissions_and_custom_label(author_dougl
     assert node.get("title") == f"Custom {author_douglas_adams.first_name}"
     assert not node.cssselect("script")
     if policy == "disable":
-        assert node.tag == "button" and node.get("disabled") is not None
+        assert node.tag == "button"
+        assert node.get("disabled") is not None
         for attr in ("href", "data-cv-modal", "data-cv-action", "data-cv-target"):
             assert node.get(attr) is None
     elif key == "update":
@@ -201,10 +203,13 @@ def test_leaf_rows_and_rendering_diagram_agree():
     assert "full hidden caption" in _row(section, "`cv_label`")[1]
     assert "icon titles and menu text" in _row(section, "`cv_short_label`")[1]
     title = _row(section, "`cv_title`")[1]
-    assert "resolved short caption" in title and "nonempty" in title and "full fallback" in title
+    assert "resolved short caption" in title
+    assert "nonempty" in title
+    assert "full fallback" in title
     diagram = (ROOT / "docs/reference/context_buttons.md").read_text()
     ricon = re.search(r'RICON\(\["(.*?)"\]\)', diagram)[1]
-    assert "full hidden caption" in ricon and "short tooltip" in ricon
+    assert "full hidden caption" in ricon
+    assert "short tooltip" in ricon
     menus = _section((ROOT / "docs/reference/action_menus.md").read_text(), "## Labels, icons and the active action")
     assert "no automatic title or tooltip" in menus
 
@@ -216,7 +221,8 @@ def test_copied_action_missing_icon_uses_effective_visible_mode(author_douglas_a
     raw = view.cv_get_context("update", obj=author_douglas_adams, user=request.user, location="context")
     raw["cv_icon_action"] = None
     (node,) = rendered("action-leaf", cv_button_data(cv_resolve_action(raw), "context")).xpath("./*[@cv-key]")
-    assert node.get("title") is None and node.get("data-cv-tooltip") is None
+    assert node.get("title") is None
+    assert node.get("data-cv-tooltip") is None
     assert node.text_content().strip() == "Update"
     assert not node.cssselect("span.visually-hidden")
 
@@ -228,7 +234,8 @@ def test_paired_migration_and_both_scan_paths():
     for heading in ("### CSS and tests that select on markup", "## Silent breaks"):
         checklist = _section(migration, heading)
         assert "(#action-tooltips)" in checklist
-        assert "short" in checklist.lower() and "context-menu native titles" in checklist
+        assert "short" in checklist.lower()
+        assert "context-menu native titles" in checklist
     section = _section(migration, "## Action tooltips")
     for anchor in ("copied-action-leaf", "copied-menu-leaf", "raw-contextbutton-template"):
         assert f"(reference/buttons.md#{anchor})" in section

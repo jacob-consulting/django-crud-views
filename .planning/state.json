@@ -69,15 +69,25 @@
       "status": "complete"
     },
     {
+      "number": "6.8",
+      "name": "Action tooltips: short captions and visible-label suppression",
+      "status": "complete"
+    },
+    {
+      "number": "6.9",
+      "name": "Protected delete-preview object links",
+      "status": "complete"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step (plan phase 7)",
-    "reason": "Phase 19 of 19 — needs a plan"
+    "command": "$gsd-discuss-phase 7",
+    "label": "Discuss Phase 7 stability policy",
+    "reason": "15 of 16 roadmap phases complete; Phase 7 needs maintainer decisions before planning"
   },
-  "updated_at": "2026-11-03T19:52:42.288Z"
+  "updated_at": "2026-11-04T17:10:58.348Z"
 }

@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "6.10"
-current_phase_name: Object-derived nested URLs and link-access parity
-status: executing
-stopped_at: Phase 6.10 plan convergence complete; six plans ready to execute
-last_updated: "2026-11-04T16:13:56.923Z"
+current_phase: "7"
+current_phase_name: Theme-surface stability policy
+status: discussing
+stopped_at: Phase 7 needs maintainer decisions before planning
+last_updated: "2026-11-04T17:10:58.348Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 6.10 plans converged after four external review cycles; ready to execute
-state_head: 9bab0a7b13b59aaa9e5272ab44d2f72904f6782a
+last_activity_desc: Phase 7 is next; theme-surface tier decisions remain open
+state_head: f2c271a5087eaea370c10bb4da305ae22f06c9e6
 progress:
-  total_phases: 17
+  total_phases: 16
   completed_phases: 15
-  total_plans: 119
+  total_plans: 113
   completed_plans: 113
 milestone_name: milestone
 ---
@@ -24,23 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-04)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.10 — Object-derived nested URLs and link-access parity
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 6.10 (Object-derived nested URLs and link-access parity) — READY TO EXECUTE
+Phase: 7 (Theme-surface stability policy) — NEEDS DISCUSSION
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-11-04 — Phase 6.10 plans converged after four external review cycles; ready to execute
+Status: Needs maintainer decisions before planning
+Last activity: 2026-11-04 — Phase 7 is next; the implemented theme surface is ready for tier decisions
 
-Next: $gsd-execute-phase 6.10 — execute the six reviewed plans in six serial waves.
-
-### Phase 06.10 plan convergence — 2026-11-04
-
-- Converged in four review cycles with Fable, Grok and Gemini; each reviewed all six plans. Unresolved HIGH/actionable counts: 6/19 → 0/5 → 0/1 → 0/0. No open plan-revision conflicts.
-- Six plans, sixteen tasks and six serial waves cover all six requirements and all sixteen selected decisions. All 32 automated verification commands declare failure conditions.
-- Final plan revision: 7581bc0; final review and diagnostics: 9bab0a7. See 06.10-REVIEWS.md for independent closure evidence and recorded source-grounding limits (the intel adapter cannot verify Python symbols).
-- Planning only: product implementation, query measurements, browser evidence and product regression execution remain required by the plans. Existing unrelated workspace changes are preserved.
+Next: $gsd-discuss-phase 7 — settle the stability tiers and remaining public-surface decisions.
 
 ### Phase 06.9 shipping — 2026-11-04
 
@@ -755,7 +748,6 @@ None yet.
 - Phase 06.7 inserted after Phase 06.6: Dynamic cancel navigation and origin query state (#302); approved scope and defaults; complete before Phase 7 freezes the public surface (URGENT)
 - Phase 06.8 inserted after Phase 06.7: Action tooltips: short captions and visible-label suppression (#304); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.9 inserted after Phase 06.8: Protected delete-preview object links (#307); user insertion schedules the issue before Phase 7 freezes the affected contracts (URGENT)
-- Phase 06.10 inserted after Phase 06.9: Object-derived nested URLs (#311) and companion link-access parity (#312); shared resolver first, complete before Phase 7 freezes the public surface (URGENT)
 
 ## Deferred Items
 
@@ -765,6 +757,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T16:13:55.044Z
-Stopped at: Phase 6.10 plan convergence complete; six plans ready to execute
-Resume file: .planning/phases/06.10-object-derived-nested-urls-and-link-access-parity/06.10-REVIEWS.md
+Last session: 2026-11-04T17:10:58.348Z
+Stopped at: Phase 7 needs maintainer decisions before planning
+Resume file: .planning/ROADMAP.md

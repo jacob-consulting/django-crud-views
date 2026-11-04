@@ -200,18 +200,6 @@ The initial spec-less probe skipped visibly while IDs were TBD; planning reruns 
 - [x] **PDL-05**: Require immediate copied-template migration with an executable documented recipe, paired Breaking/migration guidance, updated delete reference and existing example guidance, and an exact Phase 7 surface inventory.
 - [x] **PDL-06**: Core/Guardian, target denial, escaping, database identity and blocked-write regressions plus stock/custom browser acceptance prove the complete contract; report actual supported-series/runtime evidence and coverage limits.
 
-### Object-derived nested URLs and link-access parity (Phase 06.10, #311/#312)
-
-Source: Phase 06.10 CONTEXT.md D-01–D-16, qualified research proposals, and carried preservation contracts.
-These requirements extend the completed authorization/delete work without reopening or broadening its certification.
-
-- [ ] **NURL-01**: Request-free and view URL builders resolve coherent multilevel ancestry from declared relationship and PK metadata; object destinations prefer actual ancestry, collection destinations preserve page scope or derive from the object when page scope is absent, and explicit known conflicts raise.
-- [ ] **NURL-02**: Strict and optional URL generation distinguish recognized unavailability from invalid caller inputs and custom failures; explicitly scoped M2M and leaf Resource links work without inferring membership or relationships, and null single-parent relations cannot be repaired for object destinations.
-- [ ] **NURL-03**: Multilevel delete-preview candidates reuse the shared resolver while preserving visibility-first filtering, exact destination certification, first registered detail selection, public overrides, cascade behavior, row/database identity and blocked-form omission.
-- [ ] **AUTH-08**: Missing configured core or Guardian permissions never advertise accessible links. Core direct requests retain their assertion/migration hint; Guardian direct requests raise clear configuration errors. Preserve nested create's effective parent-only permission policy and explicit None parent-policy semantics.
-- [ ] **AUTH-09**: Guardian links apply the existing direct-parent rule to the resolvable destination parent before child access, preserving custom access/state/label hooks. Ordinary unresolved-object and no-object helper calls retain D-09/D-10 fallbacks; request-side checks remain authoritative, and nested create retains its distinct unresolved-input behavior.
-- [ ] **NURL-04**: Pin declared query costs and supported-series regressions, prove stock/custom-template behavior, publish paired Breaking/migration guidance with executable examples, and hand exact public helper names and limited parity guarantees to Phase 7.
-
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -220,6 +208,15 @@ These requirements extend the completed authorization/delete work without reopen
 - [ ] **STAB-04**: A public `is_library_renderer(prefix, callable)` (or equivalent) helper replaces the theme's need for `_get_renderers` / `_icon_str`
 - [ ] **STAB-05**: The stability doc lists dependency floors (crispy-forms, crispy-bootstrap5, django-tables2, Bootstrap)
 - [ ] **STAB-06**: `theme.md` cross-references "what a theme may rely on"; theme part of #89 closed
+
+## Deferred URL and visibility work
+
+The withdrawn NURL-01–04 and AUTH-08–09 entries are preserved in the
+[pre-retirement requirements snapshot](../superpowers/archive/2026-11-04-phase-06.10-object-derived-nested-urls-and-link-access-parity/planning-before-retirement/REQUIREMENTS.md).
+They are not active v1 requirements and their identifiers are reserved for historical traceability.
+The smaller opt-in helper is backlog [#314](https://github.com/jacob-consulting/django-crud-views/issues/314); the confirmed visibility bugs remain in
+[#312](https://github.com/jacob-consulting/django-crud-views/issues/312) for separate scoping.
+Neither is scheduled by this document. See the [maintainer decision](../superpowers/notes/2026-11-04-opt-in-url-helper-decision.md).
 
 ## v2 Requirements
 
@@ -253,12 +250,6 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NURL-01 | Phase 6.10 | Planned |
-| NURL-02 | Phase 6.10 | Planned |
-| NURL-03 | Phase 6.10 | Planned |
-| AUTH-08 | Phase 6.10 | Planned |
-| AUTH-09 | Phase 6.10 | Planned |
-| NURL-04 | Phase 6.10 | Planned |
 | PDL-01 | Phase 6.9 | Complete |
 | PDL-02 | Phase 6.9 | Complete |
 | PDL-03 | Phase 6.9 | Complete |
@@ -357,10 +348,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 101 total (95 prior requirements plus six Phase 06.10 requirements)
-- Mapped to phases: 101
+- v1 requirements: 95 total
+- Mapped to phases: 95
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-25*
-*Last updated: 2026-11-02 — Phase 06.4 canonical10/10, UAT2/2, security44/44 and final handoff ready; scoped exclusions retained*
+*Last updated: 2026-11-04 — retired the unimplemented integrated URL/access phase; retained 95 active v1 requirements*

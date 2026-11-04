@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
-from library.models import Author
+from library.models import Author, Book
 
 
 class CardViewTestCase(TestCase):
@@ -58,6 +58,12 @@ class AuthorCardTest(CardViewTestCase):
         resp = self.client.post(reverse("author_card-delete", kwargs={"pk": ted.pk}), {"confirm": True})
         self.assertEqual(resp.status_code, 302)
         self.assertFalse(Author.objects.filter(pk=ted.pk).exists())
+
+    def test_delete_page_previews_cascading_books(self):
+        Book.objects.create(title="The Dispossessed", price=10, author=self.author)
+        resp = self.client.get(reverse("author_card-delete", kwargs={"pk": self.author.pk}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "The Dispossessed")
 
     def test_library_links_unaffected(self):
         resp = self.client.get(reverse("author-detail", kwargs={"pk": self.author.pk}))

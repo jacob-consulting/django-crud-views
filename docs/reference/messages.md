@@ -8,7 +8,7 @@ renders that queue as Bootstrap 5 alerts.
 
 !!! example "Try it live"
     The [Messages example](https://django-crud-views-demo.onrender.com/messages/notice/compose/) in the live demo queues
-    a message at every level and shows one inline `{% cv_alert %}` — log in as `alice` / `alice`. See
+    a message at any level and shows one inline `{% cv_alert %}` — log in as `alice` / `alice`. See
     [Live demo](../getting_started/demo.md) for data resets and wake-up time.
 
 ## Usage

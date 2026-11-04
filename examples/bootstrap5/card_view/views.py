@@ -65,4 +65,5 @@ class AuthorCardUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, Updat
 class AuthorCardDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_author_card
     form_class = CrispyDeleteForm
+    cv_show_related_objects = True
     cv_message_template_code = _("Deleted author “{{ object }}”")

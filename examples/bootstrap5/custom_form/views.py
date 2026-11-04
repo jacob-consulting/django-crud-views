@@ -32,7 +32,7 @@ class ContactListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionReq
 
 class ContactDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_contact
-    cv_context_actions = ["parent", "remind"]
+    cv_context_actions = ["home", "remind"]
     cv_property_display = [
         {
             "title": _("Contact"),
@@ -63,7 +63,7 @@ class ContactRemindView(BreadcrumbMixin, MessageMixin, CrispyViewMixin, CustomFo
     cv_action_short_label_template_code = _("Remind")
 
     cv_message_template_code = _("Reminded contact “{{ object }}”")
-    cv_context_actions = ["parent", "detail", "remind"]
+    cv_context_actions = ["home", "detail", "remind"]
     cv_header_template_code = _("Remind contact")
     cv_paragraph_template_code = _("Send a reminder note to this contact")
 
@@ -95,7 +95,7 @@ class ContactInviteView(BreadcrumbMixin, MessageMixin, CrispyViewMixin, CustomFo
     cv_action_short_label_template_code = _("Invite")
 
     cv_message_template_code = _("Invited “{{ form.cleaned_data.email }}”")
-    cv_context_actions = ["home", "parent", "invite"]
+    cv_context_actions = ["home", "invite"]
     cv_header_template_code = _("Invite contact")
     cv_paragraph_template_code = _("Add a new contact by email address")
 

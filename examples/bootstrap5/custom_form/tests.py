@@ -42,6 +42,13 @@ class RemindTest(CustomFormTestCase):
         self.assertIsNone(self.contact.last_reminded_dt)
 
 
+class BackLinkTest(CustomFormTestCase):
+    def test_detail_and_remind_link_back_to_list(self):
+        for url in (reverse("contact-detail", kwargs={"pk": self.contact.pk}), self.remind_url()):
+            resp = self.client.get(url)
+            self.assertContains(resp, f'href="{reverse("contact-list")}"')
+
+
 class InviteTest(CustomFormTestCase):
     def test_page_renders(self):
         resp = self.client.get(reverse("contact-invite"))

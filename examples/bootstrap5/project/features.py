@@ -471,7 +471,10 @@ FEATURES: list[Feature] = [
         app="label_modes",
         group="ui",
         title="Label Modes & Icons",
-        description="The same actions as text only, icon and text, and icon only with a tooltip — side by side.",
+        description=(
+            "Three actions, one per label mode: text only, icon and text, icon only with a tooltip — in list rows "
+            "and the detail toolbar."
+        ),
         about=(
             "Every action button has one of three label modes. 'label' shows the short label as text, 'both' "
             "adds the action's icon, 'icon' shows the icon alone: its full label (\"Delete Gadget …\") stays in "
@@ -503,9 +506,9 @@ FEATURES: list[Feature] = [
         about=(
             "Pick a level and a text and send: the view queues it with messages.add_message and redirects back, "
             "where {% cv_messages %} in the base template renders it as a dismissible alert, coloured by level. "
-            "Debug messages are queued too but never shown: Django's default MESSAGE_LEVEL is INFO, and this "
-            "demo does not lower it. The blue box above the form is a single {% cv_alert %} drawn by the "
-            "template itself, through the same alert frame."
+            "Debug messages are dropped, not queued: Django's default MESSAGE_LEVEL is INFO, so add_message ignores "
+            "anything below it, and this demo does not lower it. The blue box above the form is a single "
+            "{% cv_alert %} drawn by the template itself, through the same alert frame."
         ),
         look_at=(
             "NoticeComposeView.cv_form_valid in views.py (a CustomFormNoObjectView) and the cv_alert tag in "

@@ -12,7 +12,7 @@ template override by name, resolved through Django's app template loader.
     [Base template](templates.md).
 
 !!! example "Try it live"
-    The [Theme example](https://django-crud-views-demo.onrender.com/theming/) in the live demo points from here to the
+    The [Theme example](https://django-crud-views-demo.onrender.com/theming/) in the live demo points from here and, once it is live, to the
     Tabler theme demo — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
 
 ## How resolution works

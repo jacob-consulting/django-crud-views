@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.10"
 current_phase_name: Simplify protected-object previews and cap total displayed objects
 status: executing
-stopped_at: Completed 06.10-03-PLAN.md; continue with Plans 04 and 05
-last_updated: "2026-11-04T21:11:01.424Z"
+stopped_at: Completed 06.10-04-PLAN.md; continue with Plan 05
+last_updated: "2026-11-04T21:20:21.806Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.10 Plan 03 complete; Plans 04 and 05 next
-state_head: aeb0d4c953139ecbfa9695dfd5d8b4ba8f6a4538
+last_activity_desc: Phase 06.10 Plan 04 complete; Plan 05 next
+state_head: c22f75dad85e7ae9f84503d4c48ae8055392f1f4
 progress:
   total_phases: 17
   completed_phases: 15
   total_plans: 118
-  completed_plans: 116
+  completed_plans: 117
 milestone_name: milestone
 ---
 
@@ -29,11 +29,18 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 ## Current Position
 
 Phase: 06.10 (Simplify protected-object previews and cap total displayed objects) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
-Last activity: 2026-11-04 — Phase 06.10 Plan 03 complete; Plans 04 and 05 next
+Last activity: 2026-11-04 — Phase 06.10 Plan 04 complete; Plan 05 next
 
 Next: $gsd-execute-phase 06.10
+
+### Phase 06.10 Plan 04 execution — 2026-11-04
+
+- Library and Guardian Delete examples teach plain protected labels, retain independent Contract access and full-page Book cascade links, and prove finite/None display never changes blocked GET/POST row preservation. Source-sync and live/tutorial prose tests pass; models, grants, seeds and defaults are unchanged.
+- German shortening notice is compiled through existing polib, byte-identical on regeneration, and tested independently of completeness across page/modal overflow/exact/hidden-only/unlimited cases.
+- Full examples: 409 passed / 100 subtests; locale selector: 17 passed; preserved inspection/migration gate: 351 passed. Four workers, current source, Python 3.12 / Django 5.2; strict MkDocs and scoped Ruff pass. All final RED records classify RED_EVIDENCE_OK.
+- Three tasks and summary committed; roadmap 4/5, plan position 5/5. Plan 05 owns final browser/runtime acceptance; shared DPV requirements, human presentation checks and native-speaker translation review remain unclaimed. SDK progress update declined the unscoped phase; existing state.json edits were preserved.
 
 ### Phase 06.10 Plan 03 execution — 2026-11-04
 
@@ -560,6 +567,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.10 P01 | 6min | 2 tasks | 7 files |
 | Phase 06.10 P02 | 8min | 3 tasks | 14 files |
 | Phase 06.10 P03 | 6min | 3 tasks | 9 files |
+| Phase 06.10 P04 | 6min | 3 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -735,6 +743,7 @@ Recent decisions affecting current work:
 - [Phase 06.10]: Plan 01 removes only protected destination certification; preserves shared cascade, Guardian, Cancel and inspection paths. Plain ordered obj/url=None entries are measured separately from complete inspection/filter costs.
 - [Phase 06.10]: Plan 02 resolves inherited view-first finite/None display policy with a private sentinel and independent raw project diagnostics; protected-first local selection precedes per-occurrence cascade URLs while full inspection and visibility remain complete.
 - [Phase 06.10]: Plan 03 preserves exact copied-recipe markers and null-URL bodies, migrates independent guards/notices, and documents selected-only presentation costs separately from full inspection/filtering.
+- [Phase 06.10]: Plan 04 retains example defaults/models/grants/seeds, uses test-local finite/None overrides, and teaches plain protected labels separately from ordinary Book navigation; German notice uses existing polib regeneration.
 
 ### Pending Todos
 
@@ -792,6 +801,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T21:10:59.289Z
-Stopped at: Completed 06.10-03-PLAN.md; continue with Plans 04 and 05
+Last session: 2026-11-04T21:20:19.613Z
+Stopped at: Completed 06.10-04-PLAN.md; continue with Plan 05
 Resume file: None

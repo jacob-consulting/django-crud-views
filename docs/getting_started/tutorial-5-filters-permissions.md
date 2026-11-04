@@ -89,12 +89,23 @@ def seed():
         author, _ = Author.objects.get_or_create(first_name=first, last_name=last, defaults={"pseudonym": pseudonym})
         for title, price in books:
             Book.objects.get_or_create(title=title, author=author, defaults={"price": Decimal(price)})
+    author = Author.objects.get(first_name="Ursula", last_name="Le Guin")
+    Contract.objects.get_or_create(title="Earthsea publishing contract", author=author)
+    grant_model_perms(user_model.objects.get(username="alice"), Contract, actions=("view",))
 ```
 
 `grant_model_perms` is a small project-level helper (`project/seeding.py`)
 that assigns all four Django model permissions — `view`, `add`, `change`,
 `delete` — for a model to a user. Both demo users, `alice` and `bob`, get
-full `Author` and `Book` permissions this way. To see the create button disappear and the 403 for
+full `Author` and `Book` permissions this way. The final example also seeds one
+`Earthsea publishing contract` for Ursula Le Guin and grants only Alice its
+`view` permission via `actions=("view",)`. Import `Contract` alongside `Author`
+and `Book` in `library/seed.py`; Part 6 defines this protected relationship and
+its detail view. Alice sees a linked Contract in the blocked delete preview;
+Bob sees the generic notice without the Contract title or URL, and its direct
+detail URL returns 403. Both users are prevented from deleting Ursula.
+
+ To see the create button disappear and the 403 for
 yourself, create a superuser (`python manage.py createsuperuser`), revoke one of alice's permissions in
 the Django admin at `/admin/`, and log in as alice again.
 

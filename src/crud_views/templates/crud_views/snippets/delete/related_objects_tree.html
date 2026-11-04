@@ -1,9 +1,7 @@
 <ul>
 {% for node in items %}
     <li>
-        {% if node.obj is None %}
-            <em>(restricted)</em>
-        {% elif node.url %}
+        {% if node.url %}
             <a href="{{ node.url }}">{{ node.obj }}</a>
         {% else %}
             {{ node.obj }}

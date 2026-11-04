@@ -177,6 +177,73 @@ def test_delete_preview_selection_solo_root(
     assert SHORTENED not in content
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("visible_root", [False, True])
+@pytest.mark.parametrize("limit", [2, None])
+def test_delete_preview_truncation_root_at_budget(
+    client_user_publisher_cascade_delete,
+    user_publisher_cascade_delete,
+    publisher_penguin,
+    monkeypatch,
+    modal,
+    visible_root,
+    limit,
+):
+    from django.contrib.auth.models import Permission
+
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import PublisherCascadeDeleteView
+
+    blockers = [Contract.objects.create(title=f"Blocker {i}", publisher=publisher_penguin) for i in range(2)]
+    user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    if visible_root:
+        user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_publisher"))
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_modal", modal)
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_delete_preview_limit", limit)
+    response = client_user_publisher_cascade_delete.get(
+        f"/publisher_cascade/{publisher_penguin.pk}/delete/", HTTP_X_CV_MODAL="true" if modal else "false"
+    )
+    context = response.context
+    assert [item["obj"] for item in context["protected_objects"]] == blockers
+    assert context["related_summary"] == {}
+    assert _objects(context["related_objects"]) == ([publisher_penguin] if visible_root and limit is None else [])
+    assert context["delete_preview_truncated"] is (visible_root and limit == 2)
+    assert response.content.decode().count(SHORTENED) == int(visible_root and limit == 2)
+
+
+@pytest.mark.django_db
+def test_delete_preview_selection_only_selected_labels(preview_view, monkeypatch):
+    from django.template.loader import render_to_string
+
+    from tests.test1.app.models import Book
+
+    first, omitted = Book(pk=1, title="First"), Book(pk=2, title="Omitted")
+    related = RelatedObjects([None, [first, omitted]], {}, [])
+    preview_view._cv_inspect_deletion = lambda: DeleteInspection(related, ())
+    preview_view.cv_delete_preview_limit = 1
+    filtered = []
+    labels = []
+
+    def filter_once(user, original):
+        filtered.append(original)
+        return original
+
+    def label(obj):
+        assert obj is first, "An omitted occurrence was stringified"
+        labels.append(obj)
+        return obj.title
+
+    preview_view.cv_filter_related_objects = filter_once
+    monkeypatch.setattr(Book, "__str__", label)
+    context = preview_view.get_context_data()
+    content = render_to_string("crud_views/snippets/delete/related_objects.html", context)
+    assert filtered == [related]
+    assert labels == [first]
+    assert "First" in content and "Omitted" not in content
+    assert content.count(SHORTENED) == 1
+
+
 @pytest.mark.parametrize("summary", [{}, {"book": 120}])
 @pytest.mark.parametrize("incomplete", [False, True])
 @pytest.mark.parametrize("truncated", [False, True])
@@ -258,7 +325,7 @@ def test_delete_preview_limit_invalid_request(
 ):
     from tests.test1.app.views import PublisherDeleteView
 
-    settings.CRUD_VIEWS_STRICT_CHECKS = False
+    settings.CRUD_VIEWS_STRICT = False
     monkeypatch.setattr(crud_views_settings, "delete_preview_limit", project)
     monkeypatch.setattr(PublisherDeleteView, "cv_show_related_objects", preview)
     if override != "unset":

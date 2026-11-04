@@ -7,7 +7,7 @@
   "expected": "Only the first blocker is selected at limit 1",
   "actual": "Both blockers enter context despite limit 1",
   "reportPath": "/tmp/0610-02-02-red.xml",
-  "runStartedAt": "2026-11-04T20:56:00Z",
+  "runStartedAt": "2026-11-04T20:53:49.225688+00:00",
   "reportModifiedAt": 1793825631.6837509,
   "semanticAssessment": "Real context preparation reached the planned protected-list assertion and exposed two entries instead of one."
 }

@@ -1,16 +1,16 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "7"
-current_phase_name: Theme-surface stability policy
-status: discussing
-stopped_at: Phase 7 needs maintainer decisions before planning
-last_updated: "2026-11-04T17:10:58.348Z"
+current_phase: "06.10"
+current_phase_name: Simplify protected-object previews and cap total displayed objects
+status: Ready for planning
+stopped_at: Phase 06.10 context gathered
+last_updated: "2026-11-04T18:26:44.769Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 7 is next; theme-surface tier decisions remain open
-state_head: f2c271a5087eaea370c10bb4da305ae22f06c9e6
+last_activity_desc: Phase 06.10 context gathered; default 50 with explicit None for unlimited display
+state_head: 810f8197da8ad05ef34898cd643be0c0dc7b48f1
 progress:
-  total_phases: 16
+  total_phases: 17
   completed_phases: 15
   total_plans: 113
   completed_plans: 113
@@ -24,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-04)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.10 — Simplify protected-object previews and cap total displayed objects
 
 ## Current Position
 
-Phase: 7 (Theme-surface stability policy) — NEEDS DISCUSSION
+Phase: 06.10 — Simplify protected-object previews and cap total displayed objects
 Plan: Not started
-Status: Needs maintainer decisions before planning
-Last activity: 2026-11-04 — Phase 7 is next; the implemented theme surface is ready for tier decisions
+Status: Ready for planning
+Last activity: 2026-11-04 — Phase 06.10 context gathered; default 50 with explicit None for unlimited display
 
-Next: $gsd-discuss-phase 7 — settle the stability tiers and remaining public-surface decisions.
+Next: $gsd-plan-phase 06.10 — research and plan the agreed delete-preview simplification and optional display limit.
 
 ### Phase 06.9 shipping — 2026-11-04
 
@@ -748,6 +748,7 @@ None yet.
 - Phase 06.7 inserted after Phase 06.6: Dynamic cancel navigation and origin query state (#302); approved scope and defaults; complete before Phase 7 freezes the public surface (URGENT)
 - Phase 06.8 inserted after Phase 06.7: Action tooltips: short captions and visible-label suppression (#304); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.9 inserted after Phase 06.8: Protected delete-preview object links (#307); user insertion schedules the issue before Phase 7 freezes the affected contracts (URGENT)
+- Phase 06.10 inserted after Phase 6.9: Issue #316: simplify protected-object previews and cap total displayed objects before Phase 7; no dependency on #312, #314 or the retired URL resolver (URGENT)
 
 ## Deferred Items
 
@@ -757,6 +758,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T17:10:58.348Z
-Stopped at: Phase 7 needs maintainer decisions before planning
-Resume file: .planning/ROADMAP.md
+Last session: 2026-11-04T18:26:42.965Z
+Stopped at: Phase 06.10 context gathered
+Resume file: .planning/phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-CONTEXT.md

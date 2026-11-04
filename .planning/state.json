@@ -79,15 +79,20 @@
       "status": "complete"
     },
     {
+      "number": "6.10",
+      "name": "Simplify protected-object previews and cap total displayed objects",
+      "status": "pending"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-discuss-phase 7",
-    "label": "Discuss Phase 7 stability policy",
-    "reason": "15 of 16 roadmap phases complete; Phase 7 needs maintainer decisions before planning"
+    "command": "$gsd-plan-phase 06.10",
+    "label": "Plan Phase 06.10 delete-preview simplification",
+    "reason": "Context gathered; default 50, explicit None for unlimited display, and selection/template/truncation decisions settled"
   },
-  "updated_at": "2026-11-04T17:10:58.348Z"
+  "updated_at": "2026-11-04T18:26:44.875Z"
 }

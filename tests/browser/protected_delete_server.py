@@ -1,4 +1,4 @@
-"""Owned, single-threaded HTTP fixture for protected-blocker navigation."""
+"""Owned, single-threaded HTTP fixture for plain blockers and capped cascade previews."""
 
 # ruff: noqa: E402 -- configure the isolated test project before model imports.
 import copy
@@ -34,9 +34,9 @@ from django.test import override_settings
 from django.urls import include, path
 
 import crud_views
-from tests.test1.app.models import Contract, Publisher
+from tests.test1.app.models import Book, Contract, Publisher
 from tests.test1.app.views import (
-    ContractDetailView,
+    BookDetailView,
     PublisherCascadeDeleteView,
     PublisherCascadeTable,
     PublisherModalProtectedDeleteView,
@@ -92,7 +92,7 @@ class FixtureMiddleware:
 
     def __call__(self, request):
         custom = request.COOKIES.get("protected_mode") == "custom"
-        scenario = request.COOKIES.get("protected_scenario", "normal")
+        scenario = request.COOKIES.get("protected_scenario", "finite-exact")
         token = CUSTOM.set(custom)
         try:
             with ExitStack() as stack:
@@ -103,13 +103,32 @@ class FixtureMiddleware:
 
                     def filtered(self, user, related, original=original_filter):
                         visible = original(self, user, related)
+
+                        def hide_tree(items):
+                            return [
+                                hide_tree(item)
+                                if isinstance(item, list)
+                                else None
+                                if scenario == "hidden-only" or item == hidden_book
+                                else item
+                                for item in items
+                            ]
+
                         return visible._replace(
-                            protected=[obj for obj in visible.protected if obj.pk != hidden.pk and scenario != "hidden"]
+                            protected=[
+                                obj for obj in visible.protected if obj.pk != hidden.pk and scenario != "hidden-only"
+                            ],
+                            tree=hide_tree(visible.tree),
                         )
 
                     values = {
                         "cv_show_related_objects": scenario != "preview-off",
                         "cv_link_related_objects": scenario != "link-off",
+                        "cv_delete_preview_limit": {
+                            "finite-over": 3,
+                            "blockers-exhaust": 2,
+                            "unlimited": None,
+                        }.get(scenario, 4),
                         "cv_filter_related_objects": filtered,
                         "cv_check_delete_protection": lambda self: [],
                     }
@@ -117,15 +136,7 @@ class FixtureMiddleware:
                         values["cv_content_template"] = "myapp/delete.content.html"
                     for name, value in values.items():
                         stack.enter_context(patch.object(cls, name, value))
-                stack.enter_context(patch.object(ContractDetailView, "cv_modal", True))
-                original_queryset = ContractDetailView.get_queryset
-                stack.enter_context(
-                    patch.object(
-                        ContractDetailView,
-                        "get_queryset",
-                        lambda self: original_queryset(self).exclude(pk=denied.pk),
-                    )
-                )
+                stack.enter_context(patch.object(BookDetailView, "cv_modal", True))
                 response = self.get_response(request)
                 if hasattr(response, "render"):
                     response.render()
@@ -148,6 +159,10 @@ def signin(request):
             "hidden": hidden.pk,
             "hiddenLabel": str(hidden),
             "payload": PAYLOAD,
+            "cascadeLabel": str(visible_book),
+            "cascadeDetailPath": PublisherCascadeDeleteView().cv_get_related_object_url(visible_book),
+            "hiddenCascadeLabel": str(hidden_book),
+            "hiddenCascadeDetailPath": PublisherCascadeDeleteView().cv_get_related_object_url(hidden_book),
             "detailPaths": {
                 name: PublisherCascadeDeleteView().cv_get_related_object_url(obj)
                 for name, obj in (("allowed", allowed), ("denied", denied), ("hidden", hidden))
@@ -164,7 +179,7 @@ urlpatterns = [
 
 
 def main():
-    global actor, publisher, allowed, denied, hidden
+    global actor, publisher, allowed, denied, hidden, visible_book, hidden_book
     with tempfile.TemporaryDirectory(prefix="cv-protected-") as temporary:
         settings.DATABASES["default"]["NAME"] = str(Path(temporary) / "db.sqlite3")
         settings.MEDIA_ROOT = str(Path(temporary) / "media")
@@ -192,12 +207,16 @@ def main():
                 call_command("migrate", run_syncdb=True, verbosity=0)
                 actor = User.objects.create_user(username="protected-browser", password=None)
                 actor.user_permissions.add(
-                    *Permission.objects.filter(codename__in=["view_publisher", "delete_publisher", "view_contract"])
+                    *Permission.objects.filter(
+                        codename__in=["view_publisher", "delete_publisher", "view_contract", "view_book"]
+                    )
                 )
                 publisher = Publisher.objects.create(name="Browser Publisher")
                 allowed = Contract.objects.create(publisher=publisher, title=PAYLOAD)
                 denied = Contract.objects.create(publisher=publisher, title="Visible denied blocker")
                 hidden = Contract.objects.create(publisher=publisher, title="Secret hidden blocker")
+                visible_book = Book.objects.create(publisher=publisher, title="Visible cascade book")
+                hidden_book = Book.objects.create(publisher=publisher, title="ZZ hidden cascade book")
                 with make_server("127.0.0.1", 0, StaticFilesHandler(get_wsgi_application())) as server:
 
                     def stop(signum, frame):

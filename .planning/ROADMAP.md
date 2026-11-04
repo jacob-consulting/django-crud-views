@@ -919,7 +919,15 @@ entries with `url=None`, existing summary policy, and one shared truncation noti
 5. Stock/copied templates, full pages and modals follow the decided contract. Before/after measurements separate inspection, visibility and presentation and demonstrate removal of adapter cost without claiming bounded total inspection cost.
 6. Delete reference, examples and copied-template guidance are updated. Any documented breaking contract change has paired CHANGELOG.md and docs/migrating-1.0.md guidance; Phase 7 inventories the final public configuration and template surface.
 
-**Plans:** 0 plans — context gathered; ready for planning.
+**Plans:** 5 plans — initial plans written; external review convergence pending.
+
+Plans:
+- [ ] 06.10-01-PLAN.md — Plain protected-blocker tracer, adapter removal and component measurements (wave 1)
+- [ ] 06.10-02-PLAN.md — Strict finite/None configuration, visible selection and enforcement regressions (wave 2)
+- [ ] 06.10-03-PLAN.md — Executable copied recipes, public guidance and Phase 7 handoff (wave 3)
+- [ ] 06.10-04-PLAN.md — Runnable examples and translated shortened notice (wave 3, parallel with 03)
+- [ ] 06.10-05-PLAN.md — Existing browser harness migration and final source-bound acceptance (wave 4)
+
 **UI hint:** yes (plain-text protected blockers and truncated delete previews across full pages and modals).
 
 ### Phase 7: Theme-surface stability policy

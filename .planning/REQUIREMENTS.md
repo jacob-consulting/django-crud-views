@@ -188,6 +188,18 @@ has not been reproduced. External-application verification is outside this phase
 - [x] **TIP-04**: Require immediate copied action/menu template migration through executable documented recipes; describe changed cv_title semantics and removed menu titles in paired Breaking changelog and migrating-1.0.md guidance while retaining unrelated full-caption/helper APIs.
 - [x] **TIP-05**: Real-browser stock Bootstrap and migrated custom-template fixtures prove short icon tooltips, full accessible labels and absent generated tooltips on visible actions/menus; record mixed-mode investigation outcomes honestly and report actual runtime/browser limits without requiring the affected external application.
 
+### Protected delete-preview object links (Phase 06.9, #307)
+
+Source: Phase 06.9 CONTEXT.md D-01–D-08 and issue #307. Immediate copied-template migration is approved.
+The initial spec-less probe skipped visibly while IDs were TBD; planning reruns it against these assigned IDs.
+
+- [x] **PDL-01**: Visible blockers link only to inspectable local registered detail destinations permitted by the target's access/state, queryset, parent and same-row/database policy; missing or inaccessible destinations remain text. The actual destination request remains authoritative for application middleware, dispatch and custom object lookup.
+- [x] **PDL-02**: Filter protected model instances before URL work; preserve hidden notices, preview-disabled limited context, visible order, unfiltered blocking and whole-form omission without changing deletion or success redirects.
+- [x] **PDL-03**: Every enabled preview exposes one ordered protected_objects collection of obj/url entries, including url=None with linking disabled; an independently overridable escaped blocker body uses the shared translated alert frame. Collector/provider/filter inputs remain model instances.
+- [x] **PDL-04**: Protected names use ordinary full-page navigation from pages and delete modals, including modal-capable detail targets; preserve the shared URL override hook and existing cascade behavior.
+- [x] **PDL-05**: Require immediate copied-template migration with an executable documented recipe, paired Breaking/migration guidance, updated delete reference and existing example guidance, and an exact Phase 7 surface inventory.
+- [x] **PDL-06**: Core/Guardian, target denial, escaping, database identity and blocked-write regressions plus stock/custom browser acceptance prove the complete contract; report actual supported-series/runtime evidence and coverage limits.
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -229,6 +241,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| PDL-01 | Phase 6.9 | Complete |
+| PDL-02 | Phase 6.9 | Complete |
+| PDL-03 | Phase 6.9 | Complete |
+| PDL-04 | Phase 6.9 | Complete |
+| PDL-05 | Phase 6.9 | Complete |
+| PDL-06 | Phase 6.9 | Complete |
 | TIP-01 | Phase 6.8 | Complete |
 | TIP-02 | Phase 6.8 | Complete |
 | TIP-03 | Phase 6.8 | Complete |
@@ -321,8 +339,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 89 total (84 prior requirements plus five TIP requirements)
-- Mapped to phases: 89
+- v1 requirements: 95 total (89 prior requirements plus six PDL requirements)
+- Mapped to phases: 95
 - Unmapped: 0 ✓
 
 ---

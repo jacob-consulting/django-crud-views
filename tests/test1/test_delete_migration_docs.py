@@ -1,6 +1,7 @@
 """Execute the published migration fences, including copied templates and real deletion effects."""
 
 import copy
+import hashlib
 import re
 import sys
 from collections import OrderedDict
@@ -15,14 +16,16 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection, models
 from django.db.models.signals import post_delete
+from django.template import Context, engines
 from django.test import Client, override_settings
 from django.test.utils import isolate_apps
-from django.urls import clear_url_caches
+from django.urls import clear_url_caches, resolve
+from django.utils.translation import override as language_override
 from lxml import html
 
 from crud_views.lib import check as check_module
 from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion
-from crud_views.lib.views import ListViewPermissionRequired
+from crud_views.lib.views import DeleteView, DetailViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
 from tests.test1.test_label_mode_docs import DOCS, FENCE, ROOT, _anchors, _section
 
@@ -33,6 +36,41 @@ EFFECT = "### Describing custom deletion effects"
 TEMPLATES = "### Copied delete templates with incomplete previews"
 NOTICE = "This preview is incomplete. Custom deletion behavior may affect additional objects."
 GENERIC = "Other objects still reference this one; remove or reassign them before deleting it."
+
+
+def protected_recipes(source=None, expected_hashes=None):
+    """Shared exact UTF-8/LF contract: no trimming, dedenting or newline normalization."""
+    if source is None:
+        source = MIGRATION.read_bytes().decode("utf-8")
+    assert "\r" not in source, "Recipes require LF newlines"
+    result = {}
+    for name in ("content", "related", "body"):
+        marker = f"<!-- protected-delete-recipe: {name} -->"
+        assert source.count(marker) == 1, f"Expected exactly one {name} marker"
+        matches = re.findall(rf"^{re.escape(marker)}\n```django\n(.*?)^```$", source, re.MULTILINE | re.DOTALL)
+        assert len(matches) == 1, f"Expected adjacent django fence for {name}"
+        result[name] = matches[0]
+    hashes = {name: hashlib.sha256(body.encode("utf-8")).hexdigest() for name, body in result.items()}
+    if expected_hashes is not None:
+        assert hashes == expected_hashes, "Recipe bytes changed"
+    return result, hashes
+
+
+def test_protected_recipe_marker_contract():
+    source = MIGRATION.read_bytes().decode("utf-8")
+    bodies, hashes = protected_recipes(source)
+    assert len(_recipe(TEMPLATES, TEMPLATE_FENCE, count=3)) == 3
+    for name, body in bodies.items():
+        assert body.endswith("\n")
+        assert hashes[name] != hashlib.sha256(body[:-1].encode("utf-8")).hexdigest()
+        marker = f"<!-- protected-delete-recipe: {name} -->"
+        for replacement in ("", marker + "\n" + marker, marker + "\n", marker + "\nprose"):
+            with pytest.raises(AssertionError):
+                protected_recipes(source.replace(marker, replacement))
+        with pytest.raises(AssertionError):
+            protected_recipes(source.replace(marker + "\n```django", marker + "\n```html"))
+        with pytest.raises(AssertionError, match="bytes changed"):
+            protected_recipes(source.replace(body, body + "\n", 1), hashes)
 
 
 def _recipe(heading, pattern=FENCE, count=1):
@@ -116,6 +154,16 @@ def recipes(monkeypatch, transactional_db):
             class DocumentListView(ListViewPermissionRequired):
                 cv_viewset = vs
 
+            blocker_vs = ViewSet(model=Blocker, name="migration_blocker")
+
+            class BlockerDetailView(DetailViewPermissionRequired):
+                cv_viewset = blocker_vs
+                cv_modal_supported = True
+
+                def get_queryset(self):
+                    # Visibility permits the label; this destination denies archived rows.
+                    return super().get_queryset().filter(is_archived=False)
+
             package = ModuleType("myapp")
             package.__path__ = []
             model_module = ModuleType("myapp.models")
@@ -133,13 +181,21 @@ def recipes(monkeypatch, transactional_db):
                 exec(compile(_recipe(heading)[0], str(MIGRATION), "exec"), namespace)
                 return vs.get_view_class("delete")
 
-            content, snippet = _recipe(TEMPLATES, TEMPLATE_FENCE, count=2)
+            bodies, hashes = protected_recipes()
+            template_sources = dict(
+                zip(
+                    ("myapp/delete.content.html", "myapp/delete_related.html", "myapp/delete_protected.html"),
+                    (bodies["content"], bodies["related"], bodies["body"]),
+                    strict=True,
+                )
+            )
+            stock_config = copy.deepcopy(settings.TEMPLATES)
             config = copy.deepcopy(settings.TEMPLATES)
             config[0]["APP_DIRS"] = False
             config[0]["OPTIONS"]["loaders"] = [
                 (
                     "django.template.loaders.locmem.Loader",
-                    {"myapp/delete.content.html": content, "myapp/delete_related.html": snippet},
+                    template_sources,
                 ),
                 "django.template.loaders.filesystem.Loader",
                 "django.template.loaders.app_directories.Loader",
@@ -147,9 +203,11 @@ def recipes(monkeypatch, transactional_db):
             urls = ModuleType("myapp.recipe_urls")
             monkeypatch.setitem(sys.modules, urls.__name__, urls)
 
-            def install(view):
-                view.cv_content_template = "myapp/delete.content.html"
-                urls.urlpatterns = vs.urlpatterns
+            def install(view, custom=True):
+                view.cv_content_template = (
+                    "myapp/delete.content.html" if custom else "crud_views/view_delete.content.html"
+                )
+                urls.urlpatterns = vs.urlpatterns + blocker_vs.urlpatterns
                 clear_url_caches()
 
             actor = User.objects.create_user(username="recipe_actor")
@@ -176,6 +234,10 @@ def recipes(monkeypatch, transactional_db):
                     Blocker=Blocker,
                     events=events,
                     actor=actor,
+                    detail=BlockerDetailView,
+                    template_sources=template_sources,
+                    hashes=hashes,
+                    stock_config=stock_config,
                     url=f"/{name}/{target.pk}/delete/",
                 )
         finally:
@@ -190,6 +252,132 @@ def recipes(monkeypatch, transactional_db):
             with connection.schema_editor() as editor:
                 for model in reversed(model_classes):
                     editor.delete_model(model)
+
+
+def _protected_fixture(r):
+    view = r.build(OVERRIDE)
+    view.cv_show_related_objects = True
+    view.cv_link_related_objects = True
+    # The application's visible-label policy deliberately includes a destination-denied row.
+    view.cv_filter_related_objects = DeleteView.cv_filter_related_objects
+    ct = ContentType.objects.get_for_model(r.Blocker)
+    permission, _ = Permission.objects.get_or_create(content_type=ct, codename="view_blocker", name="View blocker")
+    r.actor.user_permissions.add(permission)
+    linked = r.Blocker.objects.create(document=r.target, title='<b>Visible "link"</b>')
+    plain = r.Blocker.objects.create(document=r.target, title="<script>Visible fallback</script>", is_archived=True)
+    return view, linked, plain
+
+
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("mode", ["linked", "link-off", "preview-off", "hidden"])
+def test_protected_migration_recipe(recipes, modal, mode):
+    r = recipes
+    view, linked, plain = _protected_fixture(r)
+    view.cv_modal = modal
+    view.cv_link_related_objects = mode != "link-off"
+    view.cv_show_related_objects = mode != "preview-off"
+    if mode == "hidden":
+        r.actor.user_permissions.clear()
+        ct = ContentType.objects.get_for_model(r.Document)
+        r.actor.user_permissions.add(Permission.objects.get(content_type=ct, codename="delete_document"))
+    r.install(view)
+    headers = {"HTTP_X_CV_MODAL": "true"} if modal else {}
+    responses = [
+        r.client.get(r.url, **headers),
+        r.client.get(r.url, **headers),
+        r.client.post(r.url, {"confirm": "on"}, **headers),
+    ]
+    for index, response in enumerate(responses):
+        assert response.status_code == (422 if modal and index == 2 else 200)
+        markup = response.content.decode()
+        doc = html.fromstring(markup)
+        assert (doc.tag == "html") is (not modal)
+        assert (response.template_name == ["crud_views/modal/content.html"]) is modal
+        assert not doc.cssselect("form")
+        assert response.context["has_protected_objects"] is True
+        assert response.context["delete_preview_incomplete"] is True
+        assert markup.count(NOTICE) == 1
+        assert ("protected_objects" in response.context) is (mode != "preview-off")
+        bodies = doc.cssselect('[data-protected-delete-recipe="body"]')
+        if mode in ("hidden", "preview-off"):
+            assert not bodies and GENERIC in markup
+            assert "Visible" not in markup
+        else:
+            assert len(bodies) == 1
+            body = bodies[0]
+            assert body.getparent().get("role") == "alert"
+            assert [item.text_content() for item in body.cssselect("li")] == [str(linked), str(plain)]
+            assert not body.cssselect("b, script")
+            links = body.cssselect("a")
+            assert len(links) == (1 if mode == "linked" else 0)
+            if links:
+                href = links[0].get("href")
+                assert resolve(href).func.view_class is r.detail
+                destination = r.client.get(href)
+                assert destination.status_code == 200 and destination.context["object"] == linked
+                assert set(links[0].attrib) == {"href"}
+    assert r.events == [] and r.Document.objects.filter(pk=r.target.pk).exists()
+    assert r.Blocker.objects.count() == 2
+
+
+def test_protected_migration_stock_restoration(recipes):
+    r = recipes
+    view, linked, _plain = _protected_fixture(r)
+    rendered = []
+    for custom in (True, False, True):
+        r.install(view, custom=custom)
+        config = settings.TEMPLATES if custom else r.stock_config
+        with override_settings(TEMPLATES=config):
+            response = r.client.get(r.url)
+            assert response.status_code == 200
+            doc = html.fromstring(response.content)
+            assert bool(doc.cssselect('[data-protected-delete-recipe="body"]')) is custom
+            assert not doc.cssselect("form")
+            alert = next(node for node in doc.cssselect('[role="alert"]') if str(linked) in node.text_content())
+            rendered.append([(node.text_content(), node.xpath("./a/@href")) for node in alert.cssselect("li")])
+            if custom:
+                for path, source in r.template_sources.items():
+                    assert engines["django"].get_template(path).template.source == source
+    assert rendered[0] == rendered[1] == rendered[2]
+    assert protected_recipes(expected_hashes=r.hashes)[1] == r.hashes
+    assert r.events == [] and r.Blocker.objects.count() == 2
+
+
+@pytest.mark.parametrize("custom", [False, True])
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_protected_theme_recipe(recipes, custom, language):
+    r = recipes
+    bodies, _ = protected_recipes()
+    section = _section((DOCS / "reference/theme.md").read_text(), "## Authorized data in overridden templates")
+    fences = TEMPLATE_FENCE.findall(section)
+    assert len(fences) == 1
+    snippet = bodies["related"] if custom else fences[0]
+    template = engines["django"].engine.from_string("{% autoescape off %}" + snippet + "{% endautoescape %}")
+    obj = '<script>hostile "label"</script>'
+    url = '/detail/?value=" onmouseover="alert(1)&other=<value>'
+    with language_override(language):
+        markup = template.render(
+            Context(
+                {
+                    "has_protected_objects": True,
+                    "protected_objects": [{"obj": obj, "url": url}, {"obj": "Text fallback", "url": None}],
+                }
+            )
+        )
+        doc = html.fromstring(markup)
+        alert = doc.cssselect('[role="alert"]')[0]
+        link = alert.cssselect("li a")[0]
+        assert link.text_content() == obj and link.get("href") == url
+        assert set(link.attrib) == {"href"} and not alert.cssselect("script")
+        assert alert.cssselect("li")[1].text_content() == "Text fallback"
+        assert len(alert.cssselect("ul")) == 1
+        heading = alert.cssselect("strong")[0].text_content()
+        assert ("Deletion is blocked" in heading) is (language == "en")
+        hidden = template.render(Context({"has_protected_objects": True, "protected_objects": []}))
+        assert not html.fromstring(hidden).cssselect("ul, a")
+        if language == "en":
+            assert GENERIC in hidden
+    assert r.events == []
 
 
 @pytest.mark.parametrize("heading,summary", [(OVERRIDE, {"preview note": 1}), (EFFECT, {"attachment": 1})])
@@ -537,12 +725,28 @@ def test_documented_guardian_key_recipe_and_exact_diagnostic(recipes, monkeypatc
 def test_delete_breaking_entries_have_matching_migration_contracts():
     unreleased = _section((ROOT / "CHANGELOG.md").read_text(), "## Unreleased")
     breaking = _section(unreleased, "### Breaking")
+    for heading in ("Protected delete-preview entries", "Delete previews and protected objects"):
+        passages = re.findall(rf"^- \*\*{re.escape(heading)}[^\n]*\n(?:[ ]{{2}}[^\n]*\n)*", unreleased, re.MULTILINE)
+        assert len(passages) == 1
+        passage = passages[0]
+        for term in ("`obj`/`url`", "`obj`", "`url`", "`None`", "filtered", "has_protected_objects", "whole-form"):
+            assert term in passage
+        assert "now holds only the\n  protected objects" not in passage
+    for term in ("protected_objects.html", "generic alert-items", "no legacy", "modals"):
+        assert term in breaking
     anchors = _anchors(MIGRATION)
     for anchor, terms in {
         "safe-deletion-preview-overrides": ("cv_get_related_objects", "viewset.E263", "cv_get_delete_preview"),
         "describing-custom-deletion-effects": ("field_model", "Attachment", "ownerless", "source_pks"),
         "delete-method-signatures-and-database-selection": ("viewset.E264", "using", "cv_get_delete_db_alias"),
-        "copied-delete-templates-with-incomplete-previews": ("delete_preview_incomplete", "has_protected_objects"),
+        "copied-delete-templates-with-incomplete-previews": (
+            "delete_preview_incomplete",
+            "has_protected_objects",
+            "node.obj",
+            "node.url",
+            "url=None",
+            "body_template",
+        ),
         "guardian-permission-keys": ("ValueError", "KeyError", "non-string"),
         "guardian-configured-content-type-permissions": ("app.view_vehicle", "MixedContentTypeError", "child_only_car"),
     }.items():
@@ -561,3 +765,26 @@ def test_delete_breaking_entries_have_matching_migration_contracts():
         section = _section(MIGRATION.read_text(), heading)
         for term in terms:
             assert term in section
+
+
+def test_protected_public_surface_inventory():
+    reference = (DOCS / "reference/delete_view.md").read_text()
+    surface = _section(reference, "### Protected-preview public surface")
+    for term in (
+        "protected_objects",
+        "has_protected_objects",
+        "obj",
+        "url",
+        "items",
+        "cv_show_related_objects=False",
+        "crud_views/snippets/delete/protected_objects.html",
+        "cv_get_related_object_url(self, obj)",
+        "cascade",
+        "Full-page",
+        "not a new public authorization",
+    ):
+        assert term in surface
+    example = (ROOT / "examples/bootstrap5/library/views.py").read_text()
+    author = example.split("class AuthorDeleteView(", 1)[1].split("# ---", 1)[0]
+    for term in ("CASCADE", "cv_show_related_objects", "cv_link_related_objects", "plain text", "delete_view.md"):
+        assert term in author

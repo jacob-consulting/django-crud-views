@@ -802,7 +802,8 @@ with `accept_global_perms=True`. See [Strict Mode](reference/guardian.md#strict-
 
 ### Delete previews and protected objects
 
-With `cv_show_related_objects`, `protected_objects` now holds only the protected objects the user may view. Preview
+With `cv_show_related_objects`, `protected_objects` now holds ordered `obj`/`url` entries for protected objects the
+user may view. `obj` is the model instance; `url` is an eligible detail URL or `None`. Preview
 labels, tree and summary keys still depend on that option. `has_protected_objects` is now present on every delete
 GET/POST context regardless of the option, and combines native and provider blockers before permission filtering.
 `delete_preview_incomplete` is also always present. Inspection reads supported metadata without executing deletion
@@ -815,7 +816,8 @@ summaries qualify their integer counts in the heading. See the [provider contrac
   Use `related_summary or has_protected_objects` and keep the incomplete warning independent of that include.
 
 - **A copied `crud_views/snippets/delete/related_objects.html`**: show the blocked notice on the flag and list only
-  `protected_objects`, which is already filtered. Use the complete two-branch recipe in
+  `protected_objects`, which is already filtered. Bind it as caller-context `items` and use the dedicated body
+  template; generic alert `items=protected_objects` rendering no longer accepts this item shape. Use the complete recipe in
   [Copied delete templates](#copied-delete-templates-with-incomplete-previews) so hidden labels still get explanatory text. Do not fetch protected objects
   another way.
 
@@ -972,6 +974,7 @@ Save this complete content override as `myapp/delete.content.html` and set your 
 survives previews disabled, hidden labels and custom protection. No extra acknowledgement replaces the ordinary
 confirmation.
 
+<!-- protected-delete-recipe: content -->
 ```django
 {% extends "crud_views/snippets/form_frame.html" %}
 {% load crud_views i18n %}
@@ -999,12 +1002,15 @@ confirmation.
 Save the companion snippet as `myapp/delete_related.html`. Keep both notice branches; use only the filtered labels.
 Partial counts stay numeric, qualified by the heading. A copied alert leaf must render body/text too.
 
+<!-- protected-delete-recipe: related -->
 ```django
 {% load crud_views i18n %}
 <div class="cv-related-objects mb-3">
     {% if has_protected_objects %}
         {% if protected_objects %}
-            {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
+            {% with items=protected_objects %}
+                {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") body_template="myapp/delete_protected.html" %}
+            {% endwith %}
         {% else %}
             {% cv_alert "error" heading=_("Deletion is blocked by protected relationships") text=_("Other objects still reference this one; remove or reassign them before deleting it.") %}
         {% endif %}
@@ -1021,6 +1027,31 @@ Partial counts stay numeric, qualified by the heading. A copied alert leaf must 
     {% endif %}
 </div>
 ```
+
+Save the independent protected-list body as `myapp/delete_protected.html`. This body is included inside the shared
+alert frame; it owns neither the heading, icon, role nor dismissal. Its marker makes the custom recipe observable.
+Keep explicit autoescape even when an outer template disables it (trusted Django safe strings retain their usual
+semantics). Each entry has exactly `obj` and `url`; model fields are accessed as `node.obj.field`. `url=None` means
+plain text, including with linking disabled. There is no parallel legacy collection of model instances in context.
+
+<!-- protected-delete-recipe: body -->
+```django
+{% autoescape on %}<ul data-protected-delete-recipe="body">{% for node in items %}<li>{% if node.url %}<a href="{{ node.url }}">{{ node.obj }}</a>{% else %}{{ node.obj }}{% endif %}</li>{% endfor %}</ul>{% endautoescape %}
+```
+
+The three marked fences above are the complete content/snippet/body chain. Recipe consumers capture exact UTF-8/LF
+bytes after the opening fence through the final body newline, without trimming or dedenting. Each marker must be
+unique and immediately precede its `django` fence; missing, duplicate, separated or wrong-language markers fail
+validation. Tests and browser evidence use those same bytes and SHA-256 identities.
+
+`cv_show_related_objects` enables detailed context; `cv_link_related_objects` additionally enables eligible links.
+Visibility filtering happens before URL generation. A visible label can still have no URL because its destination
+is unavailable. Anchors perform ordinary full-page navigation, including from a delete modal to a modal-capable
+detail view. Preview does not run arbitrary middleware, dispatch or custom `get_object` overrides: the actual
+destination request remains authoritative. See [destination eligibility and limits](reference/delete_view.md#linking-related-objects).
+Collector/provider `protected` values and `cv_filter_related_objects(user, related)` inputs remain model instances;
+only the filtered template context changes. Keep the independent `has_protected_objects` guard even if the list is
+empty or absent with previews disabled. Migrate copied generic alert-items snippets immediately.
 
 ### Delete method signatures and database selection
 
@@ -1558,6 +1589,9 @@ about these.
 - [ ] A `view_delete.content.html` or `snippets/delete/related_objects.html` copy that tests `protected_objects`
   hides the blocked-deletion notice when the user may view no protected object
   ([Delete previews and protected objects](#delete-previews-and-protected-objects)).
+- [ ] A copied protected list that treats entries as model instances, or passes them as generic alert `items=`,
+  must use `node.obj`/`node.url` and an independent `body_template` inside the shared alert
+  ([complete copied-template migration](#copied-delete-templates-with-incomplete-previews)).
 - [ ] A Guardian manage template that reads `guardian_config.cv_guardian_accept_global_perms` renders an empty cell
   ([The Guardian manage page](#the-guardian-manage-page)).
 

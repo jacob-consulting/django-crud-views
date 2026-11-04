@@ -3,6 +3,237 @@ import pytest
 from tests.lib.helper.guardian import user_guardian_object_perm
 
 
+@pytest.fixture
+def guardian_protected_destination(monkeypatch, settings):
+    """Real nested Guardian callback, selected by the unchanged public URL hook."""
+    from types import ModuleType, SimpleNamespace
+
+    from django.http import HttpResponse
+    from django.test import RequestFactory
+    from django.urls import clear_url_caches, resolve
+
+    from crud_views.lib.viewset import _REGISTRY, ParentViewSet
+    from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import PublisherCascadeDeleteView, cv_publisher
+
+    monkeypatch.setattr(
+        "crud_views.lib.viewset._REGISTRY",
+        {name: viewset for name, viewset in _REGISTRY.items() if viewset.model is not Contract},
+    )
+    viewset = GuardianViewSet(
+        model=Contract,
+        name="protected_guardian_target",
+        parent=ParentViewSet(name=cv_publisher.name, attribute="publisher"),
+    )
+    calls = []
+
+    class Detail(GuardianDetailViewPermissionRequired):
+        cv_viewset = viewset
+
+        @classmethod
+        def cv_action_enabled(cls, user, obj=None):
+            calls.append((user, obj))
+            return True
+
+        def render_to_response(self, context, **kwargs):
+            return HttpResponse(f"contract:{self.object.pk}:{self.object._state.db}")
+
+    urlconf = ModuleType("protected_guardian_urls")
+    urlconf.urlpatterns = viewset.urlpatterns
+    settings.ROOT_URLCONF = urlconf
+    clear_url_caches()
+
+    def bind(actor, blocker):
+        request = RequestFactory().post("/different-source/?original=yes", {"confirm": "on"}, HTTP_X_CV_MODAL="true")
+        request.user = actor
+        request.urlconf = urlconf
+        source = PublisherCascadeDeleteView()
+        source.setup(request, unrelated_parent=999)
+        source.object = blocker.publisher
+        source.cv_link_related_objects = True
+        url = source.cv_get_related_object_url(blocker)
+        assert resolve(url).func.view_class is Detail
+        return SimpleNamespace(source=source, target=Detail, blocker=blocker, url=url, calls=calls, viewset=viewset)
+
+    yield bind
+    clear_url_caches()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "policy",
+    [
+        "user",
+        "group",
+        "global",
+        "strict",
+        "superuser",
+        "inactive",
+        "parent-denied",
+        "parent-none",
+        "disabled",
+        "excluded",
+    ],
+)
+def test_guardian_protected_target_policy(
+    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, policy
+):
+    from django.contrib.auth.models import Group, Permission
+    from guardian.shortcuts import assign_perm
+
+    from tests.test1.app.models import Contract
+
+    blocker = Contract.objects.create(title="Visible independently", publisher=publisher_a)
+    actor = user_guardian
+    actor.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    case = guardian_protected_destination(actor, blocker)
+    assign_perm("view_publisher", actor, publisher_a)
+    if policy not in {"strict", "global"}:
+        grantee = actor
+        if policy == "group":
+            grantee = Group.objects.create(name="target readers")
+            actor.groups.add(grantee)
+        assign_perm("view_contract", grantee, blocker)
+    if policy == "global":
+        monkeypatch.setattr(case.target, "cv_guardian_accept_global_perms", True)
+    if policy == "parent-denied":
+        from guardian.shortcuts import remove_perm
+
+        remove_perm("view_publisher", actor, publisher_a)
+    if policy == "parent-none":
+        monkeypatch.setattr(case.viewset, "cv_guardian_parent_permission", None)
+    if policy in {"superuser", "inactive"}:
+        actor.is_superuser = True
+        actor.is_active = policy != "inactive"
+        actor.save()
+    if policy == "disabled":
+        monkeypatch.setattr(case.target, "cv_action_enabled", classmethod(lambda *args: False))
+    if policy == "excluded":
+        monkeypatch.setattr(case.target, "get_queryset", lambda self: Contract.objects.none())
+    permitted = policy not in {"strict", "inactive", "parent-denied", "disabled", "excluded"}
+    assert case.source._cv_get_protected_object_url(blocker) == (case.url if permitted else None)
+    assert len(case.calls) == int(permitted)
+    # An independent real GET retains the original actor, including inactive accounts.
+    from django.core.exceptions import PermissionDenied
+    from django.http import Http404
+    from django.test import RequestFactory
+    from django.urls import resolve
+
+    match = resolve(case.url)
+    request = RequestFactory().get(case.url)
+    request.user = actor
+    request.session = {}
+    if permitted:
+        assert match.func(request, **match.kwargs).status_code == 200
+    else:
+        with pytest.raises(Http404 if policy == "excluded" else PermissionDenied):
+            match.func(request, **match.kwargs)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("error_type", ["parent", "composition", "missing-child"])
+def test_protected_target_error_boundaries(
+    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, error_type
+):
+    from django.core.exceptions import ImproperlyConfigured
+    from django.http import Http404
+
+    from tests.test1.app.models import Contract
+
+    blocker = Contract.objects.create(title="Reachable", publisher=publisher_a)
+    case = guardian_protected_destination(user_guardian, blocker)
+    entered = []
+
+    def parent(self):
+        entered.append("parent")
+        raise Http404("application parent")
+
+    def composition(cls):
+        entered.append("composition")
+        return "invalid composition"
+
+    monkeypatch.setattr(case.target, "cv_get_parent_object", parent)
+    if error_type != "parent":
+        monkeypatch.setattr(case.target, "_guardian_child_composition_error", classmethod(composition))
+    if error_type == "missing-child":
+        monkeypatch.setattr(case.target, "get_queryset", lambda self: Contract.objects.none())
+        assert case.source._cv_get_protected_object_url(blocker) is None
+        assert entered == []
+    else:
+        with pytest.raises(Http404 if error_type == "parent" else ImproperlyConfigured):
+            case.source._cv_get_protected_object_url(blocker)
+        assert entered == [error_type]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("source_global", [False, True])
+@pytest.mark.parametrize("target_global", [False, True])
+def test_guardian_protected_independent_source_policy(
+    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, source_global, target_global
+):
+    from types import MethodType
+
+    from django.contrib.auth.models import Permission
+    from guardian.shortcuts import assign_perm
+
+    from crud_views.lib.deletion import RelatedObjects
+    from crud_views_guardian.lib.views import GuardianDeleteRelatedObjectsMixin
+    from tests.test1.app.models import Contract
+
+    blocker = Contract.objects.create(title="Source-visible", publisher=publisher_a)
+    actor = user_guardian
+    actor.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    assign_perm("view_publisher", actor, publisher_a)
+    if not source_global:
+        assign_perm("view_contract", actor, blocker)
+    case = guardian_protected_destination(actor, blocker)
+    case.source.cv_guardian_accept_global_perms = source_global
+    case.source.cv_filter_related_objects = MethodType(
+        GuardianDeleteRelatedObjectsMixin.cv_filter_related_objects, case.source
+    )
+    monkeypatch.setattr(case.target, "cv_guardian_accept_global_perms", target_global)
+    assert case.source.cv_filter_related_objects(actor, RelatedObjects([], {}, [blocker])).protected == [blocker]
+    assert case.source._cv_get_protected_object_url(blocker) == (
+        case.url if target_global or not source_global else None
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("parent_mode", ["valid", "missing", "none-policy", "wrong-coordinate"])
+def test_guardian_protected_parent_resolution(
+    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, parent_mode
+):
+    from guardian.shortcuts import assign_perm
+
+    from tests.test1.app.models import Contract, Publisher
+
+    blocker = Contract.objects.create(title="Parent owned", publisher=publisher_a)
+    actor = user_guardian
+    assign_perm("view_contract", actor, blocker)
+    assign_perm("view_publisher", actor, publisher_a)
+    case = guardian_protected_destination(actor, blocker)
+    native_parent = case.target.cv_get_parent_object
+    parents = []
+
+    def parent(self):
+        parents.append(self.kwargs.copy())
+        return None if parent_mode == "missing" else native_parent(self)
+
+    monkeypatch.setattr(case.target, "cv_get_parent_object", parent)
+    if parent_mode == "none-policy":
+        monkeypatch.setattr(case.viewset, "cv_guardian_parent_permission", None)
+    if parent_mode == "wrong-coordinate":
+        other = Publisher.objects.create(name="Wrong parent")
+        candidate = case.url.replace(f"/publisher/{publisher_a.pk}/", f"/publisher/{other.pk}/")
+        monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: candidate)
+    allowed = parent_mode in {"valid", "none-policy"}
+    assert case.source._cv_get_protected_object_url(blocker) == (case.url if allowed else None)
+    assert len(parents) == int(parent_mode != "wrong-coordinate")
+    assert len(case.calls) == int(allowed)
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("superuser", [False, True])
 @pytest.mark.parametrize("details", [False, True])
@@ -52,7 +283,7 @@ def test_partial_provider_no_view_and_through_projection(
         visible_royalties = _response_instances(response, Royalty)
         assert set(visible_royalties) == ({royalty} if details and superuser else set())
         if details:
-            assert response.context["protected_objects"] == ([royalty] if superuser else [])
+            assert response.context["protected_objects"] == ([{"obj": royalty, "url": None}] if superuser else [])
             assert response.context["related_summary"] == {str(through._meta.verbose_name): 1}
             assert bool(_response_instances(response, through)) is superuser
         else:
@@ -434,7 +665,7 @@ def test_guardian_protected_model_without_view_permission(
     assert response.context["has_protected_objects"] is True
     content = _norm(response.content.decode())
     if superuser:
-        assert response.context["protected_objects"] == [royalty]
+        assert response.context["protected_objects"] == [{"obj": royalty, "url": None}]
         assert royalty in _response_instances(response, Royalty)
         assert royalty.title in content
     else:
@@ -502,7 +733,7 @@ def test_guardian_protected_partial_grant_keeps_order_and_aggregates(
     _grant_contract(user_guardian, visible)
     response = _delete_page(client_guardian, publisher_a)
     assert response.status_code == 200
-    assert response.context["protected_objects"] == [visible]
+    assert response.context["protected_objects"] == [{"obj": visible, "url": None}]
     assert response.context["has_protected_objects"] is True
     assert response.context["related_summary"] == {"book": 1}
     content = _norm(response.content.decode())
@@ -530,7 +761,10 @@ def test_guardian_protected_full_grant_and_group_grant(
     user_guardian.groups.add(group)
     assign_perm(cv_contract.permissions["view"], group, by_group)
     response = _delete_page(client_guardian, publisher_a)
-    assert sorted(response.context["protected_objects"], key=lambda c: c.pk) == [by_user, by_group]
+    assert sorted(response.context["protected_objects"], key=lambda entry: entry["obj"].pk) == [
+        {"obj": by_user, "url": None},
+        {"obj": by_group, "url": None},
+    ]
     content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1
     assert "User Contract" in content
@@ -549,7 +783,7 @@ def test_guardian_protected_object_grant_needs_no_global_permission(
     _grant_contract(user_guardian, contract)
     assert not user_guardian.has_perm("app.view_contract")
     response = _delete_page(client_guardian, publisher_a)
-    assert response.context["protected_objects"] == [contract]
+    assert response.context["protected_objects"] == [{"obj": contract, "url": None}]
 
 
 @pytest.mark.django_db
@@ -572,7 +806,7 @@ def test_guardian_protected_global_permission_follows_view_fallback(
 
     monkeypatch.setattr(GuardianPublisherCascadeDeleteView, "cv_guardian_accept_global_perms", True)
     fallback = _delete_page(client_guardian, publisher_a)
-    assert fallback.context["protected_objects"] == [contract]
+    assert fallback.context["protected_objects"] == [{"obj": contract, "url": None}]
     assert "Globally Visible Contract" in fallback.content.decode()
 
 

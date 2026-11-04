@@ -32,7 +32,8 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.5: Remaining presentation contracts and decided cleanup (INSERTED)** - analysis #259/C1/C2 and decided alias cleanup before the freeze (completed 2026-11-02)
 - [x] **Phase 6.6: Theme-adoption seams from the Tabler sync (INSERTED)** - issues #277–#280 before the freeze (completed 2026-11-03)
 - [x] **Phase 6.7: Dynamic cancel navigation and origin query state (INSERTED)** - #302: dynamic defaults and reliable origin query restoration before the freeze (completed 2026-11-03)
-- [ ] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze
+- [x] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze (completed 2026-11-04)
+- [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -838,7 +839,7 @@ Plans:
 3. The labelled list-action report has a documented investigation outcome, with a regression test for any reproduced package defect.
 4. Relevant caption, accessibility, permission, submission, escaping and lifecycle contracts remain covered; affected docs and changelog describe the changed defaults, with migration guidance if classified as breaking.
 
-**Plans:** 3/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
@@ -850,13 +851,41 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.8-03-PLAN.md
 
+### Phase 06.9: Protected delete-preview object links (INSERTED)
+
+**Goal:** When `cv_link_related_objects` is enabled, users can navigate from visible protected blockers in the delete preview to their permitted detail views.
+**Source:** [Issue #307](https://github.com/jacob-consulting/django-crud-views/issues/307). The issue proposed post-1.0 work; this insertion schedules it before the Phase 7 freeze.
+**Requirements**: PDL-01, PDL-02, PDL-03, PDL-04, PDL-05, PDL-06
+**Depends on:** Phase 06.8; preserve the delete-preview and Guardian permission contracts established in Phase 6.3. Complete before Phase 7 freezes the affected surface.
+**Scope:** Resolve protected-object URLs through the existing `cv_get_related_object_url()` path after visibility filtering. Preserve generic notices for hidden blockers, plain-text fallbacks, and existing cascade-preview behavior. Retain copied-template compatibility or document the migration; update `docs/reference/delete_view.md` and relevant example guidance.
+**Success Criteria**:
+
+1. With related-object linking enabled, visible protected blockers link to permitted detail views; missing or inaccessible destinations remain plain text.
+2. Disabled linking and hidden-blocker notices preserve existing behavior without exposing objects or URLs the user cannot view.
+3. Regression coverage verifies core and Guardian behavior, escaping, and cascade-preview preservation; affected context/template contracts and documentation are updated, with paired changelog/migration guidance if breaking.
+
+**Plans:** 4/4 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.9-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.9-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.9-03-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.9-04-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6.8, Phase 4 and Phase 5 (and so, transitively, Phases 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6.8 only and documents the surface as it is. Include the cancel
+**Depends on**: Phase 6.9, Phase 4 and Phase 5 (and so, transitively, Phases 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phase 6.9 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
 protected-preview and Guardian configuration contracts from Phase 6.2, qualified by the unresolved acceptance
 split above until Phase 6.3 remediation is verified. Include the settled conditional/formset contracts from Phase 6.4.
@@ -864,6 +893,7 @@ Include the settled heading, object-detail ID/context and alias cleanup contract
 Include the settled form ownership, label-mode registration, action-group and alert contracts from Phase 6.6.
 Include the dynamic cancel defaults, origin query preservation and custom-template URL API settled by Phase 6.7.
 Include the tooltip caption and visible-label rendering contracts settled by Phase 6.8.
+Include the protected delete-preview linking and context/template contracts settled by Phase 6.9.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -895,7 +925,7 @@ Include the tooltip caption and visible-label rendering contracts settled by Pha
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -910,7 +940,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 9 | 6.6 (#277–#280) | Theme-adoption seams from the Tabler sync before the freeze |
 | 10 | 6.7 (#302) | Dynamic cancel defaults and origin query preservation before the freeze |
 | 11 | 6.8 (#304) | Short icon tooltips and visible-label suppression before the freeze |
-| 12 | 7 (plan 4) | Needs 6.8, 4 and 5 merged; last change before the 1.0.0 bump |
+| 12 | 6.9 (#307) | Protected delete-preview links before the freeze |
+| 13 | 7 (plan 4) | Needs 6.9, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -929,5 +960,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
 | 6.6. Theme-adoption seams from the Tabler sync | 10/10 | Complete    | 2026-11-03 |
 | 6.7. Dynamic cancel navigation and origin query state | 5/5 | Complete    | 2026-11-03 |
-| 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | In Progress | - |
+| 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
+| 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

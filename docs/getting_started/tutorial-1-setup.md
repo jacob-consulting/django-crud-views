@@ -172,8 +172,8 @@ Wire the ViewSet's URL patterns into your app's `urls.py`:
 urlpatterns = cv_author.urlpatterns
 ```
 
-(The real `library/urls.py` also wires up a second ViewSet, for `Book`, that
-we introduce later — so this reduced form is for `library` alone. Part 6
+(The real `library/urls.py` also wires up the `Book` ViewSet and a detail-only `Contract` ViewSet that
+we introduce later — so this reduced form is for `Author` alone. Part 6
 shows the file's final, verbatim form.)
 
 ## What you'll get

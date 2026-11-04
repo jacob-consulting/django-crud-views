@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.800" timestamp="2026-11-04T12:23:23.856914+00:00" hostname="weaver-dev"><testcase classname="library.tests.ProtectedDeletePreviewTest" name="test_protected_page_and_modal_link_to_full_detail" time="0.701"><failure message="AssertionError: False is not true : Library must provide a protected publishing Contract">self = &lt;library.tests.ProtectedDeletePreviewTest testMethod=test_protected_page_and_modal_link_to_full_detail&gt;
+
+    def test_protected_page_and_modal_link_to_full_detail(self):
+&gt;       self.make_contract()
+
+examples/bootstrap5/library/tests.py:169: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/bootstrap5/library/tests.py:148: in make_contract
+    self.assertTrue(hasattr(models, "Contract"), "Library must provide a protected publishing Contract")
+E   AssertionError: False is not true : Library must provide a protected publishing Contract</failure></testcase></testsuite></testsuites>

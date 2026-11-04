@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.contrib.auth import get_user_model
 from project.seeding import grant_model_perms
 
-from library.models import Author, Book
+from library.models import Author, Book, Contract
 
 # Enough authors to paginate the table: ListView paginates at 10 by default, so 25 authors
 # give three pages (10 / 10 / 5) and a real middle page.
@@ -46,3 +46,6 @@ def seed():
         author, _ = Author.objects.get_or_create(first_name=first, last_name=last, defaults={"pseudonym": pseudonym})
         for title, price in books:
             Book.objects.get_or_create(title=title, author=author, defaults={"price": Decimal(price)})
+    author = Author.objects.get(first_name="Ursula", last_name="Le Guin")
+    Contract.objects.get_or_create(title="Earthsea publishing contract", author=author)
+    grant_model_perms(user_model.objects.get(username="alice"), Contract, actions=("view",))

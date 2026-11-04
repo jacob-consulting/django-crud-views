@@ -84,7 +84,8 @@ OVERRIDES = {
         '<div role="alert" data-mx-alert="{{ alert.level }}"><strong>MX-ALERT {{ alert.heading }}</strong>'
         "{% if alert.text %}<p>{{ alert.text }}</p>{% endif %}"
         "<ul>{% for item in alert.items %}<li>{{ item }}</li>{% endfor %}</ul>"
-        '{% if alert.body_template == "crud_views/snippets/delete/related_objects_tree.html" %}'
+        '{% if alert.body_template == "crud_views/snippets/delete/related_objects_tree.html" or '
+        'alert.body_template == "crud_views/snippets/delete/protected_objects.html" %}'
         "{% include alert.body_template %}{% endif %}</div>"
     ),
 }
@@ -624,7 +625,7 @@ def test_alert_override_receives_only_permitted_protected_labels(native, tp, cli
         assert f"<strong>MX-ALERT {BLOCKED_LIST_HEADING}</strong>" in content
         assert BLOCKED_SENTENCE not in content
         assert re.findall(r"<li>(.*?)</li>", blocked) == [CONTRACT_ESCAPED]  # literal escaping kept
-        assert response.context["protected_objects"] == [contract]
+        assert response.context["protected_objects"] == [{"obj": contract, "url": None}]
     else:
         assert f"<strong>MX-ALERT {BLOCKED_HEADING}</strong>" in content
         assert BLOCKED_LIST_HEADING not in content
@@ -810,7 +811,7 @@ def test_partial_native_template_context_shape(
                 isinstance(name, str) and type(count) is int for name, count in context["related_summary"].items()
             )
             assert ("partial counts" in content) is not business
-            assert context["protected_objects"] == blockers
+            assert context["protected_objects"] == [{"obj": obj, "url": None} for obj in blockers]
             (root,) = context["related_objects"]
             assert root["obj"] is None and root["url"] is None
             assert [node["obj"] for node in root["children"]] == [

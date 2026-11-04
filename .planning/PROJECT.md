@@ -59,6 +59,10 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.7** Dynamic Cancel defaults, independent captured query restoration, destination permissions and guarded template migration — Phase 06.7; canonical32/32 and UAT5/5 passed. Chrome/Orca stock-theme scope and unchanged success-navigation limits are recorded.
 
+- ✓ **6.9** Permission-aware protected blocker links, ordered escaped context, full-page navigation and executable copied-template migration — Phase 06.9; canonical31/31 and explicit confirmation of all 19 UI state rules passed. Verification refreshed after the runnable Library Contract example with Alice/Bob permission contrast.
+
+- ✓ **6.8** Short icon-action tooltips retain full accessible labels; visible labels suppress generated tooltips, with tested copied-template migration — Phase 06.8; refreshed canonical30/30 and existing UAT3/3 passed.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -102,6 +106,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Validate protected destinations after visibility filtering; preserve the shared URL hook and cascade behavior | Link only to certified same-row destinations; unavailable destinations remain readable text | Validated (Phase 06.9) |
 | Dynamic Cancel uses allowed origin, configured fallback, then permission omission; successful-save navigation stays independent | Preserve independent form captures and existing success behavior; copied templates use guarded cv_cancel_url | Validated (Phase 06.7) |
 | Group findings into phases by dependency, not rank order or one change | Reviewable units; #257 depends on 1A+1C; stability policy must be last | — Pending |
 | Option A: `form:<kind>:<mode>`; context/list/card retain variants | Independent finite vocabularies preserve W362 boundaries; form rendering and floors remain Phase 6 work | Validated (Phase 2) |
@@ -151,4 +156,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-03 after Phase 06.7 completion*
+*Last updated: 2026-11-04 after Phase 06.9 example verification refresh*

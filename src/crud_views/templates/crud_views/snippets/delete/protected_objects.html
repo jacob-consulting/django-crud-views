@@ -1,0 +1,1 @@
+{% autoescape on %}<ul>{% for item in items %}<li>{% if item.url %}<a href="{{ item.url }}">{{ item.obj }}</a>{% else %}{{ item.obj }}{% endif %}</li>{% endfor %}</ul>{% endautoescape %}

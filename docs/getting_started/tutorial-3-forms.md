@@ -79,7 +79,13 @@ class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteVie
     cv_viewset = cv_author
     form_class = CrispyDeleteForm
     cv_message_template_code = _("Deleted author “{{ object }}”")
+    # Books use CASCADE; publishing Contracts protect their Author from deletion.
+    # Authorized preview links open full detail pages, including from this modal.
+    # Unavailable destinations remain plain text. See docs/reference/delete_view.md.
     cv_show_related_objects = True
+    cv_link_related_objects = True
+    cv_modal = True
+    cv_cancel_keys = ["list", "detail"]
 ```
 
 `CrispyDeleteForm` is a confirmation form: a checkbox the user must tick
@@ -87,7 +93,20 @@ before the delete goes through, rendered with the same crispy styling as the
 other forms. `cv_show_related_objects = True` additionally lists the objects
 that will cascade-delete along with this author — useful here since deleting
 an author can take their books with it, and you want the user to see that
-before confirming.
+before confirming. A publishing `Contract` instead protects its Author from
+deletion; Part 6 adds this model and its detail view. `cv_link_related_objects`
+links visible Books and eligible Contracts to their detail pages, while
+`cv_modal` makes the Delete action open in a modal. Following a preview link
+leaves the modal for a full detail page; visiting the delete URL directly
+still renders the full-page preview.
+
+After seeding the final example, sign in as `alice` (password `alice`), filter
+the author list's last name by `Guin`, and open Ursula Le Guin's Delete action.
+The `Earthsea publishing contract` link opens its detail page. Compare with
+`bob` (password `bob`): he lacks Contract view permission, so he sees a generic
+blocked notice without its name or link. A visible blocker with no eligible
+detail destination, or with linking disabled, remains plain text. Deletion
+stays blocked in every case; other seeded authors still demonstrate Book cascades.
 
 ![Author delete view](assets/tutorial-author-delete.png)
 

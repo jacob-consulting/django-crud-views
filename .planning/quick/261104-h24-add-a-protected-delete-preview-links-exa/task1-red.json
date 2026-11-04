@@ -1,0 +1,11 @@
+{
+  "command": "PYTHONPATH=src:examples/bootstrap5 .nox/tests-3-12-django-5-2/bin/python -m pytest -c examples/bootstrap5/pytest.ini examples/bootstrap5/library/tests.py::ProtectedDeletePreviewTest::test_protected_page_and_modal_link_to_full_detail -q --junitxml=.planning/quick/261104-h24-add-a-protected-delete-preview-links-exa/task1-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.800\" timestamp=\"2026-11-04T12:23:23.856914+00:00\" hostname=\"weaver-dev\"><testcase classname=\"library.tests.ProtectedDeletePreviewTest\" name=\"test_protected_page_and_modal_link_to_full_detail\" time=\"0.701\"><failure message=\"AssertionError: False is not true : Library must provide a protected publishing Contract\">self = &lt;library.tests.ProtectedDeletePreviewTest testMethod=test_protected_page_and_modal_link_to_full_detail&gt;\n\n    def test_protected_page_and_modal_link_to_full_detail(self):\n&gt;       self.make_contract()\n\nexamples/bootstrap5/library/tests.py:169: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nexamples/bootstrap5/library/tests.py:148: in make_contract\n    self.assertTrue(hasattr(models, \"Contract\"), \"Library must provide a protected publishing Contract\")\nE   AssertionError: False is not true : Library must provide a protected publishing Contract</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_protected_page_and_modal_link_to_full_detail",
+  "targetFile": "examples/bootstrap5/library/tests.py",
+  "expected": "Library provides a protected publishing Contract",
+  "actual": "assertTrue(hasattr(models, Contract)) failed",
+  "reportPath": ".planning/quick/261104-h24-add-a-protected-delete-preview-links-exa/task1-red.xml",
+  "semanticAssessment": "Target executed and failed on the intentional missing Contract assertion, without collection or fixture errors."
+}

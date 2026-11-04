@@ -1,4 +1,5 @@
 from decimal import Decimal
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 
 from django.contrib.auth import get_user_model
@@ -140,6 +141,88 @@ class BookOrderingTest(LibraryTestCase):
         self.assertLess(self.book2.order, self.book1.order)
 
 
+class ProtectedDeletePreviewTest(LibraryTestCase):
+    def make_contract(self):
+        from library import models
+
+        self.assertTrue(hasattr(models, "Contract"), "Library must provide a protected publishing Contract")
+        self.contract = models.Contract.objects.create(title="Earthsea publishing contract", author=self.author)
+        self.delete_url = reverse("author-delete", kwargs={"pk": self.author.pk})
+        self.detail_url = reverse("contract-detail", kwargs={"pk": self.contract.pk})
+
+    def assert_rows_preserved(self):
+        self.assertTrue(Author.objects.filter(pk=self.author.pk).exists())
+        self.assertTrue(type(self.contract).objects.filter(pk=self.contract.pk).exists())
+        self.assertEqual(
+            set(Book.objects.filter(author=self.author).values_list("pk", flat=True)), {self.book1.pk, self.book2.pk}
+        )
+
+    def assert_blocked(self, response, status=200, url=None):
+        self.assertEqual(response.status_code, status)
+        self.assertTrue(response.context["has_protected_objects"])
+        self.assertEqual(response.context["protected_objects"], [{"obj": self.contract, "url": url}])
+        document = html.fromstring(response.content)
+        self.assertFalse(document.xpath('//form[.//*[@name="confirm"]]'))
+        self.assert_rows_preserved()
+        return document
+
+    def test_protected_page_and_modal_link_to_full_detail(self):
+        self.make_contract()
+        for modal in (False, True):
+            with self.subTest(modal=modal):
+                response = self.client.get(self.delete_url, HTTP_X_CV_MODAL="true" if modal else "false")
+                document = self.assert_blocked(response, url=self.detail_url)
+                (link,) = document.xpath("//a[@href=$url]", url=self.detail_url)
+                self.assertEqual(link.text_content(), self.contract.title)
+                self.assertFalse(any(key.startswith("data-cv-modal") for key in link.attrib))
+                self.assertEqual(bool(document.xpath('//div[@class="modal-body"]')), modal)
+                detail = self.client.get(link.get("href"))
+                self.assertContains(detail, self.contract.title)
+                self.assertContains(detail, str(self.author))
+                self.assertContains(detail, "<!DOCTYPE html>", html=False)
+
+    def test_confirmed_page_and_modal_posts_preserve_rows(self):
+        self.make_contract()
+        for modal in (False, True):
+            with self.subTest(modal=modal):
+                response = self.client.post(
+                    self.delete_url, {"confirm": True}, HTTP_X_CV_MODAL="true" if modal else "false"
+                )
+                self.assert_blocked(response, status=422 if modal else 200, url=self.detail_url)
+
+    def test_visible_blocker_falls_back_to_text(self):
+        self.make_contract()
+        from library.views import AuthorDeleteView, ContractDetailView, cv_contract
+
+        for label, override in (
+            ("disabled", patch.object(AuthorDeleteView, "cv_link_related_objects", False)),
+            ("missing", patch.dict(cv_contract._views, {}, clear=True)),
+            (
+                "inaccessible",
+                patch.object(ContractDetailView, "get_queryset", lambda view: type(self.contract).objects.none()),
+            ),
+        ):
+            with self.subTest(fallback=label), override:
+                for modal in (False, True):
+                    response = self.client.post(
+                        self.delete_url, {"confirm": True}, HTTP_X_CV_MODAL="true" if modal else "false"
+                    )
+                    document = self.assert_blocked(response, status=422 if modal else 200)
+                    self.assertIn(self.contract.title, document.text_content())
+                    self.assertFalse(document.xpath("//a[@href=$url]", url=self.detail_url))
+
+    def test_unprotected_author_previews_book_links_and_cascades(self):
+        url = reverse("author-delete", kwargs={"pk": self.author.pk})
+        response = self.client.get(url)
+        self.assertFalse(response.context["has_protected_objects"])
+        document = html.fromstring(response.content)
+        for book in (self.book1, self.book2):
+            self.assertTrue(document.xpath("//a[@href=$url]", url=reverse("book-detail", kwargs={"pk": book.pk})))
+        self.assertEqual(self.client.post(url, {"confirm": True}).status_code, 302)
+        self.assertFalse(Author.objects.filter(pk=self.author.pk).exists())
+        self.assertFalse(Book.objects.filter(pk__in=[self.book1.pk, self.book2.pk]).exists())
+
+
 class LibrarySeedTest(TestCase):
     def test_seed_twice(self):
         from django.core.management import call_command
@@ -152,3 +235,64 @@ class LibrarySeedTest(TestCase):
         self.assertEqual(Book.objects.count(), books)
         self.assertGreater(authors, 0)
         self.assertGreater(books, 0)
+
+    def test_protected_seed_is_idempotent_and_permissions_are_distinct(self):
+        from django.core.management import call_command
+
+        from library.models import Contract
+        from library.seed import AUTHORS
+
+        call_command("seed")
+        self.assertEqual(Contract.objects.count(), 1)
+        contract = Contract.objects.get(title="Earthsea publishing contract")
+        self.assertEqual(str(contract.author), "Ursula Le Guin")
+        call_command("seed")
+        self.assertEqual(list(Contract.objects.values_list("pk", flat=True)), [contract.pk])
+        self.assertEqual(Author.objects.count(), len(AUTHORS))
+        self.assertEqual(Book.objects.count(), sum(len(books) for _, _, _, books in AUTHORS))
+        delete_url = reverse("author-delete", kwargs={"pk": contract.author_id})
+        detail_url = reverse("contract-detail", kwargs={"pk": contract.pk})
+        for username in ("alice", "bob"):
+            user = get_user_model().objects.get(username=username)
+            self.assertEqual(user.has_perm("library.view_contract"), username == "alice")
+            for model in ("author", "book"):
+                for action in ("view", "add", "change", "delete"):
+                    self.assertTrue(user.has_perm(f"library.{action}_{model}"))
+            for action in ("add", "change", "delete"):
+                self.assertFalse(user.has_perm(f"library.{action}_contract"))
+            self.client.force_login(user)
+            for modal in (False, True):
+                response = self.client.get(delete_url, HTTP_X_CV_MODAL="true" if modal else "false")
+                self.assertTrue(response.context["has_protected_objects"])
+                if username == "alice":
+                    self.assertEqual(response.context["protected_objects"], [{"obj": contract, "url": detail_url}])
+                    self.assertContains(response, f'href="{detail_url}"')
+                else:
+                    self.assertEqual(response.context["protected_objects"], [])
+                    self.assertNotContains(response, contract.title)
+                    self.assertNotContains(response, detail_url)
+                    self.assertContains(response, "Other objects still reference this one")
+                    blocked = self.client.post(
+                        delete_url, {"confirm": True}, HTTP_X_CV_MODAL="true" if modal else "false"
+                    )
+                    self.assertEqual(blocked.status_code, 422 if modal else 200)
+                    self.assertTrue(blocked.context["has_protected_objects"])
+                    self.assertEqual(blocked.context["protected_objects"], [])
+                    self.assertNotContains(blocked, contract.title, status_code=blocked.status_code)
+                    self.assertNotContains(blocked, detail_url, status_code=blocked.status_code)
+            self.assertEqual(self.client.get(detail_url).status_code, 200 if username == "alice" else 403)
+            other = Author.objects.get(last_name="Pratchett")
+            preview = self.client.get(reverse("author-delete", kwargs={"pk": other.pk}))
+            self.assertFalse(preview.context["has_protected_objects"])
+        self.assertTrue(Author.objects.filter(pk=contract.author_id).exists())
+        self.assertTrue(Contract.objects.filter(pk=contract.pk).exists())
+        self.assertEqual(Book.objects.filter(author_id=contract.author_id).count(), 2)
+
+    def test_library_teaches_protected_delete_exercise(self):
+        from django.core.management import call_command
+
+        call_command("seed")
+        self.client.force_login(get_user_model().objects.get(username="alice"))
+        response = self.client.get(reverse("author-list"))
+        for instruction in ("Alice", "Bob", "Ursula", "Guin", "full page", "Contract.author"):
+            self.assertContains(response, instruction)

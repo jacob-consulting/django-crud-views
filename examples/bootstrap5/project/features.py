@@ -66,19 +66,24 @@ FEATURES: list[Feature] = [
         app="library",
         group="basics",
         title="Library",
-        description="Plain CRUD — list, detail, create, update, delete — plus tables, filters and ordering.",
+        description="Plain CRUD, tables, filters, ordering and permission-aware protected-delete links.",
         about=(
             "The starting point: a plain CRUD interface built from a ViewSet. Authors and books each get a "
             "list, detail, create, update and delete view that link to one another and respect Django's "
             "permissions. The author list adds a django-tables2 table with a django-filter search box; books "
-            "show manual up/down ordering."
+            "show manual up/down ordering. Sign in as Alice, filter last name 'Guin', and open Ursula Le Guin's "
+            "Delete action. Her publishing Contract blocks deletion; its link leaves the modal for a full page. "
+            "Visit /library/author/<author-pk>/delete/ directly for the full-page preview. Compare Bob's generic "
+            "hidden-blocker notice: he cannot inspect the Contract. Other authors still demonstrate Book cascades."
         ),
         look_at=(
             "the cv_author and cv_book ViewSets and their List/Detail/Create/Update/Delete views; AuthorTable "
             "and AuthorFilter for the table and filter; BookUpView / BookDownView for ordering; "
             "the automatic Cancel origin on AuthorUpdateView, which returns to the originating list or detail "
             "with captured query state; AuthorDeleteView demonstrates an explicit allowed-key list. "
-            "cv_success_keys on AuthorUpdateView selects Save's destination without restoring Cancel query state."
+            "cv_success_keys on AuthorUpdateView selects Save's destination without restoring Cancel query state; "
+            "Contract.author uses PROTECT, ContractDetailView requires view permission, and AuthorDeleteView enables "
+            "cv_show_related_objects, cv_link_related_objects and cv_modal."
         ),
         url_name="author-list",
         icon="fa-solid fa-book",
@@ -95,6 +100,11 @@ FEATURES: list[Feature] = [
                 anchor="filtering-with-django-filter",
             ),
             DocRef(page="reference/ordered_view.md", label="OrderedView — manual up/down ordering"),
+            DocRef(
+                page="reference/delete_view.md",
+                label="DeleteView — protected and cascading object links",
+                anchor="linking-related-objects",
+            ),
         ),
     ),
     Feature(

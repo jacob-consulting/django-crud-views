@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 6
 waived_count: 2
-fixed_count: 23
-total_count: 31
-last_updated: 2026-11-03T19:53:19.111Z
+fixed_count: 24
+total_count: 32
+last_updated: 2026-11-04T10:12:55.657Z
 ---
 
 # Broken Windows Ledger
@@ -46,6 +46,7 @@ last_updated: 2026-11-03T19:53:19.111Z
 | 29 | 06.7 | deviation | src/crud_views/lib/crispy/form.py | 92 | Plan05 final matrix exposed standalone custom Cancel kwargs regression plus remaining exact-link/permission fixtures; scoped plan01/02 repair preserves bound policy and passed 334 focused tests. | fixed |  | 2026-11-03T18:10:58.862Z | 2026-11-03T18:13:00.670Z |
 | 30 | 06.7 | unrun-verify | .planning/phases/06.7-dynamic-cancel-navigation-and-origin-query-state/06.7-ACCEPTANCE.md |  | Human keyboard, focus and visual Cancel acceptance plus UI consideration confirmation remain pending; automated browser results do not supply human acceptance. | fixed |  | 2026-11-03T18:10:59.020Z | 2026-11-03T19:53:19.111Z |
 | 31 | 06.7 | deviation | tests/test1/test_cancel_state.py |  | Plan05 Django4.2 replay required explicit filter helpers and removal of filtering metadata from plain-list fixtures; 83 focused tests pass on4.2 and5.2 with product unchanged. | fixed |  | 2026-11-03T18:17:50.004Z | 2026-11-03T18:17:50.177Z |
+| 32 | 06.9 | deviation | src/crud_views/lib/views/delete.py |  | Resolved in 5169325: preserve custom QuerySet.get Http404 and bind mounted SCRIPT_NAME; final 819-test suite passes. | fixed |  | 2026-11-04T10:12:29.437Z | 2026-11-04T10:12:55.657Z |
 
 ````json
 [
@@ -441,6 +442,19 @@ last_updated: 2026-11-03T19:53:19.111Z
     "reason": "",
     "recorded_at": "2026-11-03T18:17:50.004Z",
     "resolved_at": "2026-11-03T18:17:50.177Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 32,
+    "kind": "deviation",
+    "phase": "06.9",
+    "file": "src/crud_views/lib/views/delete.py",
+    "line": null,
+    "description": "Resolved in 5169325: preserve custom QuerySet.get Http404 and bind mounted SCRIPT_NAME; final 819-test suite passes.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-04T10:12:29.437Z",
+    "resolved_at": "2026-11-04T10:12:55.657Z",
     "milestone": "v1.0"
   }
 ]

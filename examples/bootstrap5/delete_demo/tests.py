@@ -38,6 +38,8 @@ class BlockedCasesTest(DeleteDemoTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Other objects still reference this one")
         self.assertNotContains(resp, "Book the movers")
+        bobs_task = Task.objects.get(title="Book the movers")
+        self.assertNotContains(resp, reverse("task-detail", kwargs={"pk": bobs_task.pk}))
         self.assertNotContains(resp, 'name="delete"')
 
     def test_case3_business_rule(self):
@@ -78,9 +80,9 @@ class DeletableTest(DeleteDemoTestCase):
         resp = self.client.get(reverse("project-detail", kwargs={"pk": project.pk}))
         self.assertEqual(resp.status_code, 200)
         delete_url = reverse("project-delete", kwargs={"pk": project.pk})
-        link = re.search(rf'<a href="{re.escape(delete_url)}[^"]*"[^>]*>', resp.content.decode())
-        self.assertIsNotNone(link)
-        self.assertIn('data-cv-modal="true"', link.group(0))
+        # any <a> whose href points at the delete view and that carries data-cv-modal, in either attribute order
+        tags = [tag for tag in re.findall(r"<a\b[^>]*>", resp.content.decode()) if "data-cv-modal" in tag]
+        self.assertTrue(any(re.search(rf'href="{re.escape(delete_url)}[?"]', tag) for tag in tags), tags)
         # the modal partial itself
         resp = self.client.get(delete_url, **MODAL)
         self.assertEqual(resp.status_code, 200)

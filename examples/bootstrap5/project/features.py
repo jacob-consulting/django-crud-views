@@ -450,10 +450,10 @@ FEATURES: list[Feature] = [
         about=(
             "What a delete page shows before anything is removed. alice has four projects: deleting Old "
             "prototype previews the two milestones that go with it. The other three are blocked: Website "
-            "relaunch by her own tasks, listed by name; Office move by objects you cannot see (a task of bob's), "
-            "so the page only says that other objects still reference it; and Annual report by a business "
-            "rule, because it is shared. A blocked page shows no confirmation form, and the delete opens in a "
-            "modal."
+            "relaunch by her own tasks, listed by name; Office move is blocked by objects you cannot see (a "
+            "task of bob's), so the page only says that other objects still reference it; and Annual report by "
+            "a business rule, because it is shared. A blocked page shows no confirmation form, and the delete "
+            "opens in a modal."
         ),
         look_at=(
             "ProjectDeleteView in views.py: cv_show_related_objects, cv_modal and cv_check_delete_protection; "
@@ -467,8 +467,18 @@ FEATURES: list[Feature] = [
                 label="DeleteView — cascading deletes display",
                 anchor="cascading-deletes-display",
             ),
+            DocRef(
+                page="reference/delete_view.md",
+                label="DeleteView — permission filtering",
+                anchor="permission-filtering",
+            ),
             DocRef(page="reference/delete_view.md", label="DeleteView — protected objects", anchor="protected-objects"),
             DocRef(page="reference/delete_view.md", label="DeleteView — delete protection", anchor="delete-protection"),
+            DocRef(
+                page="reference/guardian.md",
+                label="Guardian — cascading deletes with per-object permissions",
+                anchor="cascading-deletes-with-per-object-permissions",
+            ),
             DocRef(page="reference/modals.md", label="Modals"),
         ),
     ),

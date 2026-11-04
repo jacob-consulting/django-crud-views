@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.208" timestamp="2026-11-04T10:34:29.702650+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_migration_docs" name="test_protected_recipe_marker_contract" time="0.002"><failure message="AssertionError: Expected exactly one content marker&#10;assert 0 == 1&#10; +  where 0 = &lt;built-in method count of str object at 0xaed5b40&gt;('&lt;!-- protected-delete-recipe: content --&gt;')&#10; +    where &lt;built-in method count of str object at 0xaed5b40&gt; = &quot;# Migrating to 1.0.0\n\n1.0.0 collects the breaking changes and theme-compatibility work of 0.30.0 and of the release...n external focusable\ncontrol; the body is the last resort. Initial-show focus remains the adapter's responsibility.\n&quot;.count">def test_protected_recipe_marker_contract():
+        source = MIGRATION.read_bytes().decode("utf-8")
+&gt;       bodies, hashes = protected_recipes(source)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_delete_migration_docs.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+source = "# Migrating to 1.0.0\n\n1.0.0 collects the breaking changes and theme-compatibility work of 0.30.0 and of the release...n external focusable\ncontrol; the body is the last resort. Initial-show focus remains the adapter's responsibility.\n"
+expected_hashes = None
+
+    def protected_recipes(source=None, expected_hashes=None):
+        """Shared exact UTF-8/LF contract: no trimming, dedenting or newline normalization."""
+        if source is None:
+            source = MIGRATION.read_bytes().decode("utf-8")
+        assert "\r" not in source, "Recipes require LF newlines"
+        result = {}
+        for name in ("content", "related", "body"):
+            marker = f"&lt;!-- protected-delete-recipe: {name} --&gt;"
+&gt;           assert source.count(marker) == 1, f"Expected exactly one {name} marker"
+E           AssertionError: Expected exactly one content marker
+E           assert 0 == 1
+E            +  where 0 = &lt;built-in method count of str object at 0xaed5b40&gt;('&lt;!-- protected-delete-recipe: content --&gt;')
+E            +    where &lt;built-in method count of str object at 0xaed5b40&gt; = "# Migrating to 1.0.0\n\n1.0.0 collects the breaking changes and theme-compatibility work of 0.30.0 and of the release...n external focusable\ncontrol; the body is the last resort. Initial-show focus remains the adapter's responsibility.\n".count
+
+tests/test1/test_delete_migration_docs.py:47: AssertionError</failure></testcase></testsuite></testsuites>

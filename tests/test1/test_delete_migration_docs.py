@@ -1,6 +1,7 @@
 """Execute the published migration fences, including copied templates and real deletion effects."""
 
 import copy
+import hashlib
 import re
 import sys
 from collections import OrderedDict
@@ -33,6 +34,41 @@ EFFECT = "### Describing custom deletion effects"
 TEMPLATES = "### Copied delete templates with incomplete previews"
 NOTICE = "This preview is incomplete. Custom deletion behavior may affect additional objects."
 GENERIC = "Other objects still reference this one; remove or reassign them before deleting it."
+
+
+def protected_recipes(source=None, expected_hashes=None):
+    """Shared exact UTF-8/LF contract: no trimming, dedenting or newline normalization."""
+    if source is None:
+        source = MIGRATION.read_bytes().decode("utf-8")
+    assert "\r" not in source, "Recipes require LF newlines"
+    result = {}
+    for name in ("content", "related", "body"):
+        marker = f"<!-- protected-delete-recipe: {name} -->"
+        assert source.count(marker) == 1, f"Expected exactly one {name} marker"
+        matches = re.findall(rf"^{re.escape(marker)}\n```django\n(.*?)^```$", source, re.MULTILINE | re.DOTALL)
+        assert len(matches) == 1, f"Expected adjacent django fence for {name}"
+        result[name] = matches[0]
+    hashes = {name: hashlib.sha256(body.encode("utf-8")).hexdigest() for name, body in result.items()}
+    if expected_hashes is not None:
+        assert hashes == expected_hashes, "Recipe bytes changed"
+    return result, hashes
+
+
+def test_protected_recipe_marker_contract():
+    source = MIGRATION.read_bytes().decode("utf-8")
+    bodies, hashes = protected_recipes(source)
+    assert len(_recipe(TEMPLATES, TEMPLATE_FENCE, count=3)) == 3
+    for name, body in bodies.items():
+        assert body.endswith("\n")
+        assert hashes[name] != hashlib.sha256(body[:-1].encode("utf-8")).hexdigest()
+        marker = f"<!-- protected-delete-recipe: {name} -->"
+        for replacement in ("", marker + "\n" + marker, marker + "\n", marker + "\nprose"):
+            with pytest.raises(AssertionError):
+                protected_recipes(source.replace(marker, replacement))
+        with pytest.raises(AssertionError):
+            protected_recipes(source.replace(marker + "\n```django", marker + "\n```html"))
+        with pytest.raises(AssertionError, match="bytes changed"):
+            protected_recipes(source.replace(body, body + "\n", 1), hashes)
 
 
 def _recipe(heading, pattern=FENCE, count=1):

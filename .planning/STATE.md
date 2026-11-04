@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.10"
 current_phase_name: Simplify protected-object previews and cap total displayed objects
 status: executing
-stopped_at: Completed 06.10-01-PLAN.md; continue with Plan 02 display cap
-last_updated: "2026-11-04T20:42:29.793Z"
+stopped_at: Completed 06.10-02-PLAN.md; continue with Plans 03 and 04
+last_updated: "2026-11-04T21:01:02.392Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.10 Plan 01 complete; Plan 02 display cap next
-state_head: dfedf153842dac642a971f7f1462cf167266156f
+last_activity_desc: Phase 06.10 Plan 02 complete; Plans 03 and 04 next
+state_head: 364e996bd57fb9afcf02e13c2b41468d9910879e
 progress:
   total_phases: 17
   completed_phases: 15
   total_plans: 118
-  completed_plans: 114
+  completed_plans: 115
 milestone_name: milestone
 ---
 
@@ -29,11 +29,18 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 ## Current Position
 
 Phase: 06.10 (Simplify protected-object previews and cap total displayed objects) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
-Last activity: 2026-11-04 — Phase 06.10 Plan 01 complete; Plan 02 display cap next
+Last activity: 2026-11-04 — Phase 06.10 Plan 02 complete; Plans 03 and 04 next
 
 Next: $gsd-execute-phase 06.10
+
+### Phase 06.10 Plan 02 execution — 2026-11-04
+
+- Strict raw project/inherited view configuration supports positive integers and explicit None; default 50, E109/E265 and effective-value runtime checks include preview-off/non-strict requests.
+- Local protected-first selection preserves visible DFS occurrences, promotes hidden descendants and prepares only selected cascade URLs. One translated shortening notice reflects visible overflow; independent summary/detail guards retain solo roots and omit empty frames.
+- Final broad delete/Cancel/form/authorization/settings gate: 2,410 passed with four workers. Component measurement: 108 passed; deliberate one-query hooks match selected occurrence counts while complete inspection/filter costs remain separate.
+- All three tasks and summary committed; plan position 3/5, phase In Progress. Plans 03/04 own copied recipes, docs, examples and translations; Plan 05 owns final browser/matrix acceptance. Shared DPV requirements and human presentation/state acceptance remain open.
 
 ### Phase 06.10 Plan 01 execution — 2026-11-04
 
@@ -544,6 +551,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.9 P03 | 7min | 2 tasks | 6 files |
 | Phase 06.9 P04 | 17min | 2 tasks | 10 files |
 | Phase 06.10 P01 | 6min | 2 tasks | 7 files |
+| Phase 06.10 P02 | 8min | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -717,6 +725,7 @@ Recent decisions affecting current work:
 - [Phase 06.9]: 03: Publish exact uniquely adjacent UTF-8/LF recipe fences and hashes; keep protected visibility, destination eligibility and actual-request authority distinct.
 - [Phase 06.9]: 04: Exact copied recipes and real page/modal anchors pass seventeen Chromium cases; focused Enter and document requests are required, with cached runtime limits and independent audits retained.
 - [Phase 06.10]: Plan 01 removes only protected destination certification; preserves shared cascade, Guardian, Cancel and inspection paths. Plain ordered obj/url=None entries are measured separately from complete inspection/filter costs.
+- [Phase 06.10]: Plan 02 resolves inherited view-first finite/None display policy with a private sentinel and independent raw project diagnostics; protected-first local selection precedes per-occurrence cascade URLs while full inspection and visibility remain complete.
 
 ### Pending Todos
 
@@ -774,6 +783,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T20:42:27.951Z
-Stopped at: Completed 06.10-01-PLAN.md; continue with Plan 02 display cap
+Last session: 2026-11-04T21:01:00.319Z
+Stopped at: Completed 06.10-02-PLAN.md; continue with Plans 03 and 04
 Resume file: None

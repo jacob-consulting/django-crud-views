@@ -985,7 +985,7 @@ confirmation.
     {% if delete_protection_errors %}
         {% include "crud_views/snippets/delete/protection_errors.html" %}
     {% else %}
-        {% if related_summary or has_protected_objects %}
+        {% if related_summary or has_protected_objects or related_objects or delete_preview_truncated %}
             {% include "myapp/delete_related.html" %}
         {% endif %}
         {% if not has_protected_objects %}
@@ -1006,6 +1006,9 @@ Partial counts stay numeric, qualified by the heading. A copied alert leaf must 
 ```django
 {% load crud_views i18n %}
 <div class="cv-related-objects mb-3">
+    {% if delete_preview_truncated %}
+        {% cv_alert "warning" text=_("This preview is shortened. Additional objects are not shown.") %}
+    {% endif %}
     {% if has_protected_objects %}
         {% if protected_objects %}
             {% with items=protected_objects %}
@@ -1021,6 +1024,8 @@ Partial counts stay numeric, qualified by the heading. A copied alert leaf must 
         {% else %}
             {% cv_alert "warning" heading=_("The following related objects will also be deleted:") items=related_summary_items %}
         {% endif %}
+    {% endif %}
+    {% if related_objects %}
         {% with items=related_objects %}
             {% cv_alert "warning" heading=_("Details about the related objects to be deleted:") body_template="crud_views/snippets/delete/related_objects_tree.html" %}
         {% endwith %}
@@ -1031,8 +1036,9 @@ Partial counts stay numeric, qualified by the heading. A copied alert leaf must 
 Save the independent protected-list body as `myapp/delete_protected.html`. This body is included inside the shared
 alert frame; it owns neither the heading, icon, role nor dismissal. Its marker makes the custom recipe observable.
 Keep explicit autoescape even when an outer template disables it (trusted Django safe strings retain their usual
-semantics). Each entry has exactly `obj` and `url`; model fields are accessed as `node.obj.field`. `url=None` means
-plain text, including with linking disabled. There is no parallel legacy collection of model instances in context.
+semantics). Each entry has exactly `obj` and `url`; model fields are accessed as `node.obj.field`. Protected entries
+always have `url=None` and render plain text, even with linking enabled. The old `if node.url`/`else` body remains
+shape-compatible and always takes the text branch. There is no parallel legacy collection of model instances in context.
 
 <!-- protected-delete-recipe: body -->
 ```django
@@ -1044,11 +1050,16 @@ bytes after the opening fence through the final body newline, without trimming o
 unique and immediately precede its `django` fence; missing, duplicate, separated or wrong-language markers fail
 validation. Tests and browser evidence use those same bytes and SHA-256 identities.
 
-`cv_show_related_objects` enables detailed context; `cv_link_related_objects` additionally enables eligible links.
-Visibility filtering happens before URL generation. A visible label can still have no URL because its destination
-is unavailable. Anchors perform ordinary full-page navigation, including from a delete modal to a modal-capable
-detail view. Preview does not run arbitrary middleware, dispatch or custom `get_object` overrides: the actual
-destination request remains authoritative. See [destination eligibility and limits](reference/delete_view.md#linking-related-objects).
+`cv_show_related_objects` enables detailed context; `cv_link_related_objects` enables optional **cascade** links.
+Visibility filtering and display selection happen before cascade URL generation. Anchors perform ordinary full-page
+navigation, including from a delete modal; the actual destination request remains authoritative. Protected labels
+never become links. See [cascade linking](reference/delete_view.md#linking-related-objects).
+Outer copied templates need the new `delete_preview_truncated` notice and independent summary/detail guards even
+when their protected body remains compatible. Show exactly one translated shortening notice above all object lists
+only when a further visible occurrence is omitted. Keep `delete_preview_incomplete` separate: both warnings can
+appear together. Render a selected solo root even when `related_summary` is empty; that root consumes a slot.
+With a limit of one, root alone is exact-at-cap, while root plus one visible child is overflow. Application-redacted
+summaries must not hide retained details, and empty cascade details must not render a heading or empty list.
 Collector/provider `protected` values and `cv_filter_related_objects(user, related)` inputs remain model instances;
 only the filtered template context changes. Keep the independent `has_protected_objects` guard even if the list is
 empty or absent with previews disabled. Migrate copied generic alert-items snippets immediately.

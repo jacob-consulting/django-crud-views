@@ -566,8 +566,8 @@ page showed.
 |---|---|
 | List and card templates | Only the rows the view's queryset permits. Do not query the model again in the template. |
 | Button leaves (`tags/button/action.html`, `tags/button/menu_item.html`) | Only actions the user may see. A denied action never reaches the leaf, and a disabled one arrives with `cv_disabled`. |
-| `crud_views/view_delete.content.html`, `snippets/delete/related_objects.html` | Every delete page has independent `has_protected_objects`; the stock content omits the whole form while true. With previews enabled, `protected_objects` holds filtered ordered `obj`/`url` entries; it is absent when previews are off. |
-| `crud_views/snippets/delete/protected_objects.html` | Independent body inside the shared alert frame, consuming caller-context `items` with model instance `obj` and eligible detail URL or `None` in `url`. Escaped ordinary anchors or plain text; model fields use `item.obj.field`. |
+| `crud_views/view_delete.content.html`, `snippets/delete/related_objects.html` | Every delete page has independent `has_protected_objects`; omit the whole form while true. Detailed context has selected `protected_objects` and `related_objects`, independent full `related_summary` and `delete_preview_truncated`; these are absent when previews are off. |
+| `crud_views/snippets/delete/protected_objects.html` | Independent body inside the shared alert frame, consuming caller-context `items` with model instance `obj` and always `url=None`. Render escaped plain text; model fields use `item.obj.field`. |
 | `crud_views/view_guardian_manage.html` | Each view's own global-fallback policy in `views.<key>.guardian_policy`, and the strict helper policy in `guardian_config.get_objects_for_user`. |
 | Formset templates | The editor's rows and choices, only on a page or row request the user passed the editor's gates for. |
 
@@ -576,6 +576,9 @@ from the flag and list the filtered labels, so the notice stays when every label
 
 ```django
 {% load crud_views i18n %}
+{% if delete_preview_truncated %}
+    {% cv_alert "warning" text=_("This preview is shortened. Additional objects are not shown.") %}
+{% endif %}
 {% if has_protected_objects %}
     {% if protected_objects %}
         {% with items=protected_objects %}
@@ -585,15 +588,32 @@ from the flag and list the filtered labels, so the notice stays when every label
         {% cv_alert "error" heading=_("Deletion is blocked by protected relationships") text=_("Other objects still reference this one; remove or reassign them before deleting it.") %}
     {% endif %}
 {% endif %}
+{% if related_summary %}
+    {% if delete_preview_incomplete %}
+        {% cv_alert "warning" heading=_("Some related objects that will also be deleted (partial counts):") items=related_summary_items %}
+    {% else %}
+        {% cv_alert "warning" heading=_("The following related objects will also be deleted:") items=related_summary_items %}
+    {% endif %}
+{% endif %}
+{% if related_objects %}
+    {% with items=related_objects %}
+        {% cv_alert "warning" heading=_("Details about the related objects to be deleted:") body_template="crud_views/snippets/delete/related_objects_tree.html" %}
+    {% endwith %}
+{% endif %}
 ```
 
-The body explicitly enables autoescape for labels and URL attributes. Do not pass these dictionaries through
-generic alert `items=` normalization. The shared frame still owns heading, icon, role and dismissal. Permitted
-labels can lack URLs: destination policy is separate from visibility. Ordinary links leave a delete modal via
-full-page navigation. The private eligibility adapter is not a public authorization API; actual requests enforce
-middleware/dispatch/custom lookup policy. See [eligibility, database topology and query cost](delete_view.md#linking-related-objects).
+The protected body explicitly enables autoescape for labels. Do not pass these dictionaries through generic alert
+`items=` normalization. The shared frame still owns heading, icon, role and dismissal. Protected URLs are always
+`None`; existing `if item.url`/`else` bodies remain compatible and take the text branch. Selected cascade links keep
+ordinary full-page navigation from a delete modal and their existing hook behavior; actual requests enforce access.
+See [cascade linking and preview cost](delete_view.md#linking-related-objects).
 Wrap the include of this snippet in
-`{% if related_summary or has_protected_objects %}`. A copy that tests `protected_objects` instead loses the notice
+`{% if related_summary or has_protected_objects or related_objects or delete_preview_truncated %}`.
+Keep summary and detail guards independent: a selected solo root renders even with an empty summary, and the root
+counts toward the shared limit. Root alone at limit one is exact-at-cap; root plus a visible child overflows.
+Application-redacted summaries do not suppress selected details; empty details omit their heading and list.
+The shortening notice appears once above the lists on actual visible overflow; preserve the separate incomplete
+warning in the content template. A copy that tests `protected_objects` instead loses the notice
 for a user who may view none of the protected objects. The flag is present even with previews disabled. Render the
 confirmation form only inside `{% if not has_protected_objects %}` (and retain the custom-protection branch); this
 also removes the form-contained cancel control. A copied alert leaf must render `alert.text` or

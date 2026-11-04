@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 status: planning
 stopped_at: Phase 06.8 complete, ready to plan Phase 7
-last_updated: "2026-11-04T12:13:17.877Z"
+last_updated: "2026-11-04T12:30:19.370Z"
 last_activity: 2026-11-04
 last_activity_desc: Phase 06.8 complete, transitioned to Phase 7
-state_head: d1dc3e354d640ec4296d322c98d25174f6fcdb56
+state_head: e8f5a0e7a3fc324dece4a563e9d41f554d17ce8d
 progress:
   total_phases: 16
   completed_phases: 15
@@ -32,7 +32,7 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-04 — Phase 06.8 complete, transitioned to Phase 7
+Last activity: 2026-11-04 - Completed quick task 261104-h24: Add protected delete-preview links to the Library example
 
 Next: $gsd-discuss-phase 7 — gather context for the theme-surface stability policy.
 
@@ -718,6 +718,7 @@ None yet.
 | 261030-csg | Fix Phase 06.2 WR-01 core nested-create control state; supported-version regressions pass | 2026-10-30 | bd31992 | [261030-csg-fix-phase-06-2-wr-01-core-nested-create-](./quick/261030-csg-fix-phase-06-2-wr-01-core-nested-create-/) |
 | 261103-sag | Fix SonarQube and Codecov failures on PR 303 (local gates passed; remote confirmation pending) | 2026-11-03 | 82fe188 | [261103-sag-fix-sonarqube-and-codecov-failures-on-pr](./quick/261103-sag-fix-sonarqube-and-codecov-failures-on-pr/) |
 | 261104-8v8 | Exclude disposable browser harness from Sonar and split six documentation assertions | 2026-11-04 | 7d4cf1d | [261104-8v8-fix-pr-305-sonar-findings-and-exclude-di](./quick/261104-8v8-fix-pr-305-sonar-findings-and-exclude-di/) |
+| 261104-h24 | Add protected delete-preview links to the Library example | 2026-11-04 | e8f5a0e | [261104-h24-add-a-protected-delete-preview-links-exa](./quick/261104-h24-add-a-protected-delete-preview-links-exa/) |
 
 ### Roadmap Evolution
 

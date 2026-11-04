@@ -101,6 +101,10 @@ class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteVie
     cv_viewset = cv_author
     form_class = CrispyDeleteForm
     cv_message_template_code = _("Deleted author “{{ object }}”")
+    # Book.author uses CASCADE: this example previews books, not protected blockers.
+    # cv_show_related_objects enables details; opt into cv_link_related_objects for detail links.
+    # Visible protected blockers link only to eligible destinations, otherwise remaining plain text.
+    # Both kinds navigate to full pages, including from modals. See docs/reference/delete_view.md.
     cv_show_related_objects = True
     cv_cancel_keys = ["list", "detail"]
 

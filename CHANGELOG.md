@@ -6,6 +6,15 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Protected delete-preview entries** (#307): with previews enabled, `protected_objects` now contains filtered
+  ordered `obj`/`url` entries, where `obj` is the model instance and `url` is an eligible detail URL or `None`.
+  Copied generic alert-items snippets must migrate immediately to the independent
+  `crud_views/snippets/delete/protected_objects.html` body inside the shared alert frame. There is no legacy
+  model-instance context collection. Keep the independent `has_protected_objects` guard and whole-form omission,
+  including with hidden labels or previews disabled. Ordinary links navigate to full pages from modals too.
+  Provider/filter model-instance inputs and cascade URL behavior remain unchanged. See the executable
+  [content/snippet/body migration](docs/migrating-1.0.md#copied-delete-templates-with-incomplete-previews).
+
 - **Action tooltips** (#304): context/list icon-only `cv_title` now uses the existing short caption with full-caption
   fallback, while the full hidden `cv_label` stays unchanged. Visibly labelled context/list/card overflow items
   no longer emit automatic titles, removing the context-menu native-title exception. Copied action/menu leaves
@@ -246,8 +255,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `cv_guardian_accept_global_perms = True` on each Guardian view class that should accept global model permissions.
   `GuardianViewSet.get_objects_for_user()` stays strict and has no global-permission option. See
   [Migrating to 1.0.0](docs/migrating-1.0.md#the-guardianviewset-global-permission-key).
-- **Delete previews and protected objects.** With `cv_show_related_objects`, `protected_objects` now holds only the
-  protected objects the user may view (core: model-level `view_<model>`; Guardian: object or group grants, plus a
+- **Delete previews and protected objects.** With `cv_show_related_objects`, `protected_objects` now holds filtered
+  ordered `obj`/`url` entries: `obj` is a protected model instance the user may view, and `url` is an eligible detail
+  URL or `None` (core label visibility: model-level `view_<model>`; Guardian: object or group grants, plus a
   global permission when the delete view's `cv_guardian_accept_global_perms` allows it). The new
   `has_protected_objects` says whether protected objects block the deletion at all. The stock templates show one
   generic blocked notice from it, also when every label is hidden. A copy of `view_delete.content.html` or
@@ -255,8 +265,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   them: test `related_summary or has_protected_objects` around the include and `has_protected_objects` around the
   notice. A custom `cv_filter_related_objects` must now filter `related.protected` too, starting from `super()`.
   Inspection is read-only and supported-path counts may be partial; `delete_preview_incomplete` is always present.
-  Copies of the content/snippet templates must preserve the independent warning, partial-count heading and ordinary
-  confirmation ([tested recipe](docs/migrating-1.0.md#copied-delete-templates-with-incomplete-previews)). The aggregate
+  Copies of the content/snippet/body templates must use the structured entries and preserve the independent
+  warning, partial-count heading and whole-form omission while blocked
+  ([tested recipe](docs/migrating-1.0.md#copied-delete-templates-with-incomplete-previews)). The aggregate
   disclosure policy is unchanged. The always-present flag and form/POST changes are covered below. See
   [Migrating to 1.0.0](docs/migrating-1.0.md#delete-previews-and-protected-objects).
 - **Blocked deletions.** `has_protected_objects` is present on every delete page, regardless of

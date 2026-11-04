@@ -725,12 +725,28 @@ def test_documented_guardian_key_recipe_and_exact_diagnostic(recipes, monkeypatc
 def test_delete_breaking_entries_have_matching_migration_contracts():
     unreleased = _section((ROOT / "CHANGELOG.md").read_text(), "## Unreleased")
     breaking = _section(unreleased, "### Breaking")
+    for heading in ("Protected delete-preview entries", "Delete previews and protected objects"):
+        passages = re.findall(rf"^- \*\*{re.escape(heading)}[^\n]*\n(?:[ ]{{2}}[^\n]*\n)*", unreleased, re.MULTILINE)
+        assert len(passages) == 1
+        passage = passages[0]
+        for term in ("`obj`/`url`", "`obj`", "`url`", "`None`", "filtered", "has_protected_objects", "whole-form"):
+            assert term in passage
+        assert "now holds only the\n  protected objects" not in passage
+    for term in ("protected_objects.html", "generic alert-items", "no legacy", "modals"):
+        assert term in breaking
     anchors = _anchors(MIGRATION)
     for anchor, terms in {
         "safe-deletion-preview-overrides": ("cv_get_related_objects", "viewset.E263", "cv_get_delete_preview"),
         "describing-custom-deletion-effects": ("field_model", "Attachment", "ownerless", "source_pks"),
         "delete-method-signatures-and-database-selection": ("viewset.E264", "using", "cv_get_delete_db_alias"),
-        "copied-delete-templates-with-incomplete-previews": ("delete_preview_incomplete", "has_protected_objects"),
+        "copied-delete-templates-with-incomplete-previews": (
+            "delete_preview_incomplete",
+            "has_protected_objects",
+            "node.obj",
+            "node.url",
+            "url=None",
+            "body_template",
+        ),
         "guardian-permission-keys": ("ValueError", "KeyError", "non-string"),
         "guardian-configured-content-type-permissions": ("app.view_vehicle", "MixedContentTypeError", "child_only_car"),
     }.items():
@@ -749,3 +765,26 @@ def test_delete_breaking_entries_have_matching_migration_contracts():
         section = _section(MIGRATION.read_text(), heading)
         for term in terms:
             assert term in section
+
+
+def test_protected_public_surface_inventory():
+    reference = (DOCS / "reference/delete_view.md").read_text()
+    surface = _section(reference, "### Protected-preview public surface")
+    for term in (
+        "protected_objects",
+        "has_protected_objects",
+        "obj",
+        "url",
+        "items",
+        "cv_show_related_objects=False",
+        "crud_views/snippets/delete/protected_objects.html",
+        "cv_get_related_object_url(self, obj)",
+        "cascade",
+        "Full-page",
+        "not a new public authorization",
+    ):
+        assert term in surface
+    example = (ROOT / "examples/bootstrap5/library/views.py").read_text()
+    author = example.split("class AuthorDeleteView(", 1)[1].split("# ---", 1)[0]
+    for term in ("CASCADE", "cv_show_related_objects", "cv_link_related_objects", "plain text", "delete_view.md"):
+        assert term in author

@@ -368,6 +368,23 @@ Keep the existing custom-protection branch around this content. The complete exe
 in [Copied delete templates](../migrating-1.0.md#copied-delete-templates-with-incomplete-previews); a copied alert leaf must render `alert.text` or
 `alert.body_template` as well as its heading and items.
 
+### Protected-preview public surface
+
+The following inventory is the contract for copied templates and the Phase 7 stability reference:
+
+| Public name | Contract |
+|---|---|
+| `protected_objects` | Ordered, filtered entries with exactly `obj` (model instance) and `url` (string or `None`); present only when `cv_show_related_objects=True`. No parallel legacy collection. |
+| `has_protected_objects` | Independent unfiltered blocking boolean on every delete context, including preview-off and all-hidden cases; preserves whole-form omission. |
+| `crud_views/snippets/delete/protected_objects.html` | Independently overridable body; reads caller-context `items` containing `obj`/`url`. Explicit autoescape; model fields use `item.obj.field`. |
+| `crud_views/snippets/delete/related_objects.html` | Binds `items=protected_objects` in caller context and selects the protected body through `cv_alert body_template`; shared alert frame retains heading, icon, role and dismissal. |
+| `cv_get_related_object_url(self, obj) -> str \| None` | Existing public candidate hook, unchanged signature and first-match/cascade behavior; protected candidates additionally undergo private destination eligibility checks. |
+| Ordinary `<a href>` | Full-page navigation in the current browsing context, including from modals and to modal-capable destinations; no modal/AJAX action metadata. |
+
+`cv_link_related_objects=False` retains the same entries with `url=None`; `cv_show_related_objects=False` omits the
+detailed collection. Collector/provider/filter inputs remain model instances. The private eligibility adapter
+is not a new public authorization extension API, and no generic alert-item API or modal-routing setting is added.
+
 ## Delete Protection
 
 Add custom business logic to prevent deletion.

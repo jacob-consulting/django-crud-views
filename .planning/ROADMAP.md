@@ -34,6 +34,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.7: Dynamic cancel navigation and origin query state (INSERTED)** - #302: dynamic defaults and reliable origin query restoration before the freeze (completed 2026-11-03)
 - [x] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze (completed 2026-11-04)
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
+- [ ] **Phase 6.10: Object-derived nested URLs and link-access parity (INSERTED)** - #311 with companion #312: shared parent resolution and truthful links before the freeze
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -879,13 +880,48 @@ Plans:
 **Wave 4** *(blocked on Wave 3 completion)*
 - [x] 06.9-04-PLAN.md
 
+### Phase 06.10: Object-derived nested URLs and link-access parity (INSERTED)
+
+**Goal:** Build nested-object URLs outside their parent URL context and align link visibility with the existing request gates before the 1.0.0 surface freeze.
+**Source:** [Issue #311](https://github.com/jacob-consulting/django-crud-views/issues/311) and its explicitly paired [issue #312](https://github.com/jacob-consulting/django-crud-views/issues/312).
+**Depends on:** Phase 06.9; preserve the nested scope, delete-preview and Guardian contracts established by prior phases. Must complete before Phase 7.
+**Requirements**: NURL-01, NURL-02, NURL-03, AUTH-08, AUTH-09, NURL-04.
+**Scope and ordering:** Shared object-to-parent resolver first, then request-free and view-based URL builders (#311), then undeclared-permission and Guardian parent-gate link parity (#312). Reuse the resolver for multilevel delete-preview links.
+**Locked decisions:** CONTEXT.md D-01–D-16 settle object/collection precedence, explicit conflicts, M2M/null/Resource inputs, limited Guardian fallbacks, strict/optional errors and paired Breaking migration. Plans specify internal composition and bounded query tests; issue recommendations remain subordinate to those decisions.
+**Success Criteria** (what must be TRUE):
+
+1. Mixed-parent rows and three-level nested objects produce correct URLs without requiring the hosting view's parent kwargs; the request-free API and delete previews use the same resolver.
+2. Explicit tests cover conflicting kwargs, M2M/null relations, Resources and query counts; existing child-detail URLs and default markup remain stable.
+3. Undeclared permissions do not advertise accessible links, and Guardian child links apply the existing rule to the resolvable destination parent; D-09/D-10 unresolved-object/no-object fallbacks, request-side protection and create-view behavior remain intact.
+4. Documentation and changelog explain the new APIs and limits, and Phase 7 receives the settled public names. Core parent scope remains distinct from Guardian parent permission checks.
+
+**Scope exclusions:** Building DataView or navigation, introducing core parent permission enforcement, and downstream application changes; these remain consumers or follow-up work.
+**Plans:** 6 plans
+
+Plans:
+**Wave 1**
+- [ ] 06.10-01-PLAN.md — Shared resolver, request-free URLs and metadata/error contracts (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.10-02-PLAN.md — View builders and scoped destination context with hook preservation (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.10-03-PLAN.md — Guardian destination-parent access and undeclared-permission diagnostics (wave 3)
+- [ ] 06.10-04-PLAN.md — Multilevel delete-preview candidates and independent certification (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.10-05-PLAN.md — Executable caller migrations and Phase 7 public-surface handoff (wave 4)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.10-06-PLAN.md — Stock/custom browser acceptance and complete regression evidence (wave 5)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6.9, Phase 4 and Phase 5 (and so, transitively, Phases 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6.9 only and documents the surface as it is. Include the cancel
+**Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
 protected-preview and Guardian configuration contracts from Phase 6.2, qualified by the unresolved acceptance
 split above until Phase 6.3 remediation is verified. Include the settled conditional/formset contracts from Phase 6.4.
@@ -894,6 +930,7 @@ Include the settled form ownership, label-mode registration, action-group and al
 Include the dynamic cancel defaults, origin query preservation and custom-template URL API settled by Phase 6.7.
 Include the tooltip caption and visible-label rendering contracts settled by Phase 6.8.
 Include the protected delete-preview linking and context/template contracts settled by Phase 6.9.
+Include the nested URL APIs, shared parent resolver and Guardian parent-access/link-visibility contracts settled by Phase 6.10.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -925,7 +962,7 @@ Include the protected delete-preview linking and context/template contracts sett
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -941,7 +978,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 10 | 6.7 (#302) | Dynamic cancel defaults and origin query preservation before the freeze |
 | 11 | 6.8 (#304) | Short icon tooltips and visible-label suppression before the freeze |
 | 12 | 6.9 (#307) | Protected delete-preview links before the freeze |
-| 13 | 7 (plan 4) | Needs 6.9, 4 and 5 merged; last change before the 1.0.0 bump |
+| 13 | 6.10 (#311, #312) | Shared parent resolver, nested URLs and link-access parity before the freeze |
+| 14 | 7 (plan 4) | Needs 6.10, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -962,4 +1000,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.7. Dynamic cancel navigation and origin query state | 5/5 | Complete    | 2026-11-03 |
 | 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
+| 6.10. Object-derived nested URLs and link-access parity | 0/6 | Planned | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

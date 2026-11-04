@@ -18,10 +18,13 @@ def protected_destination(
     from django.urls import clear_url_caches, path
 
     from crud_views.lib.views import DetailViewPermissionRequired
-    from crud_views.lib.viewset import ViewSet, _REGISTRY
+    from crud_views.lib.viewset import _REGISTRY, ViewSet
     from tests.test1.app.models import Contract
 
-    monkeypatch.setattr("crud_views.lib.viewset._REGISTRY", dict(_REGISTRY))
+    monkeypatch.setattr(
+        "crud_views.lib.viewset._REGISTRY",
+        {name: viewset for name, viewset in _REGISTRY.items() if viewset.model is not Contract},
+    )
     viewset = ViewSet(model=Contract, name="protected_destination", prefix="protected_destination")
 
     class Detail(DetailViewPermissionRequired):
@@ -223,8 +226,18 @@ def test_protected_candidate_contract(protected_destination, monkeypatch, branch
         expected = branch == "presentation"
         if branch == "queryset-init":
             monkeypatch.setattr(target, "get_queryset", SingleObjectMixin.get_queryset)
+        if branch == "permission-override":
+            # Class policy permits this actor, but the real callback's instance
+            # policy denies it. The preview must not advertise the candidate.
+            assert target.cv_has_access(case.source.request.user, case.blocker)
+            client = Client()
+            client.force_login(case.source.request.user)
+            assert client.get(candidate).status_code == 403
     elif branch in {"non-detail", "unregistered"}:
-        callback = lambda request, **kwargs: HttpResponse("other")
+
+        def callback(request, **kwargs):
+            return HttpResponse("other")
+
         if branch == "unregistered":
 
             class Other(target):
@@ -270,7 +283,7 @@ def test_protected_candidate_contract(protected_destination, monkeypatch, branch
         case.source.request.POST.copy(),
         case.source.request.META.copy(),
     )
-    case.source.request.headers  # populate the cached header mapping before cloning
+    assert case.source.request.headers["X-CV-Modal"] == "true"  # cache headers before cloning
     monkeypatch.setattr(
         case.source, "cv_get_related_object_url", fail(error()) if branch.startswith("hook") else lambda obj: candidate
     )

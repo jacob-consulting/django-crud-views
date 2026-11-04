@@ -1,15 +1,20 @@
 import logging
+import re
 from collections.abc import Iterable
 from contextlib import nullcontext
+from copy import copy
 from functools import partial
 from inspect import signature
 from typing import ClassVar
+from urllib.parse import unquote, urlsplit
 
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.db import connections, router, transaction
 from django.db.models import Model
-from django.urls import NoReverseMatch, reverse
+from django.http import Http404, QueryDict
+from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve, reverse
 from django.views import generic
+from django.views.generic.detail import SingleObjectMixin
 
 from crud_views.lib.check import Check, CheckExpression
 from crud_views.lib.deletion import (
@@ -203,6 +208,101 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
                     return None
         return None
 
+    def _cv_get_protected_object_url(self, obj) -> str | None:
+        """Check the exact candidate's registered detail policy without dispatching it.
+
+        Visibility is already filtered by the caller. The actual detail request still
+        owns application middleware, dispatch and custom get_object enforcement.
+        """
+        from crud_views.lib.viewset import _REGISTRY
+
+        candidate = self.cv_get_related_object_url(obj)
+        if not isinstance(candidate, str) or not candidate:
+            return None
+
+        def local_path(value):
+            return (
+                value.startswith("/")
+                and not value.startswith("//")
+                and "\\" not in value
+                and not any(ord(char) < 32 or ord(char) == 127 for char in value)
+            )
+
+        # urlsplit strips some leading controls: validate the original first.
+        if not local_path(candidate):
+            return None
+        try:
+            parsed = urlsplit(candidate)
+            if parsed.scheme or parsed.netloc or re.search(r"%(?:2f|5c)", parsed.path, re.IGNORECASE):
+                return None
+            path = unquote(parsed.path, errors="strict")
+        except (ValueError, UnicodeError):
+            return None
+        if not local_path(path):
+            return None
+        prefix = get_script_prefix()
+        if not path.startswith(prefix):
+            return None
+        path_info = "/" + path[len(prefix) :]
+        try:
+            match = resolve(path_info, urlconf=getattr(self.request, "urlconf", None))
+        except Resolver404:
+            return None
+        target = getattr(match.func, "view_class", None)
+        viewset = getattr(target, "cv_viewset", None)
+        if (
+            not isinstance(target, type)
+            or not issubclass(target, SingleObjectMixin)
+            or not getattr(target, "cv_object", False)
+            or viewset is None
+            or not any(registered is viewset for registered in _REGISTRY.values())
+            or not viewset.is_view_registered("detail")
+            or viewset.get_view_class("detail") is not target
+        ):
+            return None
+        initkwargs = match.func.view_initkwargs
+        for name, value in initkwargs.items():
+            # Classmethod policy cannot certify instance-only authorization overrides.
+            if name == "permission_required" or (
+                (name.startswith(("cv_", "_cv_")) or callable(getattr(target, name, None)))
+                and value != getattr(target, name, None)
+            ):
+                return None
+
+        request = copy(self.request)
+        request.META = self.request.META.copy()
+        request.META.pop("HTTP_X_CV_MODAL", None)
+        request.__dict__.pop("headers", None)
+        request.method = "GET"
+        request.path = path
+        request.path_info = path_info
+        request.GET = QueryDict(parsed.query)
+        request.POST = QueryDict()
+        request.META.update(REQUEST_METHOD="GET", PATH_INFO=path_info, QUERY_STRING=parsed.query)
+        request.resolver_match = match
+        destination = target(**initkwargs)
+        destination.setup(request, *match.args, **match.kwargs)
+        # Application queryset errors must propagate; only native missing-row lookup
+        # and explicit policy denial mean an unavailable destination.
+        queryset = destination.get_queryset()
+        try:
+            fetched = SingleObjectMixin.get_object(destination, queryset=queryset)
+        except Http404:
+            return None
+        if (
+            fetched._meta.concrete_model is not obj._meta.concrete_model
+            or type(fetched.pk) is not type(obj.pk)
+            or fetched.pk != obj.pk
+            or fetched._state.db != obj._state.db
+        ):
+            return None
+        destination.object = fetched
+        try:
+            available = target._cv_cancel_target_available(request.user, fetched, destination)
+        except PermissionDenied:
+            return None
+        return candidate if available else None
+
     @staticmethod
     def _walk_nested(items):
         for item in items:
@@ -275,7 +375,10 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
             related = self.cv_filter_related_objects(self.request.user, related)
             context["related_summary"] = related.summary
             context["related_summary_items"] = [f"{name}: {count}" for name, count in related.summary.items()]
-            context["protected_objects"] = list(related.protected)
+            context["protected_objects"] = [
+                {"obj": obj, "url": self._cv_get_protected_object_url(obj) if self.cv_link_related_objects else None}
+                for obj in related.protected
+            ]
 
             urls = {}
             if self.cv_link_related_objects:

@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.9"
 current_phase_name: Protected delete-preview object links
 status: executing
-stopped_at: Completed 06.9-03-PLAN.md; plan 04 remains
-last_updated: "2026-11-04T10:41:47.297Z"
+stopped_at: Completed 06.9-04-PLAN.md; independent verification and human acceptance remain
+last_updated: "2026-11-04T11:02:40.413Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.9 execution started
-state_head: 7aa8ad79ffcc5c1456fe368eb6898cb667b15416
+last_activity_desc: Phase 06.9 plans executed; independent verification pending
+state_head: 8d72c9fca610158336ddfd1c1467ecb30a92eaf9
 progress:
   total_phases: 16
   completed_phases: 13
   total_plans: 113
-  completed_plans: 112
+  completed_plans: 113
 milestone_name: milestone
 ---
 
@@ -30,10 +30,18 @@ See: .planning/PROJECT.md (updated 2026-11-03)
 
 Phase: 06.9 (Protected delete-preview object links) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
-Last activity: 2026-11-04 — Phase 06.9 execution started
+Status: Plans executed — awaiting independent verification
+Last activity: 2026-11-04 — Phase 06.9 plan 04 automated acceptance passed
 
-Next: $gsd-execute-phase 06.9 — four plans in four waves; external review converged in 3 cycles with no unresolved actionable findings.
+Next: Orchestrator independent code/security/UI/validation/canonical verification for Phase 06.9; human acceptance remains pending.
+
+### Phase 06.9 automated execution — 2026-11-04
+
+- All four plans executed; phase remains In Progress pending independent verification and human acceptance.
+- Plan 04: 17 Chromium cases, exact copied recipes, 556 source hashes, 12 validated assets and two retained modal screenshots pass; owned server/database cleanup confirmed.
+- Cached Python 3.12 / Django 4.2, 5.2 and 6.0 each pass 9439 tests; existing CSP skips and sole Django 6.0 crispy-floor golden exclusion remain explicit. Examples 302 + 43 subtests, JavaScript 365, integration 2, Node 26, strict docs and Ruff pass.
+- Tutorial sync regression repaired; first Django 4.2 wrapper exit143 repeated to a measured exit0. No new dependency, product change or test exclusion.
+- Validation fixture readiness is true; draft/compliance/phase audit status and 19-state human confirmation remain open. No external-theme, assistive-technology or unperformed Python-version acceptance inferred.
 
 ### Phase 06.8 shipping — 2026-11-04
 
@@ -483,6 +491,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.9 P02 | 10min | 2 tasks | 5 files |
 | Phase 06.9 P03 | 10min | 2 tasks | 6 files |
 | Phase 06.9 P03 | 7min | 2 tasks | 6 files |
+| Phase 06.9 P04 | 17min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -654,6 +663,7 @@ Recent decisions affecting current work:
 - [Phase 06.9]: 01: Preserve shared first-match URL hook/cascade behavior; protected candidates use native row identity and one destination-bound access/state evaluation.
 - [Phase 06.9]: 02: Protected Guardian links certify actor/child/parent/permission-route topology only after native identity, composition and original-actor guards; shared request policy remains unchanged.
 - [Phase 06.9]: 03: Publish exact uniquely adjacent UTF-8/LF recipe fences and hashes; keep protected visibility, destination eligibility and actual-request authority distinct.
+- [Phase 06.9]: 04: Exact copied recipes and real page/modal anchors pass seventeen Chromium cases; focused Enter and document requests are required, with cached runtime limits and independent audits retained.
 
 ### Pending Todos
 
@@ -709,6 +719,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T10:41:16.174Z
-Stopped at: Completed 06.9-03-PLAN.md; plan 04 remains
+Last session: 2026-11-04T11:02:38.646Z
+Stopped at: Completed 06.9-04-PLAN.md; independent verification and human acceptance remain
 Resume file: None

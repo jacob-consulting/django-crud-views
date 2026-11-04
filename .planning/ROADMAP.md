@@ -864,7 +864,7 @@ Plans:
 2. Disabled linking and hidden-blocker notices preserve existing behavior without exposing objects or URLs the user cannot view.
 3. Regression coverage verifies core and Guardian behavior, escaping, and cascade-preview preservation; affected context/template contracts and documentation are updated, with paired changelog/migration guidance if breaking.
 
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans executed
 
 Plans:
 **Wave 1**
@@ -877,7 +877,7 @@ Plans:
 - [x] 06.9-03-PLAN.md
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.9-04-PLAN.md
+- [x] 06.9-04-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 
@@ -961,5 +961,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.6. Theme-adoption seams from the Tabler sync | 10/10 | Complete    | 2026-11-03 |
 | 6.7. Dynamic cancel navigation and origin query state | 5/5 | Complete    | 2026-11-03 |
 | 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | In Progress | - |
-| 6.9. Protected delete-preview object links | 3/4 | In Progress | - |
+| 6.9. Protected delete-preview object links | 4/4 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

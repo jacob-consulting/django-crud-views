@@ -139,6 +139,7 @@ def test_protected_candidate_contract_unsafe(protected_destination, monkeypatch,
         "permission-denied",
         "missing-row",
         "queryset-404",
+        "queryset-get-404",
         "queryset-error",
         "hook-404",
         "hook-reverse",
@@ -213,6 +214,15 @@ def test_protected_candidate_contract(protected_destination, monkeypatch, branch
     elif branch == "missing-row":
         monkeypatch.setattr(target, "get_queryset", lambda self: Contract.objects.none())
         expected = False
+    elif branch == "queryset-get-404":
+        from django.db.models import QuerySet
+
+        class BrokenQuerySet(QuerySet):
+            def get(self, *args, **kwargs):
+                raise Http404("Application lookup failure")
+
+        monkeypatch.setattr(target, "get_queryset", lambda self: BrokenQuerySet(model=Contract))
+        error = Http404
     elif branch in {"cv-override", "permission-override", "method-override", "presentation", "queryset-init"}:
         kwargs = {
             "cv-override": {"cv_permission": "delete"},
@@ -324,13 +334,13 @@ def test_protected_script_prefix(protected_destination, client_user_publisher_ca
         seen = []
 
         def available(cls, user, obj, view):
-            seen.append((view.request.path, view.request.path_info))
+            seen.append((view.request.path, view.request.path_info, view.request.META["SCRIPT_NAME"]))
             return True
 
         monkeypatch.setattr(case.target, "_cv_cancel_target_available", classmethod(available))
         adapter = getattr(case.source, "_cv_get_protected_object_url", case.source.cv_get_related_object_url)
         assert adapter(case.blocker) == url
-        assert seen == [(url, case.url)]
+        assert seen == [(url, case.url, "/mounted")]
         response = client_user_publisher_cascade_delete.get(url.removeprefix("/mounted"), SCRIPT_NAME="/mounted")
         assert response.status_code == 200
         assert response.wsgi_request.path == url
@@ -703,7 +713,7 @@ def test_protected_objects_shown_with_view_permission(
     pk = publisher_penguin.pk
     response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{pk}/delete/")
     assert response.status_code == 200
-    assert list(response.context["protected_objects"]) == [contract]
+    assert response.context["protected_objects"] == [{"obj": contract, "url": None}]
     assert response.context["has_protected_objects"] is True
     content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1

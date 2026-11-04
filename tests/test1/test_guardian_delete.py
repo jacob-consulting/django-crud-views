@@ -52,7 +52,7 @@ def test_partial_provider_no_view_and_through_projection(
         visible_royalties = _response_instances(response, Royalty)
         assert set(visible_royalties) == ({royalty} if details and superuser else set())
         if details:
-            assert response.context["protected_objects"] == ([royalty] if superuser else [])
+            assert response.context["protected_objects"] == ([{"obj": royalty, "url": None}] if superuser else [])
             assert response.context["related_summary"] == {str(through._meta.verbose_name): 1}
             assert bool(_response_instances(response, through)) is superuser
         else:
@@ -434,7 +434,7 @@ def test_guardian_protected_model_without_view_permission(
     assert response.context["has_protected_objects"] is True
     content = _norm(response.content.decode())
     if superuser:
-        assert response.context["protected_objects"] == [royalty]
+        assert response.context["protected_objects"] == [{"obj": royalty, "url": None}]
         assert royalty in _response_instances(response, Royalty)
         assert royalty.title in content
     else:
@@ -502,7 +502,7 @@ def test_guardian_protected_partial_grant_keeps_order_and_aggregates(
     _grant_contract(user_guardian, visible)
     response = _delete_page(client_guardian, publisher_a)
     assert response.status_code == 200
-    assert response.context["protected_objects"] == [visible]
+    assert response.context["protected_objects"] == [{"obj": visible, "url": None}]
     assert response.context["has_protected_objects"] is True
     assert response.context["related_summary"] == {"book": 1}
     content = _norm(response.content.decode())
@@ -530,7 +530,10 @@ def test_guardian_protected_full_grant_and_group_grant(
     user_guardian.groups.add(group)
     assign_perm(cv_contract.permissions["view"], group, by_group)
     response = _delete_page(client_guardian, publisher_a)
-    assert sorted(response.context["protected_objects"], key=lambda c: c.pk) == [by_user, by_group]
+    assert sorted(response.context["protected_objects"], key=lambda entry: entry["obj"].pk) == [
+        {"obj": by_user, "url": None},
+        {"obj": by_group, "url": None},
+    ]
     content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1
     assert "User Contract" in content
@@ -549,7 +552,7 @@ def test_guardian_protected_object_grant_needs_no_global_permission(
     _grant_contract(user_guardian, contract)
     assert not user_guardian.has_perm("app.view_contract")
     response = _delete_page(client_guardian, publisher_a)
-    assert response.context["protected_objects"] == [contract]
+    assert response.context["protected_objects"] == [{"obj": contract, "url": None}]
 
 
 @pytest.mark.django_db
@@ -572,7 +575,7 @@ def test_guardian_protected_global_permission_follows_view_fallback(
 
     monkeypatch.setattr(GuardianPublisherCascadeDeleteView, "cv_guardian_accept_global_perms", True)
     fallback = _delete_page(client_guardian, publisher_a)
-    assert fallback.context["protected_objects"] == [contract]
+    assert fallback.context["protected_objects"] == [{"obj": contract, "url": None}]
     assert "Globally Visible Contract" in fallback.content.decode()
 
 

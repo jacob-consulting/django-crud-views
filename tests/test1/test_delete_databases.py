@@ -221,7 +221,8 @@ def test_guardian_real_requests_colocate_actor_grants_and_labels(database_routes
             GuardianPublisherCascadeDeleteView.cv_guardian_accept_global_perms = previous
         assert response.status_code == 200
         assert response.context["has_protected_objects"] is True
-        assert [str(obj) for obj in response.context["protected_objects"]] == [f"{using} secret"]
+        assert [str(entry["obj"]) for entry in response.context["protected_objects"]] == [f"{using} secret"]
+        assert all(entry["url"] is None for entry in response.context["protected_objects"])
         assert f"{other} secret" not in response.content.decode()
 
 

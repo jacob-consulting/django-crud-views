@@ -278,7 +278,9 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         request.path_info = path_info
         request.GET = QueryDict(parsed.query)
         request.POST = QueryDict()
-        request.META.update(REQUEST_METHOD="GET", PATH_INFO=path_info, QUERY_STRING=parsed.query)
+        request.META.update(
+            REQUEST_METHOD="GET", PATH_INFO=path_info, SCRIPT_NAME=prefix.rstrip("/"), QUERY_STRING=parsed.query
+        )
         request.resolver_match = match
         destination = target(**initkwargs)
         destination.setup(request, *match.args, **match.kwargs)
@@ -287,7 +289,12 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         queryset = destination.get_queryset()
         try:
             fetched = SingleObjectMixin.get_object(destination, queryset=queryset)
-        except Http404:
+        except Http404 as error:
+            origin = error.__traceback__
+            while origin.tb_next is not None:
+                origin = origin.tb_next
+            if origin.tb_frame.f_code is not SingleObjectMixin.get_object.__code__:
+                raise
             return None
         if (
             fetched._meta.concrete_model is not obj._meta.concrete_model

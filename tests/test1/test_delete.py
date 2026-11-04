@@ -342,6 +342,144 @@ def test_protected_script_prefix(protected_destination, client_user_publisher_ca
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("preview", [False, True])
+@pytest.mark.parametrize("link", [False, True])
+@pytest.mark.parametrize("visible_count", [0, 1, 3])
+@pytest.mark.parametrize("cascade", [False, True])
+def test_protected_context_projection_matrix(protected_destination, monkeypatch, preview, link, visible_count, cascade):
+    from crud_views.lib.deletion import DeleteInspection, RelatedObjects
+    from tests.test1.app.models import Contract, Royalty
+
+    case = protected_destination
+    second = Contract.objects.create(title=case.blocker.title, publisher=case.source.object)
+    # Distinct models can have the same typed PK. Equal labels and PKs must not
+    # collapse the sequence supplied by inspection/filter providers.
+    third = Royalty.objects.create(pk=case.blocker.pk, title=case.blocker.title, publisher=case.source.object)
+    blockers = [third, second, case.blocker]
+    tree = [case.source.object] if cascade else []
+    summary = {"publisher": 1} if cascade else {}
+    inspection = DeleteInspection(RelatedObjects(tree, summary, blockers), ())
+    monkeypatch.setattr(case.source, "_cv_inspect_deletion", lambda: inspection)
+    calls = []
+
+    def filter_rows(user, related):
+        assert related.protected == blockers
+        assert all(hasattr(obj, "_meta") for obj in related.protected)
+        return RelatedObjects(related.tree, related.summary, blockers[:visible_count])
+
+    def url(obj):
+        calls.append(obj)
+        return case.url if obj is case.blocker else ""
+
+    monkeypatch.setattr(case.source, "cv_filter_related_objects", filter_rows)
+    monkeypatch.setattr(case.source, "cv_get_related_object_url", url)
+    case.source.cv_show_related_objects = preview
+    case.source.cv_link_related_objects = link
+    context = case.source.get_context_data()
+    assert context["has_protected_objects"] is True
+    if not preview:
+        assert not {"related_objects", "related_summary", "protected_objects"} & context.keys()
+        assert calls == []
+        return
+    expected = [
+        {"obj": obj, "url": case.url if link and obj is case.blocker else None} for obj in blockers[:visible_count]
+    ]
+    assert context["protected_objects"] == expected
+    assert [entry["obj"] is obj for entry, obj in zip(context["protected_objects"], blockers, strict=False)] == [
+        True
+    ] * visible_count
+    assert calls == (blockers[:visible_count] + tree if link else [])
+    assert context["related_objects"] == ([{"obj": case.source.object, "url": None, "children": []}] if cascade else [])
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("preview,link", [(False, False), (False, True), (True, False), (True, True)])
+@pytest.mark.parametrize("modal", [False, True])
+def test_protected_visibility_before_urls(
+    protected_destination, monkeypatch, client_user_publisher_cascade_delete, preview, link, modal
+):
+    from django.contrib.auth.models import Permission
+
+    case = protected_destination
+    case.source.request.user.user_permissions.remove(Permission.objects.get(codename="view_contract"))
+    source_class = type(case.source)
+    monkeypatch.setattr(source_class, "cv_show_related_objects", preview)
+    monkeypatch.setattr(source_class, "cv_link_related_objects", link)
+    monkeypatch.setattr(source_class, "cv_modal", modal)
+    seen = []
+    monkeypatch.setattr(source_class, "cv_get_related_object_url", lambda self, obj: seen.append(obj))
+    headers = {"HTTP_X_CV_MODAL": "true"} if modal else {}
+    url = f"/publisher_cascade/{case.source.object.pk}/delete/"
+    for method in ("get", "post"):
+        response = getattr(client_user_publisher_cascade_delete, method)(url, {"confirm": "true"}, **headers)
+        assert response.status_code == (422 if modal and method == "post" else 200)
+        assert response.context["has_protected_objects"] is True
+        if preview:
+            assert response.context["protected_objects"] == []
+        else:
+            assert "protected_objects" not in response.context
+        html = response.content.decode()
+        assert "Visible blocker" not in html
+        assert case.url not in html
+        assert "<form" not in html
+        assert "Other objects still reference this one" in html
+    assert seen == []
+    case.blocker.refresh_from_db()
+    case.source.object.refresh_from_db()
+
+
+@pytest.mark.parametrize("outer_autoescape", ["on", "off"])
+@pytest.mark.parametrize("theme", ["stock", "body", "authorization-frame"])
+def test_protected_body_escaping(outer_autoescape, theme):
+    from django.template import Context, Template
+    from django.utils.safestring import mark_safe
+    from django.utils.translation import gettext, override
+    from lxml import html as lxml_html
+
+    from tests.test1.test_alerts import _theme_templates
+    from tests.test1.test_authorization_templates import OVERRIDES
+
+    body = "crud_views/snippets/delete/protected_objects.html"
+    overrides = {}
+    if theme == "body":
+        overrides[body] = (
+            "{% autoescape on %}<x-protected>{% for item in items %}{{ item.obj }}{% endfor %}"
+            "</x-protected>{% endautoescape %}"
+        )
+    elif theme == "authorization-frame":
+        overrides["crud_views/tags/alert.html"] = OVERRIDES["crud_views/tags/alert.html"]
+    template = (
+        "{% load crud_views i18n %}{% autoescape " + outer_autoescape + " %}"
+        '{% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") '
+        'body_template="' + body + '" dismissible=True %}{% endautoescape %}'
+    )
+    items = [
+        {"obj": '<script>alert("bad")</script>', "url": '/detail/?q=" onmouseover="bad&x=1'},
+        {"obj": mark_safe("<b>Trusted label</b>"), "url": None},
+        {"obj": "Plain text", "url": ""},
+    ]
+    with _theme_templates(overrides), override("de"):
+        rendered = Template(template).render(Context({"items": items}))
+        assert gettext("Deletion is blocked by protected relationships:") in rendered
+    document = lxml_html.fromstring(rendered)
+    assert document.get("role") == "alert"
+    assert "<script>" not in rendered
+    assert "&lt;script&gt;" in rendered
+    assert "<b>Trusted label</b>" in rendered
+    assert "Plain text" in rendered
+    if theme == "body":
+        assert "<x-protected>" in rendered
+    else:
+        anchors = document.xpath(".//a")
+        assert len(anchors) == 1
+        assert anchors[0].attrib == {"href": items[0]["url"]}
+    if theme != "authorization-frame":
+        assert "alert-danger" in document.get("class")
+        assert document.xpath(".//*[@data-cv-alert-dismiss]")
+        assert document.xpath(".//strong")
+
+
+@pytest.mark.django_db
 def test_related_objects_not_shown_by_default(client_user_publisher_delete, cv_publisher, publisher_penguin):
     """Default DeleteView does not include related_objects in context."""
     from tests.test1.app.models import Book

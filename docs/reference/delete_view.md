@@ -143,6 +143,18 @@ When enabled, the delete confirmation page displays:
 
 ### Linking Related Objects
 
+!!! example "Try it live"
+    The [Library example](https://django-crud-views-demo.onrender.com/library/author/)
+    demonstrates protected publishing contracts when running this example revision.
+    After migrating and seeding locally, sign in as `alice` / `alice`, filter the
+    author list's last name by `Guin`, and open Ursula Le Guin's Delete action.
+    Follow `Earthsea publishing contract` to its full detail page from the modal,
+    or visit `/library/author/<author-pk>/delete/` directly for the full-page preview.
+    Compare `bob` / `bob`: he sees only the generic blocked notice, with no Contract
+    name or URL. Other seeded authors still demonstrate Book cascades. See the
+    [tutorial setup](../getting_started/tutorial-6-books.md#a-protected-publishing-contract)
+    for the model, route, and local startup commands; the hosted demo may run an older release.
+
 Optionally render related objects as links to their detail views:
 
 ```python

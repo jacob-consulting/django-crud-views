@@ -32,7 +32,7 @@ And one line of URL wiring:
 
 <!-- cv-sync: library/urls.py -->
 ```python
-urlpatterns = cv_author.urlpatterns + cv_book.urlpatterns
+urlpatterns = cv_author.urlpatterns + cv_book.urlpatterns + cv_contract.urlpatterns
 ```
 
 That's the real, runnable code of the [tutorial](getting_started/index.md) — a CI check

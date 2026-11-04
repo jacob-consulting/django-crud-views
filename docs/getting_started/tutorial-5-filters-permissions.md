@@ -105,7 +105,7 @@ its detail view. Alice sees a linked Contract in the blocked delete preview;
 Bob sees the generic notice without the Contract title or URL, and its direct
 detail URL returns 403. Both users are prevented from deleting Ursula.
 
- To see the create button disappear and the 403 for
+To see the create button disappear and the 403 for
 yourself, create a superuser (`python manage.py createsuperuser`), revoke one of alice's permissions in
 the Django admin at `/admin/`, and log in as alice again.
 

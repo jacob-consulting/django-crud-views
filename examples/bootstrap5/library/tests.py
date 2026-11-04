@@ -238,6 +238,7 @@ class LibrarySeedTest(TestCase):
 
     def test_protected_seed_is_idempotent_and_permissions_are_distinct(self):
         from django.core.management import call_command
+
         from library.models import Contract
         from library.seed import AUTHORS
 

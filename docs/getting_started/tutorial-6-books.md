@@ -133,22 +133,80 @@ See [Breadcrumb](../reference/breadcrumb.md) for the full trail-building
 rules — nested ViewSets, object labels, and hooking in more than one prefix
 item.
 
+## A protected publishing Contract
+
+Books use `CASCADE`, so deleting an unprotected Author also deletes their books.
+A publishing Contract demonstrates `PROTECT`: it prevents deletion while the
+relationship exists. Add this model to `library/models.py`, using the existing
+`from django.db import models` and `from django.utils.translation import gettext_lazy as _` imports:
+
+<!-- cv-sync: library/models.py -->
+```python
+class Contract(models.Model):
+    title = models.CharField(_("title"), max_length=150)
+    author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name="contracts", verbose_name=_("author"))
+
+    class Meta:
+        verbose_name = _("contract")
+        verbose_name_plural = _("contracts")
+
+    def __str__(self):
+        return self.title
+```
+
+In `library/views.py`, extend the model import to `from library.models import Author, Book, Contract`.
+The following uses `ViewSet` from `crud_views.lib.viewset`,
+`ObjectDetailViewPermissionRequired` from `crud_views_object_detail.lib`, and
+`BreadcrumbMixin` from `project.views`, as in the Author and Book views:
+
+<!-- cv-sync: library/views.py -->
+```python
+cv_contract = ViewSet(model=Contract, name="contract", icon_header="fa-solid fa-file-contract")
+
+
+class ContractDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_contract
+    cv_property_display = [
+        {"title": _("Contract"), "icon": "fas:file-contract", "properties": ["id", "title", "author"]},
+    ]
+```
+
+This ViewSet only needs a detail view: the seed function supplies the Contract,
+and its entry point is the protected link in AuthorDeleteView. Create and apply
+the migration, then run the seed command. In the bundled project, the migration
+is already included:
+
+```bash
+python manage.py migrate
+python manage.py seed
+```
+
+Sign in as `alice` / `alice`, filter Authors by last name `Guin`, and choose
+Ursula's Delete action. Her `Earthsea publishing contract` blocks deletion and
+links to a full detail page, even from the modal. To compare the full-page
+preview, open `/library/author/<author-pk>/delete/` directly with Ursula's ID.
+Sign in as `bob` / `bob` to see the generic blocked notice without the Contract
+label or URL. The [Part 5 seed](tutorial-5-filters-permissions.md#permissions-in-practice)
+grants Alice only its view permission; both accounts keep their Author and Book
+permissions. Other seeded authors remain cascade examples.
+
 ## Final urls
 
-With both ViewSets in place, `library/urls.py` is now genuinely two lines —
+With all three ViewSets in place, `library/urls.py` is now genuinely two lines —
 its final, verbatim form, referenced back in Part 1:
 
 <!-- cv-sync: library/urls.py -->
 ```python
-from library.views import cv_author, cv_book
+from library.views import cv_author, cv_book, cv_contract
 
-urlpatterns = cv_author.urlpatterns + cv_book.urlpatterns
+urlpatterns = cv_author.urlpatterns + cv_book.urlpatterns + cv_contract.urlpatterns
 ```
 
 ![Book list view with reorder arrows and breadcrumb trail](assets/tutorial-book-list.png)
 
-That's the tutorial — a working two-model library app with list, detail,
-create, update, delete, filtering, permissions, reordering, and breadcrumbs.
+That's the tutorial — a library app with full CRUD for Authors and Books,
+plus a detail-only protected Contract example, filtering, permissions,
+reordering, and breadcrumbs.
 From here, the [reference section](../reference/index.md) documents every feature in
 depth, the bundled project has 10 other example apps under
 `examples/bootstrap5/` covering nested ViewSets, formsets, workflow

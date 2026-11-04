@@ -59,7 +59,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.7** Dynamic Cancel defaults, independent captured query restoration, destination permissions and guarded template migration — Phase 06.7; canonical32/32 and UAT5/5 passed. Chrome/Orca stock-theme scope and unchanged success-navigation limits are recorded.
 
-- ✓ **6.9** Permission-aware protected blocker links, ordered escaped context, full-page navigation and executable copied-template migration — Phase 06.9; canonical31/31 and explicit confirmation of all 19 UI state rules passed.
+- ✓ **6.9** Permission-aware protected blocker links, ordered escaped context, full-page navigation and executable copied-template migration — Phase 06.9; canonical31/31 and explicit confirmation of all 19 UI state rules passed. Verification refreshed after the runnable Library Contract example with Alice/Bob permission contrast.
 
 - ✓ **6.8** Short icon-action tooltips retain full accessible labels; visible labels suppress generated tooltips, with tested copied-template migration — Phase 06.8; refreshed canonical30/30 and existing UAT3/3 passed.
 
@@ -156,4 +156,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-04 after Phase 06.8 verification refresh and Phase 06.9 completion*
+*Last updated: 2026-11-04 after Phase 06.9 example verification refresh*

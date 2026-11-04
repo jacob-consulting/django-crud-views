@@ -4,11 +4,11 @@ milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
 status: planning
-stopped_at: Phase 06.8 complete, ready to plan Phase 7
-last_updated: "2026-11-04T12:30:19.370Z"
+stopped_at: Phase 06.9 complete, ready to plan Phase 7
+last_updated: "2026-11-04T13:07:34.533Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.8 complete, transitioned to Phase 7
-state_head: e8f5a0e7a3fc324dece4a563e9d41f554d17ce8d
+last_activity_desc: Phase 06.9 complete, transitioned to Phase 7
+state_head: 82eff57d84af936c8436c39a0d71543b6ec70729
 progress:
   total_phases: 16
   completed_phases: 15
@@ -32,9 +32,16 @@ See: .planning/PROJECT.md (updated 2026-11-04)
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-04 - Completed quick task 261104-h24: Add protected delete-preview links to the Library example
+Last activity: 2026-11-04 — Phase 06.9 complete, transitioned to Phase 7
 
 Next: $gsd-discuss-phase 7 — gather context for the theme-surface stability policy.
+
+### Phase 06.9 verification refresh — 2026-11-04
+
+- Canonical verification refreshed after the Library Contract example: passed 31/31, PDL-01–06 satisfied, existing UAT 1/1 and all 19 rules preserved.
+- Fresh regression gate: 9,448 Python tests passed with one existing skip using four workers; all 365 JavaScript tests passed. Initial scoped collection required the normal full-suite entry point to initialize Django correctly.
+- Validation compliant, security 15/15 closed, no new code-review findings, UI 23/24 with inherited contrast warning. Retained browser evidence was validated without claiming a new browser run.
+- Completion warning references illustrative myapp template paths and package-relative template names in the Plan 03 summary; no implementation blocker. Unrelated config/state.json edits preserved. Phase 7 remains unplanned.
 
 ### Phase 06.8 verification refresh — 2026-11-04
 
@@ -743,6 +750,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T12:13:41.375919+00:00
-Stopped at: Phase 06.8 complete, ready to plan Phase 7
+Last session: 2026-11-04T13:07:34Z
+Stopped at: Phase 06.9 complete, ready to plan Phase 7
 Resume file: None

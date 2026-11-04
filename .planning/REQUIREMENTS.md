@@ -198,7 +198,7 @@ The initial spec-less probe skipped visibly while IDs were TBD; planning reruns 
 - [x] **PDL-03**: Every enabled preview exposes one ordered protected_objects collection of obj/url entries, including url=None with linking disabled; an independently overridable escaped blocker body uses the shared translated alert frame. Collector/provider/filter inputs remain model instances.
 - [x] **PDL-04**: Protected names use ordinary full-page navigation from pages and delete modals, including modal-capable detail targets; preserve the shared URL override hook and existing cascade behavior.
 - [ ] **PDL-05**: Require immediate copied-template migration with an executable documented recipe, paired Breaking/migration guidance, updated delete reference and existing example guidance, and an exact Phase 7 surface inventory.
-- [ ] **PDL-06**: Core/Guardian, target denial, escaping, database identity and blocked-write regressions plus stock/custom browser acceptance prove the complete contract; report actual supported-series/runtime evidence and coverage limits.
+- [x] **PDL-06**: Core/Guardian, target denial, escaping, database identity and blocked-write regressions plus stock/custom browser acceptance prove the complete contract; report actual supported-series/runtime evidence and coverage limits.
 
 ### Stability policy (plan 4)
 
@@ -246,7 +246,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PDL-03 | Phase 6.9 | Complete |
 | PDL-04 | Phase 6.9 | Complete |
 | PDL-05 | Phase 6.9 | Pending |
-| PDL-06 | Phase 6.9 | Pending |
+| PDL-06 | Phase 6.9 | Complete |
 | TIP-01 | Phase 6.8 | Complete |
 | TIP-02 | Phase 6.8 | Complete |
 | TIP-03 | Phase 6.8 | Complete |

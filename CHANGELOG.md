@@ -334,6 +334,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- The delete form's confirm checkbox now spans the full row (`col-md-12` instead of `col-md-4`), so its label
+  no longer wraps in narrow containers such as modals (#308).
+
 - Bootstrap tooltip transitions no longer run stale completion callbacks after modal content disposes their
   instance. Normal hover/focus animation, click hide and synchronous instance removal remain unchanged.
 

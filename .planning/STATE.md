@@ -1,20 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "6.8"
-current_phase_name: "Action tooltips: short captions and visible-label suppression (#304)"
-status: verifying
-stopped_at: Phase 06.9 complete, ready to verify Phase 6.8
-last_updated: "2026-11-04T11:56:14.299Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.8 complete, ready to plan Phase 7
+last_updated: "2026-11-04T12:13:17.877Z"
 last_activity: 2026-11-04
-last_activity_desc: Phase 06.9 complete, transitioned to Phase 6.8
-state_head: ed3c7104191062a5d6aa6340d1cc9473f6c4a532
+last_activity_desc: Phase 06.8 complete, transitioned to Phase 7
+state_head: d1dc3e354d640ec4296d322c98d25174f6fcdb56
 progress:
   total_phases: 16
-  completed_phases: 14
+  completed_phases: 15
   total_plans: 113
   completed_plans: 113
-  percent: 88
+  percent: 94
 milestone_name: milestone
 ---
 
@@ -25,16 +25,22 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-04)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Refresh Phase 06.8 verification before Phase 7 planning
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 6.8 — Action tooltips: short captions and visible-label suppression (#304)
-Plan: 3
-Status: Phase complete — ready for verification
-Last activity: 2026-11-04 — Phase 06.9 complete, transitioned to Phase 6.8
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-04 — Phase 06.8 complete, transitioned to Phase 7
 
-Next: $gsd-execute-phase 06.8 — refresh verification after shared CHANGELOG.md and docs/migrating-1.0.md changed. Phase 06.9 is complete; Phase 7 follows once prior verification is current.
+Next: $gsd-discuss-phase 7 — gather context for the theme-surface stability policy.
+
+### Phase 06.8 verification refresh — 2026-11-04
+
+- Canonical verification refreshed: 30/30 obligations and TIP-01–05 pass; existing UAT3/3 retained, security9/9 closed. Shared changelog/migration additions preserve tooltip recipes and contracts; no implementation changes.
+- Fresh regression evidence: 1,011 Python tests with four workers and 365 JavaScript tests pass; verifier added four render-isolation cases and one callback lifecycle test. Retained browser49cases/97controls validated with explicit historical source differences; no new browser run or full Python matrix is claimed.
+- Phase06.8 and Phase06.9 complete. Earlier pending or stale entries below are historical. Phase7 remains unplanned.
 
 ### Phase 06.9 completion — 2026-11-04
 
@@ -395,7 +401,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 110
+- Total plans completed: 113
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -417,6 +423,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.6 | 10 | - | - |
 | 06.7 | 5 | - | - |
 | 06.9 | 4 | - | - |
+| 06.8 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -735,6 +742,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T11:56:53.151445+00:00
-Stopped at: Phase 06.9 complete, ready to verify Phase 6.8
+Last session: 2026-11-04T12:13:41.375919+00:00
+Stopped at: Phase 06.8 complete, ready to plan Phase 7
 Resume file: None

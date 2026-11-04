@@ -32,7 +32,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.5: Remaining presentation contracts and decided cleanup (INSERTED)** - analysis #259/C1/C2 and decided alias cleanup before the freeze (completed 2026-11-02)
 - [x] **Phase 6.6: Theme-adoption seams from the Tabler sync (INSERTED)** - issues #277–#280 before the freeze (completed 2026-11-03)
 - [x] **Phase 6.7: Dynamic cancel navigation and origin query state (INSERTED)** - #302: dynamic defaults and reliable origin query restoration before the freeze (completed 2026-11-03)
-- [ ] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze
+- [x] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze (completed 2026-11-04)
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
@@ -839,7 +839,7 @@ Plans:
 3. The labelled list-action report has a documented investigation outcome, with a regression test for any reproduced package defect.
 4. Relevant caption, accessibility, permission, submission, escaping and lifecycle contracts remain covered; affected docs and changelog describe the changed defaults, with migration guidance if classified as breaking.
 
-**Plans:** 3/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
@@ -960,6 +960,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
 | 6.6. Theme-adoption seams from the Tabler sync | 10/10 | Complete    | 2026-11-03 |
 | 6.7. Dynamic cancel navigation and origin query state | 5/5 | Complete    | 2026-11-03 |
-| 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | In Progress | - |
+| 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

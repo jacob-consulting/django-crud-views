@@ -353,6 +353,40 @@ FEATURES: list[Feature] = [
         ),
     ),
     Feature(
+        app="formsets_conditional",
+        group="forms",
+        title="Formsets + Conditional",
+        description="Nested formsets behind a toggle, plus a conditional field-group on the same form.",
+        about=(
+            "Formsets and conditional toggles on one form. A conference reveals its billing fields only when "
+            "'Invoice a company' is ticked, and clears them on save when it is not. Its Sessions formset has a "
+            "nested Speakers formset per session; 'This conference has sessions' gates the Sessions formset "
+            "with on_off='purge', so untoggling deletes the sessions and, with them, their speakers. Only a "
+            "first-level formset may be conditional: a ConditionalFormSet on the nested Speakers formset would "
+            "fail system check crud_views.E310. Putting the toggle on the first level and letting the "
+            "nested formset follow it is the supported way to combine the two."
+        ),
+        look_at=(
+            "ConferenceForm.cv_conditional_groups (ModelFieldToggle) in views.py, and cv_conference_formsets: "
+            "the ConditionalFormSet on sessions and the speakers FormSet under its children, which has none."
+        ),
+        url_name="conference-list",
+        icon="fa-solid fa-people-group",
+        docs=(
+            DocRef(page="reference/formsets.md", label="Formsets"),
+            DocRef(
+                page="reference/conditional.md",
+                label="Conditional formsets",
+                anchor="kind-2-conditional-formset",
+            ),
+            DocRef(
+                page="reference/conditional.md",
+                label="Conditional formsets — scope constraint",
+                anchor="scope-constraint",
+            ),
+        ),
+    ),
+    Feature(
         app="context_buttons",
         group="ui",
         title="Context Buttons",

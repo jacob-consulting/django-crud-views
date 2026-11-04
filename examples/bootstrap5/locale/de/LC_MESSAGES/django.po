@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 07:23+0000\n"
+"POT-Creation-Date: 2026-11-04 07:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,8 @@ msgstr ""
 #: action_menus/models.py:7 breadcrumbs/models.py:18 conditional/models.py:40
 #: context_buttons/models.py:11 delete_demo/models.py:7
 #: delete_demo/models.py:26 delete_demo/models.py:44 formsets/models.py:7
-#: guardian_demo/models.py:7 library/models.py:26
+#: formsets_conditional/models.py:26 guardian_demo/models.py:7
+#: library/models.py:26
 msgid "title"
 msgstr "Titel"
 
@@ -133,7 +134,8 @@ msgid "Deleted step “{{ object }}”"
 msgstr "Schritt „{{ object }}“ gelöscht"
 
 #: breadcrumbs/models.py:6 conditional/models.py:6 conditional/models.py:25
-#: conditional/models.py:53 nested/models.py:6 nested/models.py:22
+#: conditional/models.py:53 formsets_conditional/models.py:6
+#: formsets_conditional/models.py:39 nested/models.py:6 nested/models.py:22
 #: nested/models.py:37 nested/models.py:51 object_detail/models.py:38
 #: object_detail/models.py:66 object_detail/models.py:78
 #: polymorphic_demo/models.py:7 workflow/models.py:26
@@ -262,19 +264,20 @@ msgstr "Veranstaltung"
 msgid "events"
 msgstr "Veranstaltungen"
 
-#: conditional/models.py:44
+#: conditional/models.py:44 formsets_conditional/models.py:30
+#: formsets_conditional/models.py:38
 msgid "session"
 msgstr "Session"
 
-#: conditional/models.py:45
+#: conditional/models.py:45 formsets_conditional/models.py:31
 msgid "sessions"
 msgstr "Sessions"
 
-#: conditional/models.py:57
+#: conditional/models.py:57 formsets_conditional/models.py:43
 msgid "speaker"
 msgstr "Referent"
 
-#: conditional/models.py:58
+#: conditional/models.py:58 formsets_conditional/models.py:44
 msgid "speakers"
 msgstr "Referenten"
 
@@ -302,11 +305,11 @@ msgstr "Anmeldung »{{ object }}« aktualisiert"
 msgid "Deleted registration “{{ object }}”"
 msgstr "Anmeldung »{{ object }}« gelöscht"
 
-#: conditional/views.py:188
+#: conditional/views.py:188 formsets_conditional/views.py:111
 msgid "Sessions"
 msgstr "Sessions"
 
-#: conditional/views.py:197
+#: conditional/views.py:197 formsets_conditional/views.py:122
 msgid "Speakers"
 msgstr "Referenten"
 
@@ -314,11 +317,11 @@ msgstr "Referenten"
 msgid "Event"
 msgstr "Veranstaltung"
 
-#: conditional/views.py:230
+#: conditional/views.py:230 formsets_conditional/views.py:158
 msgid "Number of sessions"
 msgstr "Anzahl Sessions"
 
-#: conditional/views.py:232
+#: conditional/views.py:232 formsets_conditional/views.py:159
 msgid "Number of speakers"
 msgstr "Anzahl Referenten"
 
@@ -539,6 +542,50 @@ msgstr "Fragebogen »{{ object }}« aktualisiert"
 #: formsets/views.py:149
 msgid "Deleted questionnaire “{{ object }}”"
 msgstr "Fragebogen »{{ object }}« gelöscht"
+
+#: formsets_conditional/models.py:7
+msgid "Invoice a company"
+msgstr "Rechnung an ein Unternehmen"
+
+#: formsets_conditional/models.py:9
+msgid "billing company"
+msgstr "Rechnungsempfänger"
+
+#: formsets_conditional/models.py:10
+msgid "billing VAT ID"
+msgstr "USt-IdNr. des Rechnungsempfängers"
+
+#: formsets_conditional/models.py:11
+msgid "This conference has sessions"
+msgstr "Diese Konferenz hat Sessions"
+
+#: formsets_conditional/models.py:15 formsets_conditional/models.py:24
+msgid "conference"
+msgstr "Konferenz"
+
+#: formsets_conditional/models.py:16
+msgid "conferences"
+msgstr "Konferenzen"
+
+#: formsets_conditional/views.py:55
+msgid "Billing details"
+msgstr "Rechnungsdaten"
+
+#: formsets_conditional/views.py:149
+msgid "Conference"
+msgstr "Konferenz"
+
+#: formsets_conditional/views.py:175
+msgid "Created conference “{{ object }}”"
+msgstr "Konferenz „{{ object }}“ angelegt"
+
+#: formsets_conditional/views.py:182
+msgid "Updated conference “{{ object }}”"
+msgstr "Konferenz „{{ object }}“ aktualisiert"
+
+#: formsets_conditional/views.py:188
+msgid "Deleted conference “{{ object }}”"
+msgstr "Konferenz „{{ object }}“ gelöscht"
 
 #: guardian_demo/models.py:8
 msgid "body"
@@ -1056,15 +1103,15 @@ msgctxt "feature group"
 msgid "Extensions"
 msgstr "Erweiterungen"
 
-#: project/settings.py:112
+#: project/settings.py:113
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:113
+#: project/settings.py:114
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:132
+#: project/settings.py:133
 msgid "Home"
 msgstr "Startseite"
 

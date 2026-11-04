@@ -73,6 +73,7 @@ EXAMPLE_APPS = [
     "object_detail",
     "breadcrumbs",
     "conditional",
+    "formsets_conditional",
     "delete_demo",
 ]
 

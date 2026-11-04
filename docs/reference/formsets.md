@@ -7,8 +7,10 @@ row can carry its own nested formset (e.g. each *question* row carries its own *
 formset).
 
 !!! example "Try it live"
-    The [Formsets example](https://django-crud-views-demo.onrender.com/formsets/questionnaire/) in the live demo shows this in
-    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+    The [Formsets example](https://django-crud-views-demo.onrender.com/formsets/questionnaire/) and the
+    [Formsets + Conditional example](https://django-crud-views-demo.onrender.com/formsets-conditional/conference/)
+    in the live demo show this in action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md)
+    for data resets and wake-up time.
 
 !!! note "Stability"
     This page documents the supported formsets surface: `FormSetMixin`, `FormSets`, `FormSet`,

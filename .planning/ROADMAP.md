@@ -895,7 +895,7 @@ permission-filtered plain text, existing cascade links remain available for disp
 budget defaults to 50 entries across the entire displayed related-object preview, with explicit `None` for unlimited
 display, without truncating deletion enforcement.
 **Source:** [Issue #316](https://github.com/jacob-consulting/django-crud-views/issues/316), a targeted follow-up to completed Phase 06.9 / #307.
-**Requirements**: TBD (derive from #316 during planning)
+**Requirements**: DPV-01, DPV-02, DPV-03, DPV-04, DPV-05, DPV-06
 **Depends on:** Phase 06.9. Complete before Phase 7 freezes the affected public surface.
 **Scope:** Remove protected-link destination request/view simulation and exclusively owned support code after auditing
 callers. Preserve deletion safeguards, visibility filtering, escaping, useful preview customization, and existing

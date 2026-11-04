@@ -207,7 +207,26 @@ def test_plain_protected_projection(protected_destination, monkeypatch, preview,
     monkeypatch.setattr(case.source, "cv_get_related_object_url", url)
     case.source.cv_show_related_objects = preview
     case.source.cv_link_related_objects = link
+    request = case.source.request
+    snapshot = (request.META.copy(), request.GET.copy(), request.POST.copy(), case.source.kwargs.copy())
+    actor = request.user
     context = case.source.get_context_data()
+    # Repeat on a fresh view so no inspection/presentation cache can hide mutation.
+    fresh = type(case.source)()
+    fresh.setup(request, **case.source.kwargs)
+    fresh.object = case.source.object
+    fresh.cv_show_related_objects, fresh.cv_link_related_objects = preview, link
+    fresh._cv_inspect_deletion = lambda: inspection
+    fresh.cv_filter_related_objects = filter_rows
+    fresh.cv_get_related_object_url = url
+    repeated = fresh.get_context_data()
+    for key in ("has_protected_objects", "protected_objects", "related_objects", "related_summary"):
+        assert repeated.get(key) == context.get(key)
+    assert inspection.related.protected == blockers
+    assert inspection.related.tree == tree
+    assert inspection.related.summary == summary
+    assert (request.META, request.GET, request.POST, case.source.kwargs) == snapshot
+    assert request.user is actor
     assert context["has_protected_objects"] is True
     if not preview:
         assert not {"related_objects", "related_summary", "protected_objects"} & context.keys()
@@ -218,7 +237,7 @@ def test_plain_protected_projection(protected_destination, monkeypatch, preview,
     assert [entry["obj"] is obj for entry, obj in zip(context["protected_objects"], blockers, strict=False)] == [
         True
     ] * visible_count
-    assert calls == (tree if link else [])
+    assert calls == (tree * 2 if link else [])
     assert context["related_objects"] == ([{"obj": case.source.object, "url": None, "children": []}] if cascade else [])
 
 

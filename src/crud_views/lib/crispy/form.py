@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from crud_views.lib.crispy.actions import _ThemedFormActions
 from crud_views.lib.crispy.buttons import Button, Submit
-from crud_views.lib.crispy.table import Column4
+from crud_views.lib.crispy.table import Column12
 
 
 class CrispyFormMixin:
@@ -164,7 +164,7 @@ class CrispyDeleteForm(CrispyForm):
         helper = FormHelper()
         helper.form_tag = False
         helper.layout = Layout(
-            Row(Column4("confirm")),
+            Row(Column12("confirm")),
             _ThemedFormActions(
                 *[button for button in (self.get_delete_button(), self.get_cancel_button()) if button is not None],
             ),

@@ -9,11 +9,13 @@ from django.db import connections, router, transaction
 from django.test import Client
 
 from crud_views.lib.views.delete import DeleteView
+from tests.test1 import test_delete as core_cases
 from tests.test1 import test_guardian_delete as guardian_cases
 from tests.test1.app.models import Book, Contract, Publisher
 from tests.test1.app.views import PublisherProtectedDeleteView
 
 guardian_protected_destination = guardian_cases.guardian_protected_destination
+protected_destination = core_cases.protected_destination
 
 pytestmark = pytest.mark.django_db(transaction=True, databases=["default", "shard"])
 ALIASES = ["default", "shard"]
@@ -21,9 +23,10 @@ ALIASES = ["default", "shard"]
 
 @pytest.mark.parametrize("using", ALIASES)
 @pytest.mark.parametrize(
-    "mismatch", ["none", "actor", "parent", "contenttype", "permission", "user-grant", "group-grant"]
+    "mismatch",
+    ["none", "actor", "parent", "contenttype", "permission", "user", "group", "user-grant", "group-grant"],
 )
-@pytest.mark.parametrize("policy", ["strict", "global", "superuser"])
+@pytest.mark.parametrize("policy", ["strict", "global", "superuser", "group", "parent-none"])
 def test_protected_guardian_database_topology(
     database_routes, guardian_protected_destination, monkeypatch, using, mismatch, policy
 ):
@@ -36,13 +39,19 @@ def test_protected_guardian_database_topology(
         with database_routes(alias):
             actor = _actor(alias, is_superuser=policy == "superuser")
             actor.user_permissions.add(Permission.objects.get(codename="view_contract"))
-            _grant(actor, Contract.objects.get(pk=81), "view_contract")
+            grantee = actor
+            if policy == "group":
+                grantee = Group.objects.create(name="reader")
+                actor.groups.add(grantee)
+            _grant(grantee, Contract.objects.get(pk=81), "view_contract")
             _grant(actor, Publisher.objects.get(pk=41), "view_publisher")
     with database_routes(using):
         actor = User.objects.using(other if mismatch == "actor" else using).get(pk=51)
         blocker = Contract.objects.get(pk=81)
         case = guardian_protected_destination(actor, blocker)
         monkeypatch.setattr(case.target, "cv_guardian_accept_global_perms", policy == "global")
+        if policy == "parent-none":
+            monkeypatch.setattr(case.viewset, "cv_guardian_parent_permission", None)
         # Source visibility is independently permitted; it cannot certify target topology.
         from crud_views.lib.deletion import RelatedObjects
 
@@ -54,6 +63,8 @@ def test_protected_guardian_database_topology(
         routes = {
             "contenttype": ContentType,
             "permission": Permission,
+            "user": User,
+            "group": Group,
             "user-grant": UserObjectPermission,
             "group-grant": GroupObjectPermission,
         }
@@ -100,7 +111,7 @@ def test_protected_guardian_original_actor_guards(
             _PermittedPks, "_projection_actor", lambda *a, **kw: pytest.fail("actor conversion before guard")
         )
         monkeypatch.setattr(case.target, "cv_get_parent_object", lambda *a: pytest.fail("parent before actor guard"))
-        assert case.source._cv_get_protected_object_url(blocker) is None
+        assert case.source.get_context_data()["protected_objects"] == [{"obj": blocker, "url": None}]
         assert case.source.request.user is actor
         assert case.calls == []
         request = RequestFactory().get(case.url)
@@ -142,7 +153,10 @@ def test_protected_guardian_guard_order(
             assert case.source._cv_get_protected_object_url(blocker) is None
             assert entered == []
         else:
-            with pytest.raises(ImproperlyConfigured, match="composition wins"):
+            with (
+                database_routes("default", {User: "shard"}),
+                pytest.raises(ImproperlyConfigured, match="composition wins"),
+            ):
                 case.source._cv_get_protected_object_url(blocker)
             assert entered == ["composition"]
         assert case.calls == []
@@ -162,6 +176,124 @@ def test_protected_target_database_identity(
         monkeypatch.setattr(case.target, "get_queryset", lambda self: Contract.objects.using(destination_alias).all())
         assert case.source._cv_get_protected_object_url(blocker) == (case.url if using == destination_alias else None)
         assert len(case.calls) == int(using == destination_alias)
+
+
+@pytest.mark.parametrize("failure", ["routing", "parent"])
+def test_protected_topology_errors_propagate(database_routes, guardian_protected_destination, monkeypatch, failure):
+    from django.db import OperationalError
+
+    from crud_views_guardian.lib.views import _PermittedPks
+
+    _world("default", protected=True)
+    with database_routes("default"):
+        actor = _actor("default", is_superuser=True)
+        blocker = Contract.objects.get(pk=81)
+        case = guardian_protected_destination(actor, blocker)
+        original = case.source.request.META.copy()
+        calls = []
+
+        def fail(*args, **kwargs):
+            calls.append(failure)
+            raise OperationalError("application database failure")
+
+        if failure == "routing":
+            monkeypatch.setattr(_PermittedPks, "_routes_match", fail)
+        else:
+            monkeypatch.setattr(case.target, "cv_get_parent_object", fail)
+        with pytest.raises(OperationalError, match="application database failure"):
+            case.source._cv_get_protected_object_url(blocker)
+        assert calls == [failure]
+        assert case.source.request.user is actor
+        assert original == case.source.request.META
+
+
+def _assert_protected_query_budget(counts, *, guardian):
+    assert counts[0] == 0
+    per_row, overhead = (12, 4) if guardian else (1, 0)
+    for size in (1, 4, 8):
+        assert counts[size] <= per_row * size + overhead
+    assert counts[4] - counts[1] <= per_row * 3
+    assert counts[8] - counts[4] <= per_row * 4
+    assert 3 * (counts[8] - counts[4]) <= 4 * (counts[4] - counts[1])
+
+
+@pytest.mark.parametrize("guardian", [False, True])
+@pytest.mark.parametrize("excess", [False, True])
+def test_protected_adapter_query_budget(request, database_routes, monkeypatch, guardian, excess):
+    from contextlib import ExitStack
+
+    from django.test.utils import CaptureQueriesContext
+
+    with database_routes("default"):
+        if guardian:
+            parent = _world("default", protected=True)
+            actor = _actor("default")
+            blocker = Contract.objects.get(pk=81)
+            case = request.getfixturevalue("guardian_protected_destination")(actor, blocker)
+            _grant(actor, parent, "view_publisher")
+            _grant(actor, blocker, "view_contract")
+        else:
+            case = request.getfixturevalue("protected_destination")
+            parent = case.blocker.publisher
+        rows = [case.blocker]
+        for index in range(7):
+            row = Contract.objects.create(title=f"Budget {index}", publisher=parent)
+            rows.append(row)
+            if guardian:
+                _grant(actor, row, "view_contract")
+        # Warm installed auth/content-type caches identically for every sample.
+        for row in rows:
+            assert case.source._cv_get_protected_object_url(row)
+        native_queryset = case.target.get_queryset
+        size = 0
+
+        def quadratic_queryset(self):
+            for _ in range(20 * size):
+                Contract.objects.filter(pk=rows[0].pk).exists()
+            return native_queryset(self)
+
+        if excess:
+            monkeypatch.setattr(case.target, "get_queryset", quadratic_queryset)
+        counts = {}
+        for size in (0, 1, 4, 8):
+            with ExitStack() as stack:
+                captures = [stack.enter_context(CaptureQueriesContext(connections[alias])) for alias in ALIASES]
+                urls = [case.source._cv_get_protected_object_url(row) for row in rows[:size]]
+            assert len(urls) == size and all(urls)
+            counts[size] = sum(len(capture) for capture in captures)
+        if excess:
+            with pytest.raises(AssertionError):
+                _assert_protected_query_budget(counts, guardian=guardian)
+        else:
+            _assert_protected_query_budget(counts, guardian=guardian)
+        print(f"protected adapter guardian={guardian} excess={excess}: {counts}")
+
+
+@pytest.mark.parametrize("preview,link", [(False, False), (False, True), (True, False)])
+def test_protected_adapter_off_zero_work(protected_destination, monkeypatch, preview, link):
+    from contextlib import ExitStack
+
+    from django.test.utils import CaptureQueriesContext
+
+    case = protected_destination
+    case.source.cv_show_related_objects = preview
+    case.source.cv_link_related_objects = link
+    calls, queries = [], []
+
+    def adapter(obj):
+        calls.append(obj)
+        with ExitStack() as stack:
+            captures = [stack.enter_context(CaptureQueriesContext(connections[alias])) for alias in ALIASES]
+            result = DeleteView._cv_get_protected_object_url(case.source, obj)
+        queries.extend(query for capture in captures for query in capture)
+        return result
+
+    monkeypatch.setattr(case.source, "_cv_get_protected_object_url", adapter)
+    with CaptureQueriesContext(connections["default"]) as source_queries:
+        context = case.source.get_context_data()
+    assert context["has_protected_objects"]
+    assert calls == queries == []
+    assert len(source_queries) > 0  # Inspection is measured separately from adapter work.
 
 
 def _world(using, *, protected=False):

@@ -186,6 +186,80 @@ def test_protected_custom_request_remains_authoritative(protected_destination, m
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("allowed", [False, True])
+def test_protected_override_uses_actual_registered_target(protected_destination, monkeypatch, allowed):
+    from django.urls import clear_url_caches
+
+    from crud_views.lib.viewset import ViewSet
+
+    case = protected_destination
+    alternate = ViewSet(model=type(case.blocker), name="alternate_protected_target")
+
+    class Alternate(case.target):
+        cv_viewset = alternate
+
+        @classmethod
+        def cv_action_enabled(cls, user, obj=None):
+            return allowed
+
+    case.patterns.extend(alternate.urlpatterns)
+    clear_url_caches()
+    url = f"/alternate_protected_target/{case.blocker.pk}/detail/"
+    monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: url)
+    # The first/default registered target must not substitute its own state policy.
+    monkeypatch.setattr(case.target, "cv_action_enabled", classmethod(lambda *args: not allowed))
+    assert case.source._cv_get_protected_object_url(case.blocker) == (url if allowed else None)
+    client = Client()
+    client.force_login(case.source.request.user)
+    assert client.get(url).status_code == (200 if allowed else 403)
+
+
+@pytest.mark.django_db
+def test_protected_source_state_only_normal_request(
+    protected_destination, client_user_publisher_cascade_delete, monkeypatch
+):
+    case = protected_destination
+    source = type(case.source)
+    native = source.cv_action_enabled.__func__
+    source_calls, target_calls = [], []
+
+    def state(cls, user, obj=None):
+        source_calls.append(obj)
+        return native(cls, user, obj)
+
+    monkeypatch.setattr(source, "cv_action_enabled", classmethod(state))
+    monkeypatch.setattr(case.target, "cv_action_enabled", classmethod(lambda *args: target_calls.append(args) or True))
+    counts = []
+    for enabled in (False, True):
+        source_calls.clear()
+        monkeypatch.setattr(source, "cv_link_related_objects", enabled)
+        response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{case.source.object.pk}/delete/")
+        assert response.status_code == 200
+        counts.append(len(source_calls))
+    assert counts[0] >= 1
+    assert counts[0] == counts[1]
+    assert len(target_calls) == 1
+
+
+@pytest.mark.django_db
+def test_protected_uuid_identity(protected_destination, author_douglas_adams, cv_author, monkeypatch):
+    from django.contrib.auth.models import Permission
+    from django.urls import clear_url_caches
+
+    case = protected_destination
+    case.patterns.extend(cv_author.urlpatterns)
+    clear_url_caches()
+    case.source.request.user.user_permissions.add(Permission.objects.get(codename="view_author"))
+    row = author_douglas_adams
+    url = case.source.cv_get_related_object_url(row)
+    assert str(row.pk) in url
+    assert case.source._cv_get_protected_object_url(row) == url
+    client = Client()
+    client.force_login(case.source.request.user)
+    assert client.get(url).status_code == 200
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "candidate",
     [

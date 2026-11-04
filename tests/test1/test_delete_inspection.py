@@ -11,8 +11,62 @@ from django.db import connection, models
 from django.db.models.signals import post_delete
 from django.test.utils import isolate_apps
 
+from tests.test1 import test_delete as core_cases
 from tests.test1.app.models import Book, BookNote, Contract, Publisher
 from tests.test1.app.views import PublisherCascadeDeleteView
+
+protected_destination = core_cases.protected_destination
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("modal", [False, True])
+def test_protected_preview_read_only(protected_destination, client_user_publisher_cascade_delete, monkeypatch, modal):
+    from django.test.utils import CaptureQueriesContext
+
+    case = protected_destination
+    monkeypatch.setattr(type(case.source), "cv_link_related_objects", True)
+    events = []
+    providers = []
+    native_filter = type(case.source).cv_filter_related_objects
+
+    def filter_rows(self, user, related):
+        assert related.protected == [case.blocker]
+        assert isinstance(related.protected[0], Contract)
+        return native_filter(self, user, related)
+
+    def provider(self, boundaries, *, using):
+        providers.append((tuple(boundaries), using))
+        return ()
+
+    def forbidden(*args, **kwargs):
+        events.append("write")
+        pytest.fail("Protected preview attempted deletion")
+
+    monkeypatch.setattr(type(case.source), "cv_filter_related_objects", filter_rows)
+    monkeypatch.setattr(type(case.source), "cv_get_delete_preview", provider)
+    monkeypatch.setattr(Publisher, "delete", forbidden)
+    monkeypatch.setattr(Contract, "delete", forbidden)
+    url = f"/publisher_cascade/{case.source.object.pk}/delete/"
+    headers = {"HTTP_X_CV_MODAL": "true"} if modal else {}
+    for method in ("get", "get", "post"):
+        with CaptureQueriesContext(connection) as queries:
+            response = getattr(client_user_publisher_cascade_delete, method)(url, **headers)
+        assert response.status_code == 200
+        assert response.context["protected_objects"] == [{"obj": case.blocker, "url": case.url}]
+        assert "<form" not in response.content.decode()
+        assert not any(q["sql"].lstrip().upper().startswith(("INSERT", "UPDATE", "DELETE")) for q in queries)
+        assert events == []
+    assert len(providers) == 3
+    assert all(alias == "default" for _, alias in providers)
+    # A preview is a read-time observation. Later requests enforce current policy and rows.
+    from django.contrib.auth.models import Permission
+
+    permission = Permission.objects.get(codename="view_contract")
+    case.source.request.user.user_permissions.remove(permission)
+    assert client_user_publisher_cascade_delete.get(case.url).status_code == 403
+    case.source.request.user.user_permissions.add(permission)
+    Contract.objects.filter(pk=case.blocker.pk).delete()
+    assert client_user_publisher_cascade_delete.get(case.url).status_code == 404
 
 
 @pytest.fixture

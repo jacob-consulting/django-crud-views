@@ -305,6 +305,45 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
             return None
         destination.object = fetched
         try:
+            # Only load the optional extension when an actual Guardian base is
+            # already present. Core detail views need no Guardian dependency.
+            if any(base.__module__ == "crud_views_guardian.lib.mixins" for base in target.__mro__):
+                from crud_views_guardian.lib.mixins import (
+                    GuardianObjectPermissionMixin,
+                    GuardianParentPermissionMixin,
+                    _guardian_inactive_actor,
+                )
+                from crud_views_guardian.lib.views import _PermittedPks
+
+                if issubclass(target, (GuardianObjectPermissionMixin, GuardianParentPermissionMixin)):
+                    parented = issubclass(target, GuardianParentPermissionMixin)
+                    if parented:
+                        error = target._guardian_child_composition_error()
+                        if error:
+                            raise ImproperlyConfigured(error)
+                    # Stored anonymous-user grants must never replace the original
+                    # request's authentication gate, even on a supported topology.
+                    if not request.user.is_authenticated or _guardian_inactive_actor(request.user):
+                        return None
+                    using = fetched._state.db
+                    projection = _PermittedPks(request.user, target.cv_guardian_accept_global_perms)
+                    actor = projection._projection_actor(type(fetched), using=using)
+                    if actor is None:
+                        return None
+                    request.user = actor
+                    if parented and viewset.parent is not None:
+                        parent = destination._cv_cancel_parent_object()
+                        if (
+                            parent is None
+                            or parent._state.adding
+                            or parent.pk is None
+                            or parent._state.db != using
+                            or projection._projection_actor(type(parent), using=using) is None
+                        ):
+                            return None
+                        # This fresh instance is used for one candidate only. Reuse
+                        # the certified parent without repeating application hooks.
+                        destination._cv_cancel_parent_object = lambda: parent
             available = target._cv_cancel_target_available(request.user, fetched, destination)
         except PermissionDenied:
             return None

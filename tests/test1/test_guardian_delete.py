@@ -168,6 +168,73 @@ def test_protected_target_error_boundaries(
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("source_global", [False, True])
+@pytest.mark.parametrize("target_global", [False, True])
+def test_guardian_protected_independent_source_policy(
+    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, source_global, target_global
+):
+    from types import MethodType
+
+    from django.contrib.auth.models import Permission
+    from guardian.shortcuts import assign_perm
+
+    from crud_views.lib.deletion import RelatedObjects
+    from crud_views_guardian.lib.views import GuardianDeleteRelatedObjectsMixin
+    from tests.test1.app.models import Contract
+
+    blocker = Contract.objects.create(title="Source-visible", publisher=publisher_a)
+    actor = user_guardian
+    actor.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    assign_perm("view_publisher", actor, publisher_a)
+    if not source_global:
+        assign_perm("view_contract", actor, blocker)
+    case = guardian_protected_destination(actor, blocker)
+    case.source.cv_guardian_accept_global_perms = source_global
+    case.source.cv_filter_related_objects = MethodType(
+        GuardianDeleteRelatedObjectsMixin.cv_filter_related_objects, case.source
+    )
+    monkeypatch.setattr(case.target, "cv_guardian_accept_global_perms", target_global)
+    assert case.source.cv_filter_related_objects(actor, RelatedObjects([], {}, [blocker])).protected == [blocker]
+    assert case.source._cv_get_protected_object_url(blocker) == (
+        case.url if target_global or not source_global else None
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("parent_mode", ["valid", "missing", "none-policy", "wrong-coordinate"])
+def test_guardian_protected_parent_resolution(
+    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, parent_mode
+):
+    from guardian.shortcuts import assign_perm
+
+    from tests.test1.app.models import Contract, Publisher
+
+    blocker = Contract.objects.create(title="Parent owned", publisher=publisher_a)
+    actor = user_guardian
+    assign_perm("view_contract", actor, blocker)
+    assign_perm("view_publisher", actor, publisher_a)
+    case = guardian_protected_destination(actor, blocker)
+    native_parent = case.target.cv_get_parent_object
+    parents = []
+
+    def parent(self):
+        parents.append(self.kwargs.copy())
+        return None if parent_mode == "missing" else native_parent(self)
+
+    monkeypatch.setattr(case.target, "cv_get_parent_object", parent)
+    if parent_mode == "none-policy":
+        monkeypatch.setattr(case.viewset, "cv_guardian_parent_permission", None)
+    if parent_mode == "wrong-coordinate":
+        other = Publisher.objects.create(name="Wrong parent")
+        candidate = case.url.replace(f"/publisher/{publisher_a.pk}/", f"/publisher/{other.pk}/")
+        monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: candidate)
+    allowed = parent_mode in {"valid", "none-policy"}
+    assert case.source._cv_get_protected_object_url(blocker) == (case.url if allowed else None)
+    assert len(parents) == int(parent_mode != "wrong-coordinate")
+    assert len(case.calls) == int(allowed)
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("superuser", [False, True])
 @pytest.mark.parametrize("details", [False, True])
 def test_partial_provider_no_view_and_through_projection(

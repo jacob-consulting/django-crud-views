@@ -872,9 +872,11 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.9-02-PLAN.md
-- [ ] 06.9-03-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.9-03-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06.9-04-PLAN.md
 
 ### Phase 7: Theme-surface stability policy

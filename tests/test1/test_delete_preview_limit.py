@@ -49,7 +49,9 @@ def test_delete_preview_limit_invalid(monkeypatch, value):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("preview", [False, True])
-@pytest.mark.parametrize("project,override,valid", [(False, "unset", False), (50, False, False), (False, 2, True), (False, None, True)])
+@pytest.mark.parametrize(
+    "project,override,valid", [(False, "unset", False), (50, False, False), (False, 2, True), (False, None, True)]
+)
 def test_delete_preview_limit_invalid_request(
     client_user_publisher_delete, publisher_penguin, monkeypatch, settings, preview, project, override, valid
 ):

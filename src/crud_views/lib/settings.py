@@ -52,6 +52,9 @@ class CrudViewsSettings(BaseModel):
     # None = every template keeps its own level. Typed Any so check_messages sees the raw value
     header_level: Any = from_settings("CRUD_VIEWS_HEADER_LEVEL", default=None)
 
+    # Raw startup value: None is unlimited; validation must reject coercible non-integers.
+    delete_preview_limit: Any = from_settings("CRUD_VIEWS_DELETE_PREVIEW_LIMIT", default=50)
+
     # overflow menu (#174): keys that stay inline buttons; None = no menu. Overridable per ViewSet
     # (*_actions_inline) and per view (cv_*_actions_inline), resolved on the rendering view
     list_actions_inline: Any = from_settings("CRUD_VIEWS_LIST_ACTIONS_INLINE", default=None)
@@ -247,6 +250,16 @@ class CrudViewsSettings(BaseModel):
                         f"setting CRUD_VIEWS_HEADER_LEVEL must be None or an int from 1 to {self.HEADER_LEVEL_MAX}, "
                         f"got {self.header_level!r}"
                     ),
+                )
+            )
+
+        if self.delete_preview_limit is not None and (
+            type(self.delete_preview_limit) is not int or self.delete_preview_limit <= 0
+        ):
+            messages.append(
+                Error(
+                    id="crud_views.E109",
+                    msg="setting CRUD_VIEWS_DELETE_PREVIEW_LIMIT must be None or a positive integer",
                 )
             )
 

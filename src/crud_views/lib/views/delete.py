@@ -26,6 +26,7 @@ from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.views.mixins import CrudViewProcessFormMixin
 
 logger = logging.getLogger(__name__)
+_DELETE_PREVIEW_UNSET = object()
 
 
 class _DeleteMethodGuardMixin:
@@ -62,6 +63,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
     # related objects
     cv_show_related_objects: bool = False
     cv_link_related_objects: bool = False
+    cv_delete_preview_limit = _DELETE_PREVIEW_UNSET
 
     # texts and labels
     cv_header_template: str | None = "crud_views/snippets/header/delete.html"
@@ -79,6 +81,13 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
     @classmethod
     def checks(cls) -> Iterable[Check]:
         yield from super().checks()
+        limit = cls.cv_delete_preview_limit
+        yield CheckExpression(
+            context=cls,
+            id="E265",
+            expression=limit is _DELETE_PREVIEW_UNSET or limit is None or (type(limit) is int and limit > 0),
+            msg="cv_delete_preview_limit must be None or a positive integer when explicitly configured.",
+        )
         yield CheckExpression(
             context=cls,
             id="E263",
@@ -261,7 +270,18 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         protected = [obj for obj in related.protected if _has_view_permission(obj._meta.model)]
         return RelatedObjects(tree=filtered_tree, summary=related.summary, protected=protected)
 
+    def _cv_get_delete_preview_limit(self) -> int | None:
+        limit = self.cv_delete_preview_limit
+        if limit is _DELETE_PREVIEW_UNSET:
+            limit = crud_views_settings.delete_preview_limit
+        if limit is not None and (type(limit) is not int or limit <= 0):
+            raise ImproperlyConfigured(
+                "cv_delete_preview_limit / CRUD_VIEWS_DELETE_PREVIEW_LIMIT must be None or a positive integer"
+            )
+        return limit
+
     def get_context_data(self, **kwargs):
+        self._cv_get_delete_preview_limit()
         context = super().get_context_data(**kwargs)
         errors = self.cv_check_delete_protection()
         if errors:

@@ -623,6 +623,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - The docs render Mermaid diagrams (`pymdownx.superfences` with Mermaid from the jsDelivr CDN). The first one,
   "How a context button is rendered" in `docs/reference/context_buttons.md`, traces where a toolbar button's label
   mode, label and icon come from.
+- Example app restructure for 1.0: the Showcase is removed (its card list is now the Card View example over the
+  Library authors, its modal delete the Delete example, its ActionView docs the Action Menus example, fieldsets
+  dropped) and the NEW badges are gone. New examples: Card View, Delete (cascade preview, protected objects
+  including ones the user cannot see, business-rule protection, modal), Formsets + Conditional, Custom Form View,
+  Label Modes & Icons, Messages, Disabled Actions and a Theme pointer page with a Tabler placeholder. Every example
+  links to its docs page and every referenced docs page links back.
 
 ## 0.30.0
 

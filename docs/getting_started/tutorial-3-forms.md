@@ -80,8 +80,8 @@ class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteVie
     form_class = CrispyDeleteForm
     cv_message_template_code = _("Deleted author “{{ object }}”")
     # Books use CASCADE; publishing Contracts protect their Author from deletion.
-    # Authorized preview links open full detail pages, including from this modal.
-    # Unavailable destinations remain plain text. See docs/reference/delete_view.md.
+    # Permitted Contract labels are plain text; Book links open full detail pages from the modal.
+    # The default preview limit is 50; None is unlimited. See docs/reference/delete_view.md.
     cv_show_related_objects = True
     cv_link_related_objects = True
     cv_modal = True
@@ -95,18 +95,27 @@ that will cascade-delete along with this author — useful here since deleting
 an author can take their books with it, and you want the user to see that
 before confirming. A publishing `Contract` instead protects its Author from
 deletion; Part 6 adds this model and its detail view. `cv_link_related_objects`
-links visible Books and eligible Contracts to their detail pages, while
-`cv_modal` makes the Delete action open in a modal. Following a preview link
-leaves the modal for a full detail page; visiting the delete URL directly
+links displayed cascade Books to their detail pages; permitted Contract labels
+are always plain text. `cv_modal` makes the Delete action open in a modal.
+Following a Book link leaves the modal for a full detail page; visiting the delete URL directly
 still renders the full-page preview.
+
+The default `CRUD_VIEWS_DELETE_PREVIEW_LIMIT` is **50**, shared across protected
+labels first and then cascade entries, including the displayed author itself.
+Set `cv_delete_preview_limit` on a view to override it with a positive integer,
+or explicit `None` for unlimited display. Hidden labels consume no slots. A finite
+limit shows one shortening notice only when it omits visible entries. `None` can
+produce long pages and more cascade-link work. Neither policy bounds complete
+inspection or permission-filtering cost, nor changes deletion protection.
 
 After seeding the final example, sign in as `alice` (password `alice`), filter
 the author list's last name by `Guin`, and open Ursula Le Guin's Delete action.
-The `Earthsea publishing contract` link opens its detail page. Compare with
+The permitted `Earthsea publishing contract` label is plain text. Compare with
 `bob` (password `bob`): he lacks Contract view permission, so he sees a generic
-blocked notice without its name or link. A visible blocker with no eligible
-detail destination, or with linking disabled, remains plain text. Deletion
-stays blocked in every case; other seeded authors still demonstrate Book cascades.
+blocked notice without its name or link. Deletion stays blocked in every case.
+Other seeded authors still demonstrate Book cascades: Book links open a full page,
+including when followed from the delete modal. The Contract detail view remains
+independently available to permitted users; the protected preview never links to it.
 
 ![Author delete view](assets/tutorial-author-delete.png)
 

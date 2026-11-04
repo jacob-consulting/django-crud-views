@@ -28,6 +28,7 @@ urlpatterns = [
 ]
 
 urlpatterns += [path("library/", include("library.urls"))]
+urlpatterns += [path("card-view/", include("card_view.urls"))]
 urlpatterns += [path("nested/", include("nested.urls"))]
 urlpatterns += [path("formsets/", include("formsets.urls"))]
 urlpatterns += [path("workflow/", include("workflow.urls"))]

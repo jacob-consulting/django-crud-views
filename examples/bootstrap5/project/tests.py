@@ -295,7 +295,7 @@ class FeatureGroupsTest(SimpleTestCase):
         self.assertEqual(
             grouped,
             {
-                "basics": ["library", "nested", "resources"],
+                "basics": ["library", "card_view", "nested", "resources"],
                 "forms": ["formsets", "conditional"],
                 "ui": ["showcase", "breadcrumbs", "context_buttons", "action_menus"],
                 "extensions": ["workflow", "polymorphic_demo", "guardian_demo", "object_detail"],

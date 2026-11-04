@@ -100,6 +100,32 @@ FEATURES: list[Feature] = [
         ),
     ),
     Feature(
+        app="card_view",
+        group="basics",
+        title="Card View",
+        description="The Library authors as a card grid: signed ordering in one combo, paging and card actions.",
+        about=(
+            "The same authors as in Library, listed as cards instead of a table. A second ViewSet over the "
+            "Author model uses CardListView, whose toolbar is a single ordering combo: the direction is part of "
+            "each choice, so there are no ascending/descending buttons. Six cards per page, with detail, edit "
+            "and delete actions on every card."
+        ),
+        look_at=(
+            "AuthorCardListView in views.py: cv_order_fields with signed choices, cv_order_default, "
+            "paginate_by and cv_card_actions; cv_author_card is a second ViewSet on library.models.Author."
+        ),
+        url_name="author_card-card",
+        icon="fa-solid fa-table-cells-large",
+        docs=(
+            DocRef(page="reference/card-list-view.md", label="CardListView"),
+            DocRef(
+                page="reference/card-list-view.md",
+                label="CardListView — signed ordering",
+                anchor="signed-choices-single-combo-no-buttons",
+            ),
+        ),
+    ),
+    Feature(
         app="nested",
         group="basics",
         title="Nested",

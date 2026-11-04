@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "project",
     # example feature apps (one per crud_views feature)
     "library",
+    "card_view",
     "nested",
     "formsets",
     "workflow",

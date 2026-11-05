@@ -1,5 +1,6 @@
 """Explicit-parent collection links: request parity, preserved policy and measured SQL."""
 
+import json
 import sys
 import types
 import uuid
@@ -546,3 +547,242 @@ def test_preservation_existing_parent_declaration_error_propagates(links, world,
     monkeypatch.setattr(links.child, "cv_guardian_parent_permission", "undeclared")
     with pytest.raises(AttributeError, match="split"):
         rendered_data(links, renderer, actors[0], parents[0])
+
+
+def sql_categories(queries):
+    """Classify outer SELECTs: permission joins mentioning content types are still permission work."""
+    from collections import Counter
+
+    counts = Counter()
+    for query in queries:
+        sql = query["sql"].lower()
+        if 'from "app_publisher"' in sql:
+            kind = "parent_rows"
+        elif 'from "app_book"' in sql or 'from "app_genre' in sql:
+            kind = "child_or_relation_rows"
+        elif 'from "auth_permission"' in sql:
+            kind = "permissions"
+        elif 'from "django_content_type"' in sql:
+            kind = "content_type"
+        elif 'from "auth_user"' in sql:
+            kind = "actor"
+        elif 'from "django_session"' in sql:
+            kind = "session"
+        else:
+            kind = "other"
+        counts[kind] += 1
+    return dict(counts)
+
+
+def reset_discovery(links):
+    from django.contrib.contenttypes.models import ContentType
+    from guardian.shortcuts import clear_ct_cache
+
+    ContentType.objects.clear_cache()
+    clear_ct_cache()
+    links.parent._default_permissions = None
+    links.child._default_permissions = None
+
+
+def report_measurement(record_property, **values):
+    text = json.dumps(values, sort_keys=True)
+    record_property("measurement", text)
+    print(text)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("renderer", ["context", "card"])
+def test_query_cold_and_warm_discovery(links, world, django_user_model, monkeypatch, record_property, renderer):
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    actors, parents = world
+    actor = django_user_model.objects.get(pk=actors[0].pk)
+    parent = parents[0]
+    configure(links)
+    spy = parent_spy(monkeypatch, links.list)
+    reset_discovery(links)
+    results = {}
+    for temperature in ("cold", "warm"):
+        with CaptureQueriesContext(connection) as capture:
+            data = rendered_data(links, renderer, actor, parent)
+        assert data["cv_access"] is True
+        categories = sql_categories(capture.captured_queries)
+        assert categories.get("parent_rows", 0) == 0, capture.captured_queries
+        assert categories.get("child_or_relation_rows", 0) == 0, capture.captured_queries
+        assert categories.get("permissions", 0) > 0, capture.captured_queries
+        assert categories.get("other", 0) == 0, capture.captured_queries
+        results[temperature] = {"total": len(capture), "categories": categories}
+    assert spy.call_count == 2
+    assert results["cold"]["total"] > results["warm"]["total"]
+    report_measurement(record_property, layer="adapter", renderer=renderer, results=results)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("size", [0, 1, 3])
+@pytest.mark.parametrize("temperature", ["cold", "warm"])
+@pytest.mark.parametrize("materialized", [True, False])
+def test_query_full_card_page_control(
+    links, client, django_user_model, monkeypatch, record_property, size, temperature, materialized
+):
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+    from guardian.shortcuts import get_objects_for_user
+
+    actor = django_user_model.objects.create_user(username="page_measurement")
+    parents = [Publisher.objects.create(name=f"Measured parent {i}") for i in range(size)]
+    for parent in parents:
+        for permission in ("view", "change"):
+            user_guardian_object_perm(actor, links.parent, permission, parent)
+    client.force_login(actor)
+    if materialized:
+        # Isolate rendering supplied objects; the second lane retains the real Guardian host queryset.
+        monkeypatch.setattr(links.card, "get_queryset", lambda self: parents)
+    _, action = configure(links)
+    spy = parent_spy(monkeypatch, links.list)
+    host_url = reverse(links.parent.get_router_name("card"))
+    results = {}
+    for scoped in (False, True):
+        links.card.cv_card_actions = [action] if scoped else []
+        reset_discovery(links)
+        if temperature == "warm":
+            # Warm only discovery, not a checker's object-permission cache or request actor.
+            _ = links.parent.permissions, links.child.permissions
+            get_objects_for_user(actor, links.parent.permissions["view"], Publisher, accept_global_perms=False)
+        spy.reset_mock()
+        with CaptureQueriesContext(connection) as capture:
+            response = client.get(host_url)
+        assert response.status_code == 200
+        assert spy.call_count == (size if scoped else 0)
+        if materialized and scoped:
+            assert all(call.args[1] is parent for call, parent in zip(spy.call_args_list, parents, strict=True))
+        document = html.fromstring(response.content)
+        for parent in parents:
+            assert len(document.xpath("//*[@href=$url]", url=child_url(links, "list", parent))) == int(scoped)
+        categories = sql_categories(capture.captured_queries)
+        assert categories.get("other", 0) == 0, capture.captured_queries
+        results["scoped" if scoped else "control"] = {"total": len(capture), "categories": categories}
+    control, scoped = results["control"], results["scoped"]
+    assert scoped["categories"].get("parent_rows", 0) == control["categories"].get("parent_rows", 0)
+    assert scoped["categories"].get("child_or_relation_rows", 0) == 0
+    assert control["categories"].get("parent_rows", 0) == (0 if materialized else 1)
+    if size == 0:
+        assert scoped == control
+    else:
+        assert scoped["total"] > control["total"]
+    report_measurement(
+        record_property,
+        layer="full_page",
+        size=size,
+        temperature=temperature,
+        materialized=materialized,
+        results=results,
+        incremental=scoped["total"] - control["total"],
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("order", ["distinct", "repeated", "reversed"])
+def test_query_card_occurrences_remain_independent(links, world, monkeypatch, record_property, order):
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    actors, parents = world
+    actor = actors[0]
+    objects = {"distinct": parents, "repeated": [parents[0], parents[0]], "reversed": list(reversed(parents))}[order]
+    configure(links)
+    spy = parent_spy(monkeypatch, links.list)
+    # Both positive and negative decisions use a fresh checker each time.
+    _ = links.parent.permissions
+    view = bound(links.card, actor)
+    monkeypatch.setattr(links.card, "get_queryset", lambda self: objects)
+    with CaptureQueriesContext(connection) as capture:
+        response = links.card.as_view()(view.request)
+        response.render()
+    assert response.status_code == 200
+    assert spy.call_count == len(objects)
+    assert all(call.args[1] is obj for call, obj in zip(spy.call_args_list, objects, strict=True))
+    document = html.fromstring(response.content)
+    assert len(document.xpath("//*[@href=$url]", url=child_url(links, "list", parents[0]))) == sum(
+        obj is parents[0] for obj in objects
+    )
+    assert document.xpath("//*[@href=$url]", url=child_url(links, "list", parents[1])) == []
+    categories = sql_categories(capture.captured_queries)
+    assert categories.get("parent_rows", 0) == 0
+    assert categories.get("child_or_relation_rows", 0) == 0
+    report_measurement(record_property, layer="occurrences", order=order, total=len(capture), categories=categories)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("renderer", ["context", "card"])
+def test_query_denied_actors_and_custom_do_no_permission_work(links, world, monkeypatch, renderer):
+    from django.contrib.auth.models import AnonymousUser
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    actors, parents = world
+    spy = parent_spy(monkeypatch, links.list)
+    actor = actors[0]
+    for reason in ("anonymous", "inactive", "custom"):
+        current = AnonymousUser() if reason == "anonymous" else actor
+        actor.is_active = reason != "inactive"
+        monkeypatch.setattr(links.list, "cv_has_access", Mock(return_value=reason != "custom"))
+        with CaptureQueriesContext(connection) as capture:
+            assert rendered_data(links, renderer, current, parents[0]) is None
+        assert len(capture) == 0, capture.captured_queries
+    spy.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("renderer", ["context", "card"])
+def test_query_create_uses_only_its_existing_parent_check(links, world, monkeypatch, renderer):
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    actors, parents = world
+    actor, parent = actors[0], parents[0]
+    _ = links.parent.permissions
+    spy = parent_spy(monkeypatch, links.create)
+    with CaptureQueriesContext(connection) as baseline:
+        assert links.create.cv_has_access(actor, parent) is True
+    spy.reset_mock()
+    with CaptureQueriesContext(connection) as rendered:
+        assert rendered_data(links, renderer, actor, parent, key="create")["cv_access"] is True
+    spy.assert_called_once_with(actor, parent)
+    assert sql_categories(rendered.captured_queries) == sql_categories(baseline.captured_queries)
+    assert len(rendered) == len(baseline)
+
+
+@pytest.mark.django_db
+def test_query_unaffected_core_and_ordinary_actions(links, world, monkeypatch):
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    actors, parents = world
+    actor, parent = actors[0], parents[0]
+    target = links.list
+
+    # A core target delegates the original custom policy without any parent machinery.
+    class CoreList(ListViewPermissionRequired):
+        pass
+
+    CoreList.cv_viewset = links.child
+    monkeypatch.setitem(links.child._views, "list", CoreList)
+    monkeypatch.setattr(CoreList, "cv_has_access", Mock(return_value=True))
+    parent_check = parent_spy(monkeypatch, target)
+    for renderer in ("context", "card"):
+        with CaptureQueriesContext(connection) as capture:
+            assert rendered_data(links, renderer, actor, parent)["cv_access"] is True
+        assert len(capture) == 0
+    parent_check.assert_not_called()
+
+    # Ordinary Guardian row action cost is unchanged relative to the original access call.
+    user_guardian_object_perm(actor, links.parent, "view", parent)
+    _ = links.parent.permissions
+    view = bound(links.card, actor)
+    with CaptureQueriesContext(connection) as baseline:
+        assert links.detail.cv_has_access(actor, parent) is True
+    with CaptureQueriesContext(connection) as rendered:
+        assert view.cv_get_card_action_data(CardAction(key="detail"), parent, actor)["cv_access"] is True
+    assert len(rendered) == len(baseline)
+    assert sql_categories(rendered.captured_queries) == sql_categories(baseline.captured_queries)

@@ -954,7 +954,7 @@ history querying, or the general theme architecture. Preserve existing override 
 4. Focused workflow/theme tests pass, broad regression runs use bounded multicore pytest, and golden updates reflect only intentional output changes.
 5. Document the badge override recipe and workflow form-frame participation, add a changelog entry, and update `docs/migrating-1.0.md` if a breaking change is necessary. Phase 7 inventories the resulting hooks.
 
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 **Wave 1**
@@ -964,7 +964,7 @@ Plans:
 - [x] 06.12-02-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.12-03-PLAN.md
+- [x] 06.12-03-PLAN.md
 - [ ] 06.12-04-PLAN.md
 
 **Wave 4** *(blocked on Wave 3 completion)*
@@ -1060,5 +1060,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | Complete    | 2026-11-05 |
-| 6.12. Workflow presentation | 2/5 | In Progress | - |
+| 6.12. Workflow presentation | 3/5 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

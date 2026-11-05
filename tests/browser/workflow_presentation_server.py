@@ -94,6 +94,7 @@ def serve(theme, companion, directory):
     from django.http import HttpResponse, JsonResponse
     from django.template import Template
     from django.template.loader import get_template
+    from django.template.response import SimpleTemplateResponse
     from django.test import override_settings
     from django.urls import include, path
 
@@ -149,7 +150,8 @@ def serve(theme, companion, directory):
                     patch.object(Campaign, "get_state_name", lambda self, state: '<b>State & "quoted"</b>')
                 )
             response = CampaignWorkflowView.as_view()(request, pk=objects[scenario].pk)
-            response.render()
+            if isinstance(response, SimpleTemplateResponse):
+                response.render()
             raw = Forms()
             raw.feed(response.content.decode())
             current = str(Campaign.objects.get(pk=objects[scenario].pk).state_badge)

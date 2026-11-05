@@ -15,7 +15,7 @@ const badges = ['custom', 'missing', 'empty', 'none', 'restored'];
 function requiredCases(selection) {
     return ['stock', 'tabler'].flatMap(theme => selection === 'smoke' ? [`${theme}-normal-390`, `${theme}-invalid-390`] :
         [...[390, 1280].flatMap(width => states.map(state => `${theme}-${state}-${width}`)),
-            ...badges.map(badge => `${theme}-badge-${badge}`), `${theme}-modal`]);
+            ...badges.map(badge => `${theme}-badge-${badge}`), `${theme}-modal`, `${theme}-submit`]);
 }
 function validateEvidence(report, selection) {
     for (const id of requiredCases(selection)) assert(report.cases.some(item => item.id === id && item.passed), `Missing case: ${id}`);
@@ -260,6 +260,18 @@ async function runTheme(browser, theme, companion, opts, report, assetCache) {
             const denied = await context.request.post(base + '/workflow/normal/', {form: {transition: 'wf_cancel_new', comment: ''}});
             assert.equal(denied.status(), 403, 'CSRF middleware was bypassed');
             report.cases.push({id: `${theme}-modal`, passed: true, status: response.status(), csrfMissingStatus: denied.status(), observation: obs});
+            const formPage = await context.request.get(base + '/workflow/normal/');
+            const token = (await formPage.text()).match(/name="csrfmiddlewaretoken" value="([^"]+)"/)[1];
+            const submitted = await context.request.post(base + '/workflow/normal/', {
+                form: {csrfmiddlewaretoken: token, transition: 'wf_cancel_new', comment: 'Successful submission regression'},
+                maxRedirects: 0,
+            });
+            assert.equal(submitted.status(), 302, 'Successful workflow submission must preserve the redirect');
+            const destination = await context.request.get(new URL(submitted.headers().location, base).href);
+            assert.equal(destination.status(), 200);
+            const history = await context.request.get(base + '/workflow/normal/');
+            assert((await history.text()).includes('Successful submission regression'));
+            report.cases.push({id: `${theme}-submit`, passed: true, status: submitted.status(), destinationStatus: destination.status()});
         }
         await Promise.all(pending);
         validateAssets(declared.map(item => item.url), observed);

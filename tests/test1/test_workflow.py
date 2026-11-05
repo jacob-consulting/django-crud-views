@@ -5,10 +5,51 @@ Tests for crud_views_workflow: WorkflowModelMixin, WorkflowView, WorkflowForm.
 import pytest
 from django.contrib.messages import get_messages
 from django.test.client import Client
+from django.test import override_settings
+
+from crud_views.lib import button_classes as bc
 
 from crud_views_workflow.lib.enums import BadgeEnum
 from crud_views_workflow.models import WorkflowInfo
 from tests.test1.app.models import Campaign, CampaignState
+
+
+@pytest.fixture
+def badge_registry():
+    saved = bc._THEME_BUTTON_CLASSES.copy()
+    try:
+        yield
+    finally:
+        bc._THEME_BUTTON_CLASSES.clear()
+        bc._THEME_BUTTON_CLASSES.update(saved)
+        bc.reset_button_classes_cache()
+
+
+@pytest.mark.django_db
+def test_workflow_badge_registry_request_tracer(client_user_campaign_change, campaign_new, badge_registry):
+    bc.register_button_classes({"workflow:badge-light": "theme-old", "workflow:badge-info": "theme-current"})
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    response = client_user_campaign_change.post(url, {"transition": "wf_activate", "comment": ""})
+    assert response.status_code == 302
+    campaign_new.refresh_from_db()
+    assert campaign_new.state == CampaignState.ACTIVE
+    assert WorkflowInfo.objects.filter(workflow_object_pk=str(campaign_new.pk)).count() == 1
+    response = client_user_campaign_change.get(url)
+    assert response.status_code == 200
+    assert '<span class="theme-old">New</span>' in response.content.decode()
+    assert '<span class="theme-current">Active</span>' in response.content.decode()
+    assert campaign_new.state_badge == '<span class="theme-current">Active</span>'
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-info": "project-current"}):
+        assert campaign_new.state_badge == '<span class="project-current">Active</span>'
+        campaign_new.STATE_BADGES = {}
+        assert campaign_new.get_state_badge(CampaignState.ERROR) == '<span class="project-current">Error</span>'
+
+
+@pytest.mark.parametrize("colour", list(BadgeEnum))
+def test_workflow_badge_stock_colours(colour):
+    campaign = Campaign(state=CampaignState.NEW)
+    campaign.STATE_BADGES = {CampaignState.NEW: colour}
+    assert campaign.state_badge == f'<span class="badge rounded-pill text-bg-{colour}">New</span>'
 
 # ---------------------------------------------------------------------------
 # WorkflowModelMixin model-layer tests

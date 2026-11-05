@@ -399,6 +399,11 @@ class CrudView(metaclass=CrudViewMetaClass):
         return True
 
     @classmethod
+    def _cv_child_link_has_access(cls, user, parent_obj) -> bool:
+        """Access for a child link whose URL uses the supplied immediate parent."""
+        return cls.cv_has_access(user, parent_obj)
+
+    @classmethod
     def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:
         """Secondary action gate, evaluated only AFTER cv_has_access has passed.
 
@@ -1084,6 +1089,6 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
-        perms = (perm,) if perm else ()
-        has_access = user.has_perms(perms)
-        return has_access
+        if not perm:
+            return False
+        return user.has_perms((perm,))

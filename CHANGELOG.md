@@ -354,6 +354,16 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Core missing permission declarations** ([#318](https://github.com/jacob-consulting/django-crud-views/issues/318)):
+  permission-required actions now deny missing/falsy mapping entries for every actor, including superusers,
+  before checking user permissions. Existing request diagnostics and retry of empty permission discovery remain.
+  See [inaccessible actions](docs/reference/inaccessible_actions.md#missing-core-permission-declarations).
+- **Guardian parent-to-child collection links** ([#318](https://github.com/jacob-consulting/django-crud-views/issues/318)):
+  context buttons and child card actions to shipped Guardian list/card views now check the configured permission
+  on the exact URL parent, preserving custom access, create policy and independent state. Helper-less queryset
+  compositions retain delegated access. Missing parent declarations can now fail hosting-page rendering;
+  [scope and remaining gaps](docs/reference/guardian.md#parent-to-child-collection-links) remain explicit.
+
 - The delete form's confirm checkbox now spans the full row (`col-md-12` instead of `col-md-4`), so its label
   no longer wraps in narrow containers such as modals (#308).
 

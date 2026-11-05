@@ -239,7 +239,7 @@ class ChildContextButton(ContextButton):
             context.view.request.user, context.object, context.view
         )
 
-        if cls.cv_has_access(context.view.request.user, context.object):
+        if cls._cv_child_link_has_access(context.view.request.user, context.object):
             dict_kwargs.update(cv_access=True)
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)

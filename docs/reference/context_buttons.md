@@ -180,9 +180,21 @@ ChildContextButton(
 The button requires `context.object` to build the child URL (the current object becomes the
 parent PK in the child's URL). It returns an empty context when there is no object.
 
-Access is checked via the child view's `cv_has_access(user, obj)`, where `obj` is the current
-(parent) object. For Guardian-based views, this means object-level permissions on the parent
-are checked automatically.
+The child view's `cv_has_access(user, obj)` receives the current parent object, including in custom overrides.
+For shipped Guardian list/card destinations, rendering also checks the existing parent permission rule on
+that exact URL parent. If Publisher A is viewable but its Books collection requires `change` on Publisher A,
+the Books button is hidden or disabled and the destination returns 403. Granting `change` makes the button
+usable and the destination returns 200, including an empty authorized collection.
+
+The target's per-view global fallback applies. Anonymous/inactive actors deny; a `None` parent policy skips
+only parent permission, while custom denial and independent action state remain effective. Child create
+buttons retain their existing create policy. A queryset-only Guardian composition without the parent helper
+retains delegated access after the actor check; it does not acquire parent authorization.
+See [Guardian collection-link scope and configuration failures](guardian.md#parent-to-child-collection-links),
+including missing parent declarations that can now fail the hosting page during rendering and the remaining
+sibling/object/table/filter/navigation/M2M limits. These checks do not replace destination authorization.
+The target's [hide/disable mode](inaccessible_actions.md) controls ordinary denial; disabled buttons have no
+usable URL.
 
 ### Example
 

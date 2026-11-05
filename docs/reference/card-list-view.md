@@ -141,13 +141,23 @@ class PublisherCardListView(CardListViewPermissionRequired):
     ]
 ```
 
-Child actions check the child view's permission (`cv_has_access` and `cv_action_enabled` on the `child_key` view of
-the child ViewSet), like `ChildContextButton`. A user who may not open the child view does not see the button, or sees
-it disabled when the child view resolves to `"disable"` (see [Hide or disable inaccessible actions](inaccessible_actions.md)).
-Before 0.28.0 child actions always rendered and the target view answered with 403. `LinkChildColumn` in tables still
-renders without a permission check. With a `GuardianViewSet` child, the child list view's `cv_has_access` is always
-`True` (access to the parent is checked per request), so such child card actions keep rendering — the same as
-`ChildContextButton`.
+Child actions use the child view's `cv_has_access` and independent `cv_action_enabled`, passing the card's
+object to each. For shipped Guardian list/card destinations, rendering also checks the existing parent
+permission rule on that same object used for the URL, like `ChildContextButton`. For example, a user may see
+Publisher A's card through `view` permission, but its Books action requires `change` when that is the child
+ViewSet's parent policy. Without it the action is hidden or disabled and the destination returns 403; granting
+it restores a usable action and a 200 response, even for an empty authorized Books collection.
+
+The target view's global fallback is respected. Anonymous/inactive actors deny; `None` skips only the parent
+permission check. Custom access denials and independent state still apply, and child create actions retain
+their existing policy. Custom access overrides receive the original card object. Queryset-only Guardian
+compositions without the parent helper retain delegated access after the actor check and gain no parent
+authorization. `LinkChildColumn` in tables still renders without this permission check.
+
+Ordinary denial follows [Hide or disable inaccessible actions](inaccessible_actions.md): disabled actions have
+no usable URL. Read the [Guardian collection-link limits and configuration failures](guardian.md#parent-to-child-collection-links)
+for the remaining direct/sibling/object/filter/navigation/M2M boundaries and missing parent declarations that
+can now fail the host page during rendering. Rendering does not replace destination request authorization.
 
 | Field | Required | Description |
 |---|---|---|

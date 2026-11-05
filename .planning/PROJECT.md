@@ -65,6 +65,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.10** Plain escaped protected labels, one protected-first display budget (default 50, explicit None unlimited), preserved cascade links and complete deletion enforcement — Phase 06.10; all five plans, six DPV requirements and seven human UAT checks complete. Supersedes Phase 06.9 protected-destination linking; total inspection/filtering/query cost remains unbounded.
 
+- ✓ **6.13** Opt-in workflow view permission with explicit per-transition rules, separate optional request gate, real request/history regressions and complete consumer recipe — Phase 06.13; canonical9/9, WFP-01–05 complete. Default change permission and production behavior preserved.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -140,6 +142,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Preserve source-bound companion evidence while excluding only Git-ignored, untracked IDE metadata | Exact source/index/settings checks remain strict; ordinary IDE use must not invalidate delivery | Validated (Phase 06.6) |
 | Follow successful form POST redirects in fixture regression tests | Persistence alone did not reveal an unregistered detail link on the destination list | Validated (Phase 06.6 UAT repair) |
+
+| Keep the workflow change default; document opt-in view access with explicit transition permissions | Existing page, action, choice and execution checks remain independent; optional hook denies direct requests as well as disabling controls | Validated (Phase 06.13) |
 
 ## Evolution
 

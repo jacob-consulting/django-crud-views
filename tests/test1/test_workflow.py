@@ -4,11 +4,10 @@ Tests for crud_views_workflow: WorkflowModelMixin, WorkflowView, WorkflowForm.
 
 import pytest
 from django.contrib.messages import get_messages
-from django.test.client import Client
 from django.test import override_settings
+from django.test.client import Client
 
 from crud_views.lib import button_classes as bc
-
 from crud_views_workflow.lib.enums import BadgeEnum
 from crud_views_workflow.models import WorkflowInfo
 from tests.test1.app.models import Campaign, CampaignState
@@ -50,6 +49,7 @@ def test_workflow_badge_stock_colours(colour):
     campaign = Campaign(state=CampaignState.NEW)
     campaign.STATE_BADGES = {CampaignState.NEW: colour}
     assert campaign.state_badge == f'<span class="badge rounded-pill text-bg-{colour}">New</span>'
+
 
 # ---------------------------------------------------------------------------
 # WorkflowModelMixin model-layer tests

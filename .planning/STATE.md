@@ -28,12 +28,12 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 ## Current Position
 
-Phase: 06.13 (Workflow permissions: opt-in per-transition access) — READY TO EXECUTE
-Plan: 0/2 — planning converged; execution not started
-Status: Ready to execute
+Phase: 06.13 (Workflow permissions: opt-in per-transition access) — EXECUTING
+Plan: 1/2 — request regressions committed; documentation and final checks next
+Status: Executing
 Last activity: 2026-11-05 — Phase 06.13 planning complete
 
-Next: $gsd-execute-phase 06.13
+Next: Execute 06.13-02 documentation and bounded regression checks
 
 ### Phase 06.10 shipping — 2026-11-05
 

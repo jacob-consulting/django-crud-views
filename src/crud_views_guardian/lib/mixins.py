@@ -143,6 +143,20 @@ class GuardianQuerysetMixin:
     def cv_has_access(cls, user, obj=None):
         return not _guardian_inactive_actor(user)
 
+    @classmethod
+    def _cv_child_link_has_access(cls, user, parent_obj):
+        if not cls.cv_viewset.has_parent:
+            return super()._cv_child_link_has_access(user, parent_obj)
+        if not user.is_authenticated or _guardian_inactive_actor(user):
+            return False
+        access = super()._cv_child_link_has_access(user, parent_obj)
+        if not access:
+            return access
+        # Standalone queryset compositions have no parent request gate to mirror.
+        if not hasattr(cls, "_guardian_user_has_parent_perm"):
+            return access
+        return cls._guardian_user_has_parent_perm(user, parent_obj)
+
     def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
         """
         Override to fix create button visibility for child viewsets under guardian.

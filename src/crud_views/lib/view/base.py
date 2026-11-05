@@ -399,6 +399,11 @@ class CrudView(metaclass=CrudViewMetaClass):
         return True
 
     @classmethod
+    def _cv_child_link_has_access(cls, user, parent_obj) -> bool:
+        """Access for a child link whose URL uses the supplied immediate parent."""
+        return cls.cv_has_access(user, parent_obj)
+
+    @classmethod
     def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:
         """Secondary action gate, evaluated only AFTER cv_has_access has passed.
 

@@ -4,11 +4,10 @@ import sys
 import types
 import uuid
 from types import SimpleNamespace
-from unittest.mock import Mock
 
 import pytest
 from django.test import RequestFactory, override_settings
-from django.urls import clear_url_caches, include, path, resolve, reverse
+from django.urls import clear_url_caches, include, path, reverse
 from lxml import html
 
 from crud_views.lib import check as check_module
@@ -117,8 +116,10 @@ def child_url(links, key, obj):
 
 
 @pytest.mark.django_db
-def test_parity_child_collection(links, client, django_user_model, monkeypatch):
-    renderer, target_key, mode = "context", "list", "disable"
+@pytest.mark.parametrize("renderer", ["context", "card"])
+@pytest.mark.parametrize("target_key", ["list", "card"])
+@pytest.mark.parametrize("mode", ["hide", "disable"])
+def test_parity_child_collection(links, client, django_user_model, monkeypatch, renderer, target_key, mode):
     parent = Publisher.objects.create(name="Viewable parent")
     actor = django_user_model.objects.create_user(username="parent_viewer")
     user_guardian_object_perm(actor, links.parent, "view", parent)
@@ -126,23 +127,34 @@ def test_parity_child_collection(links, client, django_user_model, monkeypatch):
     configure(links, target_key)
     target = links.child.get_view_class(target_key)
     monkeypatch.setattr(target, "cv_inaccessible_actions", mode)
-    host_url = reverse(links.parent.get_router_name("detail"), kwargs={"pk": parent.pk})
+    host_url = (
+        reverse(links.parent.get_router_name("detail"), kwargs={"pk": parent.pk})
+        if renderer == "context"
+        else reverse(links.parent.get_router_name("card"))
+    )
     destination = child_url(links, target_key, parent)
 
     assert client.get(destination).status_code == 403
     response = client.get(host_url)
     assert response.status_code == 200
     data = rendered_data(links, renderer, actor, parent, key=target_key)
-    assert data["cv_disabled"] is True
-    assert data["cv_disabled_reason"] == "permission"
-    assert data["cv_url"] is None
     document = html.fromstring(response.content)
     assert document.xpath("//*[@href=$url]", url=destination) == []
-    (node,) = document.cssselect('[cv-context-container] [cv-key="list"]')
-    assert node.tag == "button"
-    assert node.get("data-cv-disabled") == "permission"
-    for attribute in ("href", "data-cv-modal", "onclick", "formaction"):
-        assert node.get(attribute) is None
+    key = target_key if renderer == "context" else links.child.name
+    nodes = document.cssselect(f'[cv-key="{key}"]')
+    if mode == "hide":
+        assert data is None
+        assert nodes == []
+    else:
+        assert data["cv_disabled"] is True
+        assert data["cv_disabled_reason"] == "permission"
+        assert data["cv_url"] is None
+        (node,) = nodes
+        assert node.tag == "button"
+        assert node.get("data-cv-disabled") == "permission"
+        assert node.get("disabled") is not None
+        for attribute in ("href", "data-cv-modal", "onclick", "formaction"):
+            assert node.get(attribute) is None
 
     user_guardian_object_perm(actor, links.parent, "change", parent)
     response = client.get(host_url)

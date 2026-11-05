@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="34" skipped="0" tests="35" time="2.249" timestamp="2026-11-05T16:47:13.671251+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[default-default-settings]" time="0.029"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[default-custom-wrapper&quot; onclick=&quot;bad()-settings]" time="0.028"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[default--theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[default-custom-wrapper&quot; onclick=&quot;bad()-theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[default--settings]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[default-None-settings]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[default-None-theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[custom-table&quot; onclick=&quot;bad()-default-theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[custom-table&quot; onclick=&quot;bad()-default-settings]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[custom-table&quot; onclick=&quot;bad()-custom-wrapper&quot; onclick=&quot;bad()-theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[custom-table&quot; onclick=&quot;bad()-custom-wrapper&quot; onclick=&quot;bad()-settings]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[custom-table&quot; onclick=&quot;bad()--theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[custom-table&quot; onclick=&quot;bad()--settings]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[custom-table&quot; onclick=&quot;bad()-None-theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[custom-table&quot; onclick=&quot;bad()-None-settings]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[-default-theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[-default-settings]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[-custom-wrapper&quot; onclick=&quot;bad()-theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[-custom-wrapper&quot; onclick=&quot;bad()-settings]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[--settings]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[--theme]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[-None-theme]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[-None-settings]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[None-default-theme]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[None-default-settings]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[None-custom-wrapper&quot; onclick=&quot;bad()-theme]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[None-custom-wrapper&quot; onclick=&quot;bad()-settings]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[None--theme]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[None--settings]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[None-None-theme]" time="0.001"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[None-None-settings]" time="0.002"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation[2]" time="0.659"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:174: in test_workflow_history_presentation
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation[0]" time="0.677" /><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation_classes[default-default-theme]" time="0.004"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:221: in test_workflow_history_presentation_classes
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase><testcase classname="tests.test1.test_workflow" name="test_workflow_history_presentation[1]" time="0.321"><failure message="AssertionError: assert 'table' == 'div'&#10;  &#10;  - div&#10;  + table">tests/test1/test_workflow.py:174: in test_workflow_history_presentation
+    assert wrapper.tag == "div"
+E   AssertionError: assert 'table' == 'div'
+E     
+E     - div
+E     + table</failure></testcase></testsuite></testsuites>

@@ -142,6 +142,93 @@ def test_workflow_badge_escaping(
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("entries", [0, 1, 2])
+def test_workflow_history_presentation(client_user_campaign_change, campaign_new, entries, monkeypatch):
+    from lxml import html
+
+    from tests.test1.test_form_frame import THEME_FRAME, _theme_templates
+    from tests.test1.test_theme_form_ownership import _RawForms
+
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    hostile = '<script>alert("history")</script>& {{ 7|add:7 }}'
+    for transition in ("wf_activate", "wf_done")[:entries]:
+        response = client_user_campaign_change.post(url, {"transition": transition, "comment": hostile})
+        assert response.status_code == 302
+    monkeypatch.setattr(Campaign, "get_state_name", lambda self, state: hostile + state)
+    with _theme_templates({"crud_views/snippets/form_frame.html": THEME_FRAME}):
+        response = client_user_campaign_change.get(url)
+    assert response.status_code == 200
+    scanner = _RawForms()
+    scanner.feed(response.content.decode())
+    assert not scanner.stack
+    document = html.fromstring(response.content)
+    (frame,) = document.cssselect(".theme-card")
+    headings = document.xpath("//h5[normalize-space()='Workflow History']")
+    if not entries:
+        assert not headings
+        assert not document.cssselect(".table-responsive, table")
+        assert frame.cssselect("form.cv-form")
+        return
+    (heading,) = headings
+    wrapper = heading.getnext()
+    assert wrapper.tag == "div"
+    assert wrapper.get("class") == "table-responsive"
+    (table,) = list(wrapper)
+    assert table.tag == "table" and table.get("class") == "table"
+    assert wrapper.getnext() is frame
+    assert heading.getparent() is wrapper.getparent() is frame.getparent()
+    assert len(table.cssselect("thead th[scope=col]")) == 6
+    assert len(table.cssselect("tbody tr")) == entries
+    assert not table.cssselect("script, svg")
+    for row in table.cssselect("tbody tr"):
+        assert len(row) == 6
+        assert row[2].cssselect("span")[0].text.startswith(hostile)
+        assert row[3].cssselect("span")[0].text.startswith(hostile)
+    # The optional comment on Done is persisted; Activate deliberately ignores comments.
+    if entries == 2:
+        assert table.cssselect("tbody tr")[-1][4].text_content().strip() == hostile
+        assert not frame.cssselect("form, input, button, h5")
+    else:
+        assert frame.cssselect("form.cv-form")
+
+
+@pytest.mark.parametrize("source", ["theme", "settings"])
+@pytest.mark.parametrize("wrapper_class", ["default", 'custom-wrapper" onclick="bad()', "", None])
+@pytest.mark.parametrize("table_class", ["default", 'custom-table" onclick="bad()', "", None])
+def test_workflow_history_presentation_classes(badge_registry, source, wrapper_class, table_class):
+    from django.template.loader import render_to_string
+    from lxml import html
+
+    classes = {
+        key: value
+        for key, value in (("workflow:history-wrapper", wrapper_class), ("workflow:history-table", table_class))
+        if value != "default"
+    }
+    if source == "theme":
+        bc.register_button_classes(classes)
+        project = {}
+    else:
+        bc.register_button_classes(dict.fromkeys(classes, "losing-theme-class"))
+        project = classes
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+        markup = render_to_string(
+            "crud_views_workflow/view_workflow.history.html",
+            {"object": {"workflow_data": [{"comment": "Preserved history"}]}},
+        )
+    root = html.fragment_fromstring(markup, create_parent="div")
+    heading, wrapper = list(root)
+    assert heading.text_content() == "Workflow History"
+    assert wrapper.tag == "div"
+    (table,) = list(wrapper)
+    assert table.tag == "table"
+    assert set(wrapper.attrib) == set(table.attrib) == {"class"}
+    assert wrapper.get("class", "") == ("table-responsive" if wrapper_class == "default" else wrapper_class or "")
+    assert table.get("class", "") == ("table" if table_class == "default" else table_class or "")
+    assert len(table.cssselect("thead th[scope=col]")) == 6
+    assert table.cssselect("tbody tr td")[4].text_content().strip() == "Preserved history"
+
+
+@pytest.mark.django_db
 def test_state_name_new(campaign_new):
     assert campaign_new.state_name == "New"
 

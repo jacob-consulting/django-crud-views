@@ -264,8 +264,8 @@ object grants never stand in for it.
 
 ## Parent Viewsets
 
-When a child viewset has `parent=ParentViewSet(...)`, guardian checks permission
-on the parent instance before dispatching any child view.
+The shipped Guardian child views check permission on the URL parent before dispatching.
+Custom compositions need the parent authorization mixin described below.
 
 Configure what permission is required on the parent:
 
@@ -299,6 +299,52 @@ The parent check follows the child view's `cv_guardian_accept_global_perms`: in
 strict mode (the default) only a per-object grant on the parent counts; with the
 flag set, a model-level permission on the parent model (e.g. `app.view_author`) is
 accepted as a fallback.
+
+### Parent-to-child collection links
+
+`ChildContextButton` and child `CardAction` links to Guardian list/card collections check the configured
+parent permission on the exact parent object used to build their destination URL. For example, a user with
+`view` on Publisher A can open its detail/card page, but if the Books child ViewSet requires
+`cv_guardian_parent_permission="change"`, its Books action is hidden or disabled and that collection request
+returns 403. Grant `change` on Publisher A: the action becomes usable and the collection returns 200, even
+with no visible Books. A grant on Publisher B does not authorize Publisher A's link.
+
+This applies to the shipped `GuardianListViewPermissionRequired` and `GuardianCardListViewPermissionRequired`
+and compatible queryset compositions supplying the existing parent permission helper. A legal
+`GuardianQuerysetMixin` composition without that helper retains its delegated access result after the actor
+check; rendering does not add parent authorization to it. Prefer the shipped classes when that gate is required.
+
+The rule uses the target view's `cv_guardian_accept_global_perms`: object/group grants count in strict mode,
+and model-level parent permissions count only with that fallback enabled. Active superusers retain the existing
+parent permission behavior. Anonymous and inactive actors are denied for these nested collection links.
+`cv_guardian_parent_permission=None` skips only the parent permission check; actor handling, custom access
+denials and the independent `cv_action_enabled` state check still apply. Custom `cv_has_access(user, obj)`
+overrides receive the same supplied parent object. Child create links keep their existing parent/create
+permission and state policy, without an additional collection check.
+
+Denied actions use the target's [hide/disable mode](inaccessible_actions.md); disabled actions have the
+permission reason and no usable URL. State denial remains separate. The parent is reused without another
+parent-row fetch, but Guardian permission queries can still run for each eligible link, including repeated
+cards. No permission cache or ancestry lookup is added. Destination request authorization remains authoritative.
+
+#### Limits and configuration failures
+
+The collection-link check does not extend to general `cv_has_access(user, child)` calls, child-page sibling
+links, object detail/update/delete/action destinations, independent table columns, permission filters,
+navigation, DataPanel/DataView or other off-page callers. In particular, `LinkChildColumn` does not gain this
+check. Supplying an explicit parent works for M2M rendering without inferring ancestry or proving child
+membership; matching model types likewise does not establish a parent relationship.
+
+A missing Guardian parent permission declaration can now raise while the **hosting page renders its child
+action**, because this collection rendering path now invokes the existing parent helper. Previously that
+path did not invoke it. This configuration failure is preserved, not caught or converted to hidden/disabled
+output; the core missing-declaration guard does not harden Guardian overrides.
+
+[Issue #318](https://github.com/jacob-consulting/django-crud-views/issues/318) supersedes
+[#312](https://github.com/jacob-consulting/django-crud-views/issues/312) for the core declaration guard and this
+bounded collection-link correction, without resolving all earlier visibility gaps. The independently opt-in
+URL helper in [#314](https://github.com/jacob-consulting/django-crud-views/issues/314) remains separate. No public
+parent-access or general URL-resolution API is introduced by this correction.
 
 ### Custom child-view compositions
 

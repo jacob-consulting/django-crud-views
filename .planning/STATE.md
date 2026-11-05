@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.10"
-current_phase_name: Simplify protected-object previews and cap total displayed objects
-status: verifying
-stopped_at: Phase 06.10 verified human_needed; seven UAT items pending
-last_updated: "2026-11-04T21:34:52.656Z"
-last_activity: 2026-11-04
-last_activity_desc: Phase 06.10 independent verification complete; human UAT pending
-state_head: 609ee3a2d2cac37f297c3ab079a42b229515ee26
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.10 complete, ready to plan Phase 7
+last_updated: "2026-11-05T09:25:34.028Z"
+last_activity: 2026-11-05
+last_activity_desc: Phase 06.10 complete, transitioned to Phase 7
+state_head: db75a4d880762ad3c1a2fff5d9321d7e66612efc
 progress:
   total_phases: 17
-  completed_phases: 15
+  completed_phases: 16
   total_plans: 118
   completed_plans: 118
+  percent: 94
 milestone_name: milestone
 ---
 
@@ -21,19 +22,26 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-04)
+See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.10 — Simplify protected-object previews and cap total displayed objects
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.10 (Simplify protected-object previews and cap total displayed objects) — AWAITING HUMAN ACCEPTANCE
-Plan: 5 of 5
-Status: All plans and independent automated reviews complete; seven human UAT items pending
-Last activity: 2026-11-04 — Phase 06.10 canonical verification human_needed (18/20), no implementation blocker
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-05 — Phase 06.10 complete, transitioned to Phase 7
 
-Next: $gsd-verify-work 06.10
+Next: $gsd-discuss-phase 7
+
+### Phase 06.10 acceptance closeout — 2026-11-05
+
+- All seven human UAT checks explicitly passed; canonical verification and shared UAT/completion predicates pass. All five plans and six DPV requirements complete; WINDOWS 34 resolved. Earlier pending acceptance statements below are historical.
+- Temporary Cloudflare UAT routes, copied templates, two owned authors, 54 Contracts, two Books and dedicated test user removed. Existing example service on port 9000 still returns HTTP 200.
+- Plain protected labels replace synthetic destination requests; cascade navigation remains intact. The visible-occurrence budget bounds display and selected preparation only, not complete inspection/filtering/query cost.
+- Phase 7 is ready for discussion. No LEARNINGS files exist for graduation; unrelated user edits remain separate. No push or merge performed.
 
 ### Phase 06.10 independent verification — 2026-11-04
 
@@ -465,7 +473,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 113
+- Total plans completed: 118
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -488,6 +496,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.7 | 5 | - | - |
 | 06.9 | 4 | - | - |
 | 06.8 | 3 | - | - |
+| 06.10 | 5 | - | - |
 
 **Recent Trend:**
 
@@ -818,6 +827,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T21:34:50.538Z
-Stopped at: Completed 06.10-05-PLAN.md; independent phase reviews and human acceptance pending
+Last session: 2026-11-05
+Stopped at: Phase 06.10 complete, ready to discuss Phase 7
 Resume file: None

@@ -34,7 +34,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.7: Dynamic cancel navigation and origin query state (INSERTED)** - #302: dynamic defaults and reliable origin query restoration before the freeze (completed 2026-11-03)
 - [x] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze (completed 2026-11-04)
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
-- [ ] **Phase 6.10: Simplify protected-object previews and cap total displayed objects (INSERTED)** - #316: plain-text protected blockers and one shared preview display budget before the freeze
+- [x] **Phase 6.10: Simplify protected-object previews and cap total displayed objects (INSERTED)** - #316: plain-text protected blockers and one shared preview display budget before the freeze (completed 2026-11-05)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -919,7 +919,7 @@ entries with `url=None`, existing summary policy, and one shared truncation noti
 5. Stock/copied templates, full pages and modals follow the decided contract. Before/after measurements separate inspection, visibility and presentation and demonstrate removal of adapter cost without claiming bounded total inspection cost.
 6. Delete reference, examples and copied-template guidance are updated. Any documented breaking contract change has paired CHANGELOG.md and docs/migrating-1.0.md guidance; Phase 7 inventories the final public configuration and template surface.
 
-**Plans:** 5/5 plans executed — final automated gates passed; independent verification and human acceptance pending. Phase remains In Progress.
+**Plans:** 5/5 plans complete — automated gates and independent verification passed; all seven human UAT checks accepted on 2026-11-05. Phase complete.
 
 Plans:
 - [x] 06.10-01-PLAN.md — Plain protected-blocker tracer, adapter removal and component measurements (wave 1)
@@ -1015,5 +1015,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.7. Dynamic cancel navigation and origin query state | 5/5 | Complete    | 2026-11-03 |
 | 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
-| 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | In Progress | - |
+| 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | Complete    | 2026-11-05 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

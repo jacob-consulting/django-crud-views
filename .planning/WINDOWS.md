@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 7
+open_count: 6
 waived_count: 2
-fixed_count: 25
+fixed_count: 26
 total_count: 34
-last_updated: 2026-11-04T21:30:19.709Z
+last_updated: 2026-11-05T09:25:26.031Z
 ---
 
 # Broken Windows Ledger
@@ -48,7 +48,7 @@ last_updated: 2026-11-04T21:30:19.709Z
 | 31 | 06.7 | deviation | tests/test1/test_cancel_state.py |  | Plan05 Django4.2 replay required explicit filter helpers and removal of filtering metadata from plain-list fixtures; 83 focused tests pass on4.2 and5.2 with product unchanged. | fixed |  | 2026-11-03T18:17:50.004Z | 2026-11-03T18:17:50.177Z |
 | 32 | 06.9 | deviation | src/crud_views/lib/views/delete.py |  | Resolved in 5169325: preserve custom QuerySet.get Http404 and bind mounted SCRIPT_NAME; final 819-test suite passes. | fixed |  | 2026-11-04T10:12:29.437Z | 2026-11-04T10:12:55.657Z |
 | 33 | 06.10 | skipped-test | tests/test1/test_assets.py | 332 | Existing Django 6-only CSP roundtrip skips on Django 5.2; this runtime-specific skip is outside the delete-preview change. | fixed |  | 2026-11-04T21:29:51.737Z | 2026-11-04T21:30:19.548Z |
-| 34 | 06.10 | unrun-verify | .planning/phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-ACCEPTANCE.md |  | Human stock/copied page/modal presentation, keyboard acceptance and UI kind confirmation remain pending at the normal end-of-phase check. | open |  | 2026-11-04T21:30:19.709Z |  |
+| 34 | 06.10 | unrun-verify | .planning/phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-ACCEPTANCE.md |  | Human stock/copied page/modal presentation, keyboard acceptance and UI kind confirmation remain pending at the normal end-of-phase check. | fixed |  | 2026-11-04T21:30:19.709Z | 2026-11-05T09:25:26.031Z |
 
 ````json
 [
@@ -479,10 +479,10 @@ last_updated: 2026-11-04T21:30:19.709Z
     "file": ".planning/phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-ACCEPTANCE.md",
     "line": null,
     "description": "Human stock/copied page/modal presentation, keyboard acceptance and UI kind confirmation remain pending at the normal end-of-phase check.",
-    "status": "open",
+    "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-04T21:30:19.709Z",
-    "resolved_at": null,
+    "resolved_at": "2026-11-05T09:25:26.031Z",
     "milestone": "v1.0"
   }
 ]

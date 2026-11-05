@@ -1,0 +1,24 @@
+{
+  "label": "6.0-floor",
+  "command": [
+    ".nox/crispy_floor-3-12-django-6-0/bin/python",
+    "-m",
+    "pytest",
+    "tests/test1/test_workflow.py",
+    "tests/test1/test_button_classes.py",
+    "tests/test1/test_button_classes_checks.py",
+    "tests/test1/test_form_frame.py",
+    "tests/test1/test_theme_form_requests.py",
+    "tests/test1/test_heading_icons.py",
+    "tests/test1/test_theme_adoption_docs.py",
+    "-n",
+    "4",
+    "-q",
+    "--tb=short"
+  ],
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "pythonpath": "src:.",
+  "exitCode": 0,
+  "durationSeconds": 20.89421844482422,
+  "output": "05-03-6.0-floor.log"
+}

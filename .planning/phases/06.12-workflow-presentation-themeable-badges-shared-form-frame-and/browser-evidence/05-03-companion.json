@@ -1,0 +1,20 @@
+{
+  "label": "companion",
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/crud_views_tabler",
+    "--ds",
+    "tests.crud_views_tabler.settings",
+    "-n",
+    "4",
+    "-q",
+    "--tb=short"
+  ],
+  "cwd": "/home/alex/projects/alex/tabler-test",
+  "pythonpath": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/tabler-test/src:.",
+  "exitCode": 0,
+  "durationSeconds": 4.048216819763184,
+  "output": "05-03-companion.log"
+}

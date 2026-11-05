@@ -1,0 +1,46 @@
+[
+  {
+    "name": "upstream5.2",
+    "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+    "python": "3.12.3",
+    "versions": {
+      "Django": "5.2.18",
+      "django-crispy-forms": "2.7",
+      "crispy-bootstrap5": "2026.9"
+    },
+    "upstream": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py"
+  },
+  {
+    "name": "upstream4.2",
+    "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/bin/python",
+    "python": "3.12.3",
+    "versions": {
+      "Django": "4.2.30",
+      "django-crispy-forms": "2.5",
+      "crispy-bootstrap5": "2026.3"
+    },
+    "upstream": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py"
+  },
+  {
+    "name": "upstream6.0-floor",
+    "executable": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+    "python": "3.12.3",
+    "versions": {
+      "Django": "6.0.9",
+      "django-crispy-forms": "2.0",
+      "crispy-bootstrap5": "2023.10"
+    },
+    "upstream": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py"
+  },
+  {
+    "name": "companion",
+    "executable": "/home/alex/projects/alex/tabler-test/.venv/bin/python",
+    "python": "3.14.7",
+    "versions": {
+      "Django": "6.1.2",
+      "django-crispy-forms": "2.7",
+      "crispy-bootstrap5": "2026.9"
+    },
+    "upstream": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-11-05T17:27:03.929Z",
+  "sourceFiles": 36,
+  "screenshots": 4,
+  "findingsSha256": "fbd69f4f3a74315ab787d5cf9c5fbb3b1d9816be80f9bb261233a1b7e867e3c6",
+  "copiedLeafAbsent": true,
+  "obsoleteSelectorAbsent": true,
+  "upstreamHead": "0443561d708a4f77f9e340afa6cf475ce5051202",
+  "companionHead": "b35bd3b6fa1ff47b7430029f74fae9a16574f9e3",
+  "passed": true
+}

@@ -1,0 +1,59 @@
+[
+  {
+    "label": "ruff-check",
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "src",
+      "tests"
+    ],
+    "cwd": "/home/alex/projects/alex/django-crud-views",
+    "pythonpath": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views",
+    "exitCode": 0,
+    "durationSeconds": 0.03815937042236328,
+    "output": "05-03-ruff-check.log"
+  },
+  {
+    "label": "ruff-format",
+    "command": [
+      ".venv/bin/ruff",
+      "format",
+      "--check",
+      "src",
+      "tests"
+    ],
+    "cwd": "/home/alex/projects/alex/django-crud-views",
+    "pythonpath": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views",
+    "exitCode": 0,
+    "durationSeconds": 0.024234771728515625,
+    "output": "05-03-ruff-format.log"
+  },
+  {
+    "label": "docs",
+    "command": [
+      ".venv/bin/mkdocs",
+      "build",
+      "--strict",
+      "--site-dir",
+      "/tmp/cv-0612-docs"
+    ],
+    "cwd": "/home/alex/projects/alex/django-crud-views",
+    "pythonpath": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views",
+    "exitCode": 0,
+    "durationSeconds": 1.3437144756317139,
+    "output": "05-03-docs.log"
+  },
+  {
+    "label": "node",
+    "command": [
+      "node",
+      "--test",
+      "tests/browser/workflow-presentation.test.cjs"
+    ],
+    "cwd": "/home/alex/projects/alex/django-crud-views",
+    "pythonpath": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views",
+    "exitCode": 0,
+    "durationSeconds": 1.7797150611877441,
+    "output": "05-03-node.log"
+  }
+]

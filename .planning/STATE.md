@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.12"
 current_phase_name: Workflow presentation
-status: Ready to execute
+status: executing
 stopped_at: Phase 06.12 plan convergence complete
-last_updated: "2026-11-05T16:08:49.941Z"
+last_updated: "2026-11-05T16:26:12.351Z"
 last_activity: 2026-11-05
-last_activity_desc: Phase 06.12 planning complete
-state_head: c93bb08a40ba03bfb430d8c70ba4a909beabe7a9
+last_activity_desc: Phase 06.12 execution started
+state_head: c9ec128a9902efbce8417c495817d07d8e4777ca
 progress:
   total_phases: 18
   completed_phases: 16
   total_plans: 123
-  completed_plans: 118
+  completed_plans: 119
 milestone_name: milestone
 ---
 
@@ -24,14 +24,14 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.12 — Workflow presentation (#319)
+**Current focus:** Phase 06.12 — Workflow presentation
 
 ## Current Position
 
-Phase: 06.12 (Workflow presentation) — READY TO EXECUTE
-Plan: 0 of 5 executed; planning converged in 3 review cycles
+Phase: 06.12 (Workflow presentation) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-11-05 — Phase 06.12 planning complete
+Last activity: 2026-11-05 — Phase 06.12 execution started
 
 Next: $gsd-execute-phase 06.12
 

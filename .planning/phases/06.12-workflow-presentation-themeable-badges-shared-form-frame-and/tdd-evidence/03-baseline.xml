@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.036" timestamp="2026-11-05T10:54:27.877654-06:00" hostname="weaver-dev"><testcase classname="phase0612_test_theme_baseline.ThemeRenderingTests" name="test_related_objects_alerts_get_the_tabler_layout" time="0.365"><failure message="AssertionError: 2 != 3">/tmp/phase0612_test_theme_baseline.py:299: in test_related_objects_alerts_get_the_tabler_layout
+    self.assertEqual(html.count('&lt;div class="alert-icon"&gt;'), 3)
+E   AssertionError: 2 != 3</failure></testcase></testsuite></testsuites>

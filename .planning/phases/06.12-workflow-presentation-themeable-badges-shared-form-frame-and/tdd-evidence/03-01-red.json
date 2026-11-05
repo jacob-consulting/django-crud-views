@@ -1,0 +1,13 @@
+{
+  "command": "env CV_WORKFLOW_UPSTREAM_SRC=\"$PWD/src\" bash -c 'cd ../tabler-test && PYTHONPATH=\"$CV_WORKFLOW_UPSTREAM_SRC:$PWD/src:.\" .venv/bin/python -m pytest tests/crud_views_tabler/test_theme.py::WorkflowBadgeTests::test_badge_uses_current_upstream_source --ds tests.crud_views_tabler.settings -q --tb=short --junitxml=../django-crud-views/.planning/phases/06.12-workflow-presentation-themeable-badges-shared-form-frame-and/tdd-evidence/03-01-target-red.xml'",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.126\" timestamp=\"2026-11-05T10:53:21.395185-06:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.crud_views_tabler.test_theme.WorkflowBadgeTests\" name=\"test_badge_uses_current_upstream_source\" time=\"0.015\"><failure message=\"AssertionError: Posix[26 chars]alex/tabler-test/src/crud_views_tabler/templat[30 chars]tml') != Posix[26 chars]alex/django-crud-views/src/crud_views_workflow[38 chars]tml')\">tests/crud_views_tabler/test_theme.py:831: in test_badge_uses_current_upstream_source\n    self.assertEqual(Path(get_template(\"crud_views_workflow/badge.html\").origin.name).resolve(),\nE   AssertionError: Posix[26 chars]alex/tabler-test/src/crud_views_tabler/templat[30 chars]tml') != Posix[26 chars]alex/django-crud-views/src/crud_views_workflow[38 chars]tml')</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_badge_uses_current_upstream_source",
+  "targetFile": "../tabler-test/tests/crud_views_tabler/test_theme.py",
+  "expected": "Current upstream badge leaf origin",
+  "actual": "Companion copied badge leaf origin",
+  "semanticAssessment": "Target executed and failed on source-origin equality, not collection or setup.",
+  "reportPath": "/home/alex/projects/alex/django-crud-views/.planning/phases/06.12-workflow-presentation-themeable-badges-shared-form-frame-and/tdd-evidence/03-01-target-red.xml",
+  "runStartedAt": "2026-11-05T16:52:15.699187+00:00",
+  "reportModifiedAt": "2026-11-05T16:53:21.520124+00:00"
+}

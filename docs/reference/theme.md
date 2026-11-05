@@ -353,19 +353,21 @@ from crud_views.lib.button_classes import register_button_classes
 def ready(self):
     register_button_classes({"form:actions": "d-flex flex-wrap gap-2"})
     if apps.is_installed("crud_views_workflow"):
-        register_button_classes({
-            "workflow:badge-primary": "badge bg-primary-lt",
-            "workflow:badge-secondary": "badge bg-secondary-lt",
-            "workflow:badge-success": "badge bg-success-lt",
-            "workflow:badge-danger": "badge bg-danger-lt",
-            "workflow:badge-warning": "badge bg-warning-lt",
-            "workflow:badge-info": "badge bg-info-lt",
-            "workflow:badge-light": "badge bg-light-lt",
-            "workflow:badge-dark": "badge bg-dark-lt",
-            "workflow:badge-purple": "badge custom-purple",
-            "workflow:history-wrapper": "table-responsive",
-            "workflow:history-table": "table table-hover",
-        })
+        register_button_classes(
+            {
+                "workflow:badge-primary": "badge bg-primary-lt",
+                "workflow:badge-secondary": "badge bg-secondary-lt",
+                "workflow:badge-success": "badge bg-success-lt",
+                "workflow:badge-danger": "badge bg-danger-lt",
+                "workflow:badge-warning": "badge bg-warning-lt",
+                "workflow:badge-info": "badge bg-info-lt",
+                "workflow:badge-light": "badge bg-light-lt",
+                "workflow:badge-dark": "badge bg-dark-lt",
+                "workflow:badge-purple": "badge custom-purple",
+                "workflow:history-wrapper": "table-responsive",
+                "workflow:history-table": "table table-hover",
+            }
+        )
 ```
 
 The conditional belongs inside `ready`, not at module import. Workflow's app-owned defaults are a lower layer;

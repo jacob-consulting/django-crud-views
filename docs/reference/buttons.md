@@ -165,6 +165,32 @@ buttons look the same for every variant by default, the `card` buttons distingui
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
 
+### Optional workflow defaults
+
+The 88-key table above is core-only. Installing `crud_views_workflow` adds these ten app-owned defaults,
+for 98 effective default keys with only that contribution. Other installed extensions may add more.
+
+| Key | Complete default classes |
+|---|---|
+| `workflow:badge-primary` | `badge rounded-pill text-bg-primary` |
+| `workflow:badge-secondary` | `badge rounded-pill text-bg-secondary` |
+| `workflow:badge-success` | `badge rounded-pill text-bg-success` |
+| `workflow:badge-danger` | `badge rounded-pill text-bg-danger` |
+| `workflow:badge-warning` | `badge rounded-pill text-bg-warning` |
+| `workflow:badge-info` | `badge rounded-pill text-bg-info` |
+| `workflow:badge-light` | `badge rounded-pill text-bg-light` |
+| `workflow:badge-dark` | `badge rounded-pill text-bg-dark` |
+| `workflow:history-wrapper` | `table-responsive` |
+| `workflow:history-table` | `table` |
+
+Custom colours need not occur in this table. With workflow installed, `workflow:badge-colour` accepts one
+nonempty colour segment without whitespace or colon, for example `workflow:badge-purple`. None of these keys
+accepts a label-mode suffix. Workflow keys supplied by a theme or settings warn with W362 when workflow is absent.
+See the [conditional theme recipe](theme.md#optional-workflow-classes) and
+[badge rendering contract](workflow_view.md#themeable-state-badges).
+
+### Alert dismissal classes
+
 For dismissible alerts, `alert:dismissible` supplies classes on the alert frame and `alert:close` supplies
 classes on its close button. Theme registrations and project settings follow the same per-key precedence as
 the rest of the table. Setting either to `None` or `""` omits those classes: an omitted dismissal value adds no
@@ -345,11 +371,14 @@ class MyAppThemeConfig(AppConfig):
 ### Precedence
 
 ```
-button classes = package defaults + theme registrations + CRUD_VIEWS_BUTTON_CLASSES
+button classes = core defaults + installed-app defaults + theme registrations + CRUD_VIEWS_BUTTON_CLASSES
 ```
 
 Later wins per key, so project settings always win over a theme, and a theme wins over the package. If two theme apps
 register the same key, the one whose `ready()` runs later wins, which is the one later in `INSTALLED_APPS`.
+App defaults are static `AppConfig.crud_views_button_class_defaults` declarations, not theme registrations:
+collisions with core or another app's defaults are rejected. Themes override through `register_button_classes()`.
+A present `None` or empty string stops fallback and disables classes, including for workflow badges.
 
 ## Rendering
 
@@ -839,7 +868,7 @@ Full-caption APIs and unrelated template helpers remain available. Form buttons 
 | `crud_views.E363` | error | an `*:icon-host` value is not a valid format string with `{name_class}` as its only placeholder |
 | `crud_views.E364` | error | a `*:container-single` value is neither `"container"` nor `"bare"` (`None` and `""` mean `"container"`) |
 | `crud_views.E365` | error | a `form:cancel-tag` str value is neither `"button"` nor `"a"` (`""`, whitespace and other letter cases included); the hint names `'button'`, `'a'` and `None`. A non-str value is `crud_views.E361` only. Reported even when every cancel overrides it with an explicit `tag=` |
-| `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` at `context`/`list`/`card` or `form:kind:mode` (typo, or an unknown label mode) |
+| `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is not in effective core/installed-app defaults, a supported `heading-page`/`heading-modal`/`heading-group` icon slot, a valid `location:variant:mode` at `context`/`list`/`card`, or `form:kind:mode`. With workflow installed, `workflow:badge-colour` also accepts one nonempty colour segment without whitespace or colon; custom colours need not occur in the default table. Workflow keys warn when workflow is absent. Unknown action modes retain their specific mode warning. |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `crud_views.E106` | error | a `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` or `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"`; `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` is not a dict of form kind → mode (an unknown form kind is an error here, not a W291) |
 | `crud_views.E108` | error | `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`, `"form"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |

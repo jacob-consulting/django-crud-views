@@ -490,10 +490,13 @@ Replace a copied `crud_views/tags/form.html` with this inner body. The selected 
 ### Workflow action body
 
 In a copied `crud_views_workflow/view_workflow.action.html`, remove the unused `crispy_forms_tags` load and retain
-the heading, non-form errors, branch and outer token while replacing the direct crispy call:
+the heading, non-form errors, branch and outer token while replacing the direct crispy call. Extend the shared
+frame and fill `cv_form_body` around the entire choices/empty branch to receive theme framing:
 
 ```django
+{% extends "crud_views/snippets/form_frame.html" %}
 {% load i18n crud_views %}
+{% block cv_form_body %}
 {% if has_workflow_choices %}
     {% cv_heading level=5 %}{% translate "Workflow Action" %}{% endcv_heading %}
     <form class="cv-form" method="post" novalidate>
@@ -504,7 +507,19 @@ the heading, non-form errors, branch and outer token while replacing the direct 
 {% else %}
     {% translate "There are no workflow steps available from the current state." %}
 {% endif %}
+{% endblock %}
 ```
+
+History remains before and outside this action frame. In a copied history template, wrap only the table with a
+div using `workflow:history-wrapper`; put `workflow:history-table` on the table itself. Keep the heading outside
+the scrolling wrapper and omit the entire history section when empty. The stock defaults are `table-responsive`
+and `table`; broad overflow styling on the whole workflow content can be removed after adopting this structure.
+
+A copied `crud_views_workflow/badge.html` continues to own its chosen markup and receives the existing `state`,
+`name` and `class` plus additive `badge_class`. Remove a redundant badge copy and use the
+[conditional class-registration recipe](reference/theme.md#optional-workflow-classes), or explicitly consume
+`badge_class` with the documented [missing/disabled distinction](reference/workflow_view.md#themeable-state-badges).
+`BadgeEnum`, `STATE_BADGES` and `STATE_BADGE_DEFAULT` remain unchanged.
 
 Protected delete and full-page no-choice workflow still omit their own forms. Workflow modals deliberately retain
 the inherited `crud_views/view_custom_form.content.html`, including the generic no-choice form, and reject

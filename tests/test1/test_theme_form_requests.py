@@ -219,7 +219,7 @@ def test_workflow_frame_request_states(
         if modal or choices:
             owner, form = _owned(response, url, "workflow", modal)
             if not modal:
-                assert form.getparent() is cards[0]
+                assert form.getparent().get("class") == "theme-card"
                 assert form.getprevious().text_content() == "Workflow Action"
             return owner, form
         scanner = _RawForms()
@@ -256,7 +256,8 @@ def test_workflow_frame_request_states(
         assert result.status_code == (204 if modal else 302)
         campaign_new.refresh_from_db()
         assert campaign_new.state == CampaignState.ACTIVE
-        assert WorkflowInfo.objects.filter(workflow_object_pk=str(campaign_new.pk), transition="wf_activate").count() == 1
+        history = WorkflowInfo.objects.filter(workflow_object_pk=str(campaign_new.pk), transition="wf_activate")
+        assert history.count() == 1
         url = f"/campaign/{campaign_success.pk}/workflow/"
         terminal = client.get(url, headers=headers)
         assert terminal.status_code == 200

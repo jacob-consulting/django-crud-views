@@ -1,19 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: "Phase 06.10 shipped — PR #317"
-stopped_at: Phase 06.10 complete, ready to plan Phase 7
-last_updated: "2026-11-05T09:33:19.523Z"
+current_phase: "06.12"
+current_phase_name: Workflow presentation
+status: Phase 06.12 context gathered — ready for planning
+stopped_at: Phase 06.12 context gathered
+last_updated: "2026-11-05T13:54:37.663Z"
 last_activity: 2026-11-05
-state_head: 9119f39fd72eb3c76419e5ee5d53ceb014dff5b1
+state_head: 584348808a2aa7dc723f242f895fe50334560b26
 progress:
-  total_phases: 17
+  total_phases: 18
   completed_phases: 16
   total_plans: 118
   completed_plans: 118
-  percent: 94
 milestone_name: milestone
 ---
 
@@ -24,16 +23,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.12 — Workflow presentation (#319)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.12 — Workflow presentation
 Plan: Not started
-Status: Phase 06.10 shipped — PR #317
+Status: Phase 06.12 context gathered — ready for planning
 Last activity: 2026-11-05
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.12
 
 ### Phase 06.10 shipping — 2026-11-05
 
@@ -822,6 +821,7 @@ None yet.
 - Phase 06.8 inserted after Phase 06.7: Action tooltips: short captions and visible-label suppression (#304); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.9 inserted after Phase 06.8: Protected delete-preview object links (#307); user insertion schedules the issue before Phase 7 freezes the affected contracts (URGENT)
 - Phase 06.10 inserted after Phase 6.9: Issue #316: simplify protected-object previews and cap total displayed objects before Phase 7; no dependency on #312, #314 or the retired URL resolver (URGENT)
+- Phase 06.12 inserted after Phase 06.10: Issue #319: workflow badge hooks, shared form frame, and responsive history before Phase 7; number 06.12 confirmed by user, preserving the existing 06.11 record (URGENT)
 
 ## Deferred Items
 
@@ -831,6 +831,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-05
-Stopped at: Phase 06.10 complete, ready to discuss Phase 7
-Resume file: None
+Last session: 2026-11-05T13:54:35.633Z
+Stopped at: Phase 06.12 context gathered
+Resume file: .planning/phases/06.12-workflow-presentation-themeable-badges-shared-form-frame-and/06.12-CONTEXT.md

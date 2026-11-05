@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: dced8509ce37fd54351952d2e1302784d0278d0b
+last_mapped_at: 2026-11-05
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-05
 
 ## Directory Layout
 
@@ -202,4 +202,18 @@ django-crud-views/
 
 ---
 
-*Structure analysis: 2026-11-02*
+*Structure analysis: 2026-11-05*
+
+## Phase 06.12 incremental refresh — 2026-11-05
+
+Scope: workflow presentation, class registry, associated tests/docs and companion integration. Other sections retain the preceding full-map findings.
+
+### Workflow presentation locations
+
+- `src/crud_views_workflow/apps.py`: installed-app defaults for workflow badges and history structure.
+- `src/crud_views_workflow/lib/mixins.py`: shared current/history badge rendering.
+- `src/crud_views_workflow/templates/crud_views_workflow/badge.html`: escaped class/text and absent-key fallback.
+- `src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html`: shared-frame action composition.
+- `src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html`: direct responsive wrapper around the semantic table.
+- `tests/browser/workflow_presentation_server.py`, `tests/browser/workflow-presentation.cjs`, and `tests/browser/workflow-presentation.test.cjs`: disposable HTTP fixture, both-theme browser checks and harness failure tests.
+- `docs/reference/workflow_view.md`, `docs/reference/theme.md`, `docs/reference/buttons.md`: executable override recipes and registry contract.

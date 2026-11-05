@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: dced8509ce37fd54351952d2e1302784d0278d0b
+last_mapped_at: 2026-11-05
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-05
 
 ## Languages
 
@@ -89,4 +89,14 @@ last_mapped_at: 2026-11-02
 
 ---
 
-*Stack analysis: 2026-11-02*
+*Stack analysis: 2026-11-05*
+
+## Phase 06.12 incremental refresh — 2026-11-05
+
+Scope: workflow presentation, class registry, associated tests/docs and companion integration. Other sections retain the preceding full-map findings.
+
+### Workflow presentation dependencies
+
+Phase 06.12 adds no runtime dependency. `pyproject.toml` retains the optional workflow extra with `django-fsm-2>=4.0.0` and `django-fsm-2-admin>=2.0.1`. The new presentation path uses existing Django AppConfig/template APIs, the class registry, and crispy rendering.
+
+`tests/browser/workflow-presentation.cjs` uses an available Playwright/Chromium runtime and separate stock/companion Python environments. It records actual versions and template origins rather than assuming the full supported matrix was exercised locally. `CV_WORKFLOW_COMPANION` selects the sibling theme checkout.

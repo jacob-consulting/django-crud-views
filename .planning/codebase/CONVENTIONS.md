@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: dced8509ce37fd54351952d2e1302784d0278d0b
+last_mapped_at: 2026-11-05
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-05
 
 ## Naming Patterns
 
@@ -86,4 +86,16 @@ Ruff's `I` rules enforce import sorting. JavaScript tests place Vitest and Node 
 
 ---
 
-*Convention analysis: 2026-11-02*
+*Convention analysis: 2026-11-05*
+
+## Phase 06.12 incremental refresh — 2026-11-05
+
+Scope: workflow presentation, class registry, associated tests/docs and companion integration. Other sections retain the preceding full-map findings.
+
+### Optional-app presentation conventions
+
+Keep workflow defaults on its AppConfig rather than adding optional keys to the core default mapping. `src/crud_views/lib/button_classes.py` validates declarations and active workflow colour keys. Core remains at 88 defaults; installing workflow adds ten.
+
+Treat registry values as complete class replacements. Preserve explicit empty/None values; fallback is for absent keys only. Keep Django autoescaping active for badge labels/classes even though the rendered fragment is returned as safe HTML by the model helper.
+
+Use the shared `crud_views/snippets/form_frame.html` contract for decoration. The action leaf owns its single form; history has a separate table-only wrapper. Preserve the existing generic modal response path and HTTP status/redirect semantics.

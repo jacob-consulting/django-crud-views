@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: dced8509ce37fd54351952d2e1302784d0278d0b
+last_mapped_at: 2026-11-05
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-05
 
 ## Test Framework
 
@@ -154,4 +154,16 @@ For browser event listeners, collect `window` error events with `listenerErrors`
 
 ---
 
-*Testing analysis: 2026-11-02*
+*Testing analysis: 2026-11-05*
+
+## Phase 06.12 incremental refresh — 2026-11-05
+
+Scope: workflow presentation, class registry, associated tests/docs and companion integration. Other sections retain the preceding full-map findings.
+
+### Workflow presentation acceptance
+
+Focused tests live in `tests/test1/test_workflow.py`, `test_button_classes.py`, `test_button_classes_checks.py`, `test_button_classes_templates.py`, `test_form_frame.py`, `test_theme_form_requests.py`, and `test_theme_adoption_docs.py`. They cover installed-app lifecycle, registry precedence and disabled values, escaped badge context, real requests and executable docs.
+
+Run `node --test tests/browser/workflow-presentation.test.cjs` for five harness checks, and `node tests/browser/workflow-presentation.cjs --case all --output /tmp/cv-workflow.json` for the 38 stock/Tabler browser cases. The latter needs available browser/runtime assets and the companion checkout. Successful-submit cases assert a 302 redirect, a 200 destination, and persisted history; they protect against calling `.render()` on HttpResponseRedirect in the fixture.
+
+Final phase evidence records 16 explicit human passes, including narrow history, long labels, light/dark badge readability and real modal keyboard/focus behavior. Geometry assertions do not substitute for those human judgments. Broad Python checks use bounded multicore execution; the recorded full Django 5.2 suite had 10,098 passes and one expected skip.

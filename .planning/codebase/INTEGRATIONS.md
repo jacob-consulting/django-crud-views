@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: dced8509ce37fd54351952d2e1302784d0278d0b
+last_mapped_at: 2026-11-05
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-05
 
 ## APIs & External Services
 
@@ -96,3 +96,15 @@ last_mapped_at: 2026-11-02
 ---
 
 *Integration audit: 2026-11-02*
+
+## Phase 06.12 incremental refresh — 2026-11-05
+
+Scope: workflow presentation, class registry, associated tests/docs and companion integration. Other sections retain the preceding full-map findings.
+
+### Optional workflow and companion theme
+
+`CrudViewsWorkflowConfig.crud_views_button_class_defaults` in `src/crud_views_workflow/apps.py` contributes defaults only while that app is installed. Theme consumers continue using `register_button_classes()`; project `CRUD_VIEWS_BUTTON_CLASSES` overrides the theme layer.
+
+The sibling `tabler-test` integration registers light badge classes conditionally and removes its copied workflow badge leaf. Its form-frame override decorates workflow actions without a workflow-specific copy. This is a separately versioned repository: upstream PR #323 and companion PR alexander-jacob/tabler-test#1 must be coordinated, upstream first. The browser runner verifies both repositories' actual source hashes and template origins.
+
+No external service, credentials, permission policy, or workflow transition integration was introduced by this phase.

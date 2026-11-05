@@ -7,7 +7,7 @@ status: planning
 stopped_at: Phase 06.12 complete, ready to plan Phase 7
 last_updated: "2026-11-05T20:06:57.370Z"
 last_activity: 2026-11-05
-last_activity_desc: Phase 06.12 complete, transitioned to Phase 7
+last_activity_desc: Phase 06.12 PRs opened; awaiting review and CI
 state_head: 76e6603406d93f3f4bf66acd982593fc37122607
 progress:
   total_phases: 18
@@ -621,6 +621,16 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.10 P05 | 12min | 2 tasks | 12 files |
 
 ## Accumulated Context
+
+### Phase 06.12 shipping — 2026-11-05
+
+- Upstream PR #323: https://github.com/jacob-consulting/django-crud-views/pull/323, `ship/phase-06.12-workflow-presentation` → `main`.
+- Companion PR #1: https://github.com/alexander-jacob/tabler-test/pull/1; upstream hook must land first.
+- Clean shipping checkouts preserve unrelated working edits. Source/test/docs match the verified trees after the CI-only documentation formatting fix; 27 executable docs checks passed.
+- All 16 UAT and 38 browser cases passed. Security threats_open = 0. Additional review selection and merge remain pending; neither PR is merged.
+- Refreshed all seven codebase maps incrementally for workflow presentation and companion integration. Planning/shipping records stay on the phase branch, matching the repository's clean-PR practice.
+
+
 
 ### Decisions
 

@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: dced8509ce37fd54351952d2e1302784d0278d0b
+last_mapped_at: 2026-11-05
 ---
-<!-- refreshed: 2026-11-02 -->
+<!-- refreshed: 2026-11-05 -->
 
 # Architecture
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-05
 
 ## System Overview
 
@@ -219,4 +219,16 @@ last_mapped_at: 2026-11-02
 
 ---
 
-*Architecture analysis: 2026-11-02*
+*Architecture analysis: 2026-11-05*
+
+## Phase 06.12 incremental refresh — 2026-11-05
+
+Scope: workflow presentation, class registry, associated tests/docs and companion integration. Other sections retain the preceding full-map findings.
+
+### Workflow presentation data flow
+
+`src/crud_views_workflow/apps.py` declares ten optional class defaults (eight badge colours, history wrapper and history table). `src/crud_views/lib/button_classes.py` composes core and active-app defaults below theme registration and project settings. The default cache tracks `apps.app_configs` identity; app removal/restoration and pre-ready lookups do not retain stale workflow keys.
+
+`WorkflowModelMixin.get_state_badge()` in `src/crud_views_workflow/lib/mixins.py` supplies `badge_class` alongside legacy `state`, `name`, and `class`. Membership distinguishes an absent colour from a registered empty/None value: absent uses the legacy colour-derived class; present disabled entries render an empty class. Current and historical badges use the same leaf.
+
+`src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html` extends the shared form frame and owns the action body. The history leaf wraps only its table, so headings and actions remain outside horizontal scrolling. Modal requests retain the generic custom-form content path.

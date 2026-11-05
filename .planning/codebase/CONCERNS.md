@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: dced8509ce37fd54351952d2e1302784d0278d0b
+last_mapped_at: 2026-11-05
 ---
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-05
 
 ## Tech Debt
 
@@ -131,3 +131,15 @@ last_mapped_at: 2026-11-02
 ---
 
 *Concerns audit: 2026-11-02*
+
+## Phase 06.12 incremental refresh — 2026-11-05
+
+Scope: workflow presentation, class registry, associated tests/docs and companion integration. Other sections retain the preceding full-map findings.
+
+### Workflow presentation boundaries
+
+The UAT-discovered fixture redirect crash is fixed in `tests/browser/workflow_presentation_server.py` by rendering only SimpleTemplateResponse; both-theme successful-submit regression cases are in `tests/browser/workflow-presentation.cjs`. This did not change production transition handling.
+
+Inherited Tabler light/New badge contrast and touching wrapped action controls were explicitly accepted in the intended browser during phase 06.12 UAT. This is human acceptance, not measured contrast-ratio or screen-reader certification. Host font substitution seen in automated screenshots remains an environment limitation.
+
+Registry caching must continue respecting active AppConfig identity and settings invalidation. Custom colours absent from the registry deliberately retain the legacy Bootstrap class fallback; consumers supply their own classes for colours their CSS supports. `docs/reference/theme.md` and `docs/reference/workflow_view.md` describe these boundaries. Companion updates require independent verification because sibling files cannot be covered directly by the upstream repository fingerprint.

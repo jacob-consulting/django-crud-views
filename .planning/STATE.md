@@ -627,7 +627,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 - Upstream PR #323: https://github.com/jacob-consulting/django-crud-views/pull/323, `ship/phase-06.12-workflow-presentation` → `main`.
 - Companion PR #1: https://github.com/alexander-jacob/tabler-test/pull/1; upstream hook must land first.
 - Clean shipping checkouts preserve unrelated working edits. Source/test/docs match the verified trees after the CI-only documentation formatting fix; 27 executable docs checks passed.
-- All 16 UAT and 38 browser cases passed. Security threats_open = 0. Additional review selection and merge remain pending; neither PR is merged.
+- All 16 UAT and 38 browser cases passed. Security threats_open = 0. User selected skip additional review. Upstream Python 3.12–3.15 CI remains running; lint, docs, JavaScript, example checks and SonarCloud passed. Companion has no CI checks. Neither PR is merged; merge upstream before companion.
 - Refreshed all seven codebase maps incrementally for workflow presentation and companion integration. Planning/shipping records stay on the phase branch, matching the repository's clean-PR practice.
 
 

@@ -52,6 +52,24 @@ A disabled icon-only button keeps its `title` and `data-cv-tooltip`, but Bootstr
 `.btn:disabled`, so neither the native `title` nor a tooltip shows on hover. A theme that needs a tooltip there wraps
 the button in a focusable element in its own leaf override, Bootstrap's documented workaround; the stock leaf does not.
 
+## Missing core permission declarations
+
+For views using the core `CrudViewPermissionRequiredMixin.cv_has_access`, a missing or falsy entry for
+`cv_permission` in the ViewSet's permission mapping denies access before checking the user's permissions.
+This applies to ordinary users, anonymous users and superusers, including an empty mapping or an unmatched
+custom key. The action is hidden or disabled according to its target's mode; disabled output has reason
+`"permission"` and no usable URL, even when the independent action-state check also denies.
+
+Opening the target directly still raises the existing missing-permission assertion with its migration/restart
+diagnostic. Fix the declaration or run the required migrations; hiding a control does not fix configuration or
+replace request authorization. A previously empty default permission lookup retries, so the same ViewSet can
+discover permissions created by migrations. Already populated mappings retain their existing cache policy;
+this is not general cache invalidation. Resource permission declarations retain the `viewset.E260` check.
+
+Guardian overrides have their own behavior. In particular, a missing parent permission declaration can fail
+host-page rendering for the scoped [Guardian collection links](guardian.md#limits-and-configuration-failures);
+this core guard does not catch that failure.
+
 ## Template variables
 
 | Variable | Meaning |

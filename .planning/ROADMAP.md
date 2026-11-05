@@ -35,6 +35,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze (completed 2026-11-04)
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
 - [x] **Phase 6.10: Simplify protected-object previews and cap total displayed objects (INSERTED)** - #316: plain-text protected blockers and one shared preview display budget before the freeze (completed 2026-11-05)
+- [ ] **Phase 6.12: Workflow presentation (INSERTED)** - #319: themeable state badges, shared form frame, and responsive history before the freeze
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -930,13 +931,54 @@ Plans:
 
 **UI hint:** yes (plain-text protected blockers and truncated delete previews across full pages and modals).
 
+### Phase 06.12: Workflow presentation (INSERTED)
+
+**Goal:** Themes can style workflow state badges through the existing class registry, decorate workflow actions
+through the shared form frame, and keep wide history tables within the viewport with local horizontal scrolling.
+**Source:** [Issue #319](https://github.com/jacob-consulting/django-crud-views/issues/319).
+**Requirements**: TBD
+**Depends on:** Existing class-registry and shared-form-frame contracts from completed Phase 06.6.
+Complete before Phase 7 freezes the affected public surface; independently deliverable from workflow permission
+and execution changes.
+**Scope:** Add a small, explicit badge-class hook with stock Bootstrap defaults and documented colour fallback and
+project-over-theme precedence. Preserve `BadgeEnum`, `STATE_BADGES`, `STATE_BADGE_DEFAULT`, and model APIs.
+Render the action area through `crud_views/snippets/form_frame.html` and `cv_form_body`, keeping history separate.
+Wrap the history table directly for responsive scrolling, using established registry conventions for any new keys.
+**Explicit limits:** No generic formatting framework or changes to permissions, transition validation/execution,
+history querying, or the general theme architecture. Preserve existing override paths where practical.
+**Success Criteria**:
+
+1. Current and historical badges share the hook; default appearance, fallback colour and escaped labels remain correct. Themes can use light badges without copying the template; settings precedence and empty/disabled values follow registry conventions.
+2. An existing form-frame override decorates workflow actions while preserving headings, the no-transitions message, one form, CSRF, crispy rendering, validation errors and expected submit controls.
+3. Choices/no choices, history/no history and validation-error pages render correctly. Browser verification at 390 px confirms wide history scrolls locally without widening the page and normal tables remain full width; check the downstream Tabler theme where available.
+4. Focused workflow/theme tests pass, broad regression runs use bounded multicore pytest, and golden updates reflect only intentional output changes.
+5. Document the badge override recipe and workflow form-frame participation, add a changelog entry, and update `docs/migrating-1.0.md` if a breaking change is necessary. Phase 7 inventories the resulting hooks.
+
+**Plans:** 0/5 plans executed
+
+Plans:
+**Wave 1**
+- [ ] 06.12-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.12-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.12-03-PLAN.md
+- [ ] 06.12-04-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.12-05-PLAN.md
+
+**UI hint:** yes (workflow badges, action framing and mobile history overflow).
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
+**Depends on**: Phase 6.12, Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phases 6.12 and 6.10 and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
 protected-preview and Guardian configuration contracts from Phase 6.2, qualified by the unresolved acceptance
 split above until Phase 6.3 remediation is verified. Include the settled conditional/formset contracts from Phase 6.4.
@@ -946,6 +988,7 @@ Include the dynamic cancel defaults, origin query preservation and custom-templa
 Include the tooltip caption and visible-label rendering contracts settled by Phase 6.8.
 Include the final protected-preview text, shared display-limit configuration and context/template contracts settled
 by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
+Include the workflow badge hooks, shared form-frame participation and responsive history contracts settled by Phase 6.12.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -977,7 +1020,7 @@ by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.12 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -994,7 +1037,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 11 | 6.8 (#304) | Short icon tooltips and visible-label suppression before the freeze |
 | 12 | 6.9 (#307) | Protected delete-preview links before the freeze |
 | 13 | 6.10 (#316) | Simplify protected previews and settle the shared display cap before the freeze |
-| 14 | 7 (plan 4) | Needs 6.10, 4 and 5 merged; last change before the 1.0.0 bump |
+| 14 | 6.12 (#319) | Workflow badge hooks, shared form frame and responsive history before the freeze |
+| 15 | 7 (plan 4) | Needs 6.12, 6.10, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -1016,4 +1060,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | Complete    | 2026-11-05 |
+| 6.12. Workflow presentation | 0/5 | Planned     | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

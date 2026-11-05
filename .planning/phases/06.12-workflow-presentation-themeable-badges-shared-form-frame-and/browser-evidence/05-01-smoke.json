@@ -1,0 +1,749 @@
+{
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/workflow-presentation.cjs",
+    "--case",
+    "smoke",
+    "--output",
+    "/tmp/cv-0612-smoke.json"
+  ],
+  "started": "2026-11-05T17:18:43.463Z",
+  "cases": [
+    {
+      "id": "stock-normal-390",
+      "passed": true,
+      "measurement": {
+        "forms": 1,
+        "tokens": 1,
+        "ownership": [
+          {
+            "tokens": 1,
+            "submits": 1,
+            "method": "post",
+            "nested": 0,
+            "inCard": false,
+            "headingInCard": true
+          }
+        ],
+        "actionHeading": true,
+        "empty": false,
+        "error": false,
+        "table": true,
+        "geometry": {
+          "wrapper": 366,
+          "scrollWidth": 514,
+          "scrollDelta": 100,
+          "table": 513.59375,
+          "display": "table",
+          "overflowX": "auto",
+          "available": 366,
+          "children": [
+            "TABLE"
+          ],
+          "headers": 6,
+          "headingOutside": true,
+          "actionOutside": true,
+          "historyBeforeActions": true
+        },
+        "documentWidth": 390,
+        "viewport": 390,
+        "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "badges": [
+          {
+            "text": "New",
+            "classes": "badge rounded-pill text-bg-light",
+            "children": 0
+          },
+          {
+            "text": "Active",
+            "classes": "badge rounded-pill text-bg-info",
+            "children": 0
+          }
+        ]
+      },
+      "observation": {
+        "origins": {
+          "crud_views_workflow/view_workflow.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.html",
+          "workflow-host.html": "workflow-host.html",
+          "crud_views/shared/css.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/shared/css.html",
+          "crud_views_workflow/view_workflow.content.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.content.html",
+          "crud_views_workflow/view_workflow.history.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html",
+          "crud_views_workflow/badge.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/badge.html",
+          "crud_views_workflow/view_workflow.action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html",
+          "crud_views/snippets/form_frame.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/form_frame.html",
+          "crud_views/tags/form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/form.html",
+          "bootstrap5/field.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/field.html",
+          "bootstrap5/layout/radio_checkbox_select.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/radio_checkbox_select.html",
+          "bootstrap5/layout/attrs.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/attrs.html",
+          "bootstrap5/layout/help_text.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/help_text.html",
+          "bootstrap5/layout/column.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/column.html",
+          "bootstrap5/layout/row.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/row.html",
+          "django/forms/widgets/textarea.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/templates/django/forms/widgets/textarea.html",
+          "django/forms/widgets/attrs.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/templates/django/forms/widgets/attrs.html",
+          "bootstrap5/layout/help_text_and_errors.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/help_text_and_errors.html",
+          "bootstrap5/layout/field_errors.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/field_errors.html",
+          "crud_views/tags/button/form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/button/form.html",
+          "bootstrap5/layout/formactions.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/formactions.html",
+          "bootstrap5/whole_uni_form.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/whole_uni_form.html",
+          "bootstrap5/display_form.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/display_form.html",
+          "bootstrap5/errors.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/errors.html",
+          "bootstrap5/inputs.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/inputs.html"
+        },
+        "current_badge": "<span class=\"badge rounded-pill text-bg-light\">New</span>",
+        "raw": {
+          "forms": 1,
+          "tokens": 1,
+          "maximum": 1,
+          "depth": 0
+        }
+      }
+    },
+    {
+      "id": "stock-invalid-390",
+      "passed": true,
+      "measurement": {
+        "forms": 1,
+        "tokens": 1,
+        "ownership": [
+          {
+            "tokens": 1,
+            "submits": 1,
+            "method": "post",
+            "nested": 0,
+            "inCard": false,
+            "headingInCard": true
+          }
+        ],
+        "actionHeading": true,
+        "empty": false,
+        "error": true,
+        "table": true,
+        "geometry": {
+          "wrapper": 366,
+          "scrollWidth": 514,
+          "scrollDelta": 100,
+          "table": 513.59375,
+          "display": "table",
+          "overflowX": "auto",
+          "available": 366,
+          "children": [
+            "TABLE"
+          ],
+          "headers": 6,
+          "headingOutside": true,
+          "actionOutside": true,
+          "historyBeforeActions": true
+        },
+        "documentWidth": 390,
+        "viewport": 390,
+        "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "badges": [
+          {
+            "text": "New",
+            "classes": "badge rounded-pill text-bg-light",
+            "children": 0
+          },
+          {
+            "text": "Active",
+            "classes": "badge rounded-pill text-bg-info",
+            "children": 0
+          }
+        ]
+      },
+      "observation": {
+        "origins": {
+          "crud_views_workflow/view_workflow.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.html",
+          "workflow-host.html": "workflow-host.html",
+          "crud_views/shared/css.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/shared/css.html",
+          "crud_views_workflow/view_workflow.content.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.content.html",
+          "crud_views_workflow/view_workflow.history.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html",
+          "crud_views_workflow/badge.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/badge.html",
+          "crud_views_workflow/view_workflow.action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html",
+          "crud_views/snippets/form_frame.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/form_frame.html",
+          "crud_views/tags/form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/form.html",
+          "bootstrap5/field.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/field.html",
+          "bootstrap5/layout/radio_checkbox_select.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/radio_checkbox_select.html",
+          "bootstrap5/layout/attrs.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/attrs.html",
+          "bootstrap5/layout/help_text.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/help_text.html",
+          "bootstrap5/layout/column.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/column.html",
+          "bootstrap5/layout/row.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/row.html",
+          "django/forms/widgets/textarea.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/templates/django/forms/widgets/textarea.html",
+          "django/forms/widgets/attrs.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/templates/django/forms/widgets/attrs.html",
+          "bootstrap5/layout/help_text_and_errors.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/help_text_and_errors.html",
+          "bootstrap5/layout/field_errors.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/field_errors.html",
+          "crud_views/tags/button/form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/button/form.html",
+          "bootstrap5/layout/formactions.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/formactions.html",
+          "bootstrap5/whole_uni_form.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/whole_uni_form.html",
+          "bootstrap5/display_form.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/display_form.html",
+          "bootstrap5/errors.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/errors.html",
+          "bootstrap5/inputs.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/inputs.html"
+        },
+        "current_badge": "<span class=\"badge rounded-pill text-bg-light\">New</span>",
+        "raw": {
+          "forms": 1,
+          "tokens": 1,
+          "maximum": 1,
+          "depth": 0
+        }
+      }
+    },
+    {
+      "id": "tabler-normal-390",
+      "passed": true,
+      "measurement": {
+        "forms": 1,
+        "tokens": 1,
+        "ownership": [
+          {
+            "tokens": 1,
+            "submits": 1,
+            "method": "post",
+            "nested": 0,
+            "inCard": true,
+            "headingInCard": true
+          }
+        ],
+        "actionHeading": true,
+        "empty": false,
+        "error": false,
+        "table": true,
+        "geometry": {
+          "wrapper": 374,
+          "scrollWidth": 521,
+          "scrollDelta": 100,
+          "table": 521.203125,
+          "display": "table",
+          "overflowX": "auto",
+          "available": 374,
+          "children": [
+            "TABLE"
+          ],
+          "headers": 6,
+          "headingOutside": true,
+          "actionOutside": true,
+          "historyBeforeActions": true
+        },
+        "documentWidth": 390,
+        "viewport": 390,
+        "font": "system-ui, -apple-system, BlinkMacSystemFont, \"San Francisco\", \"Segoe UI\", Roboto, \"Helvetica Neue\", sans-serif",
+        "badges": [
+          {
+            "text": "New",
+            "classes": "badge bg-light-lt",
+            "children": 0
+          },
+          {
+            "text": "Active",
+            "classes": "badge bg-info-lt",
+            "children": 0
+          }
+        ]
+      },
+      "observation": {
+        "origins": {
+          "crud_views_workflow/view_workflow.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.html",
+          "crud_views_tabler/page.html": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/templates/crud_views_tabler/page.html",
+          "django_tabler/layouts/app.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/layouts/app.html",
+          "django_tabler/base.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/base.html",
+          "django_tabler/includes/layout_defaults.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/layout_defaults.html",
+          "inline": "<unknown source>",
+          "django_tabler/includes/site_name.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/site_name.html",
+          "django_tabler/includes/head.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/head.html",
+          "crud_views/shared/css.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/shared/css.html",
+          "django_tabler/includes/sidebar.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/sidebar.html",
+          "django_tabler/includes/brand.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/brand.html",
+          "django_tabler/includes/layout_switch_menu.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/layout_switch_menu.html",
+          "django_tabler/includes/user_menu_items.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/user_menu_items.html",
+          "django_tabler/includes/nav_menu.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/nav_menu.html",
+          "django_tabler/includes/navbar.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/navbar.html",
+          "crud_views/tags/breadcrumb.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/breadcrumb.html",
+          "crud_views/snippets/action/list.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action/list.html",
+          "crud_views/snippets/action_short/list.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action_short/list.html",
+          "crud_views/snippets/action/detail.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action/detail.html",
+          "crud_views/snippets/action_short/detail.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action_short/detail.html",
+          "crud_views/snippets/action/manage.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action/manage.html",
+          "crud_views/snippets/action_short/manage.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action_short/manage.html",
+          "crud_views/tags/context_actions.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/context_actions.html",
+          "crud_views/tags/list_action_form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/list_action_form.html",
+          "crud_views/tags/button/container.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/button/container.html",
+          "crud_views/tags/context_action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/context_action.html",
+          "crud_views/tags/button/action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/button/action.html",
+          "crud_views/tags/actions_menu.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/actions_menu.html",
+          "crud_views/tags/messages.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/messages.html",
+          "crud_views_workflow/view_workflow.content.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.content.html",
+          "crud_views_workflow/view_workflow.history.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html",
+          "crud_views_workflow/badge.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/badge.html",
+          "crud_views_workflow/view_workflow.action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html",
+          "crud_views/snippets/form_frame.html": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/templates/crud_views/snippets/form_frame.html",
+          "crud_views/tags/form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/form.html",
+          "crispy_tabler/field.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/field.html",
+          "crispy_tabler/layout/radio_checkbox_select.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/radio_checkbox_select.html",
+          "crispy_tabler/layout/attrs.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/attrs.html",
+          "crispy_tabler/layout/help_text.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/help_text.html",
+          "crispy_tabler/layout/column.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/column.html",
+          "crispy_tabler/layout/row.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/row.html",
+          "django/forms/widgets/textarea.html": "/home/alex/projects/alex/tabler-test/.venv/lib/python3.14/site-packages/django/forms/templates/django/forms/widgets/textarea.html",
+          "django/forms/widgets/attrs.html": "/home/alex/projects/alex/tabler-test/.venv/lib/python3.14/site-packages/django/forms/templates/django/forms/widgets/attrs.html",
+          "crispy_tabler/layout/help_text_and_errors.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/help_text_and_errors.html",
+          "crispy_tabler/layout/field_errors.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/field_errors.html",
+          "crud_views/tags/button/form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/button/form.html",
+          "crispy_tabler/layout/formactions.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/formactions.html",
+          "crispy_tabler/whole_uni_form.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/whole_uni_form.html",
+          "crispy_tabler/display_form.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/display_form.html",
+          "crispy_tabler/errors.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/errors.html",
+          "crispy_tabler/inputs.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/inputs.html",
+          "crud_views/tags/cv_config.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/cv_config.html",
+          "crud_views/modal/shell.html": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/templates/crud_views/modal/shell.html",
+          "crud_views/shared/js.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/shared/js.html"
+        },
+        "current_badge": "<span class=\"badge bg-light-lt\">New</span>",
+        "raw": {
+          "forms": 3,
+          "tokens": 3,
+          "maximum": 1,
+          "depth": 0
+        }
+      }
+    },
+    {
+      "id": "tabler-invalid-390",
+      "passed": true,
+      "measurement": {
+        "forms": 1,
+        "tokens": 1,
+        "ownership": [
+          {
+            "tokens": 1,
+            "submits": 1,
+            "method": "post",
+            "nested": 0,
+            "inCard": true,
+            "headingInCard": true
+          }
+        ],
+        "actionHeading": true,
+        "empty": false,
+        "error": true,
+        "table": true,
+        "geometry": {
+          "wrapper": 374,
+          "scrollWidth": 521,
+          "scrollDelta": 100,
+          "table": 521.203125,
+          "display": "table",
+          "overflowX": "auto",
+          "available": 374,
+          "children": [
+            "TABLE"
+          ],
+          "headers": 6,
+          "headingOutside": true,
+          "actionOutside": true,
+          "historyBeforeActions": true
+        },
+        "documentWidth": 390,
+        "viewport": 390,
+        "font": "system-ui, -apple-system, BlinkMacSystemFont, \"San Francisco\", \"Segoe UI\", Roboto, \"Helvetica Neue\", sans-serif",
+        "badges": [
+          {
+            "text": "New",
+            "classes": "badge bg-light-lt",
+            "children": 0
+          },
+          {
+            "text": "Active",
+            "classes": "badge bg-info-lt",
+            "children": 0
+          }
+        ]
+      },
+      "observation": {
+        "origins": {
+          "crud_views_workflow/view_workflow.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.html",
+          "crud_views_tabler/page.html": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/templates/crud_views_tabler/page.html",
+          "django_tabler/layouts/app.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/layouts/app.html",
+          "django_tabler/base.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/base.html",
+          "django_tabler/includes/layout_defaults.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/layout_defaults.html",
+          "inline": "<unknown source>",
+          "django_tabler/includes/site_name.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/site_name.html",
+          "django_tabler/includes/head.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/head.html",
+          "crud_views/shared/css.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/shared/css.html",
+          "django_tabler/includes/sidebar.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/sidebar.html",
+          "django_tabler/includes/brand.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/brand.html",
+          "django_tabler/includes/layout_switch_menu.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/layout_switch_menu.html",
+          "django_tabler/includes/user_menu_items.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/user_menu_items.html",
+          "django_tabler/includes/nav_menu.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/nav_menu.html",
+          "django_tabler/includes/navbar.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/django_tabler/includes/navbar.html",
+          "crud_views/tags/breadcrumb.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/breadcrumb.html",
+          "crud_views/snippets/action/list.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action/list.html",
+          "crud_views/snippets/action_short/list.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action_short/list.html",
+          "crud_views/snippets/action/detail.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action/detail.html",
+          "crud_views/snippets/action_short/detail.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action_short/detail.html",
+          "crud_views/snippets/action/manage.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action/manage.html",
+          "crud_views/snippets/action_short/manage.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/action_short/manage.html",
+          "crud_views/tags/context_actions.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/context_actions.html",
+          "crud_views/tags/list_action_form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/list_action_form.html",
+          "crud_views/tags/button/container.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/button/container.html",
+          "crud_views/tags/context_action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/context_action.html",
+          "crud_views/tags/button/action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/button/action.html",
+          "crud_views/tags/actions_menu.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/actions_menu.html",
+          "crud_views/tags/messages.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/messages.html",
+          "crud_views_workflow/view_workflow.content.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.content.html",
+          "crud_views_workflow/view_workflow.history.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html",
+          "crud_views_workflow/badge.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/badge.html",
+          "crud_views_workflow/view_workflow.action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html",
+          "crud_views/snippets/form_frame.html": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/templates/crud_views/snippets/form_frame.html",
+          "crud_views/tags/form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/form.html",
+          "crispy_tabler/field.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/field.html",
+          "crispy_tabler/layout/radio_checkbox_select.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/radio_checkbox_select.html",
+          "crispy_tabler/layout/attrs.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/attrs.html",
+          "crispy_tabler/layout/help_text.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/help_text.html",
+          "crispy_tabler/layout/column.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/column.html",
+          "crispy_tabler/layout/row.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/row.html",
+          "django/forms/widgets/textarea.html": "/home/alex/projects/alex/tabler-test/.venv/lib/python3.14/site-packages/django/forms/templates/django/forms/widgets/textarea.html",
+          "django/forms/widgets/attrs.html": "/home/alex/projects/alex/tabler-test/.venv/lib/python3.14/site-packages/django/forms/templates/django/forms/widgets/attrs.html",
+          "crispy_tabler/layout/help_text_and_errors.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/help_text_and_errors.html",
+          "crispy_tabler/layout/field_errors.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/field_errors.html",
+          "crud_views/tags/button/form.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/button/form.html",
+          "crispy_tabler/layout/formactions.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/formactions.html",
+          "crispy_tabler/whole_uni_form.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/whole_uni_form.html",
+          "crispy_tabler/display_form.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/display_form.html",
+          "crispy_tabler/errors.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/errors.html",
+          "crispy_tabler/inputs.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/inputs.html",
+          "crud_views/tags/cv_config.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/tags/cv_config.html",
+          "crud_views/modal/shell.html": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/templates/crud_views/modal/shell.html",
+          "crud_views/shared/js.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/shared/js.html"
+        },
+        "current_badge": "<span class=\"badge bg-light-lt\">New</span>",
+        "raw": {
+          "forms": 3,
+          "tokens": 3,
+          "maximum": 1,
+          "depth": 0
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "servers": [
+    {
+      "ready": 45221,
+      "database": "/tmp/cv-workflow-BACG2V/database-y53rj8za/workflow.sqlite3",
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "django": "5.2.18",
+      "versions": {
+        "Django": "5.2.18",
+        "django-crispy-forms": "2.7",
+        "crispy-bootstrap5": "2026.9"
+      },
+      "modules": {
+        "crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+        "crud_views_workflow": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/__init__.py"
+      },
+      "origins": {
+        "crud_views_workflow/badge.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/badge.html",
+        "crud_views/snippets/form_frame.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/form_frame.html",
+        "crud_views_workflow/view_workflow.action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html",
+        "crud_views_workflow/view_workflow.history.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html",
+        "bootstrap5/layout/formactions.html": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/formactions.html"
+      },
+      "theme": "stock",
+      "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python"
+    },
+    {
+      "ready": 45205,
+      "database": "/tmp/cv-workflow-PzK2Fa/database-anj87e1f/workflow.sqlite3",
+      "python": "3.14.7 (main, Sep 24 2026, 17:58:18) [Clang 22.1.3 ]",
+      "django": "6.1.2",
+      "versions": {
+        "Django": "6.1.2",
+        "django-crispy-forms": "2.7",
+        "crispy-bootstrap5": "2026.9"
+      },
+      "modules": {
+        "crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+        "crud_views_workflow": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/__init__.py",
+        "crud_views_tabler": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/__init__.py",
+        "django_tabler": "/home/alex/projects/alex/tabler-test/src/django_tabler/__init__.py"
+      },
+      "origins": {
+        "crud_views_workflow/badge.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/badge.html",
+        "crud_views/snippets/form_frame.html": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/templates/crud_views/snippets/form_frame.html",
+        "crud_views_workflow/view_workflow.action.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html",
+        "crud_views_workflow/view_workflow.history.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html",
+        "crispy_tabler/layout/formactions.html": "/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/formactions.html"
+      },
+      "theme": "tabler",
+      "executable": "/home/alex/projects/alex/tabler-test/.venv/bin/python"
+    }
+  ],
+  "assets": [
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200,
+      "theme": "stock",
+      "sha256": "74005d7c17d4a02f2f25404ec0655d9bc2fdaa53166874c87d7b7eec69d9088a",
+      "source": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    },
+    {
+      "url": "http://127.0.0.1:45221/static/crud_views/css/property.css",
+      "status": 200,
+      "theme": "stock",
+      "sha256": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/css/property.css"
+    },
+    {
+      "url": "http://127.0.0.1:45221/static/crud_views/css/table.css",
+      "status": 200,
+      "theme": "stock",
+      "sha256": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/css/table.css"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200,
+      "theme": "stock",
+      "sha256": "3c8f27e6009ccfd710a905e6dcf12d0ee3c6f2ac7da05b0572d3e0d12e736fc8",
+      "source": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    },
+    {
+      "url": "http://127.0.0.1:45221/static/crud_views/css/formset.css",
+      "status": 200,
+      "theme": "stock",
+      "sha256": "6ca22115b97a53b30c83bdfd9a7570af7b27b65975a46a5b6e5786fd4f39cb7d",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/css/formset.css"
+    },
+    {
+      "url": "http://127.0.0.1:45221/static/crud_views/css/icons.css",
+      "status": 200,
+      "theme": "stock",
+      "sha256": "1330b06fd3850f4b8567e1fd0c44cd2dc942d1d547d5ac9de1902467105db255",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/css/icons.css"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200,
+      "theme": "stock",
+      "sha256": "0833b2e9c3a26c258476c46266e6877fc75218625162e0460be9a3a098a61c6c",
+      "source": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/css/tabler.min.css",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "370a2d4e608ae518351d10528fc7dbe19b354ae5062c51b2a9cb294850d65403",
+      "source": "https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/css/tabler.min.css"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/js/tabler-theme.min.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "25845dd6d4618b7600ef0829617634a638dcd16d8814a9d2d5b9b6f7704f25a5",
+      "source": "https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/js/tabler-theme.min.js"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/js/tabler.min.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "9d26ca1aa061a0c647305654e32efc2c8838e348b2423e9d1f4593869868e09b",
+      "source": "https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/js/tabler.min.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/django_tabler/django_tabler.css",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "c5b20259df8c88d846db01bf265e16ce9e165ec5220e579cc750f2005bea3f96",
+      "source": "/home/alex/projects/alex/tabler-test/src/django_tabler/static/django_tabler/django_tabler.css"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/css/property.css",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/css/property.css"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/css/table.css",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/css/table.css"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/css/formset.css",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "6ca22115b97a53b30c83bdfd9a7570af7b27b65975a46a5b6e5786fd4f39cb7d",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/css/formset.css"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/css/icons.css",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "1330b06fd3850f4b8567e1fd0c44cd2dc942d1d547d5ac9de1902467105db255",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/css/icons.css"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views_tabler/crud_views_tabler.css",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "96284ccc22ecaef74ad7c9ca3a2f63e2bd1cab7a9255384d307c820f30f74525",
+      "source": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/static/crud_views_tabler/crud_views_tabler.css"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/js/adapters.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "aa1fa6f6a326b1d987e72fa6300664e9bcd9bcd6b67b3615a9f6a4b84706b52e",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/js/adapters.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/js/viewset.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "f3a411cc7b779a88e40a86e8189eafcc8e9c965e47503f94cad218b7b9fd5367",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/js/viewset.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/js/list.filter.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "86600d74a66dcd586a6eb749369b858a19e365b21f9ff17646b79457805810a3",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/js/list.filter.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/js/formset.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "84422b80620e543c8228b2a7e9bcab8737fdc45fa6191e7da33511b90548b71a",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/js/formset.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/js/tooltip.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "69212dee6b30d655c08dbfeb2e423ede582c8b9ecf10358d64bf5d9196e62802",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/js/tooltip.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/js/modal.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/js/modal.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views/js/toggle.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "057805c08eea725b67ac6ce9bf40d656d9bf506231a88cc79da35e762525fc21",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/static/crud_views/js/toggle.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views_tabler/tabler-adapters.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "4f0a595b32f836d75e84dea6adb2f38fe58e7c82cf750db4d14f9e9f2c3552ab",
+      "source": "/home/alex/projects/alex/tabler-test/src/crud_views_tabler/static/crud_views_tabler/tabler-adapters.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/crud_views_object_detail/js/tabs.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "558d449db4fcd8ff795a618488fde2ae1a605a7c1331af6412a5f129cbce411d",
+      "source": "/home/alex/projects/alex/django-crud-views/src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js"
+    },
+    {
+      "url": "http://127.0.0.1:45205/static/django_tabler/layout-switch.js",
+      "status": 200,
+      "theme": "tabler",
+      "sha256": "b0e85616b1cb63b5c749e6e984ca090c29bf63e050f0ce93cf0514e6a746da43",
+      "source": "/home/alex/projects/alex/tabler-test/src/django_tabler/static/django_tabler/layout-switch.js"
+    }
+  ],
+  "cleanup": [
+    {
+      "pid": 3406758,
+      "stopped": true,
+      "directory": "/tmp/cv-workflow-BACG2V",
+      "databaseRemoved": true
+    },
+    {
+      "pid": 3406861,
+      "stopped": true,
+      "directory": "/tmp/cv-workflow-PzK2Fa",
+      "databaseRemoved": true
+    }
+  ],
+  "screenshots": [],
+  "logs": {
+    "stock": {
+      "stdout": "{\"ready\": 45221, \"database\": \"/tmp/cv-workflow-BACG2V/database-y53rj8za/workflow.sqlite3\", \"python\": \"3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\", \"django\": \"5.2.18\", \"versions\": {\"Django\": \"5.2.18\", \"django-crispy-forms\": \"2.7\", \"crispy-bootstrap5\": \"2026.9\"}, \"modules\": {\"crud_views\": \"/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py\", \"crud_views_workflow\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/__init__.py\"}, \"origins\": {\"crud_views_workflow/badge.html\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/badge.html\", \"crud_views/snippets/form_frame.html\": \"/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/form_frame.html\", \"crud_views_workflow/view_workflow.action.html\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html\", \"crud_views_workflow/view_workflow.history.html\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html\", \"bootstrap5/layout/formactions.html\": \"/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/formactions.html\"}, \"theme\": \"stock\"}\n",
+      "stderr": "127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /signin/ HTTP/1.1\" 200 23\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /workflow/normal/ HTTP/1.1\" 200 4051\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 755\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /observations/ HTTP/1.1\" 200 4505\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /workflow/normal/ HTTP/1.1\" 200 4051\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 755\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"POST /workflow/normal/ HTTP/1.1\" 200 4280\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 755\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [05/Nov/2026 17:18:45] \"GET /observations/ HTTP/1.1\" 200 4505\n"
+    },
+    "tabler": {
+      "stdout": "{\"ready\": 45205, \"database\": \"/tmp/cv-workflow-PzK2Fa/database-anj87e1f/workflow.sqlite3\", \"python\": \"3.14.7 (main, Sep 24 2026, 17:58:18) [Clang 22.1.3 ]\", \"django\": \"6.1.2\", \"versions\": {\"Django\": \"6.1.2\", \"django-crispy-forms\": \"2.7\", \"crispy-bootstrap5\": \"2026.9\"}, \"modules\": {\"crud_views\": \"/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py\", \"crud_views_workflow\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/__init__.py\", \"crud_views_tabler\": \"/home/alex/projects/alex/tabler-test/src/crud_views_tabler/__init__.py\", \"django_tabler\": \"/home/alex/projects/alex/tabler-test/src/django_tabler/__init__.py\"}, \"origins\": {\"crud_views_workflow/badge.html\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/badge.html\", \"crud_views/snippets/form_frame.html\": \"/home/alex/projects/alex/tabler-test/src/crud_views_tabler/templates/crud_views/snippets/form_frame.html\", \"crud_views_workflow/view_workflow.action.html\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html\", \"crud_views_workflow/view_workflow.history.html\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html\", \"crispy_tabler/layout/formactions.html\": \"/home/alex/projects/alex/tabler-test/src/django_tabler/templates/crispy_tabler/layout/formactions.html\"}, \"theme\": \"tabler\"}\n",
+      "stderr": "127.0.0.1 - - [05/Nov/2026 17:18:46] \"GET /signin/ HTTP/1.1\" 200 23\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /workflow/normal/ HTTP/1.1\" 200 24626\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/django_tabler/django_tabler.css HTTP/1.1\" 200 228\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 755\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views_tabler/crud_views_tabler.css HTTP/1.1\" 200 2690\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 6787\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21148\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 10043\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views_tabler/tabler-adapters.js HTTP/1.1\" 200 963\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2271\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/django_tabler/layout-switch.js HTTP/1.1\" 200 2350\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /observations/ HTTP/1.1\" 200 7898\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /workflow/normal/ HTTP/1.1\" 200 24626\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/django_tabler/django_tabler.css HTTP/1.1\" 200 228\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 755\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views_tabler/crud_views_tabler.css HTTP/1.1\" 200 2690\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 6787\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21148\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 10043\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views_tabler/tabler-adapters.js HTTP/1.1\" 200 963\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2271\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/django_tabler/layout-switch.js HTTP/1.1\" 200 2350\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"POST /workflow/normal/ HTTP/1.1\" 200 24855\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/django_tabler/django_tabler.css HTTP/1.1\" 200 228\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 755\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views_tabler/crud_views_tabler.css HTTP/1.1\" 200 2690\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 6787\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21148\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 10043\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views_tabler/tabler-adapters.js HTTP/1.1\" 200 963\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2271\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /static/django_tabler/layout-switch.js HTTP/1.1\" 200 2350\n127.0.0.1 - - [05/Nov/2026 17:18:47] \"GET /observations/ HTTP/1.1\" 200 7898\n"
+    }
+  },
+  "sources": [
+    {
+      "directory": "/home/alex/projects/alex/django-crud-views",
+      "head": "665dab8a33720721a6bdc60daae81717c9669c2d",
+      "files": {
+        "src/crud_views/lib/button_classes.py": "eaa11dca75a31165bd08edcb9f22b6f2eee7477aaa94f3ec0736c09636d74d7e",
+        "src/crud_views/apps.py": "6f703360e9e76a87ae9d65b772390f13a8e298fa0d3e6b193286c802d9584b34",
+        "src/crud_views/templates/crud_views/snippets/form_frame.html": "d8b31e2b1c08c82fecb6c3b194b755717fd3be5768387ac46a40bd88e809214b",
+        "src/crud_views_workflow/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "src/crud_views_workflow/apps.py": "281f5ae798bc497cc1b4e0bc8972397ae4d4719f2e66ea67de3c881a20a5d77f",
+        "src/crud_views_workflow/checks.py": "4197f6a9a20a002c36535631929657c73391a4af2c26e7f3ad5b65bb62cfe528",
+        "src/crud_views_workflow/lib/__init__.py": "98900b66eec4946c6992eb83b5ba036de6fdd23a58a52bb6123e47e076ff1192",
+        "src/crud_views_workflow/lib/enums.py": "1741ade413fedd9d165a6eb9ba05a0bbb794f935b972392a24b52e29d75c7335",
+        "src/crud_views_workflow/lib/forms.py": "ad742e0f5f486073f73dbeb3f5584cfb6baaf7b40718513956acaf7d370aaa9a",
+        "src/crud_views_workflow/lib/mixins.py": "80147c58eb08d17d370944a3dfc50d3adb2a1982b87f3181a2dec26150a146ff",
+        "src/crud_views_workflow/lib/views.py": "22fb1c4374ef9647481c1e86f0fefdd78fc166d64b24481fafc583326b4e262d",
+        "src/crud_views_workflow/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "src/crud_views_workflow/locale/de/LC_MESSAGES/django.mo": "ea980bbc52719afeec075188a1fbe1a040077753248685521d16878c270d4b86",
+        "src/crud_views_workflow/locale/de/LC_MESSAGES/django.po": "f9bdebafb35e59248277d81ba6f1bd236f428598a01a8b216da62250c948ff9b",
+        "src/crud_views_workflow/migrations/0001_initial.py": "f8350eafcc6acf18aeafce2f1e3c2862a74b371f6965048e3540e347832d4219",
+        "src/crud_views_workflow/migrations/0002_rename_workflow_object_id_to_pk.py": "a9674aa1cd420a57b23c92f8a3a6cd409792f29af7ef4e684ca2cce16349d34b",
+        "src/crud_views_workflow/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "src/crud_views_workflow/models.py": "bd17d7230ce20de7b3e295f0b7c36e0e5519d9b1e235f98cfefa8309f608e827",
+        "src/crud_views_workflow/templates/crud_views_workflow/badge.html": "343e2479c129e0e219729a8fe446f3942307e8bb393cb4724afac43f15c169c7",
+        "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html": "994ef06f7ecbb1b6f485d8a35060779a89b45ce71df8067d2253057b237c3019",
+        "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.content.html": "391f8b8fda069c909ded8c6bfc865c0d6656308184fb892b515763ee0ae4fce7",
+        "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html": "def44591ed9355a58e8460b71bc48d7fbfb54d339a1c714a80464c868a2f4c30",
+        "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.html": "c6fd1100ee76519e2195545f6c4216ea2c1fe89fe5c7fa8037bf7fa1f909ab69",
+        "tests/browser/workflow_presentation_server.py": "22b4d4c032fa209bd0919f4f97102af90fc1f2288e9e6ec5b698505f572ece1a",
+        "tests/browser/workflow-presentation.cjs": "942b313d238d42160e3058c3fad14a54888a63e06c9e2f3b7afb2787481f91cd",
+        "tests/browser/templates/conditional_formsets/page.html": "c59a26ae170de666c4c3989e748235f05b799c330f4c602a5aa480809840ad20",
+        "tests/test1/app/models.py": "a9d988813207f37e5a2c99a777c0974637d1ddf4ac6dfb9964c3f1d71fecb3f3",
+        "tests/test1/app/views.py": "3e769cdfa8909d45af9eec4fa1054638907ab5c3148f5a4d3847f08b7339c6ae"
+      },
+      "scopedDiff": "diff --git a/tests/browser/workflow-presentation.cjs b/tests/browser/workflow-presentation.cjs\nindex 5108021..e55d27c 100644\n--- a/tests/browser/workflow-presentation.cjs\n+++ b/tests/browser/workflow-presentation.cjs\n@@ -1,4 +1,309 @@\n 'use strict';\n-function validateEvidence() {}\n-function validateAssets() {}\n-module.exports = {validateEvidence, validateAssets};\n+const assert = require('node:assert/strict');\n+const fs = require('node:fs');\n+const path = require('node:path');\n+const os = require('node:os');\n+const cp = require('node:child_process');\n+const crypto = require('node:crypto');\n+const {runtime, stopOwned} = require('./cancel-navigation.cjs');\n+const root = path.resolve(__dirname, '../..');\n+const sha = value => crypto.createHash('sha256').update(value).digest('hex');\n+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));\n+const cached = (directory, suffix) => fs.existsSync(directory) ? fs.readdirSync(directory).sort().reverse().map(name => path.join(directory, name, suffix)) : [];\n+const states = ['normal', 'wide', 'no-history', 'terminal', 'neither', 'invalid'];\n+const badges = ['custom', 'missing', 'empty', 'none', 'restored'];\n+function requiredCases(selection) {\n+    return ['stock', 'tabler'].flatMap(theme => selection === 'smoke' ? [`${theme}-normal-390`, `${theme}-invalid-390`] :\n+        [...[390, 1280].flatMap(width => states.map(state => `${theme}-${state}-${width}`)),\n+            ...badges.map(badge => `${theme}-badge-${badge}`), `${theme}-modal`]);\n+}\n+function validateEvidence(report, selection) {\n+    for (const id of requiredCases(selection)) assert(report.cases.some(item => item.id === id && item.passed), `Missing case: ${id}`);\n+    assert.deepEqual(report.failures, []);\n+    assert.equal(report.cleanup.length, 2);\n+    for (const item of report.cleanup) assert(item.stopped && item.databaseRemoved, 'Owned cleanup incomplete');\n+}\n+function validateAssets(required, observed) {\n+    for (const url of required) {\n+        const item = observed.find(item => item.url === url);\n+        assert(item, `Missing required asset: ${url}`);\n+        assert.equal(item.status, 200, `Failed required asset: ${url}`);\n+    }\n+}\n+async function startOwned(executable, args, timeout = 30000) {\n+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'cv-workflow-'));\n+    const child = cp.spawn(executable, [...args, '--directory', directory], {cwd: root,\n+        env: {...process.env, PYTHONUNBUFFERED: '1'}, stdio: ['ignore', 'pipe', 'pipe']});\n+    let stdout = '', stderr = '', spawnError;\n+    child.once('error', error => {spawnError = error;});\n+    child.stdout.on('data', data => {stdout += data;});\n+    child.stderr.on('data', data => {stderr += data;});\n+    const server = {child, directory, logs: () => ({stdout, stderr})};\n+    try {\n+        const deadline = Date.now() + timeout;\n+        while (Date.now() < deadline) {\n+            if (spawnError) throw spawnError;\n+            assert(child.exitCode === null && child.signalCode === null, `Fixture startup failed: ${stderr}`);\n+            const line = stdout.split('\\n').find(line => line.startsWith('{\"ready\":'));\n+            if (line) {server.ready = JSON.parse(line); return server;}\n+            await delay(25);\n+        }\n+        throw new Error(`Fixture startup timed out: ${stderr}`);\n+    } catch (error) {\n+        error.cleanup = await cleanupServer(server);\n+        error.logs = server.logs();\n+        throw error;\n+    }\n+}\n+async function cleanupServer(server) {\n+    if (server.child.pid) await stopOwned(server.child);\n+    const stopped = !server.child.pid || server.child.exitCode !== null || server.child.signalCode !== null;\n+    assert(stopped, 'Owned process did not stop');\n+    fs.rmSync(server.directory, {recursive: true, force: true});\n+    return {pid: server.child.pid ?? null, stopped, directory: server.directory,\n+        databaseRemoved: !fs.existsSync(server.directory)};\n+}\n+function sources(companion) {\n+    const upstreamFiles = ['src/crud_views/lib/button_classes.py', 'src/crud_views/apps.py',\n+        'src/crud_views/templates/crud_views/snippets/form_frame.html',\n+        ...cp.execFileSync('git', ['ls-files', 'src/crud_views_workflow'], {cwd: root, encoding: 'utf8'}).trim().split('\\n'),\n+        'tests/browser/workflow_presentation_server.py', 'tests/browser/workflow-presentation.cjs',\n+        'tests/browser/templates/conditional_formsets/page.html', 'tests/test1/app/models.py', 'tests/test1/app/views.py'];\n+    const companionFiles = ['src/crud_views_tabler/apps.py', 'src/crud_views_tabler/buttons.py',\n+        'src/crud_views_tabler/static/crud_views_tabler/crud_views_tabler.css',\n+        'src/crud_views_tabler/templates/crud_views/snippets/form_frame.html',\n+        'src/crud_views_tabler/templates/crud_views_tabler/page.html',\n+        'src/django_tabler/templates/django_tabler/base.html', 'src/django_tabler/templates/django_tabler/layouts/app.html',\n+        'src/django_tabler/static/django_tabler/django_tabler.css'];\n+    return [[root, upstreamFiles], [companion, companionFiles]].map(([directory, files]) => ({directory,\n+        head: cp.execFileSync('git', ['rev-parse', 'HEAD'], {cwd: directory, encoding: 'utf8'}).trim(),\n+        files: Object.fromEntries(files.map(file => [file, sha(fs.readFileSync(path.join(directory, file)))])),\n+        scopedDiff: cp.execFileSync('git', ['diff', 'HEAD', '--', ...files], {cwd: directory, encoding: 'utf8'})}));\n+}\n+function declarations(theme, companion) {\n+    const file = theme === 'stock' ? path.join(root, 'tests/browser/templates/conditional_formsets/page.html') :\n+        path.join(companion, 'src/django_tabler/templates/django_tabler/base.html');\n+    return [...fs.readFileSync(file, 'utf8').matchAll(/<(?:link|script)\\b[^>]*?(?:href|src)=\"(https:[^\"]+)\"[^>]*>/gs)]\n+        .map(([tag, url]) => ({url, integrity: tag.match(/integrity=\"([^\"]+)\"/)?.[1] ?? null}));\n+}\n+async function inspect(page, expected, theme) {\n+    const result = await page.evaluate(() => {\n+        const forms = [...document.querySelectorAll('form.cv-form')];\n+        const table = document.querySelector('table');\n+        const wrapper = table?.parentElement;\n+        const heading = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].find(el => el.textContent.trim() === 'Workflow History');\n+        const actionHeading = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].find(el => el.textContent.trim() === 'Workflow Action');\n+        const content = wrapper?.parentElement;\n+        const contentStyle = content && getComputedStyle(content);\n+        let geometry = null;\n+        if (wrapper) {\n+            wrapper.scrollLeft = 100;\n+            geometry = {wrapper: wrapper.clientWidth, scrollWidth: wrapper.scrollWidth, scrollDelta: wrapper.scrollLeft,\n+                table: table.getBoundingClientRect().width, display: getComputedStyle(table).display,\n+                overflowX: getComputedStyle(wrapper).overflowX,\n+                available: content.clientWidth - parseFloat(contentStyle.paddingLeft) - parseFloat(contentStyle.paddingRight),\n+                children: [...wrapper.children].map(el => el.tagName), headers: table.querySelectorAll('th[scope=col]').length,\n+                headingOutside: !!heading && !wrapper.contains(heading),\n+                actionOutside: forms.every(form => !wrapper.contains(form)) && (!actionHeading || !wrapper.contains(actionHeading)),\n+                historyBeforeActions: !actionHeading || !!(wrapper.compareDocumentPosition(actionHeading) & Node.DOCUMENT_POSITION_FOLLOWING)};\n+            wrapper.scrollLeft = 0;\n+        }\n+        return {forms: forms.length, tokens: document.querySelectorAll('form.cv-form [name=csrfmiddlewaretoken]').length,\n+            ownership: forms.map(form => ({tokens: form.querySelectorAll('[name=csrfmiddlewaretoken]').length,\n+                submits: [...form.querySelectorAll('button[type=submit],input[type=submit]')].filter(el => el.form === form).length,\n+                method: form.getAttribute('method'), nested: form.querySelectorAll('form').length,\n+                inCard: !!form.closest('.card-body'), headingInCard: !!actionHeading && actionHeading.parentElement === form.parentElement})),\n+            actionHeading: !!actionHeading, empty: document.body.textContent.includes('There are no workflow steps available from the current state.'),\n+            error: document.body.textContent.includes('Comment is required for this transition'),\n+            table: !!table, geometry, documentWidth: document.documentElement.scrollWidth, viewport: innerWidth,\n+            font: getComputedStyle(document.body).fontFamily,\n+            badges: table ? [...table.querySelectorAll('td span')].map(el => ({text: el.textContent, classes: el.getAttribute('class'), children: el.children.length})) : []};\n+    });\n+    const choices = !['terminal', 'neither'].includes(expected);\n+    assert.equal(result.forms, choices ? 1 : 0);\n+    assert.equal(result.tokens, choices ? 1 : 0);\n+    assert.equal(result.actionHeading, choices);\n+    assert.equal(result.empty, !choices);\n+    assert.equal(result.table, !['no-history', 'neither'].includes(expected));\n+    if (choices) {\n+        assert.equal(result.ownership[0].tokens, 1); assert.equal(result.ownership[0].submits, 1);\n+        assert.equal(result.ownership[0].nested, 0); assert.equal(result.ownership[0].method, 'post');\n+        if (theme === 'tabler') assert(result.ownership[0].inCard && result.ownership[0].headingInCard);\n+    }\n+    assert(result.documentWidth <= result.viewport + 1, `Page overflow: ${JSON.stringify(result)}`);\n+    if (result.geometry) {\n+        const g = result.geometry;\n+        assert(Math.abs(g.wrapper - g.available) <= 2, `Wrapper width: ${JSON.stringify(g)}`);\n+        assert(g.table >= g.wrapper - 2, `Shrinking table: ${JSON.stringify(g)}`);\n+        assert.equal(g.display, 'table'); assert.equal(g.headers, 6); assert.deepEqual(g.children, ['TABLE']);\n+        assert(g.headingOutside && g.actionOutside && g.historyBeforeActions);\n+        if (expected === 'normal' && result.viewport === 1280) assert(Math.abs(g.table - g.wrapper) <= 2);\n+        if (expected === 'wide' || g.scrollWidth > g.wrapper + 1) {\n+            assert(g.scrollWidth > g.wrapper && g.scrollDelta > 0 && ['auto', 'scroll'].includes(g.overflowX));\n+        }\n+    }\n+    if (expected === 'invalid') assert(result.error);\n+    return result;\n+}\n+async function runTheme(browser, theme, companion, opts, report, assetCache) {\n+    const python = runtime(theme === 'stock' ? 'CV_WORKFLOW_PYTHON' : 'CV_WORKFLOW_THEME_PYTHON',\n+        [theme === 'stock' ? path.join(root, '.nox/tests-3-12-django-5-2/bin/python') : path.join(companion, '.venv/bin/python')], true);\n+    let server, context;\n+    try {\n+        server = await startOwned(python, ['tests/browser/workflow_presentation_server.py', '--theme', theme, '--companion', companion]);\n+        report.servers.push({...server.ready, executable: python});\n+        const origins = server.ready.origins;\n+        assert.equal(origins['crud_views_workflow/badge.html'], path.join(root, 'src/crud_views_workflow/templates/crud_views_workflow/badge.html'));\n+        assert.equal(origins['crud_views/snippets/form_frame.html'], path.join(theme === 'stock' ? root : companion,\n+            `src/${theme === 'stock' ? 'crud_views' : 'crud_views_tabler'}/templates/crud_views/snippets/form_frame.html`));\n+        for (const [name, filename] of Object.entries(server.ready.modules)) assert(filename.startsWith(path.join(\n+            ['crud_views', 'crud_views_workflow'].includes(name) ? root : companion, 'src') + '/'), `Stale module ${name}`);\n+        const base = `http://127.0.0.1:${server.ready.ready}`;\n+        context = await browser.newContext({viewport: {width: 390, height: 844}, serviceWorkers: 'block'});\n+        context.setDefaultTimeout(10000);\n+        const declared = declarations(theme, companion), pending = [], observed = [];\n+        await context.route('https://**/*', async route => {\n+            const url = route.request().url();\n+            try {\n+                assert(['cdn.jsdelivr.net', 'cdnjs.cloudflare.com'].includes(new URL(url).hostname), `Undeclared asset host: ${url}`);\n+                if (!assetCache.has(url)) {\n+                    const cacheFile = path.join(os.homedir(), '.cache/django-crud-views/cancel-assets-06.7', new URL(url).hostname, new URL(url).pathname);\n+                    const body = fs.existsSync(cacheFile) ? fs.readFileSync(cacheFile) : cp.execFileSync('curl', ['--fail', '--silent', '--show-error', '--location', '--max-time', '30', url], {maxBuffer: 8 * 1024 * 1024});\n+                    assetCache.set(url, {body, source: fs.existsSync(cacheFile) ? cacheFile : url});\n+                }\n+                const asset = assetCache.get(url), integrity = declared.find(item => item.url === url)?.integrity;\n+                if (integrity) {\n+                    const [algorithm, digest] = integrity.split('-');\n+                    assert.equal(crypto.createHash(algorithm).update(asset.body).digest('base64'), digest, `SRI mismatch: ${url}`);\n+                }\n+                await route.fulfill({body: asset.body, status: 200,\n+                    contentType: url.endsWith('.css') ? 'text/css' : url.endsWith('.js') ? 'text/javascript' : 'font/woff2',\n+                    headers: {'access-control-allow-origin': '*'}});\n+            } catch (error) {report.failures.push(error.message); await route.abort();}\n+        });\n+        context.on('response', response => {\n+            const url = response.url();\n+            if (!url.includes('/static/') && !url.startsWith('https:')) return;\n+            if (observed.some(item => item.url === url)) return;\n+            const record = {url, status: response.status(), theme}; observed.push(record);\n+            pending.push((async () => {\n+                record.sha256 = sha(await response.body());\n+                if (url.startsWith('https:')) record.source = assetCache.get(url)?.source;\n+                else {\n+                    const relative = new URL(url).pathname.replace(/^\\/static\\//, '');\n+                    const app = relative.split('/')[0];\n+                    record.source = path.join(['django_tabler', 'crud_views_tabler'].includes(app) ? companion : root, 'src', app, 'static', relative);\n+                    assert.equal(record.sha256, sha(fs.readFileSync(record.source)), `Static source mismatch: ${url}`);\n+                }\n+            })().catch(error => report.failures.push(error.message)));\n+        });\n+        const page = await context.newPage();\n+        page.on('pageerror', error => report.failures.push(error.message));\n+        page.on('requestfailed', request => report.failures.push(`${request.url()}: ${request.failure()?.errorText}`));\n+        assert.equal((await context.request.get(base + '/signin/')).status(), 200);\n+        async function observation() {\n+            const response = await context.request.get(base + '/observations/');\n+            const result = await response.json();\n+            assert(result.raw.maximum <= 1 && result.raw.depth === 0, 'Raw nested form');\n+            return result;\n+        }\n+        async function visit(state, width = 390, badge = null) {\n+            await page.setViewportSize({width, height: width === 390 ? 844 : 900});\n+            const response = await page.goto(`${base}/workflow/${state === 'invalid' ? 'normal' : state}/${badge ? '?badge=' + badge : ''}`);\n+            assert.equal(response.status(), 200, `Workflow GET failed: ${response.url()}; see server logs`);\n+            await page.evaluate(() => document.fonts.ready);\n+            if (state === 'invalid') {\n+                await page.locator('[name=transition][value=wf_cancel_new]').check();\n+                const posted = page.waitForResponse(response => response.request().method() === 'POST');\n+                await page.locator('form.cv-form [type=submit]').click();\n+                assert.equal((await posted).status(), 200);\n+                await page.waitForLoadState('load'); await page.evaluate(() => document.fonts.ready);\n+            }\n+            return {measurement: await inspect(page, state, theme), observation: await observation()};\n+        }\n+        for (const width of opts.case === 'smoke' ? [390] : [390, 1280]) {\n+            for (const state of opts.case === 'smoke' ? ['normal', 'invalid'] : states) {\n+                const details = await visit(state, width);\n+                const expectedClass = theme === 'stock' ? 'badge rounded-pill text-bg-light' : 'badge bg-light-lt';\n+                assert.equal(details.measurement.badges[0]?.classes ?? expectedClass, expectedClass);\n+                report.cases.push({id: `${theme}-${state}-${width}`, passed: true, ...details});\n+                if (opts.case === 'all' && width === 390 && ['normal', 'wide'].includes(state)) {\n+                    const relative = `screenshots/workflow-${theme}-${state}-390.png`;\n+                    const filename = path.resolve(path.dirname(opts.output), relative);\n+                    fs.mkdirSync(path.dirname(filename), {recursive: true});\n+                    await page.screenshot({path: filename, fullPage: true});\n+                    report.screenshots.push({path: relative, sha256: sha(fs.readFileSync(filename))});\n+                }\n+            }\n+        }\n+        if (opts.case === 'all') {\n+            for (const badge of badges) {\n+                const details = await visit('normal', 390, badge);\n+                const first = details.measurement.badges[0];\n+                const expected = badge === 'custom' ? 'badge custom-purple \" <unsafe> {{literal}}' : badge === 'missing' ? 'badge rounded-pill text-bg-purple' :\n+                    ['empty', 'none'].includes(badge) ? '' : theme === 'stock' ? 'badge rounded-pill text-bg-light' : 'badge bg-light-lt';\n+                assert.equal(first.classes, expected); assert.equal(first.children, 0);\n+                if (badge === 'custom') assert.equal(first.text, '<b>State & \"quoted\"</b>');\n+                const current = await page.evaluate(html => {\n+                    const el = new DOMParser().parseFromString(html, 'text/html').body.firstElementChild;\n+                    return {classes: el.getAttribute('class'), text: el.textContent, children: el.children.length};\n+                }, details.observation.current_badge);\n+                assert.deepEqual(current, first);\n+                report.cases.push({id: `${theme}-badge-${badge}`, passed: true, current, ...details});\n+            }\n+            const response = await context.request.get(base + '/workflow/neither/', {headers: {'X-CV-Modal': 'true'}});\n+            assert.equal(response.status(), 200);\n+            const html = await response.text(), obs = await observation();\n+            assert.equal(obs.raw.forms, 1); assert.equal(obs.raw.tokens, 1);\n+            assert(Object.keys(obs.origins).includes('crud_views/view_custom_form.content.html'));\n+            assert(!html.includes('class=\"card\"') && !html.includes('Workflow History'));\n+            const denied = await context.request.post(base + '/workflow/normal/', {form: {transition: 'wf_cancel_new', comment: ''}});\n+            assert.equal(denied.status(), 403, 'CSRF middleware was bypassed');\n+            report.cases.push({id: `${theme}-modal`, passed: true, status: response.status(), csrfMissingStatus: denied.status(), observation: obs});\n+        }\n+        await Promise.all(pending);\n+        validateAssets(declared.map(item => item.url), observed);\n+        report.assets.push(...observed);\n+    } finally {\n+        if (context) await context.close();\n+        if (server) {report.cleanup.push(await cleanupServer(server)); report.logs[theme] = server.logs();}\n+    }\n+}\n+async function main(argv = process.argv.slice(2)) {\n+    const opts = {case: 'all', output: '/tmp/cv-workflow.json'};\n+    for (let i = 0; i < argv.length; i += 2) {\n+        assert(['--case', '--output'].includes(argv[i]) && argv[i + 1], 'Use --case smoke|all --output FILE');\n+        opts[argv[i].slice(2)] = argv[i + 1];\n+    }\n+    assert(['smoke', 'all'].includes(opts.case));\n+    const report = {command: [process.execPath, __filename, ...argv], started: new Date().toISOString(),\n+        cases: [], failures: [], servers: [], assets: [], cleanup: [], screenshots: [], logs: {}};\n+    let browser;\n+    try {\n+        const companion = path.resolve(process.env.CV_WORKFLOW_COMPANION ?? path.join(root, '../tabler-test'));\n+        report.sources = sources(companion);\n+        const playwright = runtime('CV_WORKFLOW_PLAYWRIGHT', cached(path.join(os.homedir(), '.npm/_npx'), 'node_modules/playwright'));\n+        const chromium = runtime('CV_WORKFLOW_CHROMIUM', cached(path.join(os.homedir(), '.cache/ms-playwright'), 'chrome-linux64/chrome'), true);\n+        browser = await require(playwright).chromium.launch({executablePath: chromium, headless: true, args: ['--no-sandbox']});\n+        report.browser = {playwright, version: require(path.join(playwright, 'package.json')).version, chromium, versionChromium: browser.version()};\n+        const cache = new Map();\n+        for (const theme of ['stock', 'tabler']) await runTheme(browser, theme, companion, opts, report, cache);\n+        assert.deepEqual(sources(companion), report.sources, 'Sources changed during browser run');\n+        validateEvidence(report, opts.case); report.status = 'passed';\n+    } catch (error) {\n+        report.status = 'failed'; report.error = error.stack;\n+        if (error.cleanup) report.startupCleanup = error.cleanup;\n+        if (error.logs) report.startupLogs = error.logs;\n+        process.exitCode = 1;\n+    } finally {\n+        if (browser) await browser.close();\n+        report.finished = new Date().toISOString();\n+        fs.mkdirSync(path.dirname(path.resolve(opts.output)), {recursive: true});\n+        fs.writeFileSync(opts.output, JSON.stringify(report, null, 2) + '\\n');\n+        console.log(`${report.status}: ${report.cases.length} cases; ${opts.output}`);\n+        if (report.error) console.error(report.error);\n+    }\n+    return report;\n+}\n+if (require.main === module) main().catch(error => {console.error(error); process.exitCode = 1;});\n+module.exports = {validateEvidence, validateAssets, requiredCases, startOwned, cleanupServer};\n"
+    },
+    {
+      "directory": "/home/alex/projects/alex/tabler-test",
+      "head": "b35bd3b6fa1ff47b7430029f74fae9a16574f9e3",
+      "files": {
+        "src/crud_views_tabler/apps.py": "3ea360d233f21997d617389695ab5c258bf63003ae0820e39b9152ec5e271346",
+        "src/crud_views_tabler/buttons.py": "8019284ce844d72a1c2cf38e81a3da13ed436b8ddebfaedd850677d898c7fa57",
+        "src/crud_views_tabler/static/crud_views_tabler/crud_views_tabler.css": "96284ccc22ecaef74ad7c9ca3a2f63e2bd1cab7a9255384d307c820f30f74525",
+        "src/crud_views_tabler/templates/crud_views/snippets/form_frame.html": "2f9163cf38b3a52e7a1adac5544db62db35eacfb30399747bf3c6658d290458e",
+        "src/crud_views_tabler/templates/crud_views_tabler/page.html": "fc67e4de53c96133ed5c6540f4ad2e6ddb0cee68c6869a97c241ab79adddce0b",
+        "src/django_tabler/templates/django_tabler/base.html": "f4a2c38e5dcdc91a903cafcadfdc336e7a83010ffab30fc8f342794fb36011f3",
+        "src/django_tabler/templates/django_tabler/layouts/app.html": "65cc55cce45758f5c646755970794d35e52c9024a6eb312d7febc737985fea6c",
+        "src/django_tabler/static/django_tabler/django_tabler.css": "c5b20259df8c88d846db01bf265e16ce9e165ec5220e579cc750f2005bea3f96"
+      },
+      "scopedDiff": ""
+    }
+  ],
+  "browser": {
+    "playwright": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "version": "1.64.1",
+    "chromium": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "versionChromium": "149.0.7827.55"
+  },
+  "status": "passed",
+  "finished": "2026-11-05T17:18:48.145Z"
+}

@@ -16,6 +16,7 @@ from lxml import html
 from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES, FORM_KINDS, VARIANT_LOCATIONS
 from crud_views.lib.view.button_data import LOCATIONS, cv_button_data
 from crud_views.lib.view.label_mode import LABEL_MODES
+from crud_views_workflow.apps import CrudViewsWorkflowConfig
 from tests.lib.helper.user import user_viewset_permission
 
 SRC = Path(__file__).resolve().parents[2] / "src"
@@ -54,7 +55,9 @@ def test_every_literal_slot_in_templates_is_a_default_key():
         for m in LITERAL.finditer(path.read_text()):
             pairs.append(f"{m.group(2)}:{m.group(4)}")
     assert len(pairs) >= 20, pairs
-    assert sorted(set(pairs) - set(DEFAULT_BUTTON_CLASSES)) == []
+    # The scan covers all distributed apps, independently of which apps are installed.
+    shipped_defaults = DEFAULT_BUTTON_CLASSES | CrudViewsWorkflowConfig.crud_views_button_class_defaults
+    assert sorted(set(pairs) - set(shipped_defaults)) == []
 
 
 def _render_formset_controls():

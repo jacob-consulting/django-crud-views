@@ -66,15 +66,17 @@ FEATURES: list[Feature] = [
         app="library",
         group="basics",
         title="Library",
-        description="Plain CRUD, tables, filters, ordering and permission-aware protected-delete links.",
+        description="Plain CRUD, tables, filters, ordering and permission-filtered protected-delete labels.",
         about=(
             "The starting point: a plain CRUD interface built from a ViewSet. Authors and books each get a "
             "list, detail, create, update and delete view that link to one another and respect Django's "
             "permissions. The author list adds a django-tables2 table with a django-filter search box; books "
             "show manual up/down ordering. Sign in as Alice, filter last name 'Guin', and open Ursula Le Guin's "
-            "Delete action. Her publishing Contract blocks deletion; its link leaves the modal for a full page. "
+            "Delete action. Her publishing Contract blocks deletion; its permitted label is plain text. "
             "Visit /library/author/<author-pk>/delete/ directly for the full-page preview. Compare Bob's generic "
-            "hidden-blocker notice: he cannot inspect the Contract. Other authors still demonstrate Book cascades."
+            "hidden-blocker notice: he cannot inspect the Contract. Other authors demonstrate Book cascades; "
+            "Book links leave the modal for a full page. The default display limit is 50; an explicit None "
+            "shows every visible entry. Neither changes inspection or deletion protection."
         ),
         look_at=(
             "the cv_author and cv_book ViewSets and their List/Detail/Create/Update/Delete views; AuthorTable "
@@ -102,7 +104,7 @@ FEATURES: list[Feature] = [
             DocRef(page="reference/ordered_view.md", label="OrderedView — manual up/down ordering"),
             DocRef(
                 page="reference/delete_view.md",
-                label="DeleteView — protected and cascading object links",
+                label="DeleteView — plain protected labels and cascade links",
                 anchor="linking-related-objects",
             ),
         ),

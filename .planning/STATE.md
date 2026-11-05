@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "7"
+current_phase: 7
 current_phase_name: Theme-surface stability policy
-status: discussing
-stopped_at: Phase 7 needs maintainer decisions before planning
-last_updated: "2026-11-04T17:10:58.348Z"
-last_activity: 2026-11-04
-last_activity_desc: Phase 7 is next; theme-surface tier decisions remain open
-state_head: f2c271a5087eaea370c10bb4da305ae22f06c9e6
+status: "Phase 06.10 shipped — PR #317"
+stopped_at: Phase 06.10 complete, ready to plan Phase 7
+last_updated: "2026-11-05T09:33:19.523Z"
+last_activity: 2026-11-05
+state_head: 9119f39fd72eb3c76419e5ee5d53ceb014dff5b1
 progress:
-  total_phases: 16
-  completed_phases: 15
-  total_plans: 113
-  completed_plans: 113
+  total_phases: 17
+  completed_phases: 16
+  total_plans: 118
+  completed_plans: 118
+  percent: 94
 milestone_name: milestone
 ---
 
@@ -21,19 +21,81 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-04)
+See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 7 (Theme-surface stability policy) — NEEDS DISCUSSION
+Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Needs maintainer decisions before planning
-Last activity: 2026-11-04 — Phase 7 is next; the implemented theme surface is ready for tier decisions
+Status: Phase 06.10 shipped — PR #317
+Last activity: 2026-11-05
 
-Next: $gsd-discuss-phase 7 — settle the stability tiers and remaining public-surface decisions.
+Next: $gsd-discuss-phase 7
+
+### Phase 06.10 shipping — 2026-11-05
+
+- Opened PR #317: https://github.com/jacob-consulting/django-crud-views/pull/317 from `ship/phase-06.10-delete-preview-limit` to `main`. Verification passed and security threats_open is zero; all six DPV requirements and seven UAT checks complete.
+- Shipping uses a clean managed worktree; original workspace edits preserved. CI started; PR remains unmerged. Independent phase code review is clean; optional additional PR review awaits the maintainer.
+
+### Phase 06.10 acceptance closeout — 2026-11-05
+
+- All seven human UAT checks explicitly passed; canonical verification and shared UAT/completion predicates pass. All five plans and six DPV requirements complete; WINDOWS 34 resolved. Earlier pending acceptance statements below are historical.
+- Temporary Cloudflare UAT routes, copied templates, two owned authors, 54 Contracts, two Books and dedicated test user removed. Existing example service on port 9000 still returns HTTP 200.
+- Plain protected labels replace synthetic destination requests; cascade navigation remains intact. The visible-occurrence budget bounds display and selected preparation only, not complete inspection/filtering/query cost.
+- Phase 7 is ready for discussion. No LEARNINGS files exist for graduation; unrelated user edits remain separate. No push or merge performed.
+
+### Phase 06.10 independent verification — 2026-11-04
+
+- All five plans executed; canonical verification is human_needed, 18/20 deduplicated truths verified, no failed truth or implementation blocker. All 19 decisions honored; 35 original plan truths mapped. Seven human items persisted in 06.10-UAT.md; no approval inferred.
+- Validation covers six requirements and thirteen tasks, compliant; fresh 456 Python/29 Node checks pass. Deep code review of 33 files is clean, with fresh 258 Python/13 Node passes. Final verifier adds 21 named passes; current browser evidence validates all 45 cases/557 source inputs/two screenshots.
+- Security18/18 closed:17 mitigated plus existing maintainer D-12 aggregate-policy acceptance. SC disposition corrected from planned accept to verified cached/no-install mitigation; no new risk acceptance. UI20/24 with visual/keyboard/kind confirmation pending; font attribution remains historical, no product typography defect established.
+- Final-source full5.2 9,671+1expected skip, focused4.2/6.0 2,555 each, examples409+100subtests, JS365, fragments2, Node29, Ruff and strict docs remain current: no product/test/doc changes since acceptance source e59b99a. Runtime and cached Vitest limits remain explicit.
+- Phase remains In Progress; no next-phase advance, push, merge or publication. Unrelated PROJECT/config/CLAUDE/state.json and diagnostics preserved. Earlier pending-independent-review entries below are historical.
+
+### Phase 06.10 Plan 05 execution — 2026-11-04
+
+- Existing browser harness now verifies plain blockers, real visible/hidden Books, shared limits 2/3/4/None, preserved book:2 summaries, empty-detail omission and ordinary full-document Book click/Enter navigation. Final 45-case stock/copied page/modal report binds 557 source inputs, exact recipes and two screenshots; owned process/database cleanup passed.
+- Required gates passed: full Python 3.12 / Django 5.2: 9,671 passed, 1 expected Django-6-only skip; focused 4.2/6.0: 2,555 each; examples: 409 plus 100 subtests; JS: 365; fragments: 2; Node: 29; whole-tree Ruff and strict MkDocs. Broad Python runs used four workers. The isolated skipped CSP test passed on 6.0; WINDOWS 33 records that coverage.
+- Acceptance and raw output artifacts disclose Django 6.0 crispy-floor pins, cached Vitest 5.0.3 versus declared ^5.0.5, and unrun Python/full Cartesian coverage. No dependency install, production change, push or merge occurred in this plan.
+- Plan execution is 5/5; phase and shared DPV completion remain pending independent review. Human visual/keyboard/UI-kind acceptance and three presentation checks remain pending (WINDOWS 34); nyquist_compliant and wave_0_complete remain false. SDK roadmap update kept In Progress; unscoped progress update declined. Existing state.json and unrelated user changes were preserved.
+
+### Phase 06.10 Plan 04 execution — 2026-11-04
+
+- Library and Guardian Delete examples teach plain protected labels, retain independent Contract access and full-page Book cascade links, and prove finite/None display never changes blocked GET/POST row preservation. Source-sync and live/tutorial prose tests pass; models, grants, seeds and defaults are unchanged.
+- German shortening notice is compiled through existing polib, byte-identical on regeneration, and tested independently of completeness across page/modal overflow/exact/hidden-only/unlimited cases.
+- Full examples: 409 passed / 100 subtests; locale selector: 17 passed; preserved inspection/migration gate: 351 passed. Four workers, current source, Python 3.12 / Django 5.2; strict MkDocs and scoped Ruff pass. All final RED records classify RED_EVIDENCE_OK.
+- Three tasks and summary committed; roadmap 4/5, plan position 5/5. Plan 05 owns final browser/runtime acceptance; shared DPV requirements, human presentation checks and native-speaker translation review remain unclaimed. SDK progress update declined the unscoped phase; existing state.json edits were preserved.
+
+### Phase 06.10 Plan 03 execution — 2026-11-04
+
+- Exact copied content/related/body recipes retain byte/hash identity and now render one truthful shortening notice, plain protected labels and independently guarded summaries/details, including an unblocked solo root.
+- Configuration, Breaking/migration, theme and Guardian guidance document default 50, explicit None, strict checks, protected-first visible selection and full inspection/filter cost limits. Phase 7 handoff records final names and pending acceptance.
+- Final migration suite: 129 passed with four workers on current source/Python 3.12/Django 5.2. Strict MkDocs build and scoped Ruff checks passed; RED evidence independently classified RED_EVIDENCE_OK.
+- Three tasks and summary committed; roadmap 3/5, plan position 4/5. Plans 04/05 own examples/locale and final browser/runtime acceptance. Shared DPV requirements and human presentation checks remain open. SDK progress update declined the unscoped phase; scoped plan/roadmap counts advanced without marking the phase complete.
+
+### Phase 06.10 Plan 02 execution — 2026-11-04
+
+- Strict raw project/inherited view configuration supports positive integers and explicit None; default 50, E109/E265 and effective-value runtime checks include preview-off/non-strict requests.
+- Local protected-first selection preserves visible DFS occurrences, promotes hidden descendants and prepares only selected cascade URLs. One translated shortening notice reflects visible overflow; independent summary/detail guards retain solo roots and omit empty frames.
+- Final broad delete/Cancel/form/authorization/settings gate: 2,410 passed with four workers. Component measurement: 108 passed; deliberate one-query hooks match selected occurrence counts while complete inspection/filter costs remain separate.
+- All three tasks and summary committed; plan position 3/5, phase In Progress. Plans 03/04 own copied recipes, docs, examples and translations; Plan 05 owns final browser/matrix acceptance. Shared DPV requirements and human presentation/state acceptance remain open.
+
+### Phase 06.10 Plan 01 execution — 2026-11-04
+
+- Plain protected entries preserve obj/url=None and escaped labels; private destination adapter removed. Shared cascade URL, inspection, Guardian, Cancel and body-template source is unchanged.
+- Real page/modal GET/POST tracer and read-only provider/write checks pass. Preserved delete/authorization-template gate: 1,453 passed with four workers; final scoped projection/Guardian/component gate: 70 passed.
+- Fresh before/after component evidence covers core/Guardian sizes 0/1/4/8 and all preview/link flags. Protected hook/setup calls and presentation queries are zero; full inspection/filter costs remain separate and unbounded.
+- Plan 01 summary committed. Plan 02 owns the cap; shared DPV requirements stay unchecked until later obligations are verified. Phase remains In Progress; no browser/human acceptance or full runtime matrix inferred.
+
+### Phase 06.10 plan convergence — 2026-11-04
+
+- Five plans, thirteen tasks, four waves; all nineteen decisions and six DPV requirements covered.
+- Converged in four of five permitted cycles. Fable, Grok and Gemini covered all five plans; zero current HIGH, actionable non-HIGH or open plan-revision conflicts remain. Final review: 157aa73.
+- Plan checks pass: five valid structures, 25/25 coverage items and 28/28 verification failure directions. Explicit None remains unlimited; no implementation or browser acceptance is claimed.
+- Source references were checked; empty intel/signature coverage remains explicitly UNCHECKABLE. Grok's first-cycle database-lock failure recovered with the same reviewer; later OpenCode lanes ran sequentially.
 
 ### Phase 06.9 shipping — 2026-11-04
 
@@ -415,7 +477,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 113
+- Total plans completed: 118
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -438,6 +500,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.7 | 5 | - | - |
 | 06.9 | 4 | - | - |
 | 06.8 | 3 | - | - |
+| 06.10 | 5 | - | - |
 
 **Recent Trend:**
 
@@ -529,6 +592,11 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.9 P03 | 10min | 2 tasks | 6 files |
 | Phase 06.9 P03 | 7min | 2 tasks | 6 files |
 | Phase 06.9 P04 | 17min | 2 tasks | 10 files |
+| Phase 06.10 P01 | 6min | 2 tasks | 7 files |
+| Phase 06.10 P02 | 8min | 3 tasks | 14 files |
+| Phase 06.10 P03 | 6min | 3 tasks | 9 files |
+| Phase 06.10 P04 | 6min | 3 tasks | 15 files |
+| Phase 06.10 P05 | 12min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -701,6 +769,11 @@ Recent decisions affecting current work:
 - [Phase 06.9]: 02: Protected Guardian links certify actor/child/parent/permission-route topology only after native identity, composition and original-actor guards; shared request policy remains unchanged.
 - [Phase 06.9]: 03: Publish exact uniquely adjacent UTF-8/LF recipe fences and hashes; keep protected visibility, destination eligibility and actual-request authority distinct.
 - [Phase 06.9]: 04: Exact copied recipes and real page/modal anchors pass seventeen Chromium cases; focused Enter and document requests are required, with cached runtime limits and independent audits retained.
+- [Phase 06.10]: Plan 01 removes only protected destination certification; preserves shared cascade, Guardian, Cancel and inspection paths. Plain ordered obj/url=None entries are measured separately from complete inspection/filter costs.
+- [Phase 06.10]: Plan 02 resolves inherited view-first finite/None display policy with a private sentinel and independent raw project diagnostics; protected-first local selection precedes per-occurrence cascade URLs while full inspection and visibility remain complete.
+- [Phase 06.10]: Plan 03 preserves exact copied-recipe markers and null-URL bodies, migrates independent guards/notices, and documents selected-only presentation costs separately from full inspection/filtering.
+- [Phase 06.10]: Plan 04 retains example defaults/models/grants/seeds, uses test-local finite/None overrides, and teaches plain protected labels separately from ordinary Book navigation; German notice uses existing polib regeneration.
+- [Phase 06.10]: Final browser acceptance binds current source and exact recipes; human and independent phase/security/Nyquist reviews remain pending.
 
 ### Pending Todos
 
@@ -748,6 +821,7 @@ None yet.
 - Phase 06.7 inserted after Phase 06.6: Dynamic cancel navigation and origin query state (#302); approved scope and defaults; complete before Phase 7 freezes the public surface (URGENT)
 - Phase 06.8 inserted after Phase 06.7: Action tooltips: short captions and visible-label suppression (#304); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.9 inserted after Phase 06.8: Protected delete-preview object links (#307); user insertion schedules the issue before Phase 7 freezes the affected contracts (URGENT)
+- Phase 06.10 inserted after Phase 6.9: Issue #316: simplify protected-object previews and cap total displayed objects before Phase 7; no dependency on #312, #314 or the retired URL resolver (URGENT)
 
 ## Deferred Items
 
@@ -757,6 +831,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-04T17:10:58.348Z
-Stopped at: Phase 7 needs maintainer decisions before planning
-Resume file: .planning/ROADMAP.md
+Last session: 2026-11-05
+Stopped at: Phase 06.10 complete, ready to discuss Phase 7
+Resume file: None

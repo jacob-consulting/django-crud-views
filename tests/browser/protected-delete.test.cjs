@@ -17,14 +17,19 @@ function evidence(t, selection = 'all') {
     const report = {status: 'passed', sourceHashes: harness.sourceHashes(), recipeHashes: harness.recipes().hashes,
         failures: [], cleanupErrors: [], cleanup: {stopped: true, databaseRemoved: true}, screenshots: [], cases: []};
     for (const id of harness.requiredCases(selection)) {
-        const nav = id.endsWith('-click') || id.endsWith('-enter') || id === 'stock-repeat', href = 'http://127.0.0.1:123/contract/1/detail/';
+        const nav = id.endsWith('-click') || id.endsWith('-enter') || id === 'stock-repeat', href = 'http://127.0.0.1:123/book/1/detail/';
+        const hidden = id.endsWith('hidden-only') || id.endsWith('preview-off');
         report.cases.push({id, passed: true, mode: id.startsWith('custom-') ? 'custom' : 'stock', sourceKind: id.includes('-modal-') ? 'modal' : 'page',
             activation: nav ? (id.endsWith('-enter') ? 'Enter' : 'click') : 'none', href: nav ? href : null,
             beforeUrl: 'http://127.0.0.1:123/delete/', afterUrl: nav ? href : 'http://127.0.0.1:123/delete/',
             detailStatus: nav ? 200 : null, detailModalHeader: null, requestResourceType: nav ? 'document' : null,
             focusedAnchorBeforeEnter: true, activeElementTag: 'A', activeElementHref: href,
-            dom: Object.fromEntries(['noHiddenLabel', 'noHiddenHref', 'wholeFormAbsent', 'sharedAlert', 'recipeIdentity', 'escapedLabel',
-                'fullDocument', 'sameRow', 'ordinaryAnchor', 'modalCapable', 'linkDisabledText', 'previewDisabledHidden'].map(key => [key, true]))});
+            dom: {...Object.fromEntries(['noHiddenLabel', 'noHiddenHref', 'wholeFormAbsent', 'sharedAlert', 'recipeIdentity', 'escapedLabel',
+                'fullDocument', 'sameRow', 'ordinaryAnchor', 'modalCapable', 'linkDisabledText', 'previewDisabledHidden', 'plainProtected'].map(key => [key, true])),
+                displayedCount: hidden ? 0 : id.endsWith('blockers-exhaust') ? 2 : id.endsWith('finite-over') ? 3 : 4,
+                shortenedNoticeCount: /(?:blockers-exhaust|finite-over)$/.test(id) ? 1 : 0,
+                summaryBookCount: id.endsWith('preview-off') ? null : 2,
+                detailsAbsent: hidden || id.endsWith('blockers-exhaust')}});
     }
     fs.mkdirSync(path.join(dir, 'screenshots'));
     for (const mode of ['stock', 'custom']) {
@@ -46,7 +51,7 @@ test('navigation evidence rejects false success, modal requests and wrong rows',
         const original = item[key]; item[key] = value; assert.throws(() => harness.validateEvidence(f.report, 'all', f.output)); item[key] = original;
     }
     for (const key of Object.keys(item.dom)) {
-        if (['linkDisabledText', 'previewDisabledHidden'].includes(key)) continue;
+        if (['linkDisabledText', 'previewDisabledHidden', 'displayedCount', 'shortenedNoticeCount', 'summaryBookCount', 'detailsAbsent'].includes(key)) continue;
         item.dom[key] = false; assert.throws(() => harness.validateEvidence(f.report, 'all', f.output)); item.dom[key] = true;
     }
 });
@@ -56,6 +61,32 @@ test('Enter requires exact anchor focus and document resource type', t => {
         const original = item[key]; item[key] = value; assert.throws(() => harness.validateEvidence(f.report, 'all', f.output)); item[key] = original;
     }
     delete item.focusedAnchorBeforeEnter; assert.throws(() => harness.validateEvidence(f.report, 'all', f.output));
+});
+test('matrix covers capped plain previews on every stock/custom page/modal surface', () => {
+    const ids = harness.requiredCases('all');
+    for (const mode of ['stock', 'custom']) for (const kind of ['page', 'modal']) {
+        for (const scenario of ['finite-exact', 'finite-over', 'blockers-exhaust', 'hidden-tail', 'unlimited', 'hidden-only', 'preview-off', 'escaping']) {
+            assert(ids.includes(`${mode}-${kind}-${scenario}`), `Missing ${mode}-${kind}-${scenario}`);
+        }
+    }
+});
+test('evidence rejects protected anchors and false preview counts', t => {
+    const f = evidence(t), item = f.report.cases[0];
+    for (const [key, value] of Object.entries({plainProtected: false, displayedCount: 99, shortenedNoticeCount: 1, summaryBookCount: 0, detailsAbsent: true})) {
+        const original = item.dom[key]; item.dom[key] = value;
+        assert.throws(() => harness.validateEvidence(f.report, 'all', f.output), undefined, key);
+        item.dom[key] = original;
+        delete item.dom[key]; assert.throws(() => harness.validateEvidence(f.report, 'all', f.output), undefined, `Missing ${key}`);
+        item.dom[key] = original;
+    }
+});
+test('evidence rejects missing shortening and an empty detail frame when blockers exhaust the budget', t => {
+    const f = evidence(t), item = f.report.cases.find(item => item.id === 'custom-modal-blockers-exhaust');
+    assert(item, 'Missing blocker-exhaustion case');
+    for (const [key, value] of Object.entries({shortenedNoticeCount: 0, detailsAbsent: false, summaryBookCount: 0, displayedCount: 3})) {
+        const original = item.dom[key]; item.dom[key] = value;
+        assert.throws(() => harness.validateEvidence(f.report, 'all', f.output)); item.dom[key] = original;
+    }
 });
 test('evidence rejects stale source, recipe, screenshot and failed cleanup', t => {
     const f = evidence(t);

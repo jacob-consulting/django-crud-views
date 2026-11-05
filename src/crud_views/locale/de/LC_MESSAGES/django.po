@@ -225,6 +225,10 @@ msgstr "Dieses Objekt kann nicht gelöscht werden:"
 msgid "This preview is incomplete. Custom deletion behavior may affect additional objects."
 msgstr "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen."
 
+#: templates/crud_views/snippets/delete/related_objects.html:5
+msgid "This preview is shortened. Additional objects are not shown."
+msgstr "Diese Vorschau ist gekürzt. Weitere Objekte werden nicht angezeigt."
+
 #: templates/crud_views/snippets/delete/related_objects.html:15
 msgid "Some related objects that will also be deleted (partial counts):"
 msgstr "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):"

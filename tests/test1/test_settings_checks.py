@@ -104,3 +104,19 @@ def test_theme_and_valid_project_floors_are_quiet():
     register_label_mode_defaults({"form": "both", "card": "icon"})
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "label"}):
         assert CrudViewsSettings().check_messages == []
+
+
+@pytest.mark.parametrize("value", [None, 1, 50, True, "4", 0, [], {}])
+def test_delete_preview_limit_precedence_setting_load(settings, value):
+    import runpy
+    from pathlib import Path
+
+    import crud_views.lib.settings as settings_module
+
+    settings.CRUD_VIEWS_DELETE_PREVIEW_LIMIT = value
+    # Execute an isolated settings model, without replacing the process-wide singleton.
+    captured = runpy.run_path(str(Path(settings_module.__file__)))["crud_views_settings"]
+    assert captured.delete_preview_limit == value
+    assert type(captured.delete_preview_limit) is type(value)
+    valid = value is None or (type(value) is int and value > 0)
+    assert any(message.id == "crud_views.E109" for message in captured.check_messages) is not valid

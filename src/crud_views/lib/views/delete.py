@@ -1,21 +1,15 @@
 import logging
-import re
 from collections.abc import Iterable
 from contextlib import nullcontext
-from copy import copy
 from functools import partial
-from inspect import getattr_static, signature
+from inspect import signature
 from typing import ClassVar
-from urllib.parse import unquote, urlsplit
 
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from django.core.exceptions import ImproperlyConfigured
 from django.db import connections, router, transaction
 from django.db.models import Model
-from django.http import Http404, QueryDict
-from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve, reverse
+from django.urls import NoReverseMatch, reverse
 from django.views import generic
-from django.views.generic.detail import SingleObjectMixin
 
 from crud_views.lib.check import Check, CheckExpression
 from crud_views.lib.deletion import (
@@ -32,6 +26,7 @@ from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.views.mixins import CrudViewProcessFormMixin
 
 logger = logging.getLogger(__name__)
+_DELETE_PREVIEW_UNSET = object()
 
 
 class _DeleteMethodGuardMixin:
@@ -68,6 +63,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
     # related objects
     cv_show_related_objects: bool = False
     cv_link_related_objects: bool = False
+    cv_delete_preview_limit = _DELETE_PREVIEW_UNSET
 
     # texts and labels
     cv_header_template: str | None = "crud_views/snippets/header/delete.html"
@@ -85,6 +81,13 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
     @classmethod
     def checks(cls) -> Iterable[Check]:
         yield from super().checks()
+        limit = cls.cv_delete_preview_limit
+        yield CheckExpression(
+            context=cls,
+            id="E265",
+            expression=limit is _DELETE_PREVIEW_UNSET or limit is None or (type(limit) is int and limit > 0),
+            msg="cv_delete_preview_limit must be None or a positive integer when explicitly configured.",
+        )
         yield CheckExpression(
             context=cls,
             id="E263",
@@ -209,168 +212,6 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
                     return None
         return None
 
-    def _cv_get_protected_object_url(self, obj) -> str | None:
-        """Check the exact candidate's registered detail policy without dispatching it.
-
-        Visibility is already filtered by the caller. The actual detail request still
-        owns application middleware, dispatch and custom get_object enforcement.
-        """
-        from crud_views.lib.viewset import _REGISTRY
-
-        candidate = self.cv_get_related_object_url(obj)
-        if not isinstance(candidate, str) or not candidate:
-            return None
-
-        def local_path(value):
-            return (
-                value.startswith("/")
-                and not value.startswith("//")
-                and "\\" not in value
-                and not any(ord(char) < 32 or ord(char) == 127 for char in value)
-            )
-
-        # urlsplit strips some leading controls: validate the original first.
-        if not local_path(candidate):
-            return None
-        try:
-            parsed = urlsplit(candidate)
-            if parsed.scheme or parsed.netloc or re.search(r"%(?:2f|5c)", parsed.path, re.IGNORECASE):
-                return None
-            path = unquote(parsed.path, errors="strict")
-        except (ValueError, UnicodeError):
-            return None
-        if not local_path(path):
-            return None
-        prefix = get_script_prefix()
-        if not path.startswith(prefix):
-            return None
-        path_info = "/" + path[len(prefix) :]
-        try:
-            match = resolve(path_info, urlconf=getattr(self.request, "urlconf", None))
-        except Resolver404:
-            return None
-        target = getattr(match.func, "view_class", None)
-        viewset = getattr(target, "cv_viewset", None)
-        if (
-            not isinstance(target, type)
-            or not issubclass(target, SingleObjectMixin)
-            or not getattr(target, "cv_object", False)
-            or viewset is None
-            or not any(registered is viewset for registered in _REGISTRY.values())
-            or not viewset.is_view_registered("detail")
-            or viewset.get_view_class("detail") is not target
-        ):
-            return None
-        if issubclass(target, CrudViewPermissionRequiredMixin):
-            # The classmethod policy only certifies the stock instance permission
-            # contract. Inspect descriptors without evaluating application code.
-            if any(
-                getattr_static(target, name) is not getattr_static(CrudViewPermissionRequiredMixin, name)
-                for name in ("permission_required", "get_permission_required")
-            ):
-                return None
-            permission_bases = (PermissionRequiredMixin, CrudViewPermissionRequiredMixin)
-            if any(base.__module__ == "crud_views_guardian.lib.mixins" for base in target.__mro__):
-                from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin, GuardianParentPermissionMixin
-
-                permission_bases += (GuardianObjectPermissionMixin, GuardianParentPermissionMixin)
-            # Guardian's parent gate delegates to super(), so certify the inherited
-            # chain too, rather than only the first effective has_permission method.
-            if any(
-                "has_permission" in base.__dict__
-                and not any(base.__dict__["has_permission"] is stock.has_permission for stock in permission_bases)
-                for base in target.__mro__
-            ):
-                return None
-        initkwargs = match.func.view_initkwargs
-        for name, value in initkwargs.items():
-            # Classmethod policy cannot certify instance-only authorization overrides.
-            if name == "permission_required" or (
-                (name.startswith(("cv_", "_cv_")) or callable(getattr(target, name, None)))
-                and value != getattr(target, name, None)
-            ):
-                return None
-
-        request = copy(self.request)
-        request.META = self.request.META.copy()
-        request.META.pop("HTTP_X_CV_MODAL", None)
-        request.__dict__.pop("headers", None)
-        request.method = "GET"
-        request.path = path
-        request.path_info = path_info
-        request.GET = QueryDict(parsed.query)
-        request.POST = QueryDict()
-        request.META.update(
-            REQUEST_METHOD="GET", PATH_INFO=path_info, SCRIPT_NAME=prefix.rstrip("/"), QUERY_STRING=parsed.query
-        )
-        request.resolver_match = match
-        destination = target(**initkwargs)
-        destination.setup(request, *match.args, **match.kwargs)
-        # Application queryset errors must propagate; only native missing-row lookup
-        # and explicit policy denial mean an unavailable destination.
-        queryset = destination.get_queryset()
-        try:
-            fetched = SingleObjectMixin.get_object(destination, queryset=queryset)
-        except Http404 as error:
-            origin = error.__traceback__
-            while origin.tb_next is not None:
-                origin = origin.tb_next
-            if origin.tb_frame.f_code is not SingleObjectMixin.get_object.__code__:
-                raise
-            return None
-        if (
-            fetched._meta.concrete_model is not obj._meta.concrete_model
-            or type(fetched.pk) is not type(obj.pk)
-            or fetched.pk != obj.pk
-            or fetched._state.db != obj._state.db
-        ):
-            return None
-        destination.object = fetched
-        try:
-            # Only load the optional extension when an actual Guardian base is
-            # already present. Core detail views need no Guardian dependency.
-            if any(base.__module__ == "crud_views_guardian.lib.mixins" for base in target.__mro__):
-                from crud_views_guardian.lib.mixins import (
-                    GuardianObjectPermissionMixin,
-                    GuardianParentPermissionMixin,
-                    _guardian_inactive_actor,
-                )
-                from crud_views_guardian.lib.views import _PermittedPks
-
-                if issubclass(target, (GuardianObjectPermissionMixin, GuardianParentPermissionMixin)):
-                    parented = issubclass(target, GuardianParentPermissionMixin)
-                    if parented:
-                        error = target._guardian_child_composition_error()
-                        if error:
-                            raise ImproperlyConfigured(error)
-                    # Stored anonymous-user grants must never replace the original
-                    # request's authentication gate, even on a supported topology.
-                    if not request.user.is_authenticated or _guardian_inactive_actor(request.user):
-                        return None
-                    using = fetched._state.db
-                    projection = _PermittedPks(request.user, target.cv_guardian_accept_global_perms)
-                    actor = projection._projection_actor(type(fetched), using=using)
-                    if actor is None:
-                        return None
-                    request.user = actor
-                    if parented and viewset.parent is not None:
-                        parent = destination._cv_cancel_parent_object()
-                        if (
-                            parent is None
-                            or parent._state.adding
-                            or parent.pk is None
-                            or parent._state.db != using
-                            or projection._projection_actor(type(parent), using=using) is None
-                        ):
-                            return None
-                        # This fresh instance is used for one candidate only. Reuse
-                        # the certified parent without repeating application hooks.
-                        destination._cv_cancel_parent_object = lambda: parent
-            available = target._cv_cancel_target_available(request.user, fetched, destination)
-        except PermissionDenied:
-            return None
-        return candidate if available else None
-
     @staticmethod
     def _walk_nested(items):
         for item in items:
@@ -379,26 +220,51 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
             elif item is not None and hasattr(item, "_meta"):
                 yield item
 
-    def _build_display_tree(self, items, urls):
-        result = []
-        i = 0
-        while i < len(items):
-            item = items[i]
-            if isinstance(item, (list, tuple)):
-                # Nested list without preceding instance -- flatten
-                result.extend(self._build_display_tree(item, urls))
+    def _cv_select_delete_preview(self, related, limit):
+        """Select visible occurrences without labels/URLs; one local budget, blockers first."""
+        remaining = limit
+        truncated = False
+
+        def take_slot():
+            nonlocal remaining, truncated
+            if remaining == 0:
+                truncated = True
+                return False
+            if remaining is not None:
+                remaining -= 1
+            return True
+
+        protected = []
+        for obj in related.protected:
+            if obj is not None:
+                if not take_slot():
+                    break
+                protected.append({"obj": obj, "url": None})
+
+        def select_tree(items):
+            result = []
+            i = 0
+            while i < len(items) and not truncated:
+                item = items[i]
                 i += 1
-            else:
-                # Model instance or None
+                if isinstance(item, (list, tuple)):
+                    # Standalone nested lists have no parent row.
+                    result.extend(select_tree(item))
+                    continue
                 children = []
-                if i + 1 < len(items) and isinstance(items[i + 1], (list, tuple)):
-                    children = self._build_display_tree(items[i + 1], urls)
-                    i += 2
-                else:
+                if i < len(items) and isinstance(items[i], (list, tuple)):
+                    children = items[i]
                     i += 1
-                url = urls.get(id(item)) if item is not None else None
-                result.append({"obj": item, "url": url, "children": children})
-        return result
+                if item is None:
+                    result.extend(select_tree(children))
+                else:
+                    if not take_slot():
+                        break
+                    result.append({"obj": item, "url": None, "children": select_tree(children)})
+            return result
+
+        tree = select_tree(related.tree)
+        return protected, tree, truncated
 
     def cv_filter_related_objects(self, user, related: RelatedObjects) -> RelatedObjects:
         permission_cache = {}
@@ -429,7 +295,18 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         protected = [obj for obj in related.protected if _has_view_permission(obj._meta.model)]
         return RelatedObjects(tree=filtered_tree, summary=related.summary, protected=protected)
 
+    def _cv_get_delete_preview_limit(self) -> int | None:
+        limit = self.cv_delete_preview_limit
+        if limit is _DELETE_PREVIEW_UNSET:
+            limit = crud_views_settings.delete_preview_limit
+        if limit is not None and (type(limit) is not int or limit <= 0):
+            raise ImproperlyConfigured(
+                "cv_delete_preview_limit / CRUD_VIEWS_DELETE_PREVIEW_LIMIT must be None or a positive integer"
+            )
+        return limit
+
     def get_context_data(self, **kwargs):
+        limit = self._cv_get_delete_preview_limit()
         context = super().get_context_data(**kwargs)
         errors = self.cv_check_delete_protection()
         if errors:
@@ -443,19 +320,18 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
             related = self.cv_filter_related_objects(self.request.user, related)
             context["related_summary"] = related.summary
             context["related_summary_items"] = [f"{name}: {count}" for name, count in related.summary.items()]
-            context["protected_objects"] = [
-                {"obj": obj, "url": self._cv_get_protected_object_url(obj) if self.cv_link_related_objects else None}
-                for obj in related.protected
-            ]
+            protected, tree, truncated = self._cv_select_delete_preview(related, limit)
+            context["protected_objects"] = protected
+            context["related_objects"] = tree
+            context["delete_preview_truncated"] = truncated
 
-            urls = {}
+            def prepare_urls(nodes):
+                for node in nodes:
+                    node["url"] = self.cv_get_related_object_url(node["obj"]) or None
+                    prepare_urls(node["children"])
+
             if self.cv_link_related_objects:
-                for obj in self._walk_nested(related.tree):
-                    url = self.cv_get_related_object_url(obj)
-                    if url:
-                        urls[id(obj)] = url
-
-            context["related_objects"] = self._build_display_tree(related.tree, urls)
+                prepare_urls(tree)
         return context
 
     def cv_check_delete_protection(self) -> list[str]:

@@ -62,115 +62,9 @@ def guardian_protected_destination(monkeypatch, settings):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize(
-    "policy",
-    [
-        "user",
-        "group",
-        "global",
-        "strict",
-        "superuser",
-        "inactive",
-        "parent-denied",
-        "parent-none",
-        "disabled",
-        "excluded",
-    ],
-)
-def test_guardian_protected_target_policy(
-    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, policy
-):
-    from django.contrib.auth.models import Group, Permission
-    from guardian.shortcuts import assign_perm
-
-    from tests.test1.app.models import Contract
-
-    blocker = Contract.objects.create(title="Visible independently", publisher=publisher_a)
-    actor = user_guardian
-    actor.user_permissions.add(Permission.objects.get(codename="view_contract"))
-    case = guardian_protected_destination(actor, blocker)
-    assign_perm("view_publisher", actor, publisher_a)
-    if policy not in {"strict", "global"}:
-        grantee = actor
-        if policy == "group":
-            grantee = Group.objects.create(name="target readers")
-            actor.groups.add(grantee)
-        assign_perm("view_contract", grantee, blocker)
-    if policy == "global":
-        monkeypatch.setattr(case.target, "cv_guardian_accept_global_perms", True)
-    if policy == "parent-denied":
-        from guardian.shortcuts import remove_perm
-
-        remove_perm("view_publisher", actor, publisher_a)
-    if policy == "parent-none":
-        monkeypatch.setattr(case.viewset, "cv_guardian_parent_permission", None)
-    if policy in {"superuser", "inactive"}:
-        actor.is_superuser = True
-        actor.is_active = policy != "inactive"
-        actor.save()
-    if policy == "disabled":
-        monkeypatch.setattr(case.target, "cv_action_enabled", classmethod(lambda *args: False))
-    if policy == "excluded":
-        monkeypatch.setattr(case.target, "get_queryset", lambda self: Contract.objects.none())
-    permitted = policy not in {"strict", "inactive", "parent-denied", "disabled", "excluded"}
-    assert case.source._cv_get_protected_object_url(blocker) == (case.url if permitted else None)
-    assert len(case.calls) == int(permitted)
-    # An independent real GET retains the original actor, including inactive accounts.
-    from django.core.exceptions import PermissionDenied
-    from django.http import Http404
-    from django.test import RequestFactory
-    from django.urls import resolve
-
-    match = resolve(case.url)
-    request = RequestFactory().get(case.url)
-    request.user = actor
-    request.session = {}
-    if permitted:
-        assert match.func(request, **match.kwargs).status_code == 200
-    else:
-        with pytest.raises(Http404 if policy == "excluded" else PermissionDenied):
-            match.func(request, **match.kwargs)
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize("error_type", ["parent", "composition", "missing-child"])
-def test_protected_target_error_boundaries(
-    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, error_type
-):
-    from django.core.exceptions import ImproperlyConfigured
-    from django.http import Http404
-
-    from tests.test1.app.models import Contract
-
-    blocker = Contract.objects.create(title="Reachable", publisher=publisher_a)
-    case = guardian_protected_destination(user_guardian, blocker)
-    entered = []
-
-    def parent(self):
-        entered.append("parent")
-        raise Http404("application parent")
-
-    def composition(cls):
-        entered.append("composition")
-        return "invalid composition"
-
-    monkeypatch.setattr(case.target, "cv_get_parent_object", parent)
-    if error_type != "parent":
-        monkeypatch.setattr(case.target, "_guardian_child_composition_error", classmethod(composition))
-    if error_type == "missing-child":
-        monkeypatch.setattr(case.target, "get_queryset", lambda self: Contract.objects.none())
-        assert case.source._cv_get_protected_object_url(blocker) is None
-        assert entered == []
-    else:
-        with pytest.raises(Http404 if error_type == "parent" else ImproperlyConfigured):
-            case.source._cv_get_protected_object_url(blocker)
-        assert entered == [error_type]
-
-
-@pytest.mark.django_db
 @pytest.mark.parametrize("source_global", [False, True])
 @pytest.mark.parametrize("target_global", [False, True])
-def test_guardian_protected_independent_source_policy(
+def test_plain_protected_guardian_independent_source_policy(
     guardian_protected_destination, user_guardian, publisher_a, monkeypatch, source_global, target_global
 ):
     from types import MethodType
@@ -195,43 +89,137 @@ def test_guardian_protected_independent_source_policy(
     )
     monkeypatch.setattr(case.target, "cv_guardian_accept_global_perms", target_global)
     assert case.source.cv_filter_related_objects(actor, RelatedObjects([], {}, [blocker])).protected == [blocker]
-    assert case.source._cv_get_protected_object_url(blocker) == (
-        case.url if target_global or not source_global else None
-    )
+    monkeypatch.setattr(case.target, "setup", lambda *a, **kw: pytest.fail("Protected destination constructed"))
+    assert case.source.get_context_data()["protected_objects"] == [{"obj": blocker, "url": None}]
+    assert case.calls == []
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("parent_mode", ["valid", "missing", "none-policy", "wrong-coordinate"])
-def test_guardian_protected_parent_resolution(
-    guardian_protected_destination, user_guardian, publisher_a, monkeypatch, parent_mode
+@pytest.mark.parametrize("preview", [False, True])
+@pytest.mark.parametrize("link", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+def test_plain_protected_guardian_requests(
+    client_guardian, user_guardian, publisher_a, monkeypatch, preview, link, modal
 ):
-    from guardian.shortcuts import assign_perm
+    from django.utils.html import escape
 
-    from tests.test1.app.models import Contract, Publisher
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView, cv_guardian_publisher_cascade
 
-    blocker = Contract.objects.create(title="Parent owned", publisher=publisher_a)
-    actor = user_guardian
-    assign_perm("view_contract", actor, blocker)
-    assign_perm("view_publisher", actor, publisher_a)
-    case = guardian_protected_destination(actor, blocker)
-    native_parent = case.target.cv_get_parent_object
-    parents = []
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher_cascade, "delete", publisher_a)
+    visible = _contract(publisher_a, '<script>alert("visible")</script>')
+    hidden = _contract(publisher_a, "Secret hidden label")
+    _grant_contract(user_guardian, visible)
+    view = GuardianPublisherCascadeDeleteView
+    monkeypatch.setattr(view, "cv_show_related_objects", preview)
+    monkeypatch.setattr(view, "cv_link_related_objects", link)
+    monkeypatch.setattr(view, "cv_modal", modal)
+    native = view.cv_get_related_object_url
 
-    def parent(self):
-        parents.append(self.kwargs.copy())
-        return None if parent_mode == "missing" else native_parent(self)
+    def url(self, obj):
+        assert not isinstance(obj, Contract), "Protected blocker reached shared URL hook"
+        return native(self, obj)
 
-    monkeypatch.setattr(case.target, "cv_get_parent_object", parent)
-    if parent_mode == "none-policy":
-        monkeypatch.setattr(case.viewset, "cv_guardian_parent_permission", None)
-    if parent_mode == "wrong-coordinate":
-        other = Publisher.objects.create(name="Wrong parent")
-        candidate = case.url.replace(f"/publisher/{publisher_a.pk}/", f"/publisher/{other.pk}/")
-        monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: candidate)
-    allowed = parent_mode in {"valid", "none-policy"}
-    assert case.source._cv_get_protected_object_url(blocker) == (case.url if allowed else None)
-    assert len(parents) == int(parent_mode != "wrong-coordinate")
-    assert len(case.calls) == int(allowed)
+    monkeypatch.setattr(view, "cv_get_related_object_url", url)
+    headers = {"HTTP_X_CV_MODAL": "true"} if modal else {}
+    for method in ("get", "get", "post"):
+        response = getattr(client_guardian, method)(
+            f"/guardian_publisher_cascade/{publisher_a.pk}/delete/", {"confirm": "on"}, **headers
+        )
+        assert response.status_code == (422 if modal and method == "post" else 200)
+        assert response.context["has_protected_objects"] is True
+        if preview:
+            assert response.context["protected_objects"] == [{"obj": visible, "url": None}]
+        else:
+            assert "protected_objects" not in response.context
+        content = response.content.decode()
+        assert (str(escape(visible.title)) in content) is preview
+        assert "<script>alert" not in content
+        assert hidden.title not in content
+        assert "<form" not in content
+        publisher_a.refresh_from_db()
+        visible.refresh_from_db()
+        hidden.refresh_from_db()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("limit", [50, None])
+@pytest.mark.parametrize("visible", [False, True])
+@pytest.mark.parametrize("preview", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+def test_guardian_delete_preview_limit_blocking(
+    client_guardian, user_guardian, publisher_a, monkeypatch, limit, visible, preview, modal
+):
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView, cv_guardian_publisher_cascade
+
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher_cascade, "delete", publisher_a)
+    blockers = [_contract(publisher_a, f"BLOCKER-{i:03d}") for i in range(60)]
+    if visible:
+        for obj in blockers:
+            _grant_contract(user_guardian, obj)
+    hidden = _contract(publisher_a, "HIDDEN-BLOCKER")
+    view = GuardianPublisherCascadeDeleteView
+    monkeypatch.setattr(view, "cv_delete_preview_limit", limit)
+    monkeypatch.setattr(view, "cv_show_related_objects", preview)
+    monkeypatch.setattr(view, "cv_link_related_objects", True)
+    monkeypatch.setattr(view, "cv_modal", modal)
+    monkeypatch.setattr(view, "cv_get_related_object_url", lambda *a: pytest.fail("No cascade row is visible"))
+    if not preview:
+        monkeypatch.setattr(view, "cv_filter_related_objects", lambda *a: pytest.fail("Preview-off filtering"))
+        monkeypatch.setattr(view, "_cv_select_delete_preview", lambda *a: pytest.fail("Preview-off selection"))
+    for method in ("get", "get", "post"):
+        response = getattr(client_guardian, method)(
+            f"/guardian_publisher_cascade/{publisher_a.pk}/delete/",
+            {"confirm": "on"},
+            HTTP_X_CV_MODAL="true" if modal else "false",
+        )
+        assert response.status_code == (422 if modal and method == "post" else 200)
+        assert response.context["has_protected_objects"] is True
+        content = response.content.decode()
+        assert "<form" not in content and hidden.title not in content
+        expected = blockers[:limit] if preview and visible else []
+        if preview:
+            assert response.context["protected_objects"] == [{"obj": obj, "url": None} for obj in expected]
+            assert response.context["related_objects"] == []
+            assert response.context["delete_preview_truncated"] is (visible and limit == 50)
+        else:
+            for key in ("protected_objects", "related_objects", "related_summary", "delete_preview_truncated"):
+                assert key not in response.context
+        for obj in blockers:
+            assert (obj.title in content) is (obj in expected)
+        publisher_a.refresh_from_db()
+        assert Contract.objects.filter(publisher=publisher_a).count() == 61
+
+
+@pytest.mark.django_db
+def test_delete_preview_selection_interleaved_guardian_actors(user_guardian, publisher_a):
+    from django.contrib.auth.models import User
+    from django.test import RequestFactory
+
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView
+
+    other = User.objects.create_user(username="other-preview-actor")
+    blockers = [_contract(publisher_a, f"Actor-specific {i}") for i in range(3)]
+    for obj in blockers[:2]:
+        _grant_contract(user_guardian, obj)
+    _grant_contract(other, blockers[2])
+    views = []
+    for actor, limit in ((user_guardian, 1), (other, None)):
+        request = RequestFactory().get("/preview/")
+        request.user = actor
+        view = GuardianPublisherCascadeDeleteView()
+        view.setup(request, pk=publisher_a.pk)
+        view.object = publisher_a
+        view.cv_delete_preview_limit = limit
+        views.append(view)
+    for view, expected, shortened in [(views[0], blockers[:1], True), (views[1], blockers[2:], False)] * 2:
+        context = view.get_context_data()
+        assert context["protected_objects"] == [{"obj": obj, "url": None} for obj in expected]
+        assert context["related_objects"] == []
+        assert context["delete_preview_truncated"] is shortened
+        assert context["has_protected_objects"] is True
+        assert len(view._cv_inspect_deletion().related.protected) == 3
 
 
 @pytest.mark.django_db

@@ -20,11 +20,12 @@ from django.template import Context, engines
 from django.test import Client, override_settings
 from django.test.utils import isolate_apps
 from django.urls import clear_url_caches, resolve
+from django.utils.translation import gettext
 from django.utils.translation import override as language_override
 from lxml import html
 
 from crud_views.lib import check as check_module
-from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion
+from crud_views.lib.deletion import DeletePreviewContribution, RelatedObjects, inspect_deletion
 from crud_views.lib.views import DeleteView, DetailViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
 from tests.test1.test_label_mode_docs import DOCS, FENCE, ROOT, _anchors, _section
@@ -35,6 +36,7 @@ OVERRIDE = "### Safe deletion preview overrides"
 EFFECT = "### Describing custom deletion effects"
 TEMPLATES = "### Copied delete templates with incomplete previews"
 NOTICE = "This preview is incomplete. Custom deletion behavior may affect additional objects."
+SHORTENED = "This preview is shortened. Additional objects are not shown."
 GENERIC = "Other objects still reference this one; remove or reassign them before deleting it."
 
 
@@ -308,14 +310,8 @@ def test_protected_migration_recipe(recipes, modal, mode):
             assert body.getparent().get("role") == "alert"
             assert [item.text_content() for item in body.cssselect("li")] == [str(linked), str(plain)]
             assert not body.cssselect("b, script")
-            links = body.cssselect("a")
-            assert len(links) == (1 if mode == "linked" else 0)
-            if links:
-                href = links[0].get("href")
-                assert resolve(href).func.view_class is r.detail
-                destination = r.client.get(href)
-                assert destination.status_code == 200 and destination.context["object"] == linked
-                assert set(links[0].attrib) == {"href"}
+            assert not body.cssselect("a")
+            assert response.context["protected_objects"] == [{"obj": linked, "url": None}, {"obj": plain, "url": None}]
     assert r.events == [] and r.Document.objects.filter(pk=r.target.pk).exists()
     assert r.Blocker.objects.count() == 2
 
@@ -354,21 +350,22 @@ def test_protected_theme_recipe(recipes, custom, language):
     snippet = bodies["related"] if custom else fences[0]
     template = engines["django"].engine.from_string("{% autoescape off %}" + snippet + "{% endautoescape %}")
     obj = '<script>hostile "label"</script>'
-    url = '/detail/?value=" onmouseover="alert(1)&other=<value>'
     with language_override(language):
         markup = template.render(
             Context(
                 {
                     "has_protected_objects": True,
-                    "protected_objects": [{"obj": obj, "url": url}, {"obj": "Text fallback", "url": None}],
+                    "protected_objects": [{"obj": obj, "url": None}, {"obj": "Text fallback", "url": None}],
+                    "delete_preview_truncated": True,
                 }
             )
         )
         doc = html.fromstring(markup)
         alert = doc.cssselect('[role="alert"]')[0]
-        link = alert.cssselect("li a")[0]
-        assert link.text_content() == obj and link.get("href") == url
-        assert set(link.attrib) == {"href"} and not alert.cssselect("script")
+        alert = next(node for node in doc.cssselect('[role="alert"]') if obj in node.text_content())
+        assert alert.cssselect("li")[0].text_content() == obj
+        assert not alert.cssselect("a, script")
+        assert markup.count(gettext(SHORTENED)) == 1
         assert alert.cssselect("li")[1].text_content() == "Text fallback"
         assert len(alert.cssselect("ul")) == 1
         heading = alert.cssselect("strong")[0].text_content()
@@ -378,6 +375,83 @@ def test_protected_theme_recipe(recipes, custom, language):
         if language == "en":
             assert GENERIC in hidden
     assert r.events == []
+
+
+@pytest.mark.parametrize("custom", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("language", ["en", "de"])
+@pytest.mark.parametrize(
+    "scenario,limit,expected_count,truncated,details",
+    [
+        ("exact", 4, 4, False, True),
+        ("overflow", 3, 3, True, True),
+        ("blockers-exhaust", 2, 2, True, False),
+        ("blocker-only", 2, 2, False, False),
+        ("unlimited", None, 4, False, True),
+        ("hidden-tail", 4, 4, False, True),
+        ("hidden-only", 1, 0, False, False),
+        ("redacted-summary", 3, 3, True, True),
+        ("solo-root", 1, 1, False, True),
+        ("empty-detail", None, 0, False, False),
+    ],
+)
+def test_delete_preview_truncation_recipe(
+    recipes, custom, modal, language, scenario, limit, expected_count, truncated, details
+):
+    r = recipes
+    view, first, second = _protected_fixture(r)
+    view.cv_modal = modal
+    view.cv_delete_preview_limit = limit
+    summary = {} if scenario in ("redacted-summary", "solo-root", "hidden-only", "empty-detail") else {"attachment": 7}
+    tree = [r.target, [r.attachment]]
+    blockers = [first, second]
+    if scenario == "hidden-tail":
+        tree.append([None, [None]])
+    elif scenario == "hidden-only":
+        tree, blockers = [None, [None]], []
+    elif scenario in ("solo-root", "empty-detail"):
+        r.Blocker.objects.all().delete()
+        tree, blockers = ([r.target] if scenario == "solo-root" else [None]), []
+    elif scenario == "blocker-only":
+        tree = [None]
+    blocked = scenario not in ("solo-root", "empty-detail")
+    view.cv_filter_related_objects = lambda self, user, related: RelatedObjects(tree, summary, blockers)
+    # A real registered destination proves selected cascade links retain ordinary navigation.
+    view.cv_get_related_object_url = lambda self, obj: f"/migration_blocker/{first.pk}/detail/" if blocked else None
+    r.install(view, custom=custom)
+    headers = {"HTTP_X_CV_MODAL": "true"} if modal else {}
+    with language_override(language):
+        for response in (
+            r.client.get(r.url, **headers),
+            r.client.post(r.url, {"confirm": "on"} if blocked else {}, **headers),
+        ):
+            assert response.status_code == (422 if modal and response.request["REQUEST_METHOD"] == "POST" else 200)
+            context = response.context
+            assert context["has_protected_objects"] is blocked
+            assert context["delete_preview_incomplete"] is True
+            assert context["delete_preview_truncated"] is truncated
+            assert context["related_summary"] == summary
+            markup = response.content.decode()
+            doc = html.fromstring(markup)
+            assert bool(doc.cssselect("form")) is (not blocked)
+            assert markup.count(gettext(NOTICE)) == 1
+            assert markup.count(gettext(SHORTENED)) == int(truncated)
+            assert (gettext("Details about the related objects to be deleted:") in markup) is details
+            preview = doc.cssselect(".cv-related-objects")
+            lists = preview[0].cssselect("ul") if preview else []
+            assert sum(len(node.xpath("./li")) for node in lists) == expected_count + len(summary)
+            assert all(node.xpath("./li") for node in lists)
+            for entry in context["protected_objects"]:
+                assert set(entry) == {"obj", "url"} and entry["url"] is None
+            links = preview[0].cssselect("li a") if preview else []
+            assert len(links) == (max(0, expected_count - len(context["protected_objects"])) if blocked else 0)
+            for link in links:
+                assert set(link.attrib) == {"href"}
+                assert resolve(link.get("href")).func.view_class is r.detail
+                destination = r.client.get(link.get("href"))
+                assert destination.status_code == 200 and destination.context["object"] == first
+            assert not doc.cssselect(".cv-related-objects b, .cv-related-objects script")
+    assert r.events == [] and r.Document.objects.filter(pk=r.target.pk).exists()
 
 
 @pytest.mark.parametrize("heading,summary", [(OVERRIDE, {"preview note": 1}), (EFFECT, {"attachment": 1})])
@@ -731,7 +805,20 @@ def test_delete_breaking_entries_have_matching_migration_contracts():
         passage = passages[0]
         for term in ("`obj`/`url`", "`obj`", "`url`", "`None`", "filtered", "has_protected_objects", "whole-form"):
             assert term in passage
+        assert "always" in passage and "eligible detail" not in passage
         assert "now holds only the\n  protected objects" not in passage
+    for term in (
+        "CRUD_VIEWS_DELETE_PREVIEW_LIMIT",
+        "cv_delete_preview_limit",
+        "delete_preview_truncated",
+        "50",
+        "unlimited",
+        "crud_views.E109",
+        "viewset.E265",
+        "solo-root",
+        "empty detail",
+    ):
+        assert term in breaking
     for term in ("protected_objects.html", "generic alert-items", "no legacy", "modals"):
         assert term in breaking
     anchors = _anchors(MIGRATION)
@@ -746,6 +833,9 @@ def test_delete_breaking_entries_have_matching_migration_contracts():
             "node.url",
             "url=None",
             "body_template",
+            "delete_preview_truncated",
+            "solo root",
+            "empty cascade details",
         ),
         "guardian-permission-keys": ("ValueError", "KeyError", "non-string"),
         "guardian-configured-content-type-permissions": ("app.view_vehicle", "MixedContentTypeError", "child_only_car"),
@@ -782,8 +872,58 @@ def test_protected_public_surface_inventory():
         "cascade",
         "Full-page",
         "not a new public authorization",
+        "always `None`",
+        "CRUD_VIEWS_DELETE_PREVIEW_LIMIT",
+        "cv_delete_preview_limit",
+        "delete_preview_truncated",
+        "related_summary_items",
+        "Solo root",
     ):
         assert term in surface
+    limit = _section(reference, "### Display limit")
+    settings_doc = _section((DOCS / "reference/settings.md").read_text(), "## Delete preview")
+    migration = _section(MIGRATION.read_text(), "### Delete previews and protected objects")
+    for passage in (limit, settings_doc, migration):
+        for term in (
+            "CRUD_VIEWS_DELETE_PREVIEW_LIMIT",
+            "cv_delete_preview_limit",
+            "50",
+            "None",
+            "unlimited",
+            "crud_views.E109",
+            "viewset.E265",
+            "ImproperlyConfigured",
+            "booleans",
+            "GET/POST",
+        ):
+            assert term in passage
+    linking = _section(reference, "### Linking Related Objects")
+    assert "linking-related-objects" in _anchors(DOCS / "reference/delete_view.md")
+    exercise = linking.split('!!! example "Try it live"', 1)[1].split("\nOptionally", 1)[0]
+    for term in (
+        "https://django-crud-views-demo.onrender.com/library/author/",
+        "Earthsea publishing contract",
+        "plain protected label",
+        "Book",
+        "full detail page",
+        "modal",
+    ):
+        assert term in exercise
+    assert "Follow `Earthsea" not in exercise
+    assert "destination eligibility" not in linking and "private adapter" not in linking
+    cost = _section(reference, "#### Collection cost and overrides")
+    for term in (
+        "complete inspection",
+        "effective filtering",
+        "presentation",
+        "selected cascade occurrence",
+        "total graph memory",
+        "total queries",
+        "Python 3.12 / Django 5.2",
+    ):
+        assert term in cost
+    for obsolete in ("Q(N)", "per visible", "adapter query", "actor certification"):
+        assert obsolete not in cost
     example = (ROOT / "examples/bootstrap5/library/views.py").read_text()
     author = example.split("class AuthorDeleteView(", 1)[1].split("# ---", 1)[0]
     for term in ("CASCADE", "cv_show_related_objects", "cv_link_related_objects", "plain text", "delete_view.md"):

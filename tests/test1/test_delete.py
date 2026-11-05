@@ -60,171 +60,51 @@ def protected_destination(
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("permitted", [True, False])
-def test_protected_link_request_tracer(
-    protected_destination, client_user_publisher_cascade_delete, monkeypatch, permitted
+@pytest.mark.parametrize("modal", [False, True])
+def test_plain_protected_request_tracer(
+    protected_destination, client_user_publisher_cascade_delete, monkeypatch, modal
 ):
-    from html.parser import HTMLParser
-
-    case = protected_destination
-    source_class = type(case.source)
-    monkeypatch.setattr(source_class, "cv_link_related_objects", True)
-    monkeypatch.setattr(case.target, "cv_has_access", classmethod(lambda cls, user, obj=None: permitted))
-    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{case.source.object.pk}/delete/")
-    assert response.status_code == 200
-    expected = case.url if permitted else None
-    assert response.context["protected_objects"] == [{"obj": case.blocker, "url": expected}]
-
-    class Anchors(HTMLParser):
-        hrefs = []
-
-        def handle_starttag(self, tag, attrs):
-            if tag == "a":
-                self.hrefs.append(dict(attrs).get("href"))
-
-    parser = Anchors()
-    parser.feed(response.content.decode())
-    if permitted:
-        assert case.url in parser.hrefs
-        followed = client_user_publisher_cascade_delete.get(case.url)
-        assert followed.status_code == 200
-        assert followed.content.decode() == f"contract:{case.blocker.pk}"
-    else:
-        assert case.url not in parser.hrefs
-        assert "Visible blocker" in response.content.decode()
-    assert "<form" not in response.content.decode()
-    case.blocker.refresh_from_db()
-    case.source.object.refresh_from_db()
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize("policy", ["allowed", "permission", "state", "queryset", "missing-detail", "missing-route"])
-def test_protected_target_policy_matrix(protected_destination, monkeypatch, policy):
-    from django.urls import clear_url_caches
+    from django.contrib.auth.models import Permission
+    from django.utils.html import escape
+    from lxml import html
 
     from tests.test1.app.models import Contract
 
     case = protected_destination
-    source_calls, target_calls = [], []
-    monkeypatch.setattr(type(case.source), "cv_action_enabled", classmethod(lambda *a: source_calls.append(a) or True))
-    monkeypatch.setattr(
-        case.target, "cv_action_enabled", classmethod(lambda *a: target_calls.append(a) or policy != "state")
-    )
-    if policy == "permission":
-        monkeypatch.setattr(case.target, "cv_has_access", classmethod(lambda *a: False))
-    if policy == "queryset":
-        monkeypatch.setattr(case.target, "get_queryset", lambda self: Contract.objects.none())
-    if policy == "missing-detail":
-        monkeypatch.setattr(type(case.target.cv_viewset), "is_view_registered", lambda self, key: False)
-    if policy == "missing-route":
-        case.patterns.clear()
-        clear_url_caches()
-    assert case.source._cv_get_protected_object_url(case.blocker) == (case.url if policy == "allowed" else None)
-    assert source_calls == []
-    assert len(target_calls) == int(policy in {"allowed", "state"})
-    if policy == "allowed":
-        client = Client()
-        client.force_login(case.source.request.user)
-        assert client.get(case.url).status_code == 200
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize("inherited", [False, True])
-@pytest.mark.parametrize(
-    "policy", ["permission_required", "permission_property", "get_permission_required", "has_permission"]
-)
-def test_protected_uncertifiable_permission_policy(
-    protected_destination, client_user_publisher_cascade_delete, monkeypatch, inherited, policy
-):
-    from django.urls import clear_url_caches
-
-    from crud_views.lib.viewset import ViewSet
-
-    case = protected_destination
-    calls = []
-
-    def required(self):
-        calls.append(policy)
-        return "app.change_contract" if policy == "permission_property" else ("app.change_contract",)
-
-    def denied(self):
-        calls.append(policy)
-        return False
-
-    attribute, value = {
-        "permission_required": ("permission_required", "app.change_contract"),
-        "permission_property": ("permission_required", property(required)),
-        "get_permission_required": ("get_permission_required", required),
-        "has_permission": ("has_permission", denied),
-    }[policy]
-    viewset = ViewSet(model=type(case.blocker), name="custom_protected_policy")
-    attrs = {"cv_viewset": viewset}
-    bases = (case.target,)
-    if inherited:
-        bases = (type("ApplicationPermissionPolicy", (), {attribute: value}), *bases)
-    else:
-        attrs[attribute] = value
-    target = type("CustomDetail", bases, attrs)
-    case.patterns.extend(viewset.urlpatterns)
-    clear_url_caches()
-    url = f"/custom_protected_policy/{case.blocker.pk}/detail/"
+    case.blocker.title = '<script>alert("blocker")</script>'
+    case.blocker.save()
+    case.source.request.user.user_permissions.add(Permission.objects.get(codename="view_publisher"))
     source_class = type(case.source)
     monkeypatch.setattr(source_class, "cv_link_related_objects", True)
-    monkeypatch.setattr(source_class, "cv_get_related_object_url", lambda self, obj: url)
-    native_dispatch = target.dispatch
+    monkeypatch.setattr(source_class, "cv_modal", modal)
+    cascade_calls = []
+    native_url = source_class.cv_get_related_object_url
 
-    def dispatch(self, *args, **kwargs):
-        calls.append("dispatch")
-        return native_dispatch(self, *args, **kwargs)
+    def url(self, obj):
+        assert not isinstance(obj, Contract), "Protected blocker reached the shared URL hook"
+        cascade_calls.append(obj)
+        return native_url(self, obj)
 
-    monkeypatch.setattr(target, "dispatch", dispatch)
-    assert target.cv_has_access(case.source.request.user, case.blocker)
-    assert client_user_publisher_cascade_delete.get(url).status_code == 403
-    assert "dispatch" in calls
-    calls.clear()
-
-    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{case.source.object.pk}/delete/")
-    assert response.status_code == 200
-    assert response.context["protected_objects"] == [{"obj": case.blocker, "url": None}]
-    assert "Visible blocker" in response.content.decode()
-    assert f'href="{url}"' not in response.content.decode()
-    assert calls == []
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize("method,modal", [("get", False), ("get", True), ("post", True)])
-def test_protected_target_binding(protected_destination, monkeypatch, method, modal):
-    from django.test import RequestFactory
-
-    case = protected_destination
-    original_actor = case.source.request.user
-    request = getattr(RequestFactory(), method)("/source/?original=yes", HTTP_X_CV_MODAL="true" if modal else "")
-    request.user = original_actor
-    request.urlconf = case.source.request.urlconf
-    case.source.request = request
-    source_snapshot = (request.META.copy(), request.GET.copy(), request.POST.copy(), case.source.kwargs.copy())
-    candidate = case.url + "?q=caf%C3%A9&q=two#résumé"
-    monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: candidate)
-    calls = []
-
-    def queryset(self):
-        calls.append(self)
-        assert self.request.method == "GET"
-        assert self.request.GET.getlist("q") == ["café", "two"]
-        assert self.request.POST == {}
-        assert "X-CV-Modal" not in self.request.headers
-        assert self.request.path == case.url
-        assert self.request.resolver_match.func.view_class is case.target
-        assert self.kwargs == self.request.resolver_match.kwargs
-        assert int(self.kwargs["pk"]) == case.blocker.pk
-        return type(case.blocker).objects.all()
-
-    monkeypatch.setattr(case.target, "get_queryset", queryset)
-    for _ in range(2):
-        assert case.source._cv_get_protected_object_url(case.blocker) == candidate
-    assert calls[0] is not calls[1]
-    assert (request.META, request.GET, request.POST, case.source.kwargs) == source_snapshot
-    assert request.user is original_actor
+    monkeypatch.setattr(source_class, "cv_get_related_object_url", url)
+    monkeypatch.setattr(case.target, "setup", lambda *a, **kw: pytest.fail("Protected destination constructed"))
+    path = f"/publisher_cascade/{case.source.object.pk}/delete/"
+    headers = {"HTTP_X_CV_MODAL": "true"} if modal else {}
+    for method in ("get", "post"):
+        response = getattr(client_user_publisher_cascade_delete, method)(path, {"confirm": "on"}, **headers)
+        assert response.status_code == (422 if modal and method == "post" else 200)
+        assert response.context["protected_objects"] == [{"obj": case.blocker, "url": None}]
+        assert response.context["has_protected_objects"] is True
+        content = response.content.decode()
+        document = html.fromstring(content)
+        assert case.url not in document.xpath("//a/@href")
+        assert str(escape(case.blocker.title)) in content
+        assert "<script>alert" not in content
+        assert "Deletion is blocked by protected relationships" in content
+        assert "alert-danger" in content
+        assert not document.xpath("//form")
+        case.blocker.refresh_from_db()
+        case.source.object.refresh_from_db()
+    assert cascade_calls == [case.source.object, case.source.object]
 
 
 @pytest.mark.django_db
@@ -240,41 +120,12 @@ def test_protected_custom_request_remains_authoritative(protected_destination, m
         raise PermissionDenied
 
     monkeypatch.setattr(case.target, override, deny)
-    assert case.source._cv_get_protected_object_url(case.blocker) == case.url
+    assert case.source.get_context_data()["protected_objects"] == [{"obj": case.blocker, "url": None}]
     assert called == []
     client = Client()
     client.force_login(case.source.request.user)
     assert client.get(case.url).status_code == 403
     assert called == [override]
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize("allowed", [False, True])
-def test_protected_override_uses_actual_registered_target(protected_destination, monkeypatch, allowed):
-    from django.urls import clear_url_caches
-
-    from crud_views.lib.viewset import ViewSet
-
-    case = protected_destination
-    alternate = ViewSet(model=type(case.blocker), name="alternate_protected_target")
-
-    class Alternate(case.target):
-        cv_viewset = alternate
-
-        @classmethod
-        def cv_action_enabled(cls, user, obj=None):
-            return allowed
-
-    case.patterns.extend(alternate.urlpatterns)
-    clear_url_caches()
-    url = f"/alternate_protected_target/{case.blocker.pk}/detail/"
-    monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: url)
-    # The first/default registered target must not substitute its own state policy.
-    monkeypatch.setattr(case.target, "cv_action_enabled", classmethod(lambda *args: not allowed))
-    assert case.source._cv_get_protected_object_url(case.blocker) == (url if allowed else None)
-    client = Client()
-    client.force_login(case.source.request.user)
-    assert client.get(url).status_code == (200 if allowed else 403)
 
 
 @pytest.mark.django_db
@@ -301,11 +152,11 @@ def test_protected_source_state_only_normal_request(
         counts.append(len(source_calls))
     assert counts[0] >= 1
     assert counts[0] == counts[1]
-    assert len(target_calls) == 1
+    assert target_calls == []
 
 
 @pytest.mark.django_db
-def test_protected_uuid_identity(protected_destination, author_douglas_adams, cv_author, monkeypatch):
+def test_cascade_uuid_identity(protected_destination, author_douglas_adams, cv_author, monkeypatch):
     from django.contrib.auth.models import Permission
     from django.urls import clear_url_caches
 
@@ -316,264 +167,9 @@ def test_protected_uuid_identity(protected_destination, author_douglas_adams, cv
     row = author_douglas_adams
     url = case.source.cv_get_related_object_url(row)
     assert str(row.pk) in url
-    assert case.source._cv_get_protected_object_url(row) == url
     client = Client()
     client.force_login(case.source.request.user)
     assert client.get(url).status_code == 200
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    "candidate",
-    [
-        None,
-        "",
-        "https://evil.test/",
-        "//evil.test/",
-        "relative/",
-        "\n/candidate/1/",
-        "/a\\b/",
-        "/%2f/evil.test",
-        "/%2F%2fevil.test",
-        "/%5c",
-        "/%00",
-        "/%0a",
-        "/%0D",
-        "/%ff/",
-        "/missing/",
-    ],
-)
-def test_protected_candidate_contract_unsafe(protected_destination, monkeypatch, candidate):
-    case = protected_destination
-    monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: candidate)
-    monkeypatch.setattr(case.target, "get_queryset", lambda self: pytest.fail("Unsafe URL reached target"))
-    # The fallback makes RED an assertion about the missing contract, not an AttributeError.
-    adapter = getattr(case.source, "_cv_get_protected_object_url", case.source.cv_get_related_object_url)
-    assert adapter(case.blocker) is None
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    "branch",
-    [
-        "valid",
-        "query-fragment",
-        "presentation",
-        "denied",
-        "disabled",
-        "permission-denied",
-        "missing-row",
-        "queryset-404",
-        "queryset-get-404",
-        "queryset-error",
-        "hook-404",
-        "hook-reverse",
-        "policy-404",
-        "policy-error",
-        "cv-override",
-        "permission-override",
-        "method-override",
-        "non-detail",
-        "unregistered",
-        "wrong-row",
-        "lookup-kwarg",
-        "slug",
-        "pk-and-slug",
-        "wrong-slug",
-        "missing-coordinate",
-        "unicode",
-        "wrong-model",
-        "queryset-init",
-    ],
-)
-def test_protected_candidate_contract(protected_destination, monkeypatch, branch):
-    from django.core.exceptions import PermissionDenied
-    from django.http import Http404, HttpResponse
-    from django.urls import NoReverseMatch
-    from django.views.generic.detail import SingleObjectMixin
-
-    from tests.test1.app.models import Contract, Publisher
-
-    case = protected_destination
-    target = case.target
-    candidate = case.url
-    expected = True
-    error = None
-    calls = []
-
-    def fail(exc):
-        def raising(*args, **kwargs):
-            raise exc
-
-        return raising
-
-    def available(cls, user, obj, view):
-        calls.append(view)
-        assert view.request.method == "GET"
-        assert view.request.POST == {}
-        assert "X-CV-Modal" not in view.request.headers
-        assert view.request.session is case.source.request.session
-        assert view.request.user is case.source.request.user
-        assert view.object == case.blocker
-        return True
-
-    monkeypatch.setattr(target, "_cv_cancel_target_available", classmethod(available))
-    if branch in {"denied", "disabled"}:
-        # Restore policy composition without undoing fixture isolation.
-        from crud_views.lib.view import CrudView
-
-        monkeypatch.setattr(
-            target, "_cv_cancel_target_available", classmethod(CrudView._cv_cancel_target_available.__func__)
-        )
-        hook = "cv_has_access" if branch == "denied" else "cv_action_enabled"
-        monkeypatch.setattr(target, hook, classmethod(lambda *args: False))
-        expected = False
-    elif branch == "permission-denied":
-        monkeypatch.setattr(target, "_cv_cancel_target_available", classmethod(fail(PermissionDenied())))
-        expected = False
-    elif branch in {"queryset-404", "queryset-error", "policy-404", "policy-error", "hook-404", "hook-reverse"}:
-        error = NoReverseMatch if branch == "hook-reverse" else Http404 if branch.endswith("404") else RuntimeError
-        hook = "get_queryset" if branch.startswith("queryset") else "_cv_cancel_target_available"
-        if not branch.startswith("hook"):
-            monkeypatch.setattr(target, hook, fail(error("application failure")))
-    elif branch == "missing-row":
-        monkeypatch.setattr(target, "get_queryset", lambda self: Contract.objects.none())
-        expected = False
-    elif branch == "queryset-get-404":
-        from django.db.models import QuerySet
-
-        class BrokenQuerySet(QuerySet):
-            def get(self, *args, **kwargs):
-                raise Http404("Application lookup failure")
-
-        monkeypatch.setattr(target, "get_queryset", lambda self: BrokenQuerySet(model=Contract))
-        error = Http404
-    elif branch in {"cv-override", "permission-override", "method-override", "presentation", "queryset-init"}:
-        kwargs = {
-            "cv-override": {"cv_permission": "delete"},
-            "permission-override": {"permission_required": "test1.change_contract"},
-            "method-override": {"has_permission": lambda: True},
-            "presentation": {"template_name": "custom.html"},
-            "queryset-init": {"queryset": Contract.objects.none()},
-        }[branch]
-        case.route(target.as_view(**kwargs))
-        candidate = f"/candidate/{case.blocker.pk}/"
-        expected = branch == "presentation"
-        if branch == "queryset-init":
-            monkeypatch.setattr(target, "get_queryset", SingleObjectMixin.get_queryset)
-        if branch == "permission-override":
-            # Class policy permits this actor, but the real callback's instance
-            # policy denies it. The preview must not advertise the candidate.
-            assert target.cv_has_access(case.source.request.user, case.blocker)
-            client = Client()
-            client.force_login(case.source.request.user)
-            assert client.get(candidate).status_code == 403
-    elif branch in {"non-detail", "unregistered"}:
-
-        def callback(request, **kwargs):
-            return HttpResponse("other")
-
-        if branch == "unregistered":
-
-            class Other(target):
-                pass
-
-            callback = Other.as_view()
-        case.route(callback)
-        candidate = f"/candidate/{case.blocker.pk}/"
-        expected = False
-    elif branch == "wrong-row":
-        other = Contract.objects.create(title="Other", publisher=case.source.object)
-        candidate = case.url.replace(str(case.blocker.pk), str(other.pk))
-        expected = False
-    elif branch in {"lookup-kwarg", "slug", "pk-and-slug", "wrong-slug", "missing-coordinate", "unicode"}:
-        kwargs = {"pk_url_kwarg": "row"}
-        route = "lookup/<int:row>/"
-        candidate = f"/lookup/{case.blocker.pk}/"
-        if branch != "lookup-kwarg":
-            kwargs = {"slug_url_kwarg": "label", "slug_field": "title"}
-            route = "lookup/<str:label>/"
-            case.blocker.title = "café" if branch == "unicode" else "slug"
-            case.blocker.save()
-            candidate = "/lookup/caf%C3%A9/" if branch == "unicode" else "/lookup/slug/"
-        if branch in {"pk-and-slug", "wrong-slug"}:
-            kwargs["query_pk_and_slug"] = True
-            route = "lookup/<int:pk>/<str:label>/"
-            candidate = f"/lookup/{case.blocker.pk}/{'wrong' if branch == 'wrong-slug' else 'slug'}/"
-            expected = branch != "wrong-slug"
-        if branch == "missing-coordinate":
-            kwargs = {}
-            error = AttributeError
-        case.route(target.as_view(**kwargs), route)
-    elif branch == "wrong-model":
-        monkeypatch.setattr(target, "get_queryset", lambda self: Publisher.objects.all())
-        candidate = case.url.replace(str(case.blocker.pk), str(case.source.object.pk))
-        expected = False
-    elif branch == "query-fragment":
-        candidate += "?q=one&q=two#section"
-
-    original = (
-        case.source.request.path,
-        case.source.request.GET.copy(),
-        case.source.request.POST.copy(),
-        case.source.request.META.copy(),
-    )
-    assert case.source.request.headers["X-CV-Modal"] == "true"  # cache headers before cloning
-    monkeypatch.setattr(
-        case.source, "cv_get_related_object_url", fail(error()) if branch.startswith("hook") else lambda obj: candidate
-    )
-    monkeypatch.setattr(target, "get_object", lambda *args: pytest.fail("Preview called overridden get_object"))
-    adapter = getattr(case.source, "_cv_get_protected_object_url", case.source.cv_get_related_object_url)
-    if error:
-        with pytest.raises(error):
-            adapter(case.blocker)
-    else:
-        assert adapter(case.blocker) == (candidate if expected else None)
-    assert original == (
-        case.source.request.path,
-        case.source.request.GET,
-        case.source.request.POST,
-        case.source.request.META,
-    )
-    if expected and not error:
-        assert len(calls) == 1
-    if calls:
-        assert len(calls) == 1
-        if branch == "presentation":
-            assert calls[0].template_name == "custom.html"
-        if branch == "query-fragment":
-            assert calls[0].request.GET.getlist("q") == ["one", "two"]
-
-
-@pytest.mark.django_db
-def test_protected_script_prefix(protected_destination, client_user_publisher_cascade_delete, monkeypatch, settings):
-    from django.urls import get_script_prefix, set_script_prefix
-
-    case = protected_destination
-    old_prefix = get_script_prefix()
-    settings.FORCE_SCRIPT_NAME = "/mounted"
-    try:
-        set_script_prefix("/mounted/")
-        url = "/mounted" + case.url
-        monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: url)
-        seen = []
-
-        def available(cls, user, obj, view):
-            seen.append((view.request.path, view.request.path_info, view.request.META["SCRIPT_NAME"]))
-            return True
-
-        monkeypatch.setattr(case.target, "_cv_cancel_target_available", classmethod(available))
-        adapter = getattr(case.source, "_cv_get_protected_object_url", case.source.cv_get_related_object_url)
-        assert adapter(case.blocker) == url
-        assert seen == [(url, case.url, "/mounted")]
-        response = client_user_publisher_cascade_delete.get(url.removeprefix("/mounted"), SCRIPT_NAME="/mounted")
-        assert response.status_code == 200
-        assert response.wsgi_request.path == url
-        assert response.content.decode() == f"contract:{case.blocker.pk}"
-        monkeypatch.setattr(case.source, "cv_get_related_object_url", lambda obj: case.url)
-        assert adapter(case.blocker) is None
-    finally:
-        set_script_prefix(old_prefix)
 
 
 @pytest.mark.django_db
@@ -581,7 +177,7 @@ def test_protected_script_prefix(protected_destination, client_user_publisher_ca
 @pytest.mark.parametrize("link", [False, True])
 @pytest.mark.parametrize("visible_count", [0, 1, 3])
 @pytest.mark.parametrize("cascade", [False, True])
-def test_protected_context_projection_matrix(protected_destination, monkeypatch, preview, link, visible_count, cascade):
+def test_plain_protected_projection(protected_destination, monkeypatch, preview, link, visible_count, cascade):
     from crud_views.lib.deletion import DeleteInspection, RelatedObjects
     from tests.test1.app.models import Contract, Royalty
 
@@ -604,26 +200,44 @@ def test_protected_context_projection_matrix(protected_destination, monkeypatch,
 
     def url(obj):
         calls.append(obj)
-        return case.url if obj is case.blocker else ""
+        assert obj not in blockers, "Protected entry reached shared URL hook"
+        return ""
 
     monkeypatch.setattr(case.source, "cv_filter_related_objects", filter_rows)
     monkeypatch.setattr(case.source, "cv_get_related_object_url", url)
     case.source.cv_show_related_objects = preview
     case.source.cv_link_related_objects = link
+    request = case.source.request
+    snapshot = (request.META.copy(), request.GET.copy(), request.POST.copy(), case.source.kwargs.copy())
+    actor = request.user
     context = case.source.get_context_data()
+    # Repeat on a fresh view so no inspection/presentation cache can hide mutation.
+    fresh = type(case.source)()
+    fresh.setup(request, **case.source.kwargs)
+    fresh.object = case.source.object
+    fresh.cv_show_related_objects, fresh.cv_link_related_objects = preview, link
+    fresh._cv_inspect_deletion = lambda: inspection
+    fresh.cv_filter_related_objects = filter_rows
+    fresh.cv_get_related_object_url = url
+    repeated = fresh.get_context_data()
+    for key in ("has_protected_objects", "protected_objects", "related_objects", "related_summary"):
+        assert repeated.get(key) == context.get(key)
+    assert inspection.related.protected == blockers
+    assert inspection.related.tree == tree
+    assert inspection.related.summary == summary
+    assert (request.META, request.GET, request.POST, case.source.kwargs) == snapshot
+    assert request.user is actor
     assert context["has_protected_objects"] is True
     if not preview:
         assert not {"related_objects", "related_summary", "protected_objects"} & context.keys()
         assert calls == []
         return
-    expected = [
-        {"obj": obj, "url": case.url if link and obj is case.blocker else None} for obj in blockers[:visible_count]
-    ]
+    expected = [{"obj": obj, "url": None} for obj in blockers[:visible_count]]
     assert context["protected_objects"] == expected
     assert [entry["obj"] is obj for entry, obj in zip(context["protected_objects"], blockers, strict=False)] == [
         True
     ] * visible_count
-    assert calls == (blockers[:visible_count] + tree if link else [])
+    assert calls == (tree * 2 if link else [])
     assert context["related_objects"] == ([{"obj": case.source.object, "url": None, "children": []}] if cascade else [])
 
 
@@ -689,7 +303,7 @@ def test_protected_body_escaping(outer_autoescape, theme):
         'body_template="' + body + '" dismissible=True %}{% endautoescape %}'
     )
     items = [
-        {"obj": '<script>alert("bad")</script>', "url": '/detail/?q=" onmouseover="bad&x=1'},
+        {"obj": '<script>alert("bad")</script>', "url": None},
         {"obj": mark_safe("<b>Trusted label</b>"), "url": None},
         {"obj": "Plain text", "url": ""},
     ]
@@ -706,12 +320,29 @@ def test_protected_body_escaping(outer_autoescape, theme):
         assert "<x-protected>" in rendered
     else:
         anchors = document.xpath(".//a")
-        assert len(anchors) == 1
-        assert anchors[0].attrib == {"href": items[0]["url"]}
+        assert anchors == []
     if theme != "authorization-frame":
         assert "alert-danger" in document.get("class")
         assert document.xpath(".//*[@data-cv-alert-dismiss]")
         assert document.xpath(".//strong")
+
+
+@pytest.mark.parametrize("outer_autoescape", ["on", "off"])
+def test_protected_body_non_null_compatibility_escaping(outer_autoescape):
+    """Copied callers can still supply URLs to the unchanged independently overridable body."""
+    from django.template import Context, Template
+    from lxml import html
+
+    item = {"obj": '<script>alert("bad")</script>', "url": '/detail/?q=" onmouseover="bad&x=1'}
+    template = Template(
+        "{% autoescape " + outer_autoescape + " %}"
+        '{% include "crud_views/snippets/delete/protected_objects.html" %}{% endautoescape %}'
+    )
+    rendered = template.render(Context({"items": [item]}))
+    document = html.fromstring(rendered)
+    assert "<script>" not in rendered
+    assert "&lt;script&gt;" in rendered
+    assert document.xpath(".//a")[0].attrib == {"href": item["url"]}
 
 
 @pytest.mark.django_db
@@ -1030,10 +661,67 @@ def test_blocked_state_without_related_preview(client_user_publisher_delete, pub
     assert response.context["has_protected_objects"] is blocked
     assert "protected_objects" not in response.context
     assert "related_summary" not in response.context
+    assert "delete_preview_truncated" not in response.context
     assert ("<form" in response.content.decode()) is not blocked
     response = client_user_publisher_delete.post(url, {"confirm": True})
     assert response.status_code == (200 if blocked else 302)
     assert Publisher.objects.filter(pk=publisher_penguin.pk).exists() is blocked
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("limit", [50, None])
+@pytest.mark.parametrize("visible", [False, True])
+@pytest.mark.parametrize("preview", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+def test_delete_preview_limit_blocking(
+    client_user_publisher_cascade_delete,
+    user_publisher_cascade_delete,
+    publisher_penguin,
+    monkeypatch,
+    limit,
+    visible,
+    preview,
+    modal,
+):
+    from django.contrib.auth.models import Permission
+
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import PublisherCascadeDeleteView
+
+    blockers = [Contract.objects.create(title=f"BLOCKER-{i:03d}", publisher=publisher_penguin) for i in range(60)]
+    if visible:
+        user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    view = PublisherCascadeDeleteView
+    monkeypatch.setattr(view, "cv_delete_preview_limit", limit)
+    monkeypatch.setattr(view, "cv_show_related_objects", preview)
+    monkeypatch.setattr(view, "cv_link_related_objects", True)
+    monkeypatch.setattr(view, "cv_modal", modal)
+    monkeypatch.setattr(view, "cv_get_related_object_url", lambda *a: pytest.fail("No cascade row is visible"))
+    if not preview:
+        monkeypatch.setattr(view, "cv_filter_related_objects", lambda *a: pytest.fail("Preview-off filtering"))
+        monkeypatch.setattr(view, "_cv_select_delete_preview", lambda *a: pytest.fail("Preview-off selection"))
+    for method in ("get", "get", "post"):
+        response = getattr(client_user_publisher_cascade_delete, method)(
+            f"/publisher_cascade/{publisher_penguin.pk}/delete/",
+            {"confirm": "on"},
+            HTTP_X_CV_MODAL="true" if modal else "false",
+        )
+        assert response.status_code == (422 if modal and method == "post" else 200)
+        assert response.context["has_protected_objects"] is True
+        content = response.content.decode()
+        assert "<form" not in content
+        expected = blockers[:limit] if preview and visible else []
+        if preview:
+            assert response.context["protected_objects"] == [{"obj": obj, "url": None} for obj in expected]
+            assert response.context["related_objects"] == []
+            assert response.context["delete_preview_truncated"] is (visible and limit == 50)
+        else:
+            for key in ("protected_objects", "related_objects", "related_summary", "delete_preview_truncated"):
+                assert key not in response.context
+        for obj in blockers:
+            assert (obj.title in content) is (obj in expected)
+        publisher_penguin.refresh_from_db()
+        assert Contract.objects.filter(publisher=publisher_penguin).count() == 60
 
 
 @pytest.mark.django_db

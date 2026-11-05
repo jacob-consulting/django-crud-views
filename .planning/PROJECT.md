@@ -63,6 +63,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.8** Short icon-action tooltips retain full accessible labels; visible labels suppress generated tooltips, with tested copied-template migration — Phase 06.8; refreshed canonical30/30 and existing UAT3/3 passed.
 
+- ✓ **6.10** Plain escaped protected labels, one protected-first display budget (default 50, explicit None unlimited), preserved cascade links and complete deletion enforcement — Phase 06.10; all five plans, six DPV requirements and seven human UAT checks complete. Supersedes Phase 06.9 protected-destination linking; total inspection/filtering/query cost remains unbounded.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -106,6 +108,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Protected labels are static; share one visible-occurrence budget with cascade details | Remove synthetic destination requests while retaining proven cascade hooks and complete enforcement; cap presentation, not total collection cost | Validated (Phase 06.10; UAT 7/7) |
 | Validate protected destinations after visibility filtering; preserve the shared URL hook and cascade behavior | Link only to certified same-row destinations; unavailable destinations remain readable text | Validated (Phase 06.9) |
 | Dynamic Cancel uses allowed origin, configured fallback, then permission omission; successful-save navigation stays independent | Preserve independent form captures and existing success behavior; copied templates use guarded cv_cancel_url | Validated (Phase 06.7) |
 | Group findings into phases by dependency, not rank order or one change | Reviewable units; #257 depends on 1A+1C; stability policy must be last | — Pending |

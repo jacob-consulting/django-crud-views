@@ -1,4 +1,5 @@
 from decimal import Decimal
+from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 
@@ -157,29 +158,24 @@ class ProtectedDeletePreviewTest(LibraryTestCase):
             set(Book.objects.filter(author=self.author).values_list("pk", flat=True)), {self.book1.pk, self.book2.pk}
         )
 
-    def assert_blocked(self, response, status=200, url=None):
+    def assert_blocked(self, response, status=200):
         self.assertEqual(response.status_code, status)
         self.assertTrue(response.context["has_protected_objects"])
-        self.assertEqual(response.context["protected_objects"], [{"obj": self.contract, "url": url}])
+        self.assertEqual(response.context["protected_objects"], [{"obj": self.contract, "url": None}])
         document = html.fromstring(response.content)
         self.assertFalse(document.xpath('//form[.//*[@name="confirm"]]'))
         self.assert_rows_preserved()
         return document
 
-    def test_protected_page_and_modal_link_to_full_detail(self):
+    def test_protected_page_and_modal_show_plain_labels(self):
         self.make_contract()
         for modal in (False, True):
             with self.subTest(modal=modal):
                 response = self.client.get(self.delete_url, HTTP_X_CV_MODAL="true" if modal else "false")
-                document = self.assert_blocked(response, url=self.detail_url)
-                (link,) = document.xpath("//a[@href=$url]", url=self.detail_url)
-                self.assertEqual(link.text_content(), self.contract.title)
-                self.assertFalse(any(key.startswith("data-cv-modal") for key in link.attrib))
+                document = self.assert_blocked(response)
+                self.assertIn(self.contract.title, document.text_content())
+                self.assertFalse(document.xpath("//a[@href=$url]", url=self.detail_url))
                 self.assertEqual(bool(document.xpath('//div[@class="modal-body"]')), modal)
-                detail = self.client.get(link.get("href"))
-                self.assertContains(detail, self.contract.title)
-                self.assertContains(detail, str(self.author))
-                self.assertContains(detail, "<!DOCTYPE html>", html=False)
 
     def test_confirmed_page_and_modal_posts_preserve_rows(self):
         self.make_contract()
@@ -188,28 +184,54 @@ class ProtectedDeletePreviewTest(LibraryTestCase):
                 response = self.client.post(
                     self.delete_url, {"confirm": True}, HTTP_X_CV_MODAL="true" if modal else "false"
                 )
-                self.assert_blocked(response, status=422 if modal else 200, url=self.detail_url)
+                self.assert_blocked(response, status=422 if modal else 200)
 
-    def test_visible_blocker_falls_back_to_text(self):
+    def test_visible_blocker_stays_plain_with_linking_disabled(self):
         self.make_contract()
-        from library.views import AuthorDeleteView, ContractDetailView, cv_contract
+        from library.views import AuthorDeleteView
 
-        for label, override in (
-            ("disabled", patch.object(AuthorDeleteView, "cv_link_related_objects", False)),
-            ("missing", patch.dict(cv_contract._views, {}, clear=True)),
-            (
-                "inaccessible",
-                patch.object(ContractDetailView, "get_queryset", lambda view: type(self.contract).objects.none()),
-            ),
-        ):
-            with self.subTest(fallback=label), override:
-                for modal in (False, True):
-                    response = self.client.post(
-                        self.delete_url, {"confirm": True}, HTTP_X_CV_MODAL="true" if modal else "false"
-                    )
-                    document = self.assert_blocked(response, status=422 if modal else 200)
-                    self.assertIn(self.contract.title, document.text_content())
-                    self.assertFalse(document.xpath("//a[@href=$url]", url=self.detail_url))
+        with patch.object(AuthorDeleteView, "cv_link_related_objects", False):
+            for modal in (False, True):
+                response = self.client.post(
+                    self.delete_url, {"confirm": True}, HTTP_X_CV_MODAL="true" if modal else "false"
+                )
+                document = self.assert_blocked(response, status=422 if modal else 200)
+                self.assertIn(self.contract.title, document.text_content())
+                self.assertFalse(document.xpath("//a[@href=$url]", url=self.detail_url))
+
+    def test_finite_and_unlimited_previews_preserve_blocking(self):
+        from library.views import AuthorDeleteView
+
+        self.make_contract()
+        second = type(self.contract).objects.create(title="Second publishing contract", author=self.author)
+        notice = "This preview is shortened. Additional objects are not shown."
+        for limit in (1, None):
+            for modal in (False, True):
+                for method in ("get", "post"):
+                    with (
+                        self.subTest(limit=limit, modal=modal, method=method),
+                        patch.object(AuthorDeleteView, "cv_delete_preview_limit", limit),
+                    ):
+                        response = getattr(self.client, method)(
+                            self.delete_url, {"confirm": True}, HTTP_X_CV_MODAL="true" if modal else "false"
+                        )
+                        self.assertEqual(response.status_code, 422 if modal and method == "post" else 200)
+                        self.assertTrue(response.context["has_protected_objects"])
+                        entries = response.context["protected_objects"]
+                        self.assertEqual(len(entries), 1 if limit == 1 else 2)
+                        self.assertTrue(all(entry["url"] is None for entry in entries))
+                        self.assertEqual(response.context["delete_preview_truncated"], limit == 1)
+                        document = html.fromstring(response.content)
+                        self.assertEqual(document.text_content().count(notice), int(limit == 1))
+                        self.assertFalse(document.xpath('//form[.//*[@name="confirm"]]'))
+                        for contract in (self.contract, second):
+                            self.assertFalse(
+                                document.xpath(
+                                    "//a[@href=$url]", url=reverse("contract-detail", kwargs={"pk": contract.pk})
+                                )
+                            )
+                        self.assert_rows_preserved()
+                        self.assertTrue(type(second).objects.filter(pk=second.pk).exists())
 
     def test_unprotected_author_previews_book_links_and_cascades(self):
         url = reverse("author-delete", kwargs={"pk": self.author.pk})
@@ -217,7 +239,11 @@ class ProtectedDeletePreviewTest(LibraryTestCase):
         self.assertFalse(response.context["has_protected_objects"])
         document = html.fromstring(response.content)
         for book in (self.book1, self.book2):
-            self.assertTrue(document.xpath("//a[@href=$url]", url=reverse("book-detail", kwargs={"pk": book.pk})))
+            (link,) = document.xpath("//a[@href=$url]", url=reverse("book-detail", kwargs={"pk": book.pk}))
+            self.assertFalse(any(key.startswith("data-cv-modal") for key in link.attrib))
+            detail = self.client.get(link.get("href"))
+            self.assertContains(detail, book.title)
+            self.assertContains(detail, "<!DOCTYPE html>", html=False)
         self.assertEqual(self.client.post(url, {"confirm": True}).status_code, 302)
         self.assertFalse(Author.objects.filter(pk=self.author.pk).exists())
         self.assertFalse(Book.objects.filter(pk__in=[self.book1.pk, self.book2.pk]).exists())
@@ -265,8 +291,9 @@ class LibrarySeedTest(TestCase):
                 response = self.client.get(delete_url, HTTP_X_CV_MODAL="true" if modal else "false")
                 self.assertTrue(response.context["has_protected_objects"])
                 if username == "alice":
-                    self.assertEqual(response.context["protected_objects"], [{"obj": contract, "url": detail_url}])
-                    self.assertContains(response, f'href="{detail_url}"')
+                    self.assertEqual(response.context["protected_objects"], [{"obj": contract, "url": None}])
+                    self.assertContains(response, contract.title)
+                    self.assertNotContains(response, f'href="{detail_url}"')
                 else:
                     self.assertEqual(response.context["protected_objects"], [])
                     self.assertNotContains(response, contract.title)
@@ -296,3 +323,11 @@ class LibrarySeedTest(TestCase):
         response = self.client.get(reverse("author-list"))
         for instruction in ("Alice", "Bob", "Ursula", "Guin", "full page", "Contract.author"):
             self.assertContains(response, instruction)
+        tutorial = (Path(__file__).resolve().parents[3] / "docs/getting_started/tutorial-3-forms.md").read_text()
+        exercise = tutorial.split("After seeding the final example", 1)[1]
+        for teaching in (html.fromstring(response.content).text_content(), exercise):
+            self.assertIn("plain text", teaching)
+            self.assertIn("Book links", teaching)
+            self.assertIn("full page", teaching)
+            self.assertNotIn("contract` link", teaching)
+            self.assertNotIn("its link leaves the modal", teaching)

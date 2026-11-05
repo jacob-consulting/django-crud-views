@@ -172,7 +172,8 @@ class ContractDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 ```
 
 This ViewSet only needs a detail view: the seed function supplies the Contract,
-and its entry point is the protected link in AuthorDeleteView. Create and apply
+and permitted users can visit `/library/contract/<contract-pk>/detail/` independently.
+AuthorDeleteView shows permitted protected labels as plain text without linking to this view. Create and apply
 the migration, then run the seed command. In the bundled project, the migration
 is already included:
 
@@ -183,12 +184,19 @@ python manage.py seed
 
 Sign in as `alice` / `alice`, filter Authors by last name `Guin`, and choose
 Ursula's Delete action. Her `Earthsea publishing contract` blocks deletion and
-links to a full detail page, even from the modal. To compare the full-page
+appears as plain text in the modal. To compare the full-page
 preview, open `/library/author/<author-pk>/delete/` directly with Ursula's ID.
 Sign in as `bob` / `bob` to see the generic blocked notice without the Contract
 label or URL. The [Part 5 seed](tutorial-5-filters-permissions.md#permissions-in-practice)
 grants Alice only its view permission; both accounts keep their Author and Book
-permissions. Other seeded authors remain cascade examples.
+permissions. Other seeded authors remain cascade examples: Book links open full
+detail pages, including from the delete modal.
+
+The default display budget is 50 across protected and cascade entries, with
+protected labels selected first. `cv_delete_preview_limit = None` shows every
+visible entry and can produce long pages and more cascade-link work. Neither
+policy limits complete inspection or visibility-filtering cost, nor changes
+deletion protection. See [Part 3](tutorial-3-forms.md#delete-view) for configuration.
 
 ## Final urls
 

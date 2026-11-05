@@ -188,6 +188,17 @@ has not been reproduced. External-application verification is outside this phase
 - [x] **TIP-04**: Require immediate copied action/menu template migration through executable documented recipes; describe changed cv_title semantics and removed menu titles in paired Breaking changelog and migrating-1.0.md guidance while retaining unrelated full-caption/helper APIs.
 - [x] **TIP-05**: Real-browser stock Bootstrap and migrated custom-template fixtures prove short icon tooltips, full accessible labels and absent generated tooltips on visible actions/menus; record mixed-mode investigation outcomes honestly and report actual runtime/browser limits without requiring the affected external application.
 
+### Delete-preview simplification (Phase 06.10, #316)
+
+Decisions: `phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-CONTEXT.md`.
+
+- [x] **DPV-01**: Remove protected destination certification; preserve ordered escaped obj/url entries with null URLs and existing cascade hook behavior.
+- [x] **DPV-02**: Default 50; explicit per-view then project setting; explicit None unlimited, unset inherits; reject invalid raw values.
+- [x] **DPV-03**: One protected-first budget, depth-first cascade order, every occurrence/root counts; promote visible descendants of hidden rows; select before URLs.
+- [x] **DPV-04**: Keep full summaries and redaction, truthful single translated overflow notice, separate incomplete warning, no empty cascade detail frame.
+- [x] **DPV-05**: Preserve complete inspection/provider/filter/write contracts, visibility and whole-form blocking across core/Guardian/preview-off/page/modal.
+- [x] **DPV-06**: Execute measurements and stock/copied page/modal acceptance; publish paired Breaking/migration guidance, examples and Phase 7 surface handoff.
+
 ### Protected delete-preview object links (Phase 06.9, #307)
 
 Source: Phase 06.9 CONTEXT.md D-01–D-08 and issue #307. Immediate copied-template migration is approved.
@@ -256,6 +267,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PDL-04 | Phase 6.9 | Complete |
 | PDL-05 | Phase 6.9 | Complete |
 | PDL-06 | Phase 6.9 | Complete |
+| DPV-01 | Phase 6.10 | Complete |
+| DPV-02 | Phase 6.10 | Complete |
+| DPV-03 | Phase 6.10 | Complete |
+| DPV-04 | Phase 6.10 | Complete |
+| DPV-05 | Phase 6.10 | Complete |
+| DPV-06 | Phase 6.10 | Complete |
 | TIP-01 | Phase 6.8 | Complete |
 | TIP-02 | Phase 6.8 | Complete |
 | TIP-03 | Phase 6.8 | Complete |

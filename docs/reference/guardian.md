@@ -345,14 +345,32 @@ assign_perm(cv_author.permissions["view"], group, author_instance)
 When `cv_show_related_objects = True` on a Guardian delete view, the related objects
 list is filtered using per-object `view` permissions instead of model-level permissions:
 
-- Objects the user has per-object `view` permission for: shown with full details
-- Objects the user lacks per-object `view` permission for: shown as aggregated counts
+- Objects the user has per-object `view` permission for: eligible for details within the display budget
+- Objects the user lacks per-object `view` permission for: no labels or placeholders; existing aggregate counts remain
 
 The same filter applies to the labels of protected objects (`on_delete=PROTECT`), the objects that block the
 deletion. A protected object's label reaches the template only when the user holds `view` on that object, through an
 object grant or a group grant. Labels of objects the user may not view are dropped before the template gets its
 context, while the page still shows one generic "blocked" notice through `has_protected_objects`. The summary counts
 are unchanged. See [Delete protection previews](delete_view.md#protected-objects).
+
+Protected labels are plain text: selected `protected_objects` entries contain exactly `obj` and `url=None`,
+regardless of `cv_link_related_objects`. No protected destination lookup or certification runs. Selected cascade
+entries retain the existing optional URL hook and ordinary full-page navigation, including from a modal.
+
+The effective Guardian/application filter runs before display selection. `CRUD_VIEWS_DELETE_PREVIEW_LIMIT` defaults
+to 50; an unset `cv_delete_preview_limit` inherits it, including ordinary base-view inheritance of explicit values.
+A positive integer caps the combined visible occurrences; explicit `None` means unlimited. Protected entries
+consume slots first, then depth-first cascades, counting repeats and the root. Hidden ancestors are omitted and
+their permitted children promoted. Full summary counts and application redaction remain independent of selection;
+selected solo-root details still render with an empty summary. Actual visible overflow shows one
+`delete_preview_truncated` notice, separate from `delete_preview_incomplete`; empty cascade details have no frame.
+See [display configuration and diagnostics](delete_view.md#display-limit) for raw validation and runtime errors.
+
+Hidden or beyond-cap blockers still prevent deletion and omit the whole form on pages and modals. The cap changes
+neither per-object visibility/global fallback nor inspection, providers, authorization or write-time enforcement.
+Complete inspection and filtering costs remain; unlimited mode adds all permitted presentation work. Neither
+policy bounds total graph memory or total queries. See [attributed component costs](delete_view.md#collection-cost-and-overrides).
 
 Each related/protected model uses guardian's own content type (`GUARDIAN_GET_CONTENT_TYPE`) and a bare
 `view_<ct.model>` codename with that model as `klass`. The **delete view's** `cv_guardian_accept_global_perms` enables

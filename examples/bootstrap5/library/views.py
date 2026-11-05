@@ -102,8 +102,8 @@ class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteVie
     form_class = CrispyDeleteForm
     cv_message_template_code = _("Deleted author “{{ object }}”")
     # Books use CASCADE; publishing Contracts protect their Author from deletion.
-    # Authorized preview links open full detail pages, including from this modal.
-    # Unavailable destinations remain plain text. See docs/reference/delete_view.md.
+    # Permitted Contract labels are plain text; Book links open full detail pages from the modal.
+    # The default preview limit is 50; None is unlimited. See docs/reference/delete_view.md.
     cv_show_related_objects = True
     cv_link_related_objects = True
     cv_modal = True

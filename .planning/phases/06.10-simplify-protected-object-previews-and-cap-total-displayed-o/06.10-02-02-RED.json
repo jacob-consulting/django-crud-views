@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/pytest tests -k test_delete_preview_selection_budget --junitxml=/tmp/0610-02-02-red.xml -q",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"2.459\" timestamp=\"2026-11-04T20:53:49.225688+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_delete_preview_limit\" name=\"test_delete_preview_selection_budget\" time=\"0.602\"><failure message=\"AssertionError: assert [{'obj': &lt;Con... 'url': None}] == [{'obj': &lt;Con... 'url': None}]&#10;  &#10;  Left contains one more item: {'obj': &lt;Contract: Second&gt;, 'url': None}&#10;  Use -v to get more diff\">preview_view = &lt;tests.test1.app.views.PublisherCascadeDeleteView object at 0x7c72945e1850&gt;\n\n    @pytest.mark.django_db\n    def test_delete_preview_selection_budget(preview_view):\n        from tests.test1.app.models import Contract\n    \n        first, second = Contract(title=\"First\"), Contract(title=\"Second\")\n        view = preview_view\n        view.cv_delete_preview_limit = 1\n        view._cv_inspect_deletion = lambda: DeleteInspection(RelatedObjects([view.object], {}, [first, second]), ())\n        context = view.get_context_data()\n&gt;       assert context[\"protected_objects\"] == [{\"obj\": first, \"url\": None}]\nE       AssertionError: assert [{'obj': &lt;Con... 'url': None}] == [{'obj': &lt;Con... 'url': None}]\nE         \nE         Left contains one more item: {'obj': &lt;Contract: Second&gt;, 'url': None}\nE         Use -v to get more diff\n\ntests/test1/test_delete_preview_limit.py:38: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_delete_preview_selection_budget",
+  "targetFile": "tests/test1/test_delete_preview_limit.py",
+  "expected": "Only the first blocker is selected at limit 1",
+  "actual": "Both blockers enter context despite limit 1",
+  "reportPath": "/tmp/0610-02-02-red.xml",
+  "runStartedAt": "2026-11-04T20:53:49.225688+00:00",
+  "reportModifiedAt": 1793825631.6837509,
+  "semanticAssessment": "Real context preparation reached the planned protected-list assertion and exposed two entries instead of one."
+}

@@ -8,8 +8,17 @@ const {loadAssets, assetFor, runtime, stopOwned} = require('./cancel-navigation.
 const root = path.resolve(__dirname, '../..');
 const sha = value => crypto.createHash('sha256').update(value).digest('hex');
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-const matrix = ['page-click', 'page-enter', 'modal-click', 'modal-enter', 'text-fallback', 'hidden-only', 'escaping', 'blocked-form'];
+const scenarios = ['finite-exact', 'finite-over', 'blockers-exhaust', 'hidden-tail', 'unlimited', 'hidden-only', 'preview-off', 'escaping', 'link-off'];
+const matrix = ['page-click', 'page-enter', 'modal-click', 'modal-enter', ...['page', 'modal'].flatMap(kind => scenarios.map(scenario => `${kind}-${scenario}`))];
 const requiredCases = selection => selection === 'all' ? ['stock', 'custom'].flatMap(mode => matrix.map(name => `${mode}-${name}`)).concat('stock-repeat') : ['stock-page-click', 'custom-page-click', 'stock-repeat'];
+function scenarioFor(id) {return scenarios.find(scenario => id.endsWith(`-${scenario}`)) ?? 'finite-exact';}
+function expectedPreview(scenario) {
+    const hidden = ['hidden-only', 'preview-off'].includes(scenario);
+    return {plainProtected: true, displayedCount: hidden ? 0 : scenario === 'blockers-exhaust' ? 2 : scenario === 'finite-over' ? 3 : 4,
+        shortenedNoticeCount: ['blockers-exhaust', 'finite-over'].includes(scenario) ? 1 : 0,
+        summaryBookCount: scenario === 'preview-off' ? null : 2,
+        detailsAbsent: hidden || scenario === 'blockers-exhaust'};
+}
 function options(argv) {
     const result = {case: 'all', output: '/tmp/cv-protected-delete.json'};
     for (let i = 0; i < argv.length; i += 2) {
@@ -46,6 +55,7 @@ function validateEvidence(report, selection = 'smoke', output = '/tmp/cv-protect
         assert.equal(item.mode, item.id.startsWith('custom-') ? 'custom' : 'stock');
         assert.equal(item.sourceKind, item.id.includes('-modal-') ? 'modal' : 'page');
         for (const key of ['noHiddenLabel', 'noHiddenHref', 'wholeFormAbsent', 'sharedAlert', 'recipeIdentity', 'escapedLabel']) assert.equal(item.dom[key], true, `${item.id}: ${key}`);
+        for (const [key, value] of Object.entries(expectedPreview(scenarioFor(item.id)))) assert.equal(item.dom[key], value, `${item.id}: ${key}`);
         if (item.id.endsWith('-click') || item.id.endsWith('-enter') || item.id === 'stock-repeat') {
             assert.equal(item.activation, item.id.endsWith('-enter') ? 'Enter' : 'click');
             assert.equal(item.afterUrl, item.href, 'Navigation must reach actual href');
@@ -62,8 +72,8 @@ function validateEvidence(report, selection = 'smoke', output = '/tmp/cv-protect
             assert.equal(item.activation, 'none'); assert.equal(item.href, null);
             assert.equal(item.beforeUrl, item.afterUrl); assert.equal(item.detailStatus, null);
             assert.equal(item.requestResourceType, null); assert.equal(item.detailModalHeader, null);
-            if (item.id.endsWith('text-fallback')) assert.equal(item.dom.linkDisabledText, true);
-            if (item.id.endsWith('hidden-only')) assert.equal(item.dom.previewDisabledHidden, true);
+            if (item.id.endsWith('link-off')) assert.equal(item.dom.linkDisabledText, true);
+            if (item.id.endsWith('preview-off')) assert.equal(item.dom.previewDisabledHidden, true);
         }
     }
     assert.deepEqual(report.sourceHashes, sourceHashes(), 'Stale source hashes');
@@ -149,8 +159,9 @@ async function main(argv = process.argv.slice(2)) {
         const auth = await ctx.request.get(base + '/__signin/'); assert.equal(auth.status(), 200);
         const ids = await auth.json(), page = await ctx.newPage();
         page.on('pageerror', error => report.failures.push(error.stack));
-        const detailPath = ids.detailPaths.allowed;
-        async function show(mode, kind, scenario = 'normal') {
+        const detailPath = ids.cascadeDetailPath;
+        assert(detailPath && ids.cascadeLabel, 'Missing visible cascade fixture');
+        async function show(mode, kind, scenario = 'finite-exact') {
             await ctx.addCookies([{name: 'protected_mode', value: mode, url: base}, {name: 'protected_scenario', value: scenario, url: base}]);
             const target = kind === 'modal' ? '/publisher_modal_protected/' : `/publisher_cascade/${ids.publisher}/delete/`;
             const response = await page.goto(base + target); assert.equal(response.status(), 200);
@@ -162,22 +173,34 @@ async function main(argv = process.argv.slice(2)) {
             }
             return kind === 'modal' ? page.locator('#cv-modal') : page.locator('body');
         }
-        async function inspect(scope, mode, hidden = false) {
+        async function inspect(scope, mode, scenario) {
+            const hidden = ['hidden-only', 'preview-off'].includes(scenario);
             const html = await scope.innerHTML(), text = await scope.innerText();
+            const details = scope.locator('.alert-warning').filter({hasText: 'Details about the related objects to be deleted:'});
+            const summary = scope.locator('.alert-warning').filter({hasText: 'The following related objects will also be deleted:'});
+            const bookSummary = (await summary.allInnerTexts()).join('\n').match(/book:\s*(\d+)/i);
             const dom = {
-                noHiddenLabel: !html.includes(ids.hiddenLabel), noHiddenHref: !html.includes(ids.detailPaths.hidden),
-                wholeFormAbsent: await scope.locator('form').count() === 0,
+                noHiddenLabel: !html.includes(ids.hiddenLabel) && !html.includes(ids.hiddenCascadeLabel) && !text.includes('(restricted)'),
+                noHiddenHref: !html.includes(ids.detailPaths.hidden) && !html.includes(ids.hiddenCascadeDetailPath),
+                wholeFormAbsent: await scope.locator('form, [cv-key="cancel"], [data-cv-cancel]').count() === 0,
                 sharedAlert: await scope.locator('.alert-danger[role="alert"]').count() === 1,
                 recipeIdentity: await scope.locator('[data-protected-delete-recipe="body"]').count() === (mode === 'custom' && !hidden ? 1 : 0),
                 escapedLabel: await scope.locator('img[src="x"]').count() === 0 && (hidden || text.includes(ids.payload)),
+                plainProtected: await scope.locator('.alert-danger a').count() === 0,
+                displayedCount: await scope.locator('.alert-danger li').count() + await details.locator('li').count(),
+                shortenedNoticeCount: text.split('This preview is shortened. Additional objects are not shown.').length - 1,
+                summaryBookCount: bookSummary ? Number(bookSummary[1]) : null,
+                detailsAbsent: await details.count() === 0,
             };
-            for (const [key, value] of Object.entries(dom)) assert.equal(value, true, key);
+            for (const key of ['noHiddenLabel', 'noHiddenHref', 'wholeFormAbsent', 'sharedAlert', 'recipeIdentity', 'escapedLabel']) assert.equal(dom[key], true, key);
+            for (const [key, value] of Object.entries(expectedPreview(scenario))) assert.equal(dom[key], value, key);
             if (!hidden) {
                 assert(text.includes(ids.deniedLabel));
                 assert.equal(await scope.locator(`a[href="${ids.detailPaths.denied}"]`).count(), 0);
             } else {
                 for (const label of [ids.allowedLabel, ids.deniedLabel]) assert(!text.includes(label));
                 assert.equal(await scope.locator('a[href*="/contract/"]').count(), 0);
+                assert(text.includes('Other objects still reference this one; remove or reassign them before deleting it.'));
             }
             return dom;
         }
@@ -187,11 +210,11 @@ async function main(argv = process.argv.slice(2)) {
             const item = {id, mode, sourceKind: kind, passed: false, activation: navigation ? (id.endsWith('-enter') ? 'Enter' : 'click') : 'none',
                 href: null, detailStatus: null, detailModalHeader: null, focusedAnchorBeforeEnter: null, activeElementTag: null,
                 activeElementHref: null, requestResourceType: null}; report.cases.push(item);
-            const hidden = id.endsWith('hidden-only');
-            let scope = await show(mode, kind, hidden ? 'hidden' : 'normal');
-            item.beforeUrl = page.url(); item.dom = await inspect(scope, mode, hidden);
+            const scenario = scenarioFor(id), scope = await show(mode, kind, scenario);
+            item.scenario = scenario;
+            item.beforeUrl = page.url(); item.dom = await inspect(scope, mode, scenario);
             if (navigation) {
-                const anchor = scope.locator(`.alert-danger a[href="${detailPath}"]`);
+                const anchor = scope.locator(`.alert-warning a[href="${detailPath}"]`);
                 assert.equal(await anchor.count(), 1); item.href = await anchor.evaluate(el => el.href);
                 item.dom.ordinaryAnchor = await anchor.evaluate(el => el.getAttributeNames().every(name => name === 'href') && !el.target);
                 assert(item.dom.ordinaryAnchor);
@@ -219,15 +242,14 @@ async function main(argv = process.argv.slice(2)) {
                 item.detailStatus = response.status(); item.detailModalHeader = response.request().headers()['x-cv-modal'] ?? null;
                 item.requestResourceType = response.request().resourceType();
                 item.dom.fullDocument = /<html[\s>]/i.test(await response.text()) && /<!doctype html>/i.test(await response.text());
-                item.dom.sameRow = (await page.locator('body').innerText()).includes(ids.payload) && new URL(page.url()).pathname === detailPath;
+                const detailText = await page.locator('body').innerText();
+                item.dom.sameRow = detailText.includes(ids.cascadeLabel) && !detailText.includes(ids.payload) && new URL(page.url()).pathname === detailPath;
                 item.dom.modalCapable = response.headers()['x-protected-detail-modal-capable'] === 'true';
-            } else if (id.endsWith('text-fallback')) {
-                scope = await show(mode, kind, 'link-off'); await inspect(scope, mode);
-                item.dom.linkDisabledText = await scope.locator('.alert-danger a').count() === 0;
+            } else if (scenario === 'link-off') {
+                item.dom.linkDisabledText = await scope.locator('.cv-related-objects a').count() === 0;
                 assert(item.dom.linkDisabledText);
-            } else if (hidden) {
-                scope = await show(mode, kind, 'preview-off'); await inspect(scope, mode, true);
-                item.dom.previewDisabledHidden = await scope.locator('a[href*="/contract/"]').count() === 0;
+            } else if (scenario === 'preview-off') {
+                item.dom.previewDisabledHidden = await scope.locator('.cv-related-objects ul, .cv-related-objects a').count() === 0;
                 assert(item.dom.previewDisabledHidden);
             }
             item.afterUrl = page.url(); item.passed = true;

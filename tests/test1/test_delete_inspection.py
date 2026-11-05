@@ -59,7 +59,8 @@ def test_protected_preview_read_only(protected_destination, client_user_publishe
         assert template in [item.name for item in response.templates]
         if method == "post":
             assert response.context["form"].is_valid()
-        assert response.context["protected_objects"] == [{"obj": case.blocker, "url": case.url}]
+        assert response.context["protected_objects"] == [{"obj": case.blocker, "url": None}]
+        assert case.url not in response.content.decode()
         assert "<form" not in response.content.decode()
         assert not any(q["sql"].lstrip().upper().startswith(("INSERT", "UPDATE", "DELETE")) for q in queries)
         assert events == []
@@ -897,12 +898,62 @@ def test_german_delete_catalog_matches_source(tmp_path):
     for msgid in (
         "This preview is incomplete. Custom deletion behavior may affect additional objects.",
         "Some related objects that will also be deleted (partial counts):",
+        "This preview is shortened. Additional objects are not shown.",
     ):
         entry = source.find(msgid)
         assert entry is not None and entry.translated()
     regenerated = tmp_path / "django.mo"
     source.save_as_mofile(str(regenerated))
     assert regenerated.read_bytes() == (directory / "django.mo").read_bytes()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("incomplete", [False, True])
+@pytest.mark.parametrize("scenario", ["overflow", "exact", "hidden-only", "unlimited"])
+def test_delete_preview_truncation_german_rendering(
+    client_user_publisher_cascade_delete,
+    user_publisher_cascade_delete,
+    publisher_penguin,
+    monkeypatch,
+    modal,
+    incomplete,
+    scenario,
+):
+    from django.contrib.auth.models import Permission
+    from django.utils.translation import gettext, override
+
+    for title in ("Erstes Buch", "Zweites Buch"):
+        Book.objects.create(publisher=publisher_penguin, title=title)
+    if scenario != "hidden-only":
+        user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_book"))
+    # The root has no view permission; the two visible books alone consume the budget.
+    monkeypatch.setattr(
+        PublisherCascadeDeleteView,
+        "cv_delete_preview_limit",
+        {"overflow": 1, "exact": 2, "hidden-only": 1, "unlimited": None}[scenario],
+    )
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_modal", True)
+    if incomplete:
+        monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(lambda: None))
+    english = "This preview is shortened. Additional objects are not shown."
+    german = "Diese Vorschau ist gekürzt. Weitere Objekte werden nicht angezeigt."
+    partial = "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen."
+    with override("de"):
+        assert gettext(english) == german
+        response = client_user_publisher_cascade_delete.get(
+            f"/publisher_cascade/{publisher_penguin.pk}/delete/", HTTP_X_CV_MODAL="true" if modal else "false"
+        )
+    assert response.status_code == 200
+    markup = response.content.decode()
+    assert response.context["delete_preview_truncated"] is (scenario == "overflow")
+    assert markup.count(german) == int(scenario == "overflow")
+    assert english not in markup
+    assert response.context["delete_preview_incomplete"] is incomplete
+    assert markup.count(partial) == int(incomplete)
+    if incomplete:
+        assert "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):" in markup
+    assert Book.objects.filter(publisher=publisher_penguin).count() == 2
 
 
 @pytest.mark.django_db(transaction=True)

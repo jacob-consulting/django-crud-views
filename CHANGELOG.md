@@ -321,6 +321,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Changed
 
+- Full-page workflow actions now participate in the shared form frame, including the no-transitions message.
+  History remains first and outside that frame; a table-only responsive wrapper keeps wide history scrolling
+  local. Copied action templates need the frame inheritance to participate; see the
+  [updated copy recipe](docs/migrating-1.0.md#workflow-action-body). Model signatures, permission/transition
+  behavior and supported generic modal routing are unchanged (#319).
+
 - An icon-only action button (context toolbar, list row or card) whose icon is empty no longer renders as an
   invisible button (#264). Under `CRUD_VIEWS_STRICT` (default `DEBUG`) `cv_button_data()` raises `ValueError`;
   otherwise the button renders its label, as in `"label"` mode, and a warning is logged. pytest-django runs tests
@@ -486,6 +492,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- Workflow supplies eight optional `workflow:badge-*` defaults and independent `workflow:history-wrapper` /
+  `workflow:history-table` classes below theme registrations and project settings. Current/history badges share
+  the complete-class hook, retain escaped text when disabled, and keep the original Bootstrap construction for
+  unregistered colours. The existing badge override path and `state`/`name`/`class` context remain; `badge_class`
+  is additive. See the [conditional theme recipe](docs/reference/theme.md#optional-workflow-classes) and
+  [badge contract](docs/reference/workflow_view.md#themeable-state-badges) (#319).
 
 - `register_label_mode_defaults()` lets themes register validated per-location defaults below live project
   settings, with atomic validation and later-registration wins. See [theme defaults](docs/reference/theme.md#theme-label-defaults).

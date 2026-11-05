@@ -157,6 +157,211 @@ class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermission
     form_class = CampaignWorkflowForm
 ```
 
+## Opt-in per-transition permissions
+
+`WorkflowViewPermissionRequired` keeps its default `change` gate. To let a user execute a dedicated step
+without general change permission, explicitly select `cv_permission = "view"` and give each restricted
+transition its own django-fsm `permission=` rule. Lowering the page gate alone does not restrict transitions
+that have no permission rule. See [django-fsm-2 permissions](https://github.com/django-commons/django-fsm-2#permissions).
+
+This complete basic recipe uses an app named `requests_app`. Follow the
+[installation and base-template setup](../getting_started/tutorial-1-setup.md) and
+[getting started](../getting_started/index.md)
+guidance for core apps and the base template, add `requests_app` to `INSTALLED_APPS`, and complete the
+[workflow installation](#installation) above. The regression fixture uses the installed test app label
+`app`; the example below uses `requests_app` consistently instead.
+
+### Model and transition rules
+
+In `requests_app/models.py`, both transitions start from `NEW`, so their different availability for users
+comes from their permission rules:
+
+```python
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+from django_fsm import FSMField, transition
+
+from crud_views_workflow.lib import BadgeEnum, WorkflowComment, WorkflowModelMixin
+
+
+class WorkflowRequestState(models.TextChoices):
+    NEW = "new", _("New")
+    PROCESSED = "processed", _("Processed")
+    CANCELED = "canceled", _("Canceled")
+
+
+class WorkflowRequest(WorkflowModelMixin, models.Model):
+    STATE_CHOICES = WorkflowRequestState
+    STATE_BADGES = {
+        WorkflowRequestState.NEW: BadgeEnum.LIGHT,
+        WorkflowRequestState.PROCESSED: BadgeEnum.PRIMARY,
+        WorkflowRequestState.CANCELED: BadgeEnum.WARNING,
+    }
+
+    name = models.CharField(max_length=128)
+    state = FSMField(default=WorkflowRequestState.NEW, choices=WorkflowRequestState.choices)
+
+    class Meta:
+        permissions = [("process_workflowrequest", "Can process workflow request")]
+
+    def __str__(self):
+        return self.name
+
+    @transition(
+        field=state,
+        source=WorkflowRequestState.NEW,
+        target=WorkflowRequestState.PROCESSED,
+        permission="requests_app.process_workflowrequest",
+        custom={"label": "Process", "comment": WorkflowComment.NONE},
+    )
+    def wf_process(self, by=None, comment=None):
+        pass
+
+    @transition(
+        field=state,
+        source=WorkflowRequestState.NEW,
+        target=WorkflowRequestState.CANCELED,
+        permission="requests_app.change_workflowrequest",
+        custom={"label": "Cancel", "comment": WorkflowComment.NONE},
+    )
+    def wf_cancel(self, by=None, comment=None):
+        pass
+```
+
+Create the app migration with `makemigrations requests_app`, then apply it with `migrate` to create the table
+and permissions, including the custom permission declared in `Meta`. Declaring that permission alone does
+not enforce it: the transition's `permission=` rule provides the restriction here.
+
+For a dedicated-step actor, grant `requests_app.view_workflowrequest` and
+`requests_app.process_workflowrequest`, without `requests_app.change_workflowrequest`. For an ordinary
+change actor, grant `requests_app.view_workflowrequest` and `requests_app.change_workflowrequest`, without
+the dedicated permission. Use ordinary users, since superusers would not demonstrate this separation.
+
+### Form, ViewSet and registered views
+
+In `requests_app/views.py`, register list and detail siblings alongside the workflow view. These supply
+the action, home, success and Cancel destinations. The plain siblings are minimal navigation targets;
+the generic detail body is intentionally empty. Add your own detail presentation separately if needed.
+
+```python
+from crud_views.lib.crispy import CrispyViewMixin
+from crud_views.lib.views import DetailViewPermissionRequired, ListViewPermissionRequired, MessageMixin
+from crud_views.lib.viewset import ViewSet
+from crud_views_workflow.lib import WorkflowForm, WorkflowViewPermissionRequired
+
+from .models import WorkflowRequest
+
+
+cv_workflowrequest = ViewSet(model=WorkflowRequest, name="workflowrequest")
+
+
+class WorkflowRequestListView(ListViewPermissionRequired):
+    cv_viewset = cv_workflowrequest
+    cv_list_actions = ["detail", "workflow"]
+    cv_context_actions = ["list"]
+
+
+class WorkflowRequestDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_workflowrequest
+    cv_context_actions = ["list", "detail", "workflow"]
+
+
+class WorkflowRequestWorkflowForm(WorkflowForm):
+    class Meta(WorkflowForm.Meta):
+        model = WorkflowRequest
+
+
+class WorkflowRequestWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionRequired):
+    cv_viewset = cv_workflowrequest
+    cv_permission = "view"
+    cv_context_actions = ["list", "detail", "workflow"]
+    form_class = WorkflowRequestWorkflowForm
+```
+
+In `requests_app/urls.py`, import the ViewSet after its views have registered:
+
+```python
+from .views import cv_workflowrequest
+
+urlpatterns = cv_workflowrequest.urlpatterns
+```
+
+Include the app URLs in the project's `urls.py`:
+
+```python
+from django.urls import include, path
+
+urlpatterns = [
+    path("", include("requests_app.urls")),
+]
+```
+
+For a saved object, the workflow page is `/workflowrequest/<pk>/workflow/`. A successful step redirects
+to the registered list view, which these actors can access with their view permission.
+
+### Authorization layers and basic outcomes
+
+Keep these checks distinct when adapting the recipe:
+
+1. **Page permission:** `cv_permission = "view"` requires the model's view permission. A dedicated step
+   permission cannot replace it.
+2. **Application object, queryset and parent policy:** retain any existing restrictions on which object
+   can be accessed and within which parent. This minimal example adds no such custom policy; the step
+   permission does not replace those checks in an application that has them.
+3. **Optional action-enabled request gate:** the separate variant below checks whether any step is
+   permitted. The basic recipe above leaves the existing hook unchanged.
+4. **State/user transition filtering:** `workflow_get_possible_transitions(user)` uses django-fsm's
+   available user transitions to build the offered choices for the object's current state.
+5. **Submitted-choice validation:** the form's `ChoiceField` rejects a submitted method absent from those
+   choices, including a forged same-source transition belonging to the other role.
+6. **Execution-time recheck:** after valid form submission, `workflow_has_transition(user, transition)`
+   is checked again before the transition method, object save and `WorkflowInfo` creation.
+
+Rendering an action or offering a choice earlier does not authorize execution. These request outcomes are
+covered by the isolated `WorkflowRequest` regression fixture, with a fresh `NEW` object for each case:
+
+| Configuration / actor | Request and result | Persisted state and object-scoped history |
+|-----------------------|--------------------|------------------------------------------|
+| Basic; view + dedicated step, no change | GET 200 offers only `wf_process`; POST `wf_process` returns 302; redirect GET 200 | `PROCESSED`; one new record for `wf_process`, actor and object |
+| Basic; view + change, no dedicated step | GET 200 offers only `wf_cancel`; POST `wf_cancel` returns 302; redirect GET 200 | `CANCELED`; one new record for `wf_cancel`, actor and object |
+| Basic; view + dedicated step forges `wf_cancel` | GET omits `wf_cancel`; forged POST returns 200 with a transition field error | Unchanged |
+| Basic; dedicated step without view | Direct GET and POST return 403 for the authenticated user | Unchanged |
+| Basic; view only, no permitted steps | GET 200 shows the empty message; POST `wf_process` returns 200 with a transition field error | Unchanged |
+| Basic; valid offered choice denied by the execution recheck | POST returns 400 (`SuspiciousOperation`) | Unchanged |
+| Optional hook; view only, no permitted steps | Sibling detail GET 200 renders a disabled workflow action; direct workflow GET and POST return 403 | Unchanged |
+| Optional hook; view + dedicated step | Workflow GET 200; POST `wf_process` returns 302; redirect GET 200 | `PROCESSED`; one new record for `wf_process`, actor and object |
+
+In the basic variant, a page viewer with no permitted steps sees:
+“There are no workflow steps available from the current state.” Applicable application access checks
+must still pass. The controlled execution-recheck test first establishes an offered, valid choice and
+then makes the model's recheck return false during the actual POST. It proves this rejection path,
+without establishing concurrent permission-revocation or race protection.
+
+### Optional: disable the action and deny no-step requests
+
+To deny the workflow page when no step is permitted, insert the following attributes and method **inside
+the existing `WorkflowRequestWorkflowView` class** above, with class-body indentation. This is an insertion
+snippet, not a second registered workflow view:
+
+```python
+cv_inaccessible_actions = "disable"
+
+@classmethod
+def cv_action_enabled(cls, user, obj=None):
+    return obj is None or obj.workflow_has_any_possible_transition(user)
+```
+
+When the hook returns false, a sibling page rendering the workflow action shows it disabled, and the
+server also denies authenticated direct workflow GET and POST requests with 403. This variant does not
+leave the empty workflow page accessible. A user with a permitted transition still passes the hook;
+`obj is None` also allows evaluation where no object is supplied. Page and applicable object/parent
+checks remain required, as do choice validation and the execution recheck.
+
+The hook runs for rendered actions and direct requests. Checking transition permissions can add permission
+backend lookups; this recipe makes no fixed query-count or performance guarantee. Keep application policy
+within the existing hooks and retain the default `change` gate on other workflow views unless they also
+deliberately opt in.
+
 ## WorkflowModelMixin
 
 `WorkflowModelMixin` is a model mixin that provides workflow-related properties and helpers.

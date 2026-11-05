@@ -493,6 +493,10 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- Documentation: a complete [opt-in per-transition workflow permissions recipe](docs/reference/workflow_view.md#opt-in-per-transition-permissions)
+  preserves the default `change` gate and distinguishes basic empty-page access from optional server-enforced
+  no-step gating (#320).
+
 - Workflow supplies eight optional `workflow:badge-*` defaults and independent `workflow:history-wrapper` /
   `workflow:history-table` classes below theme registrations and project settings. Current/history badges share
   the complete-class hook, retain escaped text when disabled, and keep the original Bootstrap construction for

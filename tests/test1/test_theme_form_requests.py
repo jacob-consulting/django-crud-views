@@ -197,6 +197,73 @@ def test_workflow_no_choices_preserves_distinct_bodies(
     assert _snapshot() == before
 
 
+@pytest.mark.parametrize("modal", [False, True])
+def test_workflow_frame_request_states(
+    modal, campaign_new, campaign_success, user_campaign_change, monkeypatch, record_property
+):
+    from tests.test1.app.views import cv_campaign
+    from tests.test1.test_form_frame import THEME_FRAME, _theme_templates
+
+    _grant_cancel_view(user_campaign_change, cv_campaign)
+    monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(user_campaign_change)
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+
+    def check_frame(response, choices):
+        _workflow_templates(response, modal, choices, record_property)
+        document = html.fromstring(response.content)
+        cards = document.cssselect(".theme-card")
+        assert len(cards) == int(not modal)
+        if modal or choices:
+            owner, form = _owned(response, url, "workflow", modal)
+            if not modal:
+                assert form.getparent().get("class") == "theme-card"
+                assert form.getprevious().text_content() == "Workflow Action"
+            return owner, form
+        scanner = _RawForms()
+        scanner.feed(response.content.decode())
+        assert scanner.forms == []
+        assert not cards[0].cssselect("h5, form, input, button")
+        assert cards[0].text_content().strip() == "There are no workflow steps available from the current state."
+
+    with _theme_templates({"crud_views/snippets/form_frame.html": THEME_FRAME}):
+        response = client.get(url, headers=headers)
+        assert response.status_code == 200
+        owner, _ = check_frame(response, True)
+        token = owner["tokens"][0]
+        before = _snapshot()
+        for csrf in (None, "invalid"):
+            payload = {"transition": "wf_activate"}
+            if csrf is not None:
+                payload["csrfmiddlewaretoken"] = csrf
+            assert client.post(url, payload, headers=headers).status_code == 403
+            assert _snapshot() == before
+        invalid = client.post(url, {"csrfmiddlewaretoken": token, "comment": "Retained input"}, headers=headers)
+        assert invalid.status_code == (422 if modal else 200)
+        _, form = check_frame(invalid, True)
+        assert invalid.context["form"].errors
+        assert form.cssselect(".invalid-feedback")
+        assert form.cssselect("textarea[name=comment]")[0].text_content().strip() == "Retained input"
+        assert _snapshot() == before
+        submitter = owner["submitters"][0]
+        result = client.post(
+            url,
+            {"csrfmiddlewaretoken": token, "transition": "wf_activate", submitter["name"]: submitter["value"]},
+            headers=headers,
+        )
+        assert result.status_code == (204 if modal else 302)
+        campaign_new.refresh_from_db()
+        assert campaign_new.state == CampaignState.ACTIVE
+        history = WorkflowInfo.objects.filter(workflow_object_pk=str(campaign_new.pk), transition="wf_activate")
+        assert history.count() == 1
+        url = f"/campaign/{campaign_success.pk}/workflow/"
+        terminal = client.get(url, headers=headers)
+        assert terminal.status_code == 200
+        check_frame(terminal, False)
+
+
 @pytest.mark.parametrize("view", [AuthorCreateView, AuthorUpdateView])
 def test_create_update_modal_support_stays_rejected(view, monkeypatch):
     assert view.cv_modal_supported is False

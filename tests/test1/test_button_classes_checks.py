@@ -27,6 +27,42 @@ def test_default_config_has_no_messages():
     assert check_button_classes() == []
 
 
+@pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("active", [True, False])
+@pytest.mark.parametrize(
+    "key,valid",
+    [
+        ("workflow:badge-info", True),
+        ("workflow:history-wrapper", True),
+        ("workflow:history-table", True),
+        ("workflow:badge-purple", True),
+        ("workflow:badge-icon-host", True),
+        ("workflow:badge-container-single", True),
+        ("workflow:badge-", False),
+        ("workflow:badge-purple:icon", False),
+        ("workflow:badge-pur ple", False),
+        ("workflow:badge-purple\t", False),
+        ("workflow:badge-\u00a0", False),
+        ("workflow:badges-purple", False),
+    ],
+)
+@pytest.mark.parametrize("value", [None, "", "literal {bad}", 42])
+def test_workflow_badge_key_checks(source, active, key, valid, value):
+    from django.conf import settings
+
+    installed = (
+        settings.INSTALLED_APPS
+        if active
+        else [app for app in settings.INSTALLED_APPS if not app.startswith("crud_views_workflow")]
+    )
+    with override_settings(INSTALLED_APPS=installed):
+        messages = messages_for({key: value}, source)
+        expected = [] if value is None or isinstance(value, str) else ["crud_views.E361"]
+        if not (active and valid):
+            expected.append("crud_views.W362")
+        assert ids(messages) == expected
+
+
 def test_optional_heading_keys_are_recognized():
     values = {
         f"heading-{location}:{slot}": "{name_class}" if slot == "icon-host" else "spacing"
@@ -257,7 +293,7 @@ def test_valid_form_mode_bad_value_is_e361_only(source, kind):
 @pytest.mark.parametrize("configured", [None, {}])
 def test_none_or_empty_settings_add_no_overrides(configured):
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES=configured):
-        assert bc.get_button_classes() == bc.DEFAULT_BUTTON_CLASSES
+        assert bc.get_button_classes() == bc._get_default_button_classes()
         assert check_button_classes() == []
 
 

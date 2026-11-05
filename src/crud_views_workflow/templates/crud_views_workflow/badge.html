@@ -1,1 +1,1 @@
-<span class="badge rounded-pill text-bg-{{ class }}">{{ name }}</span>
+<span class="{% if badge_class is None %}badge rounded-pill text-bg-{{ class }}{% else %}{{ badge_class }}{% endif %}">{{ name }}</span>

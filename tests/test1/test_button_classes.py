@@ -1,7 +1,14 @@
 import re
+import subprocess
+import sys
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 import pytest
+from django.apps import apps
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template
 from django.test import override_settings
 
@@ -111,6 +118,143 @@ def test_default_table_is_complete():
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
     assert get_button_class("menu", "item") == "dropdown-item"
+
+
+def test_workflow_app_defaults_lifecycle(monkeypatch):
+    from crud_views.apps import CrudViewsConfig
+    from crud_views_workflow.apps import CrudViewsWorkflowConfig
+
+    core = dict(DEFAULT_BUTTON_CLASSES)
+    workflow = dict(CrudViewsWorkflowConfig.crud_views_button_class_defaults)
+    assert len(core) == 88
+    assert len(workflow) == 10
+    assert bc._get_default_button_classes() == core | workflow
+    assert len(get_button_classes()) == 98
+    register_button_classes({"workflow:badge-purple": "theme-purple"})
+    seen = []
+    original_ready = CrudViewsConfig.ready
+
+    def ready(config):
+        # Population runs this before override_settings emits setting_changed.
+        seen.append(dict(bc._get_default_button_classes()))
+        assert "workflow:badge-info" not in get_button_classes()
+        original_ready(config)
+
+    monkeypatch.setattr(CrudViewsConfig, "ready", ready)
+    installed = [app for app in settings.INSTALLED_APPS if not app.startswith("crud_views_workflow")]
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"}):
+        for _ in range(2):
+            assert "workflow:badge-info" in get_button_classes()
+            with override_settings(INSTALLED_APPS=installed):
+                assert bc._get_default_button_classes() == core
+                assert get_button_class("workflow", "badge-purple") == "theme-purple"
+                assert get_button_class("workflow", "badge-light") == "project-light"
+                assert "workflow:badge-info" not in get_button_classes()
+            assert bc._get_default_button_classes() == core | workflow
+            assert get_button_class("workflow", "badge-info") == workflow["workflow:badge-info"]
+    assert seen == [core, core]
+    # Restoration before any setting_changed signal also invalidates a warmed resolved map.
+    apps.set_installed_apps(installed)
+    try:
+        assert "workflow:badge-info" not in get_button_classes()
+    finally:
+        apps.unset_installed_apps()
+    assert "workflow:badge-info" in get_button_classes()
+    warm = get_button_classes()
+    with patch.object(apps, "get_app_configs", side_effect=AssertionError("warm lookup rescanned apps")):
+        assert get_button_classes() is warm
+        assert bc._heading_class("group", "icon-inline") == "me-2"
+    assert core == DEFAULT_BUTTON_CLASSES
+    assert CrudViewsWorkflowConfig.crud_views_button_class_defaults == workflow
+
+
+@pytest.mark.parametrize(
+    "declarations,app,key",
+    [
+        ([{"form:submit": "collision"}], "provider0", "form:submit"),
+        ([{"custom:slot": "first"}, {"custom:slot": "second"}], "provider1", "custom:slot"),
+        ([None], "provider0", "mapping"),
+        ([[]], "provider0", "mapping"),
+        ([{42: "class"}], "provider0", "42"),
+    ],
+)
+@pytest.mark.parametrize("via_check", [False, True])
+def test_app_default_collisions(monkeypatch, declarations, app, key, via_check):
+    from copy import deepcopy
+
+    from crud_views.checks import check_button_classes
+
+    before = deepcopy(declarations)
+    core = dict(DEFAULT_BUTTON_CLASSES)
+    providers = {
+        f"provider{i}": SimpleNamespace(name=f"provider{i}", crud_views_button_class_defaults=value)
+        for i, value in enumerate(declarations)
+    }
+    get_button_classes()  # prove invalid declarations cannot hide behind the old resolved cache
+    monkeypatch.setattr(apps, "app_configs", providers)
+    with pytest.raises(ImproperlyConfigured) as error:
+        (check_button_classes if via_check else get_button_classes)()
+    assert app in str(error.value)
+    assert key in str(error.value)
+    assert declarations == before
+    assert core == DEFAULT_BUTTON_CLASSES
+
+
+def test_app_default_values_keep_e361(monkeypatch):
+    monkeypatch.setattr(
+        apps,
+        "app_configs",
+        {"provider": SimpleNamespace(name="provider", crud_views_button_class_defaults={"custom:slot": 42})},
+    )
+    assert [message.id for message in button_class_check_messages()] == ["crud_views.E361"]
+
+
+@pytest.mark.parametrize("workflow_first", [False, True])
+def test_workflow_app_defaults_fresh_setup(workflow_first):
+    # Isolate model registration and ready ordering from the already-populated pytest registry.
+    source = """
+import sys
+from types import ModuleType
+import django
+from django.apps import AppConfig
+from django.conf import settings
+
+theme = ModuleType("badge_theme_probe")
+theme.__file__ = "badge_theme_probe.py"
+sys.modules[theme.__name__] = theme
+seen = []
+class ThemeConfig(AppConfig):
+    name = "badge_theme_probe"
+    path = "."
+    def ready(self):
+        assert len(bc._get_default_button_classes()) == 98
+        bc.register_button_classes({"workflow:badge-info": "theme-info"})
+        seen.append(bc.get_button_class("workflow", "badge-info"))
+theme.ThemeConfig = ThemeConfig
+providers = ["crud_views_workflow", "badge_theme_probe.ThemeConfig"]
+if not WORKFLOW_FIRST:
+    providers.reverse()
+settings.configure(
+    SECRET_KEY="probe",
+    INSTALLED_APPS=["django.contrib.auth", "django.contrib.contenttypes", "crud_views", *providers],
+    CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"},
+)
+from crud_views.lib import button_classes as bc
+assert len(bc.DEFAULT_BUTTON_CLASSES) == 88
+assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
+django.setup()
+assert seen == ["theme-info"]
+assert len(bc._get_default_button_classes()) == 98
+assert bc.get_button_class("workflow", "badge-info") == "theme-info"
+assert bc.get_button_class("workflow", "badge-light") == "project-light"
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", f"WORKFLOW_FIRST = {workflow_first!r}\n" + source],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def test_documented_default_key_count_matches_table():

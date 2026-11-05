@@ -5,6 +5,8 @@ from django.db.models import Choices
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
+from crud_views.lib.button_classes import get_button_class, get_button_classes
+
 from .enums import BadgeEnum, WorkflowComment
 
 TState = str
@@ -38,7 +40,15 @@ class WorkflowModelMixin:
         assert self.STATE_BADGES is not None, "STATE_BADGES must be defined"
         name = self.get_state_name(state)
         klass = self.STATE_BADGES.get(state, self.STATE_BADGE_DEFAULT)
-        html = render_to_string("crud_views_workflow/badge.html", {"state": state, "name": name, "class": klass})
+        badge_class = (
+            get_button_class("workflow", f"badge-{klass}")
+            if f"workflow:badge-{klass}" in get_button_classes()
+            else None
+        )
+        html = render_to_string(
+            "crud_views_workflow/badge.html",
+            {"state": state, "name": name, "class": klass, "badge_class": badge_class},
+        )
         return mark_safe(html)
 
     @property

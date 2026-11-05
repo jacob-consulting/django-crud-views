@@ -245,6 +245,67 @@ from crud_views_workflow.lib import BadgeEnum, WorkflowModelMixin
 
 States not listed in `STATE_BADGES` fall back to `STATE_BADGE_DEFAULT` (default: `BadgeEnum.INFO`).
 
+## Themeable state badges
+
+Current and historical badges share `get_state_badge(state)` and the existing
+`crud_views_workflow/badge.html` override path. `BadgeEnum`, `STATE_BADGES` and `STATE_BADGE_DEFAULT` retain their
+model APIs. First the model chooses the colour: an unmapped state uses `STATE_BADGE_DEFAULT`. Then the class
+registry resolves `workflow:badge-<colour>`. This is a complete class string, not a colour-formatting setting.
+
+Workflow's AppConfig supplies [eight badge and two history defaults](buttons.md#optional-workflow-defaults).
+Core plus installed-app defaults sit below theme registrations, which sit below `CRUD_VIEWS_BUTTON_CLASSES`.
+The [theme recipe](theme.md#optional-workflow-classes) registers complete light/custom classes only when workflow
+is installed. Project settings examples below assume that app is installed.
+
+A custom colour such as `purple` without a registered key keeps the original Bootstrap construction:
+`badge rounded-pill text-bg-purple`. Missing a class key does **not** substitute `STATE_BADGE_DEFAULT`.
+A present `None` or `""` disables all badge classes while preserving its escaped text, and stops fallback.
+Values are literal class strings; they are escaped, never evaluated as templates.
+
+The leaf context retains `state` (raw state), `name` (display label), and `class` (selected colour).
+The additive `badge_class` is the complete resolved string, `""` for a disabled entry, or `None` as the missing-entry
+sentinel. The stock leaf uses the original Bootstrap construction only for the sentinel (also when rendering
+the leaf with old context lacking `badge_class`). Legacy copied leaves keep their chosen markup until changed
+to consume the new value. Remove a redundant badge leaf to adopt registry classes without maintaining a copy.
+
+### Project workflow classes
+
+Project settings override theme choices per key, including explicit disabled entries:
+
+```python
+CRUD_VIEWS_BUTTON_CLASSES = {
+    "workflow:badge-success": "badge project-success",
+    "workflow:badge-purple": "badge project-purple",
+    "workflow:badge-warning": None,
+    "workflow:badge-dark": "",
+    "workflow:history-wrapper": "table-responsive",
+    "workflow:history-table": "table table-striped",
+}
+```
+
+Custom colours need not be in the defaults, but must have one nonempty colour segment without whitespace or
+colon. Workflow keys in settings or theme registrations produce `crud_views.W362` when workflow is absent.
+Values other than strings or `None` produce `crud_views.E361`.
+
+## Action frame and history layout
+
+Full-page history comes first, followed by actions. Empty history renders neither a heading nor a table.
+`workflow:history-wrapper` styles a div directly around only the table; `workflow:history-table` styles the
+semantic table itself. Stock values are `table-responsive` and `table`. The history heading sits outside the
+scrolling region, with the horizontal scrollbar immediately below the table. Override each class independently;
+keep the wrapper local so wide history does not scroll the action form or widen the page.
+
+The action template extends `crud_views/snippets/form_frame.html` and fills `cv_form_body` inside `cv_form_frame`.
+Stock framing adds no decoration. With choices, both the heading and the page-owned form are inside the frame,
+with one CSRF input and the existing crispy renderer. With no choices, only the no-transitions message is framed:
+no action heading, form, CSRF input or controls. History remains outside that frame. See the complete
+[copied action recipe](theme.md#copied-workflow-action-template).
+
+Supported workflow modals keep `crud_views/view_custom_form.content.html`, including its generic no-choice form;
+unavailable transitions still reject on submission. Do not reroute them to the full-page workflow content.
+The shared theme frame retains ownership of its modal decoration rules. Permissions, transition validation,
+execution and history queries are unaffected by these presentation hooks.
+
 ## WorkflowForm
 
 `WorkflowForm` is the base form class. Subclass it and set `Meta.model`:

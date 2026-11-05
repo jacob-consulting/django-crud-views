@@ -164,7 +164,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
     with patch.object(apps, "get_app_configs", side_effect=AssertionError("warm lookup rescanned apps")):
         assert get_button_classes() is warm
         assert bc._heading_class("group", "icon-inline") == "me-2"
-    assert DEFAULT_BUTTON_CLASSES == core
+    assert core == DEFAULT_BUTTON_CLASSES
     assert CrudViewsWorkflowConfig.crud_views_button_class_defaults == workflow
 
 
@@ -197,7 +197,7 @@ def test_app_default_collisions(monkeypatch, declarations, app, key, via_check):
     assert app in str(error.value)
     assert key in str(error.value)
     assert declarations == before
-    assert DEFAULT_BUTTON_CLASSES == core
+    assert core == DEFAULT_BUTTON_CLASSES
 
 
 def test_app_default_values_keep_e361(monkeypatch):

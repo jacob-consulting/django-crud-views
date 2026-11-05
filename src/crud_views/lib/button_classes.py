@@ -319,6 +319,7 @@ def _is_action_mode_key(key: str) -> bool:
 
 def button_class_check_messages() -> list[CheckMessage]:
     messages: list[CheckMessage] = []
+    defaults = _get_default_button_classes()
 
     for name, hint in REMOVED_SETTINGS.items():
         if hasattr(settings, name):
@@ -369,7 +370,20 @@ def button_class_check_messages() -> list[CheckMessage]:
     from .view.label_mode import LABEL_MODES
 
     for key in (*_THEME_BUTTON_CLASSES, *_settings_layer()):
-        if key in DEFAULT_BUTTON_CLASSES or key in HEADING_LOCATION_KEYS or _is_action_mode_key(key):
+        workflow_colour = (
+            key.removeprefix("workflow:badge-") if isinstance(key, str) and key.startswith("workflow:badge-") else ""
+        )
+        if (
+            key in defaults
+            or key in HEADING_LOCATION_KEYS
+            or _is_action_mode_key(key)
+            or (
+                "workflow:badge-info" in defaults
+                and workflow_colour
+                and ":" not in workflow_colour
+                and not any(char.isspace() for char in workflow_colour)
+            )
+        ):
             continue
         if (parts := _action_key_parts(key)) is not None:
             messages.append(

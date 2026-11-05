@@ -35,7 +35,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze (completed 2026-11-04)
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
 - [x] **Phase 6.10: Simplify protected-object previews and cap total displayed objects (INSERTED)** - #316: plain-text protected blockers and one shared preview display budget before the freeze (completed 2026-11-05)
-- [ ] **Phase 6.13: Workflow permissions: opt-in per-transition access (INSERTED)** - #320: document and test the existing view-gated recipe while preserving the default change gate
+- [x] **Phase 6.13: Workflow permissions: opt-in per-transition access (INSERTED)** - #320: document and test the existing view-gated recipe while preserving the default change gate (completed 2026-11-05)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -962,7 +962,7 @@ recipe separately from the optional `cv_action_enabled` request gate with disabl
 
 **Exclusions**: No automatic any-transition page gate, new permission framework, Guardian integration mode,
 execution helper, refusal-message API, default-permission change, or finding 7 execution redesign.
-**Plans**: 1/2 plans executed
+**Plans**: 2/2 plans complete
 **UI hint**: no (documentation and regression tests)
 
 Plans:
@@ -970,7 +970,7 @@ Plans:
 - [x] 06.13-01-PLAN.md — Isolated opt-in permission requests, no-step variants, and execution recheck regressions.
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.13-02-PLAN.md — Complete workflow recipe, documentation changelog, and bounded compatibility validation.
+- [x] 06.13-02-PLAN.md — Complete workflow recipe, documentation changelog, and bounded compatibility validation.
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1059,5 +1059,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | Complete    | 2026-11-05 |
-| 6.13. Workflow permissions: opt-in per-transition access | 1/2 | In Progress | - |
+| 6.13. Workflow permissions: opt-in per-transition access | 2/2 | Complete    | 2026-11-05 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

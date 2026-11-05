@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.13"
-current_phase_name: "Workflow permissions: opt-in per-transition access"
-status: executing
-stopped_at: Phase 06.13 plans converged in 4 of 6 cycles; zero HIGH/actionable findings and open conflicts
-last_updated: "2026-11-05T22:14:35.995Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.13 complete, ready to plan Phase 7
+last_updated: "2026-11-05T22:59:54.106Z"
 last_activity: 2026-11-05
-last_activity_desc: Phase 06.13 planning complete
-state_head: 9e038029ce54025bda45b2bfa277c79168199b04
+last_activity_desc: Phase 06.13 complete, transitioned to Phase 7
+state_head: c218d53abbf5b21ef425edbf3ce8e05b059798aa
 progress:
   total_phases: 18
-  completed_phases: 16
+  completed_phases: 17
   total_plans: 120
-  completed_plans: 118
+  completed_plans: 120
+  percent: 94
 milestone_name: milestone
 ---
 
@@ -24,16 +25,24 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.13 — Workflow permissions: opt-in per-transition access
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.13 (Workflow permissions: opt-in per-transition access) — EXECUTING
-Plan: 1/2 — request regressions committed; documentation and final checks next
-Status: Executing
-Last activity: 2026-11-05 — Phase 06.13 planning complete
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-05 — Phase 06.13 complete, transitioned to Phase 7
 
-Next: Execute 06.13-02 documentation and bounded regression checks
+Next: $gsd-discuss-phase 7
+
+### Phase 06.13 completion — 2026-11-05
+
+- Both plans complete; canonical verification passed 9/9, all five WFP requirements and fifteen decisions satisfied. Independent deep review clean; validation compliant; seven security threats closed. UI audit N/A; no human items required for this docs/test scope.
+- Full Django 5.2: 10,108 passed/one existing skip; focused Django 4.2 and 6.0 crispy-floor: 131 each. JS regression 365 passed on cached Vitest 5.0.3; scoped Ruff/strict docs/five-fence syntax and anchor checks passed. Fresh verifier checks cover nine new cases and existing Campaign denial.
+- One initial registration-inventory failure resolved by adding the new fixture expectation; original failure retained in summary. Production/Campaign unchanged; full Python matrix, concurrent revocation and Guardian/nested policy matrices unclaimed.
+- Completion scanner misreads six inline Ruff command strings as file references; actual paths/checks were independently verified. No missing delivery artifact or behavioral debt found. Codebase maps remain stale (nonblocking advisory).
+- Phase 7 ready for discussion. Existing PROJECT/config/CLAUDE/state.json edits and the user-authored 6.12 state entry preserved; no push or merge performed.
 
 ### Phase 06.10 shipping — 2026-11-05
 
@@ -477,7 +486,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 118
+- Total plans completed: 120
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -501,6 +510,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.9 | 4 | - | - |
 | 06.8 | 3 | - | - |
 | 06.10 | 5 | - | - |
+| 06.13 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -832,6 +842,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-05T22:14:25.344Z
-Stopped at: Phase 06.13 plans converged in 4 of 6 cycles; zero HIGH/actionable findings and open conflicts
-Resume file: .planning/phases/06.13-workflow-permissions-document-and-test-opt-in-per-transition/06.13-REVIEWS.md
+Last session: 2026-11-05T23:00:42+00:00
+Stopped at: Phase 06.13 complete, ready to plan Phase 7
+Resume file: None

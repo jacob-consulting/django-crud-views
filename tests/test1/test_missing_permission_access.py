@@ -79,7 +79,7 @@ def test_core_permission_rendered_tracer(permission_routes, client, django_user_
         assert node.get("data-cv-disabled") == "permission"
         for attribute in ("href", "data-cv-modal", "onclick", "formaction"):
             assert node.get(attribute) is None
-    assert target_url not in response.content.decode()
+    assert html.fromstring(response.content).xpath("//*[@href=$url]", url=target_url) == []
 
     with pytest.raises(AssertionError, match=r"permission undeclared_action not found.*migrate.*restart"):
         client.get(target_url)

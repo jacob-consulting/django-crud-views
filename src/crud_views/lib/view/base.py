@@ -1084,6 +1084,6 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
-        perms = (perm,) if perm else ()
-        has_access = user.has_perms(perms)
-        return has_access
+        if not perm:
+            return False
+        return user.has_perms((perm,))

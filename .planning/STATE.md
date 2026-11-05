@@ -3,12 +3,11 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
-status: planning
+status: "Phase 06.10 shipped — PR #317"
 stopped_at: Phase 06.10 complete, ready to plan Phase 7
-last_updated: "2026-11-05T09:25:34.028Z"
+last_updated: "2026-11-05T09:33:19.523Z"
 last_activity: 2026-11-05
-last_activity_desc: Phase 06.10 complete, transitioned to Phase 7
-state_head: db75a4d880762ad3c1a2fff5d9321d7e66612efc
+state_head: 9119f39fd72eb3c76419e5ee5d53ceb014dff5b1
 progress:
   total_phases: 17
   completed_phases: 16
@@ -31,10 +30,15 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-11-05 — Phase 06.10 complete, transitioned to Phase 7
+Status: Phase 06.10 shipped — PR #317
+Last activity: 2026-11-05
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.10 shipping — 2026-11-05
+
+- Opened PR #317: https://github.com/jacob-consulting/django-crud-views/pull/317 from `ship/phase-06.10-delete-preview-limit` to `main`. Verification passed and security threats_open is zero; all six DPV requirements and seven UAT checks complete.
+- Shipping uses a clean managed worktree; original workspace edits preserved. CI started; PR remains unmerged. Independent phase code review is clean; optional additional PR review awaits the maintainer.
 
 ### Phase 06.10 acceptance closeout — 2026-11-05
 

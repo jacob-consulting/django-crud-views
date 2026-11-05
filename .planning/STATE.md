@@ -4,11 +4,11 @@ milestone: v1.0
 current_phase: "06.12"
 current_phase_name: Workflow presentation
 status: executing
-stopped_at: Phase 06.12 plan convergence complete
-last_updated: "2026-11-05T16:26:12.351Z"
+stopped_at: Phase 06.12 plan 01 complete; wave 1 UI safety gate blocked by missing UI-SPEC.md
+last_updated: "2026-11-05T16:27:17.605Z"
 last_activity: 2026-11-05
 last_activity_desc: Phase 06.12 execution started
-state_head: c9ec128a9902efbce8417c495817d07d8e4777ca
+state_head: b6865fba9187bc8a689f4378f88507c246461e8d
 progress:
   total_phases: 18
   completed_phases: 16
@@ -802,6 +802,7 @@ None yet.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
 - Phase 06.2 retained scope complete: CR-02–CR-04 transferred to Phase 6.3 / issue #282 and closed by its 2026-11-01 verification; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transfer completed within 6.3 GUA-01 scope; broader Guardian identity compatibility remains in #286; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
 - Phase 06.7 complete: canonical verification and UAT passed; carry the dynamic Cancel helper/defaults/omission contract into Phase 7. Low query-visibility acceptance-record obligation remains open below the configured security threshold.
+- Phase 06.12 wave 1 UI safety gate blocked: UI files changed but no UI-SPEC.md exists. Plan 01 complete (c9ec128); plans 02-05 pending. Run $gsd-ui-phase 06.12 before resuming execution.
 
 ### Quick Tasks Completed
 
@@ -838,6 +839,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-05T13:54:35.633Z
-Stopped at: Phase 06.12 context gathered
-Resume file: .planning/phases/06.12-workflow-presentation-themeable-badges-shared-form-frame-and/06.12-CONTEXT.md
+Last session: 2026-11-05T16:27:15.502Z
+Stopped at: Phase 06.12 plan 01 complete; wave 1 UI safety gate blocked by missing UI-SPEC.md
+Resume file: None

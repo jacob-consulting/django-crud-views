@@ -3,7 +3,8 @@
 {% if object.workflow_data %}
     {% cv_heading level=5 %}{% translate "Workflow History" %}{% endcv_heading %}
 
-    <table class="table">
+    <div class="{% cv_button_class 'workflow' 'history-wrapper' %}">
+    <table class="{% cv_button_class 'workflow' 'history-table' %}">
         <thead>
         <tr>
             <th scope="col">{% translate "Transition" %}</th>
@@ -40,5 +41,6 @@
 
         </tbody>
     </table>
+    </div>
 
 {% endif %}

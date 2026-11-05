@@ -118,3 +118,36 @@ def test_protection_alert_overridable_on_its_own():
     assert html == (
         '<div class="theme-alert"><p>Publisher has 2 books.</p><p>Publisher is referenced by a contract.</p></div>'
     )
+
+
+@pytest.mark.parametrize("choices", [False, True])
+@pytest.mark.parametrize("themed", [False, True])
+def test_workflow_action_frame(choices, themed):
+    from lxml import html
+
+    from tests.test1.test_theme_form_ownership import _RawForms
+
+    overrides = {"crud_views/snippets/form_frame.html": THEME_FRAME} if themed else {}
+    with _theme_templates(overrides):
+        markup = _render("crud_views_workflow/view_workflow.action.html", has_workflow_choices=choices)
+    scanner = _RawForms()
+    scanner.feed(markup)
+    assert not scanner.stack
+    root = html.fragment_fromstring(markup, create_parent="div")
+    cards = root.cssselect(".theme-card")
+    assert len(cards) == int(themed)
+    body = cards[0] if themed else root
+    if choices:
+        assert len(scanner.forms) == 1
+        assert len(scanner.forms[0]["tokens"]) == 1
+        heading, form = list(body)
+        assert heading.text_content() == "Workflow Action"
+        assert form.tag == "form"
+        assert form.get("class") == "cv-form"
+        assert form.get("method") == "post"
+        assert "novalidate" in form.attrib
+        assert "action" not in form.attrib and "enctype" not in form.attrib
+    else:
+        assert scanner.forms == []
+        assert not body.cssselect("h5, form, input, button")
+        assert body.text_content().strip() == "There are no workflow steps available from the current state."

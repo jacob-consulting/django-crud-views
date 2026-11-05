@@ -4,15 +4,228 @@ Tests for crud_views_workflow: WorkflowModelMixin, WorkflowView, WorkflowForm.
 
 import pytest
 from django.contrib.messages import get_messages
+from django.test import override_settings
 from django.test.client import Client
 
+from crud_views.lib import button_classes as bc
 from crud_views_workflow.lib.enums import BadgeEnum
 from crud_views_workflow.models import WorkflowInfo
 from tests.test1.app.models import Campaign, CampaignState
 
+
+@pytest.fixture
+def badge_registry():
+    saved = bc._THEME_BUTTON_CLASSES.copy()
+    try:
+        yield
+    finally:
+        bc._THEME_BUTTON_CLASSES.clear()
+        bc._THEME_BUTTON_CLASSES.update(saved)
+        bc.reset_button_classes_cache()
+
+
+@pytest.mark.django_db
+def test_workflow_badge_registry_request_tracer(client_user_campaign_change, campaign_new, badge_registry):
+    bc.register_button_classes({"workflow:badge-light": "theme-old", "workflow:badge-info": "theme-current"})
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    response = client_user_campaign_change.post(url, {"transition": "wf_activate", "comment": ""})
+    assert response.status_code == 302
+    campaign_new.refresh_from_db()
+    assert campaign_new.state == CampaignState.ACTIVE
+    assert WorkflowInfo.objects.filter(workflow_object_pk=str(campaign_new.pk)).count() == 1
+    response = client_user_campaign_change.get(url)
+    assert response.status_code == 200
+    assert '<span class="theme-old">New</span>' in response.content.decode()
+    assert '<span class="theme-current">Active</span>' in response.content.decode()
+    assert campaign_new.state_badge == '<span class="theme-current">Active</span>'
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-info": "project-current"}):
+        assert campaign_new.state_badge == '<span class="project-current">Active</span>'
+        campaign_new.STATE_BADGES = {}
+        assert campaign_new.get_state_badge(CampaignState.ERROR) == '<span class="project-current">Error</span>'
+
+
+@pytest.mark.parametrize("colour", list(BadgeEnum))
+def test_workflow_badge_stock_colours(colour):
+    campaign = Campaign(state=CampaignState.NEW)
+    campaign.STATE_BADGES = {CampaignState.NEW: colour}
+    assert campaign.state_badge == f'<span class="badge rounded-pill text-bg-{colour}">New</span>'
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("colour", ["info", "purple"])
+@pytest.mark.parametrize("source", ["theme", "settings"])
+@pytest.mark.parametrize("value", ["missing", None, "", " custom  complete-classes "])
+def test_workflow_badge_registry_edges(
+    client_user_campaign_change, campaign_new, badge_registry, colour, source, value
+):
+    key = f"workflow:badge-{colour}"
+    classes = {} if value == "missing" else {key: value}
+    if source == "theme":
+        bc.register_button_classes(classes)
+        project = {}
+    else:
+        if classes:
+            bc.register_button_classes({key: "losing-theme-classes"})
+        project = classes
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    assert client_user_campaign_change.post(url, {"transition": "wf_activate", "comment": ""}).status_code == 302
+    campaign_new.refresh_from_db()
+    campaign_new.STATE_BADGES = {CampaignState.NEW: colour, CampaignState.ACTIVE: colour}
+    expected = f"badge rounded-pill text-bg-{colour}" if value == "missing" else value or ""
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+        assert campaign_new.state_badge == f'<span class="{expected}">Active</span>'
+        (history,) = campaign_new.workflow_data
+        assert history["state_old_badge"] == f'<span class="{expected}">New</span>'
+        assert history["state_new_badge"] == f'<span class="{expected}">Active</span>'
+        # A missing model mapping chooses STATE_BADGE_DEFAULT, not the last custom colour.
+        campaign_new.STATE_BADGES = {}
+        campaign_new.STATE_BADGE_DEFAULT = BadgeEnum.DANGER
+        assert campaign_new.state_badge == '<span class="badge rounded-pill text-bg-danger">Active</span>'
+
+
+def test_workflow_badge_legacy_override_context(badge_registry):
+    from django.template.loader import render_to_string
+
+    from tests.test1.test_form_frame import _theme_templates
+
+    campaign = Campaign(state=CampaignState.NEW)
+    bc.register_button_classes({"workflow:badge-light": "new-classes"})
+    path = "crud_views_workflow/badge.html"
+    legacy = '<span data-state="{{ state }}" class="old-{{ class }}">{{ name }}</span>'
+    with _theme_templates({path: legacy}):
+        assert campaign.state_badge == '<span data-state="new" class="old-light">New</span>'
+    assert render_to_string(path, {"state": "new", "name": "Old caller", "class": "purple"}) == (
+        '<span class="badge rounded-pill text-bg-purple">Old caller</span>'
+    )
+    assert campaign.state_badge == '<span class="new-classes">New</span>'
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("input_kind", ["label", "colour", "classes"])
+@pytest.mark.parametrize("source", ["theme", "settings"])
+def test_workflow_badge_escaping(
+    client_user_campaign_change, campaign_new, badge_registry, monkeypatch, input_kind, source
+):
+    from django.utils.html import escape
+    from lxml import html
+
+    hostile = '"><svg onload="bad()">& {{ 7|add:7 }} {% cycle "x" "y" %}'
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    assert client_user_campaign_change.post(url, {"transition": "wf_activate", "comment": ""}).status_code == 302
+    campaign_new.refresh_from_db()
+    colour = hostile if input_kind == "colour" else "purple"
+    campaign_new.STATE_BADGES = {CampaignState.NEW: colour, CampaignState.ACTIVE: colour}
+    if input_kind == "label":
+        monkeypatch.setattr(campaign_new, "get_state_name", lambda state: hostile)
+    classes = {"workflow:badge-purple": hostile} if input_kind == "classes" else {}
+    if source == "theme":
+        bc.register_button_classes(classes)
+        classes = {}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=classes):
+        (history,) = campaign_new.workflow_data
+        rendered = [campaign_new.state_badge, history["state_old_badge"], history["state_new_badge"]]
+    for badge in rendered:
+        assert str(escape(hostile)) in badge
+        node = html.fromstring(badge)
+        assert node.tag == "span"
+        assert list(node) == []
+        assert set(node.attrib) == {"class"}
+        expected_class = hostile if input_kind == "classes" else f"badge rounded-pill text-bg-{colour}"
+        assert node.get("class") == expected_class
+        if input_kind == "label":
+            assert node.text == hostile
+
+
 # ---------------------------------------------------------------------------
 # WorkflowModelMixin model-layer tests
 # ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("entries", [0, 1, 2])
+def test_workflow_history_presentation(client_user_campaign_change, campaign_new, entries, monkeypatch):
+    from lxml import html
+
+    from tests.test1.test_form_frame import THEME_FRAME, _theme_templates
+    from tests.test1.test_theme_form_ownership import _RawForms
+
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    hostile = '<script>alert("history")</script>& {{ 7|add:7 }}'
+    for transition in ("wf_activate", "wf_done")[:entries]:
+        response = client_user_campaign_change.post(url, {"transition": transition, "comment": hostile})
+        assert response.status_code == 302
+    monkeypatch.setattr(Campaign, "get_state_name", lambda self, state: hostile + state)
+    with _theme_templates({"crud_views/snippets/form_frame.html": THEME_FRAME}):
+        response = client_user_campaign_change.get(url)
+    assert response.status_code == 200
+    scanner = _RawForms()
+    scanner.feed(response.content.decode())
+    assert not scanner.stack
+    document = html.fromstring(response.content)
+    (frame,) = document.cssselect(".theme-card")
+    headings = document.xpath("//h5[normalize-space()='Workflow History']")
+    if not entries:
+        assert not headings
+        assert not document.cssselect(".table-responsive, table")
+        assert frame.cssselect("form.cv-form")
+        return
+    (heading,) = headings
+    wrapper = heading.getnext()
+    assert wrapper.tag == "div"
+    assert wrapper.get("class") == "table-responsive"
+    (table,) = list(wrapper)
+    assert table.tag == "table" and table.get("class") == "table"
+    assert wrapper.getnext() is frame
+    assert heading.getparent() is wrapper.getparent() is frame.getparent()
+    assert len(table.cssselect("thead th[scope=col]")) == 6
+    assert len(table.cssselect("tbody tr")) == entries
+    assert not table.cssselect("script, svg")
+    for row in table.cssselect("tbody tr"):
+        assert len(row) == 6
+        assert row[2].cssselect("span")[0].text.startswith(hostile)
+        assert row[3].cssselect("span")[0].text.startswith(hostile)
+    # The optional comment on Done is persisted; Activate deliberately ignores comments.
+    if entries == 2:
+        assert table.cssselect("tbody tr")[-1][4].text_content().strip() == hostile
+        assert not frame.cssselect("form, input, button, h5")
+    else:
+        assert frame.cssselect("form.cv-form")
+
+
+@pytest.mark.parametrize("source", ["theme", "settings"])
+@pytest.mark.parametrize("wrapper_class", ["default", 'custom-wrapper" onclick="bad()', "", None])
+@pytest.mark.parametrize("table_class", ["default", 'custom-table" onclick="bad()', "", None])
+def test_workflow_history_presentation_classes(badge_registry, source, wrapper_class, table_class):
+    from django.template.loader import render_to_string
+    from lxml import html
+
+    classes = {
+        key: value
+        for key, value in (("workflow:history-wrapper", wrapper_class), ("workflow:history-table", table_class))
+        if value != "default"
+    }
+    if source == "theme":
+        bc.register_button_classes(classes)
+        project = {}
+    else:
+        bc.register_button_classes(dict.fromkeys(classes, "losing-theme-class"))
+        project = classes
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+        markup = render_to_string(
+            "crud_views_workflow/view_workflow.history.html",
+            {"object": {"workflow_data": [{"comment": "Preserved history"}]}},
+        )
+    root = html.fragment_fromstring(markup, create_parent="div")
+    heading, wrapper = list(root)
+    assert heading.text_content() == "Workflow History"
+    assert wrapper.tag == "div"
+    (table,) = list(wrapper)
+    assert table.tag == "table"
+    assert set(wrapper.attrib) == set(table.attrib) == {"class"}
+    assert wrapper.get("class", "") == ("table-responsive" if wrapper_class == "default" else wrapper_class or "")
+    assert table.get("class", "") == ("table" if table_class == "default" else table_class or "")
+    assert len(table.cssselect("thead th[scope=col]")) == 6
+    assert table.cssselect("tbody tr td")[4].text_content().strip() == "Preserved history"
 
 
 @pytest.mark.django_db

@@ -314,7 +314,8 @@ the bundled leaf), `%s` pack substitution and literal-text escaping work as in
 
 ## Framing the form pages
 
-The create, update, custom-form and delete pages share one frame, `snippets/form_frame.html`:
+The create, update, custom-form, delete and full-page workflow actions share one frame,
+`crud_views/snippets/form_frame.html`:
 
 ```django
 {% block cv_form_frame %}{% block cv_form_body %}{% endblock %}{% endblock %}
@@ -331,6 +332,48 @@ handling stay upstream's. A modal request carries the `X-CV-Modal: true` header;
 {% if request.headers.x_cv_modal != "true" %}</div></div>{% endif %}
 {% endblock %}
 ```
+
+Workflow fills `cv_form_body` around its complete choices/empty branch: both the “Workflow Action” heading and
+actionable form are inside the frame. With no choices, the frame contains only the existing no-transitions
+message, without a heading, form, CSRF input or controls. The workflow form keeps its implicit current-page
+target. History stays before and outside the action frame; only its table is wrapped for local scrolling.
+An empty history omits the whole history section. Wrapper and table classes are independent registry keys.
+
+### Optional workflow classes
+
+In a theme's `AppConfig.ready`, check app availability after discovery. Keep ordinary theme registrations in
+either case, and omit all workflow keys when workflow is absent to avoid W362. This complete recipe uses the
+existing registration API; use it as the theme config's `ready` method:
+
+```python
+from django.apps import apps
+from crud_views.lib.button_classes import register_button_classes
+
+
+def ready(self):
+    register_button_classes({"form:actions": "d-flex flex-wrap gap-2"})
+    if apps.is_installed("crud_views_workflow"):
+        register_button_classes(
+            {
+                "workflow:badge-primary": "badge bg-primary-lt",
+                "workflow:badge-secondary": "badge bg-secondary-lt",
+                "workflow:badge-success": "badge bg-success-lt",
+                "workflow:badge-danger": "badge bg-danger-lt",
+                "workflow:badge-warning": "badge bg-warning-lt",
+                "workflow:badge-info": "badge bg-info-lt",
+                "workflow:badge-light": "badge bg-light-lt",
+                "workflow:badge-dark": "badge bg-dark-lt",
+                "workflow:badge-purple": "badge custom-purple",
+                "workflow:history-wrapper": "table-responsive",
+                "workflow:history-table": "table table-hover",
+            }
+        )
+```
+
+The conditional belongs inside `ready`, not at module import. Workflow's app-owned defaults are a lower layer;
+theme authors do not change that declaration or call private cache getters. Supply complete classes without
+template evaluation or colour formatting. A custom colour is recognized only with workflow installed.
+See [project overrides and disabled values](workflow_view.md#project-workflow-classes).
 
 ## Page-owned form helpers
 
@@ -404,10 +447,13 @@ No rendered-HTML rewriting or global crispy-template override repairs such copie
 ### Copied workflow action template
 
 Migrate a copied `crud_views_workflow/view_workflow.action.html` from direct crispy to the same boundary, retaining
-the full-page branch and implicit current-page target. Remove its unused `crispy_forms_tags` load:
+the full-page branch and implicit current-page target. Extend the shared frame around both branches and remove
+its unused `crispy_forms_tags` load:
 
 ```django
+{% extends "crud_views/snippets/form_frame.html" %}
 {% load i18n crud_views %}
+{% block cv_form_body %}
 {% if has_workflow_choices %}
     {% cv_heading level=5 %}{% translate "Workflow Action" %}{% endcv_heading %}
     <form class="cv-form" method="post" novalidate>
@@ -418,6 +464,7 @@ the full-page branch and implicit current-page target. Remove its unused `crispy
 {% else %}
     {% translate "There are no workflow steps available from the current state." %}
 {% endif %}
+{% endblock %}
 ```
 
 This recipe does not change `WorkflowView.cv_content_template`: its supported modal response still uses

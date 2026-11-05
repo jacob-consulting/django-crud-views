@@ -3,11 +3,14 @@
 A mode key (``card:tertiary:icon``) is read in preference to its base key when it is present; see get_button_class.
 """
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 
+from django.apps import apps
 from django.conf import settings
 from django.core.checks import CheckMessage, Error
 from django.core.checks import Warning as DjangoWarning
+from django.core.exceptions import ImproperlyConfigured
 from django.core.signals import setting_changed
 from django.dispatch import receiver
 from django.utils.translation import gettext, gettext_noop
@@ -124,11 +127,44 @@ REMOVED_SETTINGS: dict[str, str] = {
 _THEME_BUTTON_CLASSES: dict[str, str | None] = {}
 
 _button_classes_cache: dict[str, str | None] | None = None
+_default_button_classes_cache: dict[str, str | None] | None = None
+_default_app_configs = None
 
 
 def reset_button_classes_cache() -> None:
-    global _button_classes_cache
+    global _button_classes_cache, _default_button_classes_cache, _default_app_configs
     _button_classes_cache = None
+    _default_button_classes_cache = None
+    _default_app_configs = None
+
+
+def _get_default_button_classes() -> dict[str, str | None]:
+    """Core plus active app declarations, cached only after app configuration is ready.
+
+    Declarations are immutable by convention. Invalid mappings and duplicate keys raise at
+    the first lookup; value validation remains in the normal system checks.
+    """
+    global _button_classes_cache, _default_button_classes_cache, _default_app_configs
+    if not apps.apps_ready:
+        return DEFAULT_BUTTON_CLASSES
+    if _default_app_configs is not apps.app_configs:
+        _button_classes_cache = None
+        _default_button_classes_cache = None
+        _default_app_configs = apps.app_configs
+    if _default_button_classes_cache is None:
+        defaults = dict(DEFAULT_BUTTON_CLASSES)
+        for config in apps.get_app_configs():
+            declaration = getattr(config, "crud_views_button_class_defaults", {})
+            if not isinstance(declaration, Mapping):
+                raise ImproperlyConfigured(f"{config.name}.crud_views_button_class_defaults must be a mapping.")
+            for key, value in declaration.items():
+                if not isinstance(key, str):
+                    raise ImproperlyConfigured(f"{config.name}: button class default key {key!r} must be a str.")
+                if key in defaults:
+                    raise ImproperlyConfigured(f"{config.name}: duplicate button class default key {key!r}.")
+                defaults[key] = value
+        _default_button_classes_cache = defaults
+    return _default_button_classes_cache
 
 
 @receiver(setting_changed)
@@ -149,10 +185,12 @@ def _settings_layer() -> dict[str, str | None]:
 
 def get_button_classes() -> dict[str, str | None]:
     global _button_classes_cache
+    defaults = _get_default_button_classes()
     classes = _button_classes_cache
-    if classes is None:
-        classes = {**DEFAULT_BUTTON_CLASSES, **_THEME_BUTTON_CLASSES, **_settings_layer()}
-        _button_classes_cache = classes
+    if classes is None or not apps.apps_ready:
+        classes = {**defaults, **_THEME_BUTTON_CLASSES, **_settings_layer()}
+        if apps.apps_ready:
+            _button_classes_cache = classes
     return classes
 
 
@@ -192,7 +230,7 @@ def _heading_class(location: str, slot: str) -> str:
     Presence (including None/empty) stops fallback. Read project settings at render time;
     the merged button cache cannot preserve these layer boundaries.
     """
-    for layer in (_settings_layer(), _THEME_BUTTON_CLASSES, DEFAULT_BUTTON_CLASSES):
+    for layer in (_settings_layer(), _THEME_BUTTON_CLASSES, _get_default_button_classes()):
         for key in (f"heading-{location}:{slot}", f"heading:{slot}"):
             if key in layer:
                 value = layer[key]
@@ -281,6 +319,7 @@ def _is_action_mode_key(key: str) -> bool:
 
 def button_class_check_messages() -> list[CheckMessage]:
     messages: list[CheckMessage] = []
+    defaults = _get_default_button_classes()
 
     for name, hint in REMOVED_SETTINGS.items():
         if hasattr(settings, name):
@@ -331,7 +370,20 @@ def button_class_check_messages() -> list[CheckMessage]:
     from .view.label_mode import LABEL_MODES
 
     for key in (*_THEME_BUTTON_CLASSES, *_settings_layer()):
-        if key in DEFAULT_BUTTON_CLASSES or key in HEADING_LOCATION_KEYS or _is_action_mode_key(key):
+        workflow_colour = (
+            key.removeprefix("workflow:badge-") if isinstance(key, str) and key.startswith("workflow:badge-") else ""
+        )
+        if (
+            key in defaults
+            or key in HEADING_LOCATION_KEYS
+            or _is_action_mode_key(key)
+            or (
+                "workflow:badge-info" in defaults
+                and workflow_colour
+                and ":" not in workflow_colour
+                and not any(char.isspace() for char in workflow_colour)
+            )
+        ):
             continue
         if (parts := _action_key_parts(key)) is not None:
             messages.append(

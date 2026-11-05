@@ -46,6 +46,10 @@ task bump-patch
 
 Pre-commit hook: `ruff-format` runs on commit.
 
+## GSD Workflow
+
+After each `$gsd-ship` run, run `$gsd-map-codebase` to refresh the codebase maps before starting subsequent work.
+
 ## Architecture
 
 ### Core Abstraction: ViewSet → CrudView

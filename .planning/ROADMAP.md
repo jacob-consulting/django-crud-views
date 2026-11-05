@@ -35,7 +35,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze (completed 2026-11-04)
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
 - [x] **Phase 6.10: Simplify protected-object previews and cap total displayed objects (INSERTED)** - #316: plain-text protected blockers and one shared preview display budget before the freeze (completed 2026-11-05)
-- [ ] **Phase 6.12: Workflow presentation (INSERTED)** - #319: themeable state badges, shared form frame, and responsive history before the freeze
+- [x] **Phase 6.12: Workflow presentation (INSERTED)** - #319: themeable state badges, shared form frame, and responsive history before the freeze (completed 2026-11-05)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -954,7 +954,7 @@ history querying, or the general theme architecture. Preserve existing override 
 4. Focused workflow/theme tests pass, broad regression runs use bounded multicore pytest, and golden updates reflect only intentional output changes.
 5. Document the badge override recipe and workflow form-frame participation, add a changelog entry, and update `docs/migrating-1.0.md` if a breaking change is necessary. Phase 7 inventories the resulting hooks.
 
-**Plans:** 5/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 **Wave 1**
@@ -1060,5 +1060,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | Complete    | 2026-11-05 |
-| 6.12. Workflow presentation | 5/5 | In Progress | - |
+| 6.12. Workflow presentation | 5/5 | Complete    | 2026-11-05 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.12"
-current_phase_name: Workflow presentation
-status: awaiting_verification
-stopped_at: Phase 06.12 all plans executed; independent verification human_needed; eight UAT checks pending
-last_updated: "2026-11-05T17:58:23.731Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.12 complete, ready to plan Phase 7
+last_updated: "2026-11-05T20:06:57.370Z"
 last_activity: 2026-11-05
-last_activity_desc: Phase 06.12 execution started
-state_head: 2a7863fb48b3ed702f77be86520c379129a1baba
+last_activity_desc: Phase 06.12 complete, transitioned to Phase 7
+state_head: 76e6603406d93f3f4bf66acd982593fc37122607
 progress:
   total_phases: 18
-  completed_phases: 16
+  completed_phases: 17
   total_plans: 123
   completed_plans: 123
+  percent: 94
 milestone_name: milestone
 ---
 
@@ -24,16 +25,22 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.12 — Workflow presentation
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.12 (Workflow presentation) — HUMAN VERIFICATION PENDING
-Plan: 5 of 5 executed; 8 UAT checks pending
-Status: Awaiting human verification
-Last activity: 2026-11-05 — Phase 06.12 execution started
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-05 — Phase 06.12 complete, transitioned to Phase 7
 
 Next: $gsd-verify-work 06.12
+
+### Phase 06.12 accepted — 2026-11-05
+
+- All 16 stock/Tabler human checks passed; canonical verification passed, 25/25 truths.
+- Fixture successful-submit redirect fixed; 38 browser cases and five harness tests pass.
+- Light/dark New badge and wrapped controls explicitly accepted. Phase 7 is ready to plan.
 
 ### Phase 06.12 execution and independent verification — 2026-11-05
 
@@ -491,7 +498,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 118
+- Total plans completed: 123
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -515,6 +522,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.9 | 4 | - | - |
 | 06.8 | 3 | - | - |
 | 06.10 | 5 | - | - |
+| 06.12 | 5 | - | - |
 
 **Recent Trend:**
 
@@ -847,5 +855,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-05T17:58:21.586Z
-Stopped at: Phase 06.12 all plans executed; independent verification human_needed; eight UAT checks pending
+Stopped at: Phase 06.12 complete, ready to plan Phase 7
 Resume file: .planning/phases/06.12-workflow-presentation-themeable-badges-shared-form-frame-and/06.12-UAT.md

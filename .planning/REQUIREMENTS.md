@@ -211,6 +211,18 @@ The initial spec-less probe skipped visibly while IDs were TBD; planning reruns 
 - [x] **PDL-05**: Require immediate copied-template migration with an executable documented recipe, paired Breaking/migration guidance, updated delete reference and existing example guidance, and an exact Phase 7 surface inventory.
 - [x] **PDL-06**: Core/Guardian, target denial, escaping, database identity and blocked-write regressions plus stock/custom browser acceptance prove the complete contract; report actual supported-series/runtime evidence and coverage limits.
 
+### Opt-in workflow permissions (Phase 06.13, #320)
+
+Source: `phases/06.13-workflow-permissions-document-and-test-opt-in-per-transition/06.13-CONTEXT.md`,
+decisions D-01–D-15 captured from the corrected issue on 2026-11-05. These decisions supersede the older
+roadmap's no-steps wording. All requirements below remain pending execution and verification.
+
+- [ ] **WFP-01**: Preserve the default workflow change gate and Campaign behavior. An isolated recipe explicitly uses the view page gate and two same-source transitions with ordinary change and dedicated step permissions. View plus step permission permits the appropriate GET/POST and history write; step permission alone cannot bypass page or applicable object/parent access checks.
+- [ ] **WFP-02**: Prove both no-step configurations separately: the basic recipe returns GET 200 with the existing empty message; the optional `cv_action_enabled` hook with disable policy renders a disabled sibling-page action and returns authenticated direct GET/POST 403 when false. A permitted actor succeeds through the hook.
+- [ ] **WFP-03**: Prove same-source permission-filtered choices reject forged POSTs and a valid offered choice independently reaches the real execution-time recheck, whose denial returns the existing 400. Every rejected attempt preserves persisted object state and object-scoped history.
+- [ ] **WFP-04**: Publish a complete basic model/permissions/transitions/form/ViewSet/views/URLs recipe before the separate optional hook variant. Explain all authorization layers, migration/grant prerequisites, navigation destinations, and the distinction between rendering and server enforcement without adding a public API or changing production behavior.
+- [ ] **WFP-05**: Deliver bounded regression tests and a documentation changelog entry; validate the recipe and strict docs, run focused and broader multicore regressions plus available supported-series checks, and report actual runtimes and coverage limits. Preserve repository hygiene and the phase exclusions.
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -261,6 +273,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| WFP-01 | Phase 6.13 | Pending |
+| WFP-02 | Phase 6.13 | Pending |
+| WFP-03 | Phase 6.13 | Pending |
+| WFP-04 | Phase 6.13 | Pending |
+| WFP-05 | Phase 6.13 | Pending |
 | PDL-01 | Phase 6.9 | Complete |
 | PDL-02 | Phase 6.9 | Complete |
 | PDL-03 | Phase 6.9 | Complete |
@@ -365,10 +382,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 95 total
-- Mapped to phases: 95
+- v1 requirements: 106 total
+- Mapped to phases: 106
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-25*
-*Last updated: 2026-11-04 — retired the unimplemented integrated URL/access phase; retained 95 active v1 requirements*
+*Last updated: 2026-11-05 — added five bounded Phase 06.13 workflow-permission requirements; recounted 106 active v1 requirements*

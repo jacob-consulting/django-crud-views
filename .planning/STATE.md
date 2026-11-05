@@ -7,7 +7,7 @@ status: planning
 stopped_at: Phase 06.12 complete, ready to plan Phase 7
 last_updated: "2026-11-05T20:06:57.370Z"
 last_activity: 2026-11-05
-last_activity_desc: Phase 06.12 PRs opened; awaiting review and CI
+last_activity_desc: Phase 06.12 merged upstream and companion after green checks
 state_head: 76e6603406d93f3f4bf66acd982593fc37122607
 progress:
   total_phases: 18
@@ -627,7 +627,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 - Upstream PR #323: https://github.com/jacob-consulting/django-crud-views/pull/323, `ship/phase-06.12-workflow-presentation` → `main`.
 - Companion PR #1: https://github.com/alexander-jacob/tabler-test/pull/1; upstream hook must land first.
 - Clean shipping checkouts preserve unrelated working edits. Source/test/docs match the verified trees after the CI-only documentation formatting fix; 27 executable docs checks passed.
-- All 16 UAT and 38 browser cases passed. Security threats_open = 0. User selected skip additional review. Upstream Python 3.12–3.15 CI remains running; lint, docs, JavaScript, example checks and SonarCloud passed. Companion has no CI checks. Neither PR is merged; merge upstream before companion.
+- All 16 UAT and 38 browser cases passed. Security threats_open = 0. User skipped additional review and authorized merging when green. All upstream checks passed, including Python 3.12–3.15, lint, docs, JavaScript, examples, SonarCloud and coverage. Upstream PR #323 merged first as cb35b1aa4003aea5d0c9ba99c955dc3416632180; companion PR #1 merged second as c3a4e83813421e0c17e7d689927a66794b94aa73. Companion has no configured CI; local and human acceptance passed.
 - Refreshed all seven codebase maps incrementally for workflow presentation and companion integration. Planning/shipping records stay on the phase branch, matching the repository's clean-PR practice.
 
 

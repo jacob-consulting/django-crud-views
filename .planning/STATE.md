@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.12"
 current_phase_name: Workflow presentation
-status: executing
-stopped_at: Phase 06.12 UI-SPEC approved; UI safety gate cleared; ready to resume plan 02
-last_updated: "2026-11-05T17:10:55.934Z"
+status: awaiting_verification
+stopped_at: Phase 06.12 all plans executed; independent verification human_needed; eight UAT checks pending
+last_updated: "2026-11-05T17:58:23.731Z"
 last_activity: 2026-11-05
 last_activity_desc: Phase 06.12 execution started
-state_head: 4daf5fb0d3e0430033c86271458348ddc7c4f39d
+state_head: 2a7863fb48b3ed702f77be86520c379129a1baba
 progress:
   total_phases: 18
   completed_phases: 16
   total_plans: 123
-  completed_plans: 122
+  completed_plans: 123
 milestone_name: milestone
 ---
 
@@ -28,12 +28,20 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 ## Current Position
 
-Phase: 06.12 (Workflow presentation) — EXECUTING
-Plan: 5 of 5
-Status: Ready to execute
+Phase: 06.12 (Workflow presentation) — HUMAN VERIFICATION PENDING
+Plan: 5 of 5 executed; 8 UAT checks pending
+Status: Awaiting human verification
 Last activity: 2026-11-05 — Phase 06.12 execution started
 
-Next: $gsd-execute-phase 06.12
+Next: $gsd-verify-work 06.12
+
+### Phase 06.12 execution and independent verification — 2026-11-05
+
+- All five plans executed and committed. Workflow-owned badge defaults, shared action frame, local history scrolling, actual Tabler adaptation and executable documentation delivered.
+- Canonical verification: human_needed, 17/25 merged truths verified; 13/13 decisions honored, no implementation blocker. Eight pending tests saved to 06.12-UAT.md; seven UI backstops and live keyboard/modal acceptance remain open.
+- Final evidence: 36 browser cases; full Django 5.2 10,098 passed plus one expected skip; focused 4.2 and 6.0 crispy-floor 1,002 each; companion 79 plus 46 subtests; Node five; JavaScript 365; Ruff and strict docs pass. Runtime/matrix/font limits are explicit.
+- Validation covers all 12 tasks; security 13/13 mitigations closed. Deep review 26 files clean. UI audit 17/24 records inherited faint light badges and touching wrapped controls for user disposition.
+- Companion changes committed locally on gsd/phase-06.12-workflow-presentation, head b35bd3b; unrelated findings and main checkout edits preserved. No push/publication or phase completion.
 
 ### Phase 06.12 plan convergence — 2026-11-05
 
@@ -838,6 +846,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-05T16:40:42.402Z
-Stopped at: Phase 06.12 UI-SPEC approved; UI safety gate cleared; ready to resume plan 02
-Resume file: .planning/phases/06.12-workflow-presentation-themeable-badges-shared-form-frame-and/06.12-UI-SPEC.md
+Last session: 2026-11-05T17:58:21.586Z
+Stopped at: Phase 06.12 all plans executed; independent verification human_needed; eight UAT checks pending
+Resume file: .planning/phases/06.12-workflow-presentation-themeable-badges-shared-form-frame-and/06.12-UAT.md

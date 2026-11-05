@@ -46,6 +46,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
+      # Archived review artifacts can exceed Git for Windows' default path limit.
+      - name: Enable long paths (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:

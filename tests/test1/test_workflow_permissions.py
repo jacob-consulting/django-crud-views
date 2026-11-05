@@ -4,11 +4,12 @@ import pytest
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.urls import resolve
+from lxml import html as lxml_html
 
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
 from tests.lib.helper.user import user_viewset_permission
 from tests.test1.app.models import WorkflowRequest, WorkflowRequestState
-from tests.test1.app.views import CampaignWorkflowView
+from tests.test1.app.views import CampaignWorkflowView, WorkflowRequestWorkflowForm, WorkflowRequestWorkflowView
 
 pytestmark = pytest.mark.django_db
 
@@ -59,6 +60,16 @@ def user_workflowrequest_step_only():
     )
     actor.user_permissions.add(permission)
     return actor
+
+
+@pytest.fixture
+def optional_workflowrequest_hook(monkeypatch):
+    def enabled(cls, user, obj=None):
+        return obj is None or obj.workflow_has_any_possible_transition(user)
+
+    monkeypatch.setattr(WorkflowRequestWorkflowView, "cv_action_enabled", classmethod(enabled))
+    monkeypatch.setattr(WorkflowRequestWorkflowView, "cv_inaccessible_actions", "disable")
+    return WorkflowRequestWorkflowView
 
 
 def _persisted_snapshot(obj):
@@ -157,4 +168,87 @@ def test_basic_empty(client, workflowrequest_new, user_workflowrequest_view):
     response = client.post(url, {"transition": "wf_process", "comment": ""})
     assert response.status_code == 200
     assert "transition" in response.context["form"].errors
+    assert _persisted_snapshot(obj) == before
+
+
+def test_optional_hook_denies_empty(
+    client, workflowrequest_new, user_workflowrequest_view, optional_workflowrequest_hook
+):
+    """tests/test1/app/templates/app/crud_views.html supplies cv_context_actions object above the empty detail body."""
+    obj = workflowrequest_new
+    actor = user_workflowrequest_view
+    assert optional_workflowrequest_hook.cv_action_enabled(actor, obj) is False
+    client.force_login(actor)
+    response = client.get(f"/workflowrequest/{obj.pk}/detail/")
+    assert response.status_code == 200
+    root = lxml_html.fromstring(response.content)
+    (button,) = root.cssselect('[cv-context-container] [cv-key="workflow"]')
+    assert button.tag == "button"
+    assert button.get("disabled") is not None
+    assert button.get("data-cv-disabled") == "state"
+    assert button.get("href") is None
+    assert button.get("data-cv-modal") is None
+
+    for method in (client.get, client.post):
+        before = _persisted_snapshot(obj)
+        response = method(f"/workflowrequest/{obj.pk}/workflow/", {"transition": "wf_process", "comment": ""})
+        assert response.status_code == 403
+        assert _persisted_snapshot(obj) == before
+
+
+def test_optional_hook_permitted_step(
+    client, workflowrequest_new, user_workflowrequest_step, optional_workflowrequest_hook
+):
+    obj = workflowrequest_new
+    actor = user_workflowrequest_step
+    assert optional_workflowrequest_hook.cv_action_enabled(actor, obj=None) is True
+    assert optional_workflowrequest_hook.cv_action_enabled(actor, obj) is True
+    client.force_login(actor)
+    url = f"/workflowrequest/{obj.pk}/workflow/"
+    response = client.get(url)
+    assert response.status_code == 200
+    assert dict(response.context["form"].fields["transition"].choices) == {"wf_process": "Process"}
+    before = list(obj.get_workflow_info_queryset().values())
+
+    response = client.post(url, {"transition": "wf_process", "comment": ""})
+    assert response.status_code == 302
+    assert client.get(response["Location"]).status_code == 200
+    obj.refresh_from_db()
+    assert obj.state == WorkflowRequestState.PROCESSED
+    history = list(obj.get_workflow_info_queryset())
+    assert len(history) == len(before) + 1
+    info = history[-1]
+    assert info.transition == "wf_process"
+    assert info.state_old == WorkflowRequestState.NEW
+    assert info.state_new == WorkflowRequestState.PROCESSED
+    assert info.user == actor
+    assert info.workflow_object_content_type == ContentType.objects.get_for_model(obj)
+    assert info.workflow_object_pk == str(obj.pk)
+
+
+def test_execution_recheck(client, workflowrequest_new, user_workflowrequest_step, monkeypatch):
+    obj = workflowrequest_new
+    actor = user_workflowrequest_step
+    client.force_login(actor)
+    url = f"/workflowrequest/{obj.pk}/workflow/"
+    payload = {"transition": "wf_process", "comment": ""}
+    get_response = client.get(url)
+    assert get_response.status_code == 200
+    assert dict(get_response.context["form"].fields["transition"].choices) == {"wf_process": "Process"}
+    form = WorkflowRequestWorkflowForm(
+        cv_view=get_response.context["view"], data=payload, **obj.workflow_get_form_kwargs(actor)
+    )
+    assert form.is_valid()
+    assert form.cleaned_data["transition"] == "wf_process"
+    before = _persisted_snapshot(obj)
+    calls = []
+
+    def deny_transition(self, user, transition):
+        calls.append((self.pk, user.pk, transition))
+        return False
+
+    monkeypatch.setattr(WorkflowRequest, "workflow_has_transition", deny_transition)
+    response = client.post(url, payload)
+    assert calls == [(obj.pk, actor.pk, "wf_process")]
+    assert response.status_code == 400
     assert _persisted_snapshot(obj) == before

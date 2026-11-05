@@ -51,6 +51,91 @@ def test_workflow_badge_stock_colours(colour):
     assert campaign.state_badge == f'<span class="badge rounded-pill text-bg-{colour}">New</span>'
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("colour", ["info", "purple"])
+@pytest.mark.parametrize("source", ["theme", "settings"])
+@pytest.mark.parametrize("value", ["missing", None, "", " custom  complete-classes "])
+def test_workflow_badge_registry_edges(
+    client_user_campaign_change, campaign_new, badge_registry, colour, source, value
+):
+    key = f"workflow:badge-{colour}"
+    classes = {} if value == "missing" else {key: value}
+    if source == "theme":
+        bc.register_button_classes(classes)
+        project = {}
+    else:
+        if classes:
+            bc.register_button_classes({key: "losing-theme-classes"})
+        project = classes
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    assert client_user_campaign_change.post(url, {"transition": "wf_activate", "comment": ""}).status_code == 302
+    campaign_new.refresh_from_db()
+    campaign_new.STATE_BADGES = {CampaignState.NEW: colour, CampaignState.ACTIVE: colour}
+    expected = f"badge rounded-pill text-bg-{colour}" if value == "missing" else value or ""
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+        assert campaign_new.state_badge == f'<span class="{expected}">Active</span>'
+        (history,) = campaign_new.workflow_data
+        assert history["state_old_badge"] == f'<span class="{expected}">New</span>'
+        assert history["state_new_badge"] == f'<span class="{expected}">Active</span>'
+        # A missing model mapping chooses STATE_BADGE_DEFAULT, not the last custom colour.
+        campaign_new.STATE_BADGES = {}
+        campaign_new.STATE_BADGE_DEFAULT = BadgeEnum.DANGER
+        assert campaign_new.state_badge == '<span class="badge rounded-pill text-bg-danger">Active</span>'
+
+
+def test_workflow_badge_legacy_override_context(badge_registry):
+    from django.template.loader import render_to_string
+
+    from tests.test1.test_form_frame import _theme_templates
+
+    campaign = Campaign(state=CampaignState.NEW)
+    bc.register_button_classes({"workflow:badge-light": "new-classes"})
+    path = "crud_views_workflow/badge.html"
+    legacy = '<span data-state="{{ state }}" class="old-{{ class }}">{{ name }}</span>'
+    with _theme_templates({path: legacy}):
+        assert campaign.state_badge == '<span data-state="new" class="old-light">New</span>'
+    assert render_to_string(path, {"state": "new", "name": "Old caller", "class": "purple"}) == (
+        '<span class="badge rounded-pill text-bg-purple">Old caller</span>'
+    )
+    assert campaign.state_badge == '<span class="new-classes">New</span>'
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("input_kind", ["label", "colour", "classes"])
+@pytest.mark.parametrize("source", ["theme", "settings"])
+def test_workflow_badge_escaping(
+    client_user_campaign_change, campaign_new, badge_registry, monkeypatch, input_kind, source
+):
+    from django.utils.html import escape
+    from lxml import html
+
+    hostile = '"><svg onload="bad()">& {{ 7|add:7 }} {% cycle "x" "y" %}'
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    assert client_user_campaign_change.post(url, {"transition": "wf_activate", "comment": ""}).status_code == 302
+    campaign_new.refresh_from_db()
+    colour = hostile if input_kind == "colour" else "purple"
+    campaign_new.STATE_BADGES = {CampaignState.NEW: colour, CampaignState.ACTIVE: colour}
+    if input_kind == "label":
+        monkeypatch.setattr(campaign_new, "get_state_name", lambda state: hostile)
+    classes = {"workflow:badge-purple": hostile} if input_kind == "classes" else {}
+    if source == "theme":
+        bc.register_button_classes(classes)
+        classes = {}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=classes):
+        (history,) = campaign_new.workflow_data
+        rendered = [campaign_new.state_badge, history["state_old_badge"], history["state_new_badge"]]
+    for badge in rendered:
+        assert str(escape(hostile)) in badge
+        node = html.fromstring(badge)
+        assert node.tag == "span"
+        assert list(node) == []
+        assert set(node.attrib) == {"class"}
+        expected_class = hostile if input_kind == "classes" else f"badge rounded-pill text-bg-{colour}"
+        assert node.get("class") == expected_class
+        if input_kind == "label":
+            assert node.text == hostile
+
+
 # ---------------------------------------------------------------------------
 # WorkflowModelMixin model-layer tests
 # ---------------------------------------------------------------------------

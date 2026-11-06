@@ -83,14 +83,32 @@ class ObjectDetailMixin:
                 for i, group in enumerate(pd):
                     yield from cls._checks_property_group(i, group)
             elif isinstance(pd, Mapping):
-                for groups in pd.values():
+                for entry, (model, groups) in enumerate(pd.items()):
+                    valid_model = isinstance(model, type) and issubclass(model, Model)
+                    location = (
+                        f"cv_property_display[{model._meta.label}]"
+                        if valid_model
+                        else f"cv_property_display[entry {entry} ({type(model).__name__})]"
+                    )
+                    yield CheckExpression(
+                        context=cls,
+                        id="E247",
+                        expression=valid_model,
+                        msg=f"{location} key must be a Django model class",
+                    )
+                    yield CheckExpression(
+                        context=cls,
+                        id="E241",
+                        expression=isinstance(groups, list),
+                        msg=f"{location} must be a list",
+                    )
                     if isinstance(groups, list):
                         for i, group in enumerate(groups):
-                            yield from cls._checks_property_group(i, group)
+                            yield from cls._checks_property_group(i, group, location)
         yield from super().checks()
 
     @classmethod
-    def _checks_property_group(cls, i: int, group) -> Iterable[Check]:
+    def _checks_property_group(cls, i: int, group, location: str = "cv_property_display") -> Iterable[Check]:
         if isinstance(group, PropertyGroupConfig):
             icon = group.icon
         else:
@@ -100,7 +118,7 @@ class ObjectDetailMixin:
             context=cls,
             id="W246",
             expression=prefix is None,
-            msg=f"cv_property_display[{i}]['icon'] = {icon!r} uses unregistered icon library prefix {prefix!r}",
+            msg=f"{location}[{i}]['icon'] = {icon!r} uses unregistered icon library prefix {prefix!r}",
         )
         if isinstance(group, PropertyGroupConfig):
             return  # structure already validated by pydantic
@@ -108,24 +126,24 @@ class ObjectDetailMixin:
             context=cls,
             id="E242",
             expression=isinstance(group, dict) and "title" in group,
-            msg=f"cv_property_display[{i}] must be a dict with a 'title' key",
+            msg=f"{location}[{i}] must be a dict with a 'title' key",
         )
         yield CheckExpression(
             context=cls,
             id="E243",
             expression=isinstance(group, dict) and "properties" in group,
-            msg=f"cv_property_display[{i}] must be a dict with a 'properties' key",
+            msg=f"{location}[{i}] must be a dict with a 'properties' key",
         )
         if isinstance(group, dict) and "properties" in group:
-            yield from cls._checks_group_properties(i, group["properties"])
+            yield from cls._checks_group_properties(i, group["properties"], location)
 
     @classmethod
-    def _checks_group_properties(cls, i: int, props) -> Iterable[Check]:
+    def _checks_group_properties(cls, i: int, props, location: str = "cv_property_display") -> Iterable[Check]:
         yield CheckExpression(
             context=cls,
             id="E244",
             expression=isinstance(props, list),
-            msg=f"cv_property_display[{i}]['properties'] must be a list",
+            msg=f"{location}[{i}]['properties'] must be a list",
         )
         if isinstance(props, list):
             for j, prop in enumerate(props):
@@ -133,5 +151,5 @@ class ObjectDetailMixin:
                     context=cls,
                     id="E245",
                     expression=isinstance(prop, (str, dict, PropertyConfig)),
-                    msg=f"cv_property_display[{i}]['properties'][{j}] must be a str, dict, or PropertyConfig",
+                    msg=f"{location}[{i}]['properties'][{j}] must be a str, dict, or PropertyConfig",
                 )

@@ -1,8 +1,17 @@
 """Production crispy rendering and request contracts for workflow presentation."""
 
+from collections import Counter
+from importlib.metadata import version
+
+import django
 import pytest
+from django import forms
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from lxml import html
+from django.template import Context, Template
+from django.utils.safestring import mark_safe
+
+from crud_views_workflow.lib.enums import WorkflowComment
 
 from crud_views_workflow.models import WorkflowInfo
 from tests.test1.app.models import Campaign, CampaignState
@@ -21,6 +30,54 @@ def _document(response):
 
 def _buttons(document):
     return document.cssselect('button[type="submit"][name="transition"]')
+
+
+def _render(form):
+    return Template("{% load crud_views %}{% cv_render_form %}").render(Context({"form": form, "view": form.cv_view}))
+
+
+def _assert_descriptions(document, rendered_forms=()):
+    """Only Django 4.2/crispy 2026.3's unreferenced vendor error wrapper is exempt."""
+    expected_error_groups = [
+        {f"error_{index + 1}_{form[name].auto_id}" for index in range(len(errors))}
+        for form in rendered_forms
+        for name, errors in form.errors.items()
+        if name in form.fields
+    ]
+    vendor_runtime = django.VERSION[:2] == (4, 2) and version("crispy-bootstrap5") == "2026.3"
+    exempt = []
+    for node in document.xpath('//*[@id="_error"]'):
+        descendants = {child.get("id") for child in node if child.get("id")}
+        if (
+            vendor_runtime
+            and node.tag == "div"
+            and node.get("class") == "invalid-feedback"
+            and descendants
+            and descendants in expected_error_groups
+        ):
+            exempt.append(node)
+    if vendor_runtime and expected_error_groups:
+        assert len(exempt) == len(expected_error_groups)
+    ids = [node.get("id") for node in document.xpath("//*[@id]") if node not in exempt]
+    assert all(count == 1 for count in Counter(ids).values()), "duplicate owned ID"
+    for node in document.xpath("//*[@aria-describedby]"):
+        for token in node.get("aria-describedby").split():
+            assert token != "_error", "description targets vendor wrapper"
+            assert len(document.xpath("//*[@id=$value]", value=token)) == 1, "missing or ambiguous description"
+    return exempt
+
+
+class CachedFieldsForm(CampaignWorkflowForm):
+    extra = forms.CharField(help_text="Extra guidance")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.constructor_ids = {name: self[name].auto_id for name in self.fields}
+        self.constructor_subwidgets = list(self["transition"].subwidgets)
+        self.fields["transition"].widget.attrs["aria-describedby"] = "external-guidance"
+
+    def get_layout_fields(self):
+        return ["transition", "comment", "extra"]
 
 
 class TestTransitionButtons:
@@ -147,3 +204,148 @@ class TestTransitionButtons:
         monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "typo", raising=False)
         with pytest.raises(ImproperlyConfigured, match="cv_transition_presentation"):
             client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/")
+
+
+class TestWorkflowDescriptions:
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("required", [False, True])
+    def test_comment_markers_and_guidance(
+        self, client_user_campaign_change, campaign_new, monkeypatch, modal, required
+    ):
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_help_text", "General guidance")
+        monkeypatch.setattr(CampaignWorkflowView, "cv_comment_help_text", "Comment guidance")
+        step = next(t for t in campaign_new.get_all_state_transitions() if t.name == "wf_cancel_new")
+        monkeypatch.setitem(step.custom, "help_text", "Action guidance")
+        if not required:
+            monkeypatch.setitem(step.custom, "comment", WorkflowComment.OPTIONAL)
+        response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/", headers=_headers(modal))
+        document = _document(response)
+        buttons = _buttons(document)
+        marked = [b for b in buttons if b.cssselect('[aria-hidden="true"]')]
+        assert len(marked) == int(required)
+        assert sum("Comment required" in b.text_content() for b in buttons) == int(required)
+        assert len(document.xpath('//*[normalize-space(text())="* Comment required"]')) == int(required)
+        group = document.cssselect('[role="group"]')[0]
+        assert group.getparent().cssselect("label .asteriskField")
+        assert group.getprevious().text_content().strip() == "General guidance"
+        assert "Action guidance" in buttons[1].getparent().text_content()
+        _assert_descriptions(document)
+
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("presentation", ["radio", "buttons"])
+    @pytest.mark.parametrize("text", [None, "", "Plain & complete", mark_safe("<b>Literal & {{ value }}</b>")])
+    def test_literal_and_absent_help(
+        self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation, text
+    ):
+        raw = {
+            key: (mark_safe(f"{key} {text}") if hasattr(text, "__html__") else f"{key} {text}") if text else text
+            for key in ("General", "Comment", "Action")
+        }
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_help_text", raw["General"])
+        monkeypatch.setattr(CampaignWorkflowView, "cv_comment_help_text", raw["Comment"])
+        step = next(t for t in campaign_new.get_all_state_transitions() if t.name == "wf_activate")
+        monkeypatch.setitem(step.custom, "help_text", raw["Action"])
+        response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/", headers=_headers(modal))
+        form = response.context["form"]
+        outputs = [response.content.decode(), _render(form)]
+        form._workflow_refresh()
+        outputs.append(_render(form))
+        for output in outputs:
+            document = html.fragment_fromstring(output, create_parent="main")
+            assert not document.cssselect("b")
+            content = document.text_content()
+            for key in ("General", "Comment", "Action"):
+                if text and (key != "Action" or presentation == "buttons"):
+                    assert content.count(str(raw[key])) == 1
+                elif not text:
+                    assert "None" not in content
+            if not text:
+                # Required-comment legend is separate from optional help wrappers.
+                assert not document.xpath('//*[contains(@id,"helptext") or contains(@id,"-help")]')
+            if presentation == "buttons":
+                _assert_descriptions(document)
+
+    @pytest.mark.parametrize("presentation", ["radio", "buttons"])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_all_none_omits_visible_comment_wrapper(
+        self, client_user_campaign_change, campaign_new, monkeypatch, presentation, modal
+    ):
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        for step in campaign_new.get_all_state_transitions():
+            monkeypatch.setitem(step.custom, "comment", WorkflowComment.NONE)
+        response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/", headers=_headers(modal))
+        document = _document(response)
+        assert document.cssselect('input[type="hidden"][name="comment"]')
+        assert not document.cssselect('textarea[name="comment"]')
+        assert not document.xpath('//label[contains(.,"Please provide a comment")]')
+        assert len(document.cssselect("form.cv-form .row")) == 1
+
+    def test_repeated_forms_unique_ids_and_error_paragraphs(
+        self, client_user_campaign_change, campaign_new, user_campaign_change, monkeypatch
+    ):
+        from tests.test1.app.views import cv_campaign
+        from tests.test1.test_theme_form_requests import _grant_cancel_view
+
+        _grant_cancel_view(user_campaign_change, cv_campaign)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+        monkeypatch.setattr(CampaignWorkflowView, "form_class", CachedFieldsForm)
+
+        def check(obj, name, *, user):
+            raise ValidationError(["First reason", "Second reason"])
+
+        monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+        response = client_user_campaign_change.post(
+            f"/campaign/{campaign_new.pk}/workflow/", {"transition": "wf_cancel_new", "comment": "", "extra": ""}
+        )
+        view = response.context["view"]
+        first = response.context["form"]
+        second = view.get_form()
+        view.prefix = "prefixed"
+        third = view.get_form()
+        rendered_forms = [first, second, third]
+        outputs = [_render(form) for form in rendered_forms]
+        document = html.fragment_fromstring(
+            '<p id="external-guidance">External guidance</p>' + "".join(outputs), create_parent="main"
+        )
+        _assert_descriptions(document, rendered_forms)
+        for form in rendered_forms:
+            assert form.constructor_ids == {name: form[name].auto_id for name in form.fields}
+            assert all(value.startswith("cv-wf-") for value in form.constructor_ids.values())
+        assert len(document.cssselect("[data-cv-cancel-url]")) == 3
+        assert len({node.get("id") for node in document.cssselect("[data-cv-cancel-url]")}) == 3
+        for group in document.cssselect('[role="group"]'):
+            assert "external-guidance" in group.get("aria-describedby", "").split()
+            assert "is-invalid" in group.get("class", "").split()
+            assert "invalid-feedback" in group.getnext().get("class", "")
+            for button in group.cssselect("button"):
+                assert "external-guidance" in button.get("aria-describedby", "").split()
+
+    @pytest.mark.parametrize("kind", ["duplicate", "missing", "ambiguous"])
+    def test_description_guard_negative_controls(self, kind):
+        markup = {
+            "duplicate": '<main><p id="owned"></p><p id="owned"></p></main>',
+            "missing": '<main><button aria-describedby="missing"></button></main>',
+            "ambiguous": '<main><p id="description"></p><p id="description"></p><button aria-describedby="description"></button></main>',
+        }[kind]
+        with pytest.raises(AssertionError):
+            _assert_descriptions(html.fromstring(markup))
+
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_zero_choices_preserve_existing_branch(
+        self, client_user_campaign_change, campaign_success, monkeypatch, modal
+    ):
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        response = client_user_campaign_change.get(
+            f"/campaign/{campaign_success.pk}/workflow/", headers=_headers(modal)
+        )
+        document = _document(response)
+        assert not _buttons(document)
+        assert bool(document.cssselect("form.cv-form")) is modal
+        if not modal:
+            assert "There are no workflow steps available" in document.text_content()

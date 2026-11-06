@@ -421,6 +421,33 @@ def test_create_select_redirects_to_create(client_user_vehicle_add: Client, cv_v
 
 
 @pytest.mark.django_db
+class TestSelectorLabelTracer:
+    def test_rendered_labels_keep_content_type_values_and_order(self, client_user_vehicle_add):
+        from lxml import html
+
+        car_ct = ContentType.objects.get_for_model(Car)
+        truck_ct = ContentType.objects.get_for_model(Truck)
+        response = client_user_vehicle_add.get("/vehicle/create/select/")
+        assert response.status_code == 200
+        document = html.fromstring(response.content)
+        options = document.xpath('//select[@name="polymorphic_ctype_id"]/option')
+        assert [(option.get("value"), option.text_content()) for option in options] == [
+            (str(car_ct.pk), "Car"),
+            (str(truck_ct.pk), "Truck"),
+        ]
+
+    @pytest.mark.parametrize("model", [Car, Truck])
+    def test_selection_reaches_typed_create(self, client_user_vehicle_add, model):
+        ct = ContentType.objects.get_for_model(model)
+        response = client_user_vehicle_add.post("/vehicle/create/select/", {"polymorphic_ctype_id": ct.pk})
+        assert response.status_code == 302
+        assert response.url == f"/vehicle/create/ct/{ct.pk}/"
+        typed = client_user_vehicle_add.get(response.url)
+        assert typed.status_code == 200
+        assert typed.context["form"]._meta.model is model
+
+
+@pytest.mark.django_db
 def test_create_car(client_user_vehicle_add: Client, cv_vehicle):
     """Creating a Car through the polymorphic create view."""
     car_ct = ContentType.objects.get_for_model(Car)

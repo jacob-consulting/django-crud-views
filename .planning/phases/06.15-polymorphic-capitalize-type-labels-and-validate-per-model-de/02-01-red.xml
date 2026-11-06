@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="3.212" timestamp="2026-11-06T11:07:53.063063+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_polymorphic" name="test_create_select_redirects_to_create" time="0.507" /><testcase classname="tests.test1.test_polymorphic.TestSelectorLabelTracer" name="test_rendered_labels_keep_content_type_values_and_order" time="0.256"><failure message="AssertionError: assert [('23', 'car'...24', 'truck')] == [('23', 'Car'...24', 'Truck')]&#10;  &#10;  At index 0 diff: ('23', 'car') != ('23', 'Car')&#10;  Use -v to get more diff">self = &lt;tests.test1.test_polymorphic.TestSelectorLabelTracer object at 0x76762c8230e0&gt;
+client_user_vehicle_add = &lt;django.test.client.Client object at 0x76762beef410&gt;
+
+    def test_rendered_labels_keep_content_type_values_and_order(self, client_user_vehicle_add):
+        from lxml import html
+    
+        car_ct = ContentType.objects.get_for_model(Car)
+        truck_ct = ContentType.objects.get_for_model(Truck)
+        response = client_user_vehicle_add.get("/vehicle/create/select/")
+        assert response.status_code == 200
+        document = html.fromstring(response.content)
+        options = document.xpath('//select[@name="polymorphic_ctype_id"]/option')
+&gt;       assert [(option.get("value"), option.text_content()) for option in options] == [
+            (str(car_ct.pk), "Car"),
+            (str(truck_ct.pk), "Truck"),
+        ]
+E       AssertionError: assert [('23', 'car'...24', 'truck')] == [('23', 'Car'...24', 'Truck')]
+E         
+E         At index 0 diff: ('23', 'car') != ('23', 'Car')
+E         Use -v to get more diff
+
+tests/test1/test_polymorphic.py:434: AssertionError</failure></testcase><testcase classname="tests.test1.test_polymorphic.TestSelectorLabelTracer" name="test_selection_reaches_typed_create[Car]" time="0.257" /><testcase classname="tests.test1.test_polymorphic.TestSelectorLabelTracer" name="test_selection_reaches_typed_create[Truck]" time="0.251" /></testsuite></testsuites>

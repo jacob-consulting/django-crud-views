@@ -21,13 +21,15 @@ from tests.test1.app.views import CampaignWorkflowForm, CampaignWorkflowView
 
 
 @pytest.fixture
-def workflow_worlds(monkeypatch):
+def workflow_worlds(request):
     """Independent rows deliberately collide by PK, never by identity."""
     from tests.test1.app.views import cv_campaign
 
     # ViewSet permission names are process-cached metadata. Resolve them from
     # the untouched default migration rows before creating divergent shard IDs.
-    monkeypatch.setattr(cv_campaign, "_default_permissions", None)
+    previous_permissions = cv_campaign._default_permissions
+    request.addfinalizer(lambda: setattr(cv_campaign, "_default_permissions", previous_permissions))
+    cv_campaign._default_permissions = None
     assert cv_campaign.permissions["change"] == "app.change_campaign"
     ContentType.objects.clear_cache()
     worlds = {}

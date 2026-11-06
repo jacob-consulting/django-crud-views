@@ -3,12 +3,11 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
-status: planning
+status: "Phase 06.13 shipped — PR #324"
 stopped_at: Phase 06.13 complete, ready to plan Phase 7
-last_updated: "2026-11-05T22:59:54.106Z"
-last_activity: 2026-11-05
-last_activity_desc: Phase 06.13 complete, transitioned to Phase 7
-state_head: c218d53abbf5b21ef425edbf3ce8e05b059798aa
+last_updated: "2026-11-06T05:36:43.890Z"
+last_activity: 2026-11-06
+state_head: f1716cdc5e92e343dd68f67d4f7e8dd1dcd35d54
 progress:
   total_phases: 18
   completed_phases: 17
@@ -31,10 +30,17 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-11-05 — Phase 06.13 complete, transitioned to Phase 7
+Status: Phase 06.13 shipped — PR #324
+Last activity: 2026-11-06
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.13 shipping — 2026-11-06
+
+- Opened PR #324: https://github.com/jacob-consulting/django-crud-views/pull/324 targeting main from the phase branch; remains unmerged.
+- Canonical verification passed; security threats_open is zero. Fresh shipping checks: 190 workflow/Cancel tests passed with four workers, strict MkDocs and scoped Ruff passed. Production/dependencies match main.
+- Committed pending guidance/config/state and phase placeholders as f1716cd; generated review diagnostics and research caches retained locally via git info/exclude.
+- Phase 7 remains ready for discussion. Post-ship codebase map refresh follows on this branch.
 
 ### Phase 06.13 completion — 2026-11-05
 

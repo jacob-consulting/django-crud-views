@@ -48,8 +48,10 @@ class WorkflowForm(CrispyForm):
     )
 
     def get_layout_fields(self):
-        comment = "comment" if self.fields["comment"].widget.is_hidden else Row(Column8("comment"))
-        return Row(Column8("transition")), comment
+        # Keep wrapping local to the stock opt-in layout, including field labels/help.
+        attrs = {"style": "overflow-wrap: anywhere;"} if self._workflow_presentation == "buttons" else {}
+        comment = "comment" if self.fields["comment"].widget.is_hidden else Row(Column8("comment", **attrs))
+        return Row(Column8("transition", **attrs)), comment
 
     def __init__(self, *args, choices: list[tuple[str, str]], transition_comments: dict, **kwargs):
         super().__init__(*args, **kwargs)

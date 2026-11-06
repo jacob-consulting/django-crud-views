@@ -3,11 +3,17 @@
 from functools import wraps
 
 import pytest
-from django.core.exceptions import ValidationError
+from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.http import Http404
+from django.test import RequestFactory
+from django.urls import resolve
 from django.utils.safestring import mark_safe
 from django_fsm import transition
+from guardian.shortcuts import assign_perm, remove_perm
 from lxml import html
 
+from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin
 from crud_views_workflow.lib import run_transition
 from crud_views_workflow.lib.enums import WorkflowComment
 from crud_views_workflow.lib.execution import _WorkflowRefusal
@@ -191,3 +197,76 @@ def test_nested_public_helper_failure_propagates(
     assert WorkflowInfo.objects.count() == int(committed)
     if committed:
         assert WorkflowInfo.objects.get().workflow_object_pk == str(campaign_new.pk)
+
+
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("outcome", ["allow", "initial-denial", "permission", "action", "scope"])
+def test_guardian_workflow_late_refusal_retains_scoped_authorization(
+    campaign_new, user_campaign_change, monkeypatch, modal, outcome
+):
+    executing = False
+    loads, checked = [], []
+    if outcome != "initial-denial":
+        assign_perm("app.change_campaign", user_campaign_change, campaign_new)
+
+    class ScopedWorkflow(CampaignWorkflowView):
+        def get_queryset(self):
+            queryset = super().get_queryset().filter(name=campaign_new.name)
+            return queryset.none() if executing and outcome == "scope" else queryset
+
+        def get_object(self, queryset=None):
+            loads.append(queryset)
+            return super().get_object(queryset=queryset)
+
+    class GuardianWorkflow(GuardianObjectPermissionMixin, ScopedWorkflow):
+        def _check_object_perm(self, user, perm, obj):
+            checked.append(obj)
+            return super()._check_object_perm(user, perm, obj)
+
+        @classmethod
+        def cv_action_enabled(cls, user, obj=None):
+            return not (executing and outcome == "action")
+
+        def cv_form_valid_process(self, context):
+            nonlocal executing
+            executing = True
+            if outcome == "permission":
+                remove_perm("app.change_campaign", user_campaign_change, campaign_new)
+            return super().cv_form_valid_process(context)
+
+    def check(obj, name, *, user):
+        if executing:
+            raise ValidationError("Late business blocker")
+
+    monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+    monkeypatch.setattr(GuardianWorkflow, "cv_modal", modal)
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    request = RequestFactory().post(
+        url, {"transition": "wf_activate", "comment": "  kept  "}, headers={"X-CV-Modal": "true"} if modal else {}
+    )
+    request.user = user_campaign_change
+    request.session = {}
+    request._messages = FallbackStorage(request)
+    request.resolver_match = resolve(url)
+    if outcome == "allow":
+        response = GuardianWorkflow.as_view()(request, **request.resolver_match.kwargs)
+        assert response.status_code == (422 if modal else 200)
+        form = response.context_data["form"]
+        assert list(form.errors["transition"]) == ["Late business blocker"]
+        assert form.data["comment"] == "  kept  "
+        assert response.context_data["object"] is checked[-1]
+    else:
+        with pytest.raises(Http404 if outcome == "scope" else PermissionDenied):
+            GuardianWorkflow.as_view()(request, **request.resolver_match.kwargs)
+    assert loads[0] is None
+    if outcome == "initial-denial":
+        assert not executing and len(loads) == 1 and len(checked) == 1
+    else:
+        assert len(loads) == 2
+        assert loads[1].db == "default"
+        if outcome != "scope":
+            assert campaign_new.name in loads[1].query.sql_with_params()[1]
+            assert len(checked) == 2 and checked[0] is not checked[1]
+            assert all(obj._state.db == "default" for obj in checked)
+    assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
+    assert not WorkflowInfo.objects.exists()

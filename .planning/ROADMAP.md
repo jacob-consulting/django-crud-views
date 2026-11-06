@@ -1032,9 +1032,14 @@ selection. Routine implementation mechanics are delegated to the planner. Settle
 **Plans:** 0/4 plans executed
 
 Plans:
+**Wave 1**
 - [ ] 06.15-01-PLAN.md — Exact-model detail groups and complete structural checks
 - [ ] 06.15-02-PLAN.md — Capitalized selector labels with selection/access compatibility
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.15-03-PLAN.md — Public contract, release guidance and supported-series validation
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.15-04-PLAN.md — Required downstream adoption, catalog validation and findings resolution
 
 ### Phase 7: Theme-surface stability policy

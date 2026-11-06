@@ -94,15 +94,30 @@
       "status": "complete"
     },
     {
+      "number": "6.13.1",
+      "name": "Workflow validation and execution",
+      "status": "pending"
+    },
+    {
+      "number": "6.14",
+      "name": "Card template insertion blocks and cards-first ViewSets",
+      "status": "complete"
+    },
+    {
+      "number": "6.15",
+      "name": "Polymorphic labels and per-model detail groups",
+      "status": "in_progress"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-discuss-phase 7",
-    "label": "Discuss Phase 7 theme-surface stability policy",
-    "reason": "Phase 06.13 verified and complete; Phase 7 needs context and a plan"
+    "command": "$gsd-execute-phase 06.15",
+    "label": "Execute Phase 06.15 \u2014 four plans in three waves",
+    "reason": "Plan convergence completed in four cycles; zero unresolved HIGH/actionable findings and no open revision conflicts"
   },
-  "updated_at": "2026-11-05T22:59:54.128Z"
+  "updated_at": "2026-11-06T10:54:17.616Z"
 }

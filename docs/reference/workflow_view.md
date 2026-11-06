@@ -346,6 +346,7 @@ snippet, not a second registered workflow view:
 ```python
 cv_inaccessible_actions = "disable"
 
+
 @classmethod
 def cv_action_enabled(cls, user, obj=None):
     return obj is None or obj.workflow_has_any_possible_transition(user)

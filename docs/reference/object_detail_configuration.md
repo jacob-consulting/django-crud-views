@@ -93,10 +93,14 @@ when wanted. Badge and link inputs remain raw. See [badge fallback](object_detai
 Use this body for a copied `char.html` or `default.html` value leaf. The exact check keeps
 `0`, `False` and whitespace-only strings visible; do not use a broad falsy test or trim text.
 Django autoescaping stays enabled for both labels and raw strings.
+The choice branch uses `unlocalize` so an unknown numeric code such as `10000` stays
+ungrouped even when thousand separators are enabled. This affects output only:
+`value`, `prop.choice_label` and `display_value` retain their original types.
+Ordinary numeric output keeps its existing localization.
 
 <!-- object-detail-value-recipe: text-leaf -->
 ```django
-{% if display_value is None or display_value == "" %}<span class="text-body-tertiary">&mdash;</span>{% else %}{{ display_value }}{% endif %}
+{% load l10n %}{% if display_value is None or display_value == "" %}<span class="text-body-tertiary">&mdash;</span>{% elif prop.choice_label is not None %}{{ display_value|unlocalize }}{% else %}{{ display_value }}{% endif %}
 ```
 
 Stock `char`, `text` and fallback `default` show this muted em dash for exact `None`/`""`

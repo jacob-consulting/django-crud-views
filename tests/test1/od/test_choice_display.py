@@ -336,6 +336,50 @@ def test_choice_display_uses_text_despite_inferred_or_explicit_type(field, value
     assert "<i" not in render_value(prop)
 
 
+@pytest.mark.parametrize("language,grouped", [("en", "10,000"), ("de", "10.000")])
+@pytest.mark.parametrize("leaf", [None, "char", "default", "text", "badge"])
+def test_choice_display_unknown_numeric_locale(language, grouped, leaf):
+    config = x(
+        "rank",
+        badge="info" if leaf == "badge" else None,
+        template=f"crud_views_object_detail/types/default/{leaf}.html" if leaf not in (None, "badge") else None,
+    )
+    with override_settings(USE_THOUSAND_SEPARATOR=True), override(language):
+        prop = resolve_property(ChoiceValue(rank=10000), config)
+        output = html_parser.fromstring(f"<div>{render_value(prop)}</div>").text_content().strip()
+        assert output == "10000"
+        assert type(prop.value) is type(prop.choice_label) is int
+        assert prop.value == prop.choice_label == 10000
+        # Ordinary numeric presentation and the explicit raw opt-out still localize.
+        raw = resolve_property(ChoiceValue(rank=10000), x("rank", choices_display=False))
+        assert render_value(raw).strip() == grouped
+        ordinary = ResolvedProperty("count", "Count", 10000, type="integer")
+        assert render_value(ordinary).strip() == grouped
+        ordinary.type = "char"
+        assert render_value(ordinary).strip() == grouped
+        explicit = resolve_property(
+            ChoiceValue(rank=10000), x("rank", badge=BadgeConfig(color="info", label_map={10000: "Explicit"}))
+        )
+        assert html_parser.fromstring(render_value(explicit)).text == "Explicit"
+
+
+@pytest.mark.parametrize("badge", [False, True])
+def test_choice_display_numeric_custom_context_keeps_types(badge):
+    prop = resolve_property(ChoiceValue(rank=10000), x("rank", badge="info" if badge else None))
+    template = "crud_views_object_detail/types/default/badge.html" if badge else "explicit.html"
+    prop.template = template
+    # Numeric comparisons fail if any of these context values are stringified upstream.
+    content = (
+        "{% if value == 10000 and display_value == 10000 and prop.choice_label == 10000 %}"
+        "numeric|{{ value }}|{{ display_value }}|{{ prop.choice_label }}{% endif %}"
+    )
+    with (
+        override_settings(USE_THOUSAND_SEPARATOR=True, TEMPLATES=template_settings({template: content})),
+        override("de"),
+    ):
+        assert render_value(prop) == "numeric|10.000|10.000|10.000"
+
+
 @isolate_apps()
 def test_choice_display_ordinary_boolean_and_date_keep_formatting():
     class Ordinary(models.Model):

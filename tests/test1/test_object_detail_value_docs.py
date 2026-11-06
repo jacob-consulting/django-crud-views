@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import pytest
 from django.template import Context, Template
 from django.test import override_settings
+from django.utils.translation import override
 from lxml import html
 
 from crud_views.lib import check as check_module
@@ -100,6 +101,27 @@ def test_object_detail_value_docs_badge_raw_empty_contract(value, expected):
         Context({"value": value, "display_value": "" if value == "" else "Declared null label", "prop": {}})
     )
     assert html.fromstring(output).text_content() == expected
+
+
+@pytest.mark.parametrize("language", ["en", "de"])
+@pytest.mark.parametrize("badge", [False, True])
+def test_object_detail_value_docs_unknown_numeric_locale(language, badge):
+    leaf = (
+        published_template()
+        if badge
+        else recipe("docs/reference/object_detail_configuration.md", "text-leaf", "django")
+    )
+    prop = resolve_property(ChoiceValue(rank=10000), x("rank", badge="info" if badge else None))
+    template = "crud_views_object_detail/types/default/badge.html" if badge else "copied.html"
+    prop.template = template
+    with (
+        override_settings(USE_THOUSAND_SEPARATOR=True, TEMPLATES=template_settings({template: leaf})),
+        override(language),
+    ):
+        output = html.fromstring(f"<div>{render(prop)}</div>").text_content().strip()
+    assert output == "10000"
+    assert type(prop.value) is type(prop.choice_label) is int
+    assert prop.value == prop.choice_label == 10000
 
 
 def test_object_detail_value_docs_custom_raw_ownership():

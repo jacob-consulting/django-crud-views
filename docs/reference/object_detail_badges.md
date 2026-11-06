@@ -80,7 +80,7 @@ For a type pack named `native`, set `CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_TYPE
 `crud_views_object_detail/types/native/badge.html` in your project's template directory:
 
 ```django
-{% if value is None %}<span class="text-body-tertiary">&mdash;</span>{% else %}<span class="status{% if prop.badge_color == 'brand-custom' %} status-brand{% endif %}{% if prop.badge_pill %} status-pill{% endif %}">{% if prop.badge_label %}{{ prop.badge_label }}{% else %}{{ display_value }}{% endif %}</span>{% endif %}
+{% load l10n %}{% if value is None %}<span class="text-body-tertiary">&mdash;</span>{% else %}<span class="status{% if prop.badge_color == 'brand-custom' %} status-brand{% endif %}{% if prop.badge_pill %} status-pill{% endif %}">{% if prop.badge_label %}{{ prop.badge_label }}{% elif prop.choice_label is not None %}{{ display_value|unlocalize }}{% else %}{{ display_value }}{% endif %}</span>{% endif %}
 ```
 
 Define `status`, `status-brand`, and `status-pill` in your theme's stylesheet. This recipe maps `brand-custom`
@@ -89,6 +89,8 @@ Extend the explicit color mapping for other names your theme supports. An unreco
 reaches this template, but receives no color class from this minimal mapping.
 
 Keep Django autoescaping enabled: labels and values are text, including strings containing HTML.
+Only the automatic choice fallback uses `unlocalize`, keeping unknown numeric codes
+ungrouped. Explicit badge labels retain precedence and ordinary raw numbers retain localization.
 The recipe is exercised against real property resolution and template selection, including a counting callback,
 both pill states, missing colors, and explicit-template collisions. It is a template contract example;
 complete visual acceptance of a non-Bootstrap theme requires that theme's own styles and review.

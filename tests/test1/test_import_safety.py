@@ -230,6 +230,104 @@ FIRST_IMPORTS = [
 ]
 
 
+def test_object_detail_mapping_without_polymorphic(tmp_path):
+    """Exact ordinary base/child/proxy mappings work with both optional packages absent."""
+    app = tmp_path / "mappingapp"
+    app.mkdir()
+    (app / "__init__.py").write_text("")
+    (app / "models.py").write_text(
+        textwrap.dedent(
+            """
+            from django.db import models
+
+            class Base(models.Model):
+                name = models.CharField(max_length=100)
+
+            class Child(Base):
+                code = models.CharField(max_length=100)
+
+            class Proxy(Child):
+                class Meta:
+                    proxy = True
+            """
+        )
+    )
+    code = textwrap.dedent(
+        f"""
+        import sys
+        sys.path.insert(0, {str(tmp_path)!r})
+        blocked = ("polymorphic", "crud_views_polymorphic")
+        for name in blocked:
+            sys.modules[name] = None
+
+        import django
+        from django.conf import settings
+        settings.configure(
+            SECRET_KEY="mapping-test",
+            INSTALLED_APPS=[
+                "django.contrib.contenttypes", "django.contrib.auth",
+                "crud_views", "crud_views_object_detail", "mappingapp",
+            ],
+            TEMPLATES=[{{"BACKEND": "django.template.backends.django.DjangoTemplates", "APP_DIRS": True}}],
+        )
+        django.setup()
+
+        from django.core.exceptions import ImproperlyConfigured
+        from django.template.loader import render_to_string
+        from crud_views_object_detail.lib.mixins import ObjectDetailMixin
+        from mappingapp.models import Base, Child, Proxy
+
+        class DetailBase:
+            @classmethod
+            def checks(cls):
+                return []
+
+            def get_context_data(self, **kwargs):
+                return {{"object": self.object}}
+
+        class OrdinaryDetail(ObjectDetailMixin, DetailBase):
+            cv_property_display = {{
+                model: [{{"title": model.__name__, "properties": ["name"]}}]
+                for model in (Base, Child, Proxy)
+            }}
+
+        declaration = OrdinaryDetail.cv_property_display
+        assert not [m for check in OrdinaryDetail.checks() for m in check.messages()]
+        for model in (Base, Child, Proxy):
+            view = OrdinaryDetail()
+            view.object = model(name="Ordinary mapped value")
+            assert view.get_property_display()[0].title == model.__name__
+            assert OrdinaryDetail.cv_property_display is declaration
+
+        html = render_to_string("crud_views_object_detail/view_detail.content.html", view.get_context_data())
+        assert "Ordinary mapped value" in html
+        assert "Proxy" in html
+
+        for configured, missing in ((Child, (Base, Proxy)), (Base, (Child, Proxy))):
+            for actual in missing:
+                view = OrdinaryDetail()
+                view.cv_property_display = {{configured: declaration[configured]}}
+                view.object = actual(name="Unmapped")
+                try:
+                    view.get_property_display()
+                except ImproperlyConfigured as exc:
+                    assert actual._meta.label in str(exc)
+                    assert "__main__.OrdinaryDetail" in str(exc)
+                else:
+                    raise AssertionError("Inherited or proxy fallback selected")
+
+        assert not [
+            name for name, module in sys.modules.items()
+            if module is not None and any(name == root or name.startswith(root + ".") for root in blocked)
+        ]
+        print("MAPPING-WITHOUT-POLYMORPHIC-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "MAPPING-WITHOUT-POLYMORPHIC-OK" in result.stdout
+
+
 @pytest.mark.parametrize("statement", FIRST_IMPORTS)
 def test_public_module_importable_as_first_crud_views_import(statement):
     """Regression: `from crud_views.lib.viewset import ViewSet` as the first crud_views import in a

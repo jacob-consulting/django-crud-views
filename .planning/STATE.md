@@ -9,10 +9,10 @@ last_updated: "2026-11-06T12:52:42.464Z"
 last_activity: 2026-11-06
 state_head: 16a7354420afce19d0dd47331da9865457cdc3d8
 progress:
-  total_phases: 20
-  completed_phases: 19
-  total_plans: 127
-  completed_plans: 127
+  total_phases: 21
+  completed_phases: 20
+  total_plans: 131
+  completed_plans: 131
   percent: 95
 milestone_name: milestone
 ---
@@ -42,6 +42,21 @@ Next: $gsd-discuss-phase 7
 - Validation4/4 tasks compliant; security7/7 closed; UI preservation24/24 without visual-browser claim. Deep review found one extraction warning, fixed by gettext_noop markers and independently closed; post-fix24 recipe tests/strict docs pass.
 - UI safety gate initially required a missing contract; approved preservation-only UI-SPEC and25 explicit probe truths clear it. Completion warnings misparse the verified git-show baseline command as a path; no missing artifact.
 - Next scheduled phase06.13.1 is planned and ready to execute. No LEARNINGS files/todos required graduation or closure. Config/state.json edits preserved; no push or merge performed.
+
+### Phase 06.15 acceptance closeout — 2026-11-06
+
+- User explicitly passed both visual and browser interaction checks. UAT 2/2 and canonical 16/16 passed; shared completion predicate has no blockers. All four plans complete; roadmap/state advanced to planned Phase 06.13.1.
+- Isolated UAT instance remains running on port 9000 at https://cv.jacob-consulting.org, with fresh seeded data and source-bound consumer snapshot. Original database and checkout preserved. Existing tests and audit evidence retain their original source attribution.
+- Completion scanner misread the command fragment `-c examples/bootstrap5/pytest.ini` as a path; the actual config file exists. No delivery artifact missing. No LEARNINGS files to graduate and no stale phase handoffs. Earlier pending-human statements below are historical.
+- No push or merge. Unrelated config edits preserved.
+
+### Phase 06.15 execution and verification — 2026-11-06
+
+- All four plans committed; canonical verification human_needed: 16/16 truths and 19/19 decisions verified, two human items persisted in 06.15-UAT.md.
+- Review repaired mapping fallback/mutation and bare Django Model check crashes in 06dca6d5/b2aebe49, with five regressions. Review zero open; security 12/12 closed; validation compliant. UI audit source-only, visual/browser acceptance unclaimed.
+- Final source: 90 focused tests each on Django 4.2/5.2/6.0; 8,398 prior-phase regressions plus 100 subtests; 18 consumer tests and warning-level checks; seven independent cases and strict docs passed. Earlier full 5.2 result (10,175 + one skip) remains pre-fix evidence.
+- Downstream 542936d/6a8e4f9 remain on gsd/phase-06.15-polymorphic-adoption. Another actor switched its checkout to main and advanced it; final consumer checks used a pinned archive, preserving current checkout and original report edits.
+- No phase completion, next-phase advance, push or merge. Unrelated config preserved; codebase map drift advisory.
 
 ### Phase 06.13.1 acceptance complete — 2026-11-06
 
@@ -533,7 +548,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 127
+- Total plans completed: 131
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -560,6 +575,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.13 | 2 | - | - |
 | 06.13.1 | 5 | - | - |
 | 06.14 | 2 | - | - |
+
+| 06.15 | 4 | - | - |
 
 **Recent Trend:**
 
@@ -662,6 +679,11 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.13.1 P04 | 22min | 2 tasks | 6 files |
 | Phase 06.13.1 P05 | 20min | 2 tasks | 10 files |
 | Phase 06.14 P01 | 8min | 2 tasks | 4 files |
+
+| Phase 06.15 P01 | 8min | 3 tasks | 5 files |
+| Phase 06.15 P02 | 5min | 2 tasks | 2 files |
+| Phase 06.15 P03 | 12min | 2 tasks | 4 files |
+| Phase 06.15 P04 | 9min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -850,6 +872,11 @@ Recent decisions affecting current work:
 - [Phase 06.13.1]: Restore static stock WorkflowForm icon diagnostics without importing the optional extension or calling custom providers.
 - [Phase 06.14]: Plan 01 adds only empty card_root/card_header blocks; frozen request-aware bytes, nonempty CSRF and exact documented inheritance fence verify compatibility.
 
+- [Phase 06.15]: Plan 01: exact model selection and E247 key checks share the existing parser/check traversal; POLY-03 remains pending its plan 03 structural-limit documentation.
+- [Phase 06.15]: Plan 02: capfirst formats already-discovered selector names; real requests plus lazy translation, escaping, filtering, custom-form and access regressions preserve the existing contract.
+- [Phase 06.15]: Plan 03: publish executable exact-model mapping blocks and list-only tag boundary; full 5.2 and focused 4.2/6.0 pass; POLY-05 remains pending downstream adoption.
+- [Phase 06.15]: Downstream catalog verified against explicit phase and pinned extension source roots; task branch retains original report edits unstaged; phase completion awaits independent verification.
+
 ### Pending Todos
 
 None yet.
@@ -900,6 +927,8 @@ None yet.
 - Phase 06.13 inserted after Phase 06.12: Issue #320: document and test opt-in per-transition workflow access; preserve the default change gate. Phase 06.12 is reserved on disk; this phase is independently deliverable. (URGENT)
 - Phase 06.13.1 inserted after Phase 06.13: Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322) (URGENT)
 - Phase 06.14 inserted after Phase 6: Issue #325: add empty card_root/card_header blocks and document/test cards-first ViewSets with a secondary table; preserve existing rendering, actions, permissions and navigation. Settle these contracts before Phase 7; downstream theme implementation is separate. (URGENT)
+
+- Phase 06.15 inserted after Phase 06.14: Issue #326: polymorphic selector labels and per-model detail groups, including required tabler-test adoption and verification. Phase 06.14 completed in another worktree per user; no card implementation dependency. (URGENT)
 
 ## Deferred Items
 

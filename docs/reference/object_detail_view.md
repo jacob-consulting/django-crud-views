@@ -64,8 +64,9 @@ class BookDetailView(ObjectDetailViewPermissionRequired):
 
 ## The `cv_property_display` DSL
 
-`cv_property_display` is a list of **groups**. Each group is a dict (or `PropertyGroupConfig`)
-with a title and a list of properties:
+`cv_property_display` accepts a list of **groups**, or a [model-to-groups mapping](#model-mappings).
+Each group is a dict (or `PropertyGroupConfig`) with a title and a list of properties.
+Raw and typed groups can be mixed in either order in the same list:
 
 | Parameter     | Description |
 |---------------|-------------|
@@ -111,6 +112,87 @@ view-callable fallback, [Supported Field Types](object_detail_field_types.md) fo
 auto-detected type table, [Links](object_detail_links.md) and [Badges](object_detail_badges.md)
 for rendering property values as links/badges, and [Layout Packs](object_detail_layout_packs.md)
 for the seven included visual layouts with screenshots.
+
+## Model mappings
+
+To vary groups by the resolved model, set `cv_property_display` to a mapping whose keys are
+Django model classes and whose values are group lists. Each value uses the same format as the
+ordinary list above: raw dicts, typed `PropertyGroupConfig` objects, or a mixture. Existing typed
+group objects are retained. The [complete polymorphic recipe](polymorphic_view.md#basic-usage)
+shows declared models, a shared group, subtype fields, the supported view composition and URLs.
+
+Selection uses exactly `type(self.object)` after the view resolves the object. There is no
+superclass/MRO search, default key, fallback group list or automatic subtype discovery. If your
+view serves a base-model or proxy instance, that exact class needs its own entry. A mapping
+missing the actual type raises `django.core.exceptions.ImproperlyConfigured`, naming the model
+and qualified view, for example:
+
+```text
+myapp.views.VehicleDetailView.cv_property_display has no entry for myapp.Truck
+```
+
+An empty mapping `{}` is structurally valid but matches no object at runtime. An explicit entry
+such as `{Car: []}` intentionally renders no property groups for that model. The existing empty
+list `[]` also renders no groups; `None` still reports missing configuration at startup.
+
+Selection stays local to the view instance and does not mutate the class mapping. It adds no
+object or content-type queries; normal property resolution may still query relationships.
+The selected list goes through the existing parser, resolver and layout/rendering path.
+Ordinary Django model mappings work without installing `django-polymorphic` or
+`crud_views_polymorphic`; the optional package is needed only for polymorphic view behavior.
+
+The direct template-tag API `render_object_detail(property_display=...)` continues to accept a
+**group list**, not a model mapping. Mapping selection belongs to the view configuration path;
+pass a selected list when calling the tag directly.
+
+### Startup checks and runtime boundaries
+
+Checks inspect the declared `cv_property_display` on the class, including every mapping entry.
+They validate values even when their keys are invalid. They do not instantiate models or views,
+load objects, evaluate `property_display`, or make object queries to select groups. Existing
+list diagnostics and inherited view checks continue to apply.
+
+| ID | What is checked |
+|----|-----------------|
+| `viewset.E240` | `cv_property_display` is declared and not `None` |
+| `viewset.E241` | The outer value is a list or mapping, and each mapped value is a list |
+| `viewset.E242` | A raw group is a dict with a `title` key |
+| `viewset.E243` | A raw group is a dict with a `properties` key |
+| `viewset.E244` | A raw group's `properties` value is a list |
+| `viewset.E245` | Each property is a string, dict or `PropertyConfig` |
+| `viewset.W246` | A raw or typed group icon has no unregistered library prefix |
+| `viewset.E247` | Each mapping key is a Django model class |
+
+Mapped diagnostics include the model label, group index and property index where applicable,
+for example `cv_property_display[myapp.Truck][1]['properties'][0]`, followed by the view context.
+Invalid keys use an entry position and safe type description, such as
+`cv_property_display[entry 1 (str)]`, without stringifying model instances.
+
+These are structural checks. They do not resolve property paths, prove that every possible
+subtype has an entry, or validate the result of a dynamic override. Typed groups have already
+passed their Pydantic validation; raw dicts are parsed at runtime through the same parser.
+Test representative real objects and an unmapped-type failure in your application as well.
+
+### Dynamic property escape hatch
+
+Keep a `property_display` override for groups that genuinely depend on the request or object,
+rather than only its model. The view reads that effective property once, then applies the same
+list/mapping selection and parsing rules. Existing overrides returning lists continue to work:
+
+```python
+class VehicleDetailView(ObjectDetailMixin, PolymorphicDetailViewPermissionRequired):
+    cv_viewset = cv_vehicle
+    cv_property_display = [{"title": "Vehicle", "properties": ["name"]}]
+
+    @property
+    def property_display(self):
+        if self.request.user.is_staff:
+            return [{"title": "Staff view", "properties": ["name", "pk"]}]
+        return self.cv_property_display
+```
+
+Startup checks still inspect only the declared class configuration; exercise each dynamic
+branch separately. For differences based solely on exact model type, use the mapping directly.
 
 ## Compose Pattern (Guardian / Polymorphic)
 

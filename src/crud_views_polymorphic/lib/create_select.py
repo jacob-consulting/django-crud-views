@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 
 from django import forms
 from django.http import HttpResponseRedirect
+from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from polymorphic.models import PolymorphicModel
@@ -65,7 +66,7 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
             content_types = {k: v for k, v in content_types.items() if k not in self.cv_polymorphic_exclude}
         elif self.cv_polymorphic_include:
             content_types = {k: v for k, v in content_types.items() if k in self.cv_polymorphic_include}
-        polymorphic_ctype_choices = [(ct.id, ct.name) for ct in content_types.values()]
+        polymorphic_ctype_choices = [(ct.id, capfirst(ct.name)) for ct in content_types.values()]
         form_kwargs = self.get_form_kwargs()
         return form_class(polymorphic_ctype_choices=polymorphic_ctype_choices, **form_kwargs)
 

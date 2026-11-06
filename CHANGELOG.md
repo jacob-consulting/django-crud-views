@@ -369,6 +369,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- Default polymorphic type-selector labels capitalize the first character while preserving remaining casing,
+  acronyms and lazy translations (#326). Choice IDs/order, filtering, custom forms, permissions, typed-create
+  redirects and Cancel behavior remain unchanged; formatting adds no label queries.
+- Object-detail group parsing accepts raw and typed `PropertyGroupConfig` entries mixed in either order,
+  retaining typed-group identity (#326).
+
 - **Core missing permission declarations** ([#318](https://github.com/jacob-consulting/django-crud-views/issues/318)):
   permission-required actions now deny missing/falsy mapping entries for every actor, including superusers,
   before checking user permissions. Existing request diagnostics and retry of empty permission discovery remain.
@@ -519,6 +525,14 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   before the heading, preserving default output and inherited actions. A complete, tested
   [cards-first ViewSet recipe](docs/reference/card-list-view.md#cards-first-with-a-secondary-table) serves cards
   at the root and a secondary table through existing switches, with independent Save and Cancel guidance (#325).
+
+- `cv_property_display` accepts exact Django model-class-to-group-list mappings alongside existing lists (#326).
+  Each request selects only its resolved object's exact type; missing entries raise `ImproperlyConfigured` with
+  the actual model and view. Startup checks inspect every declared key/value, include model/group/property locations,
+  and report invalid model keys as `viewset.E247`, without querying objects or requiring django-polymorphic for
+  ordinary-model mappings. Existing list declarations and dynamic `property_display` overrides remain supported.
+  See the [configuration and validation limits](docs/reference/object_detail_view.md#model-mappings) and
+  [complete polymorphic recipe](docs/reference/polymorphic_view.md#basic-usage).
 
 - Documentation: a complete [opt-in per-transition workflow permissions recipe](docs/reference/workflow_view.md#opt-in-per-transition-permissions)
   preserves the default `change` gate and distinguishes basic empty-page access from optional server-enforced

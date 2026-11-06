@@ -104,6 +104,11 @@
       "status": "complete"
     },
     {
+      "number": "6.15",
+      "name": "Polymorphic labels and per-model detail groups",
+      "status": "complete"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
@@ -112,7 +117,7 @@
   "next": {
     "command": "$gsd-discuss-phase 7",
     "label": "Plan Phase 7 theme-surface stability policy",
-    "reason": "Phases 06.13.1 and 06.14 are complete"
+    "reason": "Phases 06.13.1, 06.14 and 06.15 are complete"
   },
   "updated_at": "2026-11-06T09:44:55.505Z"
 }

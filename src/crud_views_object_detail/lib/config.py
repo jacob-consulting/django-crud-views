@@ -89,6 +89,6 @@ def x(path: str, **kwargs) -> PropertyConfig:
     return PropertyConfig(path=path, **kwargs)
 
 
-def parse_property_display(raw: list[dict]) -> list[PropertyGroupConfig]:
-    """Parse a raw property_display list into PropertyGroupConfig objects."""
-    return [PropertyGroupConfig(**group) for group in raw]
+def parse_property_display(raw: list[dict | PropertyGroupConfig]) -> list[PropertyGroupConfig]:
+    """Normalize each raw or already typed group, preserving typed group identity."""
+    return [group if isinstance(group, PropertyGroupConfig) else PropertyGroupConfig(**group) for group in raw]

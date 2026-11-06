@@ -38,6 +38,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.13: Workflow permissions: opt-in per-transition access (INSERTED)** - #320: document and test the existing view-gated recipe while preserving the default change gate (completed 2026-11-05)
 - [x] **Phase 06.13.1: Workflow validation and execution (INSERTED)** - #322: business blockers, opt-in transition buttons, and a reusable execution helper (completed 2026-11-06)
 - [x] **Phase 06.14: Card template insertion blocks and cards-first ViewSets (INSERTED)** - #325: empty card blocks and tested cards-first navigation (completed 2026-11-06)
+- [x] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test (completed 2026-11-06)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1017,6 +1018,39 @@ Plans:
 - [x] 06.13.1-04-PLAN.md — Owned browser fixture, no-JS page flow and complete UI state acceptance (wave 3).
 - [x] 06.13.1-05-PLAN.md — Public contracts, release guidance and bounded regression evidence (wave 3).
 
+### Phase 06.15: Polymorphic: capitalize type labels and validate per-model detail groups; update tabler-test (#326) (INSERTED)
+
+**Goal:** Resolve polymorphic findings 10–11 in one bounded phase: capitalize default selector labels without
+changing remaining casing or translation behavior, support explicit model-to-groups detail configuration with
+startup validation of every entry, and adopt and verify the changes in the sibling `../tabler-test` project.
+**Source:** [Issue #326](https://github.com/jacob-consulting/django-crud-views/issues/326)
+**Requirements**: POLY-01, POLY-02, POLY-03, POLY-04, POLY-05
+**Depends on:** Existing polymorphic and object-detail configuration paths. Follows Phase 06.14 numerically;
+no implementation dependency on its card work is established by #326.
+**Settled scope:** The issue's agreed design and acceptance criteria are the planning contract. Preserve existing
+list configuration and working dynamic overrides; mapped groups use exact `type(self.object)` lookup and fail
+clearly for unmapped types. Reuse existing parsing and structural/icon checks for every mapping entry, with
+model-specific diagnostics and no request/object evaluation, extra database queries, or new polymorphic dependency
+for object-detail configuration. No inheritance matching, fallback keys, subtype discovery, or completeness proof.
+**Downstream completion:** Remove only the selector capitalization workaround and redundant detail override/dummy
+configuration in `tabler-test`; retain the custom crispy layout and Continue button. Verify Beans, Equipment and
+Subscription behavior and permissions; update the findings report and documentation, and record validation from
+both repositories. Finding 16 and unrelated object-detail findings remain deferred.
+**Planning handoff:** Carry the settled issue decisions into CONTEXT.md when planning; do not reopen approach
+selection. Routine implementation mechanics are delegated to the planner. Settle these contracts before Phase 7.
+**Plans:** 4/4 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.15-01-PLAN.md — Exact-model detail groups and complete structural checks
+- [x] 06.15-02-PLAN.md — Capitalized selector labels with selection/access compatibility
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.15-03-PLAN.md — Public contract, release guidance and supported-series validation
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.15-04-PLAN.md — Required downstream adoption, catalog validation and findings resolution
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1064,7 +1098,7 @@ by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 6.14 → 6.15 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -1083,7 +1117,9 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 13 | 6.10 (#316) | Simplify protected previews and settle the shared display cap before the freeze |
 | 14 | 6.13 (#320) | Document and test opt-in workflow permissions; independently deliverable from presentation work |
 | 15 | 6.13.1 (#322) | Workflow validation/helper and opt-in buttons; settle new theme contracts before the freeze |
-| 16 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1's theme contracts settled; last change before the 1.0.0 bump |
+| 16 | 6.14 (#325) | Empty card blocks and tested cards-first navigation |
+| 17 | 6.15 (#326) | Polymorphic labels and per-model groups, including tabler-test adoption and verification |
+| 18 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15 contracts settled; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -1108,4 +1144,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.13. Workflow permissions: opt-in per-transition access | 2/2 | Complete    | 2026-11-05 |
 | 6.13.1. Workflow validation and execution | 5/5 | Complete    | 2026-11-06 |
 | 6.14. Card template insertion blocks and cards-first ViewSets | 2/2 | Complete | 2026-11-06 |
+| 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

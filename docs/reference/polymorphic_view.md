@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 
 Inherit from `PolymorphicModel` for the base class and define concrete subtypes:
 
+<!-- polymorphic-mapping-recipe: models -->
 ```python
 from django.db import models
 from polymorphic.models import PolymorphicModel
@@ -53,13 +54,17 @@ class Truck(Vehicle):
 
 ### 2. Define the ViewSet and views
 
+The detail view declares groups for each served model. Its shared group is a typed
+`PropertyGroupConfig`; the subtype-specific groups use dicts in the same lists.
+
+<!-- polymorphic-mapping-recipe: views -->
 ```python
 from django.forms import modelform_factory
 
 from crud_views.lib.viewset import ViewSet
 from crud_views.lib.crispy import CrispyViewMixin
 from crud_views.lib.crispy.form import CrispyDeleteForm
-from crud_views_object_detail.lib import ObjectDetailMixin
+from crud_views_object_detail.lib import ObjectDetailMixin, PropertyGroupConfig
 from crud_views_polymorphic.lib import (
     PolymorphicContentTypeForm,
     PolymorphicCreateSelectViewPermissionRequired,
@@ -75,6 +80,8 @@ cv_vehicle = ViewSet(model=Vehicle, name="vehicle")
 
 CarForm = modelform_factory(Car, fields=["name", "doors"])
 TruckForm = modelform_factory(Truck, fields=["name", "payload_tons"])
+
+COMMON_GROUP = PropertyGroupConfig(title="Vehicle", properties=["name"])
 
 
 class VehicleCreateSelectView(CrispyViewMixin, PolymorphicCreateSelectViewPermissionRequired):
@@ -105,15 +112,24 @@ class VehicleDeleteView(CrispyViewMixin, PolymorphicDeleteViewPermissionRequired
 
 class VehicleDetailView(ObjectDetailMixin, PolymorphicDetailViewPermissionRequired):
     cv_viewset = cv_vehicle
-    cv_property_display = [
-        {"title": "Attributes", "properties": ["name"]},
-    ]
+    cv_property_display = {
+        Car: [COMMON_GROUP, {"title": "Car", "properties": ["doors"]}],
+        Truck: [COMMON_GROUP, {"title": "Truck", "properties": ["payload_tons"]}],
+    }
 ```
+
+Keep `ObjectDetailMixin` first as shown. After the object is loaded, its exact model
+selects the declared groups. See the canonical [model mapping contract](object_detail_view.md#model-mappings)
+for missing-entry errors, explicit base/proxy entries, empty values, startup-check limits,
+and the dynamic property escape hatch.
 
 ### 3. Register URLs
 
+<!-- polymorphic-mapping-recipe: urls -->
 ```python
 # urls.py
+from .views import cv_vehicle
+
 urlpatterns = cv_vehicle.urlpatterns
 ```
 
@@ -156,6 +172,16 @@ Creating a polymorphic instance requires two steps:
    (`<prefix>/create/ct/<id>/`), resolves the subtype model via the content-type framework, and renders the
    matching form from `polymorphic_forms`. Its context actions default to `["home"]`
    (`CRUD_VIEWS_POLYMORPHIC_CREATE_CONTEXT_ACTIONS`): a `"create"` button can't be built without a content type.
+
+Default type labels use Django's `capfirst`: `car` becomes `Car`, `premium USB equipment`
+becomes `Premium USB equipment`, and `USB equipment` stays unchanged. The remaining casing
+and lazy translations are preserved. Choice IDs, discovery order and filtering are unchanged;
+formatting reuses the discovered labels without extra database lookups.
+
+Custom selector forms remain supported through `form_class`. Subclass `PolymorphicContentTypeForm`
+to retain the `polymorphic_ctype_choices` constructor argument and add your own layout or submit
+caption; default capitalization no longer needs an application workaround. Form kwargs,
+permissions, typed-create redirects and Cancel state keep their existing behavior.
 
 ### Filtering available subtypes
 

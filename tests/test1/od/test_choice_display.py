@@ -88,7 +88,7 @@ def test_choice_display_missing_owner(enabled, field, path_kind, monkeypatch):
     prop = resolve_property(obj, x(path, choices_display=enabled))
     assert prop.value == raw
     assert prop.choice_label == ""
-    assert render_value(prop).strip() == ""
+    assert render_value(prop).strip() == '<span class="text-body-tertiary">&mdash;</span>'
     direct = _resolve_value(obj, path.split("__"), False)
     if path_kind == "deep_reverse":
         assert direct == []
@@ -130,7 +130,7 @@ def test_choice_display_grouped_and_override():
     empty_label = resolve_property(Grouped(code="e"), x("code"))
     assert empty_label.value == "e"
     assert empty_label.choice_label == ""
-    assert render_value(empty_label).strip() == ""
+    assert render_value(empty_label).strip() == '<span class="text-body-tertiary">&mdash;</span>'
     obj.get_code_display = Mock(return_value="Overridden")
     assert resolve_property(obj, x("code")).choice_label == "Overridden"
     obj.get_code_display.assert_called_once_with()

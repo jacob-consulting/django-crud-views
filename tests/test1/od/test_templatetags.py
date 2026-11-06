@@ -1,7 +1,9 @@
 import pytest
 from django.template import Context, Template
+from django.template.loader import render_to_string
 from django.test import override_settings
 from django.utils import timezone
+from lxml import html as html_parser
 
 from crud_views_object_detail.lib.config import PropertyGroupConfig, x
 from crud_views_object_detail.lib.resolvers import (
@@ -9,6 +11,102 @@ from crud_views_object_detail.lib.resolvers import (
     resolve_all,
 )
 from tests.test1.od_app.models import Info, Report
+
+EMPTY_TEXT_MARKER = '<span class="text-body-tertiary">&mdash;</span>'
+
+
+def render_value(prop):
+    return Template("{% load crud_views_object_detail %}{% render_property_value prop %}").render(
+        Context({"prop": prop})
+    )
+
+
+@pytest.mark.parametrize("value_type", ["char", "text", "default", "unknown_type"])
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        (None, EMPTY_TEXT_MARKER),
+        ("", EMPTY_TEXT_MARKER),
+        (0, "0"),
+        (False, "False"),
+        ("   ", "   "),
+        ("Größe — 水", "Größe — 水"),
+        ('<script>"x"</script>', "&lt;script&gt;&quot;x&quot;&lt;/script&gt;"),
+        ([], "[]"),
+    ],
+)
+def test_empty_text_value_preserves_distinctions(value_type, value, expected):
+    prop = ResolvedProperty(path="value", label="Value", value=value, type=value_type)
+    assert render_value(prop).removesuffix("\n") == expected
+
+
+@pytest.mark.parametrize("value_type", ["char", "text", "default"])
+@pytest.mark.parametrize("display_value", [None, "", "Declared blank label"])
+def test_empty_text_leaf_uses_final_display_value(value_type, display_value):
+    html = render_to_string(
+        f"crud_views_object_detail/types/default/{value_type}.html",
+        {"value": "raw-code", "display_value": display_value, "od_settings": {"property_text_newline": "linebreaksbr"}},
+    )
+    expected = EMPTY_TEXT_MARKER if display_value is None or display_value == "" else display_value
+    assert html.removesuffix("\n") == expected
+
+
+@pytest.mark.parametrize("value_type", ["char", "text", "default"])
+@pytest.mark.parametrize("value", [None, ""])
+def test_empty_text_keeps_label_and_explicit_detail(value_type, value):
+    prop = ResolvedProperty("empty", "Empty label", value, detail="Keep this description", type=value_type)
+    html = Template("{% load crud_views_object_detail %}{% render_property prop %}").render(Context({"prop": prop}))
+    document = html_parser.fromstring(html)
+    assert document.xpath("string(.//div[contains(@class, 'col-sm-4')])") == "Empty label"
+    assert document.xpath("string(.//small)") == "Keep this description"
+    assert document.xpath("string(.//span[@class='text-body-tertiary'])") == "—"
+    assert EMPTY_TEXT_MARKER in html
+
+
+@pytest.mark.parametrize(
+    "newline,expected",
+    [
+        ("linebreaksbr", "A&lt;b&gt;<br>Größe — 水<br><br>Last"),
+        ("linebreaks", "<p>A&lt;b&gt;<br>Größe — 水</p>\n\n<p>Last</p>"),
+    ],
+)
+def test_empty_text_preserves_newline_modes(newline, expected, settings):
+    settings.CRUD_VIEWS_OBJECT_DETAIL_PROPERTY_TEXT_NEWLINE = newline
+    prop = ResolvedProperty("body", "Body", "A<b>\nGröße — 水\n\nLast", type="text")
+    assert render_value(prop).removesuffix("\n") == expected
+    prop.value = ""
+    assert render_value(prop).removesuffix("\n") == EMPTY_TEXT_MARKER
+
+
+def test_empty_text_keeps_duplicate_properties_and_order():
+    group = PropertyGroupConfig(
+        title="Repeated values",
+        properties=[x("text", title=title, detail="Description") for title in ["First", "Second", "Third"]],
+    )
+    obj = Info(text="")
+    groups = resolve_all(obj, [group])
+    html = Template("{% load crud_views_object_detail %}{% render_object_detail obj groups %}").render(
+        Context({"obj": obj, "groups": groups})
+    )
+    document = html_parser.fromstring(html)
+    labels = document.xpath("//div[contains(@class, 'col-sm-4')]/text()")
+    assert labels == ["First", "Second", "Third"]
+    assert len(document.xpath("//span[@class='text-body-tertiary']")) == 3
+    assert document.xpath("//small/text()") == ["Description"] * 3
+
+
+def test_empty_text_is_local_to_stock_text_leaves():
+    custom = ResolvedProperty("custom", "Custom", "", type="char", template="test_custom_value.html")
+    assert render_value(custom).strip() == '<span class="custom-rendered"></span>'
+    custom.value = "stored"
+    custom.choice_label = ""
+    assert render_value(custom).strip() == '<span class="custom-rendered">stored</span>'
+    badge = ResolvedProperty("badge", "Badge", "", badge_css="text-bg-success")
+    assert render_value(badge).strip() == '<span class="badge text-bg-success"></span>'
+    relation = ResolvedProperty("relation", "Relation", "", type="foreignkey")
+    assert render_value(relation).strip() == ""
+    collection = ResolvedProperty("collection", "Collection", [], type="manytomany", is_many=True)
+    assert render_value(collection).strip() == EMPTY_TEXT_MARKER
 
 
 @pytest.fixture

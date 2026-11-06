@@ -73,6 +73,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.15** Capitalized polymorphic selector labels, exact-model detail groups and exhaustive static validation, documented and adopted in the reference consumer — Phase 06.15; canonical16/16, UAT2/2, security12/12.
 
+- ✓ **6.16** Scalar choice labels with raw/custom ownership, explicit inherited help-text policy, exact textual empty markers and executable composition/migration guidance — Phase 06.16; canonical21/21, all five ODV requirements verified, security11/11 and clean independent review.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -122,6 +124,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Keep raw values separate from choice display metadata; resolve help text without mutating shared config | Preserve existing traversal/query costs and custom-template ownership; stock leaves render exact empty text and unlocalized choice fallbacks | Validated (Phase 06.16; canonical21/21) |
 | Empty card insertion blocks plus existing ViewSet configuration | Preserve default rendering and proven navigation; themes expose their own overridden blocks and applications translate recipe captions | Validated (Phase 06.14) |
 
 | Detail groups select only explicitly declared exact model keys; static checks traverse every entry | Preserve list/dynamic override paths without fallback mutation, object queries or optional polymorphic coupling | Validated (Phase 06.15; UAT 2/2) |
@@ -179,4 +182,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-06 after Phase 06.15 human acceptance*
+*Last updated: 2026-11-06 after Phase 06.16 completion*

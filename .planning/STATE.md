@@ -11,7 +11,7 @@ last_activity_desc: Phase 06.16 complete, transitioned to Phase 7
 state_head: 9d618c5e6157b41b9ffa7217718d1db7d1b63d17
 progress:
   total_phases: 22
-  completed_phases: 20
+  completed_phases: 21
   total_plans: 134
   completed_plans: 134
   percent: 95
@@ -25,7 +25,7 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-06)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.16 — Object-detail values and composition guidance
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
@@ -34,7 +34,14 @@ Plan: Not started
 Status: Ready to plan
 Last activity: 2026-11-06 — Phase 06.16 complete, transitioned to Phase 7
 
-Next: Independent Phase 06.16 canonical/code/security/UI/Nyquist verification
+Next: $gsd-discuss-phase 7
+
+### Phase 06.16 completion — 2026-11-06
+
+- All three plans committed; canonical verification passed21/21 and D01–D20 honored. All five ODV requirements complete; no required human checks or downstream adoption gate.
+- Deep review found numeric choice fallback localization; bounded stock/copied-template fix72df30bc independently re-reviewed clean. Review disposition fixed1/open0; security11/11 closed; Nyquist no gaps; UI24/24 source-only, without browser/human acceptance claims.
+- Final source: full Django5.2 10,837 passed/one existing Django6-only skip; focused4.2/5.2/6.0 665each; examples409 plus100subtests; independent verifier129 fresh cases. Strict docs/scoped Ruff pass. Broader Python matrix unrun; symbolic key-link CLI limitation covered by direct source/test tracing.
+- Phase7 is ready for discussion. No learnings artifacts, matching pending todos or stale phase handoffs. Existing config/state.json/CLAUDE edits preserved; no push or merge.
 
 ### Phase 06.16 plan 03 — 2026-11-06
 

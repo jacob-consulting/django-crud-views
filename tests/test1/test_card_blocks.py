@@ -36,7 +36,7 @@ CARD_TEMPLATE_BEFORE_INSERTION = """{% load crud_views %}
         {% endblock card_actions %}
     </div>
 </div>
-"""
+"""  # noqa: E501 -- frozen template bytes must retain their original line lengths
 
 
 @pytest.fixture

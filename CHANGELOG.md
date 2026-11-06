@@ -493,6 +493,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- Cards expose empty `card_root` and `card_header` template blocks for inherited content before the body and
+  before the heading, preserving default output and inherited actions. A complete, tested
+  [cards-first ViewSet recipe](docs/reference/card-list-view.md#cards-first-with-a-secondary-table) serves cards
+  at the root and a secondary table through existing switches, with independent Save and Cancel guidance (#325).
+
 - Documentation: a complete [opt-in per-transition workflow permissions recipe](docs/reference/workflow_view.md#opt-in-per-transition-permissions)
   preserves the default `change` gate and distinguishes basic empty-page access from optional server-enforced
   no-step gating (#320).

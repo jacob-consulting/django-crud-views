@@ -50,7 +50,9 @@ a UUID `id` and editable `first_name`, `last_name`, and `pseudonym` fields.
 <!-- card-recipe: cards-first -->
 ```python
 import django_tables2 as tables
+from crispy_forms.layout import Layout
 
+from crud_views.lib.breadcrumb import CrudViewBreadcrumbMixin
 from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.view import CardAction
@@ -81,8 +83,11 @@ class AuthorForm(CrispyModelForm):
         model = Author
         fields = ["first_name", "last_name", "pseudonym"]
 
+    def get_layout_fields(self):
+        return Layout("first_name", "last_name", "pseudonym")
 
-class AuthorCardListView(CardListViewPermissionRequired):
+
+class AuthorCardListView(CrudViewBreadcrumbMixin, CardListViewPermissionRequired):
     cv_viewset = cv_author_cards_first
     cv_key = "list"
     cv_path = ""
@@ -96,7 +101,7 @@ class AuthorCardListView(CardListViewPermissionRequired):
     cv_context_action_label_mode = "both"
 
 
-class AuthorTableListView(ListViewTableMixin, ListViewPermissionRequired):
+class AuthorTableListView(CrudViewBreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_author_cards_first
     table_class = AuthorTable
     cv_key = "table"
@@ -112,19 +117,19 @@ class AuthorTableListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_context_action_label_mode = "both"
 
 
-class AuthorDetailView(DetailViewPermissionRequired):
+class AuthorDetailView(CrudViewBreadcrumbMixin, DetailViewPermissionRequired):
     cv_viewset = cv_author_cards_first
     cv_context_actions = ["home", "create", "update"]
 
 
-class AuthorCreateView(CrispyViewMixin, CreateViewPermissionRequired):
+class AuthorCreateView(CrudViewBreadcrumbMixin, CrispyViewMixin, CreateViewPermissionRequired):
     cv_viewset = cv_author_cards_first
     form_class = AuthorForm
     cv_context_actions = ["home"]
     cv_cancel_keys = ["list", "table"]
 
 
-class AuthorUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
+class AuthorUpdateView(CrudViewBreadcrumbMixin, CrispyViewMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_author_cards_first
     form_class = AuthorForm
     cv_context_actions = ["home", "detail"]
@@ -148,6 +153,32 @@ the existing [label-mode precedence](action_menus.md#context-label-mode-resoluti
 The explicit form `cv_cancel_keys` allow returning to the custom `table` origin; automatic defaults accept
 the conventional `list`/`card` origins (and `detail` for object forms), not `table`. The update allow-list
 retains detail-origin support. Successful-save settings remain at their defaults.
+
+### Navigation targets
+
+These mechanisms are independent; setting `cv_home_key = "list"` does not configure all of them.
+
+| Navigation | Mechanism and destination in this recipe |
+|---|---|
+| Home context action | The default `ContextButton(key="home", key_target="list")` targets the cards root. It does not consult `cv_home_key`; its caption and icon come from the Cards destination. |
+| Container breadcrumb | `CrudViewBreadcrumbMixin` prefers a registered `list`, so the container links to cards. The secondary table is a separate, unlinked current item. Render the trail with `{% load crud_views %}{% cv_breadcrumb %}` in your base template. |
+| Successful create/update Save | Default `cv_success_key = "list"` and `cv_success_keys = None` redirect to cards, including after a form opened from the table. |
+| Direct form visit or static Cancel | Without an admitted origin, Cancel uses the accessible `cv_cancel_key = "list"` fallback. Explicit `cv_cancel_keys = None` or `[]` keeps this static behavior. |
+| Origin-aware Cancel | The explicit form allow-lists admit the table. Cancel returns there with its signed captured query, including repeated/blank values and an empty query. A later table visit cannot replace an earlier form's capture. |
+
+Cancel checks current destination access: a denied table origin falls back to accessible cards; when no allowed
+origin or static fallback is accessible, Cancel is omitted. Switching actions respect destination access too,
+and the permission-required views enforce access on direct requests. Successful Save remains a separate redirect
+policy, not a permission-filtered navigation link. See [dynamic Cancel](update_view.md#dynamic-cancel-target),
+[dynamic success](update_view.md#dynamic-success-target), and [origin/query settings](settings.md#origin-parameter).
+
+Ordinary **Cards**/**Table** switching does not transfer the source filters, ordering or page. Each destination
+uses its own request state; if you add filter integration with persistence, its remembered query is scoped by
+view key. This unfiltered recipe adds no persistence mechanism. See [filter integration](#filter-integration)
+and [filter settings](settings.md#filter).
+
+This configuration opts into cards as `list`; it changes no class defaults or conventional table-first
+registrations. The [card-only fallback](#list-key-fallback) below is a different configuration.
 
 ## CardAction Fields
 
@@ -444,7 +475,7 @@ filter keeps the active order.
 
 ## List Key Fallback
 
-When a ViewSet has a `CardListView` but no `ListView`, keys that reference `"list"`
+When a ViewSet has a registered `"card"` view but no registered `"list"` view, keys that reference `"list"`
 (such as `cv_success_key`, `cv_success_keys`, `cv_cancel_key`, `cv_cancel_keys`, and the default "home"
 context button) automatically fall back to `"card"`. No manual overrides needed. Standard forms use
 `cv_cancel_keys="auto"`, accepting registered list/card origins. Card actions carry the eligible origin
@@ -458,6 +489,7 @@ if neither origin nor fallback is accessible, Cancel is omitted. See
 
 This means a ViewSet with only a `CardListView` works out of the box — CreateView,
 UpdateView, and DeleteView all redirect to the card view after success.
+The cards-first recipe above already registers cards as `"list"`, so it does not use this fallback.
 
 ## Guardian (Per-Object Permissions)
 

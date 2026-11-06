@@ -36,7 +36,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
 - [x] **Phase 6.10: Simplify protected-object previews and cap total displayed objects (INSERTED)** - #316: plain-text protected blockers and one shared preview display budget before the freeze (completed 2026-11-05)
 - [x] **Phase 6.13: Workflow permissions: opt-in per-transition access (INSERTED)** - #320: document and test the existing view-gated recipe while preserving the default change gate (completed 2026-11-05)
-- [ ] **Phase 06.13.1: Workflow validation and execution (INSERTED)** - #322: business blockers, opt-in transition buttons, and a reusable execution helper
+- [x] **Phase 06.13.1: Workflow validation and execution (INSERTED)** - #322: business blockers, opt-in transition buttons, and a reusable execution helper (completed 2026-11-06)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -985,7 +985,7 @@ existing radio/custom forms and the default page permission remain supported.
 **Integration notes:** Reuse #319's shared workflow form frame (issue closed); preserve #320's permission
 regressions. Backend validation/helper work is independent of presentation. Settle any new public theme
 contracts before Phase 7's stability freeze. Plans preserve the locked public contracts and bounded workflow scope.
-**Plans:** 5/5 plans executed
+**Plans:** 5/5 plans complete
 **UI hint:** yes (accessible transition buttons, visible help/blockers, and bound error redisplay without workflow JS)
 
 Plans:
@@ -1089,5 +1089,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | Complete    | 2026-11-05 |
 | 6.13. Workflow permissions: opt-in per-transition access | 2/2 | Complete    | 2026-11-05 |
-| 6.13.1. Workflow validation and execution | 5/5 | In Progress | - |
+| 6.13.1. Workflow validation and execution | 5/5 | Complete    | 2026-11-06 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

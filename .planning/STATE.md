@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 06.13.1
-current_phase_name: Workflow validation and execution
-status: awaiting human verification
-stopped_at: Phase 06.13.1 automated verification complete; two UAT checks pending
-last_updated: "2026-11-06T11:34:32.513Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.13.1 complete, ready to plan Phase 7
+last_updated: "2026-11-06T12:47:09.104Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.13.1 verified 29/31; two human acceptance checks pending
-state_head: 4f7ff7a0e09c251faffd5a0ed30c77bbeb8d1ee4
+last_activity_desc: Phase 06.13.1 complete, transitioned to Phase 7
+state_head: abd1fa28ffcb1d7d2b51f092fc269a29c83f77f9
 progress:
   total_phases: 19
-  completed_phases: 17
+  completed_phases: 18
   total_plans: 125
   completed_plans: 125
+  percent: 95
 milestone_name: milestone
 ---
 
@@ -28,12 +29,18 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 ## Current Position
 
-Phase: 06.13.1 (Workflow validation and execution) — IN PROGRESS (human acceptance pending)
-Plan: 5 of 5
-Status: All plans executed — human_needed (29/31)
-Last activity: 2026-11-06 — Independent verification 29/31; full Django 5.2 10413 passed/one existing skip
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-06 — Phase 06.13.1 complete, transitioned to Phase 7
 
-Next: $gsd-verify-work 06.13.1
+Next: $gsd-discuss-phase 7
+
+### Phase 06.13.1 acceptance complete — 2026-11-06
+
+- User explicitly passed both required UAT checks on the external review domain: narrow/wide page/modal presentation and Tab/visible-focus/disabled-action behavior. Canonical verification promoted to passed; shared UAT-plus-verification gate has no blockers. All five plans and WFX-01–05 complete.
+- Independent code review is clean; all 15 security threats closed. Automated evidence remains attributed to its original runs: final full Django 5.2 10,413 passed/one existing skip; focused Django 4.2/6.0 1,463 each; browser 37+2. No new runtime, AT or translation-quality acceptance inferred.
+- Owned port-9000 fixture stopped and disposable database cleaned; tunnel unchanged. Completion scanner warnings refer to the valid package-relative widget template and an inline multi-file Ruff command, not missing files. No learnings artifacts to graduate. Phase 7 is next; no push or merge performed.
 
 ### Phase 06.13.1 independent verification — 2026-11-06
 
@@ -519,7 +526,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 120
+- Total plans completed: 125
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -544,6 +551,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.8 | 3 | - | - |
 | 06.10 | 5 | - | - |
 | 06.13 | 2 | - | - |
+| 06.13.1 | 5 | - | - |
 
 **Recent Trend:**
 
@@ -891,5 +899,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-06T11:34:16.722Z
-Stopped at: Completed 06.13.1-05-PLAN.md; phase review and verification pending
+Stopped at: Phase 06.13.1 complete, ready to plan Phase 7
 Resume file: None

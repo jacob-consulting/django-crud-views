@@ -44,7 +44,7 @@ def test_business_post_errors_are_literal(
 ):
     messages = [
         mark_safe('<script data-audit="blocker">alert(1)</script> & first'),
-        '<b data-audit="interpolation">second & detail</b>',
+        '<b data-audit="interpolation">second & 100% %(untouched)s</b>',
     ]
     original = ValidationError(
         [
@@ -80,7 +80,8 @@ def test_business_post_errors_are_literal(
     assert list(form.errors["transition"]) == messages
     errors = form.errors.as_data()["transition"]
     assert [error.code for error in errors] == ["first", "second"]
-    assert errors[1].params == original.error_list[1].params
+    assert errors[1].params is None  # Parameters are applied once before stripping HTML safety.
+    assert original.error_list[1].params == {"detail": messages[1]}
     assert hasattr(original.error_list[0].message, "__html__")  # Never mutate the caller's exception.
     assert form.data["comment"] == "  retained input  "
     document = _document(response)

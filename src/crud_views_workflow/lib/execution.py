@@ -23,7 +23,12 @@ def _check_transition_business(object, name, *, user):
             raise TypeError(
                 "workflow_check_transition must raise single/list ValidationError, not a dictionary"
             ) from error
-        raise _WorkflowRefusal(field="transition", error=error) from error
+        # Business messages are literal text, even when their author used mark_safe.
+        # Interpolate first: even a plain "%s" can inherit a SafeString parameter's
+        # type. Copy the leaves without params so interpolation happens exactly once.
+        # add_error unwraps ValidationError subclasses, so sanitize each leaf itself.
+        messages = [ValidationError(str.__str__(next(iter(item))), code=item.code) for item in error.error_list]
+        raise _WorkflowRefusal(field="transition", error=messages) from error
 
 
 def _check_transition_comment(policy, comment):

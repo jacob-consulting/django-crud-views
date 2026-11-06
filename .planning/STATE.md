@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.16"
 current_phase_name: Object-detail values and composition guidance
-status: Ready to execute
-stopped_at: Phase 06.16 plan convergence complete
-last_updated: "2026-11-06T15:33:54.397Z"
+status: executing
+stopped_at: Completed 06.16-01-PLAN.md
+last_updated: "2026-11-06T18:59:38.288Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.16 plan convergence complete (4 cycles)
-state_head: 76725e3388025063545bf9444e9d9a7b57f8ddf9
+last_activity_desc: Phase 06.16 execution started
+state_head: e43cb3df72c1f4ff3f81380c4ed94be624ffd6eb
 progress:
   total_phases: 22
   completed_phases: 20
   total_plans: 134
-  completed_plans: 131
+  completed_plans: 132
 milestone_name: milestone
 ---
 
@@ -24,16 +24,22 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-06)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.16 — Object-detail values and composition guidance (#327)
+**Current focus:** Phase 06.16 — Object-detail values and composition guidance
 
 ## Current Position
 
-Phase: 06.16 (Object-detail values and composition guidance) — READY TO EXECUTE
-Plan: Not started
+Phase: 06.16 (Object-detail values and composition guidance) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-11-06 — Phase 06.16 plan convergence complete (4 cycles)
+Last activity: 2026-11-06 — Phase 06.16 execution started
 
 Next: $gsd-execute-phase 06.16
+
+### Phase 06.16 plan 01 — 2026-11-06
+
+- Scalar choice display, one-walk terminal owners and badge fallback committed with raw callback/template values preserved. Missing scalar owners retain raw None/[]; collections and ordinary paths preserve query costs.
+- Final combined gate: 389 passed with four workers on Python 3.12/Django 5.2; scoped Ruff checks pass. Three RED reports classified RED_EVIDENCE_OK before their GREEN commits.
+- Summary committed; roadmap 1/3, next plan 2/3. Help policy, exact empty markers, public migration documentation and final phase-wide runtime gates remain with plans 02/03. Shared ODV-01/ODV-05 remain pending; no push or merge.
 
 ### Phase 06.16 plan convergence — 2026-11-06
 
@@ -686,6 +692,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.13.1 P04 | 22min | 2 tasks | 6 files |
 | Phase 06.13.1 P05 | 20min | 2 tasks | 10 files |
 | Phase 06.14 P01 | 8min | 2 tasks | 4 files |
+| Phase 06.16 P01 | 9min | 3 tasks | 8 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -883,6 +890,7 @@ Recent decisions affecting current work:
 - [Phase 06.15]: Plan 02: capfirst formats already-discovered selector names; real requests plus lazy translation, escaping, filtering, custom-form and access regressions preserve the existing contract.
 - [Phase 06.15]: Plan 03: publish executable exact-model mapping blocks and list-only tag boundary; full 5.2 and focused 4.2/6.0 pass; POLY-05 remains pending downstream adoption.
 - [Phase 06.15]: Downstream catalog verified against explicit phase and pinned extension source roots; task branch retains original report edits unstaged; phase completion awaits independent verification.
+- [Phase 06.16]: Choice labels remain separate from raw values; missing supported scalar owners project empty text without normalizing None or lists.
 
 ### Pending Todos
 
@@ -946,6 +954,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T13:51:45.379Z
-Stopped at: Phase 06.16 context gathered
-Resume file: .planning/phases/06.16-object-detail-choice-labels-help-text-policy-empty-values-an/06.16-CONTEXT.md
+Last session: 2026-11-06T18:59:35.832Z
+Stopped at: Completed 06.16-01-PLAN.md
+Resume file: None

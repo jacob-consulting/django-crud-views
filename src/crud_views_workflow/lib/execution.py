@@ -76,15 +76,18 @@ def _run_transition(object, name, *, user, comment=None, using, on_transition=No
         state_old = object.state
         data = getattr(object, name)(by=user, comment=comment)
         object.save(using=using)
+        content_type = ContentType.objects.db_manager(using).get_for_model(object)
+        # Scalar FK values avoid consulting a history router while constructing
+        # an unsaved WorkflowInfo; both identities already belong to this alias.
         info = WorkflowInfo.objects.using(using).create(
             transition=name,
             state_old=state_old,
             state_new=object.state,
             comment=comment,
-            user=user,
+            user_id=user.pk,
             data=data,
             workflow_object_pk=str(object.pk),
-            workflow_object_content_type=ContentType.objects.db_manager(using).get_for_model(object),
+            workflow_object_content_type_id=content_type.pk,
         )
         if on_transition is not None:
             on_transition(info)

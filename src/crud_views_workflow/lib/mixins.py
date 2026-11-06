@@ -66,10 +66,15 @@ class WorkflowModelMixin:
 
         from ..models import WorkflowInfo
 
-        return WorkflowInfo.objects.filter(
-            workflow_object_pk=str(self.pk),
-            workflow_object_content_type=ContentType.objects.get_for_model(self),
-        ).order_by("timestamp")
+        using = self._state.db
+        return (
+            WorkflowInfo.objects.using(using)
+            .filter(
+                workflow_object_pk=str(self.pk),
+                workflow_object_content_type=ContentType.objects.db_manager(using).get_for_model(self),
+            )
+            .order_by("timestamp")
+        )
 
     @property
     def workflow_data(self) -> list[dict]:

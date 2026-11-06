@@ -120,13 +120,17 @@ def test_choice_display_scalar_semantics(field, value, label):
 @isolate_apps()
 def test_choice_display_grouped_and_override():
     class Grouped(models.Model):
-        code = models.CharField(max_length=2, choices=[("Group", [("a", "Alpha"), ("b", "Beta")])])
+        code = models.CharField(max_length=2, choices=[("Group", [("a", "Alpha"), ("b", "Beta"), ("e", "")])])
 
         class Meta:
             app_label = "od_app"
 
     obj = Grouped(code="b")
     assert resolve_property(obj, x("code")).choice_label == "Beta"
+    empty_label = resolve_property(Grouped(code="e"), x("code"))
+    assert empty_label.value == "e"
+    assert empty_label.choice_label == ""
+    assert render_value(empty_label).strip() == ""
     obj.get_code_display = Mock(return_value="Overridden")
     assert resolve_property(obj, x("code")).choice_label == "Overridden"
     obj.get_code_display.assert_called_once_with()

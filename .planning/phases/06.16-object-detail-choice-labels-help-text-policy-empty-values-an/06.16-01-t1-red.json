@@ -7,7 +7,7 @@
   "expected": "Naturally processed in stock HTML",
   "actual": "HTML contains raw natural, lacks label",
   "reportPath": "/tmp/gsd-0616-01-t1-red.xml",
-  "runStartedAt": "2026-11-06T18:51:00Z",
+  "runStartedAt": "2026-11-06T18:50:07.598828+00:00",
   "reportModifiedAt": "2026-11-06T18:50:11.215065+00:00",
   "semanticAssessment": "Target executed and failed label assertion; no import, collection or fixture errors."
 }

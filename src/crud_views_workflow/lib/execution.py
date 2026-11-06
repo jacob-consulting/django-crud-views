@@ -46,9 +46,15 @@ def run_transition(object, name, *, user, comment=None):
     The object and authenticated actor must already be saved on the selected
     write database. Direct decorated-method calls do not use these checks.
     """
-    return _run_transition(
-        object, name, user=user, comment=comment, using=router.db_for_write(type(object), instance=object)
-    )
+    try:
+        return _run_transition(
+            object, name, user=user, comment=comment, using=router.db_for_write(type(object), instance=object)
+        )
+    except _WorkflowRefusal as refusal:
+        # Only the view's own private engine call may trigger refusal redisplay.
+        # A consumer invoking this public helper from a transition/callback must
+        # propagate failure without being mistaken for the outer action's checks.
+        raise ValidationError(refusal) from refusal
 
 
 def _run_transition(object, name, *, user, comment=None, using, on_transition=None):

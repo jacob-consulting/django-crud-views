@@ -97,6 +97,17 @@ class TestPropertyGroupConfig:
 
 
 class TestParsePropertyDisplay:
+    @pytest.mark.parametrize("typed_first", [False, True])
+    def test_mixed_groups_preserve_identity_and_order(self, typed_first):
+        typed = PropertyGroupConfig(title="Typed", properties=["name"])
+        raw = {"title": "Raw", "properties": ["name"]}
+        declaration = [typed, raw] if typed_first else [raw, typed]
+        groups = parse_property_display(declaration)
+        assert groups[int(not typed_first)] is typed
+        assert [g.title for g in groups] == (["Typed", "Raw"] if typed_first else ["Raw", "Typed"])
+        assert declaration[int(typed_first)] is raw
+        assert raw == {"title": "Raw", "properties": ["name"]}
+
     def test_parse_list(self):
         raw = [
             {

@@ -6,6 +6,58 @@ from crud_views_object_detail.lib.mixins import ObjectDetailMixin
 from tests.test1.od_app.models import Info
 
 
+@pytest.fixture
+def mapped_detail(settings):
+    from types import ModuleType
+
+    from django.urls import path
+
+    from tests.test1.app.models import Car, Truck
+    from tests.test1.app.views import VehicleDetailView
+    from tests.test1.project.urls import urlpatterns
+
+    class MappedDetail(VehicleDetailView):
+        cv_property_display = {
+            Car: [{"title": "Car attributes", "properties": ["name", "doors"]}],
+            Truck: [{"title": "Truck attributes", "properties": ["name", "payload_tons"]}],
+        }
+
+    urls = ModuleType("mapped_detail_urls")
+    urls.urlpatterns = [path("mapped/<int:pk>/", MappedDetail.as_view()), *urlpatterns]
+    settings.ROOT_URLCONF = urls
+    return MappedDetail
+
+
+@pytest.mark.django_db
+class TestModelDisplayTracer:
+    def test_mapped_car_request(self, mapped_detail, client_user_vehicle_view):
+        from tests.test1.app.models import Car
+
+        car = Car.objects.create(name="Mapped roadster", doors=3)
+        # Assert the declaration is supported before exercising native dispatch/rendering.
+        assert not {i for i in _error_ids(mapped_detail) if i.startswith("viewset.E24")}
+        response = client_user_vehicle_view.get(f"/mapped/{car.pk}/")
+        assert response.status_code == 200
+        html = response.content.decode()
+        assert "Car attributes" in html
+        assert "Mapped roadster" in html
+        assert "Doors" in html
+        assert response.context["object_detail_groups"][0].properties[1].value == 3
+        assert "Truck attributes" not in html
+
+    def test_missing_exact_entry_names_model_and_view(self, mapped_detail, client_user_vehicle_view, monkeypatch):
+        from django.core.exceptions import ImproperlyConfigured
+
+        from tests.test1.app.models import Car
+
+        car = Car.objects.create(name="Unmapped roadster")
+        monkeypatch.setattr(mapped_detail, "cv_property_display", {})
+        with pytest.raises(ImproperlyConfigured) as exc:
+            client_user_vehicle_view.get(f"/mapped/{car.pk}/")
+        assert "app.Car" in str(exc.value)
+        assert f"{mapped_detail.__module__}.{mapped_detail.__qualname__}" in str(exc.value)
+
+
 def _error_ids(view_cls):
     return {e.id for chk in view_cls.checks() for e in chk.messages()}
 

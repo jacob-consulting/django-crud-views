@@ -67,6 +67,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.13** Opt-in workflow view permission with explicit per-transition rules, separate optional request gate, real request/history regressions and complete consumer recipe — Phase 06.13; canonical9/9, WFP-01–05 complete. Default change permission and production behavior preserved.
 
+- ✓ **6.14** Empty `card_root`/`card_header` insertion blocks and an executable cards-first/secondary-table recipe — Phase 06.14; canonical12/12, unchanged default bytes, inherited actions and independent navigation verified.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -116,6 +118,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Empty card insertion blocks plus existing ViewSet configuration | Preserve default rendering and proven navigation; themes expose their own overridden blocks and applications translate recipe captions | Validated (Phase 06.14) |
 | Protected labels are static; share one visible-occurrence budget with cascade details | Remove synthetic destination requests while retaining proven cascade hooks and complete enforcement; cap presentation, not total collection cost | Validated (Phase 06.10; UAT 7/7) |
 | Developer maintainability is a hard constraint on every decision | The developer must be able to explain, debug, and evolve the solution; bounded scope and incremental downstream adoption keep that ownership practical | Decided (2026-11-04; project-wide) |
 | Validate protected destinations after visibility filtering; preserve the shared URL hook and cascade behavior | Link only to certified same-row destinations; unavailable destinations remain readable text | Validated (Phase 06.9) |
@@ -170,4 +173,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-05 after Phase 06.10 acceptance; developer maintainability remains a project-wide decision constraint*
+*Last updated: 2026-11-06 after Phase 06.14 verification; developer maintainability remains a project-wide decision constraint*

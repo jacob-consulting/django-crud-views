@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.14"
-current_phase_name: Card template insertion blocks and cards-first ViewSets
-status: executing
-stopped_at: Completed 06.14-01-PLAN.md; Plan 02 pending
-last_updated: "2026-11-06T10:29:51.497Z"
+current_phase: 06.13.1
+current_phase_name: "Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322)"
+status: Ready to execute
+stopped_at: Phase 06.14 complete, ready to execute Phase 06.13.1
+last_updated: "2026-11-06T11:13:14.598Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.14 execution started
-state_head: 76cd28d8b80e93a5f3fac611672e1d003058a07e
+last_activity_desc: Phase 06.14 complete, transitioned to Phase 06.13.1
+state_head: ce1c425323ac940612aff7eb931d1ebc01103b7b
 progress:
   total_phases: 20
   completed_phases: 17
   total_plans: 127
-  completed_plans: 121
+  completed_plans: 122
+  percent: 89
 milestone_name: milestone
 ---
 
@@ -21,19 +22,27 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-05)
+See: .planning/PROJECT.md (updated 2026-11-06)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.14 — Card template insertion blocks and cards-first ViewSets
+**Current focus:** Phase 06.13.1 — Workflow validation and execution
 
 ## Current Position
 
-Phase: 06.14 (Card template insertion blocks and cards-first ViewSets) — EXECUTING
-Plan: 2 of 2
+Phase: 06.13.1 — Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322)
+Plan: Not started
 Status: Ready to execute
-Last activity: 2026-11-06 — Phase 06.14 execution started
+Last activity: 2026-11-06 — Phase 06.14 complete, transitioned to Phase 06.13.1
 
-Next: $gsd-execute-phase 06.14
+Next: $gsd-execute-phase 06.13.1
+
+### Phase 06.14 completion — 2026-11-06
+
+- Both plans committed; canonical verification passed12/12, D01–D12 honored, no required human checks. Production change is exactly two empty card blocks; executable docs cover cards-first/table-secondary configuration and independent navigation.
+- Full Django5.2 execution10,136 passed/one expected skip; focused4.2/6.0 198each; JS365; scoped Ruff/strict docs pass. Final verifier77 fresh tests pass. Runtime/full-matrix/browser/gettext-extraction limits remain explicit.
+- Validation4/4 tasks compliant; security7/7 closed; UI preservation24/24 without visual-browser claim. Deep review found one extraction warning, fixed by gettext_noop markers and independently closed; post-fix24 recipe tests/strict docs pass.
+- UI safety gate initially required a missing contract; approved preservation-only UI-SPEC and25 explicit probe truths clear it. Completion warnings misparse the verified git-show baseline command as a path; no missing artifact.
+- Next scheduled phase06.13.1 is planned and ready to execute. No LEARNINGS files/todos required graduation or closure. Config/state.json edits preserved; no push or merge performed.
 
 ### Phase 06.13 shipping — 2026-11-06
 
@@ -492,7 +501,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 120
+- Total plans completed: 122
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -517,6 +526,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.8 | 3 | - | - |
 | 06.10 | 5 | - | - |
 | 06.13 | 2 | - | - |
+| 06.14 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -852,6 +862,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T10:29:49.539Z
-Stopped at: Completed 06.14-01-PLAN.md; Plan 02 pending
+Last session: 2026-11-06T11:14:03Z
+Stopped at: Phase 06.14 complete, ready to execute Phase 06.13.1
 Resume file: None

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
+last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
 last_mapped_at: 2026-11-06
 ---
 # Codebase Structure
@@ -110,6 +110,17 @@ django-crud-views/
 **`.planning/`:**
 - Purpose: GSD planning lifecycle, phase artifacts, research, codebase analyses and project-level state.
 - Contains: `.planning/codebase/`, `.planning/phases/`, `.planning/research/`, `.planning/quick/` and other workflow artifacts.
+
+## Detail and Composition Navigation
+
+- `src/crud_views_object_detail/lib/conf.py`: object-detail settings singleton, including automatic-help default.
+- `src/crud_views_object_detail/lib/config.py`: strict help instructions and `choices_display` property configuration.
+- `src/crud_views_object_detail/lib/resolvers.py`: terminal metadata, scalar-owner traversal, help selection, and additive choice labels.
+- `src/crud_views_object_detail/templatetags/crud_views_object_detail.py`: raw/display context and value-template dispatch.
+- `tests/test1/od/test_choice_display.py` and `tests/test1/od/test_help_text_policy.py`: choice/help/query/lazy-policy regressions; fixtures live in `tests/test1/od_app/models.py`.
+- `tests/test1/test_object_detail_value_docs.py`: extracts and executes marked Python/Django recipes from published references and migration instructions.
+- `src/crud_views/templates/crud_views/tags/card.html`: empty `card_root`/`card_header` extension blocks preserve stock output; `tests/test1/test_card_blocks.py` exercises overrides.
+- `tests/test1/test_polymorphic_docs.py` and `docs/reference/polymorphic_view.md`: executable form-mapping guidance; selector labels are implemented in `src/crud_views_polymorphic/lib/create_select.py`.
 
 ## Key File Locations
 

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
+last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
 last_mapped_at: 2026-11-06
 ---
 # Testing Patterns
@@ -81,6 +81,14 @@ This request-level pattern is represented in `tests/test1/test_crud.py`: exercis
 - Assert HTTP status, redirect destination, authorization, form errors, rendered semantics, and state changes. Parse HTML with lxml when structural assertions are clearer than strings.
 - Store stable rendered output under `tests/test1/golden/`; compare via helpers in `tests/lib/helper/golden.py`.
 - `tests/test1/test_workflow_permissions.py` covers workflow permissions through real GET/POST requests. It verifies available transition choices, denied transitions, and that forbidden requests leave the object and history unchanged. Successful POST assertions cover redirect, resulting state, and persisted audit history fields (transition, old/new state, actor, and object identity). Use `_persisted_snapshot()` when proving rejection causes no mutation; test execution-time permission rechecks by submitting a form validated before permission denial.
+
+## Object-Detail Acceptance Coverage
+
+- `tests/test1/od/test_choice_display.py` covers scalar/related choices, unknown/missing labels, lazy translation, escaping, raw custom ownership, badge precedence, and query baselines. `test_help_text_policy.py` covers all 48 property/project/view combinations plus interleaving and stable resolved results.
+- Query-count assertions distinguish loaded FK/O2O (zero), uncached scalar relations (one), and prefetched collections (zero); they do not promise application display overrides are query-free.
+- `tests/test1/test_object_detail_value_docs.py` extracts unique marked fences from current Markdown and executes real core/Guardian/polymorphic composition and migration recipes. This suite passed 38 cases during shipping, using four pytest workers on Python 3.12 / Django 5.2.
+- Phase 06.16 retained final-source evidence records 10,837 passed/one existing skip on the full Django 5.2 suite and 665 focused cases each on Django 4.2/5.2/6.0. These are historical phase results, not a new full matrix run (`.planning/phases/06.16-object-detail-choice-labels-help-text-policy-empty-values-an/06.16-VERIFICATION.md`).
+- CI lint formats Markdown Python fences too. Run `ruff format --check .` and `ruff check .` before shipping documentation changes (`.github/workflows/lint.yml`).
 
 ## Mocking
 

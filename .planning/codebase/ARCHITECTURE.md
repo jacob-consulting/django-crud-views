@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
+last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
 last_mapped_at: 2026-11-06
 ---
 <!-- refreshed: 2026-11-06 -->
@@ -134,6 +134,14 @@ last_mapped_at: 2026-11-06
 - Resource rows are obtained per request from a consumer-defined `Resource.cv_get_items()` or `cv_get_item()` rather than stored in the Django ORM (`src/crud_views/lib/resource.py`).
 
 **Workflow transition execution:** `WorkflowView` and public `run_transition()` share the private engine in `src/crud_views_workflow/lib/execution.py`. It verifies the selected database alias and persisted actor/object identity, validates availability/business/comment policy, then saves model state and `WorkflowInfo` within one alias-specific atomic block. View follow-ups use `transaction.on_commit()` on that same alias (`src/crud_views_workflow/lib/views.py`).
+
+### Object-Detail Resolution and Presentation
+
+1. `ObjectDetailMixin.get_property_display()` selects list, exact-model mapping or dynamic configuration; `get_context_data()` forwards the view to shared resolution (`src/crud_views_object_detail/lib/mixins.py`). Complete object-detail views already contain this mixin; compose it first only with core/Guardian/polymorphic views that lack it (`docs/reference/object_detail_view.md`).
+2. `resolve_property()` walks terminal field metadata and the existing runtime path. The runtime walk returns raw value plus scalar owner; `_resolve_value()` remains the value-only wrapper (`src/crud_views_object_detail/lib/resolvers.py`). Collection expansion/order and query behavior remain intact.
+3. Help instructions resolve explicit lazy/string text, property booleans, nullable view policy, then cached project policy. Only terminal metadata supplies automatic help; resolution does not mutate shared configuration.
+4. `ResolvedProperty.value` stays raw; `choice_label` is additive. The value tag dispatches badge → explicit template → choice text → ordinary type and passes both raw `value` and presentation `display_value` (`src/crud_views_object_detail/templatetags/crud_views_object_detail.py`).
+5. Stock char/text/default leaves mark exact None/empty display strings. Badge/custom/relation/collection handling retains its separate contract; copied templates require explicit adoption (`docs/migrating-1.0.md`).
 
 ## Key Abstractions
 

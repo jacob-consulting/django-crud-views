@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: 06.13.1
 current_phase_name: Workflow validation and execution
 status: executing
-stopped_at: Completed 06.13.1-01-PLAN.md; four plans remain
-last_updated: "2026-11-06T10:09:27.996Z"
+stopped_at: Completed 06.13.1-02-PLAN.md; three plans remain
+last_updated: "2026-11-06T10:22:04.035Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.13.1 plan 01 complete; four plans remain
-state_head: 217ef64886bab18e6ff36f028ed73c8a034af3b5
+last_activity_desc: Phase 06.13.1 plan 02 complete; three plans remain
+state_head: b63b8dcf7b1e7c7ce956ac5cb7bd77624464d77c
 progress:
   total_phases: 19
   completed_phases: 17
   total_plans: 125
-  completed_plans: 121
+  completed_plans: 122
 milestone_name: milestone
 ---
 
@@ -29,9 +29,9 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 ## Current Position
 
 Phase: 06.13.1 (Workflow validation and execution) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
-Last activity: 2026-11-06 — Phase 06.13.1 plan 01 complete; 370 focused regressions passed
+Last activity: 2026-11-06 — Phase 06.13.1 plan 02 complete; 445 focused regressions passed
 
 Next: $gsd-execute-phase 06.13.1
 
@@ -621,6 +621,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.10 P04 | 6min | 3 tasks | 15 files |
 | Phase 06.10 P05 | 12min | 2 tasks | 12 files |
 | Phase 06.13.1 P01 | 9min | 3 tasks | 7 files |
+| Phase 06.13.1 P02 | 10min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -799,6 +800,7 @@ Recent decisions affecting current work:
 - [Phase 06.10]: Plan 04 retains example defaults/models/grants/seeds, uses test-local finite/None overrides, and teaches plain protected labels separately from ordinary Book navigation; German notice uses existing polib regeneration.
 - [Phase 06.10]: Final browser acceptance binds current source and exact recipes; human and independent phase/security/Nyquist reviews remain pending.
 - [Phase 06.13.1]: Plan 01 confines refusal recovery and alias pinning to WorkflowView; independent business/comment checks share one lazy-exported explicit-actor execution engine.
+- [Phase 06.13.1]: Plan 02 binds scalar history identity/readback to the selected database; real default/shard failure-stage tests prove existing atomicity without a product rewrite.
 
 ### Pending Todos
 
@@ -858,6 +860,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T10:09:25.827Z
-Stopped at: Completed 06.13.1-01-PLAN.md; four plans remain
+Last session: 2026-11-06T10:22:01.932Z
+Stopped at: Completed 06.13.1-02-PLAN.md; three plans remain
 Resume file: None

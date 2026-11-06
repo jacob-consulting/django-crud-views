@@ -77,7 +77,10 @@ tablist and panel container. Iterate `component.groups`: each entry exposes `gro
 `control_id`, `panel_id`, and `selected` (true for the first entry only).
 Pass the same entry as `presentation` and its enclosing `component` to `render_group`.
 Group templates retain `group` and `layout`; property templates retain `prop`.
-`render_property_value` supplies `prop`, `value`, and `od_settings` to the value template.
+`render_property_value` supplies `prop`, `value`, `display_value`, and `od_settings` to the value template.
+`value` stays raw; `display_value` uses `prop.choice_label` when it is not `None`, otherwise
+the raw value. Custom templates own their output. See the [copied text value contract](object_detail_configuration.md#copied-text-value-template)
+and [badge fallback recipe](object_detail_badges.md#native-semantic-badge-template).
 These are resolved data: a theme should not resolve model fields or badge callbacks again.
 
 For supplied component token `C`, the base is `cvod-c{len(C)}-{C}`. Append `-root`,

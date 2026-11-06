@@ -41,6 +41,114 @@ Actions are rendered to match their target view automatically, exactly as table-
 
 You do not configure this on `CardAction`; the method and modal behaviour derive from the target view.
 
+## Cards first with a secondary table
+
+Register the card presentation as `list` at the ViewSet root, and a second table presentation as `table`.
+This complete example belongs in your application's `views.py`. It assumes an existing `Author` model with
+a UUID `id` and editable `first_name`, `last_name`, and `pseudonym` fields.
+
+<!-- card-recipe: cards-first -->
+```python
+import django_tables2 as tables
+
+from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin
+from crud_views.lib.table import Table, UUIDLinkDetailColumn
+from crud_views.lib.view import CardAction
+from crud_views.lib.views import (
+    CardListViewPermissionRequired,
+    CreateViewPermissionRequired,
+    DetailViewPermissionRequired,
+    ListViewPermissionRequired,
+    ListViewTableMixin,
+    UpdateViewPermissionRequired,
+)
+from crud_views.lib.viewset import ViewSet
+
+from .models import Author
+
+cv_author_cards_first = ViewSet(model=Author, name="authors_cards_first")
+
+
+class AuthorTable(Table):
+    id = UUIDLinkDetailColumn()
+    first_name = tables.Column()
+    last_name = tables.Column()
+    pseudonym = tables.Column()
+
+
+class AuthorForm(CrispyModelForm):
+    class Meta:
+        model = Author
+        fields = ["first_name", "last_name", "pseudonym"]
+
+
+class AuthorCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    cv_key = "list"
+    cv_path = ""
+    cv_context_actions = ["create", "table"]
+    cv_card_actions = [CardAction(key="detail"), CardAction(key="update")]
+    cv_action_label_template = None
+    cv_action_short_label_template = None
+    cv_action_label_template_code = '{% load i18n %}{% translate "Cards" %}'
+    cv_action_short_label_template_code = '{% load i18n %}{% translate "Cards" %}'
+    cv_icon_action = "card"
+    cv_context_action_label_mode = "both"
+
+
+class AuthorTableListView(ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    table_class = AuthorTable
+    cv_key = "table"
+    cv_path = "table"
+    cv_home_key = "list"
+    cv_context_actions = ["home", "create", "list"]
+    cv_list_actions = ["detail", "update"]
+    cv_action_label_template = None
+    cv_action_short_label_template = None
+    cv_action_label_template_code = '{% load i18n %}{% translate "Table" %}'
+    cv_action_short_label_template_code = '{% load i18n %}{% translate "Table" %}'
+    cv_icon_action = "list"
+    cv_context_action_label_mode = "both"
+
+
+class AuthorDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    cv_context_actions = ["home", "create", "update"]
+
+
+class AuthorCreateView(CrispyViewMixin, CreateViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    form_class = AuthorForm
+    cv_context_actions = ["home"]
+    cv_cancel_keys = ["list", "table"]
+
+
+class AuthorUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    form_class = AuthorForm
+    cv_context_actions = ["home", "detail"]
+    cv_cancel_keys = ["list", "table", "detail"]
+
+
+# Collect URLs only after every sibling view has registered.
+urlpatterns = cv_author_cards_first.urlpatterns
+```
+
+Import these `urlpatterns` into your application's URLconf (or append them to its existing patterns), then
+include that URLconf in the project's root URLconf. With no additional mount prefix, cards are at
+`/authors_cards_first/` and the table is at `/authors_cards_first/table/`.
+
+The existing context actions provide the **Table** and **Cards** switches. Both use translated full and short
+captions and the existing `list`/`card` [semantic icons](icons.md). The file-template attributes are explicitly
+`None` in this example; valid file templates can coexist with template code, which takes precedence.
+`cv_context_action_label_mode = "both"` makes these destinations show text and icons in toolbars, subject to
+the existing [label-mode precedence](action_menus.md#context-label-mode-resolution).
+
+The explicit form `cv_cancel_keys` allow returning to the custom `table` origin; automatic defaults accept
+the conventional `list`/`card` origins (and `detail` for object forms), not `table`. The update allow-list
+retains detail-origin support. Successful-save settings remain at their defaults.
+
 ## CardAction Fields
 
 | Field | Type | Default | Description |

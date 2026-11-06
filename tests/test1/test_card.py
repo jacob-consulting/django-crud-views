@@ -1,11 +1,108 @@
+import re
+from pathlib import Path
+from urllib.parse import urlsplit
+
 import pytest
 from django.test import override_settings
 from django.test.client import Client
+from django.urls import reverse
 from django.utils import translation
 from lxml import html
 
 from crud_views.lib.view import CardAction
 from tests.lib.helper.user import user_viewset_permission
+from tests.test1.test_cancel_navigation import emitted_link
+
+
+@pytest.fixture
+def cards_first_recipe():
+    reference = Path(__file__).resolve().parents[2] / "docs/reference/card-list-view.md"
+    matches = re.findall(r"<!-- card-recipe: cards-first -->\n```python\n(.*?)\n```", reference.read_text(), re.S)
+    assert len(matches) == 1, "Publish exactly one complete cards-first recipe"
+    return compile(matches[0], str(reference), "exec")
+
+
+@pytest.fixture
+def cv_author_cards_first(request, cards_first_recipe):
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK
+    from tests.test1.app.urls import urlpatterns
+
+    snapshot = dict(_REGISTRY)
+
+    def restore_cards_first_registry():
+        with _REGISTRY_LOCK:
+            _REGISTRY.clear()
+            _REGISTRY.update(snapshot)
+
+    request.addfinalizer(restore_cards_first_registry)
+    namespace = {"__package__": "tests.test1.app", "__name__": "tests.test1.app.cards_first_recipe"}
+    exec(cards_first_recipe, namespace)
+    CardsFirstURLs = type("CardsFirstURLs", (), {"urlpatterns": [*namespace["urlpatterns"], *urlpatterns]})
+    with override_settings(ROOT_URLCONF=CardsFirstURLs):
+        yield namespace["cv_author_cards_first"]
+
+
+@pytest.fixture
+def client_user_author_cards_first_all(client, cv_author_cards_first):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_author_cards_first_all", password="password")
+    for permission in ("view", "add", "change", "delete"):
+        user_viewset_permission(user, cv_author_cards_first, permission)
+    client.force_login(user)
+    return client
+
+
+@pytest.mark.django_db
+def test_cards_first_urls_and_switching(
+    client_user_author_cards_first_all, cv_author_cards_first, author_douglas_adams, author_terry_pratchett
+):
+    vs = cv_author_cards_first
+    client = client_user_author_cards_first_all
+    cards_url, table_url = (reverse(vs.get_router_name(key)) for key in ("list", "table"))
+    assert cards_url == "/authors_cards_first/"
+    assert table_url == "/authors_cards_first/table/"
+    assert vs.get_view_class("list").cv_key == "list"
+    assert vs.get_view_class("list").cv_path == ""
+    assert vs.get_view_class("table").cv_key == "table"
+    assert vs.get_view_class("table").cv_path == "table"
+    assert vs.get_view_class("table").cv_home_key == "list"
+
+    with translation.override("en"):
+        cards = client.get(cards_url)
+        assert cards.status_code == 200
+        cards_doc = html.fromstring(cards.content)
+        assert len(cards_doc.cssselect(".card.mb-3")) == 2
+        assert not cards_doc.cssselect("table")
+        switch = emitted_link(cards, table_url)
+        (table_button,) = cards_doc.xpath("//a[@href=$url]", url=switch)
+        assert table_button.text_content().strip() == "Table"
+        assert table_button.cssselect("i.fa-regular.fa-rectangle-list")
+        assert not table_button.cssselect(".visually-hidden")
+
+        table = client.get(switch)
+        assert table.status_code == 200
+        table_doc = html.fromstring(table.content)
+        assert not table_doc.cssselect(".card.mb-3")
+        rows = table_doc.cssselect("table tbody tr")
+        assert len(rows) == 2
+        for author in (author_douglas_adams, author_terry_pratchett):
+            assert str(author) in cards_doc.text_content()
+            assert author.first_name in table_doc.text_content()
+            assert author.last_name in table_doc.text_content()
+        cards_buttons = [
+            anchor for anchor in table_doc.cssselect("a.btn[href]") if anchor.cssselect("i.fa-solid.fa-rectangle-list")
+        ]
+        assert cards_buttons
+        assert all(urlsplit(button.get("href")).path == cards_url for button in cards_buttons)
+        cards_button = cards_buttons[-1]
+        assert cards_button.text_content().strip() == "Cards"
+        assert urlsplit(cards_button.get("href")).path == cards_url
+        assert cards_button.cssselect("i.fa-solid.fa-rectangle-list")
+        assert not cards_button.cssselect(".visually-hidden")
+        returned = client.get(cards_button.get("href"))
+        assert returned.status_code == 200
+        assert len(html.fromstring(returned.content).cssselect(".card.mb-3")) == 2
 
 
 def test_card_action_requires_key_or_child_name():

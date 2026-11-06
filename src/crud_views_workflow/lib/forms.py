@@ -103,6 +103,8 @@ class WorkflowForm(CrispyForm):
         for name in ("transition", "comment"):
             raw = getattr(self.cv_view, f"cv_{name}_help_text", None)
             self.fields[name].help_text = escape(raw) if raw else raw
+            if self._workflow_presentation == "buttons":
+                self.fields[name].label = escape(getattr(self.cv_view, f"cv_{name}_label"))
         self._bound_fields_cache.clear()
         if self._workflow_presentation != "buttons":
             return

@@ -1,6 +1,6 @@
 {% load crud_views i18n %}
 {% if widget.help_text %}<div id="{{ widget.help_id }}" class="form-text mb-3" style="overflow-wrap: anywhere;">{{ widget.help_text|force_escape }}</div>{% endif %}
-<div role="group" aria-label="{{ widget.label|force_escape }}"{% include "django/forms/widgets/attrs.html" %}>
+<div role="group" aria-label="{{ widget.label }}"{% include "django/forms/widgets/attrs.html" %}>
 {% block actions %}
 {% for action in widget.actions %}
     <div class="mb-3" style="overflow-wrap: anywhere;">

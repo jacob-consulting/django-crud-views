@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
 last_mapped_at: 2026-11-06
 ---
 # Codebase Concerns
@@ -87,6 +87,12 @@ last_mapped_at: 2026-11-06
 - Why fragile: the opt-in recipe selects the page's `view` gate and adds explicit transition permission rules; other workflow views keep the default `change` gate. It is documented and tested with real requests, including execution recheck and denial behavior.
 - Safe modification: preserve independent page authorization and transition authorization; keep default behavior unchanged unless separately intended.
 - Test coverage: request-level proof exists. It does not establish concurrency/race behavior or a Guardian/nested-object permission matrix; those remain unverified coverage boundaries, not observed defects.
+
+**Workflow helper contract boundaries:**
+- Issue: `run_transition()` is a deliberately bounded execution API: the actor and object must already be persisted on the selected write alias; direct django-fsm decorated-method calls bypass helper validation/history; and `workflow_check_transition()` is model business validation, not a replacement for transition permissions or the view's page permission.
+- Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `tests/test1/test_workflow_execution.py`.
+- Impact: callers that bypass the helper or supply unsaved/cross-database identities do not receive the helper's transactional/history guarantees; consumers must retain permission gates separately.
+- Safe use: call the exported helper or use `WorkflowView`; keep business checks side-effect-free; place transactional database follow-up in `on_transition()` and external effects in `cv_on_commit()`. Tests cover alias routing, late refusal, rollback, callback timing, identity validation and direct-call boundary. These are supported API boundaries, not known defects.
 
 ## Scaling Limits
 

@@ -66,10 +66,15 @@ class WorkflowModelMixin:
 
         from ..models import WorkflowInfo
 
-        return WorkflowInfo.objects.filter(
-            workflow_object_pk=str(self.pk),
-            workflow_object_content_type=ContentType.objects.get_for_model(self),
-        ).order_by("timestamp")
+        using = self._state.db
+        return (
+            WorkflowInfo.objects.using(using)
+            .filter(
+                workflow_object_pk=str(self.pk),
+                workflow_object_content_type=ContentType.objects.db_manager(using).get_for_model(self),
+            )
+            .order_by("timestamp")
+        )
 
     @property
     def workflow_data(self) -> list[dict]:
@@ -104,6 +109,14 @@ class WorkflowModelMixin:
 
     def workflow_has_transition(self, user, transition) -> bool:
         return any(v == transition for v, x, y in self.workflow_get_possible_transitions(user))
+
+    def workflow_check_transition(self, name, *, user):
+        """Raise ValidationError with single/list blockers based on existing model data.
+
+        Keep this check inexpensive and side-effect-free: forms and execution may
+        call it repeatedly. Required comments are validated separately.
+        """
+        pass
 
     @cached_property
     def workflow_get_transition_label_map(self) -> dict[str, str]:

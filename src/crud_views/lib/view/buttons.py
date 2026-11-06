@@ -488,17 +488,30 @@ def _static_form_classes(cls) -> list[type]:
     return forms
 
 
-def _static_form_controls(form_class: type) -> list[tuple[str, Any]]:
+def _static_form_controls(form_class: type, view_class: type) -> list[tuple[str, Any]]:
     """(form kind, icon) of each control a package form helper renders, for the hooks that are still the package's.
 
     The provider is chosen before the controls: CrispyDeleteForm's helper renders delete (delete_icon) and cancel,
-    never its inherited submit; otherwise CrispyFormMixin's helper (also the workflow form) renders submit
-    (submit_icon) and cancel. An overridden helper or action provider makes the whole form dynamic, an overridden
-    button hook that one control; icon attributes that are not None or a str (e.g. a property) are dynamic too.
+    never its inherited submit; otherwise CrispyFormMixin's helper renders submit (submit_icon) and cancel.
+    Stock WorkflowForm actions omit that submit in buttons mode. An overridden helper or action provider makes
+    the whole form dynamic, an overridden button hook that one control; icon attributes that are not None or a
+    str (e.g. a property) are dynamic too.
     """
     from crud_views.lib.crispy.buttons import _KIND_ICONS
     from crud_views.lib.crispy.form import CrispyDeleteForm, CrispyFormMixin
 
+    # Recognize the optional extension's package owner without importing it into core.
+    workflow_form = next(
+        (
+            base
+            for base in form_class.__mro__
+            if base.__module__ == "crud_views_workflow.lib.forms" and base.__name__ == "WorkflowForm"
+        ),
+        None,
+    )
+    presentation = _declared(view_class, "cv_transition_presentation") if workflow_form else "radio"
+    if presentation not in ("radio", "buttons"):
+        return []
     controls: list[tuple[str, Any]] = []
     if issubclass(form_class, CrispyDeleteForm):
         if not _inherits(form_class, "helper", CrispyDeleteForm):
@@ -510,15 +523,17 @@ def _static_form_controls(form_class: type) -> list[tuple[str, Any]]:
     else:
         if not (
             _inherits(form_class, "helper", CrispyFormMixin)
-            and _inherits(form_class, "get_form_actions", CrispyFormMixin)
+            and _inherits(form_class, "get_form_actions", workflow_form or CrispyFormMixin)
         ):
             return []
-        if _inherits(form_class, "get_submit_button", CrispyFormMixin) and _inherits(
-            form_class, "get_submit_button_kwargs", CrispyFormMixin
+        if (
+            presentation == "radio"
+            and _inherits(form_class, "get_submit_button", CrispyFormMixin)
+            and _inherits(form_class, "get_submit_button_kwargs", CrispyFormMixin)
         ):
             controls.append(("submit", _declared(form_class, "submit_icon")))
     if _inherits(form_class, "get_cancel_button", CrispyFormMixin) and _inherits(
-        form_class, "get_cancel_button_kwargs", CrispyFormMixin
+        form_class, "get_cancel_button_kwargs", workflow_form or CrispyFormMixin
     ):
         controls.append(("cancel", _KIND_ICONS["cancel"]))
     return [(kind, icon) for kind, icon in controls if icon is None or isinstance(icon, str)]
@@ -561,7 +576,7 @@ def cv_form_icon_mode_checks(cls):
         return  # viewset.E211 / E210 or crud_views.E106 report the selected map
     controls: list[tuple[type, str, Any]] = []
     for form_class in _static_form_classes(cls):
-        controls.extend((form_class, kind, icon) for kind, icon in _static_form_controls(form_class))
+        controls.extend((form_class, kind, icon) for kind, icon in _static_form_controls(form_class, cls))
     controls.extend(_static_filter_controls(cls))
     # each form class appears once (_static_form_classes deduplicates repeated polymorphic entries) and each kind
     # once per class, so every (class, kind) is reported at most once per traversal

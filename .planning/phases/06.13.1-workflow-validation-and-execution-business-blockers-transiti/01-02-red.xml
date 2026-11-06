@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.718" timestamp="2026-11-06T10:02:56.811812+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_workflow_execution.TestWorkflowHelper" name="test_exact_public_signature" time="0.501"><failure message="AssertionError: run_transition must be exported from crud_views_workflow.lib&#10;assert False&#10; +  where False = callable(None)">self = &lt;tests.test1.test_workflow_execution.TestWorkflowHelper object at 0x7b602e23a9c0&gt;
+campaign_new = &lt;Campaign: Test Campaign&gt;
+user_campaign_change = &lt;User: user_campaign_change&gt;
+
+    def test_exact_public_signature(self, campaign_new, user_campaign_change):
+        import crud_views_workflow.lib as workflow
+    
+        helper = getattr(workflow, "run_transition", None)
+&gt;       assert callable(helper), "run_transition must be exported from crud_views_workflow.lib"
+E       AssertionError: run_transition must be exported from crud_views_workflow.lib
+E       assert False
+E        +  where False = callable(None)
+
+tests/test1/test_workflow_execution.py:110: AssertionError</failure></testcase></testsuite></testsuites>

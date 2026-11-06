@@ -774,12 +774,35 @@ def test_overridden_delete_providers_are_dynamic(delete_form, form_class):
     assert _w292(AuthorDeleteView) == []
 
 
-def test_workflow_form_submit_uses_the_workflow_icon(monkeypatch):
+@pytest.mark.parametrize("presentation", ["radio", "buttons"])
+def test_workflow_form_submit_uses_the_workflow_icon(monkeypatch, presentation):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
     monkeypatch.setattr(CampaignWorkflowView, ATTR, {"submit": "icon"})
     assert _w292(CampaignWorkflowView) == []
     with override_settings(CRUD_VIEWS_ICONS={"workflow": None}):
-        assert _w292(CampaignWorkflowView) == [("submit", "CampaignWorkflowForm")]
+        assert _w292(CampaignWorkflowView) == ([("submit", "CampaignWorkflowForm")] if presentation == "radio" else [])
     with override_settings(CRUD_VIEWS_ICONS={"save": None}):
+        assert _w292(CampaignWorkflowView) == []
+
+
+@pytest.mark.parametrize("presentation", ["radio", "buttons"])
+def test_workflow_stock_cancel_is_checked_without_constructing_form(monkeypatch, presentation):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
+    monkeypatch.setattr(CampaignWorkflowView, ATTR, {"cancel": "icon"})
+
+    def boom(*args, **kwargs):
+        raise AssertionError("instantiated during static checks")
+
+    monkeypatch.setattr(CampaignWorkflowView.form_class, "__init__", boom)
+    with override_settings(CRUD_VIEWS_ICONS={"cancel": None}):
+        assert _w292(CampaignWorkflowView) == [("cancel", "CampaignWorkflowForm")]
+
+
+@pytest.mark.parametrize("provider", ["helper", "get_form_actions", "get_cancel_button_kwargs"])
+def test_workflow_custom_providers_remain_dynamic(monkeypatch, provider):
+    monkeypatch.setattr(CampaignWorkflowView, ATTR, {"cancel": "icon"})
+    monkeypatch.setattr(CampaignWorkflowView.form_class, provider, lambda *args: None)
+    with override_settings(CRUD_VIEWS_ICONS={"cancel": None}):
         assert _w292(CampaignWorkflowView) == []
 
 

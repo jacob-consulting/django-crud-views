@@ -2,8 +2,8 @@
 
 The `WorkflowView` integrates [django-fsm-2](https://github.com/viewflow/django-fsm) state machines
 with the crud-views framework. It renders a form that allows users to execute FSM transitions on a
-model instance, enforces comment requirements per transition, and maintains a full audit history via
-the `WorkflowInfo` model.
+model instance, checks model-data business rules and comment requirements, and records successful execution
+in `WorkflowInfo`. Radio choices remain the default; native transition buttons are an opt-in presentation.
 
 !!! example "Try it live"
     The [Workflow example](https://django-crud-views-demo.onrender.com/workflow/campaign/) in the live demo shows this in
@@ -135,7 +135,7 @@ urlpatterns = cv_campaign.urlpatterns
 
 | Class | Description |
 |-------|-------------|
-| `WorkflowView` | Base workflow view without permission check |
+| `WorkflowView` | Base workflow view without the page-permission mixin; execution still requires a saved authenticated actor |
 | `WorkflowViewPermissionRequired` | Workflow view requiring `change` permission |
 
 Both inherit from `CustomFormView` (a `DetailView` with form handling). They fetch the object
@@ -363,6 +363,217 @@ backend lookups; this recipe makes no fixed query-count or performance guarantee
 within the existing hooks and retain the default `change` gate on other workflow views unless they also
 deliberately opt in.
 
+## Business validation and native transition buttons
+
+`workflow_check_transition(self, name, *, user)` is a model hook with a no-op default. Return normally to allow
+the step, or raise `ValidationError` with one message or an ordered list. Field-keyed error dictionaries are
+unsupported and raise `TypeError`. Keep the hook inexpensive and side-effect-free: button previews, form validation
+and execution may call it repeatedly. It receives no comment; comment requirements are validated separately.
+
+This example belongs in an installed `orders` app with workflow installed as above. The two actions start in the
+same state; Confirm reads existing model data, while Cancel requires a comment. Make and apply the app migrations.
+
+```python
+# orders/models.py
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+from django_fsm import FSMField, transition
+
+from crud_views_workflow.lib import BadgeEnum, WorkflowComment, WorkflowModelMixin
+
+
+class OrderState(models.TextChoices):
+    NEW = "new", _("New")
+    CONFIRMED = "confirmed", _("Confirmed")
+    CANCELED = "canceled", _("Canceled")
+
+
+class Order(WorkflowModelMixin, models.Model):
+    STATE_CHOICES = OrderState
+    STATE_BADGES = {
+        OrderState.NEW: BadgeEnum.LIGHT,
+        OrderState.CONFIRMED: BadgeEnum.SUCCESS,
+        OrderState.CANCELED: BadgeEnum.WARNING,
+    }
+    state = FSMField(default=OrderState.NEW, choices=OrderState.choices, protected=True)
+    line_count = models.PositiveIntegerField(default=0)
+    delivery_address = models.CharField(max_length=255, blank=True)
+
+    def workflow_check_transition(self, name, *, user):
+        if name == "wf_confirm":
+            messages = []
+            if not self.line_count:
+                messages.append(_("Add at least one order line."))
+            if not self.delivery_address:
+                messages.append(_("Add a delivery address."))
+            if messages:
+                raise ValidationError(messages)
+
+    @transition(
+        field=state,
+        source=OrderState.NEW,
+        target=OrderState.CONFIRMED,
+        permission="orders.change_order",
+        custom={
+            "label": _("Confirm"),
+            "comment": WorkflowComment.OPTIONAL,
+            "help_text": _("Confirm after checking the order details."),
+        },
+    )
+    def wf_confirm(self, by=None, comment=None):
+        return {"line_count": self.line_count}
+
+    @transition(
+        field=state,
+        source=OrderState.NEW,
+        target=OrderState.CANCELED,
+        permission="orders.change_order",
+        custom={"label": _("Cancel order"), "comment": WorkflowComment.REQUIRED},
+    )
+    def wf_cancel(self, by=None, comment=None):
+        pass
+```
+
+Keep your existing `WorkflowForm` subclass and select buttons on the view. List/detail siblings supply ordinary
+navigation; grant the actor the appropriate model view/change permissions. Retain any application queryset,
+parent and object policy when adapting this minimal setup.
+
+```python
+# orders/views.py
+from crud_views.lib.crispy import CrispyViewMixin
+from crud_views.lib.views import DetailViewPermissionRequired, ListViewPermissionRequired, MessageMixin
+from crud_views.lib.viewset import ViewSet
+from crud_views_workflow.lib import WorkflowForm, WorkflowViewPermissionRequired
+from .models import Order
+
+cv_order = ViewSet(model=Order, name="order")
+
+
+class OrderListView(ListViewPermissionRequired):
+    cv_viewset = cv_order
+    cv_list_actions = ["detail", "workflow"]
+
+
+class OrderDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_order
+    cv_context_actions = ["list", "workflow"]
+
+
+class OrderWorkflowForm(WorkflowForm):
+    class Meta(WorkflowForm.Meta):
+        model = Order
+
+
+class OrderWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionRequired):
+    cv_viewset = cv_order
+    form_class = OrderWorkflowForm
+    cv_transition_presentation = "buttons"
+
+
+# orders/urls.py: from .views import cv_order
+# urlpatterns = cv_order.urlpatterns
+# Include orders.urls in the project's urlpatterns.
+```
+
+Buttons show only transitions allowed by state, conditions and transition permissions, in their existing order.
+An offered business-blocked action stays visible and natively disabled with every reason in order; unauthorized
+actions and their reasons are omitted. An empty required comment does not disable an otherwise available action.
+The radio presentation has no GET business preview or business-disabled radio choice, but validates the same rules
+on POST. Neither mode adds an automatic any-step page gate; the [permission layers](#authorization-layers-and-basic-outcomes)
+still apply.
+
+Each submit button carries its exact method name as `transition` (with the form prefix, if any). There is no
+competing radio/hidden transition input or generic submit in button mode. Missing or forged names receive field
+errors, never an implicit server default. Native page submission needs no JavaScript; modal opening/submission
+uses the existing modal runtime. Navigation Cancel retains its separate URL/permission policy and does not execute
+the transition named Cancel.
+
+The visible transition label has no activating `for` attribute; the widget's `role="group"` has the same configured
+translated label as an escaped `aria-label`. Clicking the label must never activate a transition. The field-label
+asterisk means an action must be selected. An individual action's asterisk, accessible **Comment required** suffix
+and conditional **\* Comment required** legend mean that action requires a comment. OPTIONAL/NONE actions may
+accept an empty comment even though the transition field is required. Absent help renders nothing. Nonempty general
+help appears once above the actions; action help and blockers stay adjacent, as literal escaped text.
+
+### Custom forms and native keyboard behavior
+
+Preserve normal constructors, extra fields, `clean()` inheritance and layout hooks. For example, add this to the
+form subclass above (and import `forms` from `django`):
+
+```python
+extra = forms.CharField(label="Internal reference")
+
+
+def get_layout_fields(self):
+    return ["extra", *super().get_layout_fields()]
+```
+
+This keeps the chosen transition widget and stock comment layout. The application owns any use of `extra` beyond
+ordinary form validation; `run_transition` does not accept arbitrary form fields. A `get_submit_button()` override
+remains usable in radio mode. A replaced `get_form_actions()` or helper must implement button mode's no-generic-submit
+contract itself and preserve eligible Cancel. Do not clear custom layouts to suppress the submit slot. Fully replaced
+renderers must retain the [widget contract](theme.md#workflow-transition-widget); previously rendered/cached custom
+HTML bypasses the normal bound-form refresh.
+
+Enter in a single-line custom input can activate the **first submit control in tree order**, when enabled, and send
+that control's valid transition name without a button click. The browser does not skip a disabled first submit to
+find a later enabled action. The stock comment Textarea inserts a newline instead. This is native named submission,
+not an omitted name or implicit server default; server allowlisting cannot distinguish it from explicit activation.
+No sentinel control, hidden transition or workflow JavaScript is added.
+
+## Standalone execution and refusal behavior
+
+```python
+from crud_views_workflow.lib import run_transition
+
+# object and authenticated actor are saved and loaded from the selected write database.
+info = run_transition(object, "wf_confirm", user=actor, comment="  Reviewed  ")
+```
+
+The public signature is `run_transition(object, name, *, user, comment=None)` and the result is the saved
+`WorkflowInfo`. `user` is required. Availability/permission is rechecked before business checks or method dispatch;
+unknown, wrong-state or unauthorized names raise Django `SuspiciousOperation`. Business and required-comment
+refusals raise `ValidationError`. Only single/list business messages are supported.
+
+Strings are trimmed and empty comments become `None`. The engine applies the selected action's comment policy,
+calls its method with `by=user, comment=comment`, saves the object, and records old/new state, method name, actor,
+normalized comment, returned JSON data, content type and stringified object PK. Model methods called directly
+do **not** automatically use this hook, save the object or record history; use the helper or supported view path.
+
+The view attaches business messages to `transition` and missing-comment errors to `comment`. Only refusals from
+these checks become bound invalid responses. A late expected refusal unwinds the write transactions, fetches a fresh
+object through the scoped queryset, refreshes choices on the same bound form and preserves raw comment/custom input.
+It produces no success redirect/message, state/history write or success commit callback. Invalid pages return 200;
+invalid modals return 422. Exceptions from transition methods, save/history operations or `on_transition` propagate
+after rollback, **including their own `ValidationError`**; they are not reclassified as friendly business errors.
+
+The workflow engine has its own atomic boundary even with `cv_atomic=False`. `on_transition` executes inside that
+boundary; successful view callbacks receive `context["workflow_info"]` in `cv_on_commit`. Application follow-up writes
+must use the selected database. External calls cannot be rolled back: defer them until commit. If standalone execution
+fails after mutating an instance, database rollback does not restore that Python object. Fetch a fresh instance through
+your authorized/scoped queryset before reuse, particularly with a protected FSM field. There is no row lock or guarantee
+against concurrent stale-object transitions, and no cross-database or external-side-effect atomicity.
+
+### Supported workflow databases
+
+The object and actual authenticated actor must already be saved and loaded from the selected write database.
+That database must hold the required actor, object, `WorkflowInfo` and `ContentType` tables/rows. Unsaved inputs,
+anonymous actors and mismatched loaded aliases raise `ImproperlyConfigured`. Replica-loaded inputs with a different
+selected write alias are rejected even when PKs match; the helper neither proves identity equivalence nor substitutes
+a same-PK actor/object.
+
+The helper selects `router.db_for_write(type(object), instance=object)` and has no public alias argument. The view
+defaults to the same instance-hinted selector, supports `cv_get_db_alias()` overrides and pins selection once for the
+valid POST write path. Changing that selector alone does not align previously loaded inputs. Explicitly bound object,
+history and content-type writes take precedence over separate router choices for those models. History readback uses
+the persisted object's alias. Separate history/content-type storage is unsupported; no router introspection or automatic
+split-storage diagnostics are promised.
+
+Earlier unbound workflow managers could work with suitable split-read/write routing, so this is a compatibility
+restriction. Follow the [workflow database migration](../migrating-1.0.md#workflow-validation-and-database-alignment).
+It is distinct from DeleteView's supported differently loaded target behavior, not a universal same-alias rule.
+
 ## WorkflowModelMixin
 
 `WorkflowModelMixin` is a model mixin that provides workflow-related properties and helpers.
@@ -396,6 +607,8 @@ deliberately opt in.
 | `workflow_get_transition_label(name)` | Human-readable label for a transition name |
 | `workflow_get_transition_label_map` | Cached dict of all transition names to labels |
 | `workflow_get_form_kwargs(user)` | Builds kwargs for `WorkflowForm` (choices, transition_comments) |
+| `workflow_check_transition(name, *, user)` | Side-effect-free model-data business hook; no-op by default; raise single/list `ValidationError` to block |
+| `get_workflow_info_queryset()` | History queryset using the persisted object's database alias |
 
 ### WorkflowComment
 
@@ -417,9 +630,9 @@ def wf_cancel_new(self, ...):
 
 | Value | Behaviour |
 |-------|-----------|
-| `WorkflowComment.NONE` | Comment field is hidden |
-| `WorkflowComment.OPTIONAL` | Comment field is shown but not required |
-| `WorkflowComment.REQUIRED` | Comment field is shown and must be filled |
+| `WorkflowComment.NONE` | This action accepts an empty comment. Only when every offered action is NONE is the visible comment wrapper/label/help omitted (both presentations); a hidden input may remain. |
+| `WorkflowComment.OPTIONAL` | Retain the shared textarea; this action accepts an empty comment. |
+| `WorkflowComment.REQUIRED` | Retain the shared textarea; choosing this action requires non-whitespace input. The action stays enabled before comment entry. |
 
 When a transition does not include `comment` in its `custom` dict, `WorkflowModelMixin.COMMENT_DEFAULT`
 is used as the fallback. Override it on your model class to change the default for all such transitions:
@@ -526,14 +739,17 @@ The form contains two fields:
 
 | Field | Description |
 |-------|-------------|
-| `transition` | `RadioSelect` of available transitions (dynamically populated) |
-| `comment` | Optional/required `Textarea` (visibility controlled by comment requirement) |
+| `transition` | Required available-choice field: `RadioSelect` by default, native named submit buttons with the view's `cv_transition_presentation="buttons"` |
+| `comment` | One shared `Textarea` unless all offered policies are NONE; chosen action controls comment validation |
 
-The form's `clean()` validates that a comment is provided when `Comment.REQUIRED` is selected.
+`clean()` returns the cleaned mapping for subclasses. It attaches offered-action business errors to `transition`
+and required-comment errors to `comment`, independently. Ownerless forms retain choice/comment checks but cannot
+check model/actor business rules; use `run_transition` for execution. Bound redisplay keeps original input rather
+than normalized execution values. Workflow view help is escaped literal text in both presentations.
 
 ## WorkflowInfo (audit log)
 
-Every successful transition creates a `WorkflowInfo` record:
+Every successful helper/view execution creates a `WorkflowInfo` record (direct decorated calls do not):
 
 | Field | Description |
 |-------|-------------|
@@ -561,11 +777,12 @@ with badge HTML and human-readable labels.
 | `cv_path` | `str` | `"workflow"` | URL path segment (e.g. `/<pk>/workflow/`) |
 | `template_name` | `str` | `"crud_views_workflow/view_workflow.html"` | Template |
 | `form_class` | `Form` | — | Must be set to a `WorkflowForm` subclass |
+| `cv_transition_presentation` | `str` | `"radio"` | `"buttons"` selects native per-transition submits; other values raise `ImproperlyConfigured` |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_transition_label` | `str` | `"Select a possible workflow action to take"` | Transition field label |
-| `cv_transition_help_text` | `str` | `None` | Transition field help text |
+| `cv_transition_help_text` | `str` | `None` | Optional literal escaped guidance; once above the actions in button mode |
 | `cv_comment_label` | `str` | `"Please provide a comment for your workflow step"` | Comment field label |
-| `cv_comment_help_text` | `str` | `None` | Comment field help text |
+| `cv_comment_help_text` | `str` | `None` | Optional literal escaped comment guidance |
 
 ## System checks
 
@@ -590,7 +807,7 @@ from `CrudViewPermissionRequiredMixin`.
 ### `on_transition` hook
 
 Override `on_transition` for **database** follow-ups of a transition. It runs inside the
-transaction, so its writes roll back together with the transition:
+workflow transaction, including when `cv_atomic=False`. Bind follow-up writes to the same database:
 
 ```python
 class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowView):
@@ -598,7 +815,7 @@ class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowView):
     form_class = CampaignWorkflowForm
 
     def on_transition(self, info, transition, state_old, state_new, comment, user, data):
-        CampaignAudit.objects.create(campaign=self.object, state=state_new, user=user)
+        CampaignAudit.objects.using(info._state.db).create(campaign=self.object, state=state_new, user=user)
 ```
 
 Send notifications and start async tasks from `cv_on_commit` instead. It runs after the commit,

@@ -19,9 +19,11 @@ __all__ = [
     "WorkflowModelMixin",
     "WorkflowView",
     "WorkflowViewPermissionRequired",
+    "run_transition",
 ]
 
 _EXPORTS = {
+    "run_transition": ("crud_views_workflow.lib.execution", "run_transition"),
     "BadgeEnum": ("crud_views_workflow.lib.enums", "BadgeEnum"),
     "WorkflowComment": ("crud_views_workflow.lib.enums", "WorkflowComment"),
     "WorkflowForm": ("crud_views_workflow.lib.forms", "WorkflowForm"),

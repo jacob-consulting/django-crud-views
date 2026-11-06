@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
 last_mapped_at: 2026-11-06
 ---
 # Testing Patterns
@@ -154,6 +154,8 @@ with pytest.raises(ValueError):
 ```
 
 For view failures, assert response status, form errors, redirect, and unchanged state as appropriate (`tests/test1/test_workflow_permissions.py`). Capture browser listener errors through `tests/js/helpers/errors.js` because event dispatch does not synchronously propagate listener exceptions.
+
+**Workflow execution/database routing:** `tests/test1/test_workflow_execution.py` exercises the public helper and request path, atomic and non-atomic view settings, transaction rollback, `on_commit` timing, selected database aliases, and rejection of unsaved or cross-database actors/objects. Database-router tests use the `shard` alias and verify history writes/reads remain aligned. Extend these cases when changing `src/crud_views_workflow/lib/execution.py` or `src/crud_views_workflow/lib/views.py`.
 
 ---
 

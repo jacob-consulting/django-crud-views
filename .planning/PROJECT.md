@@ -67,6 +67,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.13** Opt-in workflow view permission with explicit per-transition rules, separate optional request gate, real request/history regressions and complete consumer recipe — Phase 06.13; canonical9/9, WFP-01–05 complete. Default change permission and production behavior preserved.
 
+- ✓ **6.13.1** Model business blockers, shared explicit-actor workflow execution, opt-in native transition buttons, bounded same-database history and rollback-safe refusal recovery; WFX-01–05 delivered, two human UAT checks passed, independent code review clean and all 15 security threats closed.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test

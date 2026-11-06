@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.741" timestamp="2026-11-06T10:29:19.122200+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_workflow_buttons.TestWorkflowDescriptions" name="test_comment_markers_and_guidance[True-False]" time="0.540"><failure message="assert 0 == 1&#10; +  where 0 = len([])&#10; +  and   1 = int(True)">self = &lt;tests.test1.test_workflow_buttons.TestWorkflowDescriptions object at 0x73ffc7b7cb30&gt;
+client_user_campaign_change = &lt;django.test.client.Client object at 0x73ffc77ffe00&gt;
+campaign_new = &lt;Campaign: Test Campaign&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73ffc77fc4d0&gt;
+modal = False, required = True
+
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("required", [False, True])
+    def test_comment_markers_and_guidance(self, client_user_campaign_change, campaign_new, monkeypatch, modal, required):
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_help_text", "General guidance")
+        monkeypatch.setattr(CampaignWorkflowView, "cv_comment_help_text", "Comment guidance")
+        step = next(t for t in campaign_new.get_all_state_transitions() if t.name == "wf_cancel_new")
+        monkeypatch.setitem(step.custom, "help_text", "Action guidance")
+        if not required:
+            monkeypatch.setitem(step.custom, "comment", WorkflowComment.OPTIONAL)
+        response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/", headers=_headers(modal))
+        document = _document(response)
+        buttons = _buttons(document)
+        marked = [b for b in buttons if b.cssselect('[aria-hidden="true"]')]
+&gt;       assert len(marked) == int(required)
+E       assert 0 == 1
+E        +  where 0 = len([])
+E        +  and   1 = int(True)
+
+tests/test1/test_workflow_buttons.py:218: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
 last_mapped_at: 2026-11-06
 ---
 # Coding Conventions
@@ -54,6 +54,8 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 
 **Patterns:**
 - Raise Django exceptions and validation errors at request or model boundaries; test observable status, redirect, form errors, and persisted state (`tests/test1/test_resource.py`, `tests/test1/test_crud.py`).
+- Keep workflow business validation in the model's `workflow_check_transition(name, *, user)` hook (`src/crud_views_workflow/lib/mixins.py`); it should be inexpensive, side-effect-free, and raise single/list `ValidationError` messages. It supplements django-fsm availability/permission/condition gates and is not an authorization mechanism (`src/crud_views_workflow/lib/execution.py`, `tests/test1/test_workflow_execution.py`).
+- The workflow engine converts expected business/comment refusals into field errors; unrelated `ValidationError` from transition/callback code propagates as a defect. Sanitize user-visible blocker messages into plain text before adding them to forms so a `SafeString` cannot inject markup (`src/crud_views_workflow/lib/execution.py`).
 - Browser event listener errors are collected from `window` error events through `tests/js/helpers/errors.js`; DOM dispatch does not reliably rethrow them synchronously.
 
 ## Logging

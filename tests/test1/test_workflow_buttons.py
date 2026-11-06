@@ -112,6 +112,23 @@ class CustomWorkflowForm(CampaignWorkflowForm):
 
 
 class TestTransitionButtons:
+    @pytest.mark.parametrize("presentation", ["radio", "buttons"])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_stock_field_wrapping(self, client_user_campaign_change, campaign_new, monkeypatch, presentation, modal):
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        caption = "Unbroken" * 100
+        monkeypatch.setattr(CampaignWorkflowView, "cv_comment_label", caption)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_comment_help_text", caption)
+        response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/", headers=_headers(modal))
+        document = _document(response)
+        textarea = document.cssselect("textarea[name=comment]")[0]
+        wrappers = textarea.xpath('ancestor::*[contains(@style, "overflow-wrap: anywhere")]')
+        assert bool(wrappers) is (presentation == "buttons")
+        if wrappers:
+            assert caption in wrappers[0].cssselect("label")[0].text_content()
+            assert caption in wrappers[0].cssselect(".form-text")[0].text_content()
+
     @pytest.mark.parametrize("modal", [False, True])
     @pytest.mark.parametrize(
         "name,target", [("wf_activate", CampaignState.ACTIVE), ("wf_cancel_new", CampaignState.CANCELED)]

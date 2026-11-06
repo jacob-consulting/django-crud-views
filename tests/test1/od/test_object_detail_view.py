@@ -338,3 +338,84 @@ class TestModelDisplayChecks:
         view = self.view({Info: []})
         view.cv_modal_size = "modal-huge"
         assert "viewset.E250" in _error_ids(view)
+
+
+class TestModelDisplayCompatibility:
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("mapped", [False, True])
+    @pytest.mark.parametrize("forms", ["raw", "typed", "raw-typed", "typed-raw", "empty"])
+    def test_group_forms(self, mapped, forms, django_assert_num_queries):
+        from types import MappingProxyType
+
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+
+        raw = {"title": "Raw", "properties": ["text"]}
+        typed = PropertyGroupConfig(title="Typed", properties=["text"])
+        groups = {
+            "raw": [raw],
+            "typed": [typed],
+            "raw-typed": [raw, typed],
+            "typed-raw": [typed, raw],
+            "empty": [],
+        }[forms]
+        view = ObjectDetailMixin()
+        view.cv_property_display = MappingProxyType({Info: groups}) if mapped else groups
+        if mapped:
+            view.object = Info(text="A value")
+        with django_assert_num_queries(0):
+            selected = view.get_property_display()
+        assert [g.title for g in selected] == [g["title"] if isinstance(g, dict) else g.title for g in groups]
+        for original, result in zip(groups, selected, strict=True):
+            if isinstance(original, PropertyGroupConfig):
+                assert result is original
+        assert raw == {"title": "Raw", "properties": ["text"]}
+
+    def test_none_without_object(self):
+        assert ObjectDetailMixin().get_property_display() == []
+
+    def test_dynamic_override_reads_effective_property_once(self, rf):
+        class DynamicDetail(ObjectDetailMixin):
+            cv_property_display = {Info: [{"title": "Unused", "properties": []}]}
+            reads = 0
+
+            @property
+            def property_display(self):
+                self.reads += 1
+                return [{"title": self.request.GET["title"], "properties": [self.object.text]}]
+
+        view = DynamicDetail()
+        view.object = Info(text="text")
+        view.request = rf.get("/", {"title": "Dynamic title"})
+        groups = view.get_property_display()
+        assert view.reads == 1
+        assert groups[0].title == "Dynamic title"
+        assert groups[0].properties[0].path == "text"
+
+    @pytest.mark.django_db
+    def test_successive_requests_keep_declaration(self, mapped_detail, client_user_vehicle_view, monkeypatch):
+        from copy import deepcopy
+
+        from django.core.exceptions import ImproperlyConfigured
+
+        from tests.test1.app.models import Car, Truck
+
+        car = Car.objects.create(name="Roadster", doors=2)
+        truck = Truck.objects.create(name="Hauler", payload_tons=17)
+        declaration = mapped_detail.cv_property_display
+        snapshot = deepcopy(declaration)
+        for obj, title, absent, field, value in [
+            (car, "Car attributes", "Truck attributes", "doors", 2),
+            (truck, "Truck attributes", "Car attributes", "payload_tons", 17),
+            (car, "Car attributes", "Truck attributes", "doors", 2),
+        ]:
+            response = client_user_vehicle_view.get(f"/mapped/{obj.pk}/")
+            assert response.status_code == 200
+            html = response.content.decode()
+            assert title in html and absent not in html
+            group = response.context["object_detail_groups"][0]
+            assert [(p.path, p.value) for p in group.properties] == [("name", obj.name), (field, value)]
+            assert mapped_detail.cv_property_display is declaration
+            assert declaration == snapshot
+        monkeypatch.setattr(mapped_detail, "cv_property_display", {Car: declaration[Car]})
+        with pytest.raises(ImproperlyConfigured, match=r"app\.Truck"):
+            client_user_vehicle_view.get(f"/mapped/{truck.pk}/")

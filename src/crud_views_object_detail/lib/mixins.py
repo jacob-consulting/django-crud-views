@@ -47,6 +47,9 @@ class ObjectDetailMixin:
         if isinstance(raw, Mapping):
             model = type(self.object)
             try:
+                # Mapping membership may invoke lookup/default factories; inspect declared keys instead.
+                if not any(key is model for key in raw):
+                    raise KeyError(model)
                 raw = raw[model]
             except KeyError as exc:
                 view = type(self)

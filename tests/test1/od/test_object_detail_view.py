@@ -341,6 +341,65 @@ class TestModelDisplayChecks:
 
 
 class TestModelDisplayCompatibility:
+    @pytest.mark.parametrize("mapping_kind", ["defaultdict", "lookup_mapping"])
+    @pytest.mark.parametrize("populated", [False, True])
+    def test_default_producing_mapping_requires_declared_exact_key(self, mapping_kind, populated):
+        from collections import defaultdict
+        from collections.abc import Mapping
+        from copy import deepcopy
+
+        from django.core.exceptions import ImproperlyConfigured
+
+        from tests.test1.app.models import Author
+
+        factory_calls = []
+        lookups = []
+
+        def default_groups():
+            factory_calls.append(True)
+            return [{"title": "Undeclared fallback", "properties": []}]
+
+        declared = {Info: [{"title": "Declared info", "properties": ["text"]}]} if populated else {}
+        snapshot = deepcopy(declared)
+        backing = defaultdict(default_groups, declared)
+
+        class LookupMapping(Mapping):
+            # Mapping.__contains__ delegates to __getitem__, so membership can create defaults too.
+            def __getitem__(self, key):
+                lookups.append(key)
+                return backing[key]
+
+            def __iter__(self):
+                return iter(backing)
+
+            def __len__(self):
+                return len(backing)
+
+        declaration = backing if mapping_kind == "defaultdict" else LookupMapping()
+
+        class DeclaredDetail(ObjectDetailMixin):
+            cv_property_display = declaration
+
+        view = DeclaredDetail()
+        view.object = Author()
+        with pytest.raises(ImproperlyConfigured) as exc:
+            view.get_property_display()
+        assert "app.Author" in str(exc.value)
+        assert f"{DeclaredDetail.__module__}.{DeclaredDetail.__qualname__}" in str(exc.value)
+        assert factory_calls == []
+        assert lookups == []
+        assert DeclaredDetail.cv_property_display is declaration
+        assert backing == snapshot
+
+        if populated:
+            view.object = Info(text="Declared value")
+            selected = view.get_property_display()
+            assert [group.title for group in selected] == ["Declared info"]
+            assert selected[0].properties[0].path == "text"
+            assert factory_calls == []
+            assert lookups == ([Info] if mapping_kind == "lookup_mapping" else [])
+            assert backing == snapshot
+
     @pytest.mark.django_db
     @pytest.mark.parametrize("mapped", [False, True])
     @pytest.mark.parametrize("forms", ["raw", "typed", "raw-typed", "typed-raw", "empty"])

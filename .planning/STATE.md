@@ -1,19 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: "Phase 06.13 shipped — PR #324"
-stopped_at: Phase 06.13 complete, ready to plan Phase 7
-last_updated: "2026-11-06T05:36:43.890Z"
+current_phase: 06.13.1
+current_phase_name: Workflow validation and execution
+status: Phase 06.13.1 context gathered — ready for planning
+stopped_at: Phase 06.13.1 context gathered
+last_updated: "2026-11-06T06:36:00.759Z"
 last_activity: 2026-11-06
-state_head: f1716cdc5e92e343dd68f67d4f7e8dd1dcd35d54
+state_head: c0408e6cb4d3014480d9d870385f142a04d2b111
 progress:
-  total_phases: 18
+  total_phases: 19
   completed_phases: 17
   total_plans: 120
   completed_plans: 120
-  percent: 94
 milestone_name: milestone
 ---
 
@@ -24,16 +23,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.13.1 — Workflow validation and execution (#322)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.13.1 — Workflow validation and execution
 Plan: Not started
-Status: Phase 06.13 shipped — PR #324
+Status: Phase 06.13.1 context gathered — ready for planning
 Last activity: 2026-11-06
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.13.1
 
 ### Phase 06.13 shipping — 2026-11-06
 
@@ -839,6 +838,7 @@ None yet.
 - Phase 06.9 inserted after Phase 06.8: Protected delete-preview object links (#307); user insertion schedules the issue before Phase 7 freezes the affected contracts (URGENT)
 - Phase 06.10 inserted after Phase 6.9: Issue #316: simplify protected-object previews and cap total displayed objects before Phase 7; no dependency on #312, #314 or the retired URL resolver (URGENT)
 - Phase 06.13 inserted after Phase 06.12: Issue #320: document and test opt-in per-transition workflow access; preserve the default change gate. Phase 06.12 is reserved on disk; this phase is independently deliverable. (URGENT)
+- Phase 06.13.1 inserted after Phase 06.13: Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322) (URGENT)
 
 ## Deferred Items
 
@@ -848,6 +848,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-05T23:00:42+00:00
-Stopped at: Phase 06.13 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-06T06:35:58.666Z
+Stopped at: Phase 06.13.1 context gathered
+Resume file: .planning/phases/06.13.1-workflow-validation-and-execution-business-blockers-transiti/06.13.1-CONTEXT.md

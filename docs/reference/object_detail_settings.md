@@ -28,11 +28,11 @@ from django.utils.translation import gettext_lazy as _
 from crud_views_object_detail.lib import x
 
 properties = [
-    "text",                          # inherit
-    x("text", detail=None),          # inherit
-    x("text", detail=True),          # force terminal model help
-    x("text", detail=False),         # suppress
-    x("text", detail=""),            # suppress
+    "text",  # inherit
+    x("text", detail=None),  # inherit
+    x("text", detail=True),  # force terminal model help
+    x("text", detail=False),  # suppress
+    x("text", detail=""),  # suppress
     x("text", detail="Used for invoices."),
     x("text", detail=_("Invoice guidance")),
 ]

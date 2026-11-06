@@ -55,14 +55,16 @@ For a model with `process` choices such as `("natural", "Naturally processed")`:
 ```python
 from crud_views_object_detail.lib import x
 
-cv_property_display = [{
-    "title": "Processing",
-    "properties": [
-        "process",
-        x("process", title="Stored process", choices_display=False),
-        {"path": "process", "choices_display": False},
-    ],
-}]
+cv_property_display = [
+    {
+        "title": "Processing",
+        "properties": [
+            "process",
+            x("process", title="Stored process", choices_display=False),
+            {"path": "process", "choices_display": False},
+        ],
+    }
+]
 ```
 
 A declared nonempty label for a blank value (including `None`) remains meaningful text.

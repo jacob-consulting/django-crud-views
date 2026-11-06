@@ -37,7 +37,7 @@ def render_value(prop):
 )
 def test_empty_text_value_preserves_distinctions(value_type, value, expected):
     prop = ResolvedProperty(path="value", label="Value", value=value, type=value_type)
-    assert render_value(prop).removesuffix("\n") == expected
+    assert render_value(prop) == expected + ("\n" if value_type == "char" else "")
 
 
 @pytest.mark.parametrize("value_type", ["char", "text", "default"])
@@ -48,7 +48,7 @@ def test_empty_text_leaf_uses_final_display_value(value_type, display_value):
         {"value": "raw-code", "display_value": display_value, "od_settings": {"property_text_newline": "linebreaksbr"}},
     )
     expected = EMPTY_TEXT_MARKER if display_value is None or display_value == "" else display_value
-    assert html.removesuffix("\n") == expected
+    assert html == expected + ("\n" if value_type == "char" else "")
 
 
 @pytest.mark.parametrize("value_type", ["char", "text", "default"])
@@ -73,9 +73,9 @@ def test_empty_text_keeps_label_and_explicit_detail(value_type, value):
 def test_empty_text_preserves_newline_modes(newline, expected, settings):
     settings.CRUD_VIEWS_OBJECT_DETAIL_PROPERTY_TEXT_NEWLINE = newline
     prop = ResolvedProperty("body", "Body", "A<b>\nGröße — 水\n\nLast", type="text")
-    assert render_value(prop).removesuffix("\n") == expected
+    assert render_value(prop) == expected
     prop.value = ""
-    assert render_value(prop).removesuffix("\n") == EMPTY_TEXT_MARKER
+    assert render_value(prop) == EMPTY_TEXT_MARKER
 
 
 def test_empty_text_keeps_duplicate_properties_and_order():

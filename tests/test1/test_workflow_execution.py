@@ -10,13 +10,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.messages import get_messages
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation, ValidationError
 from django.db import connections, router, transaction
+from django.db.models.query import QuerySet
 from django.forms import CharField
 from django.test import Client, RequestFactory
 
 from crud_views_workflow.lib.enums import WorkflowComment
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.models import WorkflowInfo
-from tests.test1.app.models import Campaign, CampaignState
+from tests.test1.app.models import Campaign, CampaignState, Publisher
 from tests.test1.app.views import CampaignWorkflowForm, CampaignWorkflowView
 
 
@@ -679,3 +680,152 @@ class TestWorkflowDatabase:
             queryset = unsaved.get_workflow_info_queryset()
             assert queryset.db == "shard"
             assert list(queryset) == []
+
+
+@pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+class TestWorkflowRollback:
+    @pytest.mark.parametrize("using", ["default", "shard"])
+    @pytest.mark.parametrize("error_type", [ValidationError, RuntimeError])
+    @pytest.mark.parametrize(
+        "path,atomic,stage",
+        [
+            (path, atomic, stage)
+            for path, atomic in [("helper", False), ("request", False), ("request", True)]
+            for stage in ["transition", "save", "content-type", "history", "on_transition"]
+            if path == "request" or stage != "on_transition"
+        ],
+    )
+    def test_failure_stages(
+        self, workflow_worlds, database_routes, monkeypatch, using, error_type, path, atomic, stage
+    ):
+        from crud_views_workflow.lib import run_transition
+
+        obj, actor, _ = workflow_worlds[using]
+        error = error_type(f"Failure at {stage}")
+        observed, callbacks = [], []
+        executing = False
+        original_transition = Campaign.wf_activate
+        original_save = Campaign.save
+        original_get_type = type(ContentType.objects).get_for_model
+        original_create = QuerySet.create
+        original_process = CampaignWorkflowView.cv_form_valid
+
+        def fail():
+            observed.append((stage, connections[using].in_atomic_block))
+            # A real consumer follow-up write must participate in the same rollback.
+            Publisher.objects.using(using).create(name="Follow-up must roll back")
+            raise error
+
+        @wraps(original_transition)
+        def transition(obj, *, by, comment):
+            result = original_transition(obj, by=by, comment=comment)
+            assert obj.state == CampaignState.ACTIVE
+            if stage == "transition":
+                fail()
+            return result
+
+        def save(obj, *args, **kwargs):
+            result = original_save(obj, *args, **kwargs)
+            assert kwargs["using"] == using
+            if stage == "save":
+                fail()
+            return result
+
+        def get_type(manager, *args, **kwargs):
+            result = original_get_type(manager, *args, **kwargs)
+            if executing and stage == "content-type":
+                assert manager.db == using
+                fail()
+            return result
+
+        def create(queryset, **kwargs):
+            result = original_create(queryset, **kwargs)
+            if queryset.model is WorkflowInfo and stage == "history":
+                assert result._state.db == using
+                fail()
+            return result
+
+        def on_transition(view, *args):
+            if stage == "on_transition":
+                fail()
+
+        def process(view, context):
+            nonlocal executing
+            executing = True
+            return original_process(view, context)
+
+        monkeypatch.setattr(Campaign, "wf_activate", transition)
+        monkeypatch.setattr(Campaign, "save", save)
+        monkeypatch.setattr(type(ContentType.objects), "get_for_model", get_type)
+        monkeypatch.setattr(QuerySet, "create", create)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_atomic", atomic)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_form_valid", process)
+        monkeypatch.setattr(CampaignWorkflowView, "on_transition", on_transition)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_on_commit", lambda view, context: callbacks.append(context))
+        with database_routes(using), pytest.raises(error_type) as caught:
+            if path == "helper":
+                executing = True
+                run_transition(obj, "wf_activate", user=actor, comment="reason")
+            else:
+                client = Client()
+                client.force_login(actor)
+                client.post(f"/campaign/{obj.pk}/workflow/", {"transition": "wf_activate", "comment": "reason"})
+        assert caught.value is error  # ordinary ValidationError must never become a refusal
+        assert observed == [(stage, True)]
+        assert callbacks == []
+        if path == "helper":
+            assert obj.state == CampaignState.ACTIVE  # rollback does not repair Python instances
+        for alias in ("default", "shard"):
+            persisted = Campaign.objects.using(alias).get(pk=41)
+            assert persisted.state == CampaignState.NEW
+            assert persisted.name == f"{alias} campaign"
+            assert not WorkflowInfo.objects.using(alias).exists()
+            assert not Publisher.objects.using(alias).exists()
+
+    @pytest.mark.parametrize("using", ["default", "shard"])
+    @pytest.mark.parametrize("atomic", [False, True])
+    def test_success_callback_and_followup_atomicity(
+        self, workflow_worlds, database_routes, monkeypatch, using, atomic
+    ):
+        obj, actor, _ = workflow_worlds[using]
+        other = "shard" if using == "default" else "default"
+        observed, callbacks = [], []
+
+        def on_transition(view, info, *args):
+            assert info._state.db == using
+            observed.append(connections[using].in_atomic_block)
+            Publisher.objects.using(using).create(name="Committed follow-up")
+
+        def on_commit(view, context):
+            assert not connections[using].in_atomic_block
+            info = context["workflow_info"]
+            assert WorkflowInfo.objects.using(using).get(pk=info.pk).state_new == CampaignState.ACTIVE
+            callbacks.append(info)
+
+        monkeypatch.setattr(CampaignWorkflowView, "cv_atomic", atomic)
+        monkeypatch.setattr(CampaignWorkflowView, "on_transition", on_transition)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_on_commit", on_commit)
+        with database_routes(using), transaction.atomic(using=other):
+            client = Client()
+            client.force_login(actor)
+            response = client.post(f"/campaign/{obj.pk}/workflow/", {"transition": "wf_activate", "comment": ""})
+            assert response.status_code == 302
+            assert observed == [True]
+            assert len(callbacks) == 1
+        assert callbacks[0]._state.db == using
+        assert Publisher.objects.using(using).get().name == "Committed follow-up"
+        assert not Publisher.objects.using(other).exists()
+        assert not WorkflowInfo.objects.using(other).exists()
+
+    @pytest.mark.parametrize("using", ["default", "shard"])
+    def test_direct_decorated_call_remains_outside_helper(self, workflow_worlds, monkeypatch, using):
+        obj, actor, _ = workflow_worlds[using]
+
+        def check(*args, **kwargs):
+            pytest.fail("Direct decorated calls must not invoke the new helper hook")
+
+        monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+        obj.wf_activate(by=actor, comment="Direct call")
+        assert obj.state == CampaignState.ACTIVE
+        assert Campaign.objects.using(using).get(pk=obj.pk).state == CampaignState.NEW
+        assert not WorkflowInfo.objects.using(using).exists()

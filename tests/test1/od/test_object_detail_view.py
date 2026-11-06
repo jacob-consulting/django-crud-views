@@ -283,6 +283,22 @@ class TestModelDisplayChecks:
             if chk.id in {"E247", "E245"}:
                 assert "entry 0" in chk.get_message()
 
+    def test_bare_model_key_preserves_value_later_entry_and_inherited_checks(self):
+        from django.db.models import Model
+
+        from tests.test1.app.models import Author
+
+        view = self.view({Info: [], Model: None, Author: ["malformed"]})
+        view.cv_modal_size = "modal-huge"
+        messages = [m for chk in view.checks() for m in chk.messages()]
+        errors = {m.id: m.msg for m in messages}
+        assert {"viewset.E247", "viewset.E241", "viewset.E242", "viewset.E243", "viewset.E250"} <= errors.keys()
+        for error_id in ("viewset.E247", "viewset.E241"):
+            assert "entry 1 (ModelBase)" in errors[error_id]
+        for error_id in ("viewset.E242", "viewset.E243"):
+            assert "app.Author][0]" in errors[error_id]
+        assert all("DeclaredDetail" in message for message in errors.values())
+
     @pytest.mark.parametrize("value", [None, "groups", 1, {}, ()])
     @pytest.mark.parametrize("valid_key", [False, True])
     def test_invalid_value_shape(self, value, valid_key):

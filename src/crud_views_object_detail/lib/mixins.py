@@ -87,7 +87,7 @@ class ObjectDetailMixin:
                     yield from cls._checks_property_group(i, group)
             elif isinstance(pd, Mapping):
                 for entry, (model, groups) in enumerate(pd.items()):
-                    valid_model = isinstance(model, type) and issubclass(model, Model)
+                    valid_model = isinstance(model, type) and issubclass(model, Model) and model is not Model
                     location = (
                         f"cv_property_display[{model._meta.label}]"
                         if valid_model

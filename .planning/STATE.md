@@ -1,19 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: "Phase 06.13.1 shipped — PR #332"
-stopped_at: Phase 06.13.1 complete, ready to plan Phase 7
-last_updated: "2026-11-06T12:52:42.464Z"
+current_phase: "06.16"
+current_phase_name: Object-detail values and composition guidance
+status: Phase 06.16 context gathered — ready for planning
+stopped_at: Phase 06.16 context gathered
+last_updated: "2026-11-06T13:51:47.607Z"
 last_activity: 2026-11-06
-state_head: 16a7354420afce19d0dd47331da9865457cdc3d8
+state_head: 9ea03f75d27492c7e526fbaaaf09fd9b53a82f4a
 progress:
-  total_phases: 21
+  total_phases: 22
   completed_phases: 20
   total_plans: 131
   completed_plans: 131
-  percent: 95
 milestone_name: milestone
 ---
 
@@ -24,16 +23,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-06)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.13.1 — Workflow validation and execution
+**Current focus:** Phase 06.16 — Object-detail values and composition guidance (#327)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.16 — Object-detail values and composition guidance (#327)
 Plan: Not started
-Status: Phase 06.13.1 shipped — PR #332
+Status: Phase 06.16 context gathered — ready for planning
 Last activity: 2026-11-06
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.16
 
 ### Phase 06.14 completion — 2026-11-06
 
@@ -929,6 +928,7 @@ None yet.
 - Phase 06.14 inserted after Phase 6: Issue #325: add empty card_root/card_header blocks and document/test cards-first ViewSets with a secondary table; preserve existing rendering, actions, permissions and navigation. Settle these contracts before Phase 7; downstream theme implementation is separate. (URGENT)
 
 - Phase 06.15 inserted after Phase 06.14: Issue #326: polymorphic selector labels and per-model detail groups, including required tabler-test adoption and verification. Phase 06.14 completed in another worktree per user; no card implementation dependency. (URGENT)
+- Phase 06.16 inserted after Phase 06.15: Issue #327: object-detail choice labels, help-text policy, empty values, and composition guidance; settled issue decisions are the planning handoff. (URGENT)
 
 ## Deferred Items
 
@@ -938,6 +938,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T11:34:16.722Z
-Stopped at: Phase 06.13.1 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-06T13:51:45.379Z
+Stopped at: Phase 06.16 context gathered
+Resume file: .planning/phases/06.16-object-detail-choice-labels-help-text-policy-empty-values-an/06.16-CONTEXT.md

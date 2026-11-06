@@ -38,7 +38,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.13: Workflow permissions: opt-in per-transition access (INSERTED)** - #320: document and test the existing view-gated recipe while preserving the default change gate (completed 2026-11-05)
 - [ ] **Phase 06.13.1: Workflow validation and execution (INSERTED)** - #322: business blockers, opt-in transition buttons, and a reusable execution helper
 - [x] **Phase 06.14: Card template insertion blocks and cards-first ViewSets (INSERTED)** - #325: completed in another worktree, per user; integration tracked there
-- [ ] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test
+- [x] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test (completed 2026-11-06)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1029,7 +1029,7 @@ Subscription behavior and permissions; update the findings report and documentat
 both repositories. Finding 16 and unrelated object-detail findings remain deferred.
 **Planning handoff:** Carry the settled issue decisions into CONTEXT.md when planning; do not reopen approach
 selection. Routine implementation mechanics are delegated to the planner. Settle these contracts before Phase 7.
-**Plans:** 4/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 **Wave 1**
@@ -1135,5 +1135,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.13. Workflow permissions: opt-in per-transition access | 2/2 | Complete    | 2026-11-05 |
 | 6.13.1. Workflow validation and execution | 0/TBD | Not started | - |
 | 6.14. Card template insertion blocks and cards-first ViewSets | See other worktree | Complete elsewhere (user-reported) | - |
-| 6.15. Polymorphic labels and per-model detail groups | 4/4 | In Progress | - |
+| 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

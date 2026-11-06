@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.15"
-current_phase_name: Polymorphic labels and per-model detail groups
-status: verifying
-stopped_at: Phase 06.15 verified 16/16; two human UAT checks pending
-last_updated: "2026-11-06T12:15:50Z"
+current_phase: 06.13.1
+current_phase_name: "Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322)"
+status: executing
+stopped_at: Phase 06.15 complete, ready to execute Phase 06.13.1
+last_updated: "2026-11-06T12:35:39.664Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.15 automated verification passed; human UAT pending
-state_head: ed5f70cc23b38f651248f765c64accbea39dbe7e
+last_activity_desc: Phase 06.15 complete, transitioned to Phase 06.13.1
+state_head: a6da4a491975f5e1ba627a29fbcf118ba5f1de81
 progress:
   total_phases: 21
-  completed_phases: 18
+  completed_phases: 19
   total_plans: 129
   completed_plans: 124
+  percent: 90
 milestone_name: milestone
 ---
 
@@ -21,19 +22,26 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-05)
+See: .planning/PROJECT.md (updated 2026-11-06)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.15 — Polymorphic labels and per-model detail groups
+**Current focus:** Phase 06.13.1 — Workflow validation and execution
 
 ## Current Position
 
-Phase: 06.15 (Polymorphic labels and per-model detail groups) — VERIFYING
-Plan: 4 of 4
-Status: All plans executed — human verification pending
-Last activity: 2026-11-06 — Final verification 16/16; two human checks pending
+Phase: 06.13.1 — Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322)
+Plan: Not started
+Status: Ready to execute
+Last activity: 2026-11-06 — Phase 06.15 complete, transitioned to Phase 06.13.1
 
-Next: $gsd-verify-work 06.15 — visual and browser interaction acceptance
+Next: $gsd-execute-phase 06.13.1
+
+### Phase 06.15 acceptance closeout — 2026-11-06
+
+- User explicitly passed both visual and browser interaction checks. UAT 2/2 and canonical 16/16 passed; shared completion predicate has no blockers. All four plans complete; roadmap/state advanced to planned Phase 06.13.1.
+- Isolated UAT instance remains running on port 9000 at https://cv.jacob-consulting.org, with fresh seeded data and source-bound consumer snapshot. Original database and checkout preserved. Existing tests and audit evidence retain their original source attribution.
+- Completion scanner misread the command fragment `-c examples/bootstrap5/pytest.ini` as a path; the actual config file exists. No delivery artifact missing. No LEARNINGS files to graduate and no stale phase handoffs. Earlier pending-human statements below are historical.
+- No push or merge. Unrelated config edits preserved.
 
 ### Phase 06.15 execution and verification — 2026-11-06
 
@@ -500,7 +508,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 120
+- Total plans completed: 124
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -525,6 +533,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.8 | 3 | - | - |
 | 06.10 | 5 | - | - |
 | 06.13 | 2 | - | - |
+| 06.15 | 4 | - | - |
 
 **Recent Trend:**
 
@@ -867,5 +876,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-06T11:38:07.769Z
-Stopped at: Completed 06.15-04-PLAN.md; phase verification pending
+Stopped at: Phase 06.15 complete, ready to execute Phase 06.13.1
 Resume file: None

@@ -46,6 +46,11 @@ class WorkflowForm(CrispyForm):
 
     def __init__(self, *args, choices: list[tuple[str, str]], transition_comments: dict, **kwargs):
         super().__init__(*args, **kwargs)
+        self._workflow_comment_widget = self.fields["comment"].widget
+        self._workflow_set_choices(choices, transition_comments)
+        self.fields["transition"].widget.use_fieldset = False
+
+    def _workflow_set_choices(self, choices, transition_comments):
         self.transition_comments = transition_comments
         self.transition_comment = (
             max(transition_comments.values()) if transition_comments.values() else WorkflowComment.NONE
@@ -55,10 +60,15 @@ class WorkflowForm(CrispyForm):
         if self.transition_comment == WorkflowComment.NONE:
             field_comment = self.fields["comment"]
             field_comment.widget = field_comment.hidden_widget()
+        elif self.fields["comment"].widget.is_hidden:
+            self.fields["comment"].widget = self._workflow_comment_widget
 
-        transition = self.fields["transition"]
-        transition.choices = choices
-        transition.widget.use_fieldset = False
+        self.fields["transition"].choices = choices
+
+    def _workflow_refresh(self):
+        """Refresh object-derived choices without replacing the bound form or data."""
+        kwargs = self.cv_view.object.workflow_get_form_kwargs(self.cv_view.request.user)
+        self._workflow_set_choices(kwargs["choices"], kwargs["transition_comments"])
 
     def clean(self):
         cleaned_data = super().clean()

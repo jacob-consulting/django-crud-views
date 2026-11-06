@@ -10,7 +10,7 @@ from crud_views.lib.check import Check, CheckAttribute, CheckExpression
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from crud_views.lib.views.form import CustomFormView
 
-from .execution import _run_transition
+from .execution import _run_transition, _WorkflowRefusal
 from .mixins import WorkflowModelMixin
 
 _PROCESS_WORKFLOW = _("Process workflow")
@@ -82,6 +82,26 @@ class WorkflowView(CustomFormView):
         context = super().get_context_data(**kwargs)
         context["has_workflow_choices"] = self.object.workflow_has_any_possible_transition(self.request.user)
         return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(**kwargs)
+        self.cv_post_hook(context)
+        if self.cv_form_is_valid(context):
+            try:
+                self.cv_form_valid_process(context)
+            except _WorkflowRefusal as refusal:
+                # Both write boundaries have unwound. Fetch through the scoped
+                # queryset rather than refreshing a possibly protected FSM instance.
+                form = context["form"]
+                form.add_error(refusal.field, refusal)
+                self.object = self.get_object(queryset=self.get_queryset().using(self._cv_get_workflow_db_alias()))
+                form._workflow_refresh()
+                context = self.get_context_data(object=self.object, form=form, **kwargs)
+            else:
+                return self.cv_form_valid_redirect(context)
+        self.cv_form_invalid_hook(context)
+        return self.cv_form_invalid(context)
 
     def cv_get_db_alias(self) -> str:
         return router.db_for_write(type(self.object), instance=self.object)

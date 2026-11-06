@@ -1,13 +1,13 @@
 """Contracts shared by workflow forms, requests and standalone execution."""
 
 import inspect
-from functools import wraps
 from contextlib import contextmanager
+from functools import wraps
 
 import pytest
 from django.contrib.auth.models import AnonymousUser
-from django.contrib.messages import get_messages
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.messages import get_messages
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation, ValidationError
 from django.db import connections, transaction
 from django.forms import CharField
@@ -256,9 +256,7 @@ class TestWorkflowRefusal:
     @pytest.mark.parametrize("atomic", [False, True])
     @pytest.mark.parametrize("modal", [False, True])
     @pytest.mark.parametrize("refusal_kind", ["business", "comment"])
-    def test_late_refusal(
-        self, client_user_campaign_change, campaign_new, monkeypatch, atomic, modal, refusal_kind
-    ):
+    def test_late_refusal(self, client_user_campaign_change, campaign_new, monkeypatch, atomic, modal, refusal_kind):
         class CustomForm(CampaignWorkflowForm):
             extra = CharField()
 
@@ -321,7 +319,9 @@ class TestWorkflowRefusal:
         monkeypatch.setattr(CampaignWorkflowView, "cv_form_valid_hook", unexpected)
         monkeypatch.setattr(CampaignWorkflowView, "on_transition", unexpected)
         monkeypatch.setattr(CampaignWorkflowView, "cv_on_commit", unexpected)
-        monkeypatch.setattr(CampaignWorkflowView, "cv_form_invalid_hook", lambda view, context: seen["invalid"].append(context))
+        monkeypatch.setattr(
+            CampaignWorkflowView, "cv_form_invalid_hook", lambda view, context: seen["invalid"].append(context)
+        )
         monkeypatch.setattr(Campaign, "workflow_check_transition", check)
         monkeypatch.setattr(transaction, "atomic", boundary)
         client_user_campaign_change.raise_request_exception = False
@@ -339,9 +339,11 @@ class TestWorkflowRefusal:
         assert form.data["extra"] == "  custom input  "
         assert not form.non_field_errors()
         expected_field = "transition" if refusal_kind == "business" else "comment"
-        expected_errors = ["Late first blocker", "Late second blocker"] if refusal_kind == "business" else [
-            "Comment is required for this transition"
-        ]
+        expected_errors = (
+            ["Late first blocker", "Late second blocker"]
+            if refusal_kind == "business"
+            else ["Comment is required for this transition"]
+        )
         assert list(form.errors[expected_field]) == expected_errors
         assert "workflow_info" not in context
         assert "stale_history" not in context
@@ -356,9 +358,7 @@ class TestWorkflowRefusal:
         assert len(seen["invalid"]) == 1
 
     @pytest.mark.parametrize("atomic", [False, True])
-    def test_selected_alias_for_success_callback(
-        self, client_user_campaign_change, campaign_new, monkeypatch, atomic
-    ):
+    def test_selected_alias_for_success_callback(self, client_user_campaign_change, campaign_new, monkeypatch, atomic):
         selected, registered, called = [], [], []
         original_on_commit = transaction.on_commit
         original_atomic = CampaignWorkflowView.cv_get_atomic

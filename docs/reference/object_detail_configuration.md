@@ -34,7 +34,7 @@ from crud_views_object_detail.lib import x
 |------------|-------------|
 | `path`     | Field name or `__`-separated path (required) |
 | `title`    | Override the auto-derived label |
-| `detail`   | Help text shown below the value |
+| `detail`   | Inherit (`None`), force model help (`True`), suppress (`False`/`""`), or explicit text; see [help precedence](object_detail_settings.md#help-text-precedence) |
 | `type`     | Override the auto-detected type (e.g. `"date"`, `"boolean"`) |
 | `template` | Path to a custom template for rendering the value |
 | `link`     | `LinkConfig` or URL name string (see [Links](object_detail_links.md)) |

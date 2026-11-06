@@ -29,9 +29,9 @@ No migrations are required.
 
 | View class | Use for |
 |---|---|
-| `ObjectDetailView` | Structured property-group detail rendering (no permission check) |
-| `ObjectDetailViewPermissionRequired` | Structured property-group detail rendering with model-level permission check |
-| `ObjectDetailMixin` | Composable mixin — mix into `GuardianDetailViewPermissionRequired` / `PolymorphicDetailViewPermissionRequired` for rich detail on extension-package views |
+| `ObjectDetailView` | Complete view: subclass directly for structured rendering (no permission check) |
+| `ObjectDetailViewPermissionRequired` | Complete view: subclass directly for structured rendering with model-level permission check |
+| `ObjectDetailMixin` | Put first before core `DetailViewPermissionRequired`, `GuardianDetailViewPermissionRequired` or `PolymorphicDetailViewPermissionRequired`; do not prepend to complete object-detail views |
 
 ## Minimal Pattern
 
@@ -101,11 +101,12 @@ cv_property_display = [
 |------------|-------------|
 | `path`     | Field name or `__`-separated path (required) |
 | `title`    | Override the auto-derived label |
-| `detail`   | Help text shown below the value |
+| `detail`   | Inherit (`None`), force model help (`True`), suppress (`False`/`""`), or explicit text; see [help precedence](object_detail_settings.md#help-text-precedence) |
 | `type`     | Override the auto-detected type (e.g. `"date"`, `"boolean"`) |
 | `template` | Path to a custom template for rendering the value |
 | `link`     | `LinkConfig` or URL name string (see [Links](object_detail_links.md)) |
 | `badge`    | `BadgeConfig` or color string (see [Badges](object_detail_badges.md)) |
+| `choices_display` | `True` (default) displays scalar model choice labels; `False` restores raw presentation |
 
 See [Configuration](object_detail_configuration.md) for property-path traversal rules and the
 view-callable fallback, [Supported Field Types](object_detail_field_types.md) for the
@@ -196,11 +197,52 @@ branch separately. For differences based solely on exact model type, use the map
 
 ## Compose Pattern (Guardian / Polymorphic)
 
+**`ObjectDetailView` and `ObjectDetailViewPermissionRequired` already include
+`ObjectDetailMixin`: subclass these complete views directly.** Redundantly prepending the
+mixin to either complete view creates an inconsistent MRO and fails at Python class creation,
+before Django system checks can run. No extra mixin or runtime detector is needed.
+
+These two independent examples use an existing Book `cv_book` ViewSet:
+
+<!-- object-detail-value-recipe: complete -->
+```python
+from crud_views_object_detail.lib import ObjectDetailView
+
+
+class BookDetailView(ObjectDetailView):
+    cv_viewset = cv_book
+    cv_property_display = [{"title": "Book", "properties": ["title", "publisher__name"]}]
+```
+
+<!-- object-detail-value-recipe: complete-permission -->
+```python
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
+
+
+class BookDetailView(ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_book
+    cv_property_display = [{"title": "Book", "properties": ["title", "publisher__name"]}]
+```
+
+For a base that does not already include the mixin, put it first. The core composition is:
+
+<!-- object-detail-value-recipe: core -->
+```python
+from crud_views.lib.views import DetailViewPermissionRequired
+from crud_views_object_detail.lib import ObjectDetailMixin
+
+
+class BookDetailView(ObjectDetailMixin, DetailViewPermissionRequired):
+    cv_viewset = cv_book
+    cv_property_display = [{"title": "Book", "properties": ["title", "publisher__name"]}]
+```
+
 Extension-package detail views (`GuardianDetailViewPermissionRequired`,
 `PolymorphicDetailViewPermissionRequired`) are simple template-driven views by default, just
 like core `DetailView`. To get rich property-group rendering on them, mix in
 `ObjectDetailMixin`:
 
+<!-- object-detail-value-recipe: guardian -->
 ```python
 from crud_views_object_detail.lib import ObjectDetailMixin
 from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired
@@ -209,10 +251,14 @@ from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired
 class BookDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_book  # must be a GuardianViewSet
     cv_property_display = [
-        {"title": "Basic Info", "properties": ["title", "author__name"]},
+        {"title": "Basic Info", "properties": ["title", "publisher__name"]},
     ]
 ```
 
+Construct that `cv_book` with `GuardianViewSet(model=Book, name="book")`, imported from
+`crud_views_guardian.lib.viewset`, to retain object-permission ownership.
+
+<!-- object-detail-value-recipe: polymorphic -->
 ```python
 from crud_views_object_detail.lib import ObjectDetailMixin
 from crud_views_polymorphic.lib import PolymorphicDetailViewPermissionRequired
@@ -234,6 +280,12 @@ Unlike core `DetailView`, `ObjectDetailView` sets `cv_modal_supported = True` an
 Bootstrap 5 modal rendering — see [Modals](modals.md).
 
 ## Settings
+
+`cv_object_detail_show_help_text = None` inherits
+`CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT=False`; a boolean view override selects automatic
+terminal-field help. Property instructions win over both. See the exact
+[help precedence table](object_detail_settings.md#help-text-precedence), including lazy text,
+raw-tag forwarding, cached settings and already-resolved groups.
 
 `crud_views_object_detail` settings (layout pack, text newlines, etc.) are documented in
 [ObjectDetailView settings](object_detail_settings.md).

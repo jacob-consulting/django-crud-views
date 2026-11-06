@@ -25,3 +25,6 @@ Stock `char`, `text` and `default` leaves show the muted em dash for exact `None
 in `display_value`. Zero, False and whitespace remain values. Nonempty `text` keeps the
 configured `linebreaks`/`linebreaksbr` formatting. Empty rows, titles and explicit detail
 remain visible; custom templates own their output. See the [copied text leaf](object_detail_configuration.md#copied-text-value-template).
+
+Automatic model help is hidden by default. The [help precedence table](object_detail_settings.md#help-text-precedence)
+defines project, view and property overrides; only the terminal field supplies automatic help.

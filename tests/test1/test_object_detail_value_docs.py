@@ -1,20 +1,29 @@
 """Execute the published object-detail value, composition and migration recipes."""
 
 import re
+from collections import OrderedDict
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from django.template import Context, Template
 from django.test import override_settings
 from lxml import html
 
-from crud_views_object_detail.lib import conf
+from crud_views.lib import check as check_module
+from crud_views.lib import viewset as viewset_module
+from crud_views.lib.views import DetailViewPermissionRequired
+from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from crud_views_object_detail.lib import ObjectDetailMixin, ObjectDetailView, ObjectDetailViewPermissionRequired, conf
 from crud_views_object_detail.lib.conf import CrudViewsObjectDetailSettings
 from crud_views_object_detail.lib.config import BadgeConfig, parse_property_display, x
 from crud_views_object_detail.lib.resolvers import ResolvedProperty, resolve_all, resolve_property
 from crud_views_object_detail.templatetags import crud_views_object_detail as tags
+from crud_views_polymorphic.lib import PolymorphicDetailViewPermissionRequired
+from tests.test1.app.models import Vehicle
 from tests.test1.od.test_badge_semantics import render, template_settings
-from tests.test1.od_app.models import ChoiceValue
+from tests.test1.od_app.models import ChoiceValue, Info
 from tests.test1.test_badge_docs import published_template
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -118,3 +127,118 @@ def test_object_detail_value_docs_context_and_translation_guidance():
         "raw `None` or `[]` stays unchanged",
     ]:
         assert contract in config
+
+
+@pytest.mark.parametrize("project", [False, True])
+@pytest.mark.parametrize("view_policy", [None, False, True])
+def test_object_detail_value_docs_help_instructions(settings, project, view_policy):
+    settings.CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = project
+    namespace = {}
+    exec(recipe("docs/reference/object_detail_settings.md", "help-instructions"), namespace)
+    groups = parse_property_display([{"title": "Help", "properties": namespace["properties"]}])
+    props = resolve_all(Info(text="Body"), groups, view=SimpleNamespace(cv_object_detail_show_help_text=view_policy))[
+        0
+    ].properties
+    inherited = "The info body text" if (project if view_policy is None else view_policy) else None
+    assert [p.detail for p in props] == [
+        inherited,
+        inherited,
+        "The info body text",
+        None,
+        None,
+        "Used for invoices.",
+        "Invoice guidance",
+    ]
+
+
+def test_object_detail_value_docs_settings_fixture_refreshes_both(monkeypatch, settings):
+    namespace = {}
+    exec(recipe("docs/reference/object_detail_settings.md", "settings-fixture"), namespace)
+    reset = namespace["fresh_object_detail_settings"].__wrapped__
+    settings.CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = False
+    assert conf.crud_views_object_detail_settings.show_help_text is False
+    settings.CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = True
+    assert conf.crud_views_object_detail_settings.show_help_text is False  # cached startup policy
+    old_tags = tags.crud_views_object_detail_settings
+    reset(monkeypatch)
+    assert conf.crud_views_object_detail_settings.show_help_text is True
+    assert tags.crud_views_object_detail_settings is not old_tags
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "name,bases,object_fixture,user_fixture",
+    [
+        ("complete", (ObjectDetailView,), "book_hitchhiker", "user_book_view"),
+        ("complete-permission", (ObjectDetailViewPermissionRequired,), "book_hitchhiker", "user_book_view"),
+        ("core", (ObjectDetailMixin, DetailViewPermissionRequired), "book_hitchhiker", "user_book_view"),
+        ("guardian", (ObjectDetailMixin, GuardianDetailViewPermissionRequired), "book_hitchhiker", "user_guardian"),
+        (
+            "polymorphic",
+            (ObjectDetailMixin, PolymorphicDetailViewPermissionRequired),
+            "car_sedan",
+            "user_vehicle_view",
+        ),
+    ],
+)
+def test_object_detail_value_docs_composition_context(
+    monkeypatch, rf, request, name, bases, object_fixture, user_fixture
+):
+    # Load shared fixtures first, then isolate recipe registration without modifying their ViewSets.
+    obj = request.getfixturevalue(object_fixture)
+    user = request.getfixturevalue(user_fixture)
+    monkeypatch.setattr(viewset_module, "_REGISTRY", OrderedDict())
+    monkeypatch.setattr(check_module, "_VOCAB_CACHE", {})
+    factory = GuardianViewSet if name == "guardian" else viewset_module.ViewSet
+    viewset = factory(model=Vehicle if name == "polymorphic" else type(obj), name=f"recipe_{name.replace('-', '_')}")
+    namespace = {"__name__": __name__, "cv_book": viewset, "cv_vehicle": viewset}
+    exec(recipe("docs/reference/object_detail_view.md", name), namespace)
+    cls = namespace["VehicleDetailView" if name == "polymorphic" else "BookDetailView"]
+    assert cls.__bases__ == bases
+    if name != "complete":
+        assert cls.cv_permission == "view"
+    assert cls.cv_viewset is viewset
+    if name == "guardian":
+        assert isinstance(cls.cv_viewset, GuardianViewSet)
+    http_request = rf.get("/recipe/detail/")
+    http_request.user = user
+    view = cls()
+    view.setup(http_request, pk=obj.pk)
+    view.object = obj
+    context = view.get_context_data(object=obj)
+    expected = [obj.name] if name == "polymorphic" else [obj.title, obj.publisher.name]
+    assert [p.value for g in context["object_detail_groups"] for p in g.properties] == expected
+    output = Template(
+        "{% load crud_views_object_detail %}{% render_object_detail object groups=object_detail_groups %}"
+    ).render(Context({**context, "request": http_request, "view": view}))
+    text = html.fromstring(output).text_content()
+    assert all(value in text for value in expected)
+
+
+def test_object_detail_value_docs_help_and_view_inventories():
+    settings = (REFERENCE / "object_detail_settings.md").read_text()
+    for contract in [
+        "Only Python `True`/`False`",
+        "quoted strings and integers",
+        "startup configuration, not a live-reload API",
+        "once per settings instance",
+        "Already-resolved groups retain",
+        "raw tags forward",
+    ]:
+        assert contract in settings
+    view = (REFERENCE / "object_detail_view.md").read_text()
+    quick = view.split("## Quick Reference", 1)[1].split("## Minimal Pattern", 1)[0]
+    for base in [
+        "DetailViewPermissionRequired",
+        "GuardianDetailViewPermissionRequired",
+        "PolymorphicDetailViewPermissionRequired",
+    ]:
+        assert base in quick
+    assert quick.count("Complete view: subclass directly") == 2
+    for page in [view, (REFERENCE / "object_detail_configuration.md").read_text()]:
+        assert "| `choices_display`" in page
+        assert "| `detail`" in page
+        assert "object_detail_settings.md#help-text-precedence" in page
+    compose = view.split("## Compose Pattern (Guardian / Polymorphic)", 1)[1]
+    warning = compose.split("<!-- object-detail-value-recipe: complete -->", 1)[0]
+    assert "already include" in warning and "fails at Python class creation" in warning

@@ -325,6 +325,16 @@ FORM-11, FORM-12, FORM-13
 
 **UI hint**: no (new leaf template replaces existing button markup; no new screens)
 
+### Phase 06.14: Card template insertion blocks and cards-first ViewSets (#325) (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 6
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run $gsd-plan-phase 06.14 to break down)
+
 ### Phase 6.1: Cancel form button as a link (INSERTED)
 
 **Goal**: Themes and individual forms can render cancel controls as native navigation links without copying the form

@@ -2,11 +2,15 @@
 
 import inspect
 from functools import wraps
+from contextlib import contextmanager
 
 import pytest
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages import get_messages
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation, ValidationError
+from django.db import connections, transaction
+from django.forms import CharField
 
 from crud_views_workflow.lib.enums import WorkflowComment
 from crud_views_workflow.lib.forms import WorkflowForm
@@ -244,4 +248,190 @@ class TestWorkflowHelper:
         monkeypatch.setattr(Campaign, "workflow_check_transition", check)
         with pytest.raises(TypeError, match="single/list ValidationError, not a dictionary"):
             run_transition(campaign_new, "wf_activate", user=user_campaign_change)
+        assert not WorkflowInfo.objects.exists()
+
+
+@pytest.mark.django_db(transaction=True)
+class TestWorkflowRefusal:
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("refusal_kind", ["business", "comment"])
+    def test_late_refusal(
+        self, client_user_campaign_change, campaign_new, monkeypatch, atomic, modal, refusal_kind
+    ):
+        class CustomForm(CampaignWorkflowForm):
+            extra = CharField()
+
+        seen = {"execution": False, "selected": [], "reload": [], "invalid": [], "depth": 0}
+        real_process = CampaignWorkflowView.cv_form_valid
+        real_get_object = CampaignWorkflowView.get_object
+        real_atomic = transaction.atomic
+        field = Campaign._meta.get_field("state")
+        monkeypatch.setattr(field, "protected", True)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_atomic", atomic)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        monkeypatch.setattr(CampaignWorkflowView, "form_class", CustomForm)
+
+        def alias(view):
+            assert view.object.pk == campaign_new.pk
+            seen["selected"].append(view.object._state.db)
+            return "default"
+
+        @contextmanager
+        def boundary(*args, **kwargs):
+            assert kwargs["using"] == "default"
+            seen["depth"] += 1
+            try:
+                with real_atomic(*args, **kwargs):
+                    yield
+            finally:
+                seen["depth"] -= 1
+
+        def get_object(view, queryset=None):
+            if queryset is not None:
+                seen["reload"].append(queryset.db)
+                assert seen["depth"] == 0
+                assert not connections["default"].in_atomic_block
+            return real_get_object(view, queryset=queryset)
+
+        def process(view, context):
+            seen["execution"] = True  # explicit boundary; no nth-hook-call assumption
+            seen["form"] = context["form"]
+            context["workflow_info"] = "stale record"
+            context["stale_history"] = "discard me"
+            if refusal_kind == "comment":
+                step = next(t for t in view.object.get_all_state_transitions() if t.name == "wf_activate")
+                monkeypatch.setitem(step.custom, "comment", WorkflowComment.REQUIRED)
+            return real_process(view, context)
+
+        def check(obj, name, *, user):
+            if seen["execution"] and refusal_kind == "business":
+                # Deliberately simulate dirty Python state and a database write inside
+                # the engine to prove rollback/fresh-fetch recovery. Real hooks are read-only.
+                obj.__dict__["state"] = CampaignState.ACTIVE
+                Campaign.objects.filter(pk=obj.pk).update(name="must roll back")
+                raise ValidationError(["Late first blocker", "Late second blocker"])
+
+        def unexpected(*args, **kwargs):
+            pytest.fail("Expected refusal entered a success hook/callback")
+
+        monkeypatch.setattr(CampaignWorkflowView, "cv_get_db_alias", alias)
+        monkeypatch.setattr(CampaignWorkflowView, "get_object", get_object)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_form_valid", process)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_form_valid_hook", unexpected)
+        monkeypatch.setattr(CampaignWorkflowView, "on_transition", unexpected)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_on_commit", unexpected)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_form_invalid_hook", lambda view, context: seen["invalid"].append(context))
+        monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+        monkeypatch.setattr(transaction, "atomic", boundary)
+        client_user_campaign_change.raise_request_exception = False
+        raw_comment = "  retained input  " if refusal_kind == "business" else " \t "
+        response = client_user_campaign_change.post(
+            f"/campaign/{campaign_new.pk}/workflow/",
+            {"transition": "wf_activate", "comment": raw_comment, "extra": "  custom input  "},
+            headers={"X-CV-Modal": "true"} if modal else {},
+        )
+        assert response.status_code == (422 if modal else 200)
+        context = seen["invalid"][0]
+        form = context["form"]
+        assert form is seen["form"]
+        assert form.data["comment"] == raw_comment
+        assert form.data["extra"] == "  custom input  "
+        assert not form.non_field_errors()
+        expected_field = "transition" if refusal_kind == "business" else "comment"
+        expected_errors = ["Late first blocker", "Late second blocker"] if refusal_kind == "business" else [
+            "Comment is required for this transition"
+        ]
+        assert list(form.errors[expected_field]) == expected_errors
+        assert "workflow_info" not in context
+        assert "stale_history" not in context
+        assert context["object"].state == CampaignState.NEW
+        assert context["object"].name == campaign_new.name
+        assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
+        assert Campaign.objects.get(pk=campaign_new.pk).name == campaign_new.name
+        assert not WorkflowInfo.objects.exists()
+        assert not list(get_messages(response.wsgi_request))
+        assert seen["selected"] == ["default"]
+        assert seen["reload"] == ["default"]
+        assert len(seen["invalid"]) == 1
+
+    @pytest.mark.parametrize("atomic", [False, True])
+    def test_selected_alias_for_success_callback(
+        self, client_user_campaign_change, campaign_new, monkeypatch, atomic
+    ):
+        selected, registered, called = [], [], []
+        original_on_commit = transaction.on_commit
+        original_atomic = CampaignWorkflowView.cv_get_atomic
+        boundaries = []
+
+        def select(view):
+            selected.append(view.object.pk)
+            return "default"
+
+        def register(func, using=None, robust=False):
+            registered.append(using)
+            return original_on_commit(func, using=using, robust=robust)
+
+        def custom_atomic(view):
+            boundaries.append(view._cv_get_workflow_db_alias())
+            return original_atomic(view)
+
+        monkeypatch.setattr(CampaignWorkflowView, "cv_atomic", atomic)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_get_db_alias", select)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_get_atomic", custom_atomic)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_on_commit", lambda view, context: called.append(context))
+        monkeypatch.setattr(transaction, "on_commit", register)
+        response = client_user_campaign_change.post(
+            f"/campaign/{campaign_new.pk}/workflow/", {"transition": "wf_activate", "comment": ""}
+        )
+        assert response.status_code == 302
+        assert selected == [campaign_new.pk]
+        assert boundaries == registered == ["default"]
+        assert len(called) == 1
+        assert called[0]["workflow_info"].pk == WorkflowInfo.objects.get().pk
+
+    def test_refusal_reload_retains_queryset_scope(self, client_user_campaign_change, campaign_new, monkeypatch):
+        executing = False
+        original_process = CampaignWorkflowView.cv_form_valid
+        original_queryset = CampaignWorkflowView.get_queryset
+
+        def process(view, context):
+            nonlocal executing
+            executing = True
+            return original_process(view, context)
+
+        def check(obj, name, *, user):
+            if executing:
+                raise ValidationError("Late blocker")
+
+        def scoped(view):
+            queryset = original_queryset(view)
+            return queryset.none() if executing else queryset
+
+        monkeypatch.setattr(CampaignWorkflowView, "cv_form_valid", process)
+        monkeypatch.setattr(CampaignWorkflowView, "get_queryset", scoped)
+        monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+        response = client_user_campaign_change.post(
+            f"/campaign/{campaign_new.pk}/workflow/", {"transition": "wf_activate", "comment": ""}
+        )
+        assert response.status_code == 404
+        assert not WorkflowInfo.objects.exists()
+
+    @pytest.mark.parametrize("atomic", [False, True])
+    def test_ordinary_execution_validation_error_propagates(
+        self, client_user_campaign_change, campaign_new, monkeypatch, atomic
+    ):
+        error = ValidationError("Callback defect")
+
+        def on_transition(*args, **kwargs):
+            raise error
+
+        monkeypatch.setattr(CampaignWorkflowView, "cv_atomic", atomic)
+        monkeypatch.setattr(CampaignWorkflowView, "on_transition", on_transition)
+        with pytest.raises(ValidationError) as caught:
+            client_user_campaign_change.post(
+                f"/campaign/{campaign_new.pk}/workflow/", {"transition": "wf_activate", "comment": ""}
+            )
+        assert caught.value is error
+        assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
         assert not WorkflowInfo.objects.exists()

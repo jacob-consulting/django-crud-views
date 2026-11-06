@@ -31,3 +31,43 @@ class Report(models.Model):
 
     def title_upper(self):
         return self.title.upper()
+
+
+class ChoiceValue(models.Model):
+    """Choice traversal fixtures, independent of the existing report fixtures."""
+
+    process = models.CharField(
+        max_length=20,
+        choices=[("natural", "Naturally processed"), ("washed", "Gewaschen — 水"), ("", "Blank declared")],
+        default="natural",
+        null=True,
+    )
+    rank = models.IntegerField(choices=[(0, "Zero"), (1, "First")], default=0, null=True)
+    flag = models.BooleanField(choices=[(False, "Disabled"), (True, "Enabled")], default=False, null=True)
+    plain = models.CharField(max_length=20, default="ordinary")
+    previous = models.OneToOneField("self", on_delete=models.CASCADE, null=True, related_name="successor")
+
+    class Meta:
+        app_label = "od_app"
+        ordering = ["pk"]
+
+    def __str__(self):
+        return f"ChoiceValue({self.pk})"
+
+
+class ChoiceContainer(models.Model):
+    foreign = models.ForeignKey(
+        ChoiceValue, on_delete=models.CASCADE, null=True, related_name="containers", choices=[(1, "Relation label")]
+    )
+    single = models.OneToOneField(
+        ChoiceValue,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="single_container",
+        choices=[(1, "Relation label")],
+    )
+    values = models.ManyToManyField(ChoiceValue, related_name="collections")
+
+    class Meta:
+        app_label = "od_app"
+        ordering = ["pk"]

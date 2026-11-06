@@ -15,6 +15,7 @@
 <main class="container py-3">
 {% cv_messages %}
 {% if fixture_target %}<a id="launch" data-cv-modal="true" href="{{ fixture_target }}">Open workflow</a>{% endif %}
+{% for form in fixture_forms %}<form class="cv-form" method="post">{% csrf_token %}{% cv_render_form %}</form>{% endfor %}
 {% block cv_content %}{% endblock %}
 </main>
 {% cv_config %}{% cv_js %}

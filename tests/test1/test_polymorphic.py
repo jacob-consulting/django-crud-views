@@ -447,6 +447,168 @@ class TestSelectorLabelTracer:
         assert typed.context["form"]._meta.model is model
 
 
+@pytest.fixture
+def selector_builder(rf, monkeypatch):
+    """Bound discovery output; exercise the real choice construction and Django form."""
+    from types import SimpleNamespace
+
+    from crud_views_polymorphic.lib import create_select
+
+    def build(content_types=None):
+        if content_types is None:
+            content_types = {
+                Truck: SimpleNamespace(id=17, name="truck"),
+                Car: SimpleNamespace(id=9, name="car"),
+            }
+        calls = []
+
+        def discover(model):
+            calls.append(model)
+            return content_types
+
+        monkeypatch.setattr(create_select, "get_polymorphic_child_models_content_types", discover)
+        view = create_select.PolymorphicCreateSelectView()
+        view.model = Vehicle
+        view.setup(rf.get("/vehicle/create/select/"))
+        return view, calls
+
+    return build
+
+
+class TestSelectorLabelContract:
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        "label, expected",
+        [
+            ("equipment", "Equipment"),
+            ("premium USB equipment", "Premium USB equipment"),
+            ("USB equipment", "USB equipment"),
+        ],
+    )
+    def test_casing_without_label_queries(self, selector_builder, label, expected, django_assert_num_queries):
+        from types import SimpleNamespace
+
+        view, calls = selector_builder({Car: SimpleNamespace(id=9, name=label)})
+        with django_assert_num_queries(0):
+            form = view.get_form()
+            assert list(form.fields["polymorphic_ctype_id"].choices) == [(9, expected)]
+        assert calls == [Vehicle]
+
+    def test_ids_and_discovery_order(self, selector_builder):
+        view, calls = selector_builder()
+        assert list(view.get_form().fields["polymorphic_ctype_id"].choices) == [(17, "Truck"), (9, "Car")]
+        assert calls == [Vehicle]
+
+    def test_lazy_translation_uses_rendering_locale(self, selector_builder):
+        from types import SimpleNamespace
+
+        from django.utils.functional import Promise
+        from django.utils.translation import gettext_lazy, override
+
+        with override("en"):
+            view, calls = selector_builder({Car: SimpleNamespace(id=9, name=gettext_lazy("password"))})
+            form = view.get_form()
+            label = form.fields["polymorphic_ctype_id"].choices[0][1]
+            assert isinstance(label, Promise)
+            assert str(label) == "Password"
+        with override("de"):
+            assert str(label) == "Passwort"
+            assert ">Passwort</option>" in str(form["polymorphic_ctype_id"])
+        assert calls == [Vehicle]
+
+    def test_html_like_label_is_escaped_text(self, selector_builder):
+        from types import SimpleNamespace
+
+        from lxml import html
+
+        label = '<img src=x onerror="alert(1)"> USB equipment & tools'
+        view, _ = selector_builder({Car: SimpleNamespace(id=9, name=label)})
+        markup = str(view.get_form()["polymorphic_ctype_id"])
+        assert "&lt;img" in markup
+        document = html.fromstring(markup)
+        assert not document.xpath(".//img")
+        option = document.xpath(".//option")[0]
+        assert option.get("value") == "9"
+        assert option.text_content() == label
+
+    @pytest.mark.parametrize("filter_kind", ["include", "exclude"])
+    def test_filtering_retains_choice_validation(self, selector_builder, rf, filter_kind):
+        view, calls = selector_builder()
+        if filter_kind == "include":
+            view.cv_polymorphic_include = [Truck]
+        else:
+            view.cv_polymorphic_exclude = [Car]
+        for value, valid in [("17", True), ("9", False), ("999", False), ("", False)]:
+            view.request = rf.post("/vehicle/create/select/", {"polymorphic_ctype_id": value})
+            form = view.get_form()
+            assert list(form.fields["polymorphic_ctype_id"].choices) == [(17, "Truck")]
+            assert form.is_valid() is valid
+            if valid:
+                assert form.cleaned_data["polymorphic_ctype_id"] == "17"
+            else:
+                assert form.errors.as_data()["polymorphic_ctype_id"][0].code == (
+                    "invalid_choice" if value else "required"
+                )
+        assert calls == [Vehicle] * 4
+
+    @pytest.mark.parametrize("form_kind", ["default", "configured", "explicit"])
+    def test_form_selection_preserves_kwargs_and_presentation(self, selector_builder, rf, form_kind):
+        from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
+
+        class CustomForm(PolymorphicContentTypeForm):
+            submit_label = "Continue"
+
+        class ExplicitForm(PolymorphicContentTypeForm):
+            submit_label = "Choose"
+
+        view, calls = selector_builder()
+        view.prefix = "typed"
+        view.initial = {"polymorphic_ctype_id": "9"}
+        view.request = rf.post("/vehicle/create/select/", {"typed-polymorphic_ctype_id": "17"})
+        expected_class = PolymorphicContentTypeForm
+        if form_kind != "default":
+            view.form_class = CustomForm
+            expected_class = CustomForm
+        if form_kind == "explicit":
+            form = view.get_form(form_class=ExplicitForm)
+            expected_class = ExplicitForm
+        else:
+            form = view.get_form()
+        assert type(form) is expected_class
+        assert form.prefix == "typed"
+        assert form.initial == {"polymorphic_ctype_id": "9"}
+        assert form.data is view.request.POST
+        assert form.files is view.request.FILES
+        assert list(form.fields["polymorphic_ctype_id"].choices) == [(17, "Truck"), (9, "Car")]
+        assert form.is_valid()
+        assert form.cleaned_data["polymorphic_ctype_id"] == "17"
+        if form_kind != "default":
+            assert form.submit_label == ("Choose" if form_kind == "explicit" else "Continue")
+        assert calls == [Vehicle]
+
+    @pytest.mark.django_db
+    def test_existing_crispy_form_keeps_layout(self, client_user_vehicle_add):
+        from tests.test1.app.views import CrispyVehicleContentTypeForm
+
+        response = client_user_vehicle_add.get("/vehicle/create/select/")
+        form = response.context["form"]
+        assert type(form) is CrispyVehicleContentTypeForm
+        assert form.submit_label == "Select"
+        assert "col-md-4" in response.content.decode()
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("target", ["selector", "detail"])
+    @pytest.mark.parametrize("method", ["get", "post"])
+    def test_denied_requests(self, target, method, request, car_sedan):
+        fixture = "client_user_vehicle_view" if target == "selector" else "client_user_vehicle_add"
+        client = request.getfixturevalue(fixture)
+        url = "/vehicle/create/select/" if target == "selector" else f"/vehicle/{car_sedan.pk}/detail/"
+        ct = ContentType.objects.get_for_model(Car)
+        response = getattr(client, method)(url, {"polymorphic_ctype_id": ct.pk})
+        assert response.status_code == 403
+        assert list(Car.objects.values_list("name", flat=True)) == [car_sedan.name]
+
+
 @pytest.mark.django_db
 def test_create_car(client_user_vehicle_add: Client, cv_vehicle):
     """Creating a Car through the polymorphic create view."""

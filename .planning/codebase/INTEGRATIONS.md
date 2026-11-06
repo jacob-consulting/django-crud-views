@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_at: 2026-11-06
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-06
 
 ## APIs & External Services
 
@@ -32,6 +32,10 @@ last_mapped_at: 2026-11-02
   - SDK/Client: `guardian`
   - Auth: Host project's user model, auth backends, and Guardian permissions
 - django-ordered-model enables ordering actions when the host model uses that library; package extra is `[ordered]`.
+
+**Developer-provided resource sources:**
+- `Resource` and `ResourceViewMixin` let a ViewSet expose Pydantic rows backed by caller-defined sources such as a filesystem, object store, or API (`src/crud_views/lib/resource.py`, `src/crud_views/lib/viewset/__init__.py`). The package does not include a client SDK, credentials, or source-specific adapter; implementations supply `cv_get_items()` and may override `cv_get_item()`.
+- Resource views default to no database transaction (`cv_atomic = False`); the caller can opt into a transaction for ORM writes, while external side effects remain outside database rollback semantics (`src/crud_views/lib/resource.py`).
 
 ## Data Storage
 
@@ -95,4 +99,4 @@ last_mapped_at: 2026-11-02
 
 ---
 
-*Integration audit: 2026-11-02*
+*Integration audit: 2026-11-06*

@@ -165,6 +165,50 @@ class Campaign(WorkflowModelMixin, models.Model):
         pass
 
 
+class WorkflowRequestState(models.TextChoices):
+    NEW = "new", _("New")
+    PROCESSED = "processed", _("Processed")
+    CANCELED = "canceled", _("Canceled")
+
+
+class WorkflowRequest(WorkflowModelMixin, models.Model):
+    STATE_CHOICES = WorkflowRequestState
+    STATE_BADGES = {
+        WorkflowRequestState.NEW: BadgeEnum.LIGHT,
+        WorkflowRequestState.PROCESSED: BadgeEnum.PRIMARY,
+        WorkflowRequestState.CANCELED: BadgeEnum.WARNING,
+    }
+
+    name = models.CharField(max_length=128)
+    state = FSMField(default=WorkflowRequestState.NEW, choices=WorkflowRequestState.choices)
+
+    class Meta:
+        permissions = [("process_workflowrequest", "Can process workflow request")]
+
+    def __str__(self):
+        return self.name
+
+    @transition(
+        field=state,
+        source=WorkflowRequestState.NEW,
+        target=WorkflowRequestState.PROCESSED,
+        permission="app.process_workflowrequest",
+        custom={"label": "Process", "comment": WorkflowComment.NONE},
+    )
+    def wf_process(self, by=None, comment=None):
+        pass
+
+    @transition(
+        field=state,
+        source=WorkflowRequestState.NEW,
+        target=WorkflowRequestState.CANCELED,
+        permission="app.change_workflowrequest",
+        custom={"label": "Cancel", "comment": WorkflowComment.NONE},
+    )
+    def wf_cancel(self, by=None, comment=None):
+        pass
+
+
 class Vehicle(PolymorphicModel):
     name = models.CharField(max_length=200)
 

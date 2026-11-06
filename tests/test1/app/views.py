@@ -48,7 +48,7 @@ from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
 from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
-from tests.test1.app.models import Author, Book, Campaign, Car, Genre, Publisher, Truck, Vehicle
+from tests.test1.app.models import Author, Book, Campaign, Car, Genre, Publisher, Truck, Vehicle, WorkflowRequest
 
 cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
 
@@ -632,6 +632,32 @@ class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermission
     cv_context_actions = ["list", "detail", "workflow"]
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm
+
+
+cv_workflowrequest = ViewSet(model=WorkflowRequest, name="workflowrequest")
+
+
+class WorkflowRequestListView(ListViewPermissionRequired):
+    cv_viewset = cv_workflowrequest
+    cv_list_actions = ["detail", "workflow"]
+    cv_context_actions = ["list"]
+
+
+class WorkflowRequestDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_workflowrequest
+    cv_context_actions = ["list", "detail", "workflow"]
+
+
+class WorkflowRequestWorkflowForm(WorkflowForm):
+    class Meta(WorkflowForm.Meta):
+        model = WorkflowRequest
+
+
+class WorkflowRequestWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionRequired):
+    cv_viewset = cv_workflowrequest
+    cv_permission = "view"
+    cv_context_actions = ["list", "detail", "workflow"]
+    form_class = WorkflowRequestWorkflowForm
 
 
 # Guardian viewsets for guardian integration tests

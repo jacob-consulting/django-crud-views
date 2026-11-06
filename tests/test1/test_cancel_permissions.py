@@ -62,6 +62,7 @@ VALID_FORMS = {
     "publisher_modal_protected": "PublisherModalProtectedDeleteView",
     "publisher_protected": "PublisherProtectedDeleteView",
     "vehicle": "VehicleCreateSelectView VehicleCreateView VehicleUpdateView VehicleDeleteView",
+    "workflowrequest": "WorkflowRequestWorkflowView",
 }
 COLLECTED_VALID = {
     "s3file": "S3FileDeleteView",

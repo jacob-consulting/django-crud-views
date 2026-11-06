@@ -35,6 +35,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.8: Action tooltips: short captions and visible-label suppression (INSERTED)** - #304: concise icon tooltips and no redundant generated tooltips on visible labels before the freeze (completed 2026-11-04)
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
 - [x] **Phase 6.10: Simplify protected-object previews and cap total displayed objects (INSERTED)** - #316: plain-text protected blockers and one shared preview display budget before the freeze (completed 2026-11-05)
+- [x] **Phase 6.13: Workflow permissions: opt-in per-transition access (INSERTED)** - #320: document and test the existing view-gated recipe while preserving the default change gate (completed 2026-11-05)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -930,6 +931,47 @@ Plans:
 
 **UI hint:** yes (plain-text protected blockers and truncated delete previews across full pages and modals).
 
+### Phase 06.13: Workflow permissions: document and test opt-in per-transition access (#320) (INSERTED)
+
+**Goal**: Document and regression-test an opt-in workflow page gated by view permission, with explicit
+per-transition permissions controlling execution, while preserving the default change-permission gate.
+**Source**: [Issue #320](https://github.com/jacob-consulting/django-crud-views/issues/320)
+**Requirements**: WFP-01, WFP-02, WFP-03, WFP-04, WFP-05
+**Depends on**: Phase 6.10. Independently deliverable from Phase 06.12 presentation work and the separate
+workflow validation/execution design. Scheduled before Phase 7; no new public permission API is required.
+**Scope**: A self-contained recipe in `docs/reference/workflow_view.md`, focused workflow regression tests,
+and a documentation changelog entry. Keep `cv_permission = "change"` as the default; the recipe opts into
+`cv_permission = "view"` and explicit django-fsm `permission=` rules. Present the basic accessible-empty-page
+recipe separately from the optional `cv_action_enabled` request gate with disabled rendering via
+`workflow_has_any_possible_transition(user)`. Preserve applicable object/parent access checks. The corrected
+2026-11-05 CONTEXT decisions D-01–D-15 are authoritative.
+**Success Criteria** (from issue #320):
+
+  1. Default workflow views still require change permission. A view-only user with a dedicated step permission
+     can GET and POST that permitted transition, changing state and recording history.
+  2. A different role's transition available from the same source state is omitted; forged POSTs are rejected
+     without state/history changes. A user lacking page permission cannot GET or POST even if a transition permits them.
+  3. Without the optional hook, a page viewer with no permitted steps receives GET 200 and the existing empty message.
+     With the hook, the action renders disabled on an accessible sibling page and direct authenticated GET/POST
+     return 403; a user with a permitted step still succeeds. Rejected attempts preserve state and history.
+  4. Execution-time `workflow_has_transition` authorization is rechecked independently of display and form choices.
+  5. Docs distinguish page access, optional action-enabled request enforcement, state/user transition filtering,
+     submitted-choice validation, execution rechecks, and object/parent checks. Disabled rendering alone is not
+     authorization; the server also enforces the hook. Lowering the page gate alone adds no transition restrictions.
+  6. Focused tests, appropriate broader multicore regression checks, and documentation validation pass.
+
+**Exclusions**: No automatic any-transition page gate, new permission framework, Guardian integration mode,
+execution helper, refusal-message API, default-permission change, or finding 7 execution redesign.
+**Plans**: 2/2 plans complete
+**UI hint**: no (documentation and regression tests)
+
+Plans:
+**Wave 1**
+- [x] 06.13-01-PLAN.md — Isolated opt-in permission requests, no-step variants, and execution recheck regressions.
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.13-02-PLAN.md — Complete workflow recipe, documentation changelog, and bounded compatibility validation.
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -977,7 +1019,7 @@ by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -994,7 +1036,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 11 | 6.8 (#304) | Short icon tooltips and visible-label suppression before the freeze |
 | 12 | 6.9 (#307) | Protected delete-preview links before the freeze |
 | 13 | 6.10 (#316) | Simplify protected previews and settle the shared display cap before the freeze |
-| 14 | 7 (plan 4) | Needs 6.10, 4 and 5 merged; last change before the 1.0.0 bump |
+| 14 | 6.13 (#320) | Document and test opt-in workflow permissions; independently deliverable from presentation work |
+| 15 | 7 (plan 4) | Needs 6.10, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -1016,4 +1059,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.8. Action tooltips: short captions and visible-label suppression | 3/3 | Complete    | 2026-11-04 |
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | Complete    | 2026-11-05 |
+| 6.13. Workflow permissions: opt-in per-transition access | 2/2 | Complete    | 2026-11-05 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

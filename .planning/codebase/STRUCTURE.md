@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_at: 2026-11-06
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-06
 
 ## Directory Layout
 
@@ -49,6 +49,12 @@ django-crud-views/
 - Purpose: CrudView behavior and presentation contracts consumed across concrete CBVs and templates.
 - Contains: Base mixin, metaclass, context, action/menu grouping, buttons, card configuration, label modes, variants and visibility resolution.
 - Key files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/action_menu.py`, `src/crud_views/lib/view/buttons.py`.
+- Form Cancel URL resolution lives in `src/crud_views/lib/view/base.py`; the template-tag API is in `src/crud_views/templatetags/crud_views.py`, and button data/rendering is in `src/crud_views/lib/view/button_data.py` plus `src/crud_views/templates/crud_views/tags/button/form.html`.
+
+**`src/crud_views/lib/deletion.py` and `src/crud_views/templates/crud_views/snippets/delete/`:**
+- Purpose: Build bounded related-object delete previews and render blocked relationships.
+- Contains: Collector-backed relationship summaries, protected-object labels, and preview/truncation presentation.
+- Key files: `src/crud_views/lib/deletion.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/templates/crud_views/view_delete.content.html`, `src/crud_views/templates/crud_views/snippets/delete/protected_objects.html`.
 
 **`src/crud_views/lib/views/`:**
 - Purpose: Concrete generic CRUD and action views.
@@ -74,6 +80,7 @@ django-crud-views/
 - Purpose: FSM transition and history integration.
 - Contains: Workflow views/forms/mixins, audit-history models and migrations, templates, app checks and translations.
 - Key files: `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `src/crud_views_workflow/models.py`, `src/crud_views_workflow/migrations/`.
+- Workflow form actions share core form presentation, while workflow badges and content are themed in `src/crud_views_workflow/templates/crud_views_workflow/`; transition permission opt-in examples and regression tests are maintained under `tests/test1/`.
 
 **`src/crud_views_polymorphic/`:**
 - Purpose: Polymorphic model CRUD flows.
@@ -128,6 +135,7 @@ django-crud-views/
 - `src/crud_views/lib/view/`: Presentation/action resolution contracts.
 - `src/crud_views/lib/assets.py`: Static asset bundles and rendering registry.
 - `src/crud_views/lib/resource.py`: Non-ORM row interface.
+- `src/crud_views/lib/deletion.py`: Bounded delete preview and protection collection.
 
 **Presentation and Browser Behavior:**
 - `src/crud_views/templates/crud_views/`: Core theme templates and reusable partials.
@@ -162,6 +170,9 @@ django-crud-views/
 - Tests: Add Python behavior tests in the nearest `tests/test1/` feature module; extend browser tests under `tests/js/` or `tests/js-integration/` when client behavior changes.
 - User-facing theme: Add/update the corresponding template in `src/crud_views/templates/crud_views/`, Python template-tag/context support in `src/crud_views/templatetags/` or `src/crud_views/lib/view/`, and static behavior in `src/crud_views/static/crud_views/`.
 - Demonstration: Add or update an example app under `examples/bootstrap5/<feature>/` and connect it through `examples/bootstrap5/project/`.
+- For form cancellation behavior, extend the request-aware resolver in `src/crud_views/lib/view/base.py` and its focused tests; preserve template access through `{% cv_cancel_url %}`.
+- For deletion relationship previews, change the collector/summary behavior in `src/crud_views/lib/deletion.py` and the corresponding partials in `src/crud_views/templates/crud_views/snippets/delete/`; keep protected references as plain labels and preserve the display budget.
+- For workflow presentation or permission examples, use `src/crud_views_workflow/lib/` and its templates; document and test permission checks as opt-in per transition.
 
 **New Component/Module:**
 - Implementation: Place cross-view concepts in the closest `src/crud_views/lib/<concern>/` package; place a concrete Django CBV in `src/crud_views/lib/views/`.
@@ -202,4 +213,4 @@ django-crud-views/
 
 ---
 
-*Structure analysis: 2026-11-02*
+*Structure analysis: 2026-11-06*

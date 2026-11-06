@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
-status: "Phase 06.10 shipped — PR #317"
-stopped_at: Phase 06.10 complete, ready to plan Phase 7
-last_updated: "2026-11-05T09:33:19.523Z"
-last_activity: 2026-11-05
-state_head: 9119f39fd72eb3c76419e5ee5d53ceb014dff5b1
+status: "Phase 06.13 shipped — PR #324"
+stopped_at: Phase 06.13 complete, ready to plan Phase 7
+last_updated: "2026-11-06T05:36:43.890Z"
+last_activity: 2026-11-06
+state_head: f1716cdc5e92e343dd68f67d4f7e8dd1dcd35d54
 progress:
-  total_phases: 17
-  completed_phases: 16
-  total_plans: 118
-  completed_plans: 118
+  total_phases: 18
+  completed_phases: 17
+  total_plans: 120
+  completed_plans: 120
   percent: 94
 milestone_name: milestone
 ---
@@ -30,10 +30,25 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Phase 06.10 shipped — PR #317
-Last activity: 2026-11-05
+Status: Phase 06.13 shipped — PR #324
+Last activity: 2026-11-06
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.13 shipping — 2026-11-06
+
+- Opened PR #324: https://github.com/jacob-consulting/django-crud-views/pull/324 targeting main from the phase branch; remains unmerged.
+- Canonical verification passed; security threats_open is zero. Fresh shipping checks: 190 workflow/Cancel tests passed with four workers, strict MkDocs and scoped Ruff passed. Production/dependencies match main.
+- Committed pending guidance/config/state and phase placeholders as f1716cd; generated review diagnostics and research caches retained locally via git info/exclude.
+- Phase 7 remains ready for discussion. All seven codebase maps refreshed on this branch, with machine-readable mapping baselines stamped.
+
+### Phase 06.13 completion — 2026-11-05
+
+- Both plans complete; canonical verification passed 9/9, all five WFP requirements and fifteen decisions satisfied. Independent deep review clean; validation compliant; seven security threats closed. UI audit N/A; no human items required for this docs/test scope.
+- Full Django 5.2: 10,108 passed/one existing skip; focused Django 4.2 and 6.0 crispy-floor: 131 each. JS regression 365 passed on cached Vitest 5.0.3; scoped Ruff/strict docs/five-fence syntax and anchor checks passed. Fresh verifier checks cover nine new cases and existing Campaign denial.
+- One initial registration-inventory failure resolved by adding the new fixture expectation; original failure retained in summary. Production/Campaign unchanged; full Python matrix, concurrent revocation and Guardian/nested policy matrices unclaimed.
+- Completion scanner misreads six inline Ruff command strings as file references; actual paths/checks were independently verified. No missing delivery artifact or behavioral debt found. Codebase maps remain stale (nonblocking advisory).
+- Phase 7 ready for discussion. Existing PROJECT/config/CLAUDE/state.json edits and the user-authored 6.12 state entry preserved; no push or merge performed.
 
 ### Phase 06.10 shipping — 2026-11-05
 
@@ -477,7 +492,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 118
+- Total plans completed: 120
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -501,6 +516,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.9 | 4 | - | - |
 | 06.8 | 3 | - | - |
 | 06.10 | 5 | - | - |
+| 06.13 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -822,6 +838,7 @@ None yet.
 - Phase 06.8 inserted after Phase 06.7: Action tooltips: short captions and visible-label suppression (#304); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.9 inserted after Phase 06.8: Protected delete-preview object links (#307); user insertion schedules the issue before Phase 7 freezes the affected contracts (URGENT)
 - Phase 06.10 inserted after Phase 6.9: Issue #316: simplify protected-object previews and cap total displayed objects before Phase 7; no dependency on #312, #314 or the retired URL resolver (URGENT)
+- Phase 06.13 inserted after Phase 06.12: Issue #320: document and test opt-in per-transition workflow access; preserve the default change gate. Phase 06.12 is reserved on disk; this phase is independently deliverable. (URGENT)
 
 ## Deferred Items
 
@@ -831,6 +848,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-05
-Stopped at: Phase 06.10 complete, ready to discuss Phase 7
+Last session: 2026-11-05T23:00:42+00:00
+Stopped at: Phase 06.13 complete, ready to plan Phase 7
 Resume file: None

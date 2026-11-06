@@ -1,0 +1,202 @@
+[
+  {
+    "requirement_id": "E1",
+    "category": "overflow",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-01/D-02/D-09: Keep both new blocks empty by default and retain the existing root/body classes; adding a block must introduce no wrapper, clipping, scrolling or sizing rule. Consumer-inserted layout remains consumer-owned.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E1",
+    "category": "long-text",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-02/D-03/D-08: The insertion example renders the supplied model text with ordinary escaping, outside the heading, without adding a length limit or truncation filter; default card output remains unchanged.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E2",
+    "category": "empty",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "Preserve view_card.content.html's existing zero-item branch and the card empty-state copy in the Copywriting Contract; the two empty blocks do not render an object when none exists.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E2",
+    "category": "loading",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-09: Preserve the existing server-rendered full-document card request; add no partial-fetch, spinner, skeleton or client loading state.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E2",
+    "category": "error",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-06/D-08: Preserve existing destination authorization and HTTP failure handling; denied presentation GETs remain denied, with no new inline error or retry UI.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E2",
+    "category": "populated",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-04/D-05/D-08: Serve the existing card collection at the registered list root, with the existing card template, card actions and grid classes; follow the emitted Table switch to the same model's table presentation.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E2",
+    "category": "partial",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-02/D-09: Preserve model text and existing template rendering when optional content is blank; neither new slot imposes a completeness requirement, placeholder or default content.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E2",
+    "category": "overflow",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-02/D-09: Retain the existing row, cv_card_container_class, root/body and action-container classes; add no overflow, truncation or breakpoint rule.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E2",
+    "category": "zero-one-many",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-02/D-07: Retain the existing object loop: zero items uses its empty branch, and each available object uses the same card wrapper and template; no count-specific layout or copy is introduced.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E3",
+    "category": "empty",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-07/D-09: Keep the existing table renderer's empty_text branch: render its configured empty_text only when truthy; the recipe introduces no empty-text override.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E3",
+    "category": "loading",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-09: Preserve the existing server-rendered full-document table request; add no asynchronous table loading state.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E3",
+    "category": "error",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-06/D-08: Preserve the permission-required table destination's denial behavior and existing HTTP errors; no new error panel or retry control.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E3",
+    "category": "populated",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-04/D-05/D-08: Serve the configured real Table through ListViewTableMixin at table/ and retain model records when following the emitted Cards switch.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E3",
+    "category": "partial",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-07/D-09: Preserve existing table column rendering and empty-value handling; do not introduce a new missing-cell placeholder or partial-record policy.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E3",
+    "category": "overflow",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-07/D-09: Preserve the existing table template and class configuration, with no new width, scroll, clipping or wrapping rule.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E3",
+    "category": "zero-one-many",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-07/D-09: Retain the existing django-tables2 row iteration and empty branch for zero, one and many objects, with pagination governed by the existing view configuration.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E4",
+    "category": "loading",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-02/D-05/D-09: Preserve existing links, action triggers and hidden POST forms; presentation switching uses ordinary destination requests without a new pending state.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E4",
+    "category": "error",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-06/D-08: A denied switch has no usable navigation and its direct GET is denied; inaccessible Cancel origins fall back to accessible cards, and Cancel is omitted when neither origin nor fallback is accessible.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E4",
+    "category": "overflow",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-02/D-05: Preserve inline/menu splitting, action-container classes and hidden POST-form linkage; do not add a new overflow layout for the recipe.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E4",
+    "category": "long-text",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-05/D-11: Use translated Cards and Table captions with existing card/list semantic icons and both label mode in the recipe; retain the existing label-rendering and accessible-name templates without truncation changes.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E5",
+    "category": "empty",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-06/D-09: Preserve the existing unbound create form and prepopulated update form; direct visits keep accessible static Cancel to cards.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E5",
+    "category": "loading",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-06/D-09: Preserve the existing form POST lifecycle and controls without a new submission/loading state; successful POST remains independent of Cancel origin.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E5",
+    "category": "error",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-09: Preserve Django/crispy bound-form validation and existing error rendering; this phase introduces no validation rule, custom error message or retry control.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E5",
+    "category": "partial",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-06/D-09: Preserve current form fields and validation for incomplete input; the recipe only configures eligible Cancel origins, and successful valid create/update POSTs persist data and redirect to cards.",
+    "reason": null
+  },
+  {
+    "requirement_id": "E5",
+    "category": "long-text",
+    "status": "resolved",
+    "verification": "explicit",
+    "resolution": "D-09: Retain model/form field constraints and current input/error rendering; the recipe adds no text-length policy, styling or truncation.",
+    "reason": null
+  }
+]

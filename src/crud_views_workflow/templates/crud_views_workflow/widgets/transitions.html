@@ -1,0 +1,15 @@
+{% load crud_views i18n %}
+{% if widget.help_text %}<div id="{{ widget.help_id }}" class="form-text mb-3" style="overflow-wrap: anywhere;">{{ widget.help_text|force_escape }}</div>{% endif %}
+<div role="group" aria-label="{{ widget.label }}"{% include "django/forms/widgets/attrs.html" %}>
+{% block actions %}
+{% for action in widget.actions %}
+    <div class="mb-3" style="overflow-wrap: anywhere;">
+        <button type="submit" name="{{ widget.name }}" value="{{ action.name }}" id="{{ action.id }}"
+            class="{% cv_button_class 'form' 'submit' 'label' %} text-wrap" style="max-width: 100%; overflow-wrap: anywhere;"{% if action.describedby %} aria-describedby="{{ action.describedby }}"{% endif %}{% if action.blockers or widget.attrs.disabled %} disabled{% endif %}>{{ action.label|force_escape }}{% if action.comment_required %} <span aria-hidden="true">*</span><span class="{% cv_button_class 'form' 'hidden-label' %}">{% translate "Comment required" %}</span>{% endif %}</button>
+        {% if action.help_text %}<div id="{{ action.help_id }}" class="form-text">{{ action.help_text|force_escape }}</div>{% endif %}
+        {% if action.blockers %}<ul id="{{ action.blockers_id }}">{% for blocker in action.blockers %}<li>{{ blocker|force_escape }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+{% endfor %}
+{% endblock %}
+{% if widget.comment_required %}<div class="form-text" style="overflow-wrap: anywhere;">{% translate "* Comment required" %}</div>{% endif %}
+</div>

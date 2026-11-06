@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
 last_mapped_at: 2026-11-06
 ---
 <!-- refreshed: 2026-11-06 -->
@@ -132,6 +132,8 @@ last_mapped_at: 2026-11-06
 - Per-request state lives on Django view instances, request/session data, and the generated `ViewContext` (`src/crud_views/lib/view/context.py`).
 - CRUD writes are atomic by default through `CrudView.cv_atomic` and the view processing hooks in `src/crud_views/lib/view/base.py`; database aliases are resolved by the view.
 - Resource rows are obtained per request from a consumer-defined `Resource.cv_get_items()` or `cv_get_item()` rather than stored in the Django ORM (`src/crud_views/lib/resource.py`).
+
+**Workflow transition execution:** `WorkflowView` and public `run_transition()` share the private engine in `src/crud_views_workflow/lib/execution.py`. It verifies the selected database alias and persisted actor/object identity, validates availability/business/comment policy, then saves model state and `WorkflowInfo` within one alias-specific atomic block. View follow-ups use `transaction.on_commit()` on that same alias (`src/crud_views_workflow/lib/views.py`).
 
 ## Key Abstractions
 

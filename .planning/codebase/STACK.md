@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
 last_mapped_at: 2026-11-06
 ---
 # Technology Stack
@@ -58,6 +58,7 @@ last_mapped_at: 2026-11-06
 
 **Infrastructure:**
 - `django-fsm-2` and `django-fsm-2-admin` — optional `[workflow]` extra for state-machine support (`src/crud_views_workflow/`)
+- Workflow transition execution is centralized in `src/crud_views_workflow/lib/execution.py`; the public `run_transition()` helper validates the actor/object database identity and writes transition state plus `WorkflowInfo` history atomically on the selected alias.
 - `django-polymorphic` — optional `[polymorphic]` extra (`src/crud_views_polymorphic/`)
 - `django-ordered-model` — optional `[ordered]` extra for ordered model actions
 - `django-guardian` — optional `[guardian]` extra for per-object permissions (`src/crud_views_guardian/`)

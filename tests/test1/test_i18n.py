@@ -81,6 +81,57 @@ def test_mo_files_load():
             gettext_mod.GNUTranslations(fh)  # raises if corrupt
 
 
+def test_workflow_required_comment_catalog():
+    import polib
+
+    directory = REPO / "src" / "crud_views_workflow" / "locale" / "de" / "LC_MESSAGES"
+    catalog = polib.pofile(str(directory / "django.po"))
+    with (directory / "django.mo").open("rb") as stream:
+        compiled = gettext_mod.GNUTranslations(stream)
+    for source, translated in (
+        ("Comment required", "Kommentar erforderlich"),
+        ("* Comment required", "* Kommentar erforderlich"),
+    ):
+        entry = catalog.find(source)
+        assert entry is not None
+        assert not entry.obsolete and "fuzzy" not in entry.flags
+        assert entry.msgstr == translated
+        assert any(path == "templates/crud_views_workflow/widgets/transitions.html" for path, _ in entry.occurrences)
+        assert source in compiled._catalog
+        assert compiled._catalog[source] == translated
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("policy", ["NONE", "OPTIONAL", "REQUIRED"])
+@pytest.mark.parametrize("modal", [False, True])
+def test_workflow_required_comment_german_render(client_user_campaign_change, campaign_new, monkeypatch, policy, modal):
+    from lxml import html
+
+    from crud_views_workflow.lib.enums import WorkflowComment
+    from tests.test1.app.views import CampaignWorkflowView
+
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+    for step in campaign_new.get_all_state_transitions():
+        monkeypatch.setitem(step.custom, "comment", WorkflowComment[policy])
+    with translation.override("de"):
+        response = client_user_campaign_change.get(
+            f"/campaign/{campaign_new.pk}/workflow/", headers={"X-CV-Modal": "true"} if modal else {}
+        )
+    assert response.status_code == 200
+    (group,) = html.fromstring(response.content.decode(response.charset)).cssselect('[role="group"]')
+    assert group.get("aria-label") == "Mögliche Workflow-Aktion auswählen"
+    markers = group.cssselect("button .visually-hidden")
+    legends = group.xpath('./div[normalize-space(.)="* Kommentar erforderlich"]')
+    if policy == "REQUIRED":
+        assert len(markers) == len(group.cssselect("button")) == 2
+        assert [marker.text_content() for marker in markers] == ["Kommentar erforderlich"] * 2
+        assert len(legends) == 1
+    else:
+        assert not markers and not legends
+        assert "Kommentar erforderlich" not in group.text_content()
+
+
 def test_guardian_manage_renders_translated():
     from django.template import Context, Template
 

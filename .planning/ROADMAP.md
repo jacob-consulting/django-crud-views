@@ -36,7 +36,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.9: Protected delete-preview object links (INSERTED)** - #307: link visible protected blockers when related-object linking is enabled (completed 2026-11-04)
 - [x] **Phase 6.10: Simplify protected-object previews and cap total displayed objects (INSERTED)** - #316: plain-text protected blockers and one shared preview display budget before the freeze (completed 2026-11-05)
 - [x] **Phase 6.13: Workflow permissions: opt-in per-transition access (INSERTED)** - #320: document and test the existing view-gated recipe while preserving the default change gate (completed 2026-11-05)
-- [ ] **Phase 06.13.1: Workflow validation and execution (INSERTED)** - #322: business blockers, opt-in transition buttons, and a reusable execution helper
+- [x] **Phase 06.13.1: Workflow validation and execution (INSERTED)** - #322: business blockers, opt-in transition buttons, and a reusable execution helper (completed 2026-11-06)
 - [x] **Phase 06.14: Card template insertion blocks and cards-first ViewSets (INSERTED)** - #325: completed in another worktree, per user; integration tracked there
 - [x] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test (completed 2026-11-06)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
@@ -987,20 +987,20 @@ existing radio/custom forms and the default page permission remain supported.
 **Integration notes:** Reuse #319's shared workflow form frame (issue closed); preserve #320's permission
 regressions. Backend validation/helper work is independent of presentation. Settle any new public theme
 contracts before Phase 7's stability freeze. Plans preserve the locked public contracts and bounded workflow scope.
-**Plans:** 5 plans
+**Plans:** 5/5 plans complete
 **UI hint:** yes (accessible transition buttons, visible help/blockers, and bound error redisplay without workflow JS)
 
 Plans:
 **Wave 1**
-- [ ] 06.13.1-01-PLAN.md — Shared business validation/execution and origin-aware bound refusal recovery (wave 1).
+- [x] 06.13.1-01-PLAN.md — Shared business validation/execution and origin-aware bound refusal recovery (wave 1).
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.13.1-02-PLAN.md — Real routed state/history identity and atomic failure guarantees (wave 2).
-- [ ] 06.13.1-03-PLAN.md — Opt-in accessible transition buttons and custom page/modal forms (wave 2).
+- [x] 06.13.1-02-PLAN.md — Real routed state/history identity and atomic failure guarantees (wave 2).
+- [x] 06.13.1-03-PLAN.md — Opt-in accessible transition buttons and custom page/modal forms (wave 2).
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.13.1-04-PLAN.md — Owned browser fixture, no-JS page flow and complete UI state acceptance (wave 3).
-- [ ] 06.13.1-05-PLAN.md — Public contracts, release guidance and bounded regression evidence (wave 3).
+- [x] 06.13.1-04-PLAN.md — Owned browser fixture, no-JS page flow and complete UI state acceptance (wave 3).
+- [x] 06.13.1-05-PLAN.md — Public contracts, release guidance and bounded regression evidence (wave 3).
 
 ### Phase 06.14: Card template insertion blocks and cards-first ViewSets (#325) (INSERTED)
 
@@ -1133,7 +1133,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | Complete    | 2026-11-05 |
 | 6.13. Workflow permissions: opt-in per-transition access | 2/2 | Complete    | 2026-11-05 |
-| 6.13.1. Workflow validation and execution | 0/TBD | Not started | - |
+| 6.13.1. Workflow validation and execution | 5/5 | Complete    | 2026-11-06 |
 | 6.14. Card template insertion blocks and cards-first ViewSets | See other worktree | Complete elsewhere (user-reported) | - |
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

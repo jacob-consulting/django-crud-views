@@ -41,6 +41,151 @@ Actions are rendered to match their target view automatically, exactly as table-
 
 You do not configure this on `CardAction`; the method and modal behaviour derive from the target view.
 
+## Cards first with a secondary table
+
+Register the card presentation as `list` at the ViewSet root, and a second table presentation as `table`.
+This complete example belongs in your application's `views.py`. It assumes an existing `Author` model with
+a UUID `id` and editable `first_name`, `last_name`, and `pseudonym` fields.
+
+<!-- card-recipe: cards-first -->
+```python
+import django_tables2 as tables
+from crispy_forms.layout import Layout
+from django.utils.translation import gettext_noop
+
+from crud_views.lib.breadcrumb import CrudViewBreadcrumbMixin
+from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin
+from crud_views.lib.table import Table, UUIDLinkDetailColumn
+from crud_views.lib.view import CardAction
+from crud_views.lib.views import (
+    CardListViewPermissionRequired,
+    CreateViewPermissionRequired,
+    DetailViewPermissionRequired,
+    ListViewPermissionRequired,
+    ListViewTableMixin,
+    UpdateViewPermissionRequired,
+)
+from crud_views.lib.viewset import ViewSet
+
+from .models import Author
+
+# makemessages does not scan inline Python strings as templates.
+gettext_noop("Cards")
+gettext_noop("Table")
+
+cv_author_cards_first = ViewSet(model=Author, name="authors_cards_first")
+
+
+class AuthorTable(Table):
+    id = UUIDLinkDetailColumn()
+    first_name = tables.Column()
+    last_name = tables.Column()
+    pseudonym = tables.Column()
+
+
+class AuthorForm(CrispyModelForm):
+    class Meta:
+        model = Author
+        fields = ["first_name", "last_name", "pseudonym"]
+
+    def get_layout_fields(self):
+        return Layout("first_name", "last_name", "pseudonym")
+
+
+class AuthorCardListView(CrudViewBreadcrumbMixin, CardListViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    cv_key = "list"
+    cv_path = ""
+    cv_context_actions = ["create", "table"]
+    cv_card_actions = [CardAction(key="detail"), CardAction(key="update")]
+    cv_action_label_template = None
+    cv_action_short_label_template = None
+    cv_action_label_template_code = '{% load i18n %}{% translate "Cards" %}'
+    cv_action_short_label_template_code = '{% load i18n %}{% translate "Cards" %}'
+    cv_icon_action = "card"
+    cv_context_action_label_mode = "both"
+
+
+class AuthorTableListView(CrudViewBreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    table_class = AuthorTable
+    cv_key = "table"
+    cv_path = "table"
+    cv_home_key = "list"
+    cv_context_actions = ["home", "create", "list"]
+    cv_list_actions = ["detail", "update"]
+    cv_action_label_template = None
+    cv_action_short_label_template = None
+    cv_action_label_template_code = '{% load i18n %}{% translate "Table" %}'
+    cv_action_short_label_template_code = '{% load i18n %}{% translate "Table" %}'
+    cv_icon_action = "list"
+    cv_context_action_label_mode = "both"
+
+
+class AuthorDetailView(CrudViewBreadcrumbMixin, DetailViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    cv_context_actions = ["home", "create", "update"]
+
+
+class AuthorCreateView(CrudViewBreadcrumbMixin, CrispyViewMixin, CreateViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    form_class = AuthorForm
+    cv_context_actions = ["home"]
+    cv_cancel_keys = ["list", "table"]
+
+
+class AuthorUpdateView(CrudViewBreadcrumbMixin, CrispyViewMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_author_cards_first
+    form_class = AuthorForm
+    cv_context_actions = ["home", "detail"]
+    cv_cancel_keys = ["list", "table", "detail"]
+
+
+# Collect URLs only after every sibling view has registered.
+urlpatterns = cv_author_cards_first.urlpatterns
+```
+
+Import these `urlpatterns` into your application's URLconf (or append them to its existing patterns), then
+include that URLconf in the project's root URLconf. With no additional mount prefix, cards are at
+`/authors_cards_first/` and the table is at `/authors_cards_first/table/`.
+
+The existing context actions provide the **Table** and **Cards** switches. Both use translated full and short
+captions and the existing `list`/`card` [semantic icons](icons.md). The file-template attributes are explicitly
+`None` in this example; valid file templates can coexist with template code, which takes precedence.
+`cv_context_action_label_mode = "both"` makes these destinations show text and icons in toolbars, subject to
+the existing [label-mode precedence](action_menus.md#context-label-mode-resolution).
+The `gettext_noop` markers expose both captions to `makemessages`; translate them in your application's own catalogs.
+
+The explicit form `cv_cancel_keys` allow returning to the custom `table` origin; automatic defaults accept
+the conventional `list`/`card` origins (and `detail` for object forms), not `table`. The update allow-list
+retains detail-origin support. Successful-save settings remain at their defaults.
+
+### Navigation targets
+
+These mechanisms are independent; setting `cv_home_key = "list"` does not configure all of them.
+
+| Navigation | Mechanism and destination in this recipe |
+|---|---|
+| Home context action | The default `ContextButton(key="home", key_target="list")` targets the cards root. It does not consult `cv_home_key`; its caption and icon come from the Cards destination. |
+| Container breadcrumb | `CrudViewBreadcrumbMixin` prefers a registered `list`, so the container links to cards. The secondary table is a separate, unlinked current item. Render the trail with `{% load crud_views %}{% cv_breadcrumb %}` in your base template. |
+| Successful create/update Save | Default `cv_success_key = "list"` and `cv_success_keys = None` redirect to cards, including after a form opened from the table. |
+| Direct form visit or static Cancel | Without an admitted origin, Cancel uses the accessible `cv_cancel_key = "list"` fallback. Explicit `cv_cancel_keys = None` or `[]` keeps this static behavior. |
+| Origin-aware Cancel | The explicit form allow-lists admit the table. Cancel returns there with its signed captured query, including repeated/blank values and an empty query. A later table visit cannot replace an earlier form's capture. |
+
+Cancel checks current destination access: a denied table origin falls back to accessible cards; when no allowed
+origin or static fallback is accessible, Cancel is omitted. Switching actions respect destination access too,
+and the permission-required views enforce access on direct requests. Successful Save remains a separate redirect
+policy, not a permission-filtered navigation link. See [dynamic Cancel](update_view.md#dynamic-cancel-target),
+[dynamic success](update_view.md#dynamic-success-target), and [origin/query settings](settings.md#origin-parameter).
+
+Ordinary **Cards**/**Table** switching does not transfer the source filters, ordering or page. Each destination
+uses its own request state; if you add filter integration with persistence, its remembered query is scoped by
+view key. This unfiltered recipe adds no persistence mechanism. See [filter integration](#filter-integration)
+and [filter settings](settings.md#filter).
+
+This configuration opts into cards as `list`; it changes no class defaults or conventional table-first
+registrations. The [card-only fallback](#list-key-fallback) below is a different configuration.
+
 ## CardAction Fields
 
 | Field | Type | Default | Description |
@@ -189,16 +334,32 @@ you need; the card's actions (inline buttons and overflow menu) keep rendering w
 {% endblock card_content %}
 ```
 
-| Block | Default | Contains |
+| Block | Default | Location and purpose |
 |---|---|---|
+| `card_root` | empty | first child of the card root, before the card body; for a status stripe or other root content |
+| `card_header` | empty | inside the card body, before and outside the heading; for badges or introductory content |
 | `card_title` | `{{ object }}` | the text of the `<h5>` heading |
 | `card_content` | empty | anything between the heading and the actions, inside the card body |
 | `card_actions` | the menu's hidden action forms and the actions container | override only to move or drop the actions |
 
+For an Author with a `pseudonym` field, this template fills both insertion points while inheriting the title and
+actions. Save it as the template named by your view's `cv_card_template`. Model values use Django's normal HTML
+escaping; leaving either new block unused adds no output.
+
+<!-- card-recipe: insertion-blocks -->
+```html
+{% extends "crud_views/tags/card.html" %}
+
+{% block card_root %}<div class="author-card-status">{{ object.pseudonym }}</div>{% endblock card_root %}
+{% block card_header %}<p class="author-card-intro">{{ object.pseudonym }}</p>{% endblock card_header %}
+```
+
 The card's own classes are keys in the [button class table](buttons.md): `card:root` (`card mb-3`), `card:body`
 (`card-body`) and `card:title` (`card-title`); the actions container is `card:container`. A theme that puts the actions
-in a footer overrides `crud_views/tags/card.html` with its own structure and keeps the three block names, so a
-project template that extends `crud_views/tags/card.html` works unchanged under that theme.
+in a footer overrides `crud_views/tags/card.html` with its own structure and keeps all five block names:
+`card_root`, `card_header`, `card_title`, `card_content`, and `card_actions`. Replacement templates must explicitly
+expose the two new blocks at the locations above so inherited project templates can use them. Upstream template
+changes cannot update a theme's shadowing copy automatically; the theme owns that adaptation and its action plumbing.
 
 ## Filter Integration
 
@@ -320,7 +481,7 @@ filter keeps the active order.
 
 ## List Key Fallback
 
-When a ViewSet has a `CardListView` but no `ListView`, keys that reference `"list"`
+When a ViewSet has a registered `"card"` view but no registered `"list"` view, keys that reference `"list"`
 (such as `cv_success_key`, `cv_success_keys`, `cv_cancel_key`, `cv_cancel_keys`, and the default "home"
 context button) automatically fall back to `"card"`. No manual overrides needed. Standard forms use
 `cv_cancel_keys="auto"`, accepting registered list/card origins. Card actions carry the eligible origin
@@ -334,6 +495,7 @@ if neither origin nor fallback is accessible, Cancel is omitted. See
 
 This means a ViewSet with only a `CardListView` works out of the box — CreateView,
 UpdateView, and DeleteView all redirect to the card view after success.
+The cards-first recipe above already registers cards as `"list"`, so it does not use this fallback.
 
 ## Guardian (Per-Object Permissions)
 

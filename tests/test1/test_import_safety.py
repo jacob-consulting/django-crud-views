@@ -58,6 +58,21 @@ def test_workflow_mixins_import_without_app_registry():
     assert "IMPORT-OK" in result.stdout
 
 
+def test_workflow_run_transition_import_without_app_registry():
+    code = textwrap.dedent(
+        """
+        from django.conf import settings
+        settings.configure()
+        from crud_views_workflow.lib import run_transition
+        assert callable(run_transition)
+        print("IMPORT-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "IMPORT-OK" in result.stdout
+
+
 def test_resource_module_imports_standalone():
     """crud_views.lib.resource must be importable before any other crud_views module
     (users import Resource from models.py, which loads before AppConfig.ready)."""

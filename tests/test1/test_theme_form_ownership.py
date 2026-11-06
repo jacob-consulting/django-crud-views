@@ -70,6 +70,41 @@ def assert_owned_form_markup(markup):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("presentation", ["radio", "buttons"])
+@pytest.mark.parametrize("allowed", [False, True])
+def test_custom_workflow_owner_and_cancel(
+    client_user_campaign_change, user_campaign_change, campaign_new, monkeypatch, modal, presentation, allowed
+):
+    from tests.test1.app.views import CampaignWorkflowView, cv_campaign
+    from tests.test1.test_theme_form_requests import _grant_cancel_view
+    from tests.test1.test_workflow_buttons import CustomWorkflowForm
+
+    if allowed:
+        _grant_cancel_view(user_campaign_change, cv_campaign)
+    monkeypatch.setattr(CampaignWorkflowView, "form_class", CustomWorkflowForm)
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
+    monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    response = client_user_campaign_change.get(url, headers={"X-CV-Modal": "true"} if modal else {})
+    sibling = '<form method="post"><input name="csrfmiddlewaretoken" value="sibling"></form>'
+    owner = assert_owned_form_markup(sibling + response.content.decode() + sibling)
+    assert len(owner["submitters"]) == (2 if presentation == "buttons" else 1)
+    document = html_parser.fromstring(response.content)
+    form = document.cssselect("form.cv-form")[0]
+    for control in form.cssselect("input, textarea, button"):
+        assert next(control.iterancestors("form")) is form
+    cancel = form.cssselect("[data-cv-cancel-url]")
+    assert bool(cancel) is allowed
+    if allowed:
+        assert cancel[0].get("type") == "button"
+        assert cancel[0].get("name") == "reset"
+        assert cancel[0].get("data-cv-cancel-url")
+        assert cancel[0].text_content().strip() == "Cancel"
+    assert not form.cssselect('button[type="reset"], input[type="reset"]')
+
+
+@pytest.mark.django_db
 def test_create_ownership_csrf_round_trip(cv_author, user_author_add):
     client = Client(enforce_csrf_checks=True)
     client.force_login(user_author_add)

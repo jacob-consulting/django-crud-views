@@ -230,11 +230,11 @@ locked D-01–D-17 and issue #322 acceptance criteria. IDs assigned during plann
 WFP-01–WFP-05 remain completed prior-phase regression obligations. Initial spec-less fallback skipped visibly
 because phase IDs were absent at intake; no fallback predicates were fabricated.
 
-- [ ] **WFX-01**: Add the exact model-data-only business hook, ordered message/list blockers, correct transition/comment field errors and usable `clean()` return while preserving default radio/custom-form behavior (D-01–D-03, D-06, D-08).
-- [ ] **WFX-02**: Export the exact actor-required standalone helper and share execution with the view: normalize/enforce comments, recheck state/conditions/permissions before business validation or dispatch, and persist complete state/history identity on one supported database (D-05, D-07, D-11, D-14).
-- [ ] **WFX-03**: Distinguish expected refusal origin, roll back before bound redisplay with protected-FSM-safe persisted context, suppress every success effect, propagate unexpected errors, and preserve `on_transition`/commit semantics with outer atomic enabled or disabled (D-09, D-10, D-15).
-- [ ] **WFX-04**: Deliver per-view opt-in native transition buttons in the shared page/modal form: exact clicked-name ownership, visible ordered blockers, separate help, required-comment semantics, escaped translated accessible text, unique descriptions, custom-form compatibility, all 25 UI considerations and real no-JS page/browser acceptance (D-04, D-12, D-13).
-- [ ] **WFX-05**: Publish helper/hook/presentation/theme/lifecycle contracts and supported routing/direct-call limits; add release and any paired migration notes; record bounded regression, matrix, docs/lint/JS/browser evidence without overstating guarantees (D-16, D-17).
+- [x] **WFX-01**: Add the exact model-data-only business hook, ordered message/list blockers, correct transition/comment field errors and usable `clean()` return while preserving default radio/custom-form behavior (D-01–D-03, D-06, D-08).
+- [x] **WFX-02**: Export the exact actor-required standalone helper and share execution with the view: normalize/enforce comments, recheck state/conditions/permissions before business validation or dispatch, and persist complete state/history identity on one supported database (D-05, D-07, D-11, D-14).
+- [x] **WFX-03**: Distinguish expected refusal origin, roll back before bound redisplay with protected-FSM-safe persisted context, suppress every success effect, propagate unexpected errors, and preserve `on_transition`/commit semantics with outer atomic enabled or disabled (D-09, D-10, D-15).
+- [x] **WFX-04**: Deliver per-view opt-in native transition buttons in the shared page/modal form: exact clicked-name ownership, visible ordered blockers, separate help, required-comment semantics, escaped translated accessible text, unique descriptions, custom-form compatibility, all 25 UI considerations and real no-JS page/browser acceptance (D-04, D-12, D-13).
+- [x] **WFX-05**: Publish helper/hook/presentation/theme/lifecycle contracts and supported routing/direct-call limits; add release and any paired migration notes; record bounded regression, matrix, docs/lint/JS/browser evidence without overstating guarantees (D-16, D-17).
 
 ### Polymorphic labels and per-model detail groups (Phase 06.15, #326)
 
@@ -303,11 +303,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POLY-03 | Phase 06.15 (plan 01) | Complete |
 | POLY-04 | Phase 06.15 (plan 03) | Complete |
 | POLY-05 | Phase 06.15 (plans 03–04) | Complete |
-| WFX-01 | Phase 06.13.1 | Pending |
-| WFX-02 | Phase 06.13.1 | Pending |
-| WFX-03 | Phase 06.13.1 | Pending |
-| WFX-04 | Phase 06.13.1 | Pending |
-| WFX-05 | Phase 06.13.1 | Pending |
+| WFX-01 | Phase 06.13.1 | Complete |
+| WFX-02 | Phase 06.13.1 | Complete |
+| WFX-03 | Phase 06.13.1 | Complete |
+| WFX-04 | Phase 06.13.1 | Complete |
+| WFX-05 | Phase 06.13.1 | Complete |
 | WFP-01 | Phase 6.13 | Complete |
 | WFP-02 | Phase 6.13 | Complete |
 | WFP-03 | Phase 6.13 | Complete |

@@ -91,7 +91,7 @@
     {
       "number": "6.13.1",
       "name": "Workflow validation and execution",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "number": "6.14",
@@ -104,15 +104,20 @@
       "status": "complete"
     },
     {
+      "number": "6.13.1",
+      "name": "Workflow validation and execution",
+      "status": "complete"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 27 of 30 · 90% · executing"
+    "command": "$gsd-discuss-phase 7",
+    "label": "Plan Phase 7 theme-surface stability policy",
+    "reason": "Phases 06.13.1, 06.14 and 06.15 are complete"
   },
-  "updated_at": "2026-11-06T12:35:39.685Z"
+  "updated_at": "2026-11-06T09:44:55.505Z"
 }

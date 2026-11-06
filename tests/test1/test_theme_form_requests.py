@@ -264,6 +264,33 @@ def test_workflow_frame_request_states(
         check_frame(terminal, False)
 
 
+@pytest.mark.parametrize("modal", [False, True])
+def test_workflow_buttons_csrf_owner(modal, campaign_new, user_campaign_change, monkeypatch):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(user_campaign_change)
+    url = f"/campaign/{campaign_new.pk}/workflow/"
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    response = client.get(url, headers=headers)
+    owner = assert_owned_form_markup(response.content.decode())
+    assert [item["name"] for item in owner["submitters"]] == ["transition", "transition"]
+    assert [item["value"] for item in owner["submitters"]] == ["wf_activate", "wf_cancel_new"]
+    before = _snapshot()
+    for token in (None, "invalid"):
+        payload = {"transition": "wf_activate"}
+        if token is not None:
+            payload["csrfmiddlewaretoken"] = token
+        assert client.post(url, payload, headers=headers).status_code == 403
+        assert _snapshot() == before
+    response = client.post(
+        url, {"transition": "wf_activate", "csrfmiddlewaretoken": owner["tokens"][0]}, headers=headers
+    )
+    assert response.status_code == (204 if modal else 302)
+    assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.ACTIVE
+    assert WorkflowInfo.objects.filter(workflow_object_pk=str(campaign_new.pk), transition="wf_activate").count() == 1
+
+
 @pytest.mark.parametrize("view", [AuthorCreateView, AuthorUpdateView])
 def test_create_update_modal_support_stays_rejected(view, monkeypatch):
     assert view.cv_modal_supported is False

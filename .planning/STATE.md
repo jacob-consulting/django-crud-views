@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 06.13.1
-current_phase_name: "Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322)"
-status: "Phase 06.15 shipped — PR #331"
-stopped_at: Phase 06.15 complete, ready to execute Phase 06.13.1
-last_updated: "2026-11-06T12:49:51.330Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: "Phase 06.13.1 shipped — PR #332"
+stopped_at: Phase 06.13.1 complete, ready to plan Phase 7
+last_updated: "2026-11-06T12:52:42.464Z"
 last_activity: 2026-11-06
-state_head: 36396bc2fdfbd130b728bd91866ea92abe815d74
+state_head: 16a7354420afce19d0dd47331da9865457cdc3d8
 progress:
   total_phases: 21
-  completed_phases: 19
-  total_plans: 129
-  completed_plans: 124
-  percent: 90
+  completed_phases: 20
+  total_plans: 131
+  completed_plans: 131
+  percent: 95
 milestone_name: milestone
 ---
 
@@ -28,12 +28,12 @@ See: .planning/PROJECT.md (updated 2026-11-06)
 
 ## Current Position
 
-Phase: 06.13.1 — Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322)
+Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Phase 06.15 shipped — PR #331
+Status: Phase 06.13.1 shipped — PR #332
 Last activity: 2026-11-06
 
-Next: $gsd-execute-phase 06.13.1
+Next: $gsd-discuss-phase 7
 
 ### Phase 06.15 acceptance closeout — 2026-11-06
 
@@ -49,6 +49,39 @@ Next: $gsd-execute-phase 06.13.1
 - Final source: 90 focused tests each on Django 4.2/5.2/6.0; 8,398 prior-phase regressions plus 100 subtests; 18 consumer tests and warning-level checks; seven independent cases and strict docs passed. Earlier full 5.2 result (10,175 + one skip) remains pre-fix evidence.
 - Downstream 542936d/6a8e4f9 remain on gsd/phase-06.15-polymorphic-adoption. Another actor switched its checkout to main and advanced it; final consumer checks used a pinned archive, preserving current checkout and original report edits.
 - No phase completion, next-phase advance, push or merge. Unrelated config preserved; codebase map drift advisory.
+
+### Phase 06.13.1 acceptance complete — 2026-11-06
+
+- User explicitly passed both required UAT checks on the external review domain: narrow/wide page/modal presentation and Tab/visible-focus/disabled-action behavior. Canonical verification promoted to passed; shared UAT-plus-verification gate has no blockers. All five plans and WFX-01–05 complete.
+- Independent code review is clean; all 15 security threats closed. Automated evidence remains attributed to its original runs: final full Django 5.2 10,413 passed/one existing skip; focused Django 4.2/6.0 1,463 each; browser 37+2. No new runtime, AT or translation-quality acceptance inferred.
+- Owned port-9000 fixture stopped and disposable database cleaned; tunnel unchanged. Completion scanner warnings refer to the valid package-relative widget template and an inline multi-file Ruff command, not missing files. No learnings artifacts to graduate. Phase 7 is next; no push or merge performed.
+
+### Phase 06.13.1 independent verification — 2026-11-06
+
+- All five plans committed. Canonical verification is human_needed, 29/31 truths verified, all 17 decisions honored, no implementation blocker. Two explicit plan/UI acceptance items are persisted in 06.13.1-UAT.md: representative narrow/wide page/modal visuals and native Tab/visible-focus/disabled-action behavior. No human approval inferred.
+- Deep review is clean after three reproduced fixes: current-source FSM metadata, public-helper refusal isolation, and cooperative Guardian scoped reload. Security closes all 15 threats after literal SafeData POST-error repair and final independent recheck. Validation is compliant; UI audit 21/24 documents evidence limitations.
+- Final full Django 5.2: 10,413 passed/one existing CSP skip; focused Django 4.2/6.0: 1,463 each; browser 37+2 with 498 current hashes and separately bound Guardian source. Independent reviewer 56, security 26, verifier 103 Python/65 Node checks pass. Earlier smaller counts below are historical.
+- Required regression gate is covered by the final full suite run after all product repairs; no source change followed it. JS 365, strict docs and scoped Ruff remain green. Existing user config/CLAUDE and state.json diffs preserved. No push, merge, publication or phase advance.
+
+### Phase 06.13.1 plan 05 — 2026-11-06
+
+- Exact workflow helper/hook/widget/lifecycle contracts, mandatory routing migration and German source/compiled comment markers are documented and tested. All five plan summaries exist; roadmap remains In Progress pending review/verification.
+- Final full Django 5.2: 10356 passed/one existing CSP skip; focused Django 4.2 and 6.0-floor: 705 each; JS 365; German catalog/render 7; strict docs and scoped Ruff passed. The first full run exposed lost stock workflow W292 diagnostics; a bounded provider-recognition fix and regressions restored them.
+- Browser receipts refreshed after final source changes: 37 all cases plus 2 smoke, 497 matching source hashes and owned cleanup. R23 observed eight exact unreferenced vendor-wrapper exemptions on Django 4.2/crispy 2026.3; owned IDs/descriptions remain strict. Human visual/screen-reader/copy judgments remain unclaimed.
+- WFX-05 passed shared-ID readiness and is complete; overall requirement reconciliation remains with phase verification. Existing CLAUDE/config/state.json edits preserved; no push or merge.
+
+### Phase 06.13.1 plan 04 — 2026-11-06
+
+- Complete native-page/real-modal browser acceptance passed 37 cases plus 2 smoke cases with 497 source hashes and owned cleanup. Four narrow/wide long-content screenshots and all 25 UI consideration mappings are recorded in the plan summary.
+- Browser evidence exposed a stock comment-label overflow; bounded button-mode field-column wrapping passed 86 workflow regressions. Independent receipt/asset rejection passed 65 Node tests; scoped Ruff passed.
+- WFX-03/WFX-04 are complete under the shared-ID readiness check; WFX-05 waits for plan 05. Human visual, screen-reader and translated-copy judgments remain unclaimed. Phase remains In Progress, 4/5 plans executed; no push or merge.
+
+### Phase 06.13.1 plan convergence — 2026-11-06
+
+- Five plans across three waves are ready for execution. Fable, Grok and Gemini reviewed all five plans in each round; cycle 5 closed with zero HIGH concerns, zero actionable non-HIGH findings and zero open revision conflicts. Final review: 13457c2; reviewed plans: 5d06e11.
+- All 17 discussion decisions and WFX-01–WFX-05 have executable coverage. Plan structure, task ownership and diff checks pass. This is planning approval; implementation and new acceptance tests remain pending.
+- Database support is a planning choice: explicitly bind workflow writes to one selected alias and reject mismatched loaded identities, including replica-loaded inputs. Plans require Breaking/migration guidance; this restriction is not implied by the standalone helper API or attributed to a user-selected routing requirement.
+- Review source-grounding limitations remain recorded in REVIEWS.md. No implementation, push or merge was performed.
 
 ### Phase 06.13 shipping — 2026-11-06
 
@@ -507,7 +540,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 124
+- Total plans completed: 131
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -532,6 +565,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.8 | 3 | - | - |
 | 06.10 | 5 | - | - |
 | 06.13 | 2 | - | - |
+| 06.13.1 | 5 | - | - |
 | 06.15 | 4 | - | - |
 
 **Recent Trend:**
@@ -629,6 +663,11 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.10 P03 | 6min | 3 tasks | 9 files |
 | Phase 06.10 P04 | 6min | 3 tasks | 15 files |
 | Phase 06.10 P05 | 12min | 2 tasks | 12 files |
+| Phase 06.13.1 P01 | 9min | 3 tasks | 7 files |
+| Phase 06.13.1 P02 | 10min | 2 tasks | 3 files |
+| Phase 06.13.1 P03 | 19min | 3 tasks | 7 files |
+| Phase 06.13.1 P04 | 22min | 2 tasks | 6 files |
+| Phase 06.13.1 P05 | 20min | 2 tasks | 10 files |
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
 | Phase 06.15 P03 | 12min | 2 tasks | 4 files |
@@ -810,6 +849,15 @@ Recent decisions affecting current work:
 - [Phase 06.10]: Plan 03 preserves exact copied-recipe markers and null-URL bodies, migrates independent guards/notices, and documents selected-only presentation costs separately from full inspection/filtering.
 - [Phase 06.10]: Plan 04 retains example defaults/models/grants/seeds, uses test-local finite/None overrides, and teaches plain protected labels separately from ordinary Book navigation; German notice uses existing polib regeneration.
 - [Phase 06.10]: Final browser acceptance binds current source and exact recipes; human and independent phase/security/Nyquist reviews remain pending.
+- [Phase 06.13.1]: Plan 01 confines refusal recovery and alias pinning to WorkflowView; independent business/comment checks share one lazy-exported explicit-actor execution engine.
+- [Phase 06.13.1]: Plan 02 binds scalar history identity/readback to the selected database; real default/shard failure-stage tests prove existing atomicity without a product rewrite.
+- [Phase 06.13.1]: Keep radio default; button presentation owns the submit slot through the existing form-action seam.
+- [Phase 06.13.1]: Namespace IDs before subclass binding and reference crispy error paragraphs instead of version-dependent wrappers.
+- [Phase 06.13.1]: Preserve the existing late-refusal engine and form instance; custom integration required regression tests rather than another recovery abstraction.
+- [Phase 06.13.1]: Keep stock workflow wrapping on field columns; preserve radio rendering and custom layout ownership.
+- [Phase 06.13.1]: Browser acceptance uses cached local assets and runtimes only; missing prerequisites fail without passing skips.
+- [Phase 06.13.1]: Document workflow database alignment as a compatibility restriction while preserving DeleteView behavior.
+- [Phase 06.13.1]: Restore static stock WorkflowForm icon diagnostics without importing the optional extension or calling custom providers.
 - [Phase 06.15]: Plan 01: exact model selection and E247 key checks share the existing parser/check traversal; POLY-03 remains pending its plan 03 structural-limit documentation.
 - [Phase 06.15]: Plan 02: capfirst formats already-discovered selector names; real requests plus lazy translation, escaping, filtering, custom-form and access regressions preserve the existing contract.
 - [Phase 06.15]: Plan 03: publish executable exact-model mapping blocks and list-only tag boundary; full 5.2 and focused 4.2/6.0 pass; POLY-05 remains pending downstream adoption.
@@ -874,6 +922,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T11:38:07.769Z
-Stopped at: Phase 06.15 complete, ready to execute Phase 06.13.1
+Last session: 2026-11-06T11:34:16.722Z
+Stopped at: Phase 06.13.1 complete, ready to plan Phase 7
 Resume file: None

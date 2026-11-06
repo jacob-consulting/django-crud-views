@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="5" time="1.986" timestamp="2026-11-06T11:00:40.984930+00:00" hostname="weaver-dev"><testcase classname="tests.test1.od.test_object_detail_view.TestModelDisplayChecks" name="test_invalid_keys_still_check_values[bad]" time="0.005"><failure message="AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}&#10;  &#10;  Extra items in the left set:&#10;  'viewset.E247'">self = &lt;tests.test1.od.test_object_detail_view.TestModelDisplayChecks object at 0x76f2ae0648f0&gt;
+key = 'bad'
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76f2ac086e10&gt;
+
+    @pytest.mark.parametrize("key", ["bad", "{context}", 42, str, Info(pk=9)])
+    def test_invalid_keys_still_check_values(self, key, monkeypatch):
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Model instance must not be stringified")
+    
+        monkeypatch.setattr(Info, "__str__", forbidden)
+        monkeypatch.setattr(Info, "__repr__", forbidden)
+        view = self.view({key: [{"title": "Bad", "properties": [False]}]})
+        checks = list(view.checks())
+        messages = [m for chk in checks for m in chk.messages()]
+&gt;       assert {"viewset.E247", "viewset.E245"} &lt;= {m.id for m in messages}
+E       AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}
+E         
+E         Extra items in the left set:
+E         'viewset.E247'
+
+tests/test1/od/test_object_detail_view.py:279: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_object_detail_view.TestModelDisplayChecks" name="test_invalid_keys_still_check_values[{context}]" time="0.001"><failure message="AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}&#10;  &#10;  Extra items in the left set:&#10;  'viewset.E247'">self = &lt;tests.test1.od.test_object_detail_view.TestModelDisplayChecks object at 0x76f2ae066420&gt;
+key = '{context}'
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76f2ac3db8c0&gt;
+
+    @pytest.mark.parametrize("key", ["bad", "{context}", 42, str, Info(pk=9)])
+    def test_invalid_keys_still_check_values(self, key, monkeypatch):
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Model instance must not be stringified")
+    
+        monkeypatch.setattr(Info, "__str__", forbidden)
+        monkeypatch.setattr(Info, "__repr__", forbidden)
+        view = self.view({key: [{"title": "Bad", "properties": [False]}]})
+        checks = list(view.checks())
+        messages = [m for chk in checks for m in chk.messages()]
+&gt;       assert {"viewset.E247", "viewset.E245"} &lt;= {m.id for m in messages}
+E       AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}
+E         
+E         Extra items in the left set:
+E         'viewset.E247'
+
+tests/test1/od/test_object_detail_view.py:279: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_object_detail_view.TestModelDisplayChecks" name="test_invalid_keys_still_check_values[42]" time="0.001"><failure message="AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}&#10;  &#10;  Extra items in the left set:&#10;  'viewset.E247'">self = &lt;tests.test1.od.test_object_detail_view.TestModelDisplayChecks object at 0x76f2ae064cb0&gt;
+key = 42
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76f2ab78bef0&gt;
+
+    @pytest.mark.parametrize("key", ["bad", "{context}", 42, str, Info(pk=9)])
+    def test_invalid_keys_still_check_values(self, key, monkeypatch):
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Model instance must not be stringified")
+    
+        monkeypatch.setattr(Info, "__str__", forbidden)
+        monkeypatch.setattr(Info, "__repr__", forbidden)
+        view = self.view({key: [{"title": "Bad", "properties": [False]}]})
+        checks = list(view.checks())
+        messages = [m for chk in checks for m in chk.messages()]
+&gt;       assert {"viewset.E247", "viewset.E245"} &lt;= {m.id for m in messages}
+E       AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}
+E         
+E         Extra items in the left set:
+E         'viewset.E247'
+
+tests/test1/od/test_object_detail_view.py:279: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_object_detail_view.TestModelDisplayChecks" name="test_invalid_keys_still_check_values[str]" time="0.001"><failure message="AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}&#10;  &#10;  Extra items in the left set:&#10;  'viewset.E247'">self = &lt;tests.test1.od.test_object_detail_view.TestModelDisplayChecks object at 0x76f2ae064e60&gt;
+key = &lt;class 'str'&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76f2ab78abd0&gt;
+
+    @pytest.mark.parametrize("key", ["bad", "{context}", 42, str, Info(pk=9)])
+    def test_invalid_keys_still_check_values(self, key, monkeypatch):
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Model instance must not be stringified")
+    
+        monkeypatch.setattr(Info, "__str__", forbidden)
+        monkeypatch.setattr(Info, "__repr__", forbidden)
+        view = self.view({key: [{"title": "Bad", "properties": [False]}]})
+        checks = list(view.checks())
+        messages = [m for chk in checks for m in chk.messages()]
+&gt;       assert {"viewset.E247", "viewset.E245"} &lt;= {m.id for m in messages}
+E       AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}
+E         
+E         Extra items in the left set:
+E         'viewset.E247'
+
+tests/test1/od/test_object_detail_view.py:279: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_object_detail_view.TestModelDisplayChecks" name="test_invalid_keys_still_check_values[key4]" time="0.001"><failure message="AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}&#10;  &#10;  Extra items in the left set:&#10;  'viewset.E247'">self = &lt;tests.test1.od.test_object_detail_view.TestModelDisplayChecks object at 0x76f2ae0653d0&gt;
+key = &lt;[AssertionError('Model instance must not be stringified') raised in repr()] Info object at 0x76f2ae033a40&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76f2ab7c1a90&gt;
+
+    @pytest.mark.parametrize("key", ["bad", "{context}", 42, str, Info(pk=9)])
+    def test_invalid_keys_still_check_values(self, key, monkeypatch):
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Model instance must not be stringified")
+    
+        monkeypatch.setattr(Info, "__str__", forbidden)
+        monkeypatch.setattr(Info, "__repr__", forbidden)
+        view = self.view({key: [{"title": "Bad", "properties": [False]}]})
+        checks = list(view.checks())
+        messages = [m for chk in checks for m in chk.messages()]
+&gt;       assert {"viewset.E247", "viewset.E245"} &lt;= {m.id for m in messages}
+E       AssertionError: assert {'viewset.E24...viewset.E247'} &lt;= {'viewset.E245'}
+E         
+E         Extra items in the left set:
+E         'viewset.E247'
+
+tests/test1/od/test_object_detail_view.py:279: AssertionError</failure></testcase></testsuite></testsuites>

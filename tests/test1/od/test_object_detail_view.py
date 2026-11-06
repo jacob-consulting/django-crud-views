@@ -234,3 +234,107 @@ def test_group_icon_w246_for_property_group_config():
         cv_property_display = [PropertyGroupConfig(title="A", icon="xy:truck", properties=["name"])]
 
     assert "viewset.W246" in _error_ids(V)
+
+
+class TestModelDisplayChecks:
+    @staticmethod
+    def view(declaration):
+        from crud_views_object_detail.lib.views import ObjectDetailView
+
+        class DeclaredDetail(ObjectDetailView):
+            cv_property_display = declaration
+            cv_key = "detail"
+            cv_path = "detail"
+
+        return DeclaredDetail
+
+    def test_every_entry_has_model_and_indices(self):
+        from tests.test1.app.models import Author, Car, Truck
+
+        view = self.view(
+            {
+                Author: [],
+                Car: [{"title": "Car", "properties": [False]}],
+                Truck: [{"properties": []}, {"title": "Truck", "properties": None}],
+            }
+        )
+        messages = [m for chk in view.checks() for m in chk.messages()]
+        errors = {m.id: m.msg for m in messages if m.id.startswith("viewset.E24")}
+        assert "app.Car" in errors["viewset.E245"]
+        assert "[0]['properties'][0]" in errors["viewset.E245"]
+        assert "app.Truck" in errors["viewset.E242"]
+        assert "[1]['properties']" in errors["viewset.E244"]
+        assert all("DeclaredDetail" in message for message in errors.values())
+
+    @pytest.mark.parametrize("key", ["bad", "{context}", 42, str, Info(pk=9)])
+    def test_invalid_keys_still_check_values(self, key, monkeypatch):
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Model instance must not be stringified")
+
+        monkeypatch.setattr(Info, "__str__", forbidden)
+        monkeypatch.setattr(Info, "__repr__", forbidden)
+        view = self.view({key: [{"title": "Bad", "properties": [False]}]})
+        checks = list(view.checks())
+        messages = [m for chk in checks for m in chk.messages()]
+        assert {"viewset.E247", "viewset.E245"} <= {m.id for m in messages}
+        assert all("entry 0" in m.msg for m in messages if m.id in {"viewset.E247", "viewset.E245"})
+        # Consumers may use the Check formatting API as well as messages().
+        for chk in checks:
+            if chk.id in {"E247", "E245"}:
+                assert "entry 0" in chk.get_message()
+
+    @pytest.mark.parametrize("value", [None, "groups", 1, {}, ()])
+    @pytest.mark.parametrize("valid_key", [False, True])
+    def test_invalid_value_shape(self, value, valid_key):
+        key = Info if valid_key else "{invalid}"
+        messages = [m for chk in self.view({key: value}).checks() for m in chk.messages()]
+        errors = [m for m in messages if m.id == "viewset.E241"]
+        assert len(errors) == 1
+        assert (Info._meta.label if valid_key else "entry 0") in errors[0].msg
+        assert ("viewset.E247" in {m.id for m in messages}) is not valid_key
+
+    @pytest.mark.parametrize("group", [None, False, "bad", {}, {"title": "No properties"}])
+    def test_malformed_groups(self, group):
+        errors = _error_ids(self.view({Info: [group]}))
+        assert "viewset.E243" in errors
+        assert ("viewset.E242" in errors) is not (isinstance(group, dict) and "title" in group)
+
+    @pytest.mark.parametrize("typed", [False, True])
+    def test_nonfirst_icon_warning(self, typed):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+        from tests.test1.app.models import Author
+
+        group = {"title": "Bad icon", "icon": "xy:truck", "properties": ["text"]}
+        if typed:
+            group = PropertyGroupConfig(**group)
+        messages = [m for chk in self.view({Author: [], Info: [group]}).checks() for m in chk.messages()]
+        warning = next(m for m in messages if m.id == "viewset.W246")
+        assert f"{Info._meta.label}][0]['icon']" in warning.msg
+
+    @pytest.mark.django_db
+    def test_checks_are_static_and_query_free(self, monkeypatch, django_assert_num_queries):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+
+        view = self.view({Info: [PropertyGroupConfig(title="Info", properties=["text"])]})
+
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Startup checks evaluated runtime state")
+
+        monkeypatch.setattr(view, "__init__", forbidden)
+        monkeypatch.setattr(view, "property_display", property(forbidden))
+        monkeypatch.setattr(view, "get_object", forbidden)
+        monkeypatch.setattr(view, "get_object_for_detail", forbidden)
+        monkeypatch.setattr(Info, "__init__", forbidden)
+        with django_assert_num_queries(0):
+            assert not {i for i in _error_ids(view) if i.startswith("viewset.E24")}
+
+    @pytest.mark.parametrize("declaration", [{}, {Info: []}, []])
+    def test_empty_declarations(self, declaration):
+        assert not {i for i in _error_ids(self.view(declaration)) if i.startswith("viewset.E24")}
+
+    def test_none_outer_shape_and_inherited_checks(self):
+        assert "viewset.E240" in _error_ids(self.view(None))
+        assert "viewset.E241" in _error_ids(self.view("bad"))
+        view = self.view({Info: []})
+        view.cv_modal_size = "modal-huge"
+        assert "viewset.E250" in _error_ids(view)

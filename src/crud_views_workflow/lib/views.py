@@ -1,15 +1,16 @@
 from collections.abc import Iterable
+from contextlib import nullcontext
+from functools import partial
 
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import SuspiciousOperation
-from django.db import transaction
+from django.core.exceptions import ImproperlyConfigured
+from django.db import connections, router, transaction
 from django.utils.translation import gettext_lazy as _
 
 from crud_views.lib.check import Check, CheckAttribute, CheckExpression
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from crud_views.lib.views.form import CustomFormView
 
-from ..models import WorkflowInfo
+from .execution import _run_transition
 from .mixins import WorkflowModelMixin
 
 _PROCESS_WORKFLOW = _("Process workflow")
@@ -82,57 +83,46 @@ class WorkflowView(CustomFormView):
         context["has_workflow_choices"] = self.object.workflow_has_any_possible_transition(self.request.user)
         return context
 
+    def cv_get_db_alias(self) -> str:
+        return router.db_for_write(type(self.object), instance=self.object)
+
+    def _cv_get_workflow_db_alias(self):
+        """Select once after scoped object resolution; all write boundaries reuse it."""
+        if not hasattr(self, "_cv_workflow_db_alias"):
+            using = self.cv_get_db_alias()
+            if not isinstance(using, str) or not using or using not in connections:
+                raise ImproperlyConfigured("cv_get_db_alias() must select a configured database alias")
+            self._cv_workflow_db_alias = using
+        return self._cv_workflow_db_alias
+
+    def cv_get_atomic(self):
+        using = self._cv_get_workflow_db_alias()
+        return transaction.atomic(using=using) if self.cv_atomic else nullcontext()
+
+    def cv_form_valid_process(self, context: dict) -> None:
+        using = self._cv_get_workflow_db_alias()
+        with self.cv_get_atomic():
+            self.cv_form_valid(context)
+            self.cv_form_valid_hook(context)
+            transaction.on_commit(partial(self.cv_on_commit, context), using=using)
+
     def cv_form_valid(self, context: dict):
-        """
-        Process workflow transition
-        """
         form = context["form"]
-        transition = form.cleaned_data["transition"]
-        comment = form.cleaned_data["comment"]
-        if isinstance(comment, str):
-            comment = comment.strip()
-        if not comment:
-            comment = None
 
-        # some security: make sure the user is allowed to take this transition
-        if not self.object.workflow_has_transition(self.request.user, transition):
-            raise SuspiciousOperation(f"Invalid transition {transition}")
-
-        # get method to call
-        wf_method = getattr(self.object, transition, None)
-        assert callable(wf_method), f"Invalid transition {transition}"
-
-        with transaction.atomic(using=self.cv_get_db_alias()):
-            # get old state
-            state_old = self.object.state
-
-            # execute the workflow
-            data = wf_method(by=self.request.user, comment=comment)
-
-            # save object
-            self.object.save()
-
-            # new state
-            state_new = self.object.state
-            user = self.request.user
-
-            # and save the workflow state
-            info = WorkflowInfo.objects.create(
-                transition=transition,
-                state_old=state_old,
-                state_new=state_new,
-                comment=comment,
-                user=user,
-                data=data,
-                workflow_object_pk=str(self.object.pk),
-                workflow_object_content_type=ContentType.objects.get_for_model(self.object),
+        def on_transition(info):
+            context["workflow_info"] = info
+            self.on_transition(
+                info, info.transition, info.state_old, info.state_new, info.comment, self.request.user, info.data
             )
 
-            # expose the transition record to cv_on_commit (side effects after commit)
-            context["workflow_info"] = info
-
-            # call hook
-            self.on_transition(info, transition, state_old, state_new, comment, user, data)
+        _run_transition(
+            self.object,
+            form.cleaned_data["transition"],
+            user=self.request.user,
+            comment=form.cleaned_data["comment"],
+            using=self._cv_get_workflow_db_alias(),
+            on_transition=on_transition,
+        )
 
     def on_transition(self, info, transition, state_old, state_new, comment, user, data):
         """

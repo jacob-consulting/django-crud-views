@@ -21,10 +21,12 @@ class TestWorkflowTracer:
         def check(obj, name, *, user):
             calls.append((obj.pk, name, user.pk))
             if blocked:
-                raise ValidationError([
-                    ValidationError("Missing %(item)s", params={"item": "budget"}),
-                    "Missing approval",
-                ])
+                raise ValidationError(
+                    [
+                        ValidationError("Missing %(item)s", params={"item": "budget"}),
+                        "Missing approval",
+                    ]
+                )
 
         monkeypatch.setattr(Campaign, "workflow_check_transition", check, raising=False)
         url = f"/campaign/{campaign_new.pk}/workflow/"
@@ -73,15 +75,19 @@ class TestWorkflowTracer:
         )
         assert response.status_code == 302
 
-    @pytest.mark.parametrize("name, comment, valid, field", [
-        ("wf_cancel_new", "reason", True, None),
-        ("wf_cancel_new", "  ", False, "comment"),
-        ("forged", "reason", False, "transition"),
-        ("", "reason", False, "transition"),
-    ])
+    @pytest.mark.parametrize(
+        "name, comment, valid, field",
+        [
+            ("wf_cancel_new", "reason", True, None),
+            ("wf_cancel_new", "  ", False, "comment"),
+            ("forged", "reason", False, "transition"),
+            ("", "reason", False, "transition"),
+        ],
+    )
     def test_ownerless_form(self, name, comment, valid, field):
         form = WorkflowForm(
-            data={"transition": name, "comment": comment}, cv_view=None,
+            data={"transition": name, "comment": comment},
+            cv_view=None,
             choices=[("wf_cancel_new", "Cancel")],
             transition_comments={"wf_cancel_new": WorkflowComment.REQUIRED},
         )

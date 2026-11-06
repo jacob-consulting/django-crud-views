@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from crud_views.lib.crispy import Column8, CrispyForm
 
 from .enums import WorkflowComment
+from .execution import _check_transition_business, _check_transition_comment, _WorkflowRefusal
 
 
 class WorkflowForm(CrispyForm):
@@ -63,8 +64,16 @@ class WorkflowForm(CrispyForm):
         cleaned_data = super().clean()
         transition = cleaned_data.get("transition")
         comment = cleaned_data.get("comment")
-        if isinstance(comment, str):
-            comment = comment.strip()
         transition_comment = self.transition_comments.get(transition)
-        if transition_comment == WorkflowComment.REQUIRED and not comment:
-            self.add_error("comment", _("Comment is required for this transition"))
+        # add_error removes the field from cleaned_data, so retain both inputs
+        # before independently checking business blockers and comment requiredness.
+        if transition and self.cv_view is not None:
+            try:
+                _check_transition_business(self.cv_view.object, transition, user=self.cv_view.request.user)
+            except _WorkflowRefusal as refusal:
+                self.add_error(refusal.field, refusal)
+        try:
+            _check_transition_comment(transition_comment, comment)
+        except _WorkflowRefusal as refusal:
+            self.add_error(refusal.field, refusal)
+        return cleaned_data

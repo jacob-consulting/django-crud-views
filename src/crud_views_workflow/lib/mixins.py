@@ -105,6 +105,14 @@ class WorkflowModelMixin:
     def workflow_has_transition(self, user, transition) -> bool:
         return any(v == transition for v, x, y in self.workflow_get_possible_transitions(user))
 
+    def workflow_check_transition(self, name, *, user):
+        """Raise ValidationError with single/list blockers based on existing model data.
+
+        Keep this check inexpensive and side-effect-free: forms and execution may
+        call it repeatedly. Required comments are validated separately.
+        """
+        pass
+
     @cached_property
     def workflow_get_transition_label_map(self) -> dict[str, str]:
         return {t.name: t.custom.get("label", t.name) for t in self.get_all_state_transitions()}

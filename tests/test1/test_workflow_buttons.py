@@ -7,12 +7,11 @@ import django
 import pytest
 from django import forms
 from django.core.exceptions import ImproperlyConfigured, ValidationError
-from lxml import html
 from django.template import Context, Template
 from django.utils.safestring import mark_safe
+from lxml import html
 
 from crud_views_workflow.lib.enums import WorkflowComment
-
 from crud_views_workflow.models import WorkflowInfo
 from tests.test1.app.models import Campaign, CampaignState
 from tests.test1.app.views import CampaignWorkflowForm, CampaignWorkflowView
@@ -208,6 +207,30 @@ class TestTransitionButtons:
 
 class TestWorkflowDescriptions:
     @pytest.mark.parametrize("modal", [False, True])
+    def test_all_blocked_complete_literal_content(self, client_user_campaign_change, campaign_new, monkeypatch, modal):
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        caption = mark_safe("<em>Action & caption</em> " + "long" * 100)
+        reasons = [mark_safe("<script>first & reason</script>"), "second " + "detail" * 100]
+        for step in campaign_new.get_all_state_transitions():
+            monkeypatch.setitem(step.custom, "label", caption)
+
+        def check(obj, name, *, user):
+            raise ValidationError(reasons)
+
+        monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+        response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/", headers=_headers(modal))
+        document = _document(response)
+        assert not document.cssselect("em, script:not([src])")
+        assert len(_buttons(document)) == 2
+        for button in _buttons(document):
+            assert "disabled" in button.attrib
+            assert str(caption) in button.text_content()
+            assert [item.text_content() for item in button.getparent().cssselect("ul li")] == reasons
+            assert "text-wrap" in button.get("class")
+        _assert_descriptions(document)
+
+    @pytest.mark.parametrize("modal", [False, True])
     @pytest.mark.parametrize("required", [False, True])
     def test_comment_markers_and_guidance(
         self, client_user_campaign_change, campaign_new, monkeypatch, modal, required
@@ -330,7 +353,10 @@ class TestWorkflowDescriptions:
         markup = {
             "duplicate": '<main><p id="owned"></p><p id="owned"></p></main>',
             "missing": '<main><button aria-describedby="missing"></button></main>',
-            "ambiguous": '<main><p id="description"></p><p id="description"></p><button aria-describedby="description"></button></main>',
+            "ambiguous": (
+                '<main><p id="description"></p><p id="description"></p>'
+                '<button aria-describedby="description"></button></main>'
+            ),
         }[kind]
         with pytest.raises(AssertionError):
             _assert_descriptions(html.fromstring(markup))

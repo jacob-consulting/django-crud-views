@@ -80,6 +80,48 @@ class TestRenderObjectDetail:
         assert "testuser" in html
 
 
+@pytest.mark.parametrize("project", [False, True])
+@pytest.mark.parametrize("view_kind", ["absent", "core", "inherit", "enable", "disable"])
+def test_raw_tag_help_policy(project, view_kind, settings):
+    from crud_views.lib.views import DetailView
+    from crud_views_object_detail.lib.mixins import ObjectDetailMixin
+
+    settings.CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = project
+    context = {"obj": Info(text="Body"), "raw": [{"title": "Info", "properties": ["text"]}]}
+    expected = project
+    if view_kind == "core":
+        context["view"] = DetailView()
+        assert not hasattr(context["view"], "cv_object_detail_show_help_text")
+    elif view_kind != "absent":
+        view = context["view"] = ObjectDetailMixin()
+        if view_kind != "inherit":
+            expected = view.cv_object_detail_show_help_text = view_kind == "enable"
+        else:
+            assert view.cv_object_detail_show_help_text is None
+    html = Template("{% load crud_views_object_detail %}{% render_object_detail obj property_display=raw %}").render(
+        Context(context)
+    )
+    assert ("The info body text" in html) is expected
+    assert "Body" in html
+
+
+@pytest.mark.parametrize("resolved_policy", [False, True])
+def test_resolved_tag_keeps_help_under_opposite_policy(resolved_policy, settings):
+    from crud_views_object_detail.lib.mixins import ObjectDetailMixin
+
+    obj = Info(text="Body")
+    view = ObjectDetailMixin()
+    view.cv_object_detail_show_help_text = resolved_policy
+    groups = resolve_all(obj, [PropertyGroupConfig(title="Info", properties=["text"])], view=view)
+    view.cv_object_detail_show_help_text = not resolved_policy
+    settings.CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = not resolved_policy
+    html = Template("{% load crud_views_object_detail %}{% render_object_detail obj groups %}").render(
+        Context({"obj": obj, "groups": groups, "view": view})
+    )
+    assert ("The info body text" in html) is resolved_policy
+    assert groups[0].properties[0].detail == ("The info body text" if resolved_policy else None)
+
+
 class TestRenderGroup:
     def test_renders_group_title(self, groups):
         tpl = Template("{% load crud_views_object_detail %}{% render_group group %}")

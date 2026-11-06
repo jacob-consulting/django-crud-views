@@ -84,7 +84,8 @@ class TestResolvePropertySimpleFields:
         rp = resolve_property(report, cfg)
         assert rp.value == "Some info text"
         assert rp.type == "text"
-        assert rp.detail == "The info body text"
+        assert rp.detail is None
+        assert resolve_property(report, x("info__text", detail=True)).detail == "The info body text"
 
     def test_datetime_field(self, report, now):
         cfg = PropertyConfig(path="info__create_dt")

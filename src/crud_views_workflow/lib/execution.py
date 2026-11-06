@@ -74,7 +74,7 @@ def _run_transition(object, name, *, user, comment=None, using, on_transition=No
         _check_transition_business(object, name, user=user)
         policy = next(
             step.custom.get("comment", object.COMMENT_DEFAULT)
-            for step in object.get_all_state_transitions()
+            for step in object.get_available_user_state_transitions(user)
             if step.name == name
         )
         comment = _check_transition_comment(policy, comment)

@@ -115,7 +115,10 @@ class WorkflowForm(CrispyForm):
         widget.label = field.label
         widget.help_text = getattr(self.cv_view, "cv_transition_help_text", None)
         field.help_text = ""
-        steps = {step.name: step for step in self.cv_view.object.get_all_state_transitions()}
+        steps = {
+            step.name: step
+            for step in self.cv_view.object.get_available_user_state_transitions(self.cv_view.request.user)
+        }
         actions = []
         for index, (name, label) in enumerate(field.choices):
             blockers = []

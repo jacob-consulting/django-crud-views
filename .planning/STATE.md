@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: 06.13.1
 current_phase_name: Workflow validation and execution
 status: executing
-stopped_at: Completed 06.13.1-03-PLAN.md; two plans remain
-last_updated: "2026-11-06T10:43:59.990Z"
+stopped_at: Completed 06.13.1-04-PLAN.md; plan 05 remains
+last_updated: "2026-11-06T11:11:05.812Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.13.1 plan 03 complete; two plans remain
-state_head: 78309b3bc4963654f11f54eb5ae84e9bddb0a2ff
+last_activity_desc: Phase 06.13.1 plan 04 complete; plan 05 remains
+state_head: 12d3dbe432d8c1fb77db2765088e90521012b4a2
 progress:
   total_phases: 19
   completed_phases: 17
   total_plans: 125
-  completed_plans: 123
+  completed_plans: 124
 milestone_name: milestone
 ---
 
@@ -29,11 +29,17 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 ## Current Position
 
 Phase: 06.13.1 (Workflow validation and execution) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
-Last activity: 2026-11-06 — Phase 06.13.1 plan 03 complete; 537 focused regressions passed
+Last activity: 2026-11-06 — Phase 06.13.1 plan 04 complete; 37 browser cases, 65 Node checks and 86 workflow tests passed
 
 Next: $gsd-execute-phase 06.13.1
+
+### Phase 06.13.1 plan 04 — 2026-11-06
+
+- Complete native-page/real-modal browser acceptance passed 37 cases plus 2 smoke cases with 497 source hashes and owned cleanup. Four narrow/wide long-content screenshots and all 25 UI consideration mappings are recorded in the plan summary.
+- Browser evidence exposed a stock comment-label overflow; bounded button-mode field-column wrapping passed 86 workflow regressions. Independent receipt/asset rejection passed 65 Node tests; scoped Ruff passed.
+- WFX-03/WFX-04 are complete under the shared-ID readiness check; WFX-05 waits for plan 05. Human visual, screen-reader and translated-copy judgments remain unclaimed. Phase remains In Progress, 4/5 plans executed; no push or merge.
 
 ### Phase 06.13.1 plan convergence — 2026-11-06
 
@@ -623,6 +629,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.13.1 P01 | 9min | 3 tasks | 7 files |
 | Phase 06.13.1 P02 | 10min | 2 tasks | 3 files |
 | Phase 06.13.1 P03 | 19min | 3 tasks | 7 files |
+| Phase 06.13.1 P04 | 22min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -805,6 +812,8 @@ Recent decisions affecting current work:
 - [Phase 06.13.1]: Keep radio default; button presentation owns the submit slot through the existing form-action seam.
 - [Phase 06.13.1]: Namespace IDs before subclass binding and reference crispy error paragraphs instead of version-dependent wrappers.
 - [Phase 06.13.1]: Preserve the existing late-refusal engine and form instance; custom integration required regression tests rather than another recovery abstraction.
+- [Phase 06.13.1]: Keep stock workflow wrapping on field columns; preserve radio rendering and custom layout ownership.
+- [Phase 06.13.1]: Browser acceptance uses cached local assets and runtimes only; missing prerequisites fail without passing skips.
 
 ### Pending Todos
 
@@ -864,6 +873,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T10:43:57.949Z
-Stopped at: Completed 06.13.1-03-PLAN.md; two plans remain
+Last session: 2026-11-06T11:10:48.285Z
+Stopped at: Completed 06.13.1-04-PLAN.md; plan 05 remains
 Resume file: None

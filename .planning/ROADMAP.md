@@ -985,7 +985,7 @@ existing radio/custom forms and the default page permission remain supported.
 **Integration notes:** Reuse #319's shared workflow form frame (issue closed); preserve #320's permission
 regressions. Backend validation/helper work is independent of presentation. Settle any new public theme
 contracts before Phase 7's stability freeze. Plans preserve the locked public contracts and bounded workflow scope.
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 **UI hint:** yes (accessible transition buttons, visible help/blockers, and bound error redisplay without workflow JS)
 
 Plans:
@@ -997,7 +997,7 @@ Plans:
 - [x] 06.13.1-03-PLAN.md — Opt-in accessible transition buttons and custom page/modal forms (wave 2).
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.13.1-04-PLAN.md — Owned browser fixture, no-JS page flow and complete UI state acceptance (wave 3).
+- [x] 06.13.1-04-PLAN.md — Owned browser fixture, no-JS page flow and complete UI state acceptance (wave 3).
 - [ ] 06.13.1-05-PLAN.md — Public contracts, release guidance and bounded regression evidence (wave 3).
 
 ### Phase 7: Theme-surface stability policy
@@ -1089,5 +1089,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.9. Protected delete-preview object links | 4/4 | Complete    | 2026-11-04 |
 | 6.10. Simplify protected-object previews and cap total displayed objects | 5/5 | Complete    | 2026-11-05 |
 | 6.13. Workflow permissions: opt-in per-transition access | 2/2 | Complete    | 2026-11-05 |
-| 6.13.1. Workflow validation and execution | 3/5 | In Progress | - |
+| 6.13.1. Workflow validation and execution | 4/5 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

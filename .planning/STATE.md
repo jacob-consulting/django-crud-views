@@ -5,15 +5,15 @@ current_phase: "06.15"
 current_phase_name: Polymorphic labels and per-model detail groups
 status: executing
 stopped_at: Completed 06.15-02-PLAN.md
-last_updated: "2026-11-06T11:12:40.665Z"
+last_updated: "2026-11-06T11:27:58.172Z"
 last_activity: 2026-11-06
 last_activity_desc: Phase 06.15 execution started
-state_head: 2e8241ee5fc0cc005b818b3b24ed5c3dcd307408
+state_head: 02576b836103e96191f687ff7da6722e1afe16ce
 progress:
   total_phases: 21
   completed_phases: 18
   total_plans: 129
-  completed_plans: 122
+  completed_plans: 123
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 ## Current Position
 
 Phase: 06.15 (Polymorphic labels and per-model detail groups) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-11-06 — Phase 06.15 execution started
 
@@ -615,6 +615,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.10 P05 | 12min | 2 tasks | 12 files |
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
+| Phase 06.15 P03 | 12min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -794,6 +795,7 @@ Recent decisions affecting current work:
 - [Phase 06.10]: Final browser acceptance binds current source and exact recipes; human and independent phase/security/Nyquist reviews remain pending.
 - [Phase 06.15]: Plan 01: exact model selection and E247 key checks share the existing parser/check traversal; POLY-03 remains pending its plan 03 structural-limit documentation.
 - [Phase 06.15]: Plan 02: capfirst formats already-discovered selector names; real requests plus lazy translation, escaping, filtering, custom-form and access regressions preserve the existing contract.
+- [Phase 06.15]: Plan 03: publish executable exact-model mapping blocks and list-only tag boundary; full 5.2 and focused 4.2/6.0 pass; POLY-05 remains pending downstream adoption.
 
 ### Pending Todos
 

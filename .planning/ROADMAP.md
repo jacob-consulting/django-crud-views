@@ -39,7 +39,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.13.1: Workflow validation and execution (INSERTED)** - #322: business blockers, opt-in transition buttons, and a reusable execution helper (completed 2026-11-06)
 - [x] **Phase 06.14: Card template insertion blocks and cards-first ViewSets (INSERTED)** - #325: empty card blocks and tested cards-first navigation (completed 2026-11-06)
 - [x] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test (completed 2026-11-06)
-- [ ] **Phase 06.16: Object-detail values and composition guidance (INSERTED)** - #327: readable choices, explicit help-text policy, meaningful empty values, and correct mixin composition
+- [x] **Phase 06.16: Object-detail values and composition guidance (INSERTED)** - #327: readable choices, explicit help-text policy, meaningful empty values, and correct mixin composition (completed 2026-11-06)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1087,7 +1087,7 @@ recipes in both `CHANGELOG.md` and `docs/migrating-1.0.md`.
 **Planning handoff:** The maintainer agreed the issue's scope on 2026-11-06. Carry these decisions into CONTEXT.md
 without restarting discovery or creating another specification. Ask only if new code evidence reveals a material
 conflict, naming the affected decision. Internal mechanics and focused test organization are delegated.
-**Plans:** 3/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**

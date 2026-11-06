@@ -5,18 +5,38 @@ from contextlib import contextmanager
 from functools import wraps
 
 import pytest
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.messages import get_messages
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation, ValidationError
-from django.db import connections, transaction
+from django.db import connections, router, transaction
 from django.forms import CharField
+from django.test import Client, RequestFactory
 
 from crud_views_workflow.lib.enums import WorkflowComment
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.models import WorkflowInfo
 from tests.test1.app.models import Campaign, CampaignState
 from tests.test1.app.views import CampaignWorkflowForm, CampaignWorkflowView
+
+
+@pytest.fixture
+def workflow_worlds():
+    """Independent rows deliberately collide by PK, never by identity."""
+    ContentType.objects.clear_cache()
+    worlds = {}
+    for using in ("default", "shard"):
+        obj = Campaign.objects.using(using).create(pk=41, name=f"{using} campaign")
+        actor = User.objects.db_manager(using).create_user(
+            pk=51, username=f"{using} actor", is_superuser=True, is_staff=True
+        )
+        if using == "shard":
+            ContentType.objects.using(using).filter(app_label="app", model="campaign").delete()
+            ContentType.objects.using(using).create(pk=10001, app_label="app", model="campaign")
+        worlds[using] = (obj, actor, ContentType.objects.db_manager(using).get_for_model(Campaign))
+    assert worlds["default"][2].pk != worlds["shard"][2].pk
+    yield worlds
+    ContentType.objects.clear_cache()
 
 pytestmark = pytest.mark.django_db
 
@@ -435,3 +455,214 @@ class TestWorkflowRefusal:
         assert caught.value is error
         assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
         assert not WorkflowInfo.objects.exists()
+
+
+@pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+class TestWorkflowDatabase:
+    def test_instance_fallback_history_readback(self, workflow_worlds, monkeypatch):
+        from crud_views_workflow.lib import run_transition
+
+        monkeypatch.setattr(router, "routers", [])
+        obj, actor, content_type = workflow_worlds["shard"]
+        info = run_transition(obj, "wf_activate", user=actor, comment="  shard note  ")
+        queryset = obj.get_workflow_info_queryset()
+        assert queryset.db == "shard", "History reads must stay on the persisted object's database"
+        assert list(queryset) == [info]
+        assert info.user.username == "shard actor"
+        assert info.workflow_object_content_type_id == content_type.pk
+        assert info.workflow_object.name == "shard campaign"
+        assert obj.workflow_data[0]["comment"] == "shard note"
+        assert not WorkflowInfo.objects.using("default").exists()
+        assert Campaign.objects.using("default").get(pk=obj.pk).state == CampaignState.NEW
+
+    @pytest.mark.parametrize("history_route", [None, "default"])
+    @pytest.mark.parametrize("path", ["helper", "request"])
+    def test_selected_shard_identity(self, workflow_worlds, database_routes, monkeypatch, history_route, path):
+        from crud_views_workflow.lib import run_transition
+
+        obj, actor, content_type = workflow_worlds["shard"]
+        selected, callbacks = [], []
+
+        def select(view):
+            selected.append((view.object._state.db, view.request.user._state.db))
+            return "shard"
+
+        def committed(view, context):
+            assert not connections["shard"].in_atomic_block
+            callbacks.append(context["workflow_info"])
+
+        monkeypatch.setattr(CampaignWorkflowView, "cv_get_db_alias", select)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_on_commit", committed)
+        original = Campaign.wf_activate
+
+        @wraps(original)
+        def activate(obj, *, by, comment):
+            original(obj, by=by, comment=comment)
+            return {"actor": by.username, "alias": obj._state.db}
+
+        monkeypatch.setattr(Campaign, "wf_activate", activate)
+        with database_routes("shard", {WorkflowInfo: history_route, ContentType: history_route}):
+            # Holding default open proves successful callbacks use shard.
+            with transaction.atomic(using="default"):
+                if path == "helper":
+                    info = run_transition(obj, "wf_activate", user=actor, comment="  routed  ")
+                else:
+                    client = Client()
+                    client.force_login(actor)
+                    response = client.post(
+                        f"/campaign/{obj.pk}/workflow/", {"transition": "wf_activate", "comment": "  routed  "}
+                    )
+                    assert response.status_code == 302
+                    assert selected == [("shard", "shard")]
+                    assert len(callbacks) == 1
+                    info = callbacks[0]
+                assert info._state.db == "shard"
+                assert info.user.username == actor.username
+                assert info.user._state.db == "shard"
+                assert info.workflow_object_content_type_id == content_type.pk
+                assert info.workflow_object._state.db == "shard"
+                assert info.workflow_object.name == obj.name
+                assert info.state_old == CampaignState.NEW
+                assert info.state_new == CampaignState.ACTIVE
+                assert info.data == {"actor": actor.username, "alias": "shard"}
+                assert info.comment == "routed"
+                assert list(obj.get_workflow_info_queryset()) == [info]
+                assert obj.workflow_data[0]["user"].username == "shard actor"
+        assert Campaign.objects.using("shard").get(pk=obj.pk).state == CampaignState.ACTIVE
+        assert Campaign.objects.using("default").get(pk=obj.pk).state == CampaignState.NEW
+        assert not WorkflowInfo.objects.using("default").exists()
+
+    @pytest.mark.parametrize("invalid", ["unsaved-object", "unsaved-user", "other-object", "other-user"])
+    def test_invalid_identity_precedes_business_and_dispatch(self, workflow_worlds, database_routes, monkeypatch, invalid):
+        from crud_views_workflow.lib import run_transition
+
+        obj, actor, _ = workflow_worlds["shard"]
+        if invalid == "unsaved-object":
+            obj = Campaign(pk=41, name="Not saved")
+        elif invalid == "unsaved-user":
+            actor = User(pk=51, username="Not saved")
+        elif invalid == "other-object":
+            obj = workflow_worlds["default"][0]
+        else:
+            actor = workflow_worlds["default"][1]
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("Invalid identity reached execution business validation or transition")
+
+        monkeypatch.setattr(Campaign, "workflow_check_transition", forbidden)
+        monkeypatch.setattr(Campaign, "wf_activate", forbidden)
+        with database_routes("shard"), pytest.raises(ImproperlyConfigured, match="must be saved"):
+            run_transition(obj, "wf_activate", user=actor)
+        for using in ("default", "shard"):
+            assert Campaign.objects.using(using).get(pk=41).state == CampaignState.NEW
+            assert not WorkflowInfo.objects.using(using).exists()
+
+    def test_unaligned_view_override_rejected(self, workflow_worlds, database_routes, monkeypatch):
+        obj, actor, _ = workflow_worlds["default"]
+        selected, callbacks = [], []
+
+        def select(view):
+            selected.append((view.object._state.db, view.request.user._state.db))
+            return "shard"
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("Mismatched view override dispatched transition")
+
+        monkeypatch.setattr(CampaignWorkflowView, "cv_get_db_alias", select)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_on_commit", lambda view, context: callbacks.append(context))
+        monkeypatch.setattr(Campaign, "wf_activate", forbidden)
+        with database_routes("default"):
+            client = Client()
+            client.force_login(actor)
+            with pytest.raises(ImproperlyConfigured, match="must be saved"):
+                client.post(f"/campaign/{obj.pk}/workflow/", {"transition": "wf_activate", "comment": ""})
+        assert selected == [("default", "default")]
+        assert callbacks == []
+        for using in ("default", "shard"):
+            assert Campaign.objects.using(using).get(pk=41).state == CampaignState.NEW
+            assert not WorkflowInfo.objects.using(using).exists()
+
+    def test_anonymous_base_view_rejected(self, campaign_new, monkeypatch):
+        from crud_views.lib.crispy import CrispyViewMixin
+        from crud_views_workflow.lib.views import WorkflowView
+        from tests.test1.app.views import cv_campaign
+
+        class BaseWorkflow(CrispyViewMixin, WorkflowView):
+            form_class = CampaignWorkflowForm
+
+        BaseWorkflow.cv_viewset = cv_campaign  # no test-time registry replacement
+        calls = []
+        monkeypatch.setattr(BaseWorkflow, "cv_on_commit", lambda view, context: calls.append(context))
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("Anonymous actor dispatched a transition")
+
+        monkeypatch.setattr(Campaign, "wf_activate", forbidden)
+        request = RequestFactory().post(
+            f"/campaign/{campaign_new.pk}/workflow/", {"transition": "wf_activate", "comment": ""}
+        )
+        request.user = AnonymousUser()
+        with pytest.raises(ImproperlyConfigured, match="authenticated and saved"):
+            BaseWorkflow.as_view()(request, pk=campaign_new.pk)
+        assert calls == []
+        assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
+        assert not WorkflowInfo.objects.exists()
+
+    def test_split_read_write_inputs_rejected(self, workflow_worlds, monkeypatch):
+        from crud_views_workflow.lib import run_transition
+
+        class SplitRouter:
+            def db_for_read(self, model, **hints):
+                return "shard" if model in (Campaign, User) else "default"
+
+            def db_for_write(self, model, **hints):
+                return "default"
+
+        monkeypatch.setattr(router, "routers", [SplitRouter()])
+        obj, actor, _ = workflow_worlds["shard"]
+        default_actor = workflow_worlds["default"][1]
+        # Authenticate the shard-loaded identity using the default session store.
+        User.objects.using("shard").filter(pk=actor.pk).update(password=default_actor.password)
+        actor = User.objects.get(pk=actor.pk)
+        checks, selected, callbacks = [], [], []
+
+        def check(obj, name, *, user):
+            checks.append((obj._state.db, user._state.db))
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("Read-shard/write-default mismatch dispatched a transition")
+
+        original_select = CampaignWorkflowView.cv_get_db_alias
+
+        def select(view):
+            using = original_select(view)
+            selected.append((view.object._state.db, view.request.user._state.db, using))
+            return using
+
+        monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+        monkeypatch.setattr(Campaign, "wf_activate", forbidden)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_get_db_alias", select)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_on_commit", lambda view, context: callbacks.append(context))
+        assert obj._state.db == actor._state.db == "shard"
+        assert router.db_for_write(Campaign, instance=obj) == "default"
+        with pytest.raises(ImproperlyConfigured, match="must be saved"):
+            run_transition(obj, "wf_activate", user=actor)
+        assert checks == []
+        client = Client()
+        client.force_login(default_actor)
+        before = {using: list(Campaign.objects.using(using).values()) for using in ("default", "shard")}
+        with pytest.raises(ImproperlyConfigured, match="must be saved"):
+            client.post(f"/campaign/{obj.pk}/workflow/", {"transition": "wf_activate", "comment": ""})
+        assert checks == [("shard", "shard")]  # existing side-effect-free form check only
+        assert selected == [("shard", "shard", "default")]
+        assert callbacks == []
+        for using in ("default", "shard"):
+            assert list(Campaign.objects.using(using).values()) == before[using]
+            assert not WorkflowInfo.objects.using(using).exists()
+
+    def test_unsaved_history_readback_uses_router_fallback(self, workflow_worlds, database_routes):
+        unsaved = Campaign(name="Not executed")
+        with database_routes("shard"):
+            queryset = unsaved.get_workflow_info_queryset()
+            assert queryset.db == "shard"
+            assert list(queryset) == []

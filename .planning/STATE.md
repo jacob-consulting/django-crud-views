@@ -40,7 +40,7 @@ Next: $gsd-discuss-phase 7
 - Opened PR #324: https://github.com/jacob-consulting/django-crud-views/pull/324 targeting main from the phase branch; remains unmerged.
 - Canonical verification passed; security threats_open is zero. Fresh shipping checks: 190 workflow/Cancel tests passed with four workers, strict MkDocs and scoped Ruff passed. Production/dependencies match main.
 - Committed pending guidance/config/state and phase placeholders as f1716cd; generated review diagnostics and research caches retained locally via git info/exclude.
-- Phase 7 remains ready for discussion. Post-ship codebase map refresh follows on this branch.
+- Phase 7 remains ready for discussion. All seven codebase maps refreshed on this branch, with machine-readable mapping baselines stamped.
 
 ### Phase 06.13 completion — 2026-11-05
 

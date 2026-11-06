@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 38f49b77fdd3ac823a2d31a907b58a433212b423
-last_mapped_at: 2026-11-02
+last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_at: 2026-11-06
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-02
+**Analysis Date:** 2026-11-06
 
 ## Languages
 
@@ -53,6 +53,7 @@ last_mapped_at: 2026-11-02
 - `pydantic` — core settings and ViewSet model validation (`src/crud_views/lib/settings.py`, `src/crud_views/lib/viewset/`)
 - `django-crispy-forms` and `crispy-bootstrap5` — form rendering adapter (`src/crud_views/lib/crispy/`)
 - `django-tables2` and `django-filter` — optional list table/filter capabilities included in core dependencies (`src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`)
+- `Resource` is a Pydantic-backed, non-ORM row type supported by core ViewSets for read-only external or in-memory data (`src/crud_views/lib/resource.py`); it adds no new dependency.
 - `python-box` and `typing-extensions` — utility dependencies declared by the core package in `pyproject.toml`
 
 **Infrastructure:**
@@ -89,4 +90,4 @@ last_mapped_at: 2026-11-02
 
 ---
 
-*Stack analysis: 2026-11-02*
+*Stack analysis: 2026-11-06*

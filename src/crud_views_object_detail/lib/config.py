@@ -38,6 +38,7 @@ class PropertyConfig(BaseModel):
     template: str | None = None
     link: LinkConfig | None = None
     badge: BadgeConfig | None = None
+    choices_display: bool = True
 
     @field_validator("link", mode="before")
     @classmethod

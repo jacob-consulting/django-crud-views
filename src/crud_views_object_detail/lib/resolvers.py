@@ -55,6 +55,7 @@ class ResolvedProperty:
     badge_label: str | None = None
     badge_color: str | None = None
     badge_pill: bool = False
+    choice_label: Any | None = None
 
 
 @dataclass(frozen=True)
@@ -135,22 +136,26 @@ def _field_label(field_obj, segment: str) -> str:
     return segment.replace("_", " ").title()
 
 
-def _resolve_field_meta(model, segments: list[str], path: str) -> tuple[str, str | None, str, bool]:
-    """Walk the _meta chain along ``segments``: (label, detail, type, is_many)."""
+def _resolve_field_meta(model, segments: list[str], path: str):
+    """Walk metadata, retaining a terminal field only for fully model-backed paths."""
     label = path
     detail = None
     field_type = "default"
     is_many = False
     current_model = model
+    terminal_field = None
+    model_path = True
 
-    for segment in segments:
+    for index, segment in enumerate(segments):
         try:
             field_obj = current_model._meta.get_field(segment)
         except FieldDoesNotExist:
             # Could be a method/property — no further metadata to extract
             label = segment.replace("_", " ").title()
+            terminal_field = None
             break
 
+        terminal_field = field_obj if model_path else None
         label = _field_label(field_obj, segment)
         help_text = getattr(field_obj, "help_text", None)
         if help_text:
@@ -164,8 +169,10 @@ def _resolve_field_meta(model, segments: list[str], path: str) -> tuple[str, str
         elif isinstance(field_obj, (models.ManyToManyField, models.ManyToManyRel, models.ManyToOneRel)):
             is_many = True
             current_model = field_obj.related_model
+        elif index < len(segments) - 1:
+            model_path = False
 
-    return label, detail, field_type, is_many
+    return label, detail, field_type, is_many, terminal_field
 
 
 def resolve_property(instance: models.Model, config: PropertyConfig, view=None) -> ResolvedProperty:
@@ -177,7 +184,7 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
     segments = config.path.split("__")
 
     # Walk _meta to gather field metadata
-    label, detail, field_type, is_many = _resolve_field_meta(type(instance), segments, config.path)
+    label, detail, field_type, is_many, terminal_field = _resolve_field_meta(type(instance), segments, config.path)
 
     # Apply config overrides
     if config.title:
@@ -188,11 +195,21 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
         field_type = config.type
 
     # Resolve the runtime value
-    value = _resolve_value(instance, segments, is_many)
+    value, owner = _resolve_value_and_owner(instance, segments, is_many)
 
     if value is _MISSING:
         view_method = getattr(view, config.path, None) if view is not None else None
         value = view_method(instance) if callable(view_method) else None
+
+    choice_label = None
+    if (
+        config.choices_display
+        and not is_many
+        and not getattr(terminal_field, "is_relation", False)
+        and getattr(terminal_field, "choices", None)
+        and owner is not None
+    ):
+        choice_label = getattr(owner, f"get_{terminal_field.name}_display")()
 
     # Resolve link URL
     link_url = _resolve_link_url(value, config.link, is_many)
@@ -214,28 +231,36 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
         badge_label=badge_label,
         badge_color=badge.color if badge else None,
         badge_pill=badge.pill if badge else False,
+        choice_label=choice_label,
     )
 
 
 def _resolve_value(instance: models.Model, segments: list[str], is_many: bool) -> Any:
+    """Resolve only the runtime value, preserving missing and collection results."""
+    return _resolve_value_and_owner(instance, segments, is_many)[0]
+
+
+def _resolve_value_and_owner(instance: models.Model, segments: list[str], is_many: bool) -> tuple[Any, Any]:
     """Walk the instance to resolve the runtime value.
 
     Tracks a list of current objects to handle M2M fan-out.
     Returns _MISSING if the first segment is not found on the instance.
     """
     if not segments:
-        return _MISSING
+        return _MISSING, None
     first = getattr(instance, segments[0], _MISSING) if instance is not None else _MISSING
     if first is _MISSING:
-        return _MISSING
+        return _MISSING, None
 
+    owner = instance
     current = _expand(first)
     for segment in segments[1:]:
+        owner = current[0] if not is_many and len(current) == 1 else None
         current = [value for obj in current for value in _step(obj, segment)]
 
     if not is_many and len(current) == 1:
-        return current[0]
-    return current
+        return current[0], owner
+    return current, owner
 
 
 def _expand(attr: Any) -> list[Any]:

@@ -99,6 +99,12 @@ def render_property_value(context, prop):
         ]
     elif prop.template:
         template_names = [prop.template]
+    elif prop.choice_label is not None:
+        template_names = [
+            f"crud_views_object_detail/types/{types_pack}/char.html",
+            f"crud_views_object_detail/types/{types_pack}/default.html",
+            "crud_views_object_detail/types/default/char.html",
+        ]
     else:
         template_names = [
             f"crud_views_object_detail/types/{types_pack}/{prop.type}.html",
@@ -111,7 +117,13 @@ def render_property_value(context, prop):
         "property_text_newline": crud_views_object_detail_settings.property_text_newline,
     }
     return tpl.render(
-        {"prop": prop, "value": prop.value, "od_settings": od_settings, _SCOPE_KEY: _render_scope(context)},
+        {
+            "prop": prop,
+            "value": prop.value,
+            "display_value": prop.choice_label if prop.choice_label is not None else prop.value,
+            "od_settings": od_settings,
+            _SCOPE_KEY: _render_scope(context),
+        },
         context.get("request"),
     )
 

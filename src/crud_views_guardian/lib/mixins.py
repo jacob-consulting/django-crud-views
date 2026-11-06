@@ -71,8 +71,8 @@ class GuardianObjectPermissionMixin:
         checker = ObjectPermissionChecker(user)
         return checker.has_perm(perm.split(".")[1], obj)
 
-    def get_object(self):
-        obj = super().get_object()
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
         perm = self.cv_viewset.permissions.get(self.cv_permission)
         if not self._check_object_perm(self.request.user, perm, obj):
             raise PermissionDenied

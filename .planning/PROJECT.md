@@ -69,6 +69,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.13.1** Model business blockers, shared explicit-actor workflow execution, opt-in native transition buttons, bounded same-database history and rollback-safe refusal recovery; WFX-01–05 delivered, two human UAT checks passed, independent code review clean and all 15 security threats closed.
 
+- ✓ **6.14** Empty `card_root`/`card_header` insertion blocks and an executable cards-first/secondary-table recipe — Phase 06.14; canonical12/12, unchanged default bytes, inherited actions and independent navigation verified.
+
 - ✓ **6.15** Capitalized polymorphic selector labels, exact-model detail groups and exhaustive static validation, documented and adopted in the reference consumer — Phase 06.15; canonical16/16, UAT2/2, security12/12.
 
 ### Active
@@ -120,6 +122,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Empty card insertion blocks plus existing ViewSet configuration | Preserve default rendering and proven navigation; themes expose their own overridden blocks and applications translate recipe captions | Validated (Phase 06.14) |
+
 | Detail groups select only explicitly declared exact model keys; static checks traverse every entry | Preserve list/dynamic override paths without fallback mutation, object queries or optional polymorphic coupling | Validated (Phase 06.15; UAT 2/2) |
 | Protected labels are static; share one visible-occurrence budget with cascade details | Remove synthetic destination requests while retaining proven cascade hooks and complete enforcement; cap presentation, not total collection cost | Validated (Phase 06.10; UAT 7/7) |
 | Developer maintainability is a hard constraint on every decision | The developer must be able to explain, debug, and evolve the solution; bounded scope and incremental downstream adoption keep that ownership practical | Decided (2026-11-04; project-wide) |

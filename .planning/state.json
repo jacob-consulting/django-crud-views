@@ -84,6 +84,11 @@
       "status": "complete"
     },
     {
+      "number": "6.12",
+      "name": "Workflow presentation",
+      "status": "complete"
+    },
+    {
       "number": "6.13",
       "name": "Workflow permissions: opt-in per-transition access",
       "status": "complete"
@@ -101,11 +106,6 @@
     {
       "number": "6.15",
       "name": "Polymorphic labels and per-model detail groups",
-      "status": "complete"
-    },
-    {
-      "number": "6.13.1",
-      "name": "Workflow validation and execution",
       "status": "complete"
     },
     {

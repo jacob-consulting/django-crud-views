@@ -35,6 +35,14 @@ Last activity: 2026-11-06
 
 Next: $gsd-discuss-phase 7
 
+### Phase 06.14 completion — 2026-11-06
+
+- Both plans committed; canonical verification passed12/12, D01–D12 honored, no required human checks. Production change is exactly two empty card blocks; executable docs cover cards-first/table-secondary configuration and independent navigation.
+- Full Django5.2 execution10,136 passed/one expected skip; focused4.2/6.0 198each; JS365; scoped Ruff/strict docs pass. Final verifier77 fresh tests pass. Runtime/full-matrix/browser/gettext-extraction limits remain explicit.
+- Validation4/4 tasks compliant; security7/7 closed; UI preservation24/24 without visual-browser claim. Deep review found one extraction warning, fixed by gettext_noop markers and independently closed; post-fix24 recipe tests/strict docs pass.
+- UI safety gate initially required a missing contract; approved preservation-only UI-SPEC and25 explicit probe truths clear it. Completion warnings misparse the verified git-show baseline command as a path; no missing artifact.
+- Next scheduled phase06.13.1 is planned and ready to execute. No LEARNINGS files/todos required graduation or closure. Config/state.json edits preserved; no push or merge performed.
+
 ### Phase 06.15 acceptance closeout — 2026-11-06
 
 - User explicitly passed both visual and browser interaction checks. UAT 2/2 and canonical 16/16 passed; shared completion predicate has no blockers. All four plans complete; roadmap/state advanced to planned Phase 06.13.1.
@@ -566,6 +574,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.10 | 5 | - | - |
 | 06.13 | 2 | - | - |
 | 06.13.1 | 5 | - | - |
+| 06.14 | 2 | - | - |
+
 | 06.15 | 4 | - | - |
 
 **Recent Trend:**
@@ -668,6 +678,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.13.1 P03 | 19min | 3 tasks | 7 files |
 | Phase 06.13.1 P04 | 22min | 2 tasks | 6 files |
 | Phase 06.13.1 P05 | 20min | 2 tasks | 10 files |
+| Phase 06.14 P01 | 8min | 2 tasks | 4 files |
+
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
 | Phase 06.15 P03 | 12min | 2 tasks | 4 files |
@@ -858,6 +870,8 @@ Recent decisions affecting current work:
 - [Phase 06.13.1]: Browser acceptance uses cached local assets and runtimes only; missing prerequisites fail without passing skips.
 - [Phase 06.13.1]: Document workflow database alignment as a compatibility restriction while preserving DeleteView behavior.
 - [Phase 06.13.1]: Restore static stock WorkflowForm icon diagnostics without importing the optional extension or calling custom providers.
+- [Phase 06.14]: Plan 01 adds only empty card_root/card_header blocks; frozen request-aware bytes, nonempty CSRF and exact documented inheritance fence verify compatibility.
+
 - [Phase 06.15]: Plan 01: exact model selection and E247 key checks share the existing parser/check traversal; POLY-03 remains pending its plan 03 structural-limit documentation.
 - [Phase 06.15]: Plan 02: capfirst formats already-discovered selector names; real requests plus lazy translation, escaping, filtering, custom-form and access regressions preserve the existing contract.
 - [Phase 06.15]: Plan 03: publish executable exact-model mapping blocks and list-only tag boundary; full 5.2 and focused 4.2/6.0 pass; POLY-05 remains pending downstream adoption.
@@ -912,6 +926,8 @@ None yet.
 - Phase 06.10 inserted after Phase 6.9: Issue #316: simplify protected-object previews and cap total displayed objects before Phase 7; no dependency on #312, #314 or the retired URL resolver (URGENT)
 - Phase 06.13 inserted after Phase 06.12: Issue #320: document and test opt-in per-transition workflow access; preserve the default change gate. Phase 06.12 is reserved on disk; this phase is independently deliverable. (URGENT)
 - Phase 06.13.1 inserted after Phase 06.13: Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322) (URGENT)
+- Phase 06.14 inserted after Phase 6: Issue #325: add empty card_root/card_header blocks and document/test cards-first ViewSets with a secondary table; preserve existing rendering, actions, permissions and navigation. Settle these contracts before Phase 7; downstream theme implementation is separate. (URGENT)
+
 - Phase 06.15 inserted after Phase 06.14: Issue #326: polymorphic selector labels and per-model detail groups, including required tabler-test adoption and verification. Phase 06.14 completed in another worktree per user; no card implementation dependency. (URGENT)
 
 ## Deferred Items

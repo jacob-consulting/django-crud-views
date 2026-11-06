@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="14" time="3.235" timestamp="2026-11-06T10:26:40.260366+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_card_blocks" name="test_extending_template_fills_content_and_keeps_actions" time="0.623" /><testcase classname="tests.test1.test_card_blocks" name="test_insertion_blocks_positions_and_escaping[&lt;em data-injected=&quot;yes&quot;&gt;Douglas &amp; Adams&lt;/em&gt;]" time="0.625" /><testcase classname="tests.test1.test_card_blocks" name="test_unused_insertion_blocks_preserve_bytes" time="0.259" /><testcase classname="tests.test1.test_card_blocks" name="test_insertion_blocks_positions_and_escaping[Douglas]" time="0.258" /><testcase classname="tests.test1.test_card_blocks" name="test_documented_insertion_blocks" time="0.230"><failure message="AssertionError: Publish the marked insertion-blocks inheritance recipe&#10;assert None is not None">client_full = &lt;django.test.client.Client object at 0x7d1755a62120&gt;
+actions = None, author_douglas_adams = &lt;Author: Douglas Adams&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d1754dd68d0&gt;
+settings = &lt;pytest_django.fixtures.Settings object at 0x7d1754d3fe30&gt;
+
+    @pytest.mark.django_db
+    def test_documented_insertion_blocks(client_full, actions, author_douglas_adams, monkeypatch, settings):
+        reference = Path(__file__).resolve().parents[2] / "docs/reference/card-list-view.md"
+        match = re.search(r"&lt;!-- card-recipe: insertion-blocks --&gt;\n```html\n(.*?)\n```", reference.read_text(), re.S)
+&gt;       assert match is not None, "Publish the marked insertion-blocks inheritance recipe"
+E       AssertionError: Publish the marked insertion-blocks inheritance recipe
+E       assert None is not None
+
+tests/test1/test_card_blocks.py:157: AssertionError</failure></testcase><testcase classname="tests.test1.test_card_blocks" name="test_class_keys" time="0.252" /><testcase classname="tests.test1.test_action_menus_golden" name="test_list_rows_disabled" time="0.258" /><testcase classname="tests.test1.test_action_menus_golden" name="test_list_rows_full" time="0.255" /><testcase classname="tests.test1.test_action_menus_golden" name="test_toolbar_detail_full" time="0.254" /><testcase classname="tests.test1.test_action_menus_golden" name="test_toolbar_detail_disabled" time="0.265" /><testcase classname="tests.test1.test_action_menus_golden" name="test_toolbar_list_with_filter" time="0.279" /><testcase classname="tests.test1.test_action_menus_golden" name="test_cards_author_full" time="0.253" /><testcase classname="tests.test1.test_action_menus_golden" name="test_cards_author_disabled" time="0.244" /><testcase classname="tests.test1.test_action_menus_golden" name="test_cards_publisher_child" time="0.256" /></testsuite></testsuites>

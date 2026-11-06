@@ -521,6 +521,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   [public widget contract](docs/reference/theme.md#workflow-transition-widget). Direct decorated calls, concurrency
   control and rollback of external effects remain outside the guarantees.
 
+- Cards expose empty `card_root` and `card_header` template blocks for inherited content before the body and
+  before the heading, preserving default output and inherited actions. A complete, tested
+  [cards-first ViewSet recipe](docs/reference/card-list-view.md#cards-first-with-a-secondary-table) serves cards
+  at the root and a secondary table through existing switches, with independent Save and Cancel guidance (#325).
+
 - `cv_property_display` accepts exact Django model-class-to-group-list mappings alongside existing lists (#326).
   Each request selects only its resolved object's exact type; missing entries raise `ImproperlyConfigured` with
   the actual model and view. Startup checks inspect every declared key/value, include model/group/property locations,

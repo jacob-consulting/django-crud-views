@@ -1,0 +1,38 @@
+[
+  {
+    "id": "E1",
+    "text": "Empty card_root and card_header insertion slots for escaped static content before the body and before the heading.",
+    "elements": [
+      "static-content"
+    ]
+  },
+  {
+    "id": "E2",
+    "text": "Existing server-rendered cards collection at the cards-first ViewSet root.",
+    "elements": [
+      "list-collection"
+    ]
+  },
+  {
+    "id": "E3",
+    "text": "Existing server-rendered table collection at the secondary table route.",
+    "elements": [
+      "list-collection"
+    ]
+  },
+  {
+    "id": "E4",
+    "text": "Existing navigation links, presentation switch controls, Home, breadcrumbs, Cancel, and inherited card actions.",
+    "elements": [
+      "nav",
+      "interactive-control"
+    ]
+  },
+  {
+    "id": "E5",
+    "text": "Existing create and update forms used to demonstrate independent Save and origin-aware Cancel.",
+    "elements": [
+      "form"
+    ]
+  }
+]

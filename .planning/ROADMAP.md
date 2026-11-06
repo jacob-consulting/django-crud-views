@@ -330,7 +330,7 @@ FORM-11, FORM-12, FORM-13
 **Goal:** Consumers can extend cards at two empty insertion blocks and configure cards as a ViewSet's landing page with a secondary table, with executable documentation preserving existing rendering, actions, permissions and independent navigation/query-state behavior.
 **Requirements**: TBD
 **Depends on:** Phase 6
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans executed
 
 **Acceptance:** `card_root` is first inside the card root and `card_header` precedes the heading inside the body; unused blocks preserve output and inherited actions/forms. The complete tested recipe registers cards as `list` at the root and table as `table` at `table/`, with switching, home/breadcrumbs, default Save, static Cancel and explicitly allowed table-origin Cancel verified. Card-only fallback and table-first defaults remain unchanged. No routing redesign or downstream-theme implementation.
 
@@ -339,7 +339,7 @@ Plans:
 - [x] 06.14-01-PLAN.md — Add and verify empty card insertion blocks and the five-block inheritance contract (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.14-02-PLAN.md — Publish executable cards-first/table-secondary configuration, prove navigation and preserve compatibility (wave 2)
+- [x] 06.14-02-PLAN.md — Publish executable cards-first/table-secondary configuration, prove navigation and preserve compatibility (wave 2)
 
 ### Phase 6.1: Cancel form button as a link (INSERTED)
 

@@ -223,6 +223,19 @@ roadmap's no-steps wording. All requirements below remain pending execution and 
 - [x] **WFP-04**: Publish a complete basic model/permissions/transitions/form/ViewSet/views/URLs recipe before the separate optional hook variant. Explain all authorization layers, migration/grant prerequisites, navigation destinations, and the distinction between rendering and server enforcement without adding a public API or changing production behavior.
 - [x] **WFP-05**: Deliver bounded regression tests and a documentation changelog entry; validate the recipe and strict docs, run focused and broader multicore regressions plus available supported-series checks, and report actual runtimes and coverage limits. Preserve repository hygiene and the phase exclusions.
 
+### Workflow validation and execution (Phase 06.13.1, #322)
+
+Source: `phases/06.13.1-workflow-validation-and-execution-business-blockers-transiti/06.13.1-CONTEXT.md`,
+locked D-01–D-17 and issue #322 acceptance criteria. IDs assigned during planning from that existing scope;
+WFP-01–WFP-05 remain completed prior-phase regression obligations. Initial spec-less fallback skipped visibly
+because phase IDs were absent at intake; no fallback predicates were fabricated.
+
+- [ ] **WFX-01**: Add the exact model-data-only business hook, ordered message/list blockers, correct transition/comment field errors and usable `clean()` return while preserving default radio/custom-form behavior (D-01–D-03, D-06, D-08).
+- [ ] **WFX-02**: Export the exact actor-required standalone helper and share execution with the view: normalize/enforce comments, recheck state/conditions/permissions before business validation or dispatch, and persist complete state/history identity on one supported database (D-05, D-07, D-11, D-14).
+- [ ] **WFX-03**: Distinguish expected refusal origin, roll back before bound redisplay with protected-FSM-safe persisted context, suppress every success effect, propagate unexpected errors, and preserve `on_transition`/commit semantics with outer atomic enabled or disabled (D-09, D-10, D-15).
+- [ ] **WFX-04**: Deliver per-view opt-in native transition buttons in the shared page/modal form: exact clicked-name ownership, visible ordered blockers, separate help, required-comment semantics, escaped translated accessible text, unique descriptions, custom-form compatibility, all 25 UI considerations and real no-JS page/browser acceptance (D-04, D-12, D-13).
+- [ ] **WFX-05**: Publish helper/hook/presentation/theme/lifecycle contracts and supported routing/direct-call limits; add release and any paired migration notes; record bounded regression, matrix, docs/lint/JS/browser evidence without overstating guarantees (D-16, D-17).
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -273,6 +286,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| WFX-01 | Phase 06.13.1 | Pending |
+| WFX-02 | Phase 06.13.1 | Pending |
+| WFX-03 | Phase 06.13.1 | Pending |
+| WFX-04 | Phase 06.13.1 | Pending |
+| WFX-05 | Phase 06.13.1 | Pending |
 | WFP-01 | Phase 6.13 | Complete |
 | WFP-02 | Phase 6.13 | Complete |
 | WFP-03 | Phase 6.13 | Complete |

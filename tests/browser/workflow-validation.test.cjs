@@ -7,6 +7,12 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const {requiredCases, validateEvidence, loadAssets, assetFor} = require('./workflow-validation.cjs');
 
+test('all requires actual label-safety and native Enter cases', () => {
+    for (const id of ['label-safety-page', 'label-safety-modal', 'implicit-submit-custom-input-page', 'textarea-enter-page']) {
+        assert(requiredCases('all').includes(id), `Missing mandatory browser case: ${id}`);
+    }
+});
+
 function receipt(selection) {
     return {kind: 'synthetic-validator-control', cases: requiredCases(selection).map(id => ({id, passed: true})),
         failures: [], cleanup: {stopped: true, databaseRemoved: true}, sources: {'fixture.py': 'a'.repeat(64)},

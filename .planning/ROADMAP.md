@@ -1087,14 +1087,14 @@ recipes in both `CHANGELOG.md` and `docs/migrating-1.0.md`.
 **Planning handoff:** The maintainer agreed the issue's scope on 2026-11-06. Carry these decisions into CONTEXT.md
 without restarting discovery or creating another specification. Ask only if new code evidence reveals a material
 conflict, naming the affected decision. Internal mechanics and focused test organization are delegated.
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 **Wave 1**
 - [x] 06.16-01-PLAN.md — Choice display tracer, relation boundaries and raw/custom ownership
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.16-02-PLAN.md — Shared help-text policy and exact stock empty-text behavior
+- [x] 06.16-02-PLAN.md — Shared help-text policy and exact stock empty-text behavior
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.16-03-PLAN.md — Executable public contracts, composition, migration and final gates

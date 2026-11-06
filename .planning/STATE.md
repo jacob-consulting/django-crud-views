@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.16"
 current_phase_name: Object-detail values and composition guidance
 status: executing
-stopped_at: Completed 06.16-01-PLAN.md
-last_updated: "2026-11-06T18:59:38.288Z"
+stopped_at: Completed 06.16-02-PLAN.md
+last_updated: "2026-11-06T19:17:57.464Z"
 last_activity: 2026-11-06
 last_activity_desc: Phase 06.16 execution started
-state_head: e43cb3df72c1f4ff3f81380c4ed94be624ffd6eb
+state_head: 13f38dd56b00182e244008be8f8ff28458933a75
 progress:
   total_phases: 22
   completed_phases: 20
   total_plans: 134
-  completed_plans: 132
+  completed_plans: 133
 milestone_name: milestone
 ---
 
@@ -29,11 +29,17 @@ See: .planning/PROJECT.md (updated 2026-11-06)
 ## Current Position
 
 Phase: 06.16 (Object-detail values and composition guidance) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-11-06 — Phase 06.16 execution started
 
 Next: $gsd-execute-phase 06.16
+
+### Phase 06.16 plan 02 — 2026-11-06
+
+- Strict help instructions, view/project inheritance and terminal-only lazy help are committed. Stock char/text/default now mark exact None/empty text while retaining rows, descriptions, raw/custom values and non-text semantics.
+- Final combined gate: 590 passed in 12.04s on Python 3.12.3/Django 5.2.18 with four workers; scoped Ruff checks pass. Tasks 1/3 have classifier-approved RED evidence; task 2 is documented test-only expansion of already-implemented behavior.
+- Summary committed; roadmap 2/3, next plan 3/3. Shared ODV-02/ODV-03/ODV-05 await plan 03 documentation/migration and final runtime gates. No browser/human acceptance, push or merge claimed; config/state.json/CLAUDE changes preserved.
 
 ### Phase 06.16 plan 01 — 2026-11-06
 
@@ -693,6 +699,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.13.1 P05 | 20min | 2 tasks | 10 files |
 | Phase 06.14 P01 | 8min | 2 tasks | 4 files |
 | Phase 06.16 P01 | 9min | 3 tasks | 8 files |
+| Phase 06.16 P02 | 8min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -891,6 +898,8 @@ Recent decisions affecting current work:
 - [Phase 06.15]: Plan 03: publish executable exact-model mapping blocks and list-only tag boundary; full 5.2 and focused 4.2/6.0 pass; POLY-05 remains pending downstream adoption.
 - [Phase 06.15]: Downstream catalog verified against explicit phase and pinned extension source roots; task branch retains original report edits unstaged; phase completion awaits independent verification.
 - [Phase 06.16]: Choice labels remain separate from raw values; missing supported scalar owners project empty text without normalizing None or lists.
+- [Phase 06.16]: Help policy resolves once from strict property instructions, nullable view override and project setting; terminal lazy metadata stays unevaluated until rendering.
+- [Phase 06.16]: Stock textual leaves use exact None/empty-string display checks; raw values, custom ownership, non-text behavior and row structure remain intact.
 
 ### Pending Todos
 
@@ -954,6 +963,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T18:59:35.832Z
-Stopped at: Completed 06.16-01-PLAN.md
+Last session: 2026-11-06T19:17:54.950Z
+Stopped at: Completed 06.16-02-PLAN.md
 Resume file: None

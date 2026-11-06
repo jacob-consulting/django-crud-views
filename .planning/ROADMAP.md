@@ -335,7 +335,10 @@ FORM-11, FORM-12, FORM-13
 **Acceptance:** `card_root` is first inside the card root and `card_header` precedes the heading inside the body; unused blocks preserve output and inherited actions/forms. The complete tested recipe registers cards as `list` at the root and table as `table` at `table/`, with switching, home/breadcrumbs, default Save, static Cancel and explicitly allowed table-origin Cancel verified. Card-only fallback and table-first defaults remain unchanged. No routing redesign or downstream-theme implementation.
 
 Plans:
+**Wave 1**
 - [ ] 06.14-01-PLAN.md — Add and verify empty card insertion blocks and the five-block inheritance contract (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.14-02-PLAN.md — Publish executable cards-first/table-secondary configuration, prove navigation and preserve compatibility (wave 2)
 
 ### Phase 6.1: Cancel form button as a link (INSERTED)

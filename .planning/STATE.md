@@ -3,12 +3,12 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.14"
 current_phase_name: Card template insertion blocks and cards-first ViewSets
-status: Phase 06.14 context gathered — ready for planning
+status: Phase 06.14 planned — cross-AI convergence pending
 stopped_at: Phase 06.14 context gathered
-last_updated: "2026-11-06T08:55:23.481Z"
+last_updated: "2026-11-06T09:24:48.064Z"
 last_activity: 2026-11-06
 last_activity_desc: "Phase 06.14 context captured from refreshed issue #325"
-state_head: 102627a7c2577dbe904ee6e72c54faf20cff1f22
+state_head: b3fed501e845e8ffc04a9096554208419c4e0304
 progress:
   total_phases: 20
   completed_phases: 17
@@ -30,10 +30,10 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 Phase: 06.14 (Card template insertion blocks and cards-first ViewSets) — READY TO PLAN
 Plan: Not started
-Status: Phase 06.14 context gathered — ready for planning
+Status: Phase 06.14 planned — cross-AI convergence pending
 Last activity: 2026-11-06 — Phase 06.14 context captured from refreshed issue #325
 
-Next: $gsd-plan-phase 06.14
+Next: $gsd-plan-review-convergence 06.14 --max-cycles 5
 
 ### Phase 06.13 shipping — 2026-11-06
 

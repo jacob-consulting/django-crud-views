@@ -81,7 +81,17 @@
     {
       "number": "6.10",
       "name": "Simplify protected-object previews and cap total displayed objects",
-      "status": "pending"
+      "status": "complete"
+    },
+    {
+      "number": "6.12",
+      "name": "Workflow presentation",
+      "status": "complete"
+    },
+    {
+      "number": "6.13",
+      "name": "Workflow permissions: opt-in per-transition access",
+      "status": "complete"
     },
     {
       "number": "7",
@@ -90,9 +100,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-execute-phase 06.10",
-    "label": "Execute Phase 06.10 delete-preview simplification",
-    "reason": "Five plans converged after four review cycles; no unresolved HIGH, actionable non-HIGH or plan-revision conflicts remain"
+    "command": "$gsd-discuss-phase 7",
+    "label": "Discuss Phase 7 theme-surface stability policy",
+    "reason": "Phase 06.13 verified and complete; Phase 7 needs context and a plan"
   },
-  "updated_at": "2026-11-04T20:30:31.888Z"
+  "updated_at": "2026-11-05T22:59:54.128Z"
 }

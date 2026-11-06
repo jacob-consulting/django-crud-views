@@ -93,6 +93,12 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ## Constraints
 
+- **Developer maintainability**: Every decision must remain understandable, explainable, debuggable, and maintainable
+  by the project's developer. Prefer bounded solutions, explicit limits, and self-contained opt-in additions proven
+  downstream. Preserve working paths unless a concrete need justifies their added complexity or runtime cost.
+  Simplify or narrow designs the developer cannot confidently own; passing tests alone does not justify complexity.
+  Apply the project-wide [decision rule](../CLAUDE.md#decision-rule-developer-maintainability) in discussions, plans,
+  implementation, and reviews.
 - **Compatibility**: Without new configuration, every template renders what it renders today — goldens under
   `tests/test1/golden/` stay byte-identical except where a phase says so (2: form buttons; 3A: alert close;
   3B: table pagination).
@@ -111,6 +117,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Protected labels are static; share one visible-occurrence budget with cascade details | Remove synthetic destination requests while retaining proven cascade hooks and complete enforcement; cap presentation, not total collection cost | Validated (Phase 06.10; UAT 7/7) |
+| Developer maintainability is a hard constraint on every decision | The developer must be able to explain, debug, and evolve the solution; bounded scope and incremental downstream adoption keep that ownership practical | Decided (2026-11-04; project-wide) |
 | Validate protected destinations after visibility filtering; preserve the shared URL hook and cascade behavior | Link only to certified same-row destinations; unavailable destinations remain readable text | Validated (Phase 06.9) |
 | Dynamic Cancel uses allowed origin, configured fallback, then permission omission; successful-save navigation stays independent | Preserve independent form captures and existing success behavior; copied templates use guarded cv_cancel_url | Validated (Phase 06.7) |
 | Group findings into phases by dependency, not rank order or one change | Reviewable units; #257 depends on 1A+1C; stability policy must be last | — Pending |
@@ -163,4 +170,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-04 after Phase 06.9 example verification refresh*
+*Last updated: 2026-11-05 after Phase 06.10 acceptance; developer maintainability remains a project-wide decision constraint*

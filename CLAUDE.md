@@ -12,6 +12,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `crud_views_polymorphic` — django-polymorphic model support
 - `crud_views_guardian` — django-guardian per-object permission support
 
+## Decision Rule: Developer Maintainability
+
+Every architectural, API, implementation, and planning decision must remain understandable, explainable, and
+maintainable by the project's developer. The developer must be able to trace the behavior, debug it, and change it
+with confidence. Maintainability by the developer is a hard design constraint alongside correctness.
+
+- Prefer the simplest bounded solution that meets a demonstrated need; document unsupported cases explicitly.
+- Preserve proven code paths unless a concrete defect or requirement justifies changing them.
+- Prefer self-contained, opt-in additions that can prove their value downstream before broader integration.
+- Account for ongoing cognitive and runtime costs, including hidden state, extra abstractions, cross-cutting changes,
+  and additional queries on existing paths.
+- When a proposal becomes too complex for the developer to explain and own, simplify or narrow its scope. Passing
+  tests and covering more cases do not by themselves justify that complexity.
+
+This rule applies project-wide. Its motivating decision is recorded in
+[the opt-in URL helper discussion](superpowers/notes/2026-11-04-opt-in-url-helper-decision.md).
+
 ## Development Commands
 
 ```bash

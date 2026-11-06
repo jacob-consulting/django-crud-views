@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.15"
 current_phase_name: Polymorphic labels and per-model detail groups
-status: executing
-stopped_at: Completed 06.15-03-PLAN.md
-last_updated: "2026-11-06T11:28:00.559Z"
+status: verifying
+stopped_at: Completed 06.15-04-PLAN.md; phase verification pending
+last_updated: "2026-11-06T11:38:09.909Z"
 last_activity: 2026-11-06
 last_activity_desc: Phase 06.15 execution started
-state_head: 0a86cdd7ea0da33a8167b1c46266a55d02a77cac
+state_head: ed5f70cc23b38f651248f765c64accbea39dbe7e
 progress:
   total_phases: 21
   completed_phases: 18
   total_plans: 129
-  completed_plans: 123
+  completed_plans: 124
 milestone_name: milestone
 ---
 
@@ -28,12 +28,12 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 ## Current Position
 
-Phase: 06.15 (Polymorphic labels and per-model detail groups) — EXECUTING
+Phase: 06.15 (Polymorphic labels and per-model detail groups) — VERIFYING
 Plan: 4 of 4
-Status: Ready to execute
+Status: All plans executed — phase verification pending
 Last activity: 2026-11-06 — Phase 06.15 execution started
 
-Next: $gsd-execute-phase 06.15
+Next: Verify Phase 06.15; downstream adoption is on gsd/phase-06.15-polymorphic-adoption, while its checkout was externally switched to main after verification.
 
 ### Phase 06.13 shipping — 2026-11-06
 
@@ -616,6 +616,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
 | Phase 06.15 P03 | 12min | 2 tasks | 4 files |
+| Phase 06.15 P04 | 9min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -796,6 +797,7 @@ Recent decisions affecting current work:
 - [Phase 06.15]: Plan 01: exact model selection and E247 key checks share the existing parser/check traversal; POLY-03 remains pending its plan 03 structural-limit documentation.
 - [Phase 06.15]: Plan 02: capfirst formats already-discovered selector names; real requests plus lazy translation, escaping, filtering, custom-form and access regressions preserve the existing contract.
 - [Phase 06.15]: Plan 03: publish executable exact-model mapping blocks and list-only tag boundary; full 5.2 and focused 4.2/6.0 pass; POLY-05 remains pending downstream adoption.
+- [Phase 06.15]: Downstream catalog verified against explicit phase and pinned extension source roots; task branch retains original report edits unstaged; phase completion awaits independent verification.
 
 ### Pending Todos
 
@@ -856,6 +858,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T11:27:58.367Z
-Stopped at: Completed 06.15-03-PLAN.md
+Last session: 2026-11-06T11:38:07.769Z
+Stopped at: Completed 06.15-04-PLAN.md; phase verification pending
 Resume file: None

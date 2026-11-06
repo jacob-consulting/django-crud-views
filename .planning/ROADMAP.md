@@ -1029,7 +1029,7 @@ Subscription behavior and permissions; update the findings report and documentat
 both repositories. Finding 16 and unrelated object-detail findings remain deferred.
 **Planning handoff:** Carry the settled issue decisions into CONTEXT.md when planning; do not reopen approach
 selection. Routine implementation mechanics are delegated to the planner. Settle these contracts before Phase 7.
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans executed
 
 Plans:
 **Wave 1**
@@ -1040,7 +1040,7 @@ Plans:
 - [x] 06.15-03-PLAN.md — Public contract, release guidance and supported-series validation
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.15-04-PLAN.md — Required downstream adoption, catalog validation and findings resolution
+- [x] 06.15-04-PLAN.md — Required downstream adoption, catalog validation and findings resolution
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1135,5 +1135,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.13. Workflow permissions: opt-in per-transition access | 2/2 | Complete    | 2026-11-05 |
 | 6.13.1. Workflow validation and execution | 0/TBD | Not started | - |
 | 6.14. Card template insertion blocks and cards-first ViewSets | See other worktree | Complete elsewhere (user-reported) | - |
-| 6.15. Polymorphic labels and per-model detail groups | 3/4 | In Progress | - |
+| 6.15. Polymorphic labels and per-model detail groups | 4/4 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

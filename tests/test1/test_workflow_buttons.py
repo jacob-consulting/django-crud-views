@@ -25,7 +25,9 @@ def _buttons(document):
 
 class TestTransitionButtons:
     @pytest.mark.parametrize("modal", [False, True])
-    @pytest.mark.parametrize("name,target", [("wf_activate", CampaignState.ACTIVE), ("wf_cancel_new", CampaignState.CANCELED)])
+    @pytest.mark.parametrize(
+        "name,target", [("wf_activate", CampaignState.ACTIVE), ("wf_cancel_new", CampaignState.CANCELED)]
+    )
     def test_native_choice_request(self, client_user_campaign_change, campaign_new, monkeypatch, modal, name, target):
         monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons", raising=False)
         monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
@@ -43,7 +45,7 @@ class TestTransitionButtons:
         label = group.getparent().cssselect("label")[0]
         assert label.get("for") is None
         for label in document.cssselect("label[for]"):
-            targets = document.xpath('//*[@id=$id]', id=label.get("for"))
+            targets = document.xpath("//*[@id=$id]", id=label.get("for"))
             assert len(targets) == 1
             assert targets[0].tag != "button"
         assert all("disabled" not in button.attrib for button in buttons)
@@ -78,7 +80,7 @@ class TestTransitionButtons:
         form = response.context["form"]
         str(form["transition"])
         str(form["transition"])
-        form.helper
+        assert form.helper is not None
         assert calls == ["wf_activate", "wf_cancel_new"]
 
     @pytest.mark.parametrize("gate", ["permission", "condition"])

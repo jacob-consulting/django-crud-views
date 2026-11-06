@@ -1,12 +1,15 @@
 from crispy_forms.layout import Row
+from django.core.exceptions import ImproperlyConfigured
 from django.forms import CharField, ChoiceField, RadioSelect
 from django.forms.widgets import Textarea
 from django.utils.translation import gettext_lazy as _
 
 from crud_views.lib.crispy import Column8, CrispyForm
+from crud_views.lib.crispy.actions import _ThemedFormActions
 
 from .enums import WorkflowComment
 from .execution import _check_transition_business, _check_transition_comment, _WorkflowRefusal
+from .widgets import _TransitionButtons
 
 
 class WorkflowForm(CrispyForm):
@@ -46,9 +49,40 @@ class WorkflowForm(CrispyForm):
 
     def __init__(self, *args, choices: list[tuple[str, str]], transition_comments: dict, **kwargs):
         super().__init__(*args, **kwargs)
+        self._workflow_presentation = getattr(self.cv_view, "cv_transition_presentation", "radio")
+        if self._workflow_presentation not in ("radio", "buttons"):
+            raise ImproperlyConfigured("cv_transition_presentation must be 'radio' or 'buttons'")
+        if self._workflow_presentation == "buttons":
+            self.fields["transition"].widget = _TransitionButtons(attrs=self.fields["transition"].widget.attrs)
         self._workflow_comment_widget = self.fields["comment"].widget
         self._workflow_set_choices(choices, transition_comments)
         self.fields["transition"].widget.use_fieldset = False
+
+    def get_form_actions(self):
+        if self._workflow_presentation == "buttons":
+            cancel = self.get_cancel_button()
+            return _ThemedFormActions(*([cancel] if cancel is not None else []))
+        return super().get_form_actions()
+
+    def _workflow_configure(self):
+        """Configure after subclass construction and view labels, once per refresh."""
+        self._bound_fields_cache.clear()
+        if self._workflow_presentation != "buttons":
+            return
+        field = self.fields["transition"]
+        widget = field.widget
+        widget.label = field.label
+        actions = []
+        for index, (name, label) in enumerate(field.choices):
+            blockers = []
+            try:
+                _check_transition_business(self.cv_view.object, name, user=self.cv_view.request.user)
+            except _WorkflowRefusal as refusal:
+                blockers = refusal.messages
+            actions.append(
+                {"name": name, "label": label, "blockers": blockers, "id": f"{self['transition'].auto_id}-{index}"}
+            )
+        widget.actions = actions
 
     def _workflow_set_choices(self, choices, transition_comments):
         self.transition_comments = transition_comments
@@ -69,6 +103,7 @@ class WorkflowForm(CrispyForm):
         """Refresh object-derived choices without replacing the bound form or data."""
         kwargs = self.cv_view.object.workflow_get_form_kwargs(self.cv_view.request.user)
         self._workflow_set_choices(kwargs["choices"], kwargs["transition_comments"])
+        self._workflow_configure()
 
     def clean(self):
         cleaned_data = super().clean()

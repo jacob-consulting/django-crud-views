@@ -1,0 +1,12 @@
+{% load crud_views %}
+<div role="group" aria-label="{{ widget.label }}"{% include "django/forms/widgets/attrs.html" %}>
+{% block actions %}
+{% for action in widget.actions %}
+    <div class="mb-3" style="overflow-wrap: anywhere;">
+        <button type="submit" name="{{ widget.name }}" value="{{ action.name }}" id="{{ action.id }}"
+            class="{% cv_button_class 'form' 'submit' 'label' %} text-wrap"{% if action.blockers %} disabled{% endif %}>{{ action.label|force_escape }}</button>
+        {% if action.blockers %}<ul>{% for blocker in action.blockers %}<li>{{ blocker|force_escape }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+{% endfor %}
+{% endblock %}
+</div>

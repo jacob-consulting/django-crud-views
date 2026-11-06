@@ -39,6 +39,7 @@ class WorkflowView(CustomFormView):
     cv_transition_help_text = None
     cv_comment_label = _("Please provide a comment for your workflow step")
     cv_comment_help_text = None
+    cv_transition_presentation = "radio"
 
     @classmethod
     def checks(cls) -> Iterable[Check]:
@@ -70,7 +71,7 @@ class WorkflowView(CustomFormView):
         form.fields["transition"].help_text = self.cv_transition_help_text
         form.fields["comment"].label = self.cv_comment_label
         form.fields["comment"].help_text = self.cv_comment_help_text
-
+        form._workflow_configure()
         return form
 
     def get_form_kwargs(self):

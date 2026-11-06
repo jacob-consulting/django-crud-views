@@ -242,3 +242,48 @@ def test_object_detail_value_docs_help_and_view_inventories():
     compose = view.split("## Compose Pattern (Guardian / Polymorphic)", 1)[1]
     warning = compose.split("<!-- object-detail-value-recipe: complete -->", 1)[0]
     assert "already include" in warning and "fails at Python class creation" in warning
+
+
+def test_object_detail_value_docs_restore_project_help(settings):
+    namespace = {}
+    exec(recipe("docs/migrating-1.0.md", "restore-project-help"), namespace)
+    settings.CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = namespace["CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT"]
+    assert resolve_property(Info(text="Body"), x("text")).detail == "The info body text"
+
+
+def test_object_detail_value_docs_restore_view_help(monkeypatch, settings):
+    from tests.test1.app.models import Book
+
+    settings.CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = False
+    monkeypatch.setattr(viewset_module, "_REGISTRY", OrderedDict())
+    monkeypatch.setattr(check_module, "_VOCAB_CACHE", {})
+    namespace = {"__name__": __name__, "cv_book": viewset_module.ViewSet(model=Book, name="migration_book")}
+    exec(recipe("docs/migrating-1.0.md", "restore-view-help"), namespace)
+    cls = namespace["BookDetailView"]
+    assert cls.__bases__ == (ObjectDetailViewPermissionRequired,)
+    assert cls.cv_object_detail_show_help_text is True
+    assert resolve_property(Info(text="Body"), x("text"), view=cls()).detail == "The info body text"
+    assert resolve_property(Info(text="Body"), x("text", detail=False), view=cls()).detail is None
+
+
+def test_object_detail_value_docs_restore_raw_choice():
+    namespace = {}
+    exec(recipe("docs/migrating-1.0.md", "restore-raw-choice"), namespace)
+    prop = resolve_property(ChoiceValue(process="natural"), namespace["process_property"])
+    assert prop.value == "natural"
+    assert prop.choice_label is None
+    assert render(prop).strip() == "natural"
+
+
+def test_object_detail_value_docs_paired_migration():
+    changelog = (ROOT / "CHANGELOG.md").read_text().split("### Breaking", 1)[1].split("### ", 1)[0]
+    migration = (ROOT / "docs/migrating-1.0.md").read_text().split("## Object-detail values and help", 1)[1]
+    migration = migration.split("\n## ", 1)[0]
+    for text in [changelog, migration]:
+        for contract in ["choices_display=False", "display_value", "char/text/default", "composition"]:
+            assert contract in text
+        assert "CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT" in text
+        assert "cv_object_detail_show_help_text" in text
+    assert "docs/migrating-1.0.md#object-detail-values-and-help" in changelog
+    assert "reference/object_detail_configuration.md#copied-text-value-template" in migration
+    assert "reference/object_detail_badges.md#native-semantic-badge-template" in migration

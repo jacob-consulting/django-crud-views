@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/pytest tests/test1/test_workflow_buttons.py::TestWorkflowDescriptions::test_safe_field_label_is_literal -q --junitxml=.planning/phases/06.13.1-workflow-validation-and-execution-business-blockers-transiti/03-label-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.862\" timestamp=\"2026-11-06T10:40:17.660172+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_workflow_buttons.TestWorkflowDescriptions\" name=\"test_safe_field_label_is_literal\" time=\"0.625\"><failure message=\"AssertionError: assert not [&lt;Element em at 0x7b7c21741220&gt;]&#10; +  where [&lt;Element em at 0x7b7c21741220&gt;] = cssselect('em')&#10; +    where cssselect = &lt;Element label at 0x7b7c21741c70&gt;.cssselect\">tests/test1/test_workflow_buttons.py:254: in test_safe_field_label_is_literal\n    assert not visible.cssselect(\"em\")\nE   AssertionError: assert not [&lt;Element em at 0x7b7c21741220&gt;]\nE    +  where [&lt;Element em at 0x7b7c21741220&gt;] = cssselect('em')\nE    +    where cssselect = &lt;Element label at 0x7b7c21741c70&gt;.cssselect</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_safe_field_label_is_literal",
+  "targetFile": "tests/test1/test_workflow_buttons.py",
+  "expected": "literal matching visible and accessible labels",
+  "actual": "marked-safe label creates an HTML em element",
+  "reportPath": ".planning/phases/06.13.1-workflow-validation-and-execution-business-blockers-transiti/03-label-red.xml",
+  "runStartedAt": "2026-11-06T10:22:00Z",
+  "reportModifiedAt": 1793961618.5220745,
+  "semanticAssessment": "Visible field label renders SafeData as markup, violating the literal named-group contract."
+}

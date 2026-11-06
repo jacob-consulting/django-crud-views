@@ -238,6 +238,22 @@ class TestTransitionButtons:
 
 
 class TestWorkflowDescriptions:
+    def test_safe_field_label_is_literal(self, client_user_campaign_change, campaign_new, monkeypatch):
+        label = mark_safe('<em>Choose & "action"</em>')
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_label", label)
+        response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/")
+        form = response.context["form"]
+        for refresh in (False, True):
+            if refresh:
+                form._workflow_refresh()
+            document = html.fragment_fromstring(_render(form), create_parent="main")
+            group = document.cssselect('[role="group"]')[0]
+            assert group.get("aria-label") == label
+            visible = group.getparent().cssselect("label")[0]
+            assert not visible.cssselect("em")
+            assert label in visible.text_content()
+
     @pytest.mark.parametrize("modal", [False, True])
     def test_all_blocked_complete_literal_content(self, client_user_campaign_change, campaign_new, monkeypatch, modal):
         monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")

@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: "06.15"
 current_phase_name: Polymorphic labels and per-model detail groups
 status: verifying
-stopped_at: Completed 06.15-04-PLAN.md; phase verification pending
-last_updated: "2026-11-06T11:38:09.909Z"
+stopped_at: Phase 06.15 verified 16/16; two human UAT checks pending
+last_updated: "2026-11-06T12:15:50Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.15 execution started
+last_activity_desc: Phase 06.15 automated verification passed; human UAT pending
 state_head: ed5f70cc23b38f651248f765c64accbea39dbe7e
 progress:
   total_phases: 21
@@ -30,10 +30,18 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 Phase: 06.15 (Polymorphic labels and per-model detail groups) — VERIFYING
 Plan: 4 of 4
-Status: All plans executed — phase verification pending
-Last activity: 2026-11-06 — Phase 06.15 execution started
+Status: All plans executed — human verification pending
+Last activity: 2026-11-06 — Final verification 16/16; two human checks pending
 
-Next: Verify Phase 06.15; downstream adoption is on gsd/phase-06.15-polymorphic-adoption, while its checkout was externally switched to main after verification.
+Next: $gsd-verify-work 06.15 — visual and browser interaction acceptance
+
+### Phase 06.15 execution and verification — 2026-11-06
+
+- All four plans committed; canonical verification human_needed: 16/16 truths and 19/19 decisions verified, two human items persisted in 06.15-UAT.md.
+- Review repaired mapping fallback/mutation and bare Django Model check crashes in 06dca6d5/b2aebe49, with five regressions. Review zero open; security 12/12 closed; validation compliant. UI audit source-only, visual/browser acceptance unclaimed.
+- Final source: 90 focused tests each on Django 4.2/5.2/6.0; 8,398 prior-phase regressions plus 100 subtests; 18 consumer tests and warning-level checks; seven independent cases and strict docs passed. Earlier full 5.2 result (10,175 + one skip) remains pre-fix evidence.
+- Downstream 542936d/6a8e4f9 remain on gsd/phase-06.15-polymorphic-adoption. Another actor switched its checkout to main and advanced it; final consumer checks used a pinned archive, preserving current checkout and original report edits.
+- No phase completion, next-phase advance, push or merge. Unrelated config preserved; codebase map drift advisory.
 
 ### Phase 06.13 shipping — 2026-11-06
 

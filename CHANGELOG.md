@@ -6,6 +6,15 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Workflow database alignment and literal guidance** ([#322](https://github.com/jacob-consulting/django-crud-views/issues/322)):
+  workflow execution now binds object/history/content-type operations to one selected write alias and requires
+  the saved object and actual authenticated actor to be loaded from that database. Replica-loaded inputs with a
+  different write alias and separate history storage are unsupported; a `cv_get_db_alias()` override alone does
+  not align loaded inputs. Earlier unbound managers could follow separate router choices. Workflow view help now
+  renders as literal escaped text, and all-offered-NONE policies omit the visible comment wrapper/label/help in both
+  radio and button forms. Follow the concrete [workflow migration](docs/migrating-1.0.md#workflow-validation-and-database-alignment).
+  Button presentation and its instance-specific IDs are opt-in; the default radio controls are retained.
+
 - **Protected delete-preview entries** (#307, #316): with previews enabled, `protected_objects` contains filtered,
   selected ordered `obj`/`url` entries, where `obj` is the model instance and `url` is always `None`: plain labels.
   Copied generic alert-items snippets must migrate immediately to the independent
@@ -492,6 +501,19 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- **Workflow business validation, standalone execution and native buttons**
+  ([#322](https://github.com/jacob-consulting/django-crud-views/issues/322)): the model-data-only
+  `workflow_check_transition(name, *, user)` hook reports ordered blockers; public
+  `run_transition(object, name, *, user, comment=None)` shares the transactional execution/history path with the
+  view. `cv_transition_presentation="buttons"` retains existing form subclasses, shows business-disabled actions,
+  separate help and action-specific comment markers, and supports native page submission and the existing modal
+  lifecycle. `WorkflowForm.clean()` now returns its cleaned mapping. Expected late business/comment refusals keep
+  raw bound inputs after rollback; other execution exceptions propagate. German source/compiled catalogs include
+  the required-comment suffix and legend. See the [adoption and limits](docs/reference/workflow_view.md#business-validation-and-native-transition-buttons),
+  [lifecycle](docs/reference/request_lifecycle.md#workflow-views) and
+  [public widget contract](docs/reference/theme.md#workflow-transition-widget). Direct decorated calls, concurrency
+  control and rollback of external effects remain outside the guarantees.
 
 - Cards expose empty `card_root` and `card_header` template blocks for inherited content before the body and
   before the heading, preserving default output and inherited actions. A complete, tested

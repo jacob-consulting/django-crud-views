@@ -1,7 +1,8 @@
 # Request lifecycle, transactions & hooks
 
 Every write in django-crud-views (create, update, delete, custom forms, workflow transitions and
-actions) goes through one of three POST handlers. This page shows the order in which your
+actions) goes through a write lifecycle. Workflow and delete have their own POST handlers alongside
+generic forms and actions. This page shows the order in which your
 overrides are called, which of them run inside the database transaction, and where to put side
 effects such as e-mails or Celery tasks.
 
@@ -14,11 +15,12 @@ effects such as e-mails or Celery tasks.
 
 Package GET handlers do not intentionally mutate storage. Delete inspection reads metadata/ORM rows without
 executing deletion callbacks; application loaders, preview providers and filters remain trusted code whose purity
-cannot be guaranteed. POST requests are handled by one of three methods:
+cannot be guaranteed. POST requests are handled by these methods:
 
 | POST handler | Used by |
 |---|---|
-| `CrudViewProcessFormMixin.post` | `CreateView`, `UpdateView`, `CustomFormView`, `CustomFormNoObjectView`, `WorkflowView`, polymorphic create/update |
+| `CrudViewProcessFormMixin.post` | `CreateView`, `UpdateView`, `CustomFormView`, `CustomFormNoObjectView`, polymorphic create/update |
+| `WorkflowView.post` | Workflow form validation, transactional execution and expected-refusal recovery |
 | `DeleteView.post` | `DeleteView`, polymorphic delete |
 | `ActionView.post` | `ActionView`, `OrderedUpView`, `OrderedDownView` |
 
@@ -28,7 +30,11 @@ Each handler has three phases:
 2. **In the transaction (the write phase):** your write code and its follow-up hook. If anything
    raises, writes on that database roll back when the atomic boundary is enabled. External effects and writes on
    another database cannot be rolled back by it.
-3. **After the commit:** `cv_on_commit(context)`, then the redirect.
+3. **Successful response:** register `cv_on_commit(context)` for the selected database and redirect. Under
+   `ATOMIC_REQUESTS`, the callback runs when the surrounding request commits, after the view returns.
+
+Workflow expected business/comment refusals unwind the write boundaries before bound redisplay. They do not reach
+the success hook, redirect or commit callback. Other execution errors propagate after rollback.
 
 ## Call chains
 
@@ -43,6 +49,25 @@ get_object (if cv_object) → get_context_data → cv_post_hook → cv_form_is_v
            → cv_form_valid_redirect
   invalid: cv_form_invalid_hook → cv_form_invalid
 ```
+
+### Workflow views
+
+```text
+get_object → get_context_data → cv_post_hook → cv_form_is_valid
+  valid: cv_form_valid_process [optional outer atomic:
+           cv_form_valid [workflow atomic: recheck → business/comment checks → transition
+                          → save → history → on_transition]
+           → cv_form_valid_hook ⇢ cv_on_commit]
+         → cv_form_valid_redirect
+  expected execution refusal: unwind → scoped fresh object → same bound form/errors/refreshed choices
+  invalid or expected refusal: cv_form_invalid_hook → cv_form_invalid
+```
+
+Only business-hook and required-comment refusals become transition/comment field errors. Exceptions from the
+transition, save, history or `on_transition` (including their `ValidationError`) retain ordinary propagation.
+Fresh reload avoids reusing mutated protected-FSM state; raw bound custom/comment values remain available.
+Normal invalid responses are 200 and modal invalid responses are 422. See
+[workflow execution](workflow_view.md#standalone-execution-and-refusal-behavior).
 
 ### Delete views
 
@@ -93,6 +118,7 @@ get_object → get_context_data
 override `post()`, call them instead of `cv_form_valid` / `action()` directly to keep it.
 For delete views delegate to `super().post()` to retain confirmation, early protection and HTTP marker handling;
 calling `cv_form_valid_process` directly does not supply those gates.
+For workflow views delegate to `super().post()` to retain scoped recovery and bound invalid responses.
 
 ## Hook reference
 
@@ -122,6 +148,7 @@ of the transition.
 
 Success messages (`MessageMixin`, action messages) are queued inside the transaction. If a later
 hook raises, the write is rolled back but the message may still be shown on the next page.
+An expected workflow business/comment refusal occurs before the success hook and queues no success message.
 
 ## Transactions
 
@@ -140,6 +167,13 @@ runs once per view instance, including non-atomic execution. A custom delete ato
 different alias from the loaded instance. Your selectors, custom model methods and follow-up ORM writes must honor
 the intended routing; this does not authorize cross-database side effects automatically. See the
 [migration recipe](../migrating-1.0.md#delete-method-signatures-and-database-selection).
+
+**Workflow views** use the instance-hinted selector too and pin the valid POST's write alias once. Their default
+atomic boundary and commit callback use that alias, and their inner execution boundary remains atomic with
+`cv_atomic=False`. Unlike DeleteView, workflow requires both the object and actual authenticated actor already
+saved and loaded on the selected alias. A replica-loaded identity with a different write alias is rejected; a
+selector override alone does not align inputs. Object/history/content-type writes are explicitly bound, and history
+readback follows the persisted object's alias. See [supported workflow databases](workflow_view.md#supported-workflow-databases).
 
 When `cv_on_commit` runs:
 
@@ -319,14 +353,21 @@ class S3FileArchiveView(ResourceViewMixin, ActionViewPermissionRequired):
 
 `cv_get_db_alias()` asks your `DATABASE_ROUTERS` for the write database of the ViewSet's model;
 the transaction and `cv_on_commit` both use it. Override it when the write phase mainly targets
-another model. Delete views pin their instance-hinted selection as described above. Django has no transactions across
+another model. Delete and workflow views pin their instance-hinted selections as described above, with distinct
+loaded-identity rules. Workflow writes and history reads bind explicitly to the selected/persisted alias; separate
+`WorkflowInfo`/`ContentType` router choices cannot redirect them. The selected database must contain all required
+tables/identities. Applications using replica-loaded workflow inputs or separate history storage must follow the
+[migration guidance](../migrating-1.0.md#workflow-validation-and-database-alignment). No router-introspection or
+automatic split-storage diagnosis is provided.
+Django has no transactions across
 databases: writes to a second database inside
 `cv_form_valid` are not rolled back with the first.
 
 ## Limitations
 
-- **No transactions across databases.** If a router sends `WorkflowInfo` or formset child models
-  to a different database than the view's model, those writes are not atomic with the main write.
+- **No transactions across databases.** Workflow object/history/content-type operations bind to one supported
+  alias; application transition/hook writes elsewhere are not atomic with them. Formset child models routed to a
+  different database remain outside the main write's atomicity. Separate workflow history storage is unsupported.
 - **Checks do not lock rows.** Delete protection (`cv_check_delete_protection`) runs before the
   transaction; the workflow permission check runs inside it but against an object loaded without a
   row lock (no `select_for_update`). Two concurrent requests can both pass the check.
@@ -367,4 +408,5 @@ directly get no transaction and no `cv_on_commit`.** Call `cv_form_valid_process
 and delete views) or `cv_action_process(context)` (action views) instead.
 
 To get the old behaviour for one view, set `cv_atomic = False`. Hooks then run in autocommit mode
-as before, and `cv_on_commit` runs immediately after the write phase.
+as before, and `cv_on_commit` runs immediately after the write phase, except that workflow execution/`on_transition`
+and formset saves retain their own inner atomic boundaries.

@@ -5,6 +5,82 @@ the route from **0.29.x** to 1.0.0. The [CHANGELOG](https://github.com/jacob-con
 stays the complete record, ordered by release and issue; this page orders the same changes by what you have to
 touch.
 
+## Workflow validation and database alignment
+
+Workflow validation/execution (#322) adds `workflow_check_transition(self, name, *, user)`, public
+`run_transition(object, name, *, user, comment=None)` and opt-in `cv_transition_presentation="buttons"`.
+The [complete adoption recipe](reference/workflow_view.md#business-validation-and-native-transition-buttons)
+keeps existing form subclasses and the default page permission. These additive APIs do not require switching
+an existing radio view to buttons. `WorkflowForm.clean()` now returns the cleaned mapping for subclasses.
+
+### Align workflow reads, actor identity and writes
+
+**Before:** workflow operations used unbound managers and could follow separate object read/write, history and
+content-type router choices. Suitable split-read/write setups could work, without a general cross-database atomicity
+guarantee.
+
+**After:** the selected workflow write database must contain the required object, authenticated actor, `WorkflowInfo`
+and `ContentType` tables/rows. Both actual inputs must already be saved and loaded from that alias. Object save,
+history/content-type operations and the execution transaction bind explicitly to it; history readback follows the
+persisted object's alias. Separate history/content-type routers cannot redirect these operations. Replica-loaded
+inputs with a different write alias are rejected with `ImproperlyConfigured`, even when PKs match.
+
+For workflow requests, align the application's authenticated-actor resolution and scoped object queryset with
+that database, retaining every existing authorization, tenant, parent and object gate. The view's instance-hinted
+`cv_get_db_alias()` selection is pinned once for the valid write path; overriding it alone does not reload or align
+previously loaded inputs. DeleteView's separate support for a differently loaded target is unchanged and does not
+apply to workflow.
+
+For programmatic use, establish both saved inputs on the intended write database through application-authorized
+queries before calling the helper:
+
+```python
+from crud_views_workflow.lib import run_transition
+
+# These application-scoped querysets have already enforced actor/object identity and access.
+actor = authorized_actors.using(write_alias).get(pk=authenticated_actor_pk)
+order = authorized_orders.using(write_alias).get(pk=order_pk)
+info = run_transition(order, "wf_confirm", user=actor, comment="Reviewed")
+```
+
+The helper still selects the write alias with `router.db_for_write(type(order), instance=order)`; the router must
+agree with these inputs. It has no alias argument and does not establish request-level queryset/parent policy.
+Do not mutate `_state.db`, copy a model to another alias, or substitute a same-PK actor: matching PKs do not prove
+identity equivalence. Applications retaining replica-loaded workflow inputs or separate history storage remain
+unsupported. No router-topology inspection, automatic split-storage diagnosis or cross-database transaction is added.
+
+### Adopt literal help and shared comment visibility
+
+**Before:** view-supplied workflow help could be interpreted as HTML by crispy templates, and an all-NONE comment
+could leave a visible label/wrapper around a hidden field. **After:** `cv_transition_help_text` and
+`cv_comment_help_text` are escaped literal text in both presentations; all offered policies NONE omits the visible
+comment wrapper, label and help. A hidden input may remain. One OPTIONAL/REQUIRED action keeps one shared textarea;
+only the chosen action determines comment requiredness.
+
+Replace HTML help values with plain translated guidance. If an application needs authored HTML, place trusted
+static markup in an application-owned template instead of passing it through workflow help or marking user text
+safe. Update copied layouts/tests that depended on the empty comment wrapper; retain fields and bound errors when
+the comment is visible. Button-mode field labels are literal too.
+
+### Optional buttons and custom renderers
+
+Radio remains the default. Ordinary `WorkflowForm` constructors, fields, `clean()`, `get_layout_fields()` and radio
+`get_submit_button()` customization continue to work. When opting into buttons, retain the chosen transition widget
+and remove a generic submit from any replacement `get_form_actions()`/helper; preserve eligible navigation Cancel.
+Follow the [widget template contract](reference/theme.md#workflow-transition-widget) for copied renderers. Do not
+replace the entire layout just to suppress the default submit. Pre-rendered/cached HTML bypasses normal bound refresh.
+
+Button-mode IDs, including Cancel, are instance-namespaced. Use the provided IDs/description tokens rather than
+hard-coded selectors. Keep a non-activating group label, full captions, per-action comment markers and the conditional
+translated legend. The widget owns no form/CSRF token. Native Enter on a single-line field can submit the first
+submit control in tree order when enabled; it does not skip a disabled first control. The stock textarea uses Enter
+for a newline.
+
+Expected business/comment refusals now render field errors after write rollback, without success effects. Errors
+from the transition/save/history/`on_transition` itself still propagate, even if they are `ValidationError`.
+Follow-up writes must use the selected database; external effects belong after commit. There is no stale-object
+concurrency guarantee. Direct decorated calls still bypass the helper's validation, save and history contract.
+
 ## Action tooltips
 
 Context/list icon-only actions now use the existing nonempty short caption as `cv_title`, with full-caption

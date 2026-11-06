@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.838" timestamp="2026-11-06T10:25:05.613113+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_workflow_buttons.TestTransitionButtons" name="test_native_choice_request[wf_activate-active-False]" time="0.626"><failure message="AssertionError: assert [] == ['wf_activate...f_cancel_new']&#10;  &#10;  Right contains 2 more items, first extra item: 'wf_activate'&#10;  Use -v to get more diff">self = &lt;tests.test1.test_workflow_buttons.TestTransitionButtons object at 0x7dc612ac7a40&gt;
+client_user_campaign_change = &lt;django.test.client.Client object at 0x7dc611f883b0&gt;
+campaign_new = &lt;Campaign: Test Campaign&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7dc611f89910&gt;
+modal = False, name = 'wf_activate', target = CampaignState.ACTIVE
+
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("name,target", [("wf_activate", CampaignState.ACTIVE), ("wf_cancel_new", CampaignState.CANCELED)])
+    def test_native_choice_request(self, client_user_campaign_change, campaign_new, monkeypatch, modal, name, target):
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons", raising=False)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_label", 'Choose &lt;action&gt; &amp; "state"')
+        url = f"/campaign/{campaign_new.pk}/workflow/"
+        response = client_user_campaign_change.get(url, headers=_headers(modal))
+        assert response.status_code == 200
+        document = _document(response)
+        buttons = _buttons(document)
+&gt;       assert [button.get("value") for button in buttons] == ["wf_activate", "wf_cancel_new"]
+E       AssertionError: assert [] == ['wf_activate...f_cancel_new']
+E         
+E         Right contains 2 more items, first extra item: 'wf_activate'
+E         Use -v to get more diff
+
+tests/test1/test_workflow_buttons.py:38: AssertionError</failure></testcase></testsuite></testsuites>

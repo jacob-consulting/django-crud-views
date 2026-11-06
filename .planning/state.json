@@ -84,6 +84,11 @@
       "status": "complete"
     },
     {
+      "number": "6.12",
+      "name": "Workflow presentation",
+      "status": "complete"
+    },
+    {
       "number": "6.13",
       "name": "Workflow permissions: opt-in per-transition access",
       "status": "complete"
@@ -91,7 +96,12 @@
     {
       "number": "6.13.1",
       "name": "Workflow validation and execution",
-      "status": "pending"
+      "status": "complete"
+    },
+    {
+      "number": "6.14",
+      "name": "Card template insertion blocks and cards-first ViewSets",
+      "status": "complete"
     },
     {
       "number": "7",
@@ -100,9 +110,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step (plan phase 06.14)",
-    "reason": "Phase 28 of 29 — needs a plan"
+    "command": "$gsd-discuss-phase 7",
+    "label": "Plan Phase 7 theme-surface stability policy",
+    "reason": "Phases 06.13.1 and 06.14 are complete"
   },
-  "updated_at": "2026-11-06T10:15:28.829Z"
+  "updated_at": "2026-11-06T09:44:55.505Z"
 }

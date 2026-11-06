@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
 last_mapped_at: 2026-11-06
 ---
 # Codebase Structure
@@ -79,7 +79,7 @@ django-crud-views/
 **`src/crud_views_workflow/`:**
 - Purpose: FSM transition and history integration.
 - Contains: Workflow views/forms/mixins, audit-history models and migrations, templates, app checks and translations.
-- Key files: `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `src/crud_views_workflow/models.py`, `src/crud_views_workflow/migrations/`.
+- Key files: `src/crud_views_workflow/lib/views.py` (request/database orchestration and hooks), `src/crud_views_workflow/lib/execution.py` (shared transition validation and transactional engine plus public helper), `src/crud_views_workflow/lib/forms.py` (transition choices, business blocker and comment validation), `src/crud_views_workflow/lib/widgets.py` (button presentation), `src/crud_views_workflow/lib/mixins.py` (model/history API), and `src/crud_views_workflow/models.py` plus `src/crud_views_workflow/migrations/` (audit persistence).
 - Workflow form actions share core form presentation, while workflow badges and content are themed in `src/crud_views_workflow/templates/crud_views_workflow/`; transition permission opt-in examples and regression tests are maintained under `tests/test1/`.
 
 **`src/crud_views_polymorphic/`:**
@@ -145,6 +145,7 @@ django-crud-views/
 
 **Testing:**
 - `tests/test1/`: Python/Django tests and test app.
+- `tests/test1/test_workflow_execution.py`: public transition helper and view execution, validation/refusal, transaction, callback, and multi-database routing contracts.
 - `tests/js/`: JavaScript unit tests.
 - `tests/js-integration/`: JavaScript integration tests.
 - `tests/browser/`: Browser test harness assets.
@@ -173,6 +174,7 @@ django-crud-views/
 - For form cancellation behavior, extend the request-aware resolver in `src/crud_views/lib/view/base.py` and its focused tests; preserve template access through `{% cv_cancel_url %}`.
 - For deletion relationship previews, change the collector/summary behavior in `src/crud_views/lib/deletion.py` and the corresponding partials in `src/crud_views/templates/crud_views/snippets/delete/`; keep protected references as plain labels and preserve the display budget.
 - For workflow presentation or permission examples, use `src/crud_views_workflow/lib/` and its templates; document and test permission checks as opt-in per transition.
+- For workflow business blockers or execution semantics, implement the model-only `workflow_check_transition(name, *, user)` contract in the consumer model, keep shared validation/execution in `src/crud_views_workflow/lib/execution.py`, and test public helper plus request behavior in `tests/test1/test_workflow_execution.py`. Do not treat business blockers as permission checks: django-fsm permissions/conditions gate transition availability, while the workflow view's page permission remains separately enforced.
 
 **New Component/Module:**
 - Implementation: Place cross-view concepts in the closest `src/crud_views/lib/<concern>/` package; place a concrete Django CBV in `src/crud_views/lib/views/`.

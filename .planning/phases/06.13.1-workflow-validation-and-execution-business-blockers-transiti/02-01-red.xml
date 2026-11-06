@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.898" timestamp="2026-11-06T10:13:56.122867+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_workflow_execution.TestWorkflowDatabase" name="test_instance_fallback_history_readback" time="0.610"><failure message="AssertionError: History reads must stay on the persisted object's database&#10;assert 'default' == 'shard'&#10;  &#10;  - shard&#10;  + default">self = &lt;tests.test1.test_workflow_execution.TestWorkflowDatabase object at 0x70e3197ab770&gt;
+workflow_worlds = {'default': (&lt;Campaign: default campaign&gt;, &lt;User: default actor&gt;, &lt;ContentType: App | campaign&gt;), 'shard': (&lt;Campaign: shard campaign&gt;, &lt;User: shard actor&gt;, &lt;ContentType: App | campaign&gt;)}
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x70e3194d0f20&gt;
+
+    def test_instance_fallback_history_readback(self, workflow_worlds, monkeypatch):
+        from crud_views_workflow.lib import run_transition
+    
+        monkeypatch.setattr(router, "routers", [])
+        obj, actor, content_type = workflow_worlds["shard"]
+        info = run_transition(obj, "wf_activate", user=actor, comment="  shard note  ")
+        queryset = obj.get_workflow_info_queryset()
+&gt;       assert queryset.db == "shard", "History reads must stay on the persisted object's database"
+E       AssertionError: History reads must stay on the persisted object's database
+E       assert 'default' == 'shard'
+E         
+E         - shard
+E         + default
+
+tests/test1/test_workflow_execution.py:469: AssertionError</failure></testcase></testsuite></testsuites>

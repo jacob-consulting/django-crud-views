@@ -1,8 +1,8 @@
 {% load crud_views %}
 {% cv_card_action_group object as group %}
 
-<div class="{% cv_button_class "card" "root" %}">
-    <div class="{% cv_button_class "card" "body" %}">
+<div class="{% cv_button_class "card" "root" %}">{% block card_root %}{% endblock card_root %}
+    <div class="{% cv_button_class "card" "body" %}">{% block card_header %}{% endblock card_header %}
         {% cv_button_class "card" "title" as cv_card_title_class %}{% cv_heading level=5 class=cv_card_title_class %}{% block card_title %}{{ object }}{% endblock card_title %}{% endcv_heading %}
         {% block card_content %}{% endblock card_content %}
         {% block card_actions %}

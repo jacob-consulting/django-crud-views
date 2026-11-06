@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 0
 waived_count: 8
-fixed_count: 26
-total_count: 34
-last_updated: 2026-11-06T12:43:46.147Z
+fixed_count: 27
+total_count: 35
+last_updated: 2026-11-06T19:16:25.752Z
 ---
 
 # Broken Windows Ledger
@@ -49,6 +49,7 @@ last_updated: 2026-11-06T12:43:46.147Z
 | 32 | 06.9 | deviation | src/crud_views/lib/views/delete.py |  | Resolved in 5169325: preserve custom QuerySet.get Http404 and bind mounted SCRIPT_NAME; final 819-test suite passes. | fixed |  | 2026-11-04T10:12:29.437Z | 2026-11-04T10:12:55.657Z |
 | 33 | 06.10 | skipped-test | tests/test1/test_assets.py | 332 | Existing Django 6-only CSP roundtrip skips on Django 5.2; this runtime-specific skip is outside the delete-preview change. | fixed |  | 2026-11-04T21:29:51.737Z | 2026-11-04T21:30:19.548Z |
 | 34 | 06.10 | unrun-verify | .planning/phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-ACCEPTANCE.md |  | Human stock/copied page/modal presentation, keyboard acceptance and UI kind confirmation remain pending at the normal end-of-phase check. | fixed |  | 2026-11-04T21:30:19.709Z | 2026-11-05T09:25:26.031Z |
+| 35 | 06.16 | deviation | tests/test1/od/test_help_text_policy.py |  | Plan 02 task 2 is test-only expansion of task 1 behavior; no separate failing RED or production GREEN commit was needed. | fixed |  | 2026-11-06T19:15:57.137Z | 2026-11-06T19:16:25.752Z |
 
 ````json
 [
@@ -483,6 +484,19 @@ last_updated: 2026-11-06T12:43:46.147Z
     "reason": "",
     "recorded_at": "2026-11-04T21:30:19.709Z",
     "resolved_at": "2026-11-05T09:25:26.031Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 35,
+    "kind": "deviation",
+    "phase": "06.16",
+    "file": "tests/test1/od/test_help_text_policy.py",
+    "line": null,
+    "description": "Plan 02 task 2 is test-only expansion of task 1 behavior; no separate failing RED or production GREEN commit was needed.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-06T19:15:57.137Z",
+    "resolved_at": "2026-11-06T19:16:25.752Z",
     "milestone": "v1.0"
   }
 ]

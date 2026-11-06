@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
+
+from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Model
 
 from crud_views.lib.check import Check, CheckAttribute, CheckExpression, CheckWarningExpression
 from crud_views.lib.icons import unregistered_prefix
@@ -11,8 +14,8 @@ from crud_views_object_detail.lib.resolvers import resolve_all
 class ObjectDetailMixin:
     """Adds resolved object-detail property groups to a crud_views detail view.
 
-    Set ``cv_property_display`` as a list of group dicts (the DSL accepted by
-    ``parse_property_display``). Resolved groups land in the template context as
+    Set ``cv_property_display`` to a group list or a mapping from exact model
+    classes to group lists. Resolved groups land in the template context as
     ``object_detail_groups``.
     """
 
@@ -20,7 +23,7 @@ class ObjectDetailMixin:
     cv_content_template = "crud_views_object_detail/view_detail.content.html"
     cv_modal_supported = True
 
-    cv_property_display: list | None = None
+    cv_property_display: list | Mapping[type[Model], list] | None = None
 
     #: Optional per-view override of the object-detail layout pack (e.g. "accordion").
     #: Falls back to ``CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT`` when None.
@@ -41,8 +44,15 @@ class ObjectDetailMixin:
         raw = self.property_display
         if raw is None:
             return []
-        if raw and isinstance(raw[0], PropertyGroupConfig):
-            return raw
+        if isinstance(raw, Mapping):
+            model = type(self.object)
+            try:
+                raw = raw[model]
+            except KeyError as exc:
+                view = type(self)
+                raise ImproperlyConfigured(
+                    f"{view.__module__}.{view.__qualname__}.cv_property_display has no entry for {model._meta.label}"
+                ) from exc
         return parse_property_display(raw)
 
     def get_object_for_detail(self):
@@ -66,12 +76,17 @@ class ObjectDetailMixin:
             yield CheckExpression(
                 context=cls,
                 id="E241",
-                expression=isinstance(pd, list),
-                msg="cv_property_display must be a list",
+                expression=isinstance(pd, (list, Mapping)),
+                msg="cv_property_display must be a list or model-to-groups mapping",
             )
             if isinstance(pd, list):
                 for i, group in enumerate(pd):
                     yield from cls._checks_property_group(i, group)
+            elif isinstance(pd, Mapping):
+                for groups in pd.values():
+                    if isinstance(groups, list):
+                        for i, group in enumerate(groups):
+                            yield from cls._checks_property_group(i, group)
         yield from super().checks()
 
     @classmethod

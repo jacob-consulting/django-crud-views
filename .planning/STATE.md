@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 06.13.1
 current_phase_name: Workflow validation and execution
-status: executing
-stopped_at: Completed 06.13.1-04-PLAN.md; plan 05 remains
-last_updated: "2026-11-06T11:11:05.812Z"
+status: verifying
+stopped_at: Completed 06.13.1-05-PLAN.md; phase review and verification pending
+last_updated: "2026-11-06T11:34:32.513Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.13.1 plan 04 complete; plan 05 remains
-state_head: 12d3dbe432d8c1fb77db2765088e90521012b4a2
+last_activity_desc: Phase 06.13.1 all plans executed; review and verification pending
+state_head: 4f7ff7a0e09c251faffd5a0ed30c77bbeb8d1ee4
 progress:
   total_phases: 19
   completed_phases: 17
   total_plans: 125
-  completed_plans: 124
+  completed_plans: 125
 milestone_name: milestone
 ---
 
@@ -28,12 +28,19 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 ## Current Position
 
-Phase: 06.13.1 (Workflow validation and execution) — EXECUTING
+Phase: 06.13.1 (Workflow validation and execution) — IN PROGRESS (verification pending)
 Plan: 5 of 5
-Status: Ready to execute
-Last activity: 2026-11-06 — Phase 06.13.1 plan 04 complete; 37 browser cases, 65 Node checks and 86 workflow tests passed
+Status: All plans executed — review and verification pending
+Last activity: 2026-11-06 — Plan 05 complete; full Django 5.2 passed 10356 tests with one existing skip
 
-Next: $gsd-execute-phase 06.13.1
+Next: Phase 06.13.1 review and verification
+
+### Phase 06.13.1 plan 05 — 2026-11-06
+
+- Exact workflow helper/hook/widget/lifecycle contracts, mandatory routing migration and German source/compiled comment markers are documented and tested. All five plan summaries exist; roadmap remains In Progress pending review/verification.
+- Final full Django 5.2: 10356 passed/one existing CSP skip; focused Django 4.2 and 6.0-floor: 705 each; JS 365; German catalog/render 7; strict docs and scoped Ruff passed. The first full run exposed lost stock workflow W292 diagnostics; a bounded provider-recognition fix and regressions restored them.
+- Browser receipts refreshed after final source changes: 37 all cases plus 2 smoke, 497 matching source hashes and owned cleanup. R23 observed eight exact unreferenced vendor-wrapper exemptions on Django 4.2/crispy 2026.3; owned IDs/descriptions remain strict. Human visual/screen-reader/copy judgments remain unclaimed.
+- WFX-05 passed shared-ID readiness and is complete; overall requirement reconciliation remains with phase verification. Existing CLAUDE/config/state.json edits preserved; no push or merge.
 
 ### Phase 06.13.1 plan 04 — 2026-11-06
 
@@ -630,6 +637,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.13.1 P02 | 10min | 2 tasks | 3 files |
 | Phase 06.13.1 P03 | 19min | 3 tasks | 7 files |
 | Phase 06.13.1 P04 | 22min | 2 tasks | 6 files |
+| Phase 06.13.1 P05 | 20min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -814,6 +822,8 @@ Recent decisions affecting current work:
 - [Phase 06.13.1]: Preserve the existing late-refusal engine and form instance; custom integration required regression tests rather than another recovery abstraction.
 - [Phase 06.13.1]: Keep stock workflow wrapping on field columns; preserve radio rendering and custom layout ownership.
 - [Phase 06.13.1]: Browser acceptance uses cached local assets and runtimes only; missing prerequisites fail without passing skips.
+- [Phase 06.13.1]: Document workflow database alignment as a compatibility restriction while preserving DeleteView behavior.
+- [Phase 06.13.1]: Restore static stock WorkflowForm icon diagnostics without importing the optional extension or calling custom providers.
 
 ### Pending Todos
 
@@ -873,6 +883,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T11:10:48.285Z
-Stopped at: Completed 06.13.1-04-PLAN.md; plan 05 remains
+Last session: 2026-11-06T11:34:16.722Z
+Stopped at: Completed 06.13.1-05-PLAN.md; phase review and verification pending
 Resume file: None

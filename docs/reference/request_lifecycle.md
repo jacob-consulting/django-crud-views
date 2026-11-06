@@ -357,7 +357,8 @@ another model. Delete and workflow views pin their instance-hinted selections as
 loaded-identity rules. Workflow writes and history reads bind explicitly to the selected/persisted alias; separate
 `WorkflowInfo`/`ContentType` router choices cannot redirect them. The selected database must contain all required
 tables/identities. Applications using replica-loaded workflow inputs or separate history storage must follow the
-[migration guidance](../migrating-1.0.md). No router-introspection or automatic split-storage diagnosis is provided.
+[migration guidance](../migrating-1.0.md#workflow-validation-and-database-alignment). No router-introspection or
+automatic split-storage diagnosis is provided.
 Django has no transactions across
 databases: writes to a second database inside
 `cv_form_valid` are not rolled back with the first.

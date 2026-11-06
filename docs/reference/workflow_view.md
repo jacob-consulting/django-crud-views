@@ -135,7 +135,7 @@ urlpatterns = cv_campaign.urlpatterns
 
 | Class | Description |
 |-------|-------------|
-| `WorkflowView` | Base workflow view without permission check |
+| `WorkflowView` | Base workflow view without the page-permission mixin; execution still requires a saved authenticated actor |
 | `WorkflowViewPermissionRequired` | Workflow view requiring `change` permission |
 
 Both inherit from `CustomFormView` (a `DetailView` with form handling). They fetch the object
@@ -563,7 +563,7 @@ the persisted object's alias. Separate history/content-type storage is unsupport
 split-storage diagnostics are promised.
 
 Earlier unbound workflow managers could work with suitable split-read/write routing, so this is a compatibility
-restriction. Follow the [workflow database migration](../migrating-1.0.md).
+restriction. Follow the [workflow database migration](../migrating-1.0.md#workflow-validation-and-database-alignment).
 It is distinct from DeleteView's supported differently loaded target behavior, not a universal same-alias rule.
 
 ## WorkflowModelMixin
@@ -741,7 +741,7 @@ than normalized execution values. Workflow view help is escaped literal text in 
 
 ## WorkflowInfo (audit log)
 
-Every successful transition creates a `WorkflowInfo` record:
+Every successful helper/view execution creates a `WorkflowInfo` record (direct decorated calls do not):
 
 | Field | Description |
 |-------|-------------|

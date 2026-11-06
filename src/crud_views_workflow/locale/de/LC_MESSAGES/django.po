@@ -25,9 +25,17 @@ msgstr "Workflow-Schritt verarbeiten"
 msgid "Add your comment…"
 msgstr "Kommentar hinzufügen…"
 
-#: lib/forms.py:68
+#: lib/execution.py:34
 msgid "Comment is required for this transition"
 msgstr "Für diesen Übergang ist ein Kommentar erforderlich"
+
+#: templates/crud_views_workflow/widgets/transitions.html:8
+msgid "Comment required"
+msgstr "Kommentar erforderlich"
+
+#: templates/crud_views_workflow/widgets/transitions.html:14
+msgid "* Comment required"
+msgstr "* Kommentar erforderlich"
 
 #: lib/views.py:15
 msgid "Process workflow"

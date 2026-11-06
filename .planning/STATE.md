@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.15"
 current_phase_name: Polymorphic labels and per-model detail groups
 status: executing
-stopped_at: Phase 06.15 plans converged in 4 cycles; ready to execute
-last_updated: "2026-11-06T10:53:59.216Z"
+stopped_at: Completed 06.15-01-PLAN.md
+last_updated: "2026-11-06T11:06:19.079Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.15 plan review converged in 4 cycles; zero HIGH/actionable concerns
-state_head: 60c3e4dbf2275cbf858bb272b79a5ad33e99efeb
+last_activity_desc: Phase 06.15 execution started
+state_head: 7ee0fc8f1d3fae0a33ac7c9338f62ef3514be237
 progress:
   total_phases: 21
   completed_phases: 18
   total_plans: 129
-  completed_plans: 120
+  completed_plans: 121
 milestone_name: milestone
 ---
 
@@ -24,14 +24,14 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.15 — Polymorphic labels and per-model detail groups (#326)
+**Current focus:** Phase 06.15 — Polymorphic labels and per-model detail groups
 
 ## Current Position
 
-Phase: 06.15 (Polymorphic labels and per-model detail groups) — READY TO EXECUTE
-Plan: 0 of 4 executed
+Phase: 06.15 (Polymorphic labels and per-model detail groups) — EXECUTING
+Plan: 2 of 4
 Status: Ready to execute
-Last activity: 2026-11-06 — Phase 06.15 plan review converged in 4 cycles; zero HIGH/actionable concerns
+Last activity: 2026-11-06 — Phase 06.15 execution started
 
 Next: $gsd-execute-phase 06.15
 
@@ -613,6 +613,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.10 P03 | 6min | 3 tasks | 9 files |
 | Phase 06.10 P04 | 6min | 3 tasks | 15 files |
 | Phase 06.10 P05 | 12min | 2 tasks | 12 files |
+| Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -790,6 +791,7 @@ Recent decisions affecting current work:
 - [Phase 06.10]: Plan 03 preserves exact copied-recipe markers and null-URL bodies, migrates independent guards/notices, and documents selected-only presentation costs separately from full inspection/filtering.
 - [Phase 06.10]: Plan 04 retains example defaults/models/grants/seeds, uses test-local finite/None overrides, and teaches plain protected labels separately from ordinary Book navigation; German notice uses existing polib regeneration.
 - [Phase 06.10]: Final browser acceptance binds current source and exact recipes; human and independent phase/security/Nyquist reviews remain pending.
+- [Phase 06.15]: Plan 01: exact model selection and E247 key checks share the existing parser/check traversal; POLY-03 remains pending its plan 03 structural-limit documentation.
 
 ### Pending Todos
 
@@ -850,6 +852,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T10:53:57.161Z
-Stopped at: Phase 06.15 plans converged in 4 cycles; ready to execute
-Resume file: .planning/phases/06.15-polymorphic-capitalize-type-labels-and-validate-per-model-de/06.15-REVIEWS.md
+Last session: 2026-11-06T11:06:17.208Z
+Stopped at: Completed 06.15-01-PLAN.md
+Resume file: None

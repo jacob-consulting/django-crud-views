@@ -84,11 +84,6 @@
       "status": "complete"
     },
     {
-      "number": "6.12",
-      "name": "Workflow presentation",
-      "status": "complete"
-    },
-    {
       "number": "6.13",
       "name": "Workflow permissions: opt-in per-transition access",
       "status": "complete"
@@ -115,9 +110,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-execute-phase 06.15",
-    "label": "Execute Phase 06.15 \u2014 four plans in three waves",
-    "reason": "Plan convergence completed in four cycles; zero unresolved HIGH/actionable findings and no open revision conflicts"
+    "command": "$gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 29 of 30 · executing"
   },
-  "updated_at": "2026-11-06T10:54:17.616Z"
+  "updated_at": "2026-11-06T11:06:12.564Z"
 }

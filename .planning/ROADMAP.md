@@ -1058,7 +1058,7 @@ Plans:
 explicit help-text policy, meaningful empty-value rendering, and correct inheritance guidance.
 **Source:** [Issue #327](https://github.com/jacob-consulting/django-crud-views/issues/327), including its agreed
 decisions, implementation defaults, exclusions, and acceptance criteria.
-**Requirements**: Issue #327 acceptance criteria; assign requirement IDs during planning.
+**Requirements**: ODV-01, ODV-02, ODV-03, ODV-04, ODV-05
 **Depends on:** Existing object-detail resolver, configuration, and rendering paths. Follows Phase 06.15
 numerically and preserves its list/mapping/dynamic group configurations; no hard dependency on #328 or #329.
 Complete before Phase 7 freezes the affected public surface.
@@ -1087,10 +1087,12 @@ recipes in both `CHANGELOG.md` and `docs/migrating-1.0.md`.
 **Planning handoff:** The maintainer agreed the issue's scope on 2026-11-06. Carry these decisions into CONTEXT.md
 without restarting discovery or creating another specification. Ask only if new code evidence reveals a material
 conflict, naming the affected decision. Internal mechanics and focused test organization are delegated.
-**Plans:** 0 plans
+**Plans:** 0/3 plans executed
 
 Plans:
-- [ ] TBD (run $gsd-plan-phase 06.16 to break down)
+- [ ] 06.16-01-PLAN.md — Choice display tracer, relation boundaries and raw/custom ownership
+- [ ] 06.16-02-PLAN.md — Shared help-text policy and exact stock empty-text behavior
+- [ ] 06.16-03-PLAN.md — Executable public contracts, composition, migration and final gates
 
 ### Phase 7: Theme-surface stability policy
 

@@ -248,6 +248,17 @@ no predicates. The plans preserve the context's exact-type, validation and defer
 - [x] **POLY-04**: Publish complete generic list/mapping and supported-composition recipes, exact-type/errors/check limits/dynamic escape-hatch guidance, and release notes with paired migration guidance if classified Breaking; keep changes bounded (D-17–D-18).
 - [x] **POLY-05**: Deliver required downstream workaround removal with retained form/layout/groups, all catalog types and permission regressions, verified changed-checkout imports, passing catalog and warning-level checks, scoped findings 10–11 resolution and attributable two-repository evidence (D-13–D-16, D-19).
 
+### Object-detail values and composition guidance (Phase 06.16, #327)
+
+Source: settled issue #327 and Phase 06.16 CONTEXT.md D-01–D-20. These IDs group its acceptance
+criteria without adding downstream adoption or the separately deferred #328/#329 work.
+
+- [ ] **ODV-01**: Scalar string/integer/boolean model choices and terminal single-object FK/O2O fields display Django labels by default through `choices_display=True`; preserve unknown/blank/missing semantics, raw resolved/custom-template values, raw badge/link inputs, explicit badge-label and template ownership, and unchanged zero/one/many collection behavior (D-01–D-04, D-13–D-15).
+- [ ] **ODV-02**: Resolve strict property detail instructions before nullable view and project help policy, defaulting automatic help to False; use only terminal field metadata, retain lazy text, and apply the policy consistently to views, direct resolution and raw tags while keeping already-resolved groups stable without extra queries (D-05–D-08).
+- [ ] **ODV-03**: Stock char/text/default output uses the muted em dash for None and empty strings after choice presentation while retaining rows/details, zero, False, whitespace, escaping, newline formatting and custom-template control; badge/relation/collection empty policy stays unchanged (D-09–D-10, D-14–D-15).
+- [ ] **ODV-04**: Publish executable choice/help/composition examples, the exact help precedence table, raw opt-out and copied/custom-template guidance; warn beside the composition recipe that complete object-detail views already include the mixin, demonstrate valid core/Guardian/polymorphic composition, and pair Breaking/default release notes with migration instructions (D-11–D-12, D-16).
+- [ ] **ODV-05**: Prove issue #327 acceptance through focused regressions, supported Django-series and optional-app checks, current-source full-suite and documentation gates; preserve Phase 06.15 list/mapping/dynamic selection, ordinary query costs and bounded maintainable paths, with no downstream completion dependency or unrelated hierarchy/layout work (D-03, D-17–D-20).
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -408,6 +419,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FSET-03 | Phase 6.4 | Complete — scoped A19 sibling/deeper round trips and authorization verified; broader AUTH-02 exclusions retained. |
 | LIFE-01 | Phase 6.4 | Complete — source-bound browser evidence plus actual Chrome/Orca stock/native and modal acceptance; versions/distribution unspecified. |
 | LIFE-02 | Phase 6.4 | Complete — executable contracts/docs, paired migration, independent WR-05 closure, security44/44 and canonical10/10 passed. |
+| ODV-01 | Phase 06.16 | Pending |
+| ODV-02 | Phase 06.16 | Pending |
+| ODV-03 | Phase 06.16 | Pending |
+| ODV-04 | Phase 06.16 | Pending |
+| ODV-05 | Phase 06.16 | Pending |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |
@@ -417,10 +433,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 116 total
-- Mapped to phases: 116
+- v1 requirements: 121 total
+- Mapped to phases: 121
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-25*
-*Last updated: 2026-11-06 — added five bounded Phase 06.15 requirements and traceability; recounted 116 active v1 requirements including existing WFX requirements*
+*Last updated: 2026-11-06 — added ODV-01–ODV-05 for the settled Phase 06.16 acceptance groups; 121 active v1 requirements mapped*

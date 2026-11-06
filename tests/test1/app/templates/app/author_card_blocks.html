@@ -1,2 +1,4 @@
 {% extends "crud_views/tags/card.html" %}
+{% block card_root %}<div class="cv-test-root">{{ object.pseudonym }}</div>{% endblock card_root %}
+{% block card_header %}<p class="cv-test-header">{{ object.pseudonym }}</p>{% endblock card_header %}
 {% block card_content %}<p class="cv-test-content">{{ object.last_name }}</p>{% endblock card_content %}

@@ -57,9 +57,39 @@ def test_extending_template_fills_content_and_keeps_actions(client_full, actions
     assert content.text == "Adams"
     assert len(card.cssselect("[cv-card-container]")) == 1
     assert card.cssselect("form")  # the menu's hidden action forms
-    # remove the filled block and what is left is the stock card, actions included
-    content.drop_tree()
+    # drop_tree retains tails: only the inserted elements disappear, not stock whitespace.
+    for inserted in card.cssselect(".cv-test-root, .cv-test-header, .cv-test-content"):
+        inserted.drop_tree()
     assert _markup(card) == stock
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("text", ["Douglas", '<em data-injected="yes">Douglas & Adams</em>'])
+def test_insertion_blocks_positions_and_escaping(client_full, actions, author_douglas_adams, monkeypatch, text):
+    author_douglas_adams.pseudonym = text
+    author_douglas_adams.save(update_fields=["pseudonym"])
+    monkeypatch.setattr(AuthorCardListView, "cv_card_template", "app/author_card_blocks.html")
+
+    card = _card(client_full)
+    roots = card.cssselect(".cv-test-root")
+    headers = card.cssselect(".cv-test-header")
+    assert len(roots) == 1
+    assert len(headers) == 1
+    root, header = roots[0], headers[0]
+    (body,) = card.cssselect(".card-body")
+    (heading,) = body.cssselect("h5")
+    assert card[0] is root
+    assert root.getparent() is card
+    assert header.getparent() is body
+    assert body.index(header) < body.index(heading)
+    assert header not in heading.iterdescendants()
+    for inserted in (root, header):
+        assert inserted.text == text
+        assert len(inserted) == 0
+    assert heading.text == "Douglas Adams"
+    assert card.cssselect(".cv-test-content")[0].text == "Adams"
+    assert card.cssselect("[cv-card-container]")
+    assert card.cssselect("form")
 
 
 @pytest.mark.django_db

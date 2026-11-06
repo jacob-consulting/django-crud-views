@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 3aad91002c8d176fc6308cafa84dabc42da59031
+last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
 last_mapped_at: 2026-11-06
 ---
 # External Integrations
@@ -25,6 +25,7 @@ last_mapped_at: 2026-11-06
 - django-fsm-2 and django-fsm-2-admin connect workflow views to host model state transitions and admin integration (`src/crud_views_workflow/`).
   - SDK/Client: `django_fsm`
   - Auth: Django permissions and workflow view configuration
+  - Execution: `run_transition(object, name, *, user, comment=None)` is exported lazily from `src/crud_views_workflow/lib/__init__.py`; `src/crud_views_workflow/lib/execution.py` checks transition availability, business validation, comment policy, and saved actor/object identity, then persists the transition and `WorkflowInfo` in one transaction on the object's write database. `WorkflowView` uses the same engine and schedules follow-up work with `transaction.on_commit()` on that alias (`src/crud_views_workflow/lib/views.py`). Direct decorated-method calls bypass these helper checks and history behavior.
 - django-polymorphic supports polymorphic model querysets and type-specific create forms (`src/crud_views_polymorphic/`).
   - SDK/Client: `polymorphic`
   - Auth: Django permissions
@@ -44,6 +45,7 @@ last_mapped_at: 2026-11-06
   - Connection: Host Django `DATABASES` setting
   - Client: Django ORM
 - The workflow extension defines a `WorkflowInfo` model and migrations, storing audit/history data in the host database (`src/crud_views_workflow/models.py`, `src/crud_views_workflow/migrations/`).
+- Workflow transition writes and history creation use one `transaction.atomic(using=...)` boundary; router-selected history reads and commit callbacks stay pinned to the persisted object's database (`src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`). The public helper requires both object and authenticated actor to be saved on that selected alias.
 - The demo uses SQLite configured by the example project (`examples/bootstrap5/project/settings_demo.py`); `render.yaml` documents that its free-plan filesystem is ephemeral and the demo recreates/seeds the database on each start.
 
 **File Storage:**

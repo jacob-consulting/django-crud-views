@@ -3,11 +3,11 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 06.13.1
 current_phase_name: Workflow validation and execution
-status: verifying
-stopped_at: Completed 06.13.1-05-PLAN.md; phase review and verification pending
+status: awaiting human verification
+stopped_at: Phase 06.13.1 automated verification complete; two UAT checks pending
 last_updated: "2026-11-06T11:34:32.513Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.13.1 all plans executed; review and verification pending
+last_activity_desc: Phase 06.13.1 verified 29/31; two human acceptance checks pending
 state_head: 4f7ff7a0e09c251faffd5a0ed30c77bbeb8d1ee4
 progress:
   total_phases: 19
@@ -28,12 +28,19 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 
 ## Current Position
 
-Phase: 06.13.1 (Workflow validation and execution) — IN PROGRESS (verification pending)
+Phase: 06.13.1 (Workflow validation and execution) — IN PROGRESS (human acceptance pending)
 Plan: 5 of 5
-Status: All plans executed — review and verification pending
-Last activity: 2026-11-06 — Plan 05 complete; full Django 5.2 passed 10356 tests with one existing skip
+Status: All plans executed — human_needed (29/31)
+Last activity: 2026-11-06 — Independent verification 29/31; full Django 5.2 10413 passed/one existing skip
 
-Next: Phase 06.13.1 review and verification
+Next: $gsd-verify-work 06.13.1
+
+### Phase 06.13.1 independent verification — 2026-11-06
+
+- All five plans committed. Canonical verification is human_needed, 29/31 truths verified, all 17 decisions honored, no implementation blocker. Two explicit plan/UI acceptance items are persisted in 06.13.1-UAT.md: representative narrow/wide page/modal visuals and native Tab/visible-focus/disabled-action behavior. No human approval inferred.
+- Deep review is clean after three reproduced fixes: current-source FSM metadata, public-helper refusal isolation, and cooperative Guardian scoped reload. Security closes all 15 threats after literal SafeData POST-error repair and final independent recheck. Validation is compliant; UI audit 21/24 documents evidence limitations.
+- Final full Django 5.2: 10,413 passed/one existing CSP skip; focused Django 4.2/6.0: 1,463 each; browser 37+2 with 498 current hashes and separately bound Guardian source. Independent reviewer 56, security 26, verifier 103 Python/65 Node checks pass. Earlier smaller counts below are historical.
+- Required regression gate is covered by the final full suite run after all product repairs; no source change followed it. JS 365, strict docs and scoped Ruff remain green. Existing user config/CLAUDE and state.json diffs preserved. No push, merge, publication or phase advance.
 
 ### Phase 06.13.1 plan 05 — 2026-11-06
 

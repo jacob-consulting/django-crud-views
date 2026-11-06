@@ -51,6 +51,7 @@ a UUID `id` and editable `first_name`, `last_name`, and `pseudonym` fields.
 ```python
 import django_tables2 as tables
 from crispy_forms.layout import Layout
+from django.utils.translation import gettext_noop
 
 from crud_views.lib.breadcrumb import CrudViewBreadcrumbMixin
 from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin
@@ -67,6 +68,10 @@ from crud_views.lib.views import (
 from crud_views.lib.viewset import ViewSet
 
 from .models import Author
+
+# makemessages does not scan inline Python strings as templates.
+gettext_noop("Cards")
+gettext_noop("Table")
 
 cv_author_cards_first = ViewSet(model=Author, name="authors_cards_first")
 
@@ -149,6 +154,7 @@ captions and the existing `list`/`card` [semantic icons](icons.md). The file-tem
 `None` in this example; valid file templates can coexist with template code, which takes precedence.
 `cv_context_action_label_mode = "both"` makes these destinations show text and icons in toolbars, subject to
 the existing [label-mode precedence](action_menus.md#context-label-mode-resolution).
+The `gettext_noop` markers expose both captions to `makemessages`; translate them in your application's own catalogs.
 
 The explicit form `cv_cancel_keys` allow returning to the custom `table` origin; automatic defaults accept
 the conventional `list`/`card` origins (and `detail` for object forms), not `table`. The update allow-list

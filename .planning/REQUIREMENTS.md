@@ -244,8 +244,8 @@ no predicates. The plans preserve the context's exact-type, validation and defer
 
 - [x] **POLY-01**: Capitalize default selector labels with capfirst while preserving remaining case/translation, IDs/order/filtering, custom forms, permissions and redirect/cancel behavior without added label queries (D-01–D-02).
 - [x] **POLY-02**: Accept existing group lists and exact-model mappings through one parser/resolver; preserve raw/typed/mixed lists and dynamic overrides, raise clear actual-model/view errors for absent entries, and keep selections request-local (D-03–D-07).
-- [ ] **POLY-03**: Check every declared mapping key/value with model/location-aware structural/icon diagnostics, preserve existing and inherited checks, and avoid object queries, runtime hook evaluation and optional polymorphic imports for ordinary models; document structural limits (D-08–D-12).
-- [ ] **POLY-04**: Publish complete generic list/mapping and supported-composition recipes, exact-type/errors/check limits/dynamic escape-hatch guidance, and release notes with paired migration guidance if classified Breaking; keep changes bounded (D-17–D-18).
+- [x] **POLY-03**: Check every declared mapping key/value with model/location-aware structural/icon diagnostics, preserve existing and inherited checks, and avoid object queries, runtime hook evaluation and optional polymorphic imports for ordinary models; document structural limits (D-08–D-12).
+- [x] **POLY-04**: Publish complete generic list/mapping and supported-composition recipes, exact-type/errors/check limits/dynamic escape-hatch guidance, and release notes with paired migration guidance if classified Breaking; keep changes bounded (D-17–D-18).
 - [ ] **POLY-05**: Deliver required downstream workaround removal with retained form/layout/groups, all catalog types and permission regressions, verified changed-checkout imports, passing catalog and warning-level checks, scoped findings 10–11 resolution and attributable two-repository evidence (D-13–D-16, D-19).
 
 ### Stability policy (plan 4)
@@ -300,8 +300,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | POLY-01 | Phase 06.15 (plan 02) | Complete |
 | POLY-02 | Phase 06.15 (plan 01) | Complete |
-| POLY-03 | Phase 06.15 (plan 01) | Pending |
-| POLY-04 | Phase 06.15 (plan 03) | Pending |
+| POLY-03 | Phase 06.15 (plan 01) | Complete |
+| POLY-04 | Phase 06.15 (plan 03) | Complete |
 | POLY-05 | Phase 06.15 (plans 03–04) | Pending |
 | WFX-01 | Phase 06.13.1 | Pending |
 | WFX-02 | Phase 06.13.1 | Pending |

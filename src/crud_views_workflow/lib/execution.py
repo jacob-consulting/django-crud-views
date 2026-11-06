@@ -1,7 +1,7 @@
 """Shared workflow validation and transactional execution."""
 
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation, ValidationError
-from django.db import connections, transaction
+from django.db import connections, router, transaction
 from django.utils.translation import gettext_lazy as _
 
 from .enums import WorkflowComment
@@ -35,6 +35,17 @@ def _check_transition_comment(policy, comment):
     return comment
 
 
+def run_transition(object, name, *, user, comment=None):
+    """Execute an available transition and return its saved WorkflowInfo.
+
+    The object and authenticated actor must already be saved on the selected
+    write database. Direct decorated-method calls do not use these checks.
+    """
+    return _run_transition(
+        object, name, user=user, comment=comment, using=router.db_for_write(type(object), instance=object)
+    )
+
+
 def _run_transition(object, name, *, user, comment=None, using, on_transition=None):
     # Keep model imports lazy so the public helper can be imported during app setup.
     from django.contrib.contenttypes.models import ContentType
@@ -43,6 +54,8 @@ def _run_transition(object, name, *, user, comment=None, using, on_transition=No
 
     if not isinstance(using, str) or not using or using not in connections:
         raise ImproperlyConfigured("Workflow execution requires a configured database alias")
+    if not getattr(user, "is_authenticated", False):
+        raise ImproperlyConfigured("Workflow user must be authenticated and saved on the selected database")
     for label, instance in (("object", object), ("user", user)):
         state = getattr(instance, "_state", None)
         if state is None or state.adding or instance.pk is None or state.db != using:

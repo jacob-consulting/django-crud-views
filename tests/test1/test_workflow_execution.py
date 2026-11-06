@@ -145,8 +145,15 @@ class TestWorkflowHelper:
         )
         assert response.status_code == 302
         view_info = WorkflowInfo.objects.get(workflow_object_pk=str(other.pk))
-        for attr in ("transition", "user_id", "state_old", "state_new", "comment", "data",
-                     "workflow_object_content_type_id"):
+        for attr in (
+            "transition",
+            "user_id",
+            "state_old",
+            "state_new",
+            "comment",
+            "data",
+            "workflow_object_content_type_id",
+        ):
             assert getattr(info, attr) == getattr(view_info, attr)
 
     @pytest.mark.parametrize("name", [None, "", "unknown", "save", "__class__", "wf_done"])
@@ -188,7 +195,7 @@ class TestWorkflowHelper:
 
         monkeypatch.setattr(Campaign, "workflow_check_transition", forbidden)
         monkeypatch.setattr(Campaign, "wf_activate", forbidden)
-        with pytest.raises(ImproperlyConfigured, match="authenticated.*saved|saved.*authenticated"):
+        with pytest.raises(ImproperlyConfigured, match=r"authenticated.*saved|saved.*authenticated"):
             run_transition(campaign_new, "wf_activate", user=AnonymousUser())
         assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
         assert not WorkflowInfo.objects.exists()

@@ -102,6 +102,11 @@ def test_badge_semantics_preserves_positional_constructor():
     assert prop.badge_pill is False
 
 
+def test_badge_semantics_raw_none_guard_precedes_display_value():
+    prop = ResolvedProperty("test", "Test", None, badge_css="text-bg-info", choice_label="Display label")
+    assert render(prop).strip() == '<span class="text-body-tertiary">&mdash;</span>'
+
+
 @pytest.mark.parametrize("label", [None, "", '<img src=x onerror="label">'])
 def test_badge_semantics_stock_escapes_color_label_and_value(label):
     value = '<script>alert("value")</script>'

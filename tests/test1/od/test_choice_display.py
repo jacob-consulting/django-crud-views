@@ -1,4 +1,5 @@
 from copy import deepcopy
+from datetime import date
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -8,10 +9,15 @@ from django.db import models
 from django.template import Context, Template
 from django.test import override_settings
 from django.test.utils import isolate_apps
+from django.utils.formats import date_format
+from django.utils.translation import gettext_lazy, override
 from lxml import html as html_parser
 
-from crud_views_object_detail.lib.config import parse_property_display, x
+from crud_views_object_detail.lib import resolvers
+from crud_views_object_detail.lib.conf import CrudViewsObjectDetailSettings
+from crud_views_object_detail.lib.config import BadgeConfig, parse_property_display, x
 from crud_views_object_detail.lib.resolvers import ResolvedProperty, _resolve_value, resolve_all, resolve_property
+from crud_views_object_detail.templatetags import crud_views_object_detail as tags
 from tests.test1.od_app.models import ChoiceContainer, ChoiceValue
 
 
@@ -266,3 +272,179 @@ def test_choice_display_campaign_request(campaign_new, client_user_campaign_view
     document = html_parser.fromstring(response.content)
     row = document.xpath("//*[normalize-space(text())='State']/parent::*")
     assert any("State" in r.text_content() and "New" in r.text_content() for r in row)
+
+
+@pytest.mark.parametrize(
+    "mapped,expected", [(None, "Naturally processed"), ("", "Naturally processed"), ("Explicit", "Explicit")]
+)
+def test_choice_display_badge_raw_inputs_and_label_fallback(mapped, expected, monkeypatch):
+    callback = Mock(return_value="success")
+    link = Mock(wraps=resolvers._resolve_link_url)
+    monkeypatch.setattr(resolvers, "_resolve_link_url", link)
+    config = x("process", badge=BadgeConfig(color_fn=callback, label_map={"natural": mapped}), link="info-detail")
+    prop = resolve_property(ChoiceValue(), config)
+    node = html_parser.fromstring(render_value(prop))
+    assert node.tag == "span"
+    assert node.get("class") == "badge text-bg-success"
+    assert node.text == expected
+    assert prop.value == "natural"
+    callback.assert_called_once_with("natural")
+    link.assert_called_once_with("natural", config.link, False)
+
+
+@pytest.mark.parametrize("enabled", [True, False])
+def test_choice_display_badge_precedes_explicit_template(enabled):
+    obj = ChoiceValue()
+    prop = resolve_property(
+        obj,
+        x(
+            "process",
+            choices_display=enabled,
+            template="explicit.html",
+            badge=BadgeConfig(color_map={"natural": "info"}, label_map={"natural": "Explicit"}),
+        ),
+    )
+    with override_settings(TEMPLATES=template_settings({"explicit.html": "CUSTOM {{ value }}|{{ display_value }}"})):
+        assert html_parser.fromstring(render_value(prop)).text == "Explicit"
+        assert prop.badge_css == "text-bg-info"
+        unresolved = resolve_property(
+            obj,
+            x(
+                "process",
+                choices_display=enabled,
+                template="explicit.html",
+                badge=BadgeConfig(color_map={"other": "info"}, label_map={"natural": "Unused"}),
+            ),
+        )
+        assert render_value(unresolved) == "CUSTOM natural|" + ("Naturally processed" if enabled else "natural")
+    unresolved.template = None
+    assert render_value(unresolved).strip() == ("Naturally processed" if enabled else "natural")
+
+
+@pytest.mark.parametrize(
+    "field,value,expected", [("rank", 1, "First"), ("rank", 10000, "10000"), ("flag", False, "Disabled")]
+)
+@pytest.mark.parametrize("explicit_type", [None, "boolean", "float"])
+def test_choice_display_uses_text_despite_inferred_or_explicit_type(field, value, expected, explicit_type):
+    prop = resolve_property(ChoiceValue(**{field: value}), x(field, type=explicit_type))
+    assert prop.value == value
+    assert render_value(prop).strip() == expected
+    assert "<i" not in render_value(prop)
+
+
+@isolate_apps()
+def test_choice_display_ordinary_boolean_and_date_keep_formatting():
+    class Ordinary(models.Model):
+        active = models.BooleanField(default=False)
+        day = models.DateField()
+
+        class Meta:
+            app_label = "od_app"
+
+    obj = Ordinary(active=True, day=date(2026, 11, 6))
+    boolean = resolve_property(obj, x("active"))
+    day = resolve_property(obj, x("day"))
+    assert boolean.choice_label is day.choice_label is None
+    assert boolean.value is True
+    assert 'class="' in render_value(boolean) and "text-success" in render_value(boolean)
+    assert day.value == date(2026, 11, 6)
+    assert render_value(day).strip() == date_format(obj.day, "DATE_FORMAT")
+
+
+@pytest.mark.parametrize("declared", [True, False])
+@isolate_apps()
+def test_choice_display_nullable_choice(declared):
+    class Nullable(models.Model):
+        code = models.CharField(
+            max_length=10, null=True, choices=[("a", "Alpha")] + ([(None, "Not assigned")] if declared else [])
+        )
+
+        class Meta:
+            app_label = "od_app"
+
+    prop = resolve_property(Nullable(code=None), x("code"))
+    assert prop.value is None
+    assert prop.choice_label == ("Not assigned" if declared else None)
+    if declared:
+        assert render_value(prop).strip() == "Not assigned"
+    else:
+        assert render_value(prop).strip() == '<span class="text-body-tertiary">&mdash;</span>'
+
+
+@pytest.mark.parametrize("leaf", ["char", "default", None])
+def test_choice_display_custom_pack_fallback_context(leaf, monkeypatch):
+    templates = (
+        {}
+        if leaf is None
+        else {
+            f"crud_views_object_detail/types/choice-test/{leaf}.html": (
+                "{{ value }}|{{ display_value }}|{{ prop.choice_label }}"
+            )
+        }
+    )
+    with override_settings(
+        CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_TYPES="choice-test", TEMPLATES=template_settings(templates)
+    ):
+        monkeypatch.setattr(tags, "crud_views_object_detail_settings", CrudViewsObjectDetailSettings())
+        prop = resolve_property(ChoiceValue(rank=1), x("rank"))
+        assert render_value(prop).strip() == ("First" if leaf is None else "1|First|First")
+
+
+@pytest.mark.parametrize("badge", [False, True])
+@isolate_apps()
+def test_choice_display_escapes_hostile_labels(badge):
+    label = '<img src=x onerror="bad()"> & café'
+
+    class Hostile(models.Model):
+        code = models.CharField(max_length=10, choices=[("raw", label)])
+
+        class Meta:
+            app_label = "od_app"
+
+    prop = resolve_property(Hostile(code="raw"), x("code", badge="info" if badge else None))
+    rendered = render_value(prop)
+    assert "<img" not in rendered
+    assert "&lt;img" in rendered
+    assert "&amp; café" in rendered
+    if badge:
+        assert html_parser.fromstring(rendered).text == label
+
+
+@isolate_apps()
+def test_choice_display_lazy_translation_at_resolution():
+    class Translated(models.Model):
+        code = models.CharField(max_length=10, choices=[("yes", gettext_lazy("Yes"))])
+
+        class Meta:
+            app_label = "od_app"
+
+    obj = Translated(code="yes")
+    for language, expected in [("en", "Yes"), ("de", "Ja")]:
+        with override(language):
+            prop = resolve_property(obj, x("code"))
+            assert prop.value == "yes"
+            assert prop.choice_label == expected
+            assert render_value(prop).strip() == expected
+
+
+@pytest.mark.parametrize("enabled", [True, False])
+def test_choice_display_empty_badge_and_missing_label_key(enabled):
+    prop = resolve_property(ChoiceValue(process=""), x("process", choices_display=enabled, badge="info"))
+    assert prop.value == ""
+    assert render_value(prop).strip() == (
+        '<span class="badge text-bg-info">' + ("Blank declared" if enabled else "") + "</span>"
+    )
+    missing_key = resolve_property(
+        ChoiceValue(), x("process", badge=BadgeConfig(color="info", label_map={"other": "Unused"}))
+    )
+    assert missing_key.badge_label is None
+    assert html_parser.fromstring(render_value(missing_key)).text == "Naturally processed"
+
+
+def test_choice_display_custom_badge_context_keeps_raw_value():
+    prop = resolve_property(ChoiceValue(), x("process", badge="info"))
+    templates = {
+        "crud_views_object_detail/types/default/badge.html": "{{ value }}|{{ display_value }}|{{ prop.choice_label }}"
+    }
+    with override_settings(TEMPLATES=template_settings(templates)):
+        assert render_value(prop) == "natural|Naturally processed|Naturally processed"

@@ -69,7 +69,9 @@ def test_choice_display_tracer():
 @pytest.mark.parametrize("field", ["process", "rank", "flag"])
 @pytest.mark.parametrize("path_kind", ["nullable", "first_reverse", "deep_reverse"])
 @pytest.mark.django_db
-def test_choice_display_missing_owner(enabled, field, path_kind):
+def test_choice_display_missing_owner(enabled, field, path_kind, monkeypatch):
+    display = Mock(side_effect=AssertionError("missing owner must not call display"))
+    monkeypatch.setattr(ChoiceValue, f"get_{field}_display", display)
     if path_kind == "nullable":
         obj, path, raw = ChoiceContainer(foreign=None), f"foreign__{field}", None
     elif path_kind == "first_reverse":
@@ -84,6 +86,7 @@ def test_choice_display_missing_owner(enabled, field, path_kind):
     direct = _resolve_value(obj, path.split("__"), False)
     if path_kind == "deep_reverse":
         assert direct == []
+    display.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -219,6 +222,38 @@ def test_choice_display_missing_first_relation_keeps_view_fallback():
     assert prop.choice_label is None
     assert render_value(prop).strip() == "application fallback"
     callback.assert_called_once_with(obj)
+
+
+@pytest.mark.django_db
+def test_choice_display_present_reverse_owner_and_dictionary_opt_out(django_assert_num_queries):
+    previous = ChoiceValue.objects.create()
+    successor = ChoiceValue.objects.create(previous=previous, process="washed")
+    loaded = ChoiceValue.objects.select_related("successor").get(pk=previous.pk)
+    with django_assert_num_queries(0):
+        groups = resolve_all(
+            loaded,
+            parse_property_display(
+                [
+                    {
+                        "title": "Choices",
+                        "properties": [
+                            "successor__process",
+                            {
+                                "path": "successor__process",
+                                "title": "Code",
+                                "choices_display": False,
+                            },
+                        ],
+                    }
+                ]
+            ),
+        )
+    human, raw = groups[0].properties
+    assert human.value == raw.value == successor.process
+    assert human.choice_label == "Gewaschen — 水"
+    assert raw.choice_label is None
+    assert raw.label == "Code"
+    assert render_value(raw).strip() == "washed"
 
 
 @pytest.mark.django_db

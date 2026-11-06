@@ -197,19 +197,24 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
     # Resolve the runtime value
     value, owner = _resolve_value_and_owner(instance, segments, is_many)
 
+    used_view_fallback = False
     if value is _MISSING:
         view_method = getattr(view, config.path, None) if view is not None else None
-        value = view_method(instance) if callable(view_method) else None
+        used_view_fallback = callable(view_method)
+        value = view_method(instance) if used_view_fallback else None
 
     choice_label = None
     if (
-        config.choices_display
-        and not is_many
+        not is_many
+        and not used_view_fallback
         and not getattr(terminal_field, "is_relation", False)
         and getattr(terminal_field, "choices", None)
-        and owner is not None
     ):
-        choice_label = getattr(owner, f"get_{terminal_field.name}_display")()
+        if owner is None:
+            # Missing scalar relations stay empty even when their raw walk returns [].
+            choice_label = ""
+        elif config.choices_display:
+            choice_label = getattr(owner, f"get_{terminal_field.name}_display")()
 
     # Resolve link URL
     link_url = _resolve_link_url(value, config.link, is_many)

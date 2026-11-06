@@ -189,16 +189,32 @@ you need; the card's actions (inline buttons and overflow menu) keep rendering w
 {% endblock card_content %}
 ```
 
-| Block | Default | Contains |
+| Block | Default | Location and purpose |
 |---|---|---|
+| `card_root` | empty | first child of the card root, before the card body; for a status stripe or other root content |
+| `card_header` | empty | inside the card body, before and outside the heading; for badges or introductory content |
 | `card_title` | `{{ object }}` | the text of the `<h5>` heading |
 | `card_content` | empty | anything between the heading and the actions, inside the card body |
 | `card_actions` | the menu's hidden action forms and the actions container | override only to move or drop the actions |
 
+For an Author with a `pseudonym` field, this template fills both insertion points while inheriting the title and
+actions. Save it as the template named by your view's `cv_card_template`. Model values use Django's normal HTML
+escaping; leaving either new block unused adds no output.
+
+<!-- card-recipe: insertion-blocks -->
+```html
+{% extends "crud_views/tags/card.html" %}
+
+{% block card_root %}<div class="author-card-status">{{ object.pseudonym }}</div>{% endblock card_root %}
+{% block card_header %}<p class="author-card-intro">{{ object.pseudonym }}</p>{% endblock card_header %}
+```
+
 The card's own classes are keys in the [button class table](buttons.md): `card:root` (`card mb-3`), `card:body`
 (`card-body`) and `card:title` (`card-title`); the actions container is `card:container`. A theme that puts the actions
-in a footer overrides `crud_views/tags/card.html` with its own structure and keeps the three block names, so a
-project template that extends `crud_views/tags/card.html` works unchanged under that theme.
+in a footer overrides `crud_views/tags/card.html` with its own structure and keeps all five block names:
+`card_root`, `card_header`, `card_title`, `card_content`, and `card_actions`. Replacement templates must explicitly
+expose the two new blocks at the locations above so inherited project templates can use them. Upstream template
+changes cannot update a theme's shadowing copy automatically; the theme owns that adaptation and its action plumbing.
 
 ## Filter Integration
 

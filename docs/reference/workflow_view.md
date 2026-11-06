@@ -411,16 +411,23 @@ class Order(WorkflowModelMixin, models.Model):
                 raise ValidationError(messages)
 
     @transition(
-        field=state, source=OrderState.NEW, target=OrderState.CONFIRMED,
+        field=state,
+        source=OrderState.NEW,
+        target=OrderState.CONFIRMED,
         permission="orders.change_order",
-        custom={"label": _("Confirm"), "comment": WorkflowComment.OPTIONAL,
-                "help_text": _("Confirm after checking the order details.")},
+        custom={
+            "label": _("Confirm"),
+            "comment": WorkflowComment.OPTIONAL,
+            "help_text": _("Confirm after checking the order details."),
+        },
     )
     def wf_confirm(self, by=None, comment=None):
         return {"line_count": self.line_count}
 
     @transition(
-        field=state, source=OrderState.NEW, target=OrderState.CANCELED,
+        field=state,
+        source=OrderState.NEW,
+        target=OrderState.CANCELED,
         permission="orders.change_order",
         custom={"label": _("Cancel order"), "comment": WorkflowComment.REQUIRED},
     )
@@ -462,6 +469,7 @@ class OrderWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionReq
     cv_viewset = cv_order
     form_class = OrderWorkflowForm
     cv_transition_presentation = "buttons"
+
 
 # orders/urls.py: from .views import cv_order
 # urlpatterns = cv_order.urlpatterns

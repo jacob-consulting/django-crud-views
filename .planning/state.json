@@ -94,15 +94,20 @@
       "status": "complete"
     },
     {
+      "number": "6.13.1",
+      "name": "Workflow validation and execution",
+      "status": "planned"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-discuss-phase 7",
-    "label": "Discuss Phase 7 theme-surface stability policy",
-    "reason": "Phase 06.13 verified and complete; Phase 7 needs context and a plan"
+    "command": "$gsd-execute-phase 06.13.1",
+    "label": "Execute Phase 06.13.1 workflow validation and execution",
+    "reason": "Five plans converged in five review cycles; no unresolved review concerns or revision conflicts"
   },
-  "updated_at": "2026-11-05T22:59:54.128Z"
+  "updated_at": "2026-11-06T09:44:55.505Z"
 }

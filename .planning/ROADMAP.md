@@ -1087,7 +1087,7 @@ recipes in both `CHANGELOG.md` and `docs/migrating-1.0.md`.
 **Planning handoff:** The maintainer agreed the issue's scope on 2026-11-06. Carry these decisions into CONTEXT.md
 without restarting discovery or creating another specification. Ask only if new code evidence reveals a material
 conflict, naming the affected decision. Internal mechanics and focused test organization are delegated.
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans executed
 
 Plans:
 **Wave 1**
@@ -1097,7 +1097,7 @@ Plans:
 - [x] 06.16-02-PLAN.md — Shared help-text policy and exact stock empty-text behavior
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.16-03-PLAN.md — Executable public contracts, composition, migration and final gates
+- [x] 06.16-03-PLAN.md — Executable public contracts, composition, migration and final gates
 
 ### Phase 7: Theme-surface stability policy
 

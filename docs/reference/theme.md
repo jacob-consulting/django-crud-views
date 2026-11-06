@@ -339,6 +339,61 @@ message, without a heading, form, CSRF input or controls. The workflow form keep
 target. History stays before and outside the action frame; only its table is wrapped for local scrolling.
 An empty history omits the whole history section. Wrapper and table classes are independent registry keys.
 
+### Workflow transition widget
+
+`cv_transition_presentation="buttons"` opts a WorkflowView into the public template override
+`crud_views_workflow/widgets/transitions.html`. Its **`actions`** block encloses the ordered action loop.
+The widget renders inside the existing shared page/modal form: it must not add a form, CSRF token, hidden/radio
+transition input or generic submit. The page/helper keeps ownership; the no-choice page and generic modal branches
+remain as documented above. The default radio presentation and its submit customization remain available.
+
+| Context | Contract |
+| --- | --- |
+| `widget.name` | Actual submitted field name, including a form prefix |
+| `widget.attrs` | Group ID, classes, invalid marker and composed description references; preserve these attributes |
+| `widget.label` | Escaped final configured label; render normally as the group's `aria-label`, without a second force-escape |
+| `widget.help_text`, `widget.help_id` | Optional raw general guidance and unique description ID; render once before actions, with literal escaping |
+| `widget.comment_required` | Whether any offered action requires a comment; controls the one translated legend |
+| `widget.actions` | Ordered offered actions, excluding state/condition/permission-unavailable actions |
+| `action.name`, `action.id` | Exact submitted transition method and unique control ID |
+| `action.label` | Full literal caption; force-escape, never interpret as HTML/templates |
+| `action.help_text`, `action.help_id` | Optional literal guidance and unique target ID |
+| `action.blockers`, `action.blockers_id` | Every ordered literal business message and its unique list ID |
+| `action.comment_required` | Requires a comment when this action is submitted, independent of preview availability |
+| `action.describedby` | Preserved external IDs plus general guidance, field errors and this action's help/blockers |
+
+Keep native `button type="submit"`, `name=widget.name`, `value=action.name` and disable for blockers or a disabled
+widget. Empty required comments do not disable actions. Preserve `role="group"`, its configured translated escaped
+`aria-label`, and the visible crispy field label **without an activating `for`**. A group label must never focus or
+activate a submit button. Preserve `is-invalid` without adding text-input `form-control`/`form-select` styling.
+
+The field-label asterisk means an action must be selected. Only a REQUIRED action has its own visible asterisk
+(hidden from assistive technology), the translated accessible **Comment required** suffix, and the conditional
+**\* Comment required** legend. OPTIONAL/NONE actions can accept empty comments while the transition field stays
+required. Absent help renders nothing; nonempty help and blockers are literal escaped text, not tooltips or HTML.
+
+Buttons use existing `form:submit` label classes, `form:hidden-label` for the accessible suffix and `form:cancel`
+for navigation Cancel. Preserve full visible/accessibility captions and local wrapping, with ordinary page/modal
+scrolling. The stock layout wraps transition/comment columns in button mode; custom layouts own equivalent wrapping.
+All offered policies NONE removes the visible comment wrapper/label/help in both presentations; a hidden comment
+input may remain. Button-mode controls/descriptions and Cancel use an instance namespace even with unprefixed forms.
+Preserve generated IDs and reference crispy's explicit error paragraphs, not version-specific wrapper IDs. Django
+4.2/crispy-bootstrap5 2026.3 can emit duplicate unreferenced `_error` wrappers; owned IDs and every full-document
+description target must still be unique. This is not permission to duplicate control/error paragraph IDs.
+
+Custom `get_layout_fields()` implementations can keep extra fields alongside `"transition"` and `"comment"`; see the
+[workflow custom-form recipe](workflow_view.md#custom-forms-and-native-keyboard-behavior). Radio mode retains
+`get_submit_button()` customization. Replacing `get_form_actions()` or the whole helper means adopting the no-generic-submit
+contract and eligible Cancel yourself. Previously cached/rendered HTML bypasses normal refresh; arbitrary rewritten
+markup is not automatically repaired. Python `_TransitionButtons`, private execution/refusal helpers and `_workflow_*`
+members are implementation details, not public extension APIs. The template path, `actions` block and context above
+are the new public theme surface for the stability freeze; no icon/variant metadata or new class registry key is added.
+
+Native Enter in a single-line input can activate the **first submit control in tree order when enabled**, sending its
+valid transition name. Browsers do not skip a disabled first submit to find another enabled action. Enter in the stock
+comment Textarea inserts a newline. Keep these native semantics: no hidden sentinel/default transition or workflow
+JavaScript. Missing/invalid-name rejection still applies, but cannot distinguish valid implicit activation from a click.
+
 ### Optional workflow classes
 
 In a theme's `AppConfig.ready`, check app availability after discovery. Keep ordinary theme registrations in

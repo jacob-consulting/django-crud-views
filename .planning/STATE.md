@@ -1,16 +1,16 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 06.13.1
-current_phase_name: Workflow validation and execution
-status: Phase 06.13.1 planned — cross-AI convergence pending
-stopped_at: Phase 06.13.1 context gathered
-last_updated: "2026-11-06T07:18:15.375Z"
+current_phase: "06.14"
+current_phase_name: Card template insertion blocks and cards-first ViewSets
+status: Phase 06.14 context gathered — ready for planning
+stopped_at: Phase 06.14 context gathered
+last_updated: "2026-11-06T08:55:23.481Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.13.1 planning complete
-state_head: c35298a604aeb8a7034864f6276d9b3d982733cc
+last_activity_desc: "Phase 06.14 context captured from refreshed issue #325"
+state_head: 102627a7c2577dbe904ee6e72c54faf20cff1f22
 progress:
-  total_phases: 19
+  total_phases: 20
   completed_phases: 17
   total_plans: 125
   completed_plans: 120
@@ -24,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.13.1 — Workflow validation and execution (#322)
+**Current focus:** Phase 06.14 — Card template insertion blocks and cards-first ViewSets (#325)
 
 ## Current Position
 
-Phase: 06.13.1 (Workflow validation and execution) — READY TO EXECUTE
+Phase: 06.14 (Card template insertion blocks and cards-first ViewSets) — READY TO PLAN
 Plan: Not started
-Status: Phase 06.13.1 planned — cross-AI convergence pending
-Last activity: 2026-11-06 — Phase 06.13.1 planning complete
+Status: Phase 06.14 context gathered — ready for planning
+Last activity: 2026-11-06 — Phase 06.14 context captured from refreshed issue #325
 
-Next: $gsd-plan-phase 06.13.1
+Next: $gsd-plan-phase 06.14
 
 ### Phase 06.13 shipping — 2026-11-06
 
@@ -840,6 +840,7 @@ None yet.
 - Phase 06.10 inserted after Phase 6.9: Issue #316: simplify protected-object previews and cap total displayed objects before Phase 7; no dependency on #312, #314 or the retired URL resolver (URGENT)
 - Phase 06.13 inserted after Phase 06.12: Issue #320: document and test opt-in per-transition workflow access; preserve the default change gate. Phase 06.12 is reserved on disk; this phase is independently deliverable. (URGENT)
 - Phase 06.13.1 inserted after Phase 06.13: Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322) (URGENT)
+- Phase 06.14 inserted after Phase 6: Issue #325: add empty card_root/card_header blocks and document/test cards-first ViewSets with a secondary table; preserve existing rendering, actions, permissions and navigation. Settle these contracts before Phase 7; downstream theme implementation is separate. (URGENT)
 
 ## Deferred Items
 
@@ -849,6 +850,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T06:35:58.666Z
-Stopped at: Phase 06.13.1 context gathered
-Resume file: .planning/phases/06.13.1-workflow-validation-and-execution-business-blockers-transiti/06.13.1-CONTEXT.md
+Last session: 2026-11-06T08:55:21.358Z
+Stopped at: Phase 06.14 context gathered
+Resume file: .planning/phases/06.14-card-template-insertion-blocks-and-cards-first-viewsets-325/06.14-CONTEXT.md

@@ -84,14 +84,14 @@
       "status": "complete"
     },
     {
-      "number": "6.12",
-      "name": "Workflow presentation",
-      "status": "complete"
-    },
-    {
       "number": "6.13",
       "name": "Workflow permissions: opt-in per-transition access",
       "status": "complete"
+    },
+    {
+      "number": "6.13.1",
+      "name": "Workflow validation and execution",
+      "status": "pending"
     },
     {
       "number": "7",
@@ -100,9 +100,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-discuss-phase 7",
-    "label": "Discuss Phase 7 theme-surface stability policy",
-    "reason": "Phase 06.13 verified and complete; Phase 7 needs context and a plan"
+    "command": "$gsd-progress --next",
+    "label": "Advance to the next step (plan phase 06.13.1)",
+    "reason": "Phase 27 of 29 — needs a plan"
   },
-  "updated_at": "2026-11-05T22:59:54.128Z"
+  "updated_at": "2026-11-06T08:42:53.307Z"
 }

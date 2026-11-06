@@ -6,6 +6,7 @@ from importlib.metadata import version
 import django
 import pytest
 from django import forms
+from django.contrib.messages import get_messages
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.template import Context, Template
 from django.utils.safestring import mark_safe
@@ -77,6 +78,37 @@ class CachedFieldsForm(CampaignWorkflowForm):
 
     def get_layout_fields(self):
         return ["transition", "comment", "extra"]
+
+
+class CustomWorkflowForm(CampaignWorkflowForm):
+    """Existing constructor contract, a required single-line field and custom layout."""
+
+    extra = forms.CharField()
+    submit_label = "Custom process"
+
+    def __init__(self, data=None, files=None, *, initial, prefix, cv_view, choices, transition_comments):
+        super().__init__(
+            data=data,
+            files=files,
+            initial=initial,
+            prefix=prefix,
+            cv_view=cv_view,
+            choices=choices,
+            transition_comments=transition_comments,
+        )
+        self.clean_calls = 0
+        self.constructor_ids = {name: self[name].auto_id for name in self.fields}
+        self.cached_transition = list(self["transition"].subwidgets)
+
+    def clean(self):
+        self.clean_calls += 1
+        cleaned = super().clean()
+        assert isinstance(cleaned, dict)
+        cleaned["custom_clean"] = "preserved"
+        return cleaned
+
+    def get_layout_fields(self):
+        return ["extra", "transition", "comment"]
 
 
 class TestTransitionButtons:
@@ -375,3 +407,155 @@ class TestWorkflowDescriptions:
         assert bool(document.cssselect("form.cv-form")) is modal
         if not modal:
             assert "There are no workflow steps available" in document.text_content()
+
+
+class TestWorkflowCustomForms:
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("presentation", ["radio", "buttons"])
+    @pytest.mark.parametrize("name", ["wf_activate", None, "forged"])
+    def test_custom_named_payload(
+        self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation, name
+    ):
+        monkeypatch.setattr(CampaignWorkflowView, "form_class", CustomWorkflowForm)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        monkeypatch.setattr(CampaignWorkflowView, "prefix", "custom")
+        url = f"/campaign/{campaign_new.pk}/workflow/"
+        response = client_user_campaign_change.get(url, headers=_headers(modal))
+        form = response.context["form"]
+        document = _document(response)
+        extra = document.cssselect('input[type="text"][name="custom-extra"]')
+        assert len(extra) == 1
+        assert form.constructor_ids == {field: form[field].auto_id for field in form.fields}
+        if presentation == "buttons":
+            buttons = document.cssselect('button[name="custom-transition"]')
+            assert [b.get("value") for b in buttons] == ["wf_activate", "wf_cancel_new"]
+            assert "disabled" not in buttons[0].attrib
+            assert not document.cssselect('button[name="submit"]')
+        else:
+            assert document.cssselect('button[name="submit"]')[0].text_content().strip() == "Custom process"
+        payload = {"custom-extra": "  supplied value  ", "custom-comment": ""}
+        if name is not None:
+            payload["custom-transition"] = name
+        result = client_user_campaign_change.post(url, payload, headers=_headers(modal))
+        if name == "wf_activate":
+            assert result.status_code == (204 if modal else 302)
+            assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.ACTIVE
+            assert WorkflowInfo.objects.get().transition == name
+        else:
+            assert result.status_code == (422 if modal else 200)
+            assert "transition" in result.context["form"].errors
+            assert result.context["form"].data["custom-extra"] == payload["custom-extra"]
+            assert not WorkflowInfo.objects.exists()
+
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("presentation", ["radio", "buttons"])
+    def test_ordinary_custom_errors(self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation):
+        monkeypatch.setattr(CampaignWorkflowView, "form_class", CustomWorkflowForm)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        raw = "  <b>untouched & input</b>  "
+        result = client_user_campaign_change.post(
+            f"/campaign/{campaign_new.pk}/workflow/",
+            {"transition": "wf_cancel_new", "comment": raw, "extra": "  "},
+            headers=_headers(modal),
+        )
+        assert result.status_code == (422 if modal else 200)
+        form = result.context["form"]
+        assert list(form.errors) == ["extra"]
+        assert form.clean_calls == 1
+        assert form.cleaned_data["custom_clean"] == "preserved"
+        document = _document(result)
+        assert document.cssselect('input[name="extra"]')[0].get("value") == "  "
+        assert document.cssselect('textarea[name="comment"]')[0].text_content().lstrip("\n") == raw
+        assert not document.cssselect("b")
+        assert not WorkflowInfo.objects.exists()
+
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("presentation", ["radio", "buttons"])
+    @pytest.mark.parametrize("kind", ["business", "comment", "changed_choices"])
+    def test_late_refusal_preserves_form(
+        self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation, kind
+    ):
+        monkeypatch.setattr(CampaignWorkflowView, "form_class", CustomWorkflowForm)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        monkeypatch.setattr(Campaign._meta.get_field("state"), "protected", True)
+        real_process = CampaignWorkflowView.cv_form_valid_process
+        seen = {}
+
+        def process(view, context):
+            seen.update(form=context["form"], object=view.object, ids=dict(context["form"].constructor_ids))
+            context["stale_history"] = "discard"
+            if kind == "comment":
+                step = next(t for t in view.object.get_all_state_transitions() if t.name == "wf_activate")
+                monkeypatch.setitem(step.custom, "comment", WorkflowComment.REQUIRED)
+            elif kind == "changed_choices":
+                # Simulate a separately committed change before entering the execution boundary.
+                Campaign.objects.filter(pk=view.object.pk).update(state=CampaignState.ACTIVE)
+            return real_process(view, context)
+
+        def check(obj, name, *, user):
+            if obj is seen.get("object") and kind != "comment":
+                obj.__dict__["state"] = CampaignState.CANCELED
+                Campaign.objects.filter(pk=obj.pk).update(name="rolled back")
+                raise ValidationError(["Late first reason", "Late second reason"])
+
+        def unexpected(*args, **kwargs):
+            pytest.fail("Refusal entered a success hook")
+
+        monkeypatch.setattr(CampaignWorkflowView, "cv_form_valid_process", process)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_form_valid_hook", unexpected)
+        monkeypatch.setattr(CampaignWorkflowView, "on_transition", unexpected)
+        monkeypatch.setattr(CampaignWorkflowView, "cv_on_commit", unexpected)
+        monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+        raw_comment = " \t " if kind == "comment" else "  <b>retained & comment</b>  "
+        raw_extra = "  <em>retained & custom input</em>  "
+        result = client_user_campaign_change.post(
+            f"/campaign/{campaign_new.pk}/workflow/",
+            {"transition": "wf_activate", "comment": raw_comment, "extra": raw_extra},
+            headers=_headers(modal),
+        )
+        assert result.status_code == (422 if modal else 200)
+        assert "Location" not in result and "X-CV-Redirect" not in result
+        assert not list(get_messages(result.wsgi_request))
+        form = result.context["form"]
+        assert form is seen["form"]
+        assert form.clean_calls == 1
+        assert form.constructor_ids == seen["ids"] == {name: form[name].auto_id for name in form.fields}
+        assert form.data["comment"] == raw_comment and form.data["extra"] == raw_extra
+        expected_field = "comment" if kind == "comment" else "transition"
+        expected_errors = (
+            ["Comment is required for this transition"]
+            if kind == "comment"
+            else ["Late first reason", "Late second reason"]
+        )
+        assert list(form.errors) == [expected_field]
+        assert list(form.errors[expected_field]) == expected_errors
+        assert "stale_history" not in result.context
+        obj = result.context["object"]
+        assert obj is not seen["object"]
+        assert obj.state == (CampaignState.ACTIVE if kind == "changed_choices" else CampaignState.NEW)
+        assert obj.name == campaign_new.name
+        assert Campaign.objects.get(pk=obj.pk).state == obj.state
+        assert list(obj.get_workflow_info_queryset()) == []
+        document = _document(result)
+        assert document.cssselect('input[name="extra"]')[0].get("value") == raw_extra
+        rendered_comment = document.cssselect('textarea[name="comment"]')[0].text_content().lstrip("\n")
+        if kind == "comment":
+            # Crispy's existing remove_spaces filter normalizes whitespace-only
+            # textarea content. Bound data and the native widget retain it exactly.
+            assert rendered_comment.strip() == ""
+            assert raw_comment in form["comment"].as_widget()
+        else:
+            assert rendered_comment == raw_comment
+        assert not document.cssselect("b, em")
+        if presentation == "buttons":
+            expected_names = [name for name, _ in obj.workflow_get_form_kwargs(result.wsgi_request.user)["choices"]]
+            assert [button.get("value") for button in _buttons(document)] == expected_names
+            if kind == "changed_choices":
+                assert "wf_activate" not in expected_names
+            if kind == "comment":
+                assert "Comment required" in _buttons(document)[0].text_content()
+            _assert_descriptions(document, [form])
+        assert not WorkflowInfo.objects.exists()

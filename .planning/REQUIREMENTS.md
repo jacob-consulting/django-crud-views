@@ -242,7 +242,7 @@ Source: Phase 06.15 CONTEXT.md D-01–D-19 and settled issue #326. These five bo
 at planning; the initial spec-less probe visibly skipped because phase_req_ids were null/TBD and generated
 no predicates. The plans preserve the context's exact-type, validation and deferred-scope boundaries.
 
-- [ ] **POLY-01**: Capitalize default selector labels with capfirst while preserving remaining case/translation, IDs/order/filtering, custom forms, permissions and redirect/cancel behavior without added label queries (D-01–D-02).
+- [x] **POLY-01**: Capitalize default selector labels with capfirst while preserving remaining case/translation, IDs/order/filtering, custom forms, permissions and redirect/cancel behavior without added label queries (D-01–D-02).
 - [x] **POLY-02**: Accept existing group lists and exact-model mappings through one parser/resolver; preserve raw/typed/mixed lists and dynamic overrides, raise clear actual-model/view errors for absent entries, and keep selections request-local (D-03–D-07).
 - [ ] **POLY-03**: Check every declared mapping key/value with model/location-aware structural/icon diagnostics, preserve existing and inherited checks, and avoid object queries, runtime hook evaluation and optional polymorphic imports for ordinary models; document structural limits (D-08–D-12).
 - [ ] **POLY-04**: Publish complete generic list/mapping and supported-composition recipes, exact-type/errors/check limits/dynamic escape-hatch guidance, and release notes with paired migration guidance if classified Breaking; keep changes bounded (D-17–D-18).
@@ -298,7 +298,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| POLY-01 | Phase 06.15 (plan 02) | Pending |
+| POLY-01 | Phase 06.15 (plan 02) | Complete |
 | POLY-02 | Phase 06.15 (plan 01) | Complete |
 | POLY-03 | Phase 06.15 (plan 01) | Pending |
 | POLY-04 | Phase 06.15 (plan 03) | Pending |

@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.15"
 current_phase_name: Polymorphic labels and per-model detail groups
 status: executing
-stopped_at: Completed 06.15-01-PLAN.md
-last_updated: "2026-11-06T11:06:19.079Z"
+stopped_at: Completed 06.15-02-PLAN.md
+last_updated: "2026-11-06T11:12:40.665Z"
 last_activity: 2026-11-06
 last_activity_desc: Phase 06.15 execution started
-state_head: 7ee0fc8f1d3fae0a33ac7c9338f62ef3514be237
+state_head: 2e8241ee5fc0cc005b818b3b24ed5c3dcd307408
 progress:
   total_phases: 21
   completed_phases: 18
   total_plans: 129
-  completed_plans: 121
+  completed_plans: 122
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-05)
 ## Current Position
 
 Phase: 06.15 (Polymorphic labels and per-model detail groups) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-11-06 — Phase 06.15 execution started
 
@@ -614,6 +614,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.10 P04 | 6min | 3 tasks | 15 files |
 | Phase 06.10 P05 | 12min | 2 tasks | 12 files |
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
+| Phase 06.15 P02 | 5min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -792,6 +793,7 @@ Recent decisions affecting current work:
 - [Phase 06.10]: Plan 04 retains example defaults/models/grants/seeds, uses test-local finite/None overrides, and teaches plain protected labels separately from ordinary Book navigation; German notice uses existing polib regeneration.
 - [Phase 06.10]: Final browser acceptance binds current source and exact recipes; human and independent phase/security/Nyquist reviews remain pending.
 - [Phase 06.15]: Plan 01: exact model selection and E247 key checks share the existing parser/check traversal; POLY-03 remains pending its plan 03 structural-limit documentation.
+- [Phase 06.15]: Plan 02: capfirst formats already-discovered selector names; real requests plus lazy translation, escaping, filtering, custom-form and access regressions preserve the existing contract.
 
 ### Pending Todos
 
@@ -852,6 +854,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T11:06:17.208Z
-Stopped at: Completed 06.15-01-PLAN.md
+Last session: 2026-11-06T11:12:38.512Z
+Stopped at: Completed 06.15-02-PLAN.md
 Resume file: None

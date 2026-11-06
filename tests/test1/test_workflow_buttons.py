@@ -36,6 +36,64 @@ def _render(form):
     return Template("{% load crud_views %}{% cv_render_form %}").render(Context({"form": form, "view": form.cv_view}))
 
 
+@pytest.mark.parametrize("late", [False, True])
+@pytest.mark.parametrize("presentation", ["radio", "buttons"])
+@pytest.mark.parametrize("modal", [False, True])
+def test_business_post_errors_are_literal(
+    client_user_campaign_change, campaign_new, monkeypatch, late, presentation, modal
+):
+    messages = [
+        mark_safe('<script data-audit="blocker">alert(1)</script> & first'),
+        '<b data-audit="interpolation">second & detail</b>',
+    ]
+    original = ValidationError(
+        [
+            ValidationError(messages[0], code="first"),
+            ValidationError(mark_safe("%(detail)s"), code="second", params={"detail": mark_safe(messages[1])}),
+        ]
+    )
+    execution_started = False
+    real_process = CampaignWorkflowView.cv_form_valid_process
+
+    def process(view, context):
+        nonlocal execution_started
+        execution_started = True
+        return real_process(view, context)
+
+    def check(obj, name, *, user):
+        if not late or execution_started:
+            raise original
+
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
+    monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+    monkeypatch.setattr(CampaignWorkflowView, "cv_form_valid_process", process)
+    monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+    response = client_user_campaign_change.post(
+        f"/campaign/{campaign_new.pk}/workflow/",
+        {"transition": "wf_activate", "comment": "  retained input  "},
+        headers=_headers(modal),
+    )
+    assert response.status_code == (422 if modal else 200)
+    assert execution_started is late
+    form = response.context["form"]
+    assert list(form.errors) == ["transition"]
+    assert list(form.errors["transition"]) == messages
+    errors = form.errors.as_data()["transition"]
+    assert [error.code for error in errors] == ["first", "second"]
+    assert errors[1].params == original.error_list[1].params
+    assert hasattr(original.error_list[0].message, "__html__")  # Never mutate the caller's exception.
+    assert form.data["comment"] == "  retained input  "
+    document = _document(response)
+    assert not document.cssselect("[data-audit]")
+    rendered_errors = [
+        document.get_element_by_id(f"error_{index}_{form['transition'].auto_id}").text_content().strip()
+        for index in (1, 2)
+    ]
+    assert rendered_errors == messages  # Literal once: no HTML interpretation or double escaping.
+    assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
+    assert not WorkflowInfo.objects.exists()
+
+
 def _assert_descriptions(document, rendered_forms=()):
     """Only Django 4.2/crispy 2026.3's unreferenced vendor error wrapper is exempt."""
     expected_error_groups = [

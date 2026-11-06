@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, StrictBool, field_validator
 
 from crud_views.lib.lazy import LazyStr
 from crud_views_object_detail.lib.presentation import _validate_id_token
@@ -33,7 +33,7 @@ class PropertyConfig(BaseModel):
 
     path: str
     title: LazyStr | None = None
-    detail: LazyStr | None = None
+    detail: LazyStr | StrictBool | None = None
     type: str | None = None
     template: str | None = None
     link: LinkConfig | None = None

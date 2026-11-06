@@ -29,6 +29,9 @@ class ObjectDetailMixin:
     #: Falls back to ``CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT`` when None.
     cv_object_detail_layout: str | None = None
 
+    #: Inherit ``CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT`` when None.
+    cv_object_detail_show_help_text: bool | None = None
+
     #: Stable component token; applications own uniqueness across independent responses.
     cv_object_detail_id: str | None = None
 

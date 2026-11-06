@@ -6,7 +6,9 @@ from typing import Any
 from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 from django.urls import NoReverseMatch, reverse
+from django.utils.functional import Promise
 
+from crud_views_object_detail.lib import conf
 from crud_views_object_detail.lib.config import BadgeConfig, LinkConfig, PropertyConfig, PropertyGroupConfig
 
 _MISSING = object()
@@ -139,7 +141,6 @@ def _field_label(field_obj, segment: str) -> str:
 def _resolve_field_meta(model, segments: list[str], path: str):
     """Walk metadata, retaining a terminal field only for fully model-backed paths."""
     label = path
-    detail = None
     field_type = "default"
     is_many = False
     current_model = model
@@ -157,9 +158,6 @@ def _resolve_field_meta(model, segments: list[str], path: str):
 
         terminal_field = field_obj if model_path else None
         label = _field_label(field_obj, segment)
-        help_text = getattr(field_obj, "help_text", None)
-        if help_text:
-            detail = str(help_text)
         field_type = _get_field_type(field_obj)
 
         # Navigate into related models for FK/O2O
@@ -172,7 +170,26 @@ def _resolve_field_meta(model, segments: list[str], path: str):
         elif index < len(segments) - 1:
             model_path = False
 
-    return label, detail, field_type, is_many, terminal_field
+    return label, getattr(terminal_field, "help_text", None), field_type, is_many, terminal_field
+
+
+def _resolve_detail(config: PropertyConfig, help_text, view):
+    """Select text once without evaluating lazy descriptions or mutating configuration."""
+    detail = config.detail
+    if isinstance(detail, Promise):
+        return detail
+    if isinstance(detail, str):
+        return detail if detail != "" else None
+    policy = detail
+    if policy is None:
+        policy = getattr(view, "cv_object_detail_show_help_text", None)
+    if policy is None:
+        policy = conf.crud_views_object_detail_settings.show_help_text
+    if policy is not True:
+        return None
+    if isinstance(help_text, Promise):
+        return help_text
+    return help_text if help_text != "" else None
 
 
 def resolve_property(instance: models.Model, config: PropertyConfig, view=None) -> ResolvedProperty:
@@ -184,13 +201,12 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
     segments = config.path.split("__")
 
     # Walk _meta to gather field metadata
-    label, detail, field_type, is_many, terminal_field = _resolve_field_meta(type(instance), segments, config.path)
+    label, help_text, field_type, is_many, terminal_field = _resolve_field_meta(type(instance), segments, config.path)
+    detail = _resolve_detail(config, help_text, view)
 
     # Apply config overrides
     if config.title:
         label = config.title
-    if config.detail is not None:
-        detail = config.detail
     if config.type:
         field_type = config.type
 
@@ -227,7 +243,7 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
         path=config.path,
         label=label,
         value=value,
-        detail=detail or None,
+        detail=detail,
         type=field_type,
         template=config.template,
         is_many=is_many,

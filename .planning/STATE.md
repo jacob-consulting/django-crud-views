@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.14"
 current_phase_name: Card template insertion blocks and cards-first ViewSets
-status: Ready to execute — Phase 06.14 plan review converged in 3 cycles
-stopped_at: Phase 06.14 plan review converged in 3 cycles; all three reviewers clean
-last_updated: "2026-11-06T10:15:42.180Z"
+status: executing
+stopped_at: Completed 06.14-01-PLAN.md; Plan 02 pending
+last_updated: "2026-11-06T10:29:51.497Z"
 last_activity: 2026-11-06
-last_activity_desc: Phase 06.14 plans converged; Fable, Grok and Gemini report no unresolved actionable findings
-state_head: d232a1a83c925600693c90c965acfc78484ff492
+last_activity_desc: Phase 06.14 execution started
+state_head: 76cd28d8b80e93a5f3fac611672e1d003058a07e
 progress:
   total_phases: 20
   completed_phases: 17
   total_plans: 127
-  completed_plans: 120
+  completed_plans: 121
 milestone_name: milestone
 ---
 
@@ -24,14 +24,14 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-05)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.14 — Card template insertion blocks and cards-first ViewSets (#325)
+**Current focus:** Phase 06.14 — Card template insertion blocks and cards-first ViewSets
 
 ## Current Position
 
-Phase: 06.14 (Card template insertion blocks and cards-first ViewSets) — READY TO EXECUTE
-Plan: 0 of 2 completed; execution not started
-Status: Ready to execute — Phase 06.14 plan review converged in 3 cycles
-Last activity: 2026-11-06 — Phase 06.14 plans converged; Fable, Grok and Gemini report no unresolved actionable findings
+Phase: 06.14 (Card template insertion blocks and cards-first ViewSets) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-11-06 — Phase 06.14 execution started
 
 Next: $gsd-execute-phase 06.14
 
@@ -613,6 +613,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.10 P03 | 6min | 3 tasks | 9 files |
 | Phase 06.10 P04 | 6min | 3 tasks | 15 files |
 | Phase 06.10 P05 | 12min | 2 tasks | 12 files |
+| Phase 06.14 P01 | 8min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -790,6 +791,7 @@ Recent decisions affecting current work:
 - [Phase 06.10]: Plan 03 preserves exact copied-recipe markers and null-URL bodies, migrates independent guards/notices, and documents selected-only presentation costs separately from full inspection/filtering.
 - [Phase 06.10]: Plan 04 retains example defaults/models/grants/seeds, uses test-local finite/None overrides, and teaches plain protected labels separately from ordinary Book navigation; German notice uses existing polib regeneration.
 - [Phase 06.10]: Final browser acceptance binds current source and exact recipes; human and independent phase/security/Nyquist reviews remain pending.
+- [Phase 06.14]: Plan 01 adds only empty card_root/card_header blocks; frozen request-aware bytes, nonempty CSRF and exact documented inheritance fence verify compatibility.
 
 ### Pending Todos
 
@@ -850,6 +852,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T10:15:31.162Z
-Stopped at: Phase 06.14 plan review converged in 3 cycles; all three reviewers clean
-Resume file: .planning/phases/06.14-card-template-insertion-blocks-and-cards-first-viewsets-325/06.14-REVIEWS.md
+Last session: 2026-11-06T10:29:49.539Z
+Stopped at: Completed 06.14-01-PLAN.md; Plan 02 pending
+Resume file: None

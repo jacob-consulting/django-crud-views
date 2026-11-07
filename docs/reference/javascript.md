@@ -17,15 +17,18 @@ The scripts render in this order from `{% cv_js %}` (and `cv_sources("js")` for 
 | `modal.js` | nothing | `cv.adapters.modal` |
 | `toggle.js` | nothing | nothing |
 | `tooltip.js` | nothing | `cv.adapters.tooltip` (does nothing without it) |
+| object-detail `tabs.js` (extension) | nothing | `cv.adapters.tab`, at initialization/disposal; absent entry is a no-op |
 
-Bootstrap's bundle may load anywhere on the page for the default adapters (the namespace is resolved when an adapter is
-called, not when the script loads); it still has to be present for Bootstrap's own data-API components. jQuery is
+The namespace is resolved when an adapter is called, not when the script loads. Bootstrap's bundle and selected-theme
+wiring must be ready before initialization, including immediate initialization on an already-ready document;
+call-time resolution does not schedule a retry. Bootstrap must also be present for its own data-API components. jQuery is
 needed only on pages with formsets and by jQuery-based extensions, see [jQuery](#jquery).
 
 ## `cv.adapters`
 
 `adapters.js` defines `cv.adapters`. Core calls adapters only through `cv.adapters.<name>`, looked up at call time, so an
-assignment at any point before the user acts takes effect.
+assignment before the relevant call takes effect. Wire initialization adapters before initialization, not just before
+the first user action.
 
 | Adapter | Method | Called by core when | Bootstrap default |
 |---|---|---|---|
@@ -38,6 +41,8 @@ assignment at any point before the user acts takes effect.
 | `tooltip` | `dispose(el)` (optional) | for every `[data-cv-tooltip]` under `#cv-modal` on `cv:modal:unload`, before the content is replaced | `Tooltip.getInstance(el)?.dispose()`; does nothing without `Tooltip` or without an instance |
 | `collapse` | `toggle(el)` | the filter toggle button is clicked, with `#filter-collapse` | `Collapse.getOrCreateInstance(el).toggle()`; throws a clear error when the namespace has no `Collapse`; returns `false` without toggling while the panel is still animating (`.collapsing`), because Bootstrap ignores a toggle then |
 | `alert` | `close(el)` | a click lands on or inside a `[data-cv-alert-dismiss]` element, with its nearest `role="alert"` ancestor, see [Dismissible alerts](#dismissible-alerts) | `Alert.getOrCreateInstance(el).close()`; removes `el` from the page when the namespace has no `Alert` |
+| `tab` | `init(el)` | each owned object-detail trigger on page/modal initialization | `Tab.getOrCreateInstance(el)`; no-op without `Tab`, never calls `show()` or focuses |
+| `tab` | `dispose(el)` | owned modal triggers on unload, while still attached | `Tab.getInstance(el)?.dispose()`; no-op without `Tab` or an instance, never constructs one |
 
 A failing `modal.show` is logged with `console.error` and the modal flow falls back to opening the full page. A
 `collapse.toggle` that throws or returns exactly `false` leaves the filter toggle's icon, `aria-expanded` and persisted
@@ -60,7 +65,10 @@ Replacing the **whole map after** core loads is different: `cv.adapters = {...}`
 fills them in again. Such a map must provide every adapter core calls, `alert` with `close(el)` included; without it,
 a click on an alert's close control throws a `TypeError` and the alert stays. Prefer replacing single entries
 (`cv.adapters.modal = {...}`) or merging into the existing map (`Object.assign(cv.adapters, {...})`). A theme that
-builds its own map for a Bootstrap-compatible namespace takes the alert entry from the factory:
+builds its own map for a Bootstrap-compatible namespace takes the alert and tab entries from the factory.
+A complete custom tab entry must provide both callable `init(el)` and `dispose(el)` methods:
+
+<!-- cv-tab-adapter-complete-map -->
 
 ```javascript
 cv.adapters = {
@@ -68,16 +76,20 @@ cv.adapters = {
     tooltip: myTooltipAdapter,
     collapse: myCollapseAdapter,
     alert: cv.bootstrapAdapters(() => globalThis.tabler).alert,
+    tab: cv.bootstrapAdapters(() => globalThis.tabler).tab,
 };
 ```
 
 ## Bootstrap under another name
 
-`cv.bootstrapAdapters(ns)` builds all four adapters for any Bootstrap-compatible namespace. `ns` is an object or a
-function returning one; a function is resolved on every call, so load order does not matter.
+`cv.bootstrapAdapters(ns)` builds all five adapters for a Bootstrap-compatible namespace. `ns` is an object or a
+function returning one; a function is resolved on every call. This permits late availability on a subsequent call,
+but does not schedule initialization when a library loads later.
 
 **Tabler** exposes Bootstrap's components as `window.tabler`. Register one small script as an asset (loaded after core,
-see [Assets](assets.md)) containing:
+see [Assets](assets.md#object-detail-tab-initialization-order)) containing, before tab initialization:
+
+<!-- cv-tab-adapter-namespace -->
 
 ```javascript
 Object.assign(cv.adapters, cv.bootstrapAdapters(() => globalThis.tabler));
@@ -90,6 +102,23 @@ import * as bootstrap from "bootstrap";
 
 Object.assign(cv.adapters, cv.bootstrapAdapters(bootstrap));
 ```
+
+## Object-detail tabs
+
+`cv.initObjectDetailTabs(root=document)` initializes only triggers owned by `data-cv-od-tabs` tablists,
+including a marked root and respecting nested tablist boundaries. It is repeat-safe. The extension calls it on
+DOMContentLoaded, immediately for an already-ready document, and on `cv:modal:loaded`. On `cv:modal:unload`
+it disposes old owned triggers while attached, before replacement; newly loaded content initializes afterward.
+For custom insertion, call `cv.initObjectDetailTabs(root)` after inserting your markup and loading the library.
+If a provider becomes available late, call this existing initializer again: call-time resolution alone schedules no retry.
+
+Missing `cv`, adapter map, tab entry or `Tab` is a no-op; cleanup also tolerates an absent instance. A present tab
+entry must supply both callable methods. Malformed entries and errors from present providers, components or custom
+adapters propagate. These rules do not change the alert entry's missing-entry error contract.
+
+Initialization does not show a tab or take focus. First-tab selection and panel `tabindex="0"` remain server-rendered;
+the UI library owns keyboard navigation, activation and panel switching. Missing Tab provides no keyboard fallback.
+The factory supports Bootstrap-compatible component APIs; it does not adapt arbitrary tab libraries automatically.
 
 ## Tooltips
 

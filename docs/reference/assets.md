@@ -43,6 +43,20 @@ Rules:
   (and jQuery-based extensions) load it anywhere before `DOMContentLoaded`.
   See [JavaScript](javascript.md#jquery).
 
+## Object-detail tab initialization order
+
+Core `crud_views/js/adapters.js` must load before the registered object-detail `tabs.js` extension.
+Wire the selected theme through `cv.bootstrapAdapters(namespaceOrProvider)` after the factory loads and before
+tab initialization. The library's `Tab` component must also be available by that call. Normal parser-loaded
+scripts can wire the theme before DOMContentLoaded; on an already-ready document the extension initializes
+immediately, so load the theme wiring before the extension. Apply the same ordering in custom bundles and
+filtered asset lists; do not emit only the extension while omitting the core adapter factory.
+
+Late provider resolution does not schedule a retry. If `Tab` loads after initialization, call
+`cv.initObjectDetailTabs(root)` again once it is available. Custom insertion uses that same initializer;
+normal modal loaded/unload events already initialize new content and dispose attached old triggers before replacement.
+See the [executed namespace and complete-map recipes](javascript.md#bootstrap-under-another-name).
+
 ## Vendoring third-party files
 
 `crud_views.lib.vendor` provides shared infrastructure for extension apps that offer a

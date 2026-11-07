@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 1
-waived_count: 8
+open_count: 0
+waived_count: 9
 fixed_count: 27
 total_count: 36
-last_updated: 2026-11-07T10:17:20.705Z
+last_updated: 2026-11-07T10:25:35.767Z
 ---
 
 # Broken Windows Ledger
@@ -50,7 +50,7 @@ last_updated: 2026-11-07T10:17:20.705Z
 | 33 | 06.10 | skipped-test | tests/test1/test_assets.py | 332 | Existing Django 6-only CSP roundtrip skips on Django 5.2; this runtime-specific skip is outside the delete-preview change. | fixed |  | 2026-11-04T21:29:51.737Z | 2026-11-04T21:30:19.548Z |
 | 34 | 06.10 | unrun-verify | .planning/phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-ACCEPTANCE.md |  | Human stock/copied page/modal presentation, keyboard acceptance and UI kind confirmation remain pending at the normal end-of-phase check. | fixed |  | 2026-11-04T21:30:19.709Z | 2026-11-05T09:25:26.031Z |
 | 35 | 06.16 | deviation | tests/test1/od/test_help_text_policy.py |  | Plan 02 task 2 is test-only expansion of task 1 behavior; no separate failing RED or production GREEN commit was needed. | fixed |  | 2026-11-06T19:15:57.137Z | 2026-11-06T19:16:25.752Z |
-| 36 | 06.17 | deviation | docs/reference/javascript.md |  | Task 1 documentation edits began before RED evidence classifier approval; actual pre-edit report subsequently approved, final executable recipes and all regression gates pass. | open |  | 2026-11-07T10:17:20.705Z |  |
+| 36 | 06.17 | deviation | docs/reference/javascript.md |  | Task 1 documentation edits began before RED evidence classifier approval; actual pre-edit report subsequently approved, final executable recipes and all regression gates pass. | waived | Independent deep review found no product defect: genuine pre-edit failures were preserved and later classifier-approved; final executable recipe and full regression checks pass. Accept the documentation-only ordering exception while retaining the historical violation; no retroactive compliance claimed. | 2026-11-07T10:17:20.705Z | 2026-11-07T10:25:35.767Z |
 
 ````json
 [
@@ -507,10 +507,10 @@ last_updated: 2026-11-07T10:17:20.705Z
     "file": "docs/reference/javascript.md",
     "line": null,
     "description": "Task 1 documentation edits began before RED evidence classifier approval; actual pre-edit report subsequently approved, final executable recipes and all regression gates pass.",
-    "status": "open",
-    "reason": "",
+    "status": "waived",
+    "reason": "Independent deep review found no product defect: genuine pre-edit failures were preserved and later classifier-approved; final executable recipe and full regression checks pass. Accept the documentation-only ordering exception while retaining the historical violation; no retroactive compliance claimed.",
     "recorded_at": "2026-11-07T10:17:20.705Z",
-    "resolved_at": null,
+    "resolved_at": "2026-11-07T10:25:35.767Z",
     "milestone": "v1.0"
   }
 ]

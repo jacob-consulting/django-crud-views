@@ -1138,11 +1138,11 @@ use multicore pytest for broad Python verification and report actual limits.
 reopening initial selection, open-all, persistence, adapter shape, keyboard ownership, or modal lifecycle. Ask only
 about material conflicts supported by new code evidence. Minimal helper placement, fixtures, harness reuse and
 test organization are delegated; follow existing adapter override and asset-loading conventions.
-**Plans:** 0/3 plans executed
+**Plans:** 1/3 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.17-01-PLAN.md
+- [x] 06.17-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.17-02-PLAN.md

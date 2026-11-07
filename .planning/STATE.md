@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.17"
 current_phase_name: Object-detail accordion initial state and tab adapters
-status: Ready to execute — Phase 06.17 plans converged in 3 cycles
-stopped_at: Phase 06.17 plans converged in 3 cycles; 0 HIGH, 0 actionable findings, 0 open conflicts
-last_updated: "2026-11-07T08:56:00.228Z"
+status: Executing — Plan 06.17-01 complete; next plan 02 of 03
+stopped_at: Completed 06.17-01-PLAN.md; next plan 06.17-02
+last_updated: "2026-11-07T09:50:54.224Z"
 last_activity: 2026-11-07
-last_activity_desc: Phase 06.17 planning complete
-state_head: 5eca42be672c0b88b917b12d5737583267037d8e
+last_activity_desc: Plan 06.17-01 first-open accordion complete
+state_head: d001910f407724e5180d174cbec4a127ed3f4ec4
 progress:
   total_phases: 23
   completed_phases: 21
   total_plans: 137
-  completed_plans: 134
+  completed_plans: 135
 milestone_name: milestone
 ---
 
@@ -28,12 +28,18 @@ See: .planning/PROJECT.md (updated 2026-11-06)
 
 ## Current Position
 
-Phase: 06.17 (Object-detail accordion initial state and tab adapters) — READY TO EXECUTE
-Plan: Not started
-Status: Ready to execute — Phase 06.17 plans converged in 3 cycles
-Last activity: 2026-11-07 — Phase 06.17 planning complete
+Phase: 06.17 (Object-detail accordion initial state and tab adapters) — EXECUTING
+Plan: 2 of 3
+Status: Executing — Plan 06.17-01 complete
+Last activity: 2026-11-07 — Plan 06.17-01 first-open accordion complete
 
 Next: $gsd-execute-phase 06.17
+
+### Phase 06.17 plan 01 — 2026-11-07
+
+- First-open accordion state committed with no new controller/configuration; existing Collapse switches and closes all. Both tasks have classifier-approved RED evidence and GREEN commits.
+- Final targeted rendering/a11y suite: 139 passed with four workers; heading/identity tracer: 103 passed. Browser: 14 cases/348 assertions, including real fresh modal HTTP loads for one/two groups; cleanup complete. Harness guards: 19 passed; scoped Ruff passes.
+- Summary committed; roadmap 1/3 In Progress. ODT-01 complete; shared ODT-04 awaits Plan 02 tab/alternate-namespace acceptance. Plan 03 owns documentation/migration and full phase gates. No human visual/AT, full support matrix, push or merge claimed.
 
 ### Phase 06.16 completion — 2026-11-06
 
@@ -715,6 +721,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.16 P01 | 9min | 3 tasks | 8 files |
 | Phase 06.16 P02 | 8min | 3 tasks | 12 files |
 | Phase 06.16 P03 | 11min | 3 tasks | 10 files |
+| Phase 06.17 P01 | 6min | 2 tasks | 10 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -916,6 +923,7 @@ Recent decisions affecting current work:
 - [Phase 06.16]: Help policy resolves once from strict property instructions, nullable view override and project setting; terminal lazy metadata stays unevaluated until rendering.
 - [Phase 06.16]: Stock textual leaves use exact None/empty-string display checks; raw values, custom ownership, non-text behavior and row structure remain intact.
 - [Phase 06.16]: Plan 03: exact copied recipes and five real context compositions pass with final full 5.2 and focused 4.2/6.0 evidence; keep independent phase approval pending.
+- [Phase 06.17]: Accordion initial state consumes presentation.selected; existing Collapse owns switching and close-all.
 
 ### Pending Todos
 
@@ -980,6 +988,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-07T08:55:48.785Z
-Stopped at: Phase 06.17 plans converged in 3 cycles; 0 HIGH, 0 actionable findings, 0 open conflicts
-Resume file: .planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-REVIEWS.md
+Last session: 2026-11-07T09:50:51.614Z
+Stopped at: Completed 06.17-01-PLAN.md; next plan 06.17-02
+Resume file: None

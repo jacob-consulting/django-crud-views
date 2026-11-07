@@ -265,7 +265,7 @@ Source: settled issue #328 and Phase 06.17 CONTEXT.md D-01–D-20. The initial s
 was visibly skipped while phase requirement IDs were TBD; these IDs preserve all explicit acceptance
 criteria from context/research without inventing fallback predicates or downstream adoption gates.
 
-- [ ] **ODT-01**: Server-render exactly the projected first accordion group open with matching classes/ARIA, reciprocal scoped references and shared-parent behavior; cover zero/one/many groups, standalone rendering and independent components, with no configurable selection, persistence or opening JavaScript (D-01–D-05, D-13).
+- [x] **ODT-01**: Server-render exactly the projected first accordion group open with matching classes/ARIA, reciprocal scoped references and shared-parent behavior; cover zero/one/many groups, standalone rendering and independent components, with no configurable selection, persistence or opening JavaScript (D-01–D-05, D-13).
 - [ ] **ODT-02**: Add tab init/dispose to the existing namespace/provider factory with call-time resolution, get-or-create initialization without show/focus, get-only disposal, absent component/instance no-ops and visible present errors; preserve default invocation and override/loading conventions (D-06–D-09, D-14).
 - [ ] **ODT-03**: Dispatch through the tab adapter only for owned marked triggers, preserving root/nested boundaries, public repeat-safe custom initialization, DOM-ready/ready-document behavior and modal attached-content unload-before-replacement/loaded ordering; retain library-owned keyboard/selection/focus behavior (D-10–D-12, D-14).
 - [ ] **ODT-04**: Prove real page/modal accordion switching and close-all behavior plus stock and tabler namespace tab initialization with no bootstrap global in the alternate scenario; inspect inactive instances, keyboard wrapping/Home/End, ARIA/tab stops, insertion focus, repeat safety and disposal while attached before actual HTTP replacement (D-13–D-16).
@@ -436,7 +436,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ODV-03 | Phase 06.16 | Complete |
 | ODV-04 | Phase 06.16 | Complete |
 | ODV-05 | Phase 06.16 | Complete |
-| ODT-01 | Phase 06.17 | Pending |
+| ODT-01 | Phase 06.17 | Complete |
 | ODT-02 | Phase 06.17 | Pending |
 | ODT-03 | Phase 06.17 | Pending |
 | ODT-04 | Phase 06.17 | Pending |

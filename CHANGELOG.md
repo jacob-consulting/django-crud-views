@@ -6,6 +6,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Object-detail accordion defaults and tab adapters.** The first accordion group now starts open on pages
+  and fresh modal loads. Copied group templates must use `presentation.selected` for button collapsed styling,
+  expanded ARIA and panel visibility. Complete custom adapter maps must include both `tab.init(el)` and
+  `tab.dispose(el)`, or use the existing factory. Follow the
+  [migration guide](docs/migrating-1.0.md#object-detail-accordion-defaults-and-tab-adapters) (#328).
+
 - **Object-detail values and help defaults** ([#327](https://github.com/jacob-consulting/django-crud-views/issues/327)):
   scalar model choices now show readable labels; use `x("process", choices_display=False)` for stored codes.
   Automatic model help is hidden by default; restore it with `CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT=True`

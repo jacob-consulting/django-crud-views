@@ -116,12 +116,16 @@ fence at `crud_views_object_detail/layouts/<pack>/<part>.html` in your template 
 Title buttons own `icon.host_class`; element libraries render `icon.inline_html` once.
 Never derive panel selection from a `forloop` inside the separately rendered group.
 
-Tabs require Bootstrap's JavaScript and `crud_views_object_detail/js/tabs.js`, registered
-by the installed extension and emitted by `{% cv_js %}`. `cv.initObjectDetailTabs(root=document)`
+Tabs require a Bootstrap-compatible Tab component, the core adapter factory and
+`crud_views_object_detail/js/tabs.js`, registered by the installed extension and emitted by `{% cv_js %}`.
+Wire the selected theme before initialization; see [adapter loading](assets.md#object-detail-tab-initialization-order).
+`cv.initObjectDetailTabs(root=document)`
 initializes only `data-cv-od-tabs` tablists, both on DOM ready and on `cv:modal:loaded`.
-`cv:modal:unload` disposes their Bootstrap instances before replacement. It is safe to
-call the initializer again after custom insertion. ArrowUp/ArrowDown wrap and immediately
-activate; Home/End activate the first/last tab. Bootstrap handles panel switching.
+`cv:modal:unload` disposes their theme instances while attached, before replacement. It is safe to
+call the initializer again after custom insertion or late library availability; no retry is scheduled automatically.
+Initialization never shows a tab or takes focus. ArrowUp/ArrowDown wrap and immediately
+activate; Home/End activate the first/last tab. The UI library handles keyboard behavior and panel switching;
+missing Tab is a no-op, not a keyboard fallback.
 Custom bundles with explicit keys need the [filtered asset recipe](../migrating-1.0.md#filtered-object-detail-assets).
 
 Stock panels deliberately retain `tabindex=0`, even when their content contains links:
@@ -130,7 +134,11 @@ reaches its first focusable descendant, or the next control after the component 
 there is none. This is the stock recipe choice, not a universal theme requirement.
 A theme may omit the panel stop when its leading meaningful content is focusable, but
 must keep an accessible destination for plain text and test its own focus order.
-Accordions remain initially collapsed; the tab `selected` flag does not open them.
+Accordions use the same `presentation.selected` projection: exactly the first group starts open, including
+a standalone `render_group`. Put the most useful group first. Opening another group closes the previous one;
+closing the open group can leave all groups closed. Each fresh page or modal load resets to first-open,
+independently for each component. There is no configurable initial selection, start-collapsed/open-all mode,
+or persistence. Selection is presentation data, not a group configuration field.
 
 ### tabs-vertical object_detail
 
@@ -192,13 +200,13 @@ Accordions remain initially collapsed; the tab `selected` flag does not open the
   {% cv_heading level=2 class="accordion-header" %}
     {% cv_heading_icon group.icon location="group" as icon %}
     <button type="button" id="{{ presentation.control_id }}"
-            class="accordion-button collapsed{% if icon.host_class %} {{ icon.host_class }}{% endif %}"
+            class="accordion-button{% if not presentation.selected %} collapsed{% endif %}{% if icon.host_class %} {{ icon.host_class }}{% endif %}"
             data-bs-toggle="collapse" data-bs-target="#{{ presentation.panel_id }}"
-            aria-controls="{{ presentation.panel_id }}" aria-expanded="false">
+            aria-controls="{{ presentation.panel_id }}" aria-expanded="{% if presentation.selected %}true{% else %}false{% endif %}">
       {{ icon.inline_html }}{{ group.title }}
     </button>
   {% endcv_heading %}
-  <div class="accordion-collapse collapse" id="{{ presentation.panel_id }}"
+  <div class="accordion-collapse collapse{% if presentation.selected %} show{% endif %}" id="{{ presentation.panel_id }}"
        aria-labelledby="{{ presentation.control_id }}"
        {% if component %}data-bs-parent="#{{ component.id }}"{% endif %}>
     <div class="accordion-body"><table><tbody>

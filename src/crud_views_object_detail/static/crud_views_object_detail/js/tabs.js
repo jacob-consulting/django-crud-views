@@ -1,5 +1,5 @@
 // Stock object-detail tabs opt in through data-cv-od-tabs on their tablist.
-// Bootstrap owns selection and keyboard behavior; initialize before the first
+// The theme adapter's UI library owns selection and keyboard behavior; initialize before the first
 // keypress without calling show() or taking focus from the page/modal.
 (function () {
     if (globalThis.__cvObjectDetailTabsInit) {
@@ -20,17 +20,26 @@
             .filter(el => el.closest(tablist) === list));
     }
 
+    function tabAdapter() {
+        const tab = globalThis.cv?.adapters?.tab;
+        if (tab == null) return null;
+        if (typeof tab.init !== "function" || typeof tab.dispose !== "function") {
+            throw new TypeError("cv.adapters.tab must supply init(element) and dispose(element)");
+        }
+        return tab;
+    }
+
     function initObjectDetailTabs(root = document) {
         const triggers = ownedTriggers(root);
-        // Native/unmarked layouts must not even look up the Bootstrap global.
+        // Native/unmarked layouts must not even look up the adapter.
         if (!triggers.length) {
             return;
         }
-        const Tab = globalThis.bootstrap?.Tab;
-        if (!Tab) {
+        const tab = tabAdapter();
+        if (!tab) {
             return;
         }
-        triggers.forEach(el => Tab.getOrCreateInstance(el));
+        triggers.forEach(el => tab.init(el));
     }
 
     function disposeObjectDetailTabs(root) {
@@ -38,13 +47,13 @@
         if (!triggers.length) {
             return;
         }
-        const Tab = globalThis.bootstrap?.Tab;
-        if (!Tab) {
+        const tab = tabAdapter();
+        if (!tab) {
             return;
         }
         // Never construct an instance during cleanup. modal.js dispatches unload
-        // before replacing attached content; Bootstrap releases its own handlers.
-        triggers.forEach(el => Tab.getInstance(el)?.dispose());
+        // before replacing attached content; the adapter releases its own handlers.
+        triggers.forEach(el => tab.dispose(el));
     }
 
     globalThis.cv = globalThis.cv || {};

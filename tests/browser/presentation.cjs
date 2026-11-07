@@ -267,10 +267,54 @@ async function runIdentity(page, detail, report) {
     }
     record.passed = true;
 }
-async function openModal(page) {
+async function runAccordionModal(page, detail, report) {
+    for (const count of [1, 2]) {
+        const record = {id: `accordion-${count}-page-modal`, assertions: [], passed: false};
+        report.cases.push(record);
+        await page.goto(base + detail + `?layout=accordion&expanded=1&count=${count}`);
+        check(record, 'page-accordion-layout', await page.locator('#primary .accordion-button').count() === count);
+        await accordionState(page, '#primary', count, 0, record, 'page-first-paint');
+        await accordionState(page, '#sibling', count, 0, record, 'sibling-first-paint');
+        await accordionState(page, '#accordion-one', 5, 0, record, 'auxiliary-one-first-paint');
+        await accordionState(page, '#accordion-two', 5, 0, record, 'auxiliary-two-first-paint');
+        if (count > 1) {
+            await page.locator('#primary .accordion-button').last().click();
+            await accordionState(page, '#primary', count, count - 1, record, 'page-switch');
+        }
+        await page.locator('#primary .accordion-button').last().click();
+        await accordionState(page, '#primary', count, -1, record, 'page-close-all');
+        await page.locator('#accordion-one .accordion-button').first().click();
+        await accordionState(page, '#accordion-one', 5, -1, record, 'auxiliary-one-close-all');
+        for (const load of [1, 2]) {
+            const response = page.waitForResponse(response => response.url().includes(detail) &&
+                response.request().headers()['x-cv-modal'] === 'true');
+            await openModal(page, '.accordion-button');
+            const loaded = await response;
+            check(record, `load-${load}-actual-accordion-http`, loaded.status() === 200 &&
+                loaded.url().includes('layout=accordion') && (await loaded.text()).includes('accordion-button'));
+            await accordionState(page, '#cv-modal', count, 0, record, `load-${load}-first-paint`);
+            const ids = await page.locator('[id]').evaluateAll(nodes => nodes.map(node => node.id));
+            check(record, `load-${load}-unique-identities`, ids.length === new Set(ids).size);
+            if (count > 1) {
+                await page.locator('#cv-modal .accordion-button').last().click();
+                await accordionState(page, '#cv-modal', count, count - 1, record, `load-${load}-switch`);
+            }
+            await page.locator('#cv-modal .accordion-button').last().click();
+            await accordionState(page, '#cv-modal', count, -1, record, `load-${load}-close-all`);
+            await accordionState(page, '#primary', count, -1, record, `load-${load}-page-unaffected`);
+            await accordionState(page, '#sibling', count, 0, record, `load-${load}-sibling-unaffected`);
+            await accordionState(page, '#accordion-one', 5, -1, record, `load-${load}-auxiliary-one-unaffected`);
+            await accordionState(page, '#accordion-two', 5, 0, record, `load-${load}-auxiliary-two-unaffected`);
+            await closeModal(page);
+        }
+        record.passed = true;
+    }
+}
+async function openModal(page, contentSelector = '[role="tab"]') {
     await page.locator('#launch').focus();
     await page.keyboard.press('Enter');
-    await page.locator('#cv-modal.show [role="tab"]').first().waitFor();
+    await page.locator(`#cv-modal.show ${contentSelector}`).first().waitFor();
+    await page.waitForFunction(() => !document.querySelector('#cv-modal').classList.contains('cv-loading'));
     await delay(350);
 }
 async function closeModal(page) {
@@ -445,11 +489,12 @@ async function main() {
         await runTabs(page, detail, report);
         if (requested === 'all') {
             await runIdentity(page, detail, report);
+            await runAccordionModal(page, detail, report);
             await runTranslation(page, detail, report);
             await runIcons(page, detail, report);
             await runNative(page, detail, report);
         }
-        assert.equal(report.cases.length, requested === 'all' ? 12 : 8);
+        assert.equal(report.cases.length, requested === 'all' ? 14 : 8);
         assert(report.cases.every(c => c.passed && c.assertions.length > 0 && c.assertions.every(a => a.passed)));
         assert.deepEqual(report.pageErrors, []);
         assert.deepEqual(report.consoleErrors, []);

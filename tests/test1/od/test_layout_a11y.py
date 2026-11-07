@@ -59,8 +59,9 @@ def test_tooltip_js_is_a_core_script():
 
 
 @pytest.mark.parametrize("pack", ["accordion", "tabs-vertical"])
-def test_interactive_layout_aria_references_resolve_to_unique_elements(pack):
-    groups = [ResolvedGroup(title=title) for title in ["Repeated", "Repeated"]]
+@pytest.mark.parametrize("count", [0, 1, 2])
+def test_interactive_layout_aria_references_resolve_to_unique_elements(pack, count):
+    groups = [ResolvedGroup(title="Repeated") for _ in range(count)]
     markup = Template("{% load crud_views_object_detail %}{% render_object_detail obj groups layout=pack %}").render(
         Context({"groups": groups, "pack": pack})
     )
@@ -69,7 +70,22 @@ def test_interactive_layout_aria_references_resolve_to_unique_elements(pack):
         for attribute in ("aria-controls", "aria-labelledby"):
             if target := element.get(attribute):
                 assert len(doc.xpath("//*[@id=$target]", target=target)) == 1
-    if pack == "tabs-vertical":
+    if not count:
+        assert not doc.cssselect("[aria-controls], [aria-labelledby], button")
+    elif pack == "tabs-vertical":
         (selected,) = doc.cssselect('[role="tab"][aria-selected="true"]')
         (visible,) = doc.cssselect('[role="tabpanel"].active.show')
         assert selected.get("aria-controls") == visible.get("id")
+    else:
+        (root,) = doc.cssselect(".accordion")
+        controls = root.cssselect("button.accordion-button")
+        panels = root.cssselect(".accordion-collapse")
+        assert len(controls) == len(panels) == count
+        for index, (control, panel) in enumerate(zip(controls, panels, strict=True)):
+            assert control.get("type") == "button"
+            assert control.get("aria-controls") == panel.get("id")
+            assert panel.get("aria-labelledby") == control.get("id")
+            assert panel.get("data-bs-parent") == "#" + root.get("id")
+            assert control.get("aria-expanded") == ("true" if index == 0 else "false")
+            assert ("collapsed" in control.classes) is (index != 0)
+            assert ("show" in panel.classes) is (index == 0)

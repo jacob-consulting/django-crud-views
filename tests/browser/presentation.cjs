@@ -196,6 +196,21 @@ async function runTabs(page, detail, report) {
         }
     }
 }
+async function accordionState(page, container, count, selected, record, label) {
+    // Wait for every panel, including the previously selected one, to finish transitioning.
+    await page.waitForFunction(selector => !document.querySelector(selector).querySelector('.collapsing'), container);
+    const state = await page.locator(container).evaluate(root => [...root.querySelectorAll('.accordion-button')].map(control => {
+        const panel = document.getElementById(control.getAttribute('aria-controls'));
+        return {expanded: control.getAttribute('aria-expanded'), collapsed: control.classList.contains('collapsed'),
+            shown: panel.classList.contains('show'), visible: panel.getBoundingClientRect().height > 0,
+            contained: root.contains(panel), label: panel.getAttribute('aria-labelledby') === control.id,
+            target: control.getAttribute('data-bs-target') === '#' + panel.id};
+    }));
+    check(record, label, state.length === count && state.every((item, index) =>
+        item.expanded === String(index === selected) && item.collapsed === (index !== selected) &&
+        item.shown === (index === selected) && item.visible === (index === selected) &&
+        item.contained && item.label && item.target), state);
+}
 async function runIdentity(page, detail, report) {
     const record = {id: 'identity-isolation', assertions: [], passed: false};
     report.cases.push(record);
@@ -239,15 +254,16 @@ async function runIdentity(page, detail, report) {
         }
     }
     for (const [index, parent] of parents.entries()) {
-        for (const control of parent.controls) {
+        await accordionState(page, '#' + parent.id, 5, 0, record, `accordion-${index}-first-paint`);
+        for (const [position, control] of parent.controls.entries()) {
+            if (position === 0) continue; // First group is already open on first paint.
             await page.locator('#' + control.control).click();
-            await page.locator('#' + control.panel + '.show').waitFor();
-            await page.waitForFunction(id => !document.getElementById(id).classList.contains('collapsing'), control.panel);
-            check(record, `accordion-${index}-${control.control}`, await page.locator('#' + control.panel).isVisible() &&
-                await page.locator(`#${parent.id} .accordion-collapse.show`).count() === 1);
+            await accordionState(page, '#' + parent.id, 5, position, record, `accordion-${index}-switch-${position}`);
         }
-        if (index === 0) check(record, 'second-accordion-stays-collapsed', await page.locator('#accordion-two .show').count() === 0);
-        else check(record, 'first-accordion-keeps-selection', await page.locator('#' + parents[0].controls.at(-1).panel).isVisible());
+        await page.locator('#' + parent.controls.at(-1).control).click();
+        await accordionState(page, '#' + parent.id, 5, -1, record, `accordion-${index}-close-all`);
+        const sibling = parents[1 - index];
+        await accordionState(page, '#' + sibling.id, 5, index === 0 ? 0 : -1, record, `accordion-${index}-sibling-unaffected`);
     }
     record.passed = true;
 }

@@ -82,9 +82,7 @@ def test_interactive_title_button_owns_icon(icon, hostile, layout):
     (button,) = doc.cssselect("button[data-bs-toggle]")
     assert group.title in button.text_content()
     assert not doc.cssselect("em, [onclick], [onerror]")
-    structural = (
-        {"nav-link", "text-start", "active"} if layout == "tabs-vertical" else {"accordion-button", "collapsed"}
-    )
+    structural = {"nav-link", "text-start", "active"} if layout == "tabs-vertical" else {"accordion-button"}
     assert structural <= button.classes
     assert len(button.cssselect("i")) == (1 if icon == "fas:pen" else 0)
     assert ("icon-edit" in button.get("class")) == (icon == "host:edit")
@@ -101,23 +99,31 @@ def test_invalid_component_token_rejected(token):
         render_object_detail(Context(), None, [], layout="tabs-vertical", component_id=token)
 
 
-def test_accordion_targets_belong_to_their_component():
-    groups = [ResolvedGroup(title=title) for title in ["A B", "A-B", "", gettext_lazy("日本語")]]
+@pytest.mark.parametrize("count", [0, 1, 5])
+def test_accordion_targets_belong_to_their_component(count):
+    groups = [
+        ResolvedGroup(title=title) for title in ["Same", "Same", "", gettext_lazy("日本語"), '<img src="x">'][:count]
+    ]
+    before = deepcopy(groups)
     doc = render(groups, layout="accordion", repeat=True)
+    assert groups == before
+    assert not doc.cssselect("img")
     ids = doc.xpath("//@id")
     assert len(ids) == len(set(ids))
     for root in doc.cssselect(".accordion"):
         controls = root.cssselect(".accordion-button")
         panels = root.cssselect(".accordion-collapse")
         assert len(controls) == len(panels) == len(groups)
-        for control, panel in zip(controls, panels, strict=True):
+        assert len(root.cssselect(".accordion-collapse.show")) == min(1, count)
+        for index, (control, panel) in enumerate(zip(controls, panels, strict=True)):
             assert control.get("id")
             assert control.get("aria-controls") == panel.get("id")
             assert control.get("data-bs-target") == "#" + panel.get("id")
             assert panel.get("aria-labelledby") == control.get("id")
             assert panel.get("data-bs-parent") == "#" + root.get("id")
-            assert control.get("aria-expanded") == "false"
-            assert "show" not in panel.classes
+            assert control.get("aria-expanded") == ("true" if index == 0 else "false")
+            assert ("collapsed" in control.classes) is (index != 0)
+            assert ("show" in panel.classes) is (index == 0)
 
 
 def test_standalone_accordion_omits_unrendered_parent():
@@ -128,6 +134,9 @@ def test_standalone_accordion_omits_unrendered_parent():
     for control, panel in zip(doc.cssselect("button"), doc.cssselect(".accordion-collapse"), strict=True):
         assert panel.get("aria-labelledby") == control.get("id")
         assert control.get("aria-controls") == panel.get("id")
+        assert control.get("aria-expanded") == "true"
+        assert "collapsed" not in control.classes
+        assert "show" in panel.classes
 
 
 def test_direct_calls_without_active_render_have_independent_scopes():

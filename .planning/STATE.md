@@ -3,11 +3,11 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.17"
 current_phase_name: Object-detail accordion initial state and tab adapters
-status: Phase 06.17 context gathered — ready for planning
+status: Phase 06.17 plans drafted — external convergence review pending
 stopped_at: Phase 06.17 context gathered
-last_updated: "2026-11-07T07:42:43.719Z"
+last_updated: "2026-11-07T08:06:52.836Z"
 last_activity: 2026-11-07
-state_head: 022e03c5cf414c819ad10111a10a61545b3a83f3
+state_head: b2cfda8f5d0bcdfe1bcc9f6789cc5e961bf52ffa
 progress:
   total_phases: 23
   completed_phases: 21
@@ -29,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-11-06)
 
 Phase: 06.17 — Object-detail accordion initial state and tab adapters
 Plan: Not started
-Status: Phase 06.17 context gathered — ready for planning
+Status: Phase 06.17 plans drafted — external convergence review pending
 Last activity: 2026-11-07
 
-Next: $gsd-plan-phase 06.17
+Next: $gsd-plan-review-convergence 06.17 --max-cycles 5
 
 ### Phase 06.16 completion — 2026-11-06
 

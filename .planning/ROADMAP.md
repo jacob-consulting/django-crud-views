@@ -1141,8 +1141,13 @@ test organization are delegated; follow existing adapter override and asset-load
 **Plans:** 0/3 plans executed
 
 Plans:
+**Wave 1**
 - [ ] 06.17-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.17-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.17-03-PLAN.md
 
 ### Phase 7: Theme-surface stability policy

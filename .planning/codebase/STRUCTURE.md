@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
-last_mapped_at: 2026-11-06
+last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
+last_mapped_at: 2026-11-07
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-06
+**Analysis Date:** 2026-11-07
 
 ## Directory Layout
 
@@ -75,6 +75,7 @@ django-crud-views/
 - Purpose: Configurable detail properties and layouts, usable by a core detail view.
 - Contains: Property/group/link/badge configuration, resolvers, presentation mixin/view, layout packs, type templates, CSS and tab JS.
 - Key files: `src/crud_views_object_detail/lib/config.py`, `src/crud_views_object_detail/lib/resolvers.py`, `src/crud_views_object_detail/lib/presentation.py`, `src/crud_views_object_detail/lib/views.py`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/`, `src/crud_views_object_detail/templates/crud_views_object_detail/types/`.
+- Interactive layouts: `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` scopes tab lifecycle through `cv.adapters.tab`. Accordion markup in `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html` projects `presentation.selected` into initial classes and ARIA; Bootstrap's existing Collapse data API handles switching and parent-scoped close-all behavior through `data-bs-toggle`, `data-bs-target`, and `data-bs-parent`.
 
 **`src/crud_views_workflow/`:**
 - Purpose: FSM transition and history integration.
@@ -153,6 +154,7 @@ django-crud-views/
 - `src/crud_views/static/crud_views/`: Core CSS/JavaScript.
 - `src/crud_views/templatetags/crud_views.py`: Theme-facing template tag API.
 - `src/crud_views_object_detail/templates/crud_views_object_detail/`: Object detail layout and field rendering packs.
+- `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`: Object-detail tab lifecycle bridge loaded through asset registration in `src/crud_views_object_detail/apps.py`.
 
 **Testing:**
 - `tests/test1/`: Python/Django tests and test app.
@@ -181,6 +183,7 @@ django-crud-views/
 - Primary code: Add a reusable core abstraction under `src/crud_views/lib/`; add a request handler to `src/crud_views/lib/views/` when it is a new view type.
 - Tests: Add Python behavior tests in the nearest `tests/test1/` feature module; extend browser tests under `tests/js/` or `tests/js-integration/` when client behavior changes.
 - User-facing theme: Add/update the corresponding template in `src/crud_views/templates/crud_views/`, Python template-tag/context support in `src/crud_views/templatetags/` or `src/crud_views/lib/view/`, and static behavior in `src/crud_views/static/crud_views/`.
+- Interactive object-detail layouts: Put markup in `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/<layout>/`. For tabs, use the existing scoped lifecycle bridge in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and `cv.adapters.tab`; for accordion markup, preserve Bootstrap Collapse data attributes and render initial selected state from `presentation.selected` in the template.
 - Demonstration: Add or update an example app under `examples/bootstrap5/<feature>/` and connect it through `examples/bootstrap5/project/`.
 - For form cancellation behavior, extend the request-aware resolver in `src/crud_views/lib/view/base.py` and its focused tests; preserve template access through `{% cv_cancel_url %}`.
 - For deletion relationship previews, change the collector/summary behavior in `src/crud_views/lib/deletion.py` and the corresponding partials in `src/crud_views/templates/crud_views/snippets/delete/`; keep protected references as plain labels and preserve the display budget.
@@ -226,4 +229,4 @@ django-crud-views/
 
 ---
 
-*Structure analysis: 2026-11-06*
+*Structure analysis: 2026-11-07*

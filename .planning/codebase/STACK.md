@@ -1,100 +1,87 @@
 ---
-last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
-last_mapped_at: 2026-11-06
+last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
+last_mapped_at: 2026-11-07
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-06
+**Analysis Date:** 2026-11-07
 
 ## Languages
 
 **Primary:**
-- Python >=3.12 — distributable Django package and example projects under `src/` and `examples/`
+- Python >=3.12 — distributable Django package across five apps in `src/crud_views*/` and examples in `examples/`
 
 **Secondary:**
-- JavaScript (Node.js >=20 for the private test harness) — browser-side unit and integration tests under `tests/js/` and `tests/js-integration/`
-- HTML, CSS, gettext PO/MO — Django templates/assets and translations in `src/` and `docs/development/i18n.md`
+- JavaScript — browser behavior and tests under `src/crud_views/static/` and `tests/js*/`; Node.js >=20, CI uses Node 22 (`package.json`, `.github/workflows/js-tests.yml`)
+- HTML, CSS, gettext PO/MO — Django templates, static assets, and translations in `src/` and `docs/development/i18n.md`
 
 ## Runtime
 
 **Environment:**
-- Python >=3.12; CI covers Python 3.12, 3.13, 3.14, and 3.15 (see `noxfile.py` and `.github/workflows/tests.yml`)
-- Django >=4.2; tested against Django 4.2, 5.2, and 6.0 (see `pyproject.toml` and `noxfile.py`)
-- Node.js >=20 for JavaScript tests (see `package.json`); CI currently selects Node 22 in `.github/workflows/js-tests.yml`
+- Python >=3.12; CI matrix spans Python 3.12–3.15 (`noxfile.py`, `.github/workflows/tests.yml`)
+- Django >=4.2; matrix covers 4.2, 5.2, and 6.0 (`pyproject.toml`, `noxfile.py`)
+- Node.js >=20 for JS harness (`package.json`)
 
 **Package Manager:**
-- Python: `uv` for development and nox virtual environments; `pip` for install/deploy instructions
-- Lockfile: `uv.lock` present; `package-lock.json` present for the JS harness
-- JavaScript: npm
+- Python: `uv` for development and nox virtual environments; pip for installation
+- Lockfile: `uv.lock` present
+- JavaScript: npm; `package-lock.json` present
 
 ## Frameworks
 
 **Core:**
-- Django >=4.2 — host framework for the five installable apps in `src/crud_views*/`
-- Pydantic >=2.2.1 — settings, ViewSet configuration, and validated configuration models
-- django-crispy-forms >=2.0 and crispy-bootstrap5 >=2023.10 — form layout and Bootstrap 5 rendering
-- django-tables2 >=2.5.3 and django-filter >=21.1 — table and filter support for list views
+- Django >=4.2 — host web framework and ORM
+- Pydantic >=2.2.1 — validated settings, ViewSets, and configuration
+- django-crispy-forms >=2.0 with crispy-bootstrap5 >=2023.10 — form layouts and rendering
+- django-tables2 >=2.5.3 and django-filter >=21.1 — list tables and filters
 
 **Testing:**
-- pytest with pytest-django, pytest-cov, pytest-xdist, pytest-mock, and pytest-random-order — Python test suite in `tests/`
-- nox — Python/Django compatibility matrix in `noxfile.py`
-- Vitest 5 with jsdom 30 — JavaScript tests configured in `vitest.config.js` and `vitest.integration.config.js`
+- pytest with pytest-django, pytest-cov, pytest-xdist, pytest-mock, pytest-random-order
+- nox — Python/Django compatibility matrix (`noxfile.py`)
+- Vitest 5 and jsdom 30 — JS tests (`vitest.config.js`, `vitest.integration.config.js`)
 
 **Build/Dev:**
-- Hatchling — PEP 517 build backend; `pyproject.toml` explicitly packages all five `src/crud_views*` apps
-- Ruff >=0.17,<0.18 — Python formatting and linting
-- MkDocs with `mkdocs-awesome-pages-plugin`, `mkdocs-get-deps`, and `pymdown-extensions` — documentation site (`mkdocs.yml`)
-- bump-my-version — synchronized version updates configured in `pyproject.toml`
+- Hatchling — PEP 517 build backend and wheel packaging (`pyproject.toml`)
+- Ruff >=0.17,<0.18 — formatting and linting
+- MkDocs with awesome-pages, get-deps, pymdown-extensions — documentation (`mkdocs.yml`)
+- bump-my-version — version synchronization (`pyproject.toml`)
 
 ## Key Dependencies
 
 **Critical:**
-- `Django` — host framework and runtime dependency for every app in `src/`
-- `pydantic` — core settings and ViewSet model validation (`src/crud_views/lib/settings.py`, `src/crud_views/lib/viewset/`)
-- `django-crispy-forms` and `crispy-bootstrap5` — form rendering adapter (`src/crud_views/lib/crispy/`)
-- `django-tables2` and `django-filter` — optional list table/filter capabilities included in core dependencies (`src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`)
-- `Resource` is a Pydantic-backed, non-ORM row type supported by core ViewSets for read-only external or in-memory data (`src/crud_views/lib/resource.py`); it adds no new dependency.
-- `python-box` and `typing-extensions` — utility dependencies declared by the core package in `pyproject.toml`
+- `Django`, `pydantic`, `django-crispy-forms`, `crispy-bootstrap5`, `django-tables2`, `django-filter` — package runtime dependencies declared in `pyproject.toml`
+- `python-box`, `typing-extensions` — core utilities (`pyproject.toml`)
 
 **Infrastructure:**
-- `django-fsm-2` and `django-fsm-2-admin` — optional `[workflow]` extra for state-machine support (`src/crud_views_workflow/`)
-- Workflow transition execution is centralized in `src/crud_views_workflow/lib/execution.py`; the public `run_transition()` helper validates the actor/object database identity and writes transition state plus `WorkflowInfo` history atomically on the selected alias.
-- `django-polymorphic` — optional `[polymorphic]` extra (`src/crud_views_polymorphic/`)
-- `django-ordered-model` — optional `[ordered]` extra for ordered model actions
-- `django-guardian` — optional `[guardian]` extra for per-object permissions (`src/crud_views_guardian/`)
-- `django-crud-views[all]` installs all four extension extras
-- `lxml`, `cssselect`, `polib`, and `django-pipeline` — test-only dependencies declared in `pyproject.toml`
-- `gunicorn`, `whitenoise`, and `django-ratelimit` — demo deployment requirements in `requirements/demo.txt`, not package runtime dependencies
-
-## Object-Detail Presentation Settings
-
-- `src/crud_views_object_detail/lib/conf.py` owns its own settings singleton. `CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT` defaults to False; layout/types packs and newline formatting remain separate cached settings.
-- `PropertyConfig` uses the existing Pydantic dependency for `choices_display=True` and strict boolean/string/None detail instructions (`src/crud_views_object_detail/lib/config.py`). This increment adds no dependency or production migration.
-- Ruff formats Python examples inside Markdown as well as Python modules. The repository-wide CI commands are `ruff format --check .` and `ruff check .` (`.github/workflows/lint.yml`); checking only changed Python files misses documentation fences.
+- `django-fsm-2` and `django-fsm-2-admin` — optional `[workflow]` extra
+- `django-polymorphic` — optional `[polymorphic]` extra
+- `django-ordered-model` — optional `[ordered]` extra
+- `django-guardian` — optional `[guardian]` extra
+- `[all]` combines the four integration extras (`pyproject.toml`)
+- `lxml`, `cssselect`, `polib`, `django-pipeline` — test dependencies; `gunicorn`, `whitenoise`, `django-ratelimit` — demo requirements (`requirements/demo.txt`)
 
 ## Configuration
 
 **Environment:**
-- The library reads project configuration from the host Django settings module; package options use the `CRUD_VIEWS_*` prefix and are modeled in `src/crud_views/lib/settings.py`.
-- Each example supplies its own Django settings and environment handling, e.g. `examples/bootstrap5/project/settings_demo.py`; the library itself does not load a `.env` file.
-- `render.yaml` declares deployment-time `DJANGO_SETTINGS_MODULE`, generated `SECRET_KEY`, and Python runtime for the public demo. `.env` files, if present, are not inspected.
+- Package configuration comes from host Django settings; core options use `CRUD_VIEWS_*` and are modeled in `src/crud_views/lib/settings.py`.
+- Example settings configure their own applications and environment; package does not load dotenv files.
 
 **Build:**
-- `pyproject.toml` defines package metadata, dependency extras, Hatchling wheel package paths, Ruff, pytest, coverage, and version-bump settings.
-- `noxfile.py` defines Python/Django test matrices and example test sessions.
-- `package.json`, `vitest.config.js`, and `vitest.integration.config.js` define the private JavaScript test harness.
-- `mkdocs.yml` and `docs/requirements.txt` configure documentation builds.
+- `pyproject.toml` defines metadata, extras, Hatchling package list, Ruff, pytest, coverage, and bump settings.
+- `noxfile.py` defines Python/Django, examples, crispy-floor, and package validation sessions.
+- `package.json`, `vitest.config.js`, and `vitest.integration.config.js` configure the private JS harness; `mkdocs.yml` configures docs.
+- CI runs `ruff format --check .` and `ruff check .` across the repository, including Python examples inside Markdown (`.github/workflows/lint.yml`).
 
 ## Platform Requirements
 
 **Development:**
-- Python >=3.12, `uv`, and `task` for the documented workflow; Node.js >=20/npm only for JS tests (`CLAUDE.md`, `package.json`).
-- The package supports Django 4.2, 5.2, and 6.0; Django 4.2 sessions are skipped on Python 3.14+ in `noxfile.py`.
+- Python >=3.12, `uv`, and Task; Node/npm for browser-side tests (`docs/development/index.md`, `package.json`).
+- Django 4.2 sessions skip Python 3.14+ (`noxfile.py`).
 
 **Production:**
-- A Django host project and a supported Python/Django combination; the package does not prescribe a production database or web server.
-- The included demo is deployed to Render using Gunicorn and WhiteNoise (`render.yaml`, `requirements/demo.txt`); it seeds a fresh SQLite database at startup because the demo plan has ephemeral storage.
+- A host Django project on supported Python/Django; no database or hosting platform is mandated by the library.
+- Example deployment uses Render, Gunicorn, WhiteNoise, and ephemeral SQLite (`render.yaml`, `requirements/demo.txt`).
 
 ---
 
-*Stack analysis: 2026-11-06*
+*Stack analysis: 2026-11-07*

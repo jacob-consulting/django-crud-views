@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
-last_mapped_at: 2026-11-06
+last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
+last_mapped_at: 2026-11-07
 ---
-<!-- refreshed: 2026-11-06 -->
+<!-- refreshed: 2026-11-07 -->
 
 # Architecture
 
-**Analysis Date:** 2026-11-06
+**Analysis Date:** 2026-11-07
 
 ## System Overview
 
@@ -66,6 +66,7 @@ last_mapped_at: 2026-11-06
 - `CrudViewMetaClass` performs registration during class creation; consumers include the ViewSet's `urlpatterns` from their Django URL configuration.
 - Concrete request handlers combine the package's `CrudView` mixin with Django generic CBVs; permission-required classes add `CrudViewPermissionRequiredMixin`.
 - The core theme is implemented in Django templates and template tags. App-contributed behavior can add static assets through `register_assets()` from an app's `AppConfig.ready()`.
+- Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
 - Optional packages depend on the core public view abstractions and are enabled by installing their app and declaring their specialized views.
 
 ## Layers
@@ -105,6 +106,13 @@ last_mapped_at: 2026-11-06
 - Depends on: Core `CrudView`/ViewSet APIs plus the corresponding optional Django ecosystem package.
 - Used by: Consumer projects that install and configure the extension.
 
+**Object-detail layout adapter:**
+- Purpose: Render property groups into layout packs and initialize interactive tabs while keeping UI-library ownership behind the theme adapter API.
+- Location: `src/crud_views_object_detail/lib/presentation.py`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`
+- Contains: Per-render component identity/presentation data, layout templates and scoped tab lifecycle bridge. Accordion initial selected state is projected into CSS classes and ARIA attributes by the templates; Bootstrap's Collapse data API owns subsequent interaction.
+- Depends on: Core asset registry and `cv.adapters` contracts.
+- Used by: Object-detail pages and modal content in consumer projects.
+
 ## Data Flow
 
 ### Primary Request Path
@@ -120,6 +128,7 @@ last_mapped_at: 2026-11-06
 1. Core assets are selected from `CrudViewsSettings`; extensions may register bundles during `AppConfig.ready()` (`src/crud_views/lib/assets.py`).
 2. `{% cv_css %}` and `{% cv_js %}` render enabled bundle entries; optional django-pipeline integration consumes lazy sources from `src/crud_views/lib/pipeline.py`.
 3. The theme's shared templates and JavaScript adapters initialize configured behavior such as modals, tooltips, list filters, formsets and action controls (`src/crud_views/templates/crud_views/shared/`, `src/crud_views/static/crud_views/js/`).
+4. `src/crud_views_object_detail/apps.py` registers the object-detail script bundle; `tabs.js` initializes/disposes marked tab triggers on document readiness and modal load/unload. Accordion `presentation.selected` determines initial expanded/collapsed classes and `aria-expanded`; Bootstrap's data API handles later trigger clicks and parent-scoped collapse behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`).
 
 ### Extension Flow
 
@@ -199,6 +208,7 @@ last_mapped_at: 2026-11-06
 - **Circular imports:** `src/crud_views/lib/resource.py` is intentionally kept as a leaf and documents that importing any `viewset` module from it triggers a cycle through `viewset/__init__.py`.
 - **Import-time registration:** View class declarations require their ViewSet to exist first and can fail on duplicate keys/names; keep declaration/import order explicit (`src/crud_views/lib/view/meta.py`, `src/crud_views/lib/viewset/__init__.py`).
 - **Theme coupling:** The bundled presentation targets Bootstrap 5 and Django templates; theme-facing changes should update the matching template, Python context/tag contract, and browser behavior where relevant (`src/crud_views/templates/crud_views/`, `src/crud_views/lib/view/`, `src/crud_views/static/crud_views/`).
+- **Adapter boundary:** Package-owned browser modules should use semantic methods on `cv.adapters` when they implement behavior through a UI library. Object-detail tabs are explicitly marked and disposed on modal unload; accordion markup relies on Bootstrap's declarative Collapse data API instead (`src/crud_views/static/crud_views/js/adapters.js`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
 - **Optional dependencies:** Keep integrations in their dedicated extension packages or guarded core integration modules, and use the public core classes where supported (`src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`, `src/crud_views/lib/crispy/`).
 
 ## Anti-Patterns
@@ -233,4 +243,4 @@ last_mapped_at: 2026-11-06
 
 ---
 
-*Architecture analysis: 2026-11-06*
+*Architecture analysis: 2026-11-07*

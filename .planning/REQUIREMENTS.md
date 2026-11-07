@@ -269,7 +269,7 @@ criteria from context/research without inventing fallback predicates or downstre
 - [x] **ODT-02**: Add tab init/dispose to the existing namespace/provider factory with call-time resolution, get-or-create initialization without show/focus, get-only disposal, absent component/instance no-ops and visible present errors; preserve default invocation and override/loading conventions (D-06–D-09, D-14).
 - [x] **ODT-03**: Dispatch through the tab adapter only for owned marked triggers, preserving root/nested boundaries, public repeat-safe custom initialization, DOM-ready/ready-document behavior and modal attached-content unload-before-replacement/loaded ordering; retain library-owned keyboard/selection/focus behavior (D-10–D-12, D-14).
 - [x] **ODT-04**: Prove real page/modal accordion switching and close-all behavior plus stock and tabler namespace tab initialization with no bootstrap global in the alternate scenario; inspect inactive instances, keyboard wrapping/Home/End, ARIA/tab stops, insertion focus, repeat safety and disposal while attached before actual HTTP replacement (D-13–D-16).
-- [ ] **ODT-05**: Publish executable factory/custom-map and copied accordion examples, preserve custom insertion guidance, pair changed-default/template/adapter migration in Breaking and migrating-1.0, and record focused/full JS, rendering, browser and docs verification with multicore broad Python and honest limits; preserve bounded scope and prior group/value behavior (D-17–D-20).
+- [x] **ODT-05**: Publish executable factory/custom-map and copied accordion examples, preserve custom insertion guidance, pair changed-default/template/adapter migration in Breaking and migrating-1.0, and record focused/full JS, rendering, browser and docs verification with multicore broad Python and honest limits; preserve bounded scope and prior group/value behavior (D-17–D-20).
 
 ### Stability policy (plan 4)
 
@@ -440,7 +440,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ODT-02 | Phase 06.17 | Complete |
 | ODT-03 | Phase 06.17 | Complete |
 | ODT-04 | Phase 06.17 | Complete |
-| ODT-05 | Phase 06.17 | Pending |
+| ODT-05 | Phase 06.17 | Complete |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |

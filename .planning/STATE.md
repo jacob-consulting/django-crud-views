@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.17"
 current_phase_name: Object-detail accordion initial state and tab adapters
-status: Executing — Plan 06.17-02 complete; next plan 03 of 03
-stopped_at: Completed 06.17-02-PLAN.md; next plan 06.17-03
-last_updated: "2026-11-07T10:05:41.075Z"
+status: Ready for verification — Phase 06.17 plans 3/3 complete
+stopped_at: Completed 06.17-03-PLAN.md; independent reviews and verification pending
+last_updated: "2026-11-07T10:18:56.023Z"
 last_activity: 2026-11-07
-last_activity_desc: Plan 06.17-02 theme tab adapters complete
-state_head: a2508df273c9f9ada25223f04c1964774dca81ee
+last_activity_desc: Plan 06.17-03 executable migrations and final acceptance complete
+state_head: 94c9685203c18397b301dd266e6f79e81841b05c
 progress:
   total_phases: 23
   completed_phases: 21
   total_plans: 137
-  completed_plans: 136
+  completed_plans: 137
 milestone_name: milestone
 ---
 
@@ -24,16 +24,23 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-06)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.17 — execute reviewed accordion and tab adapter plans
+**Current focus:** Phase 06.17 — independent reviews and verification
 
 ## Current Position
 
-Phase: 06.17 (Object-detail accordion initial state and tab adapters) — EXECUTING
+Phase: 06.17 (Object-detail accordion initial state and tab adapters) — READY FOR VERIFICATION
 Plan: 3 of 3
-Status: Executing — Plan 06.17-02 complete
-Last activity: 2026-11-07 — Plan 06.17-02 theme tab adapters complete
+Status: Plans 3/3 complete; independent reviews and verification pending
+Last activity: 2026-11-07 — Plan 06.17-03 executable migrations and final acceptance complete
 
-Next: $gsd-execute-phase 06.17
+Next: Phase 06.17 independent reviews and verification
+
+### Phase 06.17 plan 03 — 2026-11-07
+
+- Published five-entry adapter/lifecycle/loading contracts, exact-source namespace/map examples, first-open copied accordion recipes and paired Breaking/current migration guidance. No production source changed in this plan.
+- Final source e24fec82: full Django5.2 10,849 passed/one existing Django6-only skip in304.72s; focused177 each Django4.2/5.2/6.0, all Python3.12.3/four workers. JS383, browser18 cases/472 assertions with53 matching hashes and cleanup, harness19, strict docs and scoped Ruff pass.
+- Summary and acceptance committed; roadmap3/3 remains In Progress, ODT-01–05 complete. Independent reviews/verification remain pending. WINDOWS36 records Task1 documentation edits preceding classifier approval; actual pre-edit RED and final GREEN evidence retained, no silent waiver. Task2 gate order compliant.
+- Last-plan SDK reports ready_for_verification; aggregate progress handler declined its existing unscoped read. State prose synchronized. Existing config/state.json/CLAUDE edits and notes/.gitkeep preserved; no phase completion, push or merge.
 
 ### Phase 06.17 plan 02 — 2026-11-07
 
@@ -729,6 +736,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.16 P03 | 11min | 3 tasks | 10 files |
 | Phase 06.17 P01 | 6min | 2 tasks | 10 files |
 | Phase 06.17 P02 | 8min | 2 tasks | 12 files |
+| Phase 06.17 P03 | 10min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -932,6 +940,7 @@ Recent decisions affecting current work:
 - [Phase 06.16]: Plan 03: exact copied recipes and five real context compositions pass with final full 5.2 and focused 4.2/6.0 evidence; keep independent phase approval pending.
 - [Phase 06.17]: Accordion initial state consumes presentation.selected; existing Collapse owns switching and close-all.
 - [Phase 06.17]: Tab adapter absence is a no-op; present entries require callable init/dispose, resolved on every owned lifecycle dispatch.
+- [Phase 06.17]: Document selected-theme wiring before initialization, including ready documents; late providers require the existing initializer.
 
 ### Pending Todos
 
@@ -996,6 +1005,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-07T10:05:38.589Z
-Stopped at: Completed 06.17-02-PLAN.md; next plan 06.17-03
+Last session: 2026-11-07T10:18:53.533Z
+Stopped at: Completed 06.17-03-PLAN.md; independent reviews and verification pending
 Resume file: None

@@ -41,6 +41,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test (completed 2026-11-06)
 - [x] **Phase 06.16: Object-detail values and composition guidance (INSERTED)** - #327: readable choices, explicit help-text policy, meaningful empty values, and correct mixin composition (completed 2026-11-06)
 - [x] **Phase 06.17: Object-detail accordion initial state and tab adapters (INSERTED)** - #328: open the first accordion group and initialize tabs through theme adapters (completed 2026-11-07)
+- [ ] **Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)** - Shared ancestor enforcement under the approved design v2; planning pending.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1150,6 +1151,72 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.17-03-PLAN.md
 
+### Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)
+
+**Goal:** Nested endpoints validate their declared ancestry and enforce its selected permissions through one
+shared mechanism, while preserving independent endpoint-local gates and unchanged top-level behavior.
+**Canonical specification:** [Ancestor authorization design v2](../superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md).
+The effective topic sections and acceptance matrix are authoritative; original D-01–D-53 IDs provide provenance.
+**Requirements**: ANCE-01, ANCE-02, ANCE-03, ANCE-04, ANCE-05, ANCE-06, ANCE-07, ANCE-08
+**Depends on:** Phase 06.17
+**Scope:** Typed `AncestorPolicy` / `AncestorPermissions` configuration; model and Guardian providers; full and
+nearest-protected cascade modes; finite built-in Read/Write classification and exact custom action pairs;
+supported FK/M2M ancestry and Resource leaves; strict validation and bounded ancestry walks; early actor denial
+and interleaved ancestor lookup/permission checks before remaining endpoint work. Preserve ancestor ViewSet
+queryset scope and reuse resolved parent identity. Apply the default-database boundary and bounded migration
+of existing immediate-parent helpers and manage diagnostics.
+**Success criteria:**
+1. The specification's acceptance matrix proves selection, independent gates, request ordering, relationships,
+   queryset/identity/database boundaries, construction safety, and supported core/Guardian/extension compositions.
+2. Removed Guardian parent-policy declarations fail explicitly; existing local object/list/create/state behavior
+   remains intact, and ancestor fallback stays independent of endpoint-local fallback.
+3. One- and three-level query costs are measured in both modes; top-level requests do no ancestor work and
+   permission revocation takes effect on the next request.
+4. Feature/configuration/Guardian/manage guidance, generic examples, a Breaking changelog entry and
+   `docs/migrating-1.0.md` explain the new contract and its migration, Resource, mutation and visibility limits.
+**Planning handoff:** Carry the effective locked decisions into context without reopening approved choices.
+Separate builder discretion and deferred work; consult the historical ledger only for provenance. Ask only
+about genuine conflicts supported by new code evidence. Developer maintainability remains a hard constraint.
+Full ancestor-aware navigation, Resource ancestors, nondefault nested ORM/auth support, destination-parent or
+all-membership authorization, generic mutation engines and persistent authorization caches remain out of scope.
+This insertion assigns the phase; detailed planning and implementation remain pending.
+**Plans:** 0/12 plans executed
+
+Plans:
+**Wave 1**
+- [ ] 06.18-01-PLAN.md — Prove one nested request and strict policy ownership
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.18-02-PLAN.md — Bound ancestry walks and classify exact endpoint operations
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.18-03-PLAN.md — Integrate Guardian ancestry and retire legacy parent policy
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.18-04-PLAN.md — Preserve early admission and enforce ordering across shipped MROs
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.18-05-PLAN.md — Preserve scoped ancestry and structural-parent identity
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 06.18-06-PLAN.md — Reject reached nondefault nested data and write routes
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [ ] 06.18-07-PLAN.md — Apply the default-database boundary to reached authorization consumers
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [ ] 06.18-08-PLAN.md — Migrate repository authorization fixtures while preserving local regressions
+
+**Wave 9** *(blocked on Wave 8 completion)*
+- [ ] 06.18-09-PLAN.md — Expose policy diagnostics and preserve nested redirect behavior
+
+**Wave 10** *(blocked on Wave 9 completion)*
+- [ ] 06.18-10-PLAN.md — Prove mutation boundaries, fresh authorization and measured cost
+- [ ] 06.18-11-PLAN.md — Publish executable configuration, Resource and Guardian guidance
+
+**Wave 11** *(blocked on Wave 10 completion)*
+- [ ] 06.18-12-PLAN.md — Publish paired breaking guidance and capture final-source evidence
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1166,6 +1233,8 @@ Include the dynamic cancel defaults, origin query preservation and custom-templa
 Include the tooltip caption and visible-label rendering contracts settled by Phase 6.8.
 Include the final protected-preview text, shared display-limit configuration and context/template contracts settled
 by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
+Phase 06.18 must also settle before this freeze; include its public ancestor-policy configuration, settings,
+diagnostics and migration contracts in the stability review.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -1197,7 +1266,7 @@ by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 6.14 → 6.15 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 6.14 → 6.15 → 6.16 → 6.17 → 6.18 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -1218,7 +1287,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 15 | 6.13.1 (#322) | Workflow validation/helper and opt-in buttons; settle new theme contracts before the freeze |
 | 16 | 6.14 (#325) | Empty card blocks and tested cards-first navigation |
 | 17 | 6.15 (#326) | Polymorphic labels and per-model groups, including tabler-test adoption and verification |
-| 18 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15 contracts settled; last change before the 1.0.0 bump |
+| 18 | 6.18 (ancestor authorization) | Follows completed 6.17; approved design v2 governs scope and acceptance |
+| 19 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15/6.18 contracts settled; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -1244,4 +1314,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.13.1. Workflow validation and execution | 5/5 | Complete    | 2026-11-06 |
 | 6.14. Card template insertion blocks and cards-first ViewSets | 2/2 | Complete | 2026-11-06 |
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
+| 06.18. Ancestor authorization for nested ViewSets | 0/12 | Planned     | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

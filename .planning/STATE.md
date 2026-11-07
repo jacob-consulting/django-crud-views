@@ -1,19 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: "Phase 06.17 shipped — PR #335"
-stopped_at: Phase 06.17 complete, ready to plan Phase 7
-last_updated: "2026-11-07T12:31:37.595Z"
+current_phase: "06.18"
+current_phase_name: Ancestor authorization for nested ViewSets
+status: Phase 06.18 context gathered — ready for planning
+stopped_at: Phase 06.18 context gathered
+last_updated: "2026-11-07T20:29:34.029Z"
 last_activity: 2026-11-07
-state_head: 5f70a2f69ae4622551e94b4b8e4ad58c540315b4
+state_head: 3321d1aaf1c2455e529b50c6696219195bc9375b
 progress:
-  total_phases: 23
+  total_phases: 24
   completed_phases: 22
   total_plans: 137
   completed_plans: 137
-  percent: 95
 milestone_name: milestone
 ---
 
@@ -24,16 +23,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-07)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.18 — Ancestor authorization for nested ViewSets
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.18 — Ancestor authorization for nested ViewSets
 Plan: Not started
-Status: Phase 06.17 shipped — PR #335
+Status: Phase 06.18 context gathered — ready for planning
 Last activity: 2026-11-07
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.18
 
 ### Phase 06.17 completion — 2026-11-07
 
@@ -1004,6 +1003,7 @@ None yet.
 - Phase 06.15 inserted after Phase 06.14: Issue #326: polymorphic selector labels and per-model detail groups, including required tabler-test adoption and verification. Phase 06.14 completed in another worktree per user; no card implementation dependency. (URGENT)
 - Phase 06.16 inserted after Phase 06.15: Issue #327: object-detail choice labels, help-text policy, empty values, and composition guidance; settled issue decisions are the planning handoff. (URGENT)
 - Phase 06.17 inserted after Phase 06.16: Issue #328: open the first accordion group and initialize/dispose tabs through theme adapters; settled issue decisions are the planning handoff. (URGENT)
+- Phase 06.18 inserted after Phase 06.17: Ancestor authorization for nested ViewSets; canonical approved specification: superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md. Policy decisions remain locked; planning and implementation pending. (URGENT)
 
 ## Deferred Items
 
@@ -1013,6 +1013,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-07T10:18:53.533Z
-Stopped at: Phase 06.17 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-07T20:29:31.590Z
+Stopped at: Phase 06.18 context gathered
+Resume file: .planning/phases/06.18-ancestor-authorization-for-nested-viewsets/06.18-CONTEXT.md

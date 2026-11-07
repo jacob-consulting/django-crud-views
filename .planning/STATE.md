@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.17"
 current_phase_name: Object-detail accordion initial state and tab adapters
-status: Executing — Plan 06.17-01 complete; next plan 02 of 03
-stopped_at: Completed 06.17-01-PLAN.md; next plan 06.17-02
-last_updated: "2026-11-07T09:50:54.224Z"
+status: Executing — Plan 06.17-02 complete; next plan 03 of 03
+stopped_at: Completed 06.17-02-PLAN.md; next plan 06.17-03
+last_updated: "2026-11-07T10:05:41.075Z"
 last_activity: 2026-11-07
-last_activity_desc: Plan 06.17-01 first-open accordion complete
-state_head: d001910f407724e5180d174cbec4a127ed3f4ec4
+last_activity_desc: Plan 06.17-02 theme tab adapters complete
+state_head: a2508df273c9f9ada25223f04c1964774dca81ee
 progress:
   total_phases: 23
   completed_phases: 21
   total_plans: 137
-  completed_plans: 135
+  completed_plans: 136
 milestone_name: milestone
 ---
 
@@ -29,11 +29,17 @@ See: .planning/PROJECT.md (updated 2026-11-06)
 ## Current Position
 
 Phase: 06.17 (Object-detail accordion initial state and tab adapters) — EXECUTING
-Plan: 2 of 3
-Status: Executing — Plan 06.17-01 complete
-Last activity: 2026-11-07 — Plan 06.17-01 first-open accordion complete
+Plan: 3 of 3
+Status: Executing — Plan 06.17-02 complete
+Last activity: 2026-11-07 — Plan 06.17-02 theme tab adapters complete
 
 Next: $gsd-execute-phase 06.17
+
+### Phase 06.17 plan 02 — 2026-11-07
+
+- Lazy tab factory and owned adapter dispatch committed with default/override/no-op/error contracts; existing modal and keyboard ownership preserved. Both tasks have classifier-approved RED and GREEN commits.
+- Final focused JS 74, asset tests 8 with four workers, harness guards 19 passed. Real browser 18 cases/472 assertions with 53 matching source hashes proves stock and alias-free tabler initialization, keyboard/repeat/focus and attached disposal during HTTP replacement; cleanup complete. Scoped Ruff passes.
+- Summary committed; roadmap 2/3 In Progress, ODT-02/03/04 complete. Plan 03 owns public docs/migrations and final gates. Aggregate progress SDK declined its existing unscoped read; plan counter advanced to 3/3. User edits preserved; no push, merge or phase completion.
 
 ### Phase 06.17 plan 01 — 2026-11-07
 
@@ -722,6 +728,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.16 P02 | 8min | 3 tasks | 12 files |
 | Phase 06.16 P03 | 11min | 3 tasks | 10 files |
 | Phase 06.17 P01 | 6min | 2 tasks | 10 files |
+| Phase 06.17 P02 | 8min | 2 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -924,6 +931,7 @@ Recent decisions affecting current work:
 - [Phase 06.16]: Stock textual leaves use exact None/empty-string display checks; raw values, custom ownership, non-text behavior and row structure remain intact.
 - [Phase 06.16]: Plan 03: exact copied recipes and five real context compositions pass with final full 5.2 and focused 4.2/6.0 evidence; keep independent phase approval pending.
 - [Phase 06.17]: Accordion initial state consumes presentation.selected; existing Collapse owns switching and close-all.
+- [Phase 06.17]: Tab adapter absence is a no-op; present entries require callable init/dispose, resolved on every owned lifecycle dispatch.
 
 ### Pending Todos
 
@@ -988,6 +996,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-07T09:50:51.614Z
-Stopped at: Completed 06.17-01-PLAN.md; next plan 06.17-02
+Last session: 2026-11-07T10:05:38.589Z
+Stopped at: Completed 06.17-02-PLAN.md; next plan 06.17-03
 Resume file: None

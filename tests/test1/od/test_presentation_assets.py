@@ -20,6 +20,8 @@ def test_presentation_assets_installed_extension_emits_once():
     html = render_scripts()
     assert html.count(f'src="/static/{SCRIPT}"') == 1
     assert html.index("crud_views/js/viewset.js") < html.index(SCRIPT)
+    assert html.count('src="/static/crud_views/js/adapters.js"') == 1
+    assert html.index("crud_views/js/adapters.js") < html.index(SCRIPT)
 
 
 def test_presentation_assets_repeat_ready_and_reset(asset_registry):

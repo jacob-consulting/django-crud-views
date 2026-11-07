@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
-last_mapped_at: 2026-11-06
+last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
+last_mapped_at: 2026-11-07
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-06
+**Analysis Date:** 2026-11-07
 
 ## Test Framework
 
@@ -167,4 +167,4 @@ For view failures, assert response status, form errors, redirect, and unchanged 
 
 ---
 
-*Testing analysis: 2026-11-06*
+*Testing analysis: 2026-11-07*

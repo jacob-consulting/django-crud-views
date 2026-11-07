@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
-last_mapped_at: 2026-11-06
+last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
+last_mapped_at: 2026-11-07
 ---
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-06
+**Analysis Date:** 2026-11-07
 
 ## Tech Debt
 
@@ -139,12 +139,16 @@ No independently confirmed missing critical feature is recorded. The polymorphic
 - Priority: Medium
 
 **Human acceptance items:**
-- What's not tested: visual/focus inspection or CDN failure behavior for stock UI is only an outstanding concern where explicitly marked pending in current phase UAT.
-- Files: `.planning/STATE.md`, `.planning/phases/06.5*/06.5-UAT.md`
-- Risk: deployment fallback and visual/focus behavior may lack recorded human acceptance.
-- Priority: Medium
+- What's not tested: the Phase 06.17 review explicitly excludes other-browser, assistive-technology, human visual, and actual third-party theme approval; its audits identify no required human gate left open.
+- Files: `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-UI-REVIEW.md`, `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-REVIEW-DISPOSITION.md`
+- Risk: the bounded automated/source review does not establish broader browser, accessibility, visual, or downstream theme compatibility.
+- Priority: Low
 
 ## Resolved Historical Concerns
+
+**Object-detail accordion initial state and tab lifecycle:**
+- Status: Phase 06.17 verified 15/15 must-haves. Independent deep review of 19 changed files found zero findings; security review closed all 9/9 threats; UI review passed 24/24 with no required priority fixes. Broader human/browser/accessibility/theme certification remains outside the bounded phase.
+- Evidence: `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-VERIFICATION.md`, `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-REVIEW-DISPOSITION.md`, `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-SECURITY.md`, `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-UI-REVIEW.md`.
 
 **Protected delete labels:**
 - Status: protected-object entries are not linked; link generation is reserved for selected visible cascade objects. The old concern that protected labels could be linked is resolved.
@@ -156,4 +160,4 @@ No independently confirmed missing critical feature is recorded. The polymorphic
 
 ---
 
-*Concerns audit: 2026-11-06*
+*Concerns audit: 2026-11-07*

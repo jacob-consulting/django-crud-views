@@ -75,6 +75,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.16** Scalar choice labels with raw/custom ownership, explicit inherited help-text policy, exact textual empty markers and executable composition/migration guidance — Phase 06.16; canonical21/21, all five ODV requirements verified, security11/11 and clean independent review.
 
+- ✓ **6.17** First-open projected accordion groups and lazy theme-owned tab initialization/disposal with exact-source migration recipes — Phase 06.17; canonical15/15, ODT-01–05 complete, clean deep review and security9/9.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -182,4 +184,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-06 after Phase 06.16 completion*
+*Last updated: 2026-11-07 after Phase 06.17 completion*

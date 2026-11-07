@@ -91,7 +91,10 @@ async function preflight(page, url, report) {
                 error.applicationFailure = true;
                 throw error;
             }
-            await page.waitForFunction(() => globalThis.bootstrap?.Tab.VERSION === '5.3.3' && globalThis.jQuery?.fn.jquery === '3.7.1');
+            const namespace = new URL(url).searchParams.get('namespace') === 'tabler' ? 'tabler' : 'bootstrap';
+            await page.waitForFunction(namespace => globalThis[namespace]?.Tab.VERSION === '5.3.3' && globalThis.jQuery?.fn.jquery === '3.7.1', namespace);
+            report.namespace = namespace;
+            if (namespace === 'tabler') assert(await page.evaluate(() => !('bootstrap' in globalThis)));
             report.font = await page.evaluate(async () => {
                 const loaded = await document.fonts.load('900 16px "Font Awesome 6 Free"');
                 const icon = document.querySelector('.fa-user');
@@ -122,6 +125,7 @@ async function tabState(page, container, count, index, record, label, focused = 
         return tabs.every((tab, i) => document.getElementById(tab.getAttribute('aria-controls')).classList.contains('show') === (i === index));
     }, {container, index});
     const state = await page.locator(container).evaluate(root => ({
+        namespaceValid: new URL(location.href).searchParams.get('namespace') !== 'tabler' || !('bootstrap' in globalThis),
         focus: document.activeElement.id,
         tabs: [...root.querySelectorAll('[role="tab"]')].map(t => {
             const p = document.getElementById(t.getAttribute('aria-controls'));
@@ -131,7 +135,7 @@ async function tabState(page, container, count, index, record, label, focused = 
                     active: p.classList.contains('active'), shown: p.classList.contains('show'), tabIndex: p.tabIndex}};
         }),
     }));
-    check(record, label, state.tabs.length === count && state.tabs.every((t, i) =>
+    check(record, label, state.namespaceValid && state.tabs.length === count && state.tabs.every((t, i) =>
         t.name && t.panel && t.target === '#' + t.panel.id && t.panel.label === t.id && t.panel.tabIndex === 0 &&
         t.selected === String(i === index) && t.active === (i === index) && t.tabIndex === (i === index ? 0 : -1) &&
         t.panel.visible === (i === index) && t.panel.active === (i === index) && t.panel.shown === (i === index)) &&
@@ -142,7 +146,12 @@ async function tabs(page, container, count, links, record, modal = false) {
     await tabState(page, container, count, 0, record, 'first-paint', false);
     await controls.first().focus();
     // This is deliberately the first interaction with the newly inserted tablist.
-    for (const [key, selected] of [['ArrowDown', count - 1], ['ArrowDown', 0], ['ArrowUp', count - 1], ['Home', 0], ['End', count - 1]]) {
+    const sequence = [
+        ...Array.from({length: count}, (_, i) => ['ArrowDown', (i + 1) % count]),
+        ...Array.from({length: count}, (_, i) => ['ArrowUp', (count - i - 1) % count]),
+        ['End', count - 1], ['Home', 0], ['End', count - 1],
+    ];
+    for (const [key, selected] of sequence) {
         await page.keyboard.press(key);
         await tabState(page, container, count, selected, record, `keyboard-${record.assertions.length}-${key}`);
     }
@@ -155,6 +164,123 @@ async function tabs(page, container, count, links, record, modal = false) {
         await page.keyboard.press('Tab');
         const destination = links ? `#${panel} a[href="/panel-link/"]` : modal ? '#modal-after-tabs' : '#after-tabs';
         check(record, `tab-exit-${selected}`, await page.locator(destination).evaluate(el => el === document.activeElement), destination);
+    }
+}
+async function runTabAdapters(hostPage, detail, report) {
+    for (const namespace of ['bootstrap', 'tabler']) {
+        // A fresh context fetches every pinned asset, including fonts already cached in the host page.
+        const context = await hostPage.context().browser().newContext();
+        await context.addCookies(await hostPage.context().cookies());
+        const page = await context.newPage();
+        page.setDefaultTimeout(5000);
+        page.on('pageerror', error => report.pageErrors.push(error.message));
+        page.on('console', message => {if (message.type() === 'error') report.consoleErrors.push(message.text());});
+        try {
+        const url = base + detail + `?count=3&namespace=${namespace}`;
+        const assets = {};
+        await preflight(page, url, assets);
+        for (const modal of [false, true]) {
+            const container = modal ? '#cv-modal' : '#primary';
+            const record = {id: `tab-adapters-${namespace}-${modal ? 'modal' : 'page'}`, assertions: [], assets, passed: false};
+            report.cases.push(record);
+            if (modal) await openModal(page);
+            const initial = await page.locator(container).evaluate((root, namespace) => {
+                const Tab = globalThis[namespace].Tab;
+                return {namespace, version: Tab.VERSION, bootstrapAbsent: !('bootstrap' in globalThis),
+                    observedCalls: globalThis.presentationTabCalls?.filter(call => call.modal === !!root.closest('#cv-modal')).length,
+                    instances: [...root.querySelectorAll('[role="tab"]')].map(el => !!Tab.getInstance(el))};
+            }, namespace);
+            check(record, 'all-three-instances-before-interaction', initial.instances.length === 3 && initial.instances.every(Boolean) &&
+                initial.observedCalls === 3 && initial.version === '5.3.3' && (namespace !== 'tabler' || initial.bootstrapAbsent), initial);
+            await tabs(page, container, 3, false, record, modal);
+            // Start at zero, then prove repeated setup preserves identity/focus/selection and one key produces one event.
+            await page.locator(`${container} [role="tab"]`).first().click();
+            await tabState(page, container, 3, 0, record, 'repeat-baseline');
+            const repeat = await page.locator(container).evaluate((root, namespace) => {
+                const Tab = globalThis[namespace].Tab;
+                const triggers = [...root.querySelectorAll('[role="tab"]')];
+                const instances = triggers.map(el => Tab.getInstance(el));
+                const focus = document.activeElement;
+                const selected = triggers.map(el => el.getAttribute('aria-selected'));
+                const counter = {count: 0};
+                const listener = event => { if (triggers.includes(event.target)) counter.count++; };
+                root.addEventListener('shown.bs.tab', listener);
+                globalThis.presentationRepeat = {root, counter, listener};
+                for (let i = 0; i < 3; i++) cv.initObjectDetailTabs(root);
+                return {identity: triggers.every((el, i) => Tab.getInstance(el) === instances[i]),
+                    focus: document.activeElement === focus,
+                    selection: triggers.every((el, i) => el.getAttribute('aria-selected') === selected[i]),
+                    bootstrapAbsent: !('bootstrap' in globalThis)};
+            }, namespace);
+            check(record, 'repeat-preserves-instances-selection-focus', repeat.identity && repeat.focus && repeat.selection &&
+                (namespace !== 'tabler' || repeat.bootstrapAbsent), repeat);
+            await page.keyboard.press('ArrowDown');
+            await tabState(page, container, 3, 1, record, 'repeat-one-key-selects-second');
+            await delay(200);
+            const activations = await page.evaluate(() => {
+                const {root, counter, listener} = presentationRepeat;
+                root.removeEventListener('shown.bs.tab', listener);
+                delete globalThis.presentationRepeat;
+                return counter.count;
+            });
+            check(record, 'repeat-exactly-one-activation', activations === 1, activations);
+            if (modal) {
+                await page.evaluate(namespace => {
+                    const Tab = globalThis[namespace].Tab;
+                    const old = [...document.querySelectorAll('#cv-modal [data-cv-od-tabs] [role="tab"]')];
+                    const pageInstances = [...document.querySelectorAll('#primary [role="tab"]')].map(el => [el, Tab.getInstance(el)]);
+                    const unrelated = document.createElement('div');
+                    unrelated.innerHTML = '<div role="tablist"><button role="tab" data-bs-toggle="tab">Unrelated</button></div>';
+                    document.body.append(unrelated);
+                    const control = unrelated.querySelector('button');
+                    const instance = Tab.getOrCreateInstance(control);
+                    const observations = [];
+                    for (const el of old) {
+                        const tab = Tab.getInstance(el), dispose = tab.dispose;
+                        tab.dispose = function () {
+                            observations.push({connected: el.isConnected, allOldAttached: old.every(t => t.isConnected),
+                                sameContent: document.querySelector('#cv-modal').contains(el), bootstrapAbsent: !('bootstrap' in globalThis)});
+                            return dispose.call(this);
+                        };
+                    }
+                    globalThis.presentationReplacement = {old, pageInstances, control, instance, observations, unrelated};
+                }, namespace);
+                const response = page.waitForResponse(r => r.url() === url && r.request().headers()['x-cv-modal'] === 'true');
+                await page.evaluate(url => new Promise(resolve => {
+                    document.getElementById('cv-modal').addEventListener('cv:modal:loaded', resolve, {once: true});
+                    cv.cvModalOpen(url, '', document.getElementById('launch'));
+                }), url);
+                check(record, 'replacement-real-http', (await response).status() === 200);
+                const replacement = await page.evaluate(namespace => {
+                    const Tab = globalThis[namespace].Tab;
+                    const {old, pageInstances, control, instance, observations, unrelated} = presentationReplacement;
+                    const result = {observations, oldDetached: old.every(el => !el.isConnected),
+                        oldAssociationsRemoved: old.every(el => Tab.getInstance(el) === null),
+                        newInstances: [...document.querySelectorAll('#cv-modal [role="tab"]')].map(el => !!Tab.getInstance(el)),
+                        pageRetained: pageInstances.every(([el, tab]) => Tab.getInstance(el) === tab),
+                        unrelatedRetained: Tab.getInstance(control) === instance, bootstrapAbsent: !('bootstrap' in globalThis)};
+                    instance.dispose(); unrelated.remove(); delete globalThis.presentationReplacement;
+                    return result;
+                }, namespace);
+                check(record, 'every-old-instance-disposed-before-detachment', replacement.observations.length === 3 &&
+                    replacement.observations.every(o => o.connected && o.allOldAttached && o.sameContent &&
+                        (namespace !== 'tabler' || o.bootstrapAbsent)), replacement.observations);
+                check(record, 'replacement-removes-old-and-initializes-new', replacement.oldDetached && replacement.oldAssociationsRemoved &&
+                    replacement.newInstances.length === 3 && replacement.newInstances.every(Boolean), replacement);
+                check(record, 'replacement-retains-page-and-unrelated', replacement.pageRetained && replacement.unrelatedRetained &&
+                    (namespace !== 'tabler' || replacement.bootstrapAbsent), replacement);
+                await tabState(page, '#cv-modal', 3, 0, record, 'replacement-first-selected', false);
+                await tabState(page, '#primary', 3, 1, record, 'replacement-page-selection-retained', false);
+            }
+            const observations = await page.evaluate(() => globalThis.presentationTabCalls);
+            check(record, 'real-init-never-shows-focuses-or-selects', observations?.length > 0 && observations.every(o =>
+                o.focusUnchanged && o.selectionUnchanged && o.showCalls === 0 && o.connected &&
+                (namespace !== 'tabler' || o.bootstrapAbsent)), observations);
+            check(record, 'initialization-observed-in-required-scope', observations.some(o => o.modal === modal), observations.length);
+            if (modal) await closeModal(page);
+            record.passed = true;
+        }
+        } finally { await context.close(); }
     }
 }
 async function runTabs(page, detail, report) {
@@ -195,6 +321,21 @@ async function runTabs(page, detail, report) {
             record.passed = true;
         }
     }
+}
+async function accordionState(page, container, count, selected, record, label) {
+    // Wait for every panel, including the previously selected one, to finish transitioning.
+    await page.waitForFunction(selector => !document.querySelector(selector).querySelector('.collapsing'), container);
+    const state = await page.locator(container).evaluate(root => [...root.querySelectorAll('.accordion-button')].map(control => {
+        const panel = document.getElementById(control.getAttribute('aria-controls'));
+        return {expanded: control.getAttribute('aria-expanded'), collapsed: control.classList.contains('collapsed'),
+            shown: panel.classList.contains('show'), visible: panel.getBoundingClientRect().height > 0,
+            contained: root.contains(panel), label: panel.getAttribute('aria-labelledby') === control.id,
+            target: control.getAttribute('data-bs-target') === '#' + panel.id};
+    }));
+    check(record, label, state.length === count && state.every((item, index) =>
+        item.expanded === String(index === selected) && item.collapsed === (index !== selected) &&
+        item.shown === (index === selected) && item.visible === (index === selected) &&
+        item.contained && item.label && item.target), state);
 }
 async function runIdentity(page, detail, report) {
     const record = {id: 'identity-isolation', assertions: [], passed: false};
@@ -239,22 +380,67 @@ async function runIdentity(page, detail, report) {
         }
     }
     for (const [index, parent] of parents.entries()) {
-        for (const control of parent.controls) {
+        await accordionState(page, '#' + parent.id, 5, 0, record, `accordion-${index}-first-paint`);
+        for (const [position, control] of parent.controls.entries()) {
+            if (position === 0) continue; // First group is already open on first paint.
             await page.locator('#' + control.control).click();
-            await page.locator('#' + control.panel + '.show').waitFor();
-            await page.waitForFunction(id => !document.getElementById(id).classList.contains('collapsing'), control.panel);
-            check(record, `accordion-${index}-${control.control}`, await page.locator('#' + control.panel).isVisible() &&
-                await page.locator(`#${parent.id} .accordion-collapse.show`).count() === 1);
+            await accordionState(page, '#' + parent.id, 5, position, record, `accordion-${index}-switch-${position}`);
         }
-        if (index === 0) check(record, 'second-accordion-stays-collapsed', await page.locator('#accordion-two .show').count() === 0);
-        else check(record, 'first-accordion-keeps-selection', await page.locator('#' + parents[0].controls.at(-1).panel).isVisible());
+        await page.locator('#' + parent.controls.at(-1).control).click();
+        await accordionState(page, '#' + parent.id, 5, -1, record, `accordion-${index}-close-all`);
+        const sibling = parents[1 - index];
+        await accordionState(page, '#' + sibling.id, 5, index === 0 ? 0 : -1, record, `accordion-${index}-sibling-unaffected`);
     }
     record.passed = true;
 }
-async function openModal(page) {
+async function runAccordionModal(page, detail, report) {
+    for (const count of [1, 2]) {
+        const record = {id: `accordion-${count}-page-modal`, assertions: [], passed: false};
+        report.cases.push(record);
+        await page.goto(base + detail + `?layout=accordion&expanded=1&count=${count}`);
+        check(record, 'page-accordion-layout', await page.locator('#primary .accordion-button').count() === count);
+        await accordionState(page, '#primary', count, 0, record, 'page-first-paint');
+        await accordionState(page, '#sibling', count, 0, record, 'sibling-first-paint');
+        await accordionState(page, '#accordion-one', 5, 0, record, 'auxiliary-one-first-paint');
+        await accordionState(page, '#accordion-two', 5, 0, record, 'auxiliary-two-first-paint');
+        if (count > 1) {
+            await page.locator('#primary .accordion-button').last().click();
+            await accordionState(page, '#primary', count, count - 1, record, 'page-switch');
+        }
+        await page.locator('#primary .accordion-button').last().click();
+        await accordionState(page, '#primary', count, -1, record, 'page-close-all');
+        await page.locator('#accordion-one .accordion-button').first().click();
+        await accordionState(page, '#accordion-one', 5, -1, record, 'auxiliary-one-close-all');
+        for (const load of [1, 2]) {
+            const response = page.waitForResponse(response => response.url().includes(detail) &&
+                response.request().headers()['x-cv-modal'] === 'true');
+            await openModal(page, '.accordion-button');
+            const loaded = await response;
+            check(record, `load-${load}-actual-accordion-http`, loaded.status() === 200 &&
+                loaded.url().includes('layout=accordion') && (await loaded.text()).includes('accordion-button'));
+            await accordionState(page, '#cv-modal', count, 0, record, `load-${load}-first-paint`);
+            const ids = await page.locator('[id]').evaluateAll(nodes => nodes.map(node => node.id));
+            check(record, `load-${load}-unique-identities`, ids.length === new Set(ids).size);
+            if (count > 1) {
+                await page.locator('#cv-modal .accordion-button').last().click();
+                await accordionState(page, '#cv-modal', count, count - 1, record, `load-${load}-switch`);
+            }
+            await page.locator('#cv-modal .accordion-button').last().click();
+            await accordionState(page, '#cv-modal', count, -1, record, `load-${load}-close-all`);
+            await accordionState(page, '#primary', count, -1, record, `load-${load}-page-unaffected`);
+            await accordionState(page, '#sibling', count, 0, record, `load-${load}-sibling-unaffected`);
+            await accordionState(page, '#accordion-one', 5, -1, record, `load-${load}-auxiliary-one-unaffected`);
+            await accordionState(page, '#accordion-two', 5, 0, record, `load-${load}-auxiliary-two-unaffected`);
+            await closeModal(page);
+        }
+        record.passed = true;
+    }
+}
+async function openModal(page, contentSelector = '[role="tab"]') {
     await page.locator('#launch').focus();
     await page.keyboard.press('Enter');
-    await page.locator('#cv-modal.show [role="tab"]').first().waitFor();
+    await page.locator(`#cv-modal.show ${contentSelector}`).first().waitFor();
+    await page.waitForFunction(() => !document.querySelector('#cv-modal').classList.contains('cv-loading'));
     await delay(350);
 }
 async function closeModal(page) {
@@ -376,7 +562,7 @@ async function runNative(page, detail, report) {
 }
 async function main() {
     const sourceFiles = ['tests/browser/presentation.cjs', 'tests/browser/presentation_server.py',
-        'tests/browser/presentation-config.test.cjs', 'tests/test1/app/templates/app/base.html',
+        'tests/browser/presentation-config.test.cjs', 'tests/browser/presentation-cleanup.test.cjs', 'tests/test1/app/templates/app/base.html',
         ...filesIn('tests/browser/templates/presentation'), ...filesIn('src/crud_views/static/crud_views/js'),
         ...filesIn('src/crud_views_object_detail/static'),
         ...filesIn('src/crud_views_object_detail/templates'), 'src/crud_views_object_detail/lib/mixins.py',
@@ -427,13 +613,21 @@ async function main() {
         await preflight(page, base + detail, report);
         assetGate = false;
         await runTabs(page, detail, report);
+        await runTabAdapters(page, detail, report);
         if (requested === 'all') {
             await runIdentity(page, detail, report);
+            await runAccordionModal(page, detail, report);
             await runTranslation(page, detail, report);
             await runIcons(page, detail, report);
             await runNative(page, detail, report);
         }
-        assert.equal(report.cases.length, requested === 'all' ? 12 : 8);
+        const requiredCases = [
+            ...[1, 2].flatMap(count => ['plain', 'link'].flatMap(kind => ['page', 'modal'].map(scope => `tabs-${count}-${kind}-${scope}`))),
+            ...['bootstrap', 'tabler'].flatMap(namespace => ['page', 'modal'].map(scope => `tab-adapters-${namespace}-${scope}`)),
+            ...(requested === 'all' ? ['identity-isolation', 'accordion-1-page-modal', 'accordion-2-page-modal',
+                'stable-translated-identities', 'mixed-heading-icons', 'native-projection-escaping'] : []),
+        ];
+        assert.deepEqual(report.cases.map(c => c.id).sort(), requiredCases.sort());
         assert(report.cases.every(c => c.passed && c.assertions.length > 0 && c.assertions.every(a => a.passed)));
         assert.deepEqual(report.pageErrors, []);
         assert.deepEqual(report.consoleErrors, []);

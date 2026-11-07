@@ -259,6 +259,18 @@ criteria without adding downstream adoption or the separately deferred #328/#329
 - [x] **ODV-04**: Publish executable choice/help/composition examples, the exact help precedence table, raw opt-out and copied/custom-template guidance; warn beside the composition recipe that complete object-detail views already include the mixin, demonstrate valid core/Guardian/polymorphic composition, and pair Breaking/default release notes with migration instructions (D-11–D-12, D-16).
 - [x] **ODV-05**: Prove issue #327 acceptance through focused regressions, supported Django-series and optional-app checks, current-source full-suite and documentation gates; preserve Phase 06.15 list/mapping/dynamic selection, ordinary query costs and bounded maintainable paths, with no downstream completion dependency or unrelated hierarchy/layout work (D-03, D-17–D-20).
 
+### Object-detail accordion and tab adapters (Phase 06.17, #328)
+
+Source: settled issue #328 and Phase 06.17 CONTEXT.md D-01–D-20. The initial spec-less edge probe
+was visibly skipped while phase requirement IDs were TBD; these IDs preserve all explicit acceptance
+criteria from context/research without inventing fallback predicates or downstream adoption gates.
+
+- [x] **ODT-01**: Server-render exactly the projected first accordion group open with matching classes/ARIA, reciprocal scoped references and shared-parent behavior; cover zero/one/many groups, standalone rendering and independent components, with no configurable selection, persistence or opening JavaScript (D-01–D-05, D-13).
+- [x] **ODT-02**: Add tab init/dispose to the existing namespace/provider factory with call-time resolution, get-or-create initialization without show/focus, get-only disposal, absent component/instance no-ops and visible present errors; preserve default invocation and override/loading conventions (D-06–D-09, D-14).
+- [x] **ODT-03**: Dispatch through the tab adapter only for owned marked triggers, preserving root/nested boundaries, public repeat-safe custom initialization, DOM-ready/ready-document behavior and modal attached-content unload-before-replacement/loaded ordering; retain library-owned keyboard/selection/focus behavior (D-10–D-12, D-14).
+- [x] **ODT-04**: Prove real page/modal accordion switching and close-all behavior plus stock and tabler namespace tab initialization with no bootstrap global in the alternate scenario; inspect inactive instances, keyboard wrapping/Home/End, ARIA/tab stops, insertion focus, repeat safety and disposal while attached before actual HTTP replacement (D-13–D-16).
+- [x] **ODT-05**: Publish executable factory/custom-map and copied accordion examples, preserve custom insertion guidance, pair changed-default/template/adapter migration in Breaking and migrating-1.0, and record focused/full JS, rendering, browser and docs verification with multicore broad Python and honest limits; preserve bounded scope and prior group/value behavior (D-17–D-20).
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -424,6 +436,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ODV-03 | Phase 06.16 | Complete |
 | ODV-04 | Phase 06.16 | Complete |
 | ODV-05 | Phase 06.16 | Complete |
+| ODT-01 | Phase 06.17 | Complete |
+| ODT-02 | Phase 06.17 | Complete |
+| ODT-03 | Phase 06.17 | Complete |
+| ODT-04 | Phase 06.17 | Complete |
+| ODT-05 | Phase 06.17 | Complete |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |
@@ -433,10 +450,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 121 total
-- Mapped to phases: 121
+- v1 requirements: 126 total
+- Mapped to phases: 126
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-25*
-*Last updated: 2026-11-06 — added ODV-01–ODV-05 for the settled Phase 06.16 acceptance groups; 121 active v1 requirements mapped*
+*Last updated: 2026-11-07 — added ODT-01–ODT-05 for the settled Phase 06.17 acceptance groups; 126 active v1 requirements mapped*

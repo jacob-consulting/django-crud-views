@@ -1,6 +1,42 @@
 {% extends "app/base.html" %}
 {% load crud_views crud_views_object_detail %}
 {% block nav %}{% endblock %}
+{% block presentation_theme_adapter %}
+<script>
+    // Test-only compatible namespace recipe, before the first owned DOM-ready initialization.
+    {% if tabler_namespace %}
+    globalThis.tabler = globalThis.bootstrap;
+    delete globalThis.bootstrap;
+    Object.assign(cv.adapters, cv.bootstrapAdapters(() => globalThis.tabler));
+    {% endif %}
+    globalThis.presentationTabCalls = [];
+    {
+        const namespace = {% if tabler_namespace %}"tabler"{% else %}"bootstrap"{% endif %};
+        const initialize = cv.adapters.tab.init;
+        cv.adapters.tab.init = function (element) {
+            const Tab = globalThis[namespace].Tab;
+            const bootstrapAbsentBefore = !("bootstrap" in globalThis);
+            const focus = document.activeElement;
+            const list = element.closest("[data-cv-od-tabs]");
+            const selection = () => [...list.querySelectorAll('[role="tab"]')].map(el =>
+                [el.getAttribute("aria-selected"), el.classList.contains("active")]);
+            const before = JSON.stringify(selection());
+            const show = Tab.prototype.show;
+            let showCalls = 0;
+            Tab.prototype.show = function (...args) { showCalls++; return show.apply(this, args); };
+            try {
+                initialize.call(this, element);
+            } finally {
+                Tab.prototype.show = show;
+            }
+            presentationTabCalls.push({focusUnchanged: document.activeElement === focus,
+                selectionUnchanged: JSON.stringify(selection()) === before, showCalls,
+                bootstrapAbsent: bootstrapAbsentBefore && !("bootstrap" in globalThis), connected: element.isConnected,
+                modal: !!element.closest("#cv-modal")});
+        };
+    }
+</script>
+{% endblock %}
 {% block content %}
 {% cv_heading_icon view.cv_get_header_icon location="page" as title_icon %}
 {% cv_heading "header" level=1 size=3 icon_class=title_icon.host_class %}{{ title_icon.inline_html }} Presentation author{% endcv_heading %}
@@ -11,7 +47,7 @@
 <a id="launch" href="{{ modal_url }}" data-cv-modal="true">Open author details</a>
 {% if expanded %}
 <section id="sibling">
-{% render_object_detail object object_detail_groups layout="tabs-vertical" component_id="author-sibling" %}
+{% render_object_detail object object_detail_groups layout=object_detail_layout component_id="author-sibling" %}
 </section>
 <section id="accordion-one">{% render_object_detail object accordion_groups layout="accordion" %}</section>
 <section id="accordion-two">{% render_object_detail object accordion_groups layout="accordion" %}</section>

@@ -1,6 +1,6 @@
 // src/crud_views/static/crud_views/js/adapters.js
 // cv.adapters: the only place crud_views scripts touch a UI library. Themes replace entries;
-// cv.bootstrapAdapters(ns) builds all four for any Bootstrap-compatible namespace.
+// cv.bootstrapAdapters(ns) builds all five for any Bootstrap-compatible namespace.
 globalThis.cv = globalThis.cv || {};
 (function (cv) {
     const SIZE_CLASSES = Object.freeze({sm: "modal-sm", lg: "modal-lg", xl: "modal-xl"});
@@ -98,6 +98,11 @@ globalThis.cv = globalThis.cv || {};
                 // getInstance, not getOrCreateInstance: a trigger that was never initialised gains nothing here.
                 hide(el) { component(ns, "Tooltip")?.getInstance(el)?.hide(); },
                 dispose(el) { component(ns, "Tooltip")?.getInstance(el)?.dispose(); },
+            },
+            tab: {
+                init(el) { component(ns, "Tab")?.getOrCreateInstance(el); },
+                // Cleanup must never create an instance on a previously untouched trigger.
+                dispose(el) { component(ns, "Tab")?.getInstance(el)?.dispose(); },
             },
             collapse: {
                 toggle(el) {

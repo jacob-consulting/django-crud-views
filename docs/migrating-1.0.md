@@ -432,8 +432,8 @@ and render element-library icons once. Redeploy copied templates with these chan
 Replace copied object and group templates together using the executed
 [tabs and accordion recipes](reference/object_detail_layout_packs.md#copied-interactive-templates).
 Use `component.groups` and forward `presentation` / `component` to `render_group`.
-Both triggers and panels read the same `selected` flag; the first tab and panel are active.
-Accordions remain initially collapsed. Keep the stock marker and panel reading/focus stop,
+Both triggers and panels read the same `presentation.selected` flag; the first tab and panel are active,
+and the first accordion group starts open. Keep the stock marker and panel reading/focus stop,
 or follow the reference's theme qualification and verify your own focus sequence.
 
 Old title-slug selectors and fixed accordion root IDs are obsolete. Supply
@@ -454,6 +454,27 @@ fields do not require a template migration: default Bootstrap output remains unc
 Native themes can use the tested [badge recipe](reference/object_detail_badges.md#native-semantic-badge-template)
 and [minimal native layout](reference/object_detail_layout_packs.md#minimal-native-layout).
 
+### Object-detail accordion defaults and tab adapters
+
+The first accordion group now starts open on full pages and fresh modal loads. Put the most useful group first;
+opening another closes the previous one, and users may close all. Standalone `render_group` starts open too.
+There is no configurable selection, start-collapsed/open-all mode or persistence across reloads.
+
+The projection source is unchanged: forward `component.groups` entries as `presentation`, and use
+`presentation.selected` in all three copied group-template state conditions: omit the button's `collapsed`
+class when selected, set `aria-expanded` to true only when selected, and add the panel's `show` class only
+when selected. Preserve scoped IDs, reciprocal ARIA references and the conditional shared parent. Replace
+copied object/group files together from the [executable recipes](reference/object_detail_layout_packs.md#copied-interactive-templates).
+Do not derive selection from an inner loop or add selection to group configuration.
+
+`cv.bootstrapAdapters(namespaceOrProvider)` now returns tab operations alongside its existing entries.
+A complete custom adapter map must supply both callable `tab.init(el)` and `tab.dispose(el)` methods,
+or obtain the tab entry from the factory. Use the [executed namespace and complete-map examples](reference/javascript.md#cvadapters)
+and [load-order guidance](reference/assets.md#object-detail-tab-initialization-order). Missing Tab/entry is a no-op;
+malformed present entries and provider/component errors propagate. No missing-library keyboard fallback is promised.
+The existing `cv.initObjectDetailTabs(root=document)` custom-insertion API remains repeat-safe and does not
+activate or focus tabs; the UI library owns keyboard behavior. A late provider needs an explicit initializer call.
+
 ### Filtered object-detail assets
 
 The installed object-detail extension registers `crud_views_object_detail/js/tabs.js`.
@@ -468,8 +489,12 @@ sources = cv_sources("js", keys=["crud_views", "crud_views_object_detail"])
 ```
 
 Use `sources` as the pipeline package's `source_filenames`; keep it lazy in settings.
-Do not add a duplicate direct script when your bundle already includes it. Load Bootstrap
-before initializing stock tabs. Rebuild/redeploy static bundles along with copied templates.
+Do not add a duplicate direct script when your bundle already includes it. Load core `adapters.js` before the
+object-detail extension and finish selected-theme wiring and library loading before initialization. On an
+already-ready document the extension initializes immediately, so wiring must precede the extension itself.
+Apply this deadline to custom bundles too; late provider resolution does not schedule a retry. Call
+`cv.initObjectDetailTabs(root)` after late library availability or custom insertion. Rebuild/redeploy static
+bundles along with copied templates; see [asset order](reference/assets.md#object-detail-tab-initialization-order).
 
 ### Removed card label keyword
 
@@ -1549,17 +1574,20 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
   starts from the [Custom alert frame](reference/theme.md#custom-alert-frame) recipe.
 - **Heading levels:** `CRUD_VIEWS_HEADER_LEVEL`, plus `{% cv_heading %}` for the headings in your theme's own
   templates, so they follow the same setting (#251, [Heading levels](reference/templates.md#heading-levels)).
-- **JavaScript:** `cv.adapters.modal`, `cv.adapters.tooltip`, `cv.adapters.collapse` and `cv.adapters.alert` replace
+- **JavaScript:** `cv.adapters.modal`, `cv.adapters.tooltip`, `cv.adapters.collapse`, `cv.adapters.alert` and `cv.adapters.tab` replace
   Bootstrap's API for a theme on another framework ([`cv.adapters`](reference/javascript.md#cvadapters)).
   `alert.close(el)` is new: it closes a dismissible alert
   ([Dismissible alerts](reference/javascript.md#dismissible-alerts)). How the theme assigns its adapters matters:
-    - A partial map assigned **before** `adapters.js` loads needs nothing: every entry it leaves out, `alert`
+    - A partial map assigned **before** `adapters.js` loads needs nothing: every entry it leaves out, `alert` and `tab`
       included, gets its default while `adapters.js` loads.
     - A theme that replaces the **whole map after** core loads (`cv.adapters = {...}`) discards the defaults, and
       core does not fill them in again. Its map must provide `alert` with `close(el)`, or every alert close button
       throws a `TypeError` and the alert stays. Replace single entries (`cv.adapters.modal = {...}`) or merge into
       the existing map (`Object.assign(cv.adapters, {...})`) instead; a map for a Bootstrap-compatible namespace
-      takes the entry from the factory, `alert: cv.bootstrapAdapters(ns).alert`.
+      takes the entries from the factory, including `alert: cv.bootstrapAdapters(ns).alert` and
+      `tab: cv.bootstrapAdapters(ns).tab`. A complete custom tab entry needs both callable `init(el)` and
+      `dispose(el)` methods. Unlike alert, an absent tab entry is a no-op; a malformed present entry throws.
+      Wire the selected theme before initialization; see the [executable adapter recipes](reference/javascript.md#cvadapters).
 
 ### Contract changes in templates you still override
 

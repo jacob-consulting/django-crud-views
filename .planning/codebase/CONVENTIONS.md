@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
-last_mapped_at: 2026-11-06
+last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
+last_mapped_at: 2026-11-07
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-06
+**Analysis Date:** 2026-11-07
 
 ## Maintainability Constraint
 
@@ -97,4 +97,4 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 
 ---
 
-*Convention analysis: 2026-11-06*
+*Convention analysis: 2026-11-07*

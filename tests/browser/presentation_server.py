@@ -119,6 +119,8 @@ class PresentationDetail(ObjectDetailViewPermissionRequired):
         from crud_views_object_detail.lib.config import PropertyGroupConfig
 
         names = [(gettext_lazy("January"), "january"), (gettext_lazy("February"), "february")]
+        if self.request.GET.get("count") == "3":
+            names.append((gettext_lazy("March"), "march"))
         if native_theme.get():
             return [
                 PropertyGroupConfig(
@@ -150,7 +152,14 @@ class PresentationDetail(ObjectDetailViewPermissionRequired):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["expanded"] = self.request.GET.get("expanded") == "1"
-        context["object_detail_layout"] = "native" if native_theme.get() else "tabs-vertical"
+        context["tabler_namespace"] = self.request.GET.get("namespace") == "tabler"
+        context["object_detail_layout"] = (
+            "native"
+            if native_theme.get()
+            else "accordion"
+            if self.request.GET.get("layout") == "accordion"
+            else "tabs-vertical"
+        )
         context["accordion_groups"] = [
             ResolvedGroup(title=title, icon=icon, properties=[ResolvedProperty("first_name", "Name", HOSTILE)])
             for title, icon in [

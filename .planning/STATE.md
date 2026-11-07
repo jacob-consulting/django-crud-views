@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
-status: "Phase 06.16 shipped — PR #333"
-stopped_at: Phase 06.16 complete, ready to plan Phase 7
-last_updated: "2026-11-06T21:24:31.612Z"
-last_activity: 2026-11-06
-state_head: 4d04ff90fc04167393c1591f0b7cfef33a943673
+status: "Phase 06.17 shipped — PR #335"
+stopped_at: Phase 06.17 complete, ready to plan Phase 7
+last_updated: "2026-11-07T12:31:37.595Z"
+last_activity: 2026-11-07
+state_head: 5f70a2f69ae4622551e94b4b8e4ad58c540315b4
 progress:
-  total_phases: 22
-  completed_phases: 21
-  total_plans: 134
-  completed_plans: 134
+  total_phases: 23
+  completed_phases: 22
+  total_plans: 137
+  completed_plans: 137
   percent: 95
 milestone_name: milestone
 ---
@@ -21,7 +21,7 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-06)
+See: .planning/PROJECT.md (updated 2026-11-07)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -30,10 +30,36 @@ See: .planning/PROJECT.md (updated 2026-11-06)
 
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Phase 06.16 shipped — PR #333
-Last activity: 2026-11-06
+Status: Phase 06.17 shipped — PR #335
+Last activity: 2026-11-07
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.17 completion — 2026-11-07
+
+- All three plans committed; canonical verification passed15/15, ODT-01–05, D01–D20 and32 UI considerations accounted for. No required human checks or implementation blockers.
+- Independent deep review clean19 files; security9/9 closed; Nyquist no gaps; UI preservation24/24. WINDOWS36 documentation classifier-order exception independently reviewed and explicitly waived; historical violation remains recorded.
+- Final source full5.2:10,849 passed/one existing skip; focused177 each4.2/5.2/6.0 on Python3.12.3; JS383; browser18/472 with53 matching hashes and cleanup; examples409 plus100subtests. Strict docs/scoped Ruff pass. Broader runtime/visual/AT coverage unclaimed.
+- Completion warnings misparse inline commands as paths; actual referenced artifacts exist. No learnings/todos/handoffs require graduation or closure. Phase7 ready for discussion; existing config/state.json/CLAUDE/notes preserved; no push or merge.
+
+### Phase 06.17 plan 03 — 2026-11-07
+
+- Published five-entry adapter/lifecycle/loading contracts, exact-source namespace/map examples, first-open copied accordion recipes and paired Breaking/current migration guidance. No production source changed in this plan.
+- Final source e24fec82: full Django5.2 10,849 passed/one existing Django6-only skip in304.72s; focused177 each Django4.2/5.2/6.0, all Python3.12.3/four workers. JS383, browser18 cases/472 assertions with53 matching hashes and cleanup, harness19, strict docs and scoped Ruff pass.
+- Summary and acceptance committed; roadmap3/3 remains In Progress, ODT-01–05 complete. Independent reviews/verification remain pending. WINDOWS36 records Task1 documentation edits preceding classifier approval; actual pre-edit RED and final GREEN evidence retained, no silent waiver. Task2 gate order compliant.
+- Last-plan SDK reports ready_for_verification; aggregate progress handler declined its existing unscoped read. State prose synchronized. Existing config/state.json/CLAUDE edits and notes/.gitkeep preserved; no phase completion, push or merge.
+
+### Phase 06.17 plan 02 — 2026-11-07
+
+- Lazy tab factory and owned adapter dispatch committed with default/override/no-op/error contracts; existing modal and keyboard ownership preserved. Both tasks have classifier-approved RED and GREEN commits.
+- Final focused JS 74, asset tests 8 with four workers, harness guards 19 passed. Real browser 18 cases/472 assertions with 53 matching source hashes proves stock and alias-free tabler initialization, keyboard/repeat/focus and attached disposal during HTTP replacement; cleanup complete. Scoped Ruff passes.
+- Summary committed; roadmap 2/3 In Progress, ODT-02/03/04 complete. Plan 03 owns public docs/migrations and final gates. Aggregate progress SDK declined its existing unscoped read; plan counter advanced to 3/3. User edits preserved; no push, merge or phase completion.
+
+### Phase 06.17 plan 01 — 2026-11-07
+
+- First-open accordion state committed with no new controller/configuration; existing Collapse switches and closes all. Both tasks have classifier-approved RED evidence and GREEN commits.
+- Final targeted rendering/a11y suite: 139 passed with four workers; heading/identity tracer: 103 passed. Browser: 14 cases/348 assertions, including real fresh modal HTTP loads for one/two groups; cleanup complete. Harness guards: 19 passed; scoped Ruff passes.
+- Summary committed; roadmap 1/3 In Progress. ODT-01 complete; shared ODT-04 awaits Plan 02 tab/alternate-namespace acceptance. Plan 03 owns documentation/migration and full phase gates. No human visual/AT, full support matrix, push or merge claimed.
 
 ### Phase 06.16 completion — 2026-11-06
 
@@ -580,7 +606,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 130
+- Total plans completed: 133
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -608,6 +634,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.13.1 | 5 | - | - |
 | 06.14 | 2 | - | - |
 | 06.16 | 3 | - | - |
+| 06.17 | 3 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -715,6 +742,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.16 P01 | 9min | 3 tasks | 8 files |
 | Phase 06.16 P02 | 8min | 3 tasks | 12 files |
 | Phase 06.16 P03 | 11min | 3 tasks | 10 files |
+| Phase 06.17 P01 | 6min | 2 tasks | 10 files |
+| Phase 06.17 P02 | 8min | 2 tasks | 12 files |
+| Phase 06.17 P03 | 10min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -916,6 +946,9 @@ Recent decisions affecting current work:
 - [Phase 06.16]: Help policy resolves once from strict property instructions, nullable view override and project setting; terminal lazy metadata stays unevaluated until rendering.
 - [Phase 06.16]: Stock textual leaves use exact None/empty-string display checks; raw values, custom ownership, non-text behavior and row structure remain intact.
 - [Phase 06.16]: Plan 03: exact copied recipes and five real context compositions pass with final full 5.2 and focused 4.2/6.0 evidence; keep independent phase approval pending.
+- [Phase 06.17]: Accordion initial state consumes presentation.selected; existing Collapse owns switching and close-all.
+- [Phase 06.17]: Tab adapter absence is a no-op; present entries require callable init/dispose, resolved on every owned lifecycle dispatch.
+- [Phase 06.17]: Document selected-theme wiring before initialization, including ready documents; late providers require the existing initializer.
 
 ### Pending Todos
 
@@ -970,6 +1003,7 @@ None yet.
 
 - Phase 06.15 inserted after Phase 06.14: Issue #326: polymorphic selector labels and per-model detail groups, including required tabler-test adoption and verification. Phase 06.14 completed in another worktree per user; no card implementation dependency. (URGENT)
 - Phase 06.16 inserted after Phase 06.15: Issue #327: object-detail choice labels, help-text policy, empty values, and composition guidance; settled issue decisions are the planning handoff. (URGENT)
+- Phase 06.17 inserted after Phase 06.16: Issue #328: open the first accordion group and initialize/dispose tabs through theme adapters; settled issue decisions are the planning handoff. (URGENT)
 
 ## Deferred Items
 
@@ -979,6 +1013,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T19:37:58.542Z
-Stopped at: Phase 06.16 complete, ready to plan Phase 7
+Last session: 2026-11-07T10:18:53.533Z
+Stopped at: Phase 06.17 complete, ready to plan Phase 7
 Resume file: None

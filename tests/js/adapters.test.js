@@ -38,9 +38,102 @@ function thrownBy(fn) {
     return undefined;
 }
 
+function publishedAdapterRecipe(marker) {
+    const docs = fs.readFileSync("docs/reference/javascript.md", "utf8");
+    const token = `<!-- ${marker} -->`;
+    expect(docs.split(token)).toHaveLength(2);
+    const fence = docs.split(token)[1].match(/^\s*```javascript\n([\s\S]*?)```/);
+    expect(fence).not.toBeNull();
+    return fence[1];
+}
+
 describe("adapters.js", () => {
     beforeEach(() => { document.body.innerHTML = '<div id="m"><div id="d"></div></div><span id="t"></span>'; });
     afterEach(() => { vi.unstubAllGlobals(); delete window.cv; });
+
+    it.each(["cv-tab-adapter-namespace", "cv-tab-adapter-complete-map"])("published %s supports tab lifecycle without bootstrap", async marker => {
+        await loadScript("adapters");
+        const code = publishedAdapterRecipe(marker);
+        const ns = fakeNamespace();
+        const tab = { show: vi.fn(), dispose: vi.fn() };
+        ns.Tab = { getOrCreateInstance: vi.fn(() => tab), getInstance: vi.fn(() => tab) };
+        const globals = {}; // Deliberately no bootstrap; the provider resolves tabler later.
+        new Function("cv", "globalThis", "myModalAdapter", "myTooltipAdapter", "myCollapseAdapter", code)(
+            window.cv, globals, ns.Modal, ns.Tooltip, ns.Collapse,
+        );
+        const adapters = window.cv.adapters, el = document.getElementById("t");
+        expect(Object.keys(adapters).sort()).toEqual(["alert", "collapse", "modal", "tab", "tooltip"]);
+        adapters.tab.init(el); adapters.tab.dispose(el);
+        expect(ns.Tab.getOrCreateInstance).not.toHaveBeenCalled();
+        globals.tabler = ns;
+        adapters.tab.init(el); adapters.tab.dispose(el);
+        expect(ns.Tab.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+        expect(ns.Tab.getInstance).toHaveBeenCalledExactlyOnceWith(el);
+        expect(tab.dispose).toHaveBeenCalledOnce();
+        expect(tab.show).not.toHaveBeenCalled();
+        expect(globals.bootstrap).toBeUndefined();
+        adapters.alert.close(el);
+        expect(ns.alert.close).toHaveBeenCalledOnce();
+        if (marker === "cv-tab-adapter-complete-map") {
+            expect(adapters.modal).toBe(ns.Modal);
+            expect(adapters.tooltip).toBe(ns.Tooltip);
+            expect(adapters.collapse).toBe(ns.Collapse);
+        } else {
+            adapters.modal.show(el); adapters.tooltip.init(el); adapters.collapse.toggle(el);
+            expect(ns.instance.show).toHaveBeenCalledOnce();
+            expect(ns.Tooltip.getOrCreateInstance).toHaveBeenCalledWith(el);
+            expect(ns.collapse.toggle).toHaveBeenCalledOnce();
+        }
+    });
+
+    it.each(["default", "object", "provider"])("%s tab resolves late components for init and get-only disposal", async kind => {
+        await loadScript("adapters");
+        let current;
+        const object = {};
+        const adapter = kind === "default" ? window.cv.adapters.tab
+            : window.cv.bootstrapAdapters(kind === "object" ? object : () => current).tab;
+        expect(adapter).toBeDefined();
+        const el = document.getElementById("t");
+        const focus = vi.spyOn(el, "focus");
+        adapter.init(el);
+        adapter.dispose(el);
+        for (let index = 0; index < 2; index++) {
+            const instance = { show: vi.fn(), dispose: vi.fn() };
+            const Tab = { getOrCreateInstance: vi.fn(() => instance), getInstance: vi.fn(() => instance) };
+            current = { Tab };
+            object.Tab = Tab;
+            window.bootstrap = current;
+            adapter.init(el);
+            adapter.init(el);
+            expect(Tab.getOrCreateInstance).toHaveBeenCalledTimes(2);
+            expect(Tab.getOrCreateInstance).toHaveBeenCalledWith(el);
+            expect(instance.show).not.toHaveBeenCalled();
+            adapter.dispose(el);
+            expect(Tab.getInstance).toHaveBeenCalledWith(el);
+            expect(instance.dispose).toHaveBeenCalledOnce();
+            Tab.getInstance.mockReturnValue(null);
+            adapter.dispose(el);
+            expect(instance.dispose).toHaveBeenCalledOnce();
+            expect(Tab.getOrCreateInstance).toHaveBeenCalledTimes(2);
+        }
+        expect(focus).not.toHaveBeenCalled();
+        focus.mockRestore();
+    });
+
+    it.each(["init", "dispose"])("tab %s propagates provider and component errors by identity", async method => {
+        await loadScript("adapters");
+        const error = new Error("tab failure");
+        const el = document.getElementById("t");
+        const fail = () => { throw error; };
+        for (const ns of [fail, { get Tab() { throw error; } },
+            { Tab: { getOrCreateInstance: fail, getInstance: fail } }]) {
+            const adapter = window.cv.bootstrapAdapters(ns).tab;
+            expect(adapter).toBeDefined();
+            expect(thrownBy(() => adapter[method](el))).toBe(error);
+        }
+        const adapter = window.cv.bootstrapAdapters({ Tab: { getInstance: () => ({ dispose: fail }) } }).tab;
+        expect(thrownBy(() => adapter.dispose(el))).toBe(error);
+    });
 
     it("defines cv.adapters.modal/tooltip/collapse/alert and cv.bootstrapAdapters", async () => {
         await loadScript("adapters");

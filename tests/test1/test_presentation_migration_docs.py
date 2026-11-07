@@ -38,7 +38,7 @@ def render(groups, pack, token="author-page"):
 
 
 @pytest.mark.parametrize("pack", ["tabs-vertical", "accordion"])
-@pytest.mark.parametrize("count", [1, 2])
+@pytest.mark.parametrize("count", [0, 1, 2])
 @pytest.mark.parametrize("language", ["en", "de"])
 def test_copied_interactive_recipes(pack, count, language):
     groups = [
@@ -53,9 +53,11 @@ def test_copied_interactive_recipes(pack, count, language):
     tree = html.fromstring(output)
     controls = tree.cssselect("button[data-bs-toggle]")
     assert len(controls) == count
-    assert ("Januar" if language == "de" else "January") in tree.text_content()
+    if count:
+        assert ("Januar" if language == "de" else "January") in tree.text_content()
     assert not tree.cssselect("script")
-    assert "<script>x</script>" in tree.text_content()
+    if count:
+        assert "<script>x</script>" in tree.text_content()
     ids = tree.xpath("descendant-or-self::*/@id")
     assert len(ids) == len(set(ids))
     for index, control in enumerate(controls):
@@ -73,8 +75,35 @@ def test_copied_interactive_recipes(pack, count, language):
             assert ("active" in panel.classes) is (index == 0)
             assert ("show" in panel.classes) is (index == 0)
         else:
-            assert control.get("aria-expanded") == "false"
+            assert control.get("aria-expanded") == ("true" if index == 0 else "false")
+            assert ("collapsed" in control.classes) is (index != 0)
+            assert ("show" in panel.classes) is (index == 0)
             assert panel.get("data-bs-parent") == "#cvod-c11-author-page-root"
+
+
+def test_copied_accordion_standalone_starts_open_without_parent():
+    hostile = '<img src=x onerror="bad"> & text'
+    group = ResolvedGroup(hostile, icon="host:edit", properties=[ResolvedProperty("title", "Title", hostile)])
+    with override_settings(
+        TEMPLATES=template_settings(copied_templates("accordion")),
+        CRUD_VIEWS_ICON_LIBRARIES={"host": {"renderer": "font", "placement": "host", "class": "icon-{name}"}},
+        CRUD_VIEWS_BUTTON_CLASSES={"heading-group:icon-host": '{name_class}" onclick="attack'},
+    ):
+        output = Template('{% load crud_views_object_detail %}{% render_group group layout="accordion" %}').render(
+            Context({"group": group})
+        )
+    tree = html.fromstring(output)
+    (control,) = tree.cssselect("button")
+    (panel,) = tree.cssselect(".accordion-collapse")
+    assert control.get("aria-expanded") == "true"
+    assert "collapsed" not in control.classes
+    assert "show" in panel.classes
+    assert panel.get("data-bs-parent") is None
+    assert panel.get("id") == control.get("aria-controls")
+    assert panel.get("aria-labelledby") == control.get("id")
+    assert hostile in tree.text_content()
+    assert 'icon-edit" onclick="attack' in control.get("class")
+    assert not tree.cssselect("img, [onerror], [onclick]")
 
 
 @pytest.mark.parametrize("pack", ["tabs-vertical", "accordion", "native"])
@@ -230,6 +259,7 @@ def test_current_release_and_migration_claims_are_paired():
         ("Heading hosts and sizing", "heading-hosts-and-sizing"),
         ("Interactive object-detail templates and targets", "interactive-object-detail-templates-and-targets"),
         ("Removed card label keyword", "removed-card-label-keyword"),
+        ("Object-detail accordion defaults and tab adapters", "object-detail-accordion-defaults-and-tab-adapters"),
     ):
         assert f"**{title}.**" in unreleased
         assert f"docs/migrating-1.0.md#{anchor}" in unreleased
@@ -248,6 +278,27 @@ def test_current_release_and_migration_claims_are_paired():
     assert "cv_context_actions_label_mode" in migration and "cv_context_action_label_mode" in migration
     assert "badge_color" in unreleased and "badge_pill" in unreleased
     assert "reference/object_detail_layout_packs.md#collision-detection-boundary" in migration
+
+
+def test_current_migration_sections_describe_first_open_and_complete_adapters():
+    migration = MIGRATION.read_text()
+
+    def section(title):
+        return migration.split(f"### {title}\n", 1)[1].split("\n### ", 1)[0]
+
+    interactive = section("Interactive object-detail templates and targets")
+    assert "presentation.selected" in interactive
+    assert "first" in interactive and "open" in interactive
+    assert "initially collapsed" not in interactive
+    assert "remain collapsed" not in interactive
+    assets = section("Filtered object-detail assets")
+    for phrase in ("adapters.js", "before", "selected-theme", "already-ready", "initialization"):
+        assert phrase in assets
+    hooks = section("Hooks instead of copies")
+    for name in ("modal", "tooltip", "collapse", "alert", "tab"):
+        assert f"cv.adapters.{name}" in hooks
+    for phrase in ("init(el)", "dispose(el)", "whole map", "TypeError", "no-op", "callable"):
+        assert phrase in hooks
 
 
 @pytest.mark.parametrize("icon", ["fas:pen", "", None])

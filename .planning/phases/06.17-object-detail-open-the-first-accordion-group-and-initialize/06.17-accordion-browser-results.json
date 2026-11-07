@@ -1,5 +1,5 @@
 {
-  "captured": "2026-11-07T09:44:24.275Z",
+  "captured": "2026-11-07T09:47:46.485Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/presentation.cjs",
@@ -9,7 +9,7 @@
     ".planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-accordion-browser-results.json"
   ],
   "scope": "all",
-  "revision": "f31fa20a6739466d06dfc5e8c7f8d9eb397ad2bf",
+  "revision": "cd8a7ccfe2a0e87aa218c5b1dfb1423dae152f8d",
   "sourceHashes": {
     "src/crud_views/lib/button_classes.py": "eaa11dca75a31165bd08edcb9f22b6f2eee7477aaa94f3ec0736c09636d74d7e",
     "src/crud_views/lib/icons.py": "bc3a3d3ef8913f1d6ac194d025ae539c1503afd8c8f929c272eef1ecc9307b25",
@@ -58,10 +58,10 @@
     "src/crud_views_object_detail/templates/crud_views_object_detail/view_detail.content.html": "2ee488ed149f5d1ff0b7cdd372ffeb497deeceebb17d60547317a22ebacbeed0",
     "src/crud_views_object_detail/templatetags/crud_views_object_detail.py": "e78578a0a9389b42f4a9513eff700212050518e2f007adb5c2d97767cef75c62",
     "tests/browser/presentation-config.test.cjs": "e3019e8d7fd42cdf5dabf67771b385ec11f340d9f612353b9facbe35e1921e88",
-    "tests/browser/presentation.cjs": "b9e8e01b92c9b60d579c19feaceb21238a6d970f81dbc0c470eb7d7e4393bafb",
-    "tests/browser/presentation_server.py": "3f6351974e122790fbf8135d8d61c62806d2640b11c78f2e1e3f98542b021b93",
+    "tests/browser/presentation.cjs": "83b8b22d1242dbb8e04942baf936c1b228a662045e036f33f5a06c66cf401b3c",
+    "tests/browser/presentation_server.py": "9ea6e462c64b69602e7757610a7e8d3c188710ace8ee859aa00a3580102d861f",
     "tests/browser/templates/presentation/native.html": "d98429624e14dc85d9c2ed32c8648482d46c4fd8e7821e86627bb62b55417ab0",
-    "tests/browser/templates/presentation/stock.html": "031406931245254f72f8f928143e8c05d81cfafcbf354873a40d96bcc1aa775c",
+    "tests/browser/templates/presentation/stock.html": "4d17062ba44b87bcb5f40d36ba1d8a9073227d689d61d4c664677604238ba088",
     "tests/test1/app/templates/app/base.html": "f2f325b993a2e91be2f7cd235f0f1bcab8f3cfa9f51c5709c4e4f15ff85f1c08"
   },
   "runtime": {
@@ -2898,101 +2898,101 @@
           "passed": true,
           "observed": [
             {
-              "id": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-root",
+              "id": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-root",
               "controls": [
                 {
-                  "control": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i0-control",
+                  "control": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i0-control",
                   "title": "Repeated",
-                  "panel": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i0-panel",
-                  "target": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i0-panel",
-                  "parent": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-root",
-                  "label": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i0-control",
+                  "panel": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i0-panel",
+                  "target": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i0-panel",
+                  "parent": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-root",
+                  "label": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i0-control",
                   "contained": true
                 },
                 {
-                  "control": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i1-control",
+                  "control": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i1-control",
                   "title": "Repeated",
-                  "panel": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i1-panel",
-                  "target": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i1-panel",
-                  "parent": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-root",
-                  "label": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i1-control",
+                  "panel": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i1-panel",
+                  "target": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i1-panel",
+                  "parent": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-root",
+                  "label": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i1-control",
                   "contained": true
                 },
                 {
-                  "control": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i2-control",
+                  "control": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i2-control",
                   "title": "",
-                  "panel": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i2-panel",
-                  "target": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i2-panel",
-                  "parent": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-root",
-                  "label": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i2-control",
+                  "panel": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i2-panel",
+                  "target": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i2-panel",
+                  "parent": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-root",
+                  "label": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i2-control",
                   "contained": true
                 },
                 {
-                  "control": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i3-control",
+                  "control": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i3-control",
                   "title": "A !?",
-                  "panel": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i3-panel",
-                  "target": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i3-panel",
-                  "parent": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-root",
-                  "label": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i3-control",
+                  "panel": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i3-panel",
+                  "target": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i3-panel",
+                  "parent": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-root",
+                  "label": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i3-control",
                   "contained": true
                 },
                 {
-                  "control": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i4-control",
+                  "control": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i4-control",
                   "title": "日本語",
-                  "panel": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i4-panel",
-                  "target": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i4-panel",
-                  "parent": "#cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-root",
-                  "label": "cvod-c33-g8ffd357bfdeb498db0c5a3abb37943b7-i4-control",
+                  "panel": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i4-panel",
+                  "target": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i4-panel",
+                  "parent": "#cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-root",
+                  "label": "cvod-c33-g5ffa9bc8872c4d2fb0d1f07a8a28f876-i4-control",
                   "contained": true
                 }
               ]
             },
             {
-              "id": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-root",
+              "id": "cvod-c33-g9bffdee051a04965a75db1167afa6517-root",
               "controls": [
                 {
-                  "control": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i0-control",
+                  "control": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i0-control",
                   "title": "Repeated",
-                  "panel": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i0-panel",
-                  "target": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i0-panel",
-                  "parent": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-root",
-                  "label": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i0-control",
+                  "panel": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i0-panel",
+                  "target": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-i0-panel",
+                  "parent": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-root",
+                  "label": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i0-control",
                   "contained": true
                 },
                 {
-                  "control": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i1-control",
+                  "control": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i1-control",
                   "title": "Repeated",
-                  "panel": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i1-panel",
-                  "target": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i1-panel",
-                  "parent": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-root",
-                  "label": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i1-control",
+                  "panel": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i1-panel",
+                  "target": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-i1-panel",
+                  "parent": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-root",
+                  "label": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i1-control",
                   "contained": true
                 },
                 {
-                  "control": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i2-control",
+                  "control": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i2-control",
                   "title": "",
-                  "panel": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i2-panel",
-                  "target": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i2-panel",
-                  "parent": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-root",
-                  "label": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i2-control",
+                  "panel": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i2-panel",
+                  "target": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-i2-panel",
+                  "parent": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-root",
+                  "label": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i2-control",
                   "contained": true
                 },
                 {
-                  "control": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i3-control",
+                  "control": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i3-control",
                   "title": "A !?",
-                  "panel": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i3-panel",
-                  "target": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i3-panel",
-                  "parent": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-root",
-                  "label": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i3-control",
+                  "panel": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i3-panel",
+                  "target": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-i3-panel",
+                  "parent": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-root",
+                  "label": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i3-control",
                   "contained": true
                 },
                 {
-                  "control": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i4-control",
+                  "control": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i4-control",
                   "title": "日本語",
-                  "panel": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i4-panel",
-                  "target": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i4-panel",
-                  "parent": "#cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-root",
-                  "label": "cvod-c33-g19914a77a0c3453ea4f8cda5db203fd5-i4-control",
+                  "panel": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i4-panel",
+                  "target": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-i4-panel",
+                  "parent": "#cvod-c33-g9bffdee051a04965a75db1167afa6517-root",
+                  "label": "cvod-c33-g9bffdee051a04965a75db1167afa6517-i4-control",
                   "contained": true
                 }
               ]
@@ -3715,6 +3715,1273 @@
               "collapsed": true,
               "shown": false,
               "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "accordion-1-page-modal",
+      "assertions": [
+        {
+          "id": "page-accordion-layout",
+          "passed": true
+        },
+        {
+          "id": "page-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "sibling-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "auxiliary-one-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "auxiliary-two-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "page-close-all",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "auxiliary-one-close-all",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-actual-accordion-http",
+          "passed": true
+        },
+        {
+          "id": "load-1-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-unique-identities",
+          "passed": true
+        },
+        {
+          "id": "load-1-close-all",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-page-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-sibling-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-auxiliary-one-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-auxiliary-two-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-actual-accordion-http",
+          "passed": true
+        },
+        {
+          "id": "load-2-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-unique-identities",
+          "passed": true
+        },
+        {
+          "id": "load-2-close-all",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-page-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-sibling-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-auxiliary-one-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-auxiliary-two-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "accordion-2-page-modal",
+      "assertions": [
+        {
+          "id": "page-accordion-layout",
+          "passed": true
+        },
+        {
+          "id": "page-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "sibling-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "auxiliary-one-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "auxiliary-two-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "page-switch",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "page-close-all",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "auxiliary-one-close-all",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-actual-accordion-http",
+          "passed": true
+        },
+        {
+          "id": "load-1-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-unique-identities",
+          "passed": true
+        },
+        {
+          "id": "load-1-switch",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-close-all",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-page-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-sibling-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-auxiliary-one-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-1-auxiliary-two-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-actual-accordion-http",
+          "passed": true
+        },
+        {
+          "id": "load-2-first-paint",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-unique-identities",
+          "passed": true
+        },
+        {
+          "id": "load-2-switch",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-close-all",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-page-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-sibling-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-auxiliary-one-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            },
+            {
+              "expanded": "false",
+              "collapsed": true,
+              "shown": false,
+              "visible": false,
+              "contained": true,
+              "label": true,
+              "target": true
+            }
+          ]
+        },
+        {
+          "id": "load-2-auxiliary-two-unaffected",
+          "passed": true,
+          "observed": [
+            {
+              "expanded": "true",
+              "collapsed": false,
+              "shown": true,
+              "visible": true,
               "contained": true,
               "label": true,
               "target": true
@@ -4990,7 +6257,7 @@
           "id": "no-bootstrap-assets-or-markup",
           "passed": true,
           "observed": [
-            "http://127.0.0.1:8145/detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?theme=native"
+            "http://127.0.0.1:8145/detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?theme=native"
           ]
         },
         {
@@ -5129,6 +6396,6 @@
   ],
   "assetFailures": [],
   "missingAssets": [],
-  "serverLog": "{\"ready\": 8145, \"database\": \"temporary SQLite\", \"media\": \"temporary\"}\n127.0.0.1 - - [07/Nov/2026 09:44:25] \"GET /signin/ HTTP/1.1\" 200 79\n127.0.0.1 - - [07/Nov/2026 09:44:25] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/ HTTP/1.1\" 200 6031\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 6787\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21148\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 755\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 10043\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2271\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=1&links=0 HTTP/1.1\" 200 4899\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:26] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=1&links=0 HTTP/1.1\" 200 2013\n127.0.0.1 - - [07/Nov/2026 09:44:27] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=1&links=0 HTTP/1.1\" 200 2013\n127.0.0.1 - - [07/Nov/2026 09:44:27] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=1&links=0 HTTP/1.1\" 200 2013\n127.0.0.1 - - [07/Nov/2026 09:44:28] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=1&links=1 HTTP/1.1\" 200 4926\n127.0.0.1 - - [07/Nov/2026 09:44:28] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:28] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=1&links=1 HTTP/1.1\" 200 2040\n127.0.0.1 - - [07/Nov/2026 09:44:29] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=1&links=1 HTTP/1.1\" 200 2040\n127.0.0.1 - - [07/Nov/2026 09:44:29] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=1&links=1 HTTP/1.1\" 200 2040\n127.0.0.1 - - [07/Nov/2026 09:44:30] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=2&links=0 HTTP/1.1\" 200 6069\n127.0.0.1 - - [07/Nov/2026 09:44:30] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:32] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=2&links=0 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:44:33] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=2&links=0 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:44:34] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=2&links=0 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:44:35] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=2&links=1 HTTP/1.1\" 200 6123\n127.0.0.1 - - [07/Nov/2026 09:44:35] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:37] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=2&links=1 HTTP/1.1\" 200 3242\n127.0.0.1 - - [07/Nov/2026 09:44:38] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=2&links=1 HTTP/1.1\" 200 3242\n127.0.0.1 - - [07/Nov/2026 09:44:39] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?count=2&links=1 HTTP/1.1\" 200 3242\n127.0.0.1 - - [07/Nov/2026 09:44:40] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1 HTTP/1.1\" 200 24486\n127.0.0.1 - - [07/Nov/2026 09:44:40] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:41] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:44:46] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=en HTTP/1.1\" 200 24510\n127.0.0.1 - - [07/Nov/2026 09:44:46] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:46] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=en HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:44:47] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=en HTTP/1.1\" 200 24510\n127.0.0.1 - - [07/Nov/2026 09:44:47] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:47] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=en HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:44:48] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=de HTTP/1.1\" 200 24492\n127.0.0.1 - - [07/Nov/2026 09:44:48] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:48] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=de HTTP/1.1\" 200 3189\n127.0.0.1 - - [07/Nov/2026 09:44:49] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=de&reverse=1 HTTP/1.1\" 200 24520\n127.0.0.1 - - [07/Nov/2026 09:44:49] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:49] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=de&reverse=1 HTTP/1.1\" 200 3189\n127.0.0.1 - - [07/Nov/2026 09:44:50] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=en HTTP/1.1\" 200 24510\n127.0.0.1 - - [07/Nov/2026 09:44:50] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:50] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?expanded=1&lang=en HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:44:51] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=host&size=default&heading=2 HTTP/1.1\" 200 6117\n127.0.0.1 - - [07/Nov/2026 09:44:51] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:51] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=host&size=default&heading=2 HTTP/1.1\" 200 3197\n127.0.0.1 - - [07/Nov/2026 09:44:52] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=host&size=replace&heading=2 HTTP/1.1\" 200 6162\n127.0.0.1 - - [07/Nov/2026 09:44:52] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:52] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=host&size=replace&heading=2 HTTP/1.1\" 200 3242\n127.0.0.1 - - [07/Nov/2026 09:44:53] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=host&size=remove&heading=2 HTTP/1.1\" 200 6106\n127.0.0.1 - - [07/Nov/2026 09:44:53] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:54] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=host&size=remove&heading=2 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:44:55] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=element&size=default&heading=2 HTTP/1.1\" 200 6157\n127.0.0.1 - - [07/Nov/2026 09:44:55] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:55] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=element&size=default&heading=2 HTTP/1.1\" 200 3231\n127.0.0.1 - - [07/Nov/2026 09:44:56] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=element&size=replace&heading=2 HTTP/1.1\" 200 6202\n127.0.0.1 - - [07/Nov/2026 09:44:56] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:56] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=element&size=replace&heading=2 HTTP/1.1\" 200 3276\n127.0.0.1 - - [07/Nov/2026 09:44:57] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=element&size=remove&heading=2 HTTP/1.1\" 200 6138\n127.0.0.1 - - [07/Nov/2026 09:44:57] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:57] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=element&size=remove&heading=2 HTTP/1.1\" 200 3222\n127.0.0.1 - - [07/Nov/2026 09:44:58] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=empty&size=default&heading=2 HTTP/1.1\" 200 6102\n127.0.0.1 - - [07/Nov/2026 09:44:58] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:58] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=empty&size=default&heading=2 HTTP/1.1\" 200 3180\n127.0.0.1 - - [07/Nov/2026 09:44:59] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=empty&size=replace&heading=2 HTTP/1.1\" 200 6147\n127.0.0.1 - - [07/Nov/2026 09:44:59] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:44:59] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=empty&size=replace&heading=2 HTTP/1.1\" 200 3225\n127.0.0.1 - - [07/Nov/2026 09:45:00] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=empty&size=remove&heading=2 HTTP/1.1\" 200 6083\n127.0.0.1 - - [07/Nov/2026 09:45:00] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:45:00] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=empty&size=remove&heading=2 HTTP/1.1\" 200 3171\n127.0.0.1 - - [07/Nov/2026 09:45:01] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=disabled&size=default&heading=2 HTTP/1.1\" 200 6108\n127.0.0.1 - - [07/Nov/2026 09:45:01] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:45:01] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=disabled&size=default&heading=2 HTTP/1.1\" 200 3180\n127.0.0.1 - - [07/Nov/2026 09:45:02] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=disabled&size=replace&heading=2 HTTP/1.1\" 200 6153\n127.0.0.1 - - [07/Nov/2026 09:45:02] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:45:02] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=disabled&size=replace&heading=2 HTTP/1.1\" 200 3225\n127.0.0.1 - - [07/Nov/2026 09:45:03] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=disabled&size=remove&heading=2 HTTP/1.1\" 200 6089\n127.0.0.1 - - [07/Nov/2026 09:45:03] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:45:03] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?icon=disabled&size=remove&heading=2 HTTP/1.1\" 200 3171\n127.0.0.1 - - [07/Nov/2026 09:45:04] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/?theme=native HTTP/1.1\" 200 1603\n127.0.0.1 - - [07/Nov/2026 09:45:04] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:45:04] \"GET /detail/ee0a505d-dd46-455b-811a-7118cb8f2521/ HTTP/1.1\" 200 6031\n127.0.0.1 - - [07/Nov/2026 09:45:04] \"GET /favicon.ico HTTP/1.1\" 204 0\n",
+  "serverLog": "{\"ready\": 8145, \"database\": \"temporary SQLite\", \"media\": \"temporary\"}\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /signin/ HTTP/1.1\" 200 79\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/ HTTP/1.1\" 200 6031\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 6787\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21148\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 755\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 10043\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2271\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=1&links=0 HTTP/1.1\" 200 4899\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:47:48] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=1&links=0 HTTP/1.1\" 200 2013\n127.0.0.1 - - [07/Nov/2026 09:47:49] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=1&links=0 HTTP/1.1\" 200 2013\n127.0.0.1 - - [07/Nov/2026 09:47:49] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=1&links=0 HTTP/1.1\" 200 2013\n127.0.0.1 - - [07/Nov/2026 09:47:50] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=1&links=1 HTTP/1.1\" 200 4926\n127.0.0.1 - - [07/Nov/2026 09:47:50] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:47:50] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=1&links=1 HTTP/1.1\" 200 2040\n127.0.0.1 - - [07/Nov/2026 09:47:51] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=1&links=1 HTTP/1.1\" 200 2040\n127.0.0.1 - - [07/Nov/2026 09:47:51] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=1&links=1 HTTP/1.1\" 200 2040\n127.0.0.1 - - [07/Nov/2026 09:47:52] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=2&links=0 HTTP/1.1\" 200 6069\n127.0.0.1 - - [07/Nov/2026 09:47:52] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:47:54] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=2&links=0 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:47:56] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=2&links=0 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:47:56] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=2&links=0 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:47:57] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=2&links=1 HTTP/1.1\" 200 6123\n127.0.0.1 - - [07/Nov/2026 09:47:57] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:47:59] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=2&links=1 HTTP/1.1\" 200 3242\n127.0.0.1 - - [07/Nov/2026 09:48:01] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=2&links=1 HTTP/1.1\" 200 3242\n127.0.0.1 - - [07/Nov/2026 09:48:01] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?count=2&links=1 HTTP/1.1\" 200 3242\n127.0.0.1 - - [07/Nov/2026 09:48:02] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1 HTTP/1.1\" 200 24486\n127.0.0.1 - - [07/Nov/2026 09:48:02] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:03] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:48:08] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?layout=accordion&expanded=1&count=1 HTTP/1.1\" 200 21758\n127.0.0.1 - - [07/Nov/2026 09:48:08] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:09] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?layout=accordion&expanded=1&count=1 HTTP/1.1\" 200 1794\n127.0.0.1 - - [07/Nov/2026 09:48:11] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?layout=accordion&expanded=1&count=1 HTTP/1.1\" 200 1794\n127.0.0.1 - - [07/Nov/2026 09:48:12] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?layout=accordion&expanded=1&count=2 HTTP/1.1\" 200 24750\n127.0.0.1 - - [07/Nov/2026 09:48:12] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:13] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?layout=accordion&expanded=1&count=2 HTTP/1.1\" 200 3287\n127.0.0.1 - - [07/Nov/2026 09:48:15] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?layout=accordion&expanded=1&count=2 HTTP/1.1\" 200 3287\n127.0.0.1 - - [07/Nov/2026 09:48:17] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=en HTTP/1.1\" 200 24510\n127.0.0.1 - - [07/Nov/2026 09:48:17] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:17] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=en HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:48:18] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=en HTTP/1.1\" 200 24510\n127.0.0.1 - - [07/Nov/2026 09:48:18] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:18] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=en HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:48:19] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=de HTTP/1.1\" 200 24492\n127.0.0.1 - - [07/Nov/2026 09:48:19] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:19] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=de HTTP/1.1\" 200 3189\n127.0.0.1 - - [07/Nov/2026 09:48:20] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=de&reverse=1 HTTP/1.1\" 200 24520\n127.0.0.1 - - [07/Nov/2026 09:48:20] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:20] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=de&reverse=1 HTTP/1.1\" 200 3189\n127.0.0.1 - - [07/Nov/2026 09:48:21] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=en HTTP/1.1\" 200 24510\n127.0.0.1 - - [07/Nov/2026 09:48:21] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:21] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?expanded=1&lang=en HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:48:22] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=host&size=default&heading=2 HTTP/1.1\" 200 6117\n127.0.0.1 - - [07/Nov/2026 09:48:22] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:22] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=host&size=default&heading=2 HTTP/1.1\" 200 3197\n127.0.0.1 - - [07/Nov/2026 09:48:23] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=host&size=replace&heading=2 HTTP/1.1\" 200 6162\n127.0.0.1 - - [07/Nov/2026 09:48:23] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:23] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=host&size=replace&heading=2 HTTP/1.1\" 200 3242\n127.0.0.1 - - [07/Nov/2026 09:48:24] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=host&size=remove&heading=2 HTTP/1.1\" 200 6106\n127.0.0.1 - - [07/Nov/2026 09:48:24] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:24] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=host&size=remove&heading=2 HTTP/1.1\" 200 3188\n127.0.0.1 - - [07/Nov/2026 09:48:25] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=element&size=default&heading=2 HTTP/1.1\" 200 6157\n127.0.0.1 - - [07/Nov/2026 09:48:26] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:26] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=element&size=default&heading=2 HTTP/1.1\" 200 3231\n127.0.0.1 - - [07/Nov/2026 09:48:27] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=element&size=replace&heading=2 HTTP/1.1\" 200 6202\n127.0.0.1 - - [07/Nov/2026 09:48:27] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:27] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=element&size=replace&heading=2 HTTP/1.1\" 200 3276\n127.0.0.1 - - [07/Nov/2026 09:48:28] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=element&size=remove&heading=2 HTTP/1.1\" 200 6138\n127.0.0.1 - - [07/Nov/2026 09:48:28] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:28] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=element&size=remove&heading=2 HTTP/1.1\" 200 3222\n127.0.0.1 - - [07/Nov/2026 09:48:29] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=empty&size=default&heading=2 HTTP/1.1\" 200 6102\n127.0.0.1 - - [07/Nov/2026 09:48:29] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:29] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=empty&size=default&heading=2 HTTP/1.1\" 200 3180\n127.0.0.1 - - [07/Nov/2026 09:48:30] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=empty&size=replace&heading=2 HTTP/1.1\" 200 6147\n127.0.0.1 - - [07/Nov/2026 09:48:30] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:30] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=empty&size=replace&heading=2 HTTP/1.1\" 200 3225\n127.0.0.1 - - [07/Nov/2026 09:48:31] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=empty&size=remove&heading=2 HTTP/1.1\" 200 6083\n127.0.0.1 - - [07/Nov/2026 09:48:31] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:31] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=empty&size=remove&heading=2 HTTP/1.1\" 200 3171\n127.0.0.1 - - [07/Nov/2026 09:48:32] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=disabled&size=default&heading=2 HTTP/1.1\" 200 6108\n127.0.0.1 - - [07/Nov/2026 09:48:32] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:32] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=disabled&size=default&heading=2 HTTP/1.1\" 200 3180\n127.0.0.1 - - [07/Nov/2026 09:48:33] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=disabled&size=replace&heading=2 HTTP/1.1\" 200 6153\n127.0.0.1 - - [07/Nov/2026 09:48:33] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:33] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=disabled&size=replace&heading=2 HTTP/1.1\" 200 3225\n127.0.0.1 - - [07/Nov/2026 09:48:34] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=disabled&size=remove&heading=2 HTTP/1.1\" 200 6089\n127.0.0.1 - - [07/Nov/2026 09:48:34] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:34] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?icon=disabled&size=remove&heading=2 HTTP/1.1\" 200 3171\n127.0.0.1 - - [07/Nov/2026 09:48:35] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/?theme=native HTTP/1.1\" 200 1603\n127.0.0.1 - - [07/Nov/2026 09:48:35] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [07/Nov/2026 09:48:35] \"GET /detail/df571ccd-e205-4271-ab58-d3cb2aa2c78b/ HTTP/1.1\" 200 6031\n127.0.0.1 - - [07/Nov/2026 09:48:36] \"GET /favicon.ico HTTP/1.1\" 204 0\n",
   "completed": true
 }

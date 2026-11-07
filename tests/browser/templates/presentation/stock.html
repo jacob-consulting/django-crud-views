@@ -11,7 +11,7 @@
 <a id="launch" href="{{ modal_url }}" data-cv-modal="true">Open author details</a>
 {% if expanded %}
 <section id="sibling">
-{% render_object_detail object object_detail_groups layout="tabs-vertical" component_id="author-sibling" %}
+{% render_object_detail object object_detail_groups layout=object_detail_layout component_id="author-sibling" %}
 </section>
 <section id="accordion-one">{% render_object_detail object accordion_groups layout="accordion" %}</section>
 <section id="accordion-two">{% render_object_detail object accordion_groups layout="accordion" %}</section>

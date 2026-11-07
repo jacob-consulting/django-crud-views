@@ -40,6 +40,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.14: Card template insertion blocks and cards-first ViewSets (INSERTED)** - #325: empty card blocks and tested cards-first navigation (completed 2026-11-06)
 - [x] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test (completed 2026-11-06)
 - [x] **Phase 06.16: Object-detail values and composition guidance (INSERTED)** - #327: readable choices, explicit help-text policy, meaningful empty values, and correct mixin composition (completed 2026-11-06)
+- [ ] **Phase 06.17: Object-detail accordion initial state and tab adapters (INSERTED)** - #328: open the first accordion group and initialize tabs through theme adapters
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1098,6 +1099,51 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.16-03-PLAN.md — Executable public contracts, composition, migration and final gates
+
+### Phase 06.17: Object detail: open the first accordion group and initialize tabs through theme adapters (#328) (INSERTED)
+
+**Goal:** Resolve object-detail findings 15 and 17 in one bounded phase: show useful accordion content immediately
+and initialize/dispose object-detail tabs through the established theme adapter boundary.
+**Source:** [Issue #328](https://github.com/jacob-consulting/django-crud-views/issues/328), including its agreed
+decisions, exclusions, implementation pointers, and acceptance criteria.
+**Requirements**: ODT-01, ODT-02, ODT-03, ODT-04, ODT-05
+**Depends on:** Existing object-detail presentation/lifecycle and `cv.bootstrapAdapters` factory. Follows Phase
+06.16 for scheduling only; no hard dependency on #327 or #329. Complete before Phase 7 freezes the affected surface.
+**Settled scope:**
+- D15: Reuse `presentation.selected` to server-render the first accordion group open on pages and newly loaded
+  modal content, with matching styling and ARIA. Preserve scoped identity, references, and shared-parent behavior:
+  opening another group closes the previous one, and users can close all groups. Standalone `render_group` retains
+  its selected one-group projection. No JavaScript solely to establish initial visibility.
+- D17: Add `cv.adapters.tab.init(element)` and `.dispose(element)` through `cv.bootstrapAdapters(namespaceOrProvider)`.
+  Resolve the namespace on each call; initialize with `Tab.getOrCreateInstance(element)` and dispose with
+  `Tab.getInstance(element)?.dispose()`. Missing Tab is a no-op; cleanup never constructs instances, initialization
+  never calls `show()` or takes focus, and present-adapter/component errors remain visible.
+- Preserve repeat-safe `cv.initObjectDetailTabs(root=document)`, DOM-ready and `cv:modal:loaded` initialization,
+  and `cv:modal:unload` disposal before replacement. Only operate on owned triggers in marked `data-cv-od-tabs`
+  tablists, preserving root handling and nested boundaries. The UI library owns keyboard activation and switching;
+  preserve first-tab selection, focus behavior, and panel tabindex conventions.
+**Exclusions:** No configurable initial group, start-collapsed/open-all option, persistence, namespace registry,
+hard-coded Tabler fallback, custom keyboard handler, accordion rewrite, layout redesign, or changes to other
+adapters. Missing-Tab compatibility does not promise keyboard-operable fallback tabs. Downstream theme adoption
+is not a completion dependency; #327 value rendering and #329 header icons remain separate.
+**Validation and documentation:** Verify multiple/single/empty accordion groups, independent components and
+standalone rendering; page/modal toggling and cleanup; adapter default/supplied/lazy namespaces and absent Tab;
+owned/unrelated/nested tablists and repeat initialization. Use a real Bootstrap component under `tabler` with no
+`globalThis.bootstrap` to prove initialization, keyboard activation and disposal, not merely clicking. Browser
+coverage includes ArrowUp/ArrowDown wrapping, Home/End, ARIA/tab stops, no insertion focus theft, and modal replacement.
+Update adapter contracts/examples, layout docs, copied accordion recipes, custom-theme/custom-insertion guidance,
+`CHANGELOG.md`, and `docs/migrating-1.0.md`. Run focused JS, rendering/accessibility, browser and documentation checks;
+use multicore pytest for broad Python verification and report actual limits.
+**Planning handoff:** The maintainer agreed these decisions on 2026-11-06. Carry the issue into CONTEXT.md without
+reopening initial selection, open-all, persistence, adapter shape, keyboard ownership, or modal lifecycle. Ask only
+about material conflicts supported by new code evidence. Minimal helper placement, fixtures, harness reuse and
+test organization are delegated; follow existing adapter override and asset-loading conventions.
+**Plans:** 0/3 plans executed
+
+Plans:
+- [ ] 06.17-01-PLAN.md
+- [ ] 06.17-02-PLAN.md
+- [ ] 06.17-03-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 

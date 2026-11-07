@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=$PWD/src .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1 -k test_choice_display_tracer -n 4 -q --junitxml=/tmp/gsd-0616-01-t1-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"3.617\" timestamp=\"2026-11-06T18:50:07.598828+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.od.test_choice_display\" name=\"test_choice_display_tracer\" time=\"0.007\"><failure message=\"assert 'Naturally processed' in '\\n\\n\\n&lt;div class=&quot;card mb-3&quot;&gt;\\n    &lt;div class=&quot;card-body&quot;&gt;\\n        &lt;div class=&quot;row&quot;&gt;\\n            &lt;div class=&quot;col-md...\\n&lt;/div&gt;\\n\\n                    \\n                &lt;/div&gt;\\n            &lt;/div&gt;\\n        &lt;/div&gt;\\n    &lt;/div&gt;\\n&lt;/div&gt;\\n\\n\\n'\">@isolate_apps()\n    def test_choice_display_tracer():\n        class Sample(models.Model):\n            process = models.CharField(\n                max_length=20, verbose_name=\"processing method\", choices=[(\"natural\", \"Naturally processed\")]\n            )\n    \n            class Meta:\n                app_label = \"od_app\"\n    \n        obj = Sample(process=\"natural\")\n        raw = [{\"title\": \"Sample\", \"properties\": [\"process\"]}]\n        groups = resolve_all(obj, parse_property_display(raw))\n        prop = groups[0].properties[0]\n        html = Template(\n            \"{% load crud_views_object_detail %}{% render_object_detail obj property_display=raw %}\"\n        ).render(Context({\"obj\": obj, \"raw\": raw}))\n&gt;       assert \"Naturally processed\" in html\nE       assert 'Naturally processed' in '\\n\\n\\n&lt;div class=\"card mb-3\"&gt;\\n    &lt;div class=\"card-body\"&gt;\\n        &lt;div class=\"row\"&gt;\\n            &lt;div class=\"col-md...\\n&lt;/div&gt;\\n\\n                    \\n                &lt;/div&gt;\\n            &lt;/div&gt;\\n        &lt;/div&gt;\\n    &lt;/div&gt;\\n&lt;/div&gt;\\n\\n\\n'\n\ntests/test1/od/test_choice_display.py:30: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_choice_display_tracer",
+  "targetFile": "tests/test1/od/test_choice_display.py",
+  "expected": "Naturally processed in stock HTML",
+  "actual": "HTML contains raw natural, lacks label",
+  "reportPath": "/tmp/gsd-0616-01-t1-red.xml",
+  "runStartedAt": "2026-11-06T18:50:07.598828+00:00",
+  "reportModifiedAt": "2026-11-06T18:50:11.215065+00:00",
+  "semanticAssessment": "Target executed and failed label assertion; no import, collection or fixture errors."
+}

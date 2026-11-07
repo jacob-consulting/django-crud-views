@@ -6,6 +6,16 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Object-detail values and help defaults** ([#327](https://github.com/jacob-consulting/django-crud-views/issues/327)):
+  scalar model choices now show readable labels; use `x("process", choices_display=False)` for stored codes.
+  Automatic model help is hidden by default; restore it with `CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT=True`
+  or `cv_object_detail_show_help_text=True` on a view, subject to explicit property `detail` instructions.
+  Stock char/text/default leaves now show the muted em dash for both `None` and `""`, keeping rows and
+  meaningful zero/False/whitespace values. Copied text and badge leaves should consume `display_value`
+  while custom `value` stays raw; preserve badge raw-None and explicit-label fallback semantics.
+  Follow the executable [object-detail migration](docs/migrating-1.0.md#object-detail-values-and-help)
+  and [complete-view composition warning](docs/reference/object_detail_view.md#compose-pattern-guardian-polymorphic).
+
 - **Workflow database alignment and literal guidance** ([#322](https://github.com/jacob-consulting/django-crud-views/issues/322)):
   workflow execution now binds object/history/content-type operations to one selected write alias and requires
   the saved object and actual authenticated actor to be loaded from that database. Replica-loaded inputs with a

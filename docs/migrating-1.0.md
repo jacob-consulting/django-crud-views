@@ -5,6 +5,68 @@ the route from **0.29.x** to 1.0.0. The [CHANGELOG](https://github.com/jacob-con
 stays the complete record, ordered by release and issue; this page orders the same changes by what you have to
 touch.
 
+## Object-detail values and help
+
+Object-detail presentation (#327) changes three defaults: scalar model choices show readable
+labels instead of stored codes; automatic model help is hidden; and stock char/text/default
+leaves show the muted em dash for `""` as well as `None`. Rows, titles and explicit detail
+remain. Zero, False and whitespace-only strings are still values. No data migration is needed.
+
+Restore automatic terminal-field help project-wide in Django settings:
+
+<!-- object-detail-value-recipe: restore-project-help -->
+```python
+CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = True
+```
+
+Or opt in for one view using an existing Book `cv_book` ViewSet:
+
+<!-- object-detail-value-recipe: restore-view-help -->
+```python
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
+
+
+class BookDetailView(ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_book
+    cv_object_detail_show_help_text = True
+    cv_property_display = [{"title": "Book", "properties": ["title", "publisher__name"]}]
+```
+
+Use `cv_object_detail_show_help_text=False` to hide automatic help on one view, or `None`
+to inherit the project setting. Property `detail=True` forces terminal help;
+`detail=False` or `detail=""` suppresses it. Omitted/None inherits and explicit nonempty/lazy
+text wins. See the [exact precedence and cached setting lifetime](reference/object_detail_settings.md#help-text-precedence).
+Intermediate relationship help is no longer a fallback for missing terminal help.
+
+Restore stored-code presentation per property; explicit `type` alone does not opt out:
+
+<!-- object-detail-value-recipe: restore-raw-choice -->
+```python
+from crud_views_object_detail.lib import x
+
+process_property = x("process", choices_display=False)
+```
+
+There is no project/view choice-display switch. Scalar string/integer/boolean choices and
+terminal scalar choices across FK/O2O paths are supported; collection choice mapping remains
+unsupported. See [raw/display ownership and missing-owner semantics](reference/object_detail_configuration.md#choice-labels-and-raw-values).
+
+### Copied value templates
+
+Update copied `char.html`, `text.html` and `default.html` leaves to use `display_value` for
+output and the exact `is None or == ""` check. Keep `text.html`'s existing newline filter
+branch. Execute/adapt the [copied text leaf](reference/object_detail_configuration.md#copied-text-value-template).
+For badges use the updated [native badge recipe](reference/object_detail_badges.md#native-semantic-badge-template):
+retain the raw `value is None` guard and truthy `prop.badge_label` override, then fall back
+to `display_value`. Do not apply the text empty-string marker to badges.
+
+`value` and `prop.value` stay raw for custom templates, badge maps/functions and links;
+`prop.choice_label` and `display_value` are separate presentation data. Explicit property
+templates still own their output (after resolved badges). Keep autoescaping enabled and do
+not mark model labels/help safe. Consumer-owned templates and group filtering are not removed
+automatically. Subclass complete object-detail views directly; see the adjacent
+[composition warning and core/Guardian/polymorphic examples](reference/object_detail_view.md#compose-pattern-guardian-polymorphic).
+
 ## Workflow validation and database alignment
 
 Workflow validation/execution (#322) adds `workflow_check_transition(self, name, *, user)`, public

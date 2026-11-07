@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
+last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
 last_mapped_at: 2026-11-06
 ---
 # Technology Stack
@@ -65,6 +65,12 @@ last_mapped_at: 2026-11-06
 - `django-crud-views[all]` installs all four extension extras
 - `lxml`, `cssselect`, `polib`, and `django-pipeline` — test-only dependencies declared in `pyproject.toml`
 - `gunicorn`, `whitenoise`, and `django-ratelimit` — demo deployment requirements in `requirements/demo.txt`, not package runtime dependencies
+
+## Object-Detail Presentation Settings
+
+- `src/crud_views_object_detail/lib/conf.py` owns its own settings singleton. `CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT` defaults to False; layout/types packs and newline formatting remain separate cached settings.
+- `PropertyConfig` uses the existing Pydantic dependency for `choices_display=True` and strict boolean/string/None detail instructions (`src/crud_views_object_detail/lib/config.py`). This increment adds no dependency or production migration.
+- Ruff formats Python examples inside Markdown as well as Python modules. The repository-wide CI commands are `ruff format --check .` and `ruff check .` (`.github/workflows/lint.yml`); checking only changed Python files misses documentation fences.
 
 ## Configuration
 

@@ -39,6 +39,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.13.1: Workflow validation and execution (INSERTED)** - #322: business blockers, opt-in transition buttons, and a reusable execution helper (completed 2026-11-06)
 - [x] **Phase 06.14: Card template insertion blocks and cards-first ViewSets (INSERTED)** - #325: empty card blocks and tested cards-first navigation (completed 2026-11-06)
 - [x] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test (completed 2026-11-06)
+- [x] **Phase 06.16: Object-detail values and composition guidance (INSERTED)** - #327: readable choices, explicit help-text policy, meaningful empty values, and correct mixin composition (completed 2026-11-06)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1050,6 +1051,53 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.15-04-PLAN.md — Required downstream adoption, catalog validation and findings resolution
+
+### Phase 06.16: Object detail: choice labels, help-text policy, empty values, and composition guidance (#327) (INSERTED)
+
+**Goal:** Resolve object-detail findings 12, 13, 14, and 16 in one bounded phase: readable choice labels,
+explicit help-text policy, meaningful empty-value rendering, and correct inheritance guidance.
+**Source:** [Issue #327](https://github.com/jacob-consulting/django-crud-views/issues/327), including its agreed
+decisions, implementation defaults, exclusions, and acceptance criteria.
+**Requirements**: ODV-01, ODV-02, ODV-03, ODV-04, ODV-05
+**Depends on:** Existing object-detail resolver, configuration, and rendering paths. Follows Phase 06.15
+numerically and preserves its list/mapping/dynamic group configurations; no hard dependency on #328 or #329.
+Complete before Phase 7 freezes the affected public surface.
+**Settled scope:**
+- D12: Add per-property `choices_display=True` with a raw-value opt-out. Use model display-method semantics for
+  scalar choice fields and terminal fields on single-object FK/O2O paths; preserve collection behavior, including
+  one-member collections. Preserve raw resolved/custom-template values and inputs to badges and links; explicit
+  badge labels win. Preserve translation, escaping, unknown-code fallback, and missing-relation behavior.
+- D13: Hide automatic model help text by default. Apply explicit property `detail` → view
+  `cv_object_detail_show_help_text` → project `CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT` → `False` precedence.
+  Support boolean instructions, empty-string suppression, explicit/lazy text, and terminal-field metadata without
+  intermediate help-text leakage. Apply consistently through the shared resolver and raw template tags;
+  already-resolved properties retain their resolved detail text. No additional database queries.
+- D14: Stock char/text/default templates show the existing muted em dash for `None` and `""`, keeping rows,
+  labels, and explicit details. Preserve `0`, `False`, whitespace, escaping, newline formatting, and custom-template
+  ownership. A declared non-empty label for a blank choice remains meaningful text.
+- D16: Document that complete object-detail views already include `ObjectDetailMixin`; demonstrate valid core,
+  Guardian, and polymorphic composition without hierarchy changes or a new MRO detector/system check.
+**Exclusions:** No collection choice transformation, hide-empty feature, general display pipeline/resolver rewrite,
+interactive layout work (#328), or core header-icon suppression (#329). Downstream adoption/commits are not a
+completion dependency; application-owned filtering and custom templates remain application decisions.
+**Validation and documentation:** Cover the issue's resolver/config/template/view regressions and documentation
+checks, preserving optional-app behavior and ordinary-path query costs. Use multicore pytest for broad runs.
+Document defaults, precedence, escape hatches, and composition; record breaking/default changes and migration
+recipes in both `CHANGELOG.md` and `docs/migrating-1.0.md`.
+**Planning handoff:** The maintainer agreed the issue's scope on 2026-11-06. Carry these decisions into CONTEXT.md
+without restarting discovery or creating another specification. Ask only if new code evidence reveals a material
+conflict, naming the affected decision. Internal mechanics and focused test organization are delegated.
+**Plans:** 3/3 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.16-01-PLAN.md — Choice display tracer, relation boundaries and raw/custom ownership
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.16-02-PLAN.md — Shared help-text policy and exact stock empty-text behavior
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.16-03-PLAN.md — Executable public contracts, composition, migration and final gates
 
 ### Phase 7: Theme-surface stability policy
 

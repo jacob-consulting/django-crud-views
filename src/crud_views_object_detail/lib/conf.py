@@ -12,6 +12,11 @@ def _from_settings(name, default=_UNSET):
 
 class CrudViewsObjectDetailSettings(BaseModel):
     @cached_property
+    def show_help_text(self) -> bool:
+        v = _from_settings("CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT")
+        return False if v is _UNSET else v
+
+    @cached_property
     def template_pack_layout(self) -> str:
         v = _from_settings("CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT")
         return "split-card" if v is _UNSET else v

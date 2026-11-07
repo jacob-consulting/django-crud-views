@@ -1,1 +1,1 @@
-{% if value is None %}<span class="text-body-tertiary">&mdash;</span>{% else %}{{ value }}{% endif %}
+{% load l10n %}{% if display_value is None or display_value == "" %}<span class="text-body-tertiary">&mdash;</span>{% elif prop.choice_label is not None %}{{ display_value|unlocalize }}{% else %}{{ display_value }}{% endif %}

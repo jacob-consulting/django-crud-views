@@ -53,18 +53,26 @@ Badge templates receive the resolved property as `prop`, plus its original value
 | `prop.badge_color` | Original resolved color name, or `None` when unresolved |
 | `prop.badge_pill` | Requested pill state for a resolved badge; otherwise `False` |
 | `prop.badge_css` | Compatible Bootstrap classes, or `None` when unresolved |
-| `prop.badge_label` | Label-map result, or `None`; the stock template uses the raw value for an empty label |
+| `prop.badge_label` | Label-map result, or `None`; truthy labels win, empty labels fall back to `display_value` |
 | `prop.value` / `value` | Original property value |
+| `prop.choice_label` | Separate automatic choice display result, or `None` |
+| `display_value` | Choice display result when present, otherwise raw `value` |
 
 Arbitrary color names pass through unchanged. Supported names and their visual styling belong to the theme.
-The stock template uses `text-bg-{color}` and appends `rounded-pill` when requested; its output is unchanged.
+The stock template uses `text-bg-{color}` and appends `rounded-pill` when requested.
 An empty color string still resolves to the existing `text-bg-` class; only `None` means no resolved color.
 Label resolution stays independent: an unresolved color can still have a mapped label, but ordinary templates
-receive the original value.
+receive raw `value` alongside `display_value` (and do not use the badge label).
+
+Color maps/functions, label maps and link resolution always receive stored values. A truthy
+explicit badge label wins over the automatic choice label, even with `choices_display=False`.
+An empty mapped label falls back to `display_value`. Preserve the raw-`None` guard: badge
+templates show the marker for raw `None`, while an empty string can still render an empty
+badge. The stock text empty-string policy does not apply to badges.
 
 A resolved badge takes precedence over the property's explicit `template=`. Customize the badge template
 in your type pack to change badge output. When no color resolves, the explicit property template wins;
-without one, the ordinary typed template path is used.
+without one, choice text precedes the ordinary typed template path.
 
 ## Native semantic badge template
 
@@ -72,7 +80,7 @@ For a type pack named `native`, set `CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_TYPE
 `crud_views_object_detail/types/native/badge.html` in your project's template directory:
 
 ```django
-<span class="status{% if prop.badge_color == 'brand-custom' %} status-brand{% endif %}{% if prop.badge_pill %} status-pill{% endif %}">{% if prop.badge_label %}{{ prop.badge_label }}{% else %}{{ value }}{% endif %}</span>
+{% load l10n %}{% if value is None %}<span class="text-body-tertiary">&mdash;</span>{% else %}<span class="status{% if prop.badge_color == 'brand-custom' %} status-brand{% endif %}{% if prop.badge_pill %} status-pill{% endif %}">{% if prop.badge_label %}{{ prop.badge_label }}{% elif prop.choice_label is not None %}{{ display_value|unlocalize }}{% else %}{{ display_value }}{% endif %}</span>{% endif %}
 ```
 
 Define `status`, `status-brand`, and `status-pill` in your theme's stylesheet. This recipe maps `brand-custom`
@@ -81,6 +89,8 @@ Extend the explicit color mapping for other names your theme supports. An unreco
 reaches this template, but receives no color class from this minimal mapping.
 
 Keep Django autoescaping enabled: labels and values are text, including strings containing HTML.
+Only the automatic choice fallback uses `unlocalize`, keeping unknown numeric codes
+ungrouped. Explicit badge labels retain precedence and ordinary raw numbers retain localization.
 The recipe is exercised against real property resolution and template selection, including a counting callback,
 both pill states, missing colors, and explicit-template collisions. It is a template contract example;
 complete visual acceptance of a non-Bootstrap theme requires that theme's own styles and review.

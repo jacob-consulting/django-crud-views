@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
+last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
 last_mapped_at: 2026-11-06
 ---
 # Codebase Concerns
@@ -93,6 +93,12 @@ last_mapped_at: 2026-11-06
 - Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `tests/test1/test_workflow_execution.py`.
 - Impact: callers that bypass the helper or supply unsaved/cross-database identities do not receive the helper's transactional/history guarantees; consumers must retain permission gates separately.
 - Safe use: call the exported helper or use `WorkflowView`; keep business checks side-effect-free; place transactional database follow-up in `on_transition()` and external effects in `cv_on_commit()`. Tests cover alias routing, late refusal, rollback, callback timing, identity validation and direct-call boundary. These are supported API boundaries, not known defects.
+
+**Object-detail migration and template ownership:**
+- Boundary: automatic model help now defaults to off and scalar choices display labels by default. Existing copied value templates retain their own behavior until updated; raw callback/custom-template values remain available.
+- Files: `src/crud_views_object_detail/lib/conf.py`, `src/crud_views_object_detail/lib/resolvers.py`, `src/crud_views_object_detail/templatetags/crud_views_object_detail.py`, `docs/migrating-1.0.md`.
+- Safe adoption: use the documented project/view help restoration or per-property `choices_display=False`; preserve badge precedence and escaping when copying leaves. Cached settings are startup configuration; tests explicitly replace the singleton rather than assuming `override_settings()` invalidates cached values.
+- Verification: choice/help/query regressions and executable migration recipes cover the supported scalar/collection boundary. This is an intentional migration contract, not an unresolved defect.
 
 ## Scaling Limits
 

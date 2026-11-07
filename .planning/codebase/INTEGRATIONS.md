@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
+last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
 last_mapped_at: 2026-11-06
 ---
 # External Integrations
@@ -37,6 +37,13 @@ last_mapped_at: 2026-11-06
 **Developer-provided resource sources:**
 - `Resource` and `ResourceViewMixin` let a ViewSet expose Pydantic rows backed by caller-defined sources such as a filesystem, object store, or API (`src/crud_views/lib/resource.py`, `src/crud_views/lib/viewset/__init__.py`). The package does not include a client SDK, credentials, or source-specific adapter; implementations supply `cv_get_items()` and may override `cv_get_item()`.
 - Resource views default to no database transaction (`cv_atomic = False`); the caller can opt into a transaction for ORM writes, while external side effects remain outside database rollback semantics (`src/crud_views/lib/resource.py`).
+
+## Model Metadata and Detail Rendering
+
+- Object detail obtains choice labels through Django's public `get_FIELD_display()` method on the terminal scalar model owner, captured during the existing value traversal (`src/crud_views_object_detail/lib/resolvers.py`). Scalar FK/O2O paths participate; collections and terminal relation fields keep their existing behavior.
+- Raw `value` remains the input to badge/link callbacks and custom templates; `display_value` supplies the separate presentation result (`src/crud_views_object_detail/templatetags/crud_views_object_detail.py`). Django template escaping and localization remain the rendering boundary.
+- Help descriptions use terminal field metadata and property/view/project precedence. Lazy help stays deferred until rendering; resolved choice labels follow the language active when resolved (`docs/reference/object_detail_configuration.md`). No external client/service is added.
+- The polymorphic selector uses Django `capfirst(ct.name)` for visible subtype labels while keeping content-type ids and order (`src/crud_views_polymorphic/lib/create_select.py`). Direct-create subtype validation remains a separate concern.
 
 ## Data Storage
 

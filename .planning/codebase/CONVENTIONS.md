@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 6a6fc57d180bee14eefae688b9553e8c31daa861
+last_mapped_commit: b096e72abe16c0d263028edf34441e83506bb90b
 last_mapped_at: 2026-11-06
 ---
 # Coding Conventions
@@ -80,6 +80,14 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 **Parameters:** Prefer explicit pytest fixture dependencies and small options objects for reusable JavaScript DOM fixtures (`tests/js/helpers/dom.js`).
 
 **Return Values:** Return concrete responses or data from helpers; assert observable output, database state, rendered markup, and DOM state.
+
+## Presentation and Published Recipes
+
+- Preserve raw values and expose display metadata separately. Object-detail callbacks and custom templates retain raw `value`; stock leaves consume `display_value` (`src/crud_views_object_detail/lib/resolvers.py`, `src/crud_views_object_detail/templatetags/crud_views_object_detail.py`).
+- Treat booleans as explicit policy instructions only where declared: `PropertyConfig.detail` accepts `StrictBool`, lazy/string text or None. Avoid truthiness/string conversion of lazy help during resolution (`src/crud_views_object_detail/lib/config.py`, `src/crud_views_object_detail/lib/resolvers.py`).
+- Keep rendered empty values exact: None/empty strings differ from zero, False, spaces and collections. Preserve escaping, newline behavior and custom-template ownership.
+- Published examples use unique HTML recipe markers beside fenced snippets, enabling tests to execute the actual documentation (`tests/test1/test_object_detail_value_docs.py`). Format Markdown Python fences with the repository-wide Ruff command.
+- Before 1.0, pair a `### Breaking` changelog entry with `docs/migrating-1.0.md`; document restoration/opt-out recipes for changed defaults (`CLAUDE.md`).
 
 ## Module Design
 

@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
-status: "Phase 06.13.1 shipped — PR #332"
-stopped_at: Phase 06.13.1 complete, ready to plan Phase 7
-last_updated: "2026-11-06T12:52:42.464Z"
+status: "Phase 06.16 shipped — PR #333"
+stopped_at: Phase 06.16 complete, ready to plan Phase 7
+last_updated: "2026-11-06T21:24:31.612Z"
 last_activity: 2026-11-06
-state_head: 16a7354420afce19d0dd47331da9865457cdc3d8
+state_head: 4d04ff90fc04167393c1591f0b7cfef33a943673
 progress:
-  total_phases: 21
-  completed_phases: 20
-  total_plans: 131
-  completed_plans: 131
+  total_phases: 22
+  completed_phases: 21
+  total_plans: 134
+  completed_plans: 134
   percent: 95
 milestone_name: milestone
 ---
@@ -24,16 +24,48 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-06)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.13.1 — Workflow validation and execution
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Phase 06.13.1 shipped — PR #332
+Status: Phase 06.16 shipped — PR #333
 Last activity: 2026-11-06
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.16 completion — 2026-11-06
+
+- All three plans committed; canonical verification passed21/21 and D01–D20 honored. All five ODV requirements complete; no required human checks or downstream adoption gate.
+- Deep review found numeric choice fallback localization; bounded stock/copied-template fix72df30bc independently re-reviewed clean. Review disposition fixed1/open0; security11/11 closed; Nyquist no gaps; UI24/24 source-only, without browser/human acceptance claims.
+- Final source: full Django5.2 10,837 passed/one existing Django6-only skip; focused4.2/5.2/6.0 665each; examples409 plus100subtests; independent verifier129 fresh cases. Strict docs/scoped Ruff pass. Broader Python matrix unrun; symbolic key-link CLI limitation covered by direct source/test tracing.
+- Phase7 is ready for discussion. No learnings artifacts, matching pending todos or stale phase handoffs. Existing config/state.json/CLAUDE edits preserved; no push or merge.
+
+### Phase 06.16 plan 03 — 2026-11-06
+
+- Published choice/help/raw-display contracts, unique copied badge/text recipes, five complete/core/Guardian/polymorphic context recipes, and paired Breaking migration/restoration paths. The new documentation suite has 35 passing cases.
+- Final current-source gates: full Django 5.2.18, 10821 passed/1 expected existing skip in 302.53s; focused Django 4.2.30/6.0.9, 649 passed each. All used Python 3.12.3 and four workers; strict docs and scoped Ruff pass.
+- Summary committed; roadmap 3/3 remains In Progress. Shared ODV-01–05 readiness passed and implementation requirements are marked complete; independent phase audits/approval remain pending. No full Python matrix, browser/human approval, downstream adoption, push or merge claimed.
+
+### Phase 06.16 plan 02 — 2026-11-06
+
+- Strict help instructions, view/project inheritance and terminal-only lazy help are committed. Stock char/text/default now mark exact None/empty text while retaining rows, descriptions, raw/custom values and non-text semantics.
+- Final combined gate: 590 passed in 12.04s on Python 3.12.3/Django 5.2.18 with four workers; scoped Ruff checks pass. Tasks 1/3 have classifier-approved RED evidence; task 2 is documented test-only expansion of already-implemented behavior.
+- Summary committed; roadmap 2/3, next plan 3/3. Shared ODV-02/ODV-03/ODV-05 await plan 03 documentation/migration and final runtime gates. No browser/human acceptance, push or merge claimed; config/state.json/CLAUDE changes preserved.
+
+### Phase 06.16 plan 01 — 2026-11-06
+
+- Scalar choice display, one-walk terminal owners and badge fallback committed with raw callback/template values preserved. Missing scalar owners retain raw None/[]; collections and ordinary paths preserve query costs.
+- Final combined gate: 389 passed with four workers on Python 3.12/Django 5.2; scoped Ruff checks pass. Three RED reports classified RED_EVIDENCE_OK before their GREEN commits.
+- Summary committed; roadmap 1/3, next plan 2/3. Help policy, exact empty markers, public migration documentation and final phase-wide runtime gates remain with plans 02/03. Shared ODV-01/ODV-05 remain pending; no push or merge.
+
+### Phase 06.16 plan convergence — 2026-11-06
+
+- Three plans across three sequential waves are ready to execute. Fable, Grok and Gemini reviewed all three plans; cycle 4 closed with zero HIGH concerns, zero actionable non-HIGH findings and zero open revision conflicts. Final review: 76725e33; reviewed plans: d328e956.
+- All 20 discussion decisions and ODV-01–ODV-05 have executable coverage. Plan frontmatter/structure and post-planning gap checks pass. Implementation and acceptance tests remain pending.
+- Source-audit coverage limits are recorded in REVIEWS.md: the intel adapter cannot check Python symbols, and the phase-status seam did not recognize the roadmap section. Supplemental source inspection and other artifact comparisons remain separately attributed.
+- No production changes, push or merge. Unrelated CLAUDE.md and state.json edits preserved.
 
 ### Phase 06.14 completion — 2026-11-06
 
@@ -548,7 +580,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 131
+- Total plans completed: 130
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -575,6 +607,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.13 | 2 | - | - |
 | 06.13.1 | 5 | - | - |
 | 06.14 | 2 | - | - |
+| 06.16 | 3 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -679,6 +712,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.13.1 P04 | 22min | 2 tasks | 6 files |
 | Phase 06.13.1 P05 | 20min | 2 tasks | 10 files |
 | Phase 06.14 P01 | 8min | 2 tasks | 4 files |
+| Phase 06.16 P01 | 9min | 3 tasks | 8 files |
+| Phase 06.16 P02 | 8min | 3 tasks | 12 files |
+| Phase 06.16 P03 | 11min | 3 tasks | 10 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -876,6 +912,10 @@ Recent decisions affecting current work:
 - [Phase 06.15]: Plan 02: capfirst formats already-discovered selector names; real requests plus lazy translation, escaping, filtering, custom-form and access regressions preserve the existing contract.
 - [Phase 06.15]: Plan 03: publish executable exact-model mapping blocks and list-only tag boundary; full 5.2 and focused 4.2/6.0 pass; POLY-05 remains pending downstream adoption.
 - [Phase 06.15]: Downstream catalog verified against explicit phase and pinned extension source roots; task branch retains original report edits unstaged; phase completion awaits independent verification.
+- [Phase 06.16]: Choice labels remain separate from raw values; missing supported scalar owners project empty text without normalizing None or lists.
+- [Phase 06.16]: Help policy resolves once from strict property instructions, nullable view override and project setting; terminal lazy metadata stays unevaluated until rendering.
+- [Phase 06.16]: Stock textual leaves use exact None/empty-string display checks; raw values, custom ownership, non-text behavior and row structure remain intact.
+- [Phase 06.16]: Plan 03: exact copied recipes and five real context compositions pass with final full 5.2 and focused 4.2/6.0 evidence; keep independent phase approval pending.
 
 ### Pending Todos
 
@@ -929,6 +969,7 @@ None yet.
 - Phase 06.14 inserted after Phase 6: Issue #325: add empty card_root/card_header blocks and document/test cards-first ViewSets with a secondary table; preserve existing rendering, actions, permissions and navigation. Settle these contracts before Phase 7; downstream theme implementation is separate. (URGENT)
 
 - Phase 06.15 inserted after Phase 06.14: Issue #326: polymorphic selector labels and per-model detail groups, including required tabler-test adoption and verification. Phase 06.14 completed in another worktree per user; no card implementation dependency. (URGENT)
+- Phase 06.16 inserted after Phase 06.15: Issue #327: object-detail choice labels, help-text policy, empty values, and composition guidance; settled issue decisions are the planning handoff. (URGENT)
 
 ## Deferred Items
 
@@ -938,6 +979,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T11:34:16.722Z
-Stopped at: Phase 06.13.1 complete, ready to plan Phase 7
+Last session: 2026-11-06T19:37:58.542Z
+Stopped at: Phase 06.16 complete, ready to plan Phase 7
 Resume file: None

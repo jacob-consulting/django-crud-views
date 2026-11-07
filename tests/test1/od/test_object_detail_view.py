@@ -140,6 +140,63 @@ def test_object_detail_mixin_layout_override_defaults_to_none():
     assert context["object_detail_layout"] is None
 
 
+@pytest.mark.parametrize("selection", ["list", "mapping", "dynamic"])
+@pytest.mark.parametrize("project", [False, True])
+@pytest.mark.parametrize("view_policy", [None, False, True])
+def test_object_detail_help_policy_context_selection(selection, project, view_policy, settings):
+    from crud_views_object_detail.lib.config import PropertyGroupConfig, x
+
+    settings.CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = project
+    groups = [
+        PropertyGroupConfig(title="Empty", properties=[]),
+        PropertyGroupConfig(
+            title="Selected", properties=["text", x("text", detail=False), x("text", detail="Explicit")]
+        ),
+    ]
+
+    class V(ObjectDetailMixin, _StubDetailBase):
+        cv_property_display = {Info: groups} if selection == "mapping" else groups
+        cv_object_detail_show_help_text = view_policy
+
+    if selection == "dynamic":
+        V.property_display = property(lambda self: groups)
+    view = V()
+    view.object = Info(text="Body")
+    selected = view.get_property_display()
+    assert all(a is b for a, b in zip(groups, selected, strict=True))
+    context = view.get_context_data()
+    resolved = context["object_detail_groups"]
+    assert [g.title for g in resolved] == ["Empty", "Selected"]
+    assert resolved[0].properties == []
+    expected = "The info body text" if (project if view_policy is None else view_policy) else None
+    assert [p.detail for p in resolved[1].properties] == [expected, None, "Explicit"]
+    assert [p.path for p in resolved[1].properties] == ["text", "text", "text"]
+    html = render_to_string("crud_views_object_detail/view_detail.content.html", {**context, "object": view.object})
+    assert ("The info body text" in html) is (expected is not None)
+    assert "Explicit" in html
+    assert [p.detail for p in groups[1].properties] == [None, False, "Explicit"]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("project", [False, True])
+@pytest.mark.parametrize("view_policy", [None, False, True])
+def test_object_detail_help_policy_full_request(
+    project, view_policy, settings, monkeypatch, campaign_new, client_user_campaign_view
+):
+    from tests.test1.app.models import Campaign
+    from tests.test1.app.views import CampaignDetailView
+
+    settings.CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT = project
+    monkeypatch.setattr(Campaign._meta.get_field("name"), "help_text", "Campaign name guidance")
+    monkeypatch.setattr(CampaignDetailView, "cv_object_detail_show_help_text", view_policy)
+    response = client_user_campaign_view.get(f"/campaign/{campaign_new.pk}/detail/")
+    assert response.status_code == 200
+    prop = next(p for g in response.context["object_detail_groups"] for p in g.properties if p.path == "name")
+    expected = project if view_policy is None else view_policy
+    assert prop.detail == ("Campaign name guidance" if expected else None)
+    assert ("Campaign name guidance" in response.content.decode()) is expected
+
+
 def test_object_detail_mixin_layout_override_threaded_into_context():
     """cv_object_detail_layout, when set, lands in the context as object_detail_layout."""
 

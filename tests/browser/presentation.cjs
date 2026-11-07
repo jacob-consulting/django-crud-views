@@ -125,6 +125,7 @@ async function tabState(page, container, count, index, record, label, focused = 
         return tabs.every((tab, i) => document.getElementById(tab.getAttribute('aria-controls')).classList.contains('show') === (i === index));
     }, {container, index});
     const state = await page.locator(container).evaluate(root => ({
+        namespaceValid: new URL(location.href).searchParams.get('namespace') !== 'tabler' || !('bootstrap' in globalThis),
         focus: document.activeElement.id,
         tabs: [...root.querySelectorAll('[role="tab"]')].map(t => {
             const p = document.getElementById(t.getAttribute('aria-controls'));
@@ -134,7 +135,7 @@ async function tabState(page, container, count, index, record, label, focused = 
                     active: p.classList.contains('active'), shown: p.classList.contains('show'), tabIndex: p.tabIndex}};
         }),
     }));
-    check(record, label, state.tabs.length === count && state.tabs.every((t, i) =>
+    check(record, label, state.namespaceValid && state.tabs.length === count && state.tabs.every((t, i) =>
         t.name && t.panel && t.target === '#' + t.panel.id && t.panel.label === t.id && t.panel.tabIndex === 0 &&
         t.selected === String(i === index) && t.active === (i === index) && t.tabIndex === (i === index ? 0 : -1) &&
         t.panel.visible === (i === index) && t.panel.active === (i === index) && t.panel.shown === (i === index)) &&
@@ -186,10 +187,11 @@ async function runTabAdapters(hostPage, detail, report) {
             const initial = await page.locator(container).evaluate((root, namespace) => {
                 const Tab = globalThis[namespace].Tab;
                 return {namespace, version: Tab.VERSION, bootstrapAbsent: !('bootstrap' in globalThis),
+                    observedCalls: globalThis.presentationTabCalls?.filter(call => call.modal === !!root.closest('#cv-modal')).length,
                     instances: [...root.querySelectorAll('[role="tab"]')].map(el => !!Tab.getInstance(el))};
             }, namespace);
             check(record, 'all-three-instances-before-interaction', initial.instances.length === 3 && initial.instances.every(Boolean) &&
-                initial.version === '5.3.3' && (namespace !== 'tabler' || initial.bootstrapAbsent), initial);
+                initial.observedCalls === 3 && initial.version === '5.3.3' && (namespace !== 'tabler' || initial.bootstrapAbsent), initial);
             await tabs(page, container, 3, false, record, modal);
             // Start at zero, then prove repeated setup preserves identity/focus/selection and one key produces one event.
             await page.locator(`${container} [role="tab"]`).first().click();

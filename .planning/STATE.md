@@ -1,19 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: "Phase 06.16 shipped — PR #333"
-stopped_at: Phase 06.16 complete, ready to plan Phase 7
-last_updated: "2026-11-06T21:24:31.612Z"
-last_activity: 2026-11-06
-state_head: 4d04ff90fc04167393c1591f0b7cfef33a943673
+current_phase: "06.17"
+current_phase_name: Object-detail accordion initial state and tab adapters
+status: Phase 06.17 context gathered — ready for planning
+stopped_at: Phase 06.17 context gathered
+last_updated: "2026-11-07T07:42:43.719Z"
+last_activity: 2026-11-07
+state_head: 022e03c5cf414c819ad10111a10a61545b3a83f3
 progress:
-  total_phases: 22
+  total_phases: 23
   completed_phases: 21
   total_plans: 134
   completed_plans: 134
-  percent: 95
 milestone_name: milestone
 ---
 
@@ -24,16 +23,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-06)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.17 — Object-detail accordion initial state and tab adapters
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.17 — Object-detail accordion initial state and tab adapters
 Plan: Not started
-Status: Phase 06.16 shipped — PR #333
-Last activity: 2026-11-06
+Status: Phase 06.17 context gathered — ready for planning
+Last activity: 2026-11-07
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.17
 
 ### Phase 06.16 completion — 2026-11-06
 
@@ -970,6 +969,7 @@ None yet.
 
 - Phase 06.15 inserted after Phase 06.14: Issue #326: polymorphic selector labels and per-model detail groups, including required tabler-test adoption and verification. Phase 06.14 completed in another worktree per user; no card implementation dependency. (URGENT)
 - Phase 06.16 inserted after Phase 06.15: Issue #327: object-detail choice labels, help-text policy, empty values, and composition guidance; settled issue decisions are the planning handoff. (URGENT)
+- Phase 06.17 inserted after Phase 06.16: Issue #328: open the first accordion group and initialize/dispose tabs through theme adapters; settled issue decisions are the planning handoff. (URGENT)
 
 ## Deferred Items
 
@@ -979,6 +979,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-06T19:37:58.542Z
-Stopped at: Phase 06.16 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-07T07:42:41.406Z
+Stopped at: Phase 06.17 context gathered
+Resume file: .planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-CONTEXT.md

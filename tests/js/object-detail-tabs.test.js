@@ -46,7 +46,7 @@ describe("object-detail tabs real asset", () => {
     afterEach(() => {
         listeners.forEach(args => document.removeEventListener(...args));
         delete window.__cvObjectDetailTabsInit;
-        delete window.cv?.initObjectDetailTabs;
+        delete window.cv;
         vi.restoreAllMocks();
         vi.unstubAllGlobals();
     });
@@ -56,6 +56,75 @@ describe("object-detail tabs real asset", () => {
         await loadScript("tabs", "crud_views_object_detail");
         expect(window.cv.initObjectDetailTabs).toBeTypeOf("function");
     }
+
+    function observedError(root, name) {
+        let error;
+        const observe = event => { error = event.error; event.preventDefault(); };
+        window.addEventListener("error", observe);
+        try { modalEvent(root, name); } finally { window.removeEventListener("error", observe); }
+        return error;
+    }
+
+    it("dispatches to early and late custom tab adapters without a library lookup", async () => {
+        const early = { init: vi.fn(), dispose: vi.fn() };
+        window.cv = { adapters: { tab: early } };
+        await loadTabs();
+        expect(window.cv.adapters.tab).toBe(early);
+        window.cv.initObjectDetailTabs();
+        expect(early.init).toHaveBeenCalledTimes(2);
+        expect(early.init.mock.calls.map(([el]) => el.id)).toEqual(["page-0", "page-1"]);
+        const late = { init: vi.fn(), dispose: vi.fn() };
+        window.cv.adapters.tab = late;
+        window.cv.initObjectDetailTabs();
+        modalEvent(document.getElementById("page"), "unload");
+        expect(late.init).toHaveBeenCalledTimes(2);
+        expect(late.dispose).toHaveBeenCalledTimes(2);
+        expect(early.dispose).not.toHaveBeenCalled();
+        expect(fake.bootstrap.Tab.getOrCreateInstance).not.toHaveBeenCalled();
+    });
+
+    it.each(["cv", "adapters", "tab"])("no-ops with absent %s for init and disposal", async missing => {
+        await loadTabs();
+        const initialize = window.cv.initObjectDetailTabs;
+        if (missing === "cv") delete window.cv;
+        else if (missing === "adapters") delete window.cv.adapters;
+        else delete window.cv.adapters.tab;
+        initialize();
+        expect(observedError(document.getElementById("page"), "unload")).toBeUndefined();
+        expect(fake.bootstrap.Tab.getOrCreateInstance).not.toHaveBeenCalled();
+        expect(fake.bootstrap.Tab.getInstance).not.toHaveBeenCalled();
+    });
+
+    it.each([{}, { init() {} }, { dispose() {} }, { init: 1, dispose() {} }])(
+        "rejects malformed present adapter %j on init and unload", async adapter => {
+            await loadTabs();
+            window.cv.adapters.tab = adapter;
+            expect(() => window.cv.initObjectDetailTabs()).toThrow(TypeError);
+            expect(observedError(document.getElementById("page"), "unload")).toBeInstanceOf(TypeError);
+        });
+
+    it.each(["init", "dispose"])("preserves the original custom %s exception", async method => {
+        await loadTabs();
+        const error = new Error("custom adapter failure");
+        window.cv.adapters.tab = { init() {}, dispose() {}, [method]() { throw error; } };
+        if (method === "init") {
+            expect(() => window.cv.initObjectDetailTabs()).toThrow(error);
+            expect(observedError(document.getElementById("page"), "loaded")).toBe(error);
+        } else expect(observedError(document.getElementById("page"), "unload")).toBe(error);
+    });
+
+    it("never resolves adapters for native or empty roots on either lifecycle", async () => {
+        await loadTabs();
+        document.body.innerHTML = '<section id="native"></section><div data-cv-od-tabs id="empty"></div>';
+        const lookup = vi.fn(() => { throw new Error("lookup"); });
+        Object.defineProperty(window.cv, "adapters", { configurable: true, get: lookup });
+        window.cv.initObjectDetailTabs();
+        for (const root of document.body.children) {
+            expect(observedError(root, "loaded")).toBeUndefined();
+            expect(observedError(root, "unload")).toBeUndefined();
+        }
+        expect(lookup).not.toHaveBeenCalled();
+    });
 
     it("initializes every owned trigger on DOMContentLoaded", async () => {
         await loadTabs();

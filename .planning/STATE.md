@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.17"
-current_phase_name: Object-detail accordion initial state and tab adapters
-status: Ready for verification — Phase 06.17 plans 3/3 complete
-stopped_at: Completed 06.17-03-PLAN.md; independent reviews and verification pending
-last_updated: "2026-11-07T10:18:56.023Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.17 complete, ready to plan Phase 7
+last_updated: "2026-11-07T10:32:40.005Z"
 last_activity: 2026-11-07
-last_activity_desc: Plan 06.17-03 executable migrations and final acceptance complete
-state_head: 94c9685203c18397b301dd266e6f79e81841b05c
+last_activity_desc: Phase 06.17 complete, transitioned to Phase 7
+state_head: 6d690f8a0fce144299f1375e3b055d74c8bcd3ae
 progress:
   total_phases: 23
-  completed_phases: 21
+  completed_phases: 22
   total_plans: 137
   completed_plans: 137
+  percent: 95
 milestone_name: milestone
 ---
 
@@ -21,19 +22,26 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-06)
+See: .planning/PROJECT.md (updated 2026-11-07)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.17 — independent reviews and verification
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.17 (Object-detail accordion initial state and tab adapters) — READY FOR VERIFICATION
-Plan: 3 of 3
-Status: Plans 3/3 complete; independent reviews and verification pending
-Last activity: 2026-11-07 — Plan 06.17-03 executable migrations and final acceptance complete
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-07 — Phase 06.17 complete, transitioned to Phase 7
 
-Next: Phase 06.17 independent reviews and verification
+Next: $gsd-discuss-phase 7
+
+### Phase 06.17 completion — 2026-11-07
+
+- All three plans committed; canonical verification passed15/15, ODT-01–05, D01–D20 and32 UI considerations accounted for. No required human checks or implementation blockers.
+- Independent deep review clean19 files; security9/9 closed; Nyquist no gaps; UI preservation24/24. WINDOWS36 documentation classifier-order exception independently reviewed and explicitly waived; historical violation remains recorded.
+- Final source full5.2:10,849 passed/one existing skip; focused177 each4.2/5.2/6.0 on Python3.12.3; JS383; browser18/472 with53 matching hashes and cleanup; examples409 plus100subtests. Strict docs/scoped Ruff pass. Broader runtime/visual/AT coverage unclaimed.
+- Completion warnings misparse inline commands as paths; actual referenced artifacts exist. No learnings/todos/handoffs require graduation or closure. Phase7 ready for discussion; existing config/state.json/CLAUDE/notes preserved; no push or merge.
 
 ### Phase 06.17 plan 03 — 2026-11-07
 
@@ -599,7 +607,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 130
+- Total plans completed: 133
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -627,6 +635,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.13.1 | 5 | - | - |
 | 06.14 | 2 | - | - |
 | 06.16 | 3 | - | - |
+| 06.17 | 3 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1006,5 +1015,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-07T10:18:53.533Z
-Stopped at: Completed 06.17-03-PLAN.md; independent reviews and verification pending
+Stopped at: Phase 06.17 complete, ready to plan Phase 7
 Resume file: None

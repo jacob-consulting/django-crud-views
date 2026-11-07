@@ -38,9 +38,53 @@ function thrownBy(fn) {
     return undefined;
 }
 
+function publishedAdapterRecipe(marker) {
+    const docs = fs.readFileSync("docs/reference/javascript.md", "utf8");
+    const token = `<!-- ${marker} -->`;
+    expect(docs.split(token)).toHaveLength(2);
+    const fence = docs.split(token)[1].match(/^\s*```javascript\n([\s\S]*?)```/);
+    expect(fence).not.toBeNull();
+    return fence[1];
+}
+
 describe("adapters.js", () => {
     beforeEach(() => { document.body.innerHTML = '<div id="m"><div id="d"></div></div><span id="t"></span>'; });
     afterEach(() => { vi.unstubAllGlobals(); delete window.cv; });
+
+    it.each(["cv-tab-adapter-namespace", "cv-tab-adapter-complete-map"])("published %s supports tab lifecycle without bootstrap", async marker => {
+        await loadScript("adapters");
+        const code = publishedAdapterRecipe(marker);
+        const ns = fakeNamespace();
+        const tab = { show: vi.fn(), dispose: vi.fn() };
+        ns.Tab = { getOrCreateInstance: vi.fn(() => tab), getInstance: vi.fn(() => tab) };
+        const globals = {}; // Deliberately no bootstrap; the provider resolves tabler later.
+        new Function("cv", "globalThis", "myModalAdapter", "myTooltipAdapter", "myCollapseAdapter", code)(
+            window.cv, globals, ns.Modal, ns.Tooltip, ns.Collapse,
+        );
+        const adapters = window.cv.adapters, el = document.getElementById("t");
+        expect(Object.keys(adapters).sort()).toEqual(["alert", "collapse", "modal", "tab", "tooltip"]);
+        adapters.tab.init(el); adapters.tab.dispose(el);
+        expect(ns.Tab.getOrCreateInstance).not.toHaveBeenCalled();
+        globals.tabler = ns;
+        adapters.tab.init(el); adapters.tab.dispose(el);
+        expect(ns.Tab.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+        expect(ns.Tab.getInstance).toHaveBeenCalledExactlyOnceWith(el);
+        expect(tab.dispose).toHaveBeenCalledOnce();
+        expect(tab.show).not.toHaveBeenCalled();
+        expect(globals.bootstrap).toBeUndefined();
+        adapters.alert.close(el);
+        expect(ns.alert.close).toHaveBeenCalledOnce();
+        if (marker === "cv-tab-adapter-complete-map") {
+            expect(adapters.modal).toBe(ns.Modal);
+            expect(adapters.tooltip).toBe(ns.Tooltip);
+            expect(adapters.collapse).toBe(ns.Collapse);
+        } else {
+            adapters.modal.show(el); adapters.tooltip.init(el); adapters.collapse.toggle(el);
+            expect(ns.instance.show).toHaveBeenCalledOnce();
+            expect(ns.Tooltip.getOrCreateInstance).toHaveBeenCalledWith(el);
+            expect(ns.collapse.toggle).toHaveBeenCalledOnce();
+        }
+    });
 
     it.each(["default", "object", "provider"])("%s tab resolves late components for init and get-only disposal", async kind => {
         await loadScript("adapters");

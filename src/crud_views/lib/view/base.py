@@ -263,12 +263,17 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def get_context_data(self, **kwargs):
         from crud_views.lib.ancestor_db import _check_nested_queryset
+        from crud_views.lib.ancestors import _scope_child_queryset
 
-        if "object_list" not in kwargs and getattr(self, "object_list", None) is not None:
-            # where list views consume their collection: a nested one stays scoped to the resolved parent
-            from crud_views.lib.ancestors import _scope_child_queryset
-
-            self.object_list = _scope_child_queryset(self, self.object_list)
+        # where list views consume their collection: a nested one stays scoped to the resolved parent. django-filter
+        # passes it as the ``object_list`` keyword and tables read ``self.object_list``, so both are scoped (the
+        # same scoped queryset when the keyword is ``self.object_list``).
+        original = getattr(self, "object_list", None)
+        if original is not None:
+            self.object_list = _scope_child_queryset(self, original)
+        supplied = kwargs.get("object_list")
+        if supplied is not None:
+            kwargs["object_list"] = self.object_list if supplied is original else _scope_child_queryset(self, supplied)
         # the collection Django's list context will paginate must read the default database (nested only)
         _check_nested_queryset(self, kwargs.get("object_list", getattr(self, "object_list", None)))
         context = super().get_context_data(**kwargs)

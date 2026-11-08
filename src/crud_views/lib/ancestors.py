@@ -4,9 +4,10 @@ Shared ancestor authorization for nested ViewSet requests (phase 06.18).
 One request engine, ``_authorize_ancestors(view)``, runs before an endpoint's own work:
 
 1. Top-level requests return immediately: no ancestor work at all.
-2. Static selection, without database access: the requested operation's permission pair, the declared
-   ancestry, each ancestor's effective provider and the levels selected for a permission gate (full cascade:
-   every protected ancestor; nearest-only: the nearest protected one).
+2. Static validation and selection, without database access: the declared ancestry and its relationships, the
+   action declarations, the requested operation's permission pair, each ancestor's effective provider and the
+   levels selected for a permission gate (full cascade: every protected ancestor; nearest-only: the nearest
+   protected one).
 3. Actor admission when a gate is selected: anonymous actors get the endpoint's login/no-permission response,
    inactive authenticated actors 403 — both before any ancestor lookup.
 4. Outermost inward, each ancestor is resolved through its own ViewSet queryset (called with the real child
@@ -15,9 +16,9 @@ One request engine, ``_authorize_ancestors(view)``, runs before an endpoint's ow
 5. On success the resolved chain is stored on the view instance (request-local) and the request continues
    through its existing path; ``cv_get_parent_object()`` reuses the resolved immediate parent.
 
-Plan 06.18-01 classifies the core list/detail (Read) and create/update/delete (Write) families; the remaining
-finite families and the custom-endpoint declaration rules arrive with plan 06.18-02. Until then an
-unclassified nested endpoint without an exact ``actions`` entry performs no ancestor work.
+Operations come from a finite family table (``_operation_family``); an endpoint outside it — a generic action,
+custom form, workflow or other custom view — needs an exact ``actions`` entry when nested, otherwise the request
+fails with ``ImproperlyConfigured`` (and the system check reports viewset.E268).
 """
 
 from __future__ import annotations
@@ -181,36 +182,127 @@ def _validate_relationship(viewset: ViewSet, below: ViewSet, edge: ParentViewSet
         )
 
 
-def _family(view_class: type[CrudView]) -> str | None:
-    """'read' / 'write' for the classified core families, None for anything else (see module docstring)."""
+_READ = "read"
+_WRITE = "write"
+
+
+def _family_table() -> tuple[tuple[type, str], ...]:
+    """The finite shipped endpoint families (core classes only, imported lazily). Rich ObjectDetail and the
+    polymorphic detail/create/update/delete views inherit the core Detail/Create/Update/Delete classes; the
+    polymorphic type selector carries the inherited ``_cv_ancestor_operation`` marker instead, so core never
+    imports an optional package. Django's generic DetailView is deliberately absent: custom forms and
+    workflow inherit it."""
+    from crud_views.lib.views.action_ordered import OrderedDownView, OrderedUpView
+    from crud_views.lib.views.card import CardListView
+    from crud_views.lib.views.child import RedirectChildView
     from crud_views.lib.views.create import CreateView
     from crud_views.lib.views.delete import DeleteView
     from crud_views.lib.views.detail import DetailView
     from crud_views.lib.views.list import ListView
+    from crud_views.lib.views.manage import ManageView
     from crud_views.lib.views.update import UpdateView
 
-    if issubclass(view_class, (ListView, DetailView)):
-        return "read"
-    if issubclass(view_class, (CreateView, UpdateView, DeleteView)):
-        return "write"
+    return (
+        (ListView, _READ),
+        (CardListView, _READ),
+        (DetailView, _READ),
+        (RedirectChildView, _READ),
+        (ManageView, _READ),
+        (CreateView, _WRITE),
+        (UpdateView, _WRITE),
+        (DeleteView, _WRITE),
+        (OrderedUpView, _WRITE),
+        (OrderedDownView, _WRITE),
+    )
+
+
+def _operation_family(view_class: type) -> str | None:
+    """'read' / 'write' for a shipped family (including permission variants and ordinary subclasses), else
+    None. Decided by class only — never by the registered key, the HTTP method or the local permission."""
+    marker = getattr(view_class, "_cv_ancestor_operation", None)
+    if marker is not None:
+        return marker
+    for base, family in _family_table():
+        if issubclass(view_class, base):
+            return family
     return None
 
 
-def _operation_requirements(view_class: type[CrudView]) -> AncestorPermissions | None:
-    """The permission pair required of ancestors for a request to ``view_class``.
+def _registered_key(view_class: type[CrudView]) -> str:
+    """The key ``view_class`` is literally registered under at its ViewSet (else its ``cv_key``)."""
+    for key, registered in view_class.cv_viewset.get_all_views().items():
+        if registered is view_class:
+            return key
+    return view_class.cv_key
 
-    An exact ``actions`` entry for the registered key wins; otherwise the family's pair (the ViewSet's
-    ``read``/``write`` override, else the global default). None: not classified yet.
+
+def _missing_action_message(viewset: ViewSet, key: str, view_class: type) -> str:
+    return (
+        f"ViewSet {viewset.name!r} view {key!r} ({view_class.__name__}) is a nested endpoint outside the "
+        f"built-in Read/Write families: declare ancestor_policy.actions[{key!r}] = "
+        f"AncestorPermissions(nearest=..., higher=...) on ViewSet {viewset.name!r}"
+    )
+
+
+def _action_declaration_problems(viewset: ViewSet) -> list[tuple[str, str]]:
+    """``(check id, message)`` for the action declarations of a nested ViewSet, from its completed registry:
+
+    * ``E267``: an ``actions`` key that is not literally registered (Card's ``list`` navigation alias is no
+      registration);
+    * ``E268``: a registered unclassified endpoint without its exact ``actions`` entry.
+
+    Top-level ViewSets have none (construction rejects their nonempty ``actions``). No database.
     """
-    policy = view_class.cv_viewset.ancestor_policy
-    if view_class.cv_key in policy.actions:
-        return policy.actions[view_class.cv_key]
-    family = _family(view_class)
-    if family == "read":
+    if viewset.parent is None:
+        return []
+    policy = viewset.ancestor_policy
+    problems = []
+    for key in policy.actions:
+        if viewset.is_view_registered(key):
+            continue
+        hint = ""
+        if key == "list" and viewset.is_view_registered("card"):
+            hint = "; the 'card' endpoint answers list navigation but is registered as 'card': use actions['card']"
+        registered = ", ".join(repr(k) for k in viewset.get_all_views()) or "none"
+        problems.append(
+            (
+                "E267",
+                f"ViewSet {viewset.name!r}: ancestor_policy.actions[{key!r}] names no registered endpoint "
+                f"(registered: {registered}){hint}",
+            )
+        )
+    for key, view_class in viewset.get_all_views().items():
+        if key not in policy.actions and _operation_family(view_class) is None:
+            problems.append(("E268", _missing_action_message(viewset, key, view_class)))
+    return problems
+
+
+def _validate_action_declarations(viewset: ViewSet) -> None:
+    """Runtime guard: every ``actions`` key of a nested ViewSet is literally registered (``ImproperlyConfigured``
+    otherwise). A missing entry is enforced per requested endpoint by ``_operation_requirements``."""
+    for code, message in _action_declaration_problems(viewset):
+        if code == "E267":
+            raise ImproperlyConfigured(message)
+
+
+def _operation_requirements(view_class: type[CrudView]) -> AncestorPermissions:
+    """The permission pair required of ancestors for a nested request to ``view_class``.
+
+    The exact ``actions`` entry for its registered key wins; otherwise the family's pair (the ViewSet's
+    ``read``/``write`` override, else the global default). An unclassified endpoint without an entry is a
+    configuration error in every cascade mode, even with all-none ancestry.
+    """
+    viewset = view_class.cv_viewset
+    policy = viewset.ancestor_policy
+    key = _registered_key(view_class)
+    if key in policy.actions:
+        return policy.actions[key]
+    family = _operation_family(view_class)
+    if family == _READ:
         return policy.read or crud_views_settings.ancestor_read_permissions
-    if family == "write":
+    if family == _WRITE:
         return policy.write or crud_views_settings.ancestor_write_permissions
-    return None
+    raise ImproperlyConfigured(_missing_action_message(viewset, key, view_class))
 
 
 def _effective_provider(viewset: ViewSet) -> str:
@@ -273,11 +365,10 @@ def _authorize_ancestors(view: CrudView):
     viewset = view.cv_viewset
     if viewset is None or viewset.parent is None:
         return None
-    # static validation first: structure and relationships, before any actor, object or permission work
+    # static validation first: structure, relationships and declarations, before any actor/object/permission work
     chain = _validate_ancestor_structure(viewset)
+    _validate_action_declarations(viewset)
     pair = _operation_requirements(type(view))
-    if pair is None:
-        return None
     selected = _selected_gates(viewset, chain)
 
     user = view.request.user

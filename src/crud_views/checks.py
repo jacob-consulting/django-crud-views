@@ -8,7 +8,7 @@ from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from crud_views.lib import assets
 from crud_views.lib import ordered as ordered_helper
 from crud_views.lib import pipeline as pipeline_helper
-from crud_views.lib.ancestors import _AncestryError, _validate_ancestor_structure
+from crud_views.lib.ancestors import _action_declaration_problems, _AncestryError, _validate_ancestor_structure
 from crud_views.lib.button_classes import button_class_check_messages
 from crud_views.lib.conditional.group import ConditionalGroupFormMixin, resolve_conditional_empty_value
 from crud_views.lib.formsets.formsets import FormSet
@@ -32,12 +32,14 @@ def check_viewsets(app_configs=None, **kwargs):
     return errors
 
 
-def _ancestor_structure_messages(viewsets) -> list:
+def _ancestor_structure_messages(viewsets, *, completed: bool = True) -> list:
     """viewset.E266 for every nested ViewSet whose declared ancestry cannot be walked or expressed: a cycle, an
     unregistered parent or an unsupported relationship. Declarations and model metadata only — no database.
 
     A Resource parent is not repeated here: the owning child ViewSet already reports that edge once as
-    viewset.E261 (ViewSet.checks()). URL construction and requests raise ImproperlyConfigured for all kinds.
+    viewset.E261 (ViewSet.checks()). An unregistered parent may still be a valid forward reference until the
+    registry is complete, so it is reported only when ``completed``. URL construction and requests raise
+    ImproperlyConfigured for every kind regardless.
     """
     messages = []
     for viewset in viewsets:
@@ -46,7 +48,7 @@ def _ancestor_structure_messages(viewsets) -> list:
         try:
             _validate_ancestor_structure(viewset)
         except _AncestryError as exc:
-            if exc.kind == "resource_parent":
+            if exc.kind == "resource_parent" or (exc.kind == "missing" and not completed):
                 continue
             messages.append(
                 Error(
@@ -59,12 +61,62 @@ def _ancestor_structure_messages(viewsets) -> list:
     return messages
 
 
+def _ancestor_action_messages(viewsets) -> list:
+    """viewset.E267 (an ``ancestor_policy.actions`` key that is not literally registered) and viewset.E268 (a
+    nested unclassified endpoint without its exact entry). Needs a completed registry; no database."""
+    hints = {
+        "E267": "Use the exact registered endpoint key; navigation aliases such as list -> card do not count.",
+        "E268": "Generic actions, custom forms and workflow views need a complete ancestor permission pair.",
+    }
+    return [
+        Error(message, hint=hints[code], obj=viewset, id=f"viewset.{code}")
+        for viewset in viewsets
+        for code, message in _action_declaration_problems(viewset)
+    ]
+
+
+def _url_configuration_loaded() -> bool:
+    """The readiness barrier of the completion-dependent ancestor checks.
+
+    Import the configured ROOT_URLCONF and every included URLconf through Django's own resolver (visiting each
+    resolver once), so view modules that only the URLconf imports have registered their views. True when that
+    completed; False without ROOT_URLCONF, or when the import failed or is still in progress (a check run
+    during URLconf import) — Django's own URL checks report such failures. Nothing is remembered between calls.
+    """
+    from django.conf import settings
+    from django.urls import URLResolver, get_resolver
+
+    if not getattr(settings, "ROOT_URLCONF", None):
+        return False
+    pending, seen = [get_resolver()], set()
+    try:
+        while pending:
+            resolver = pending.pop()
+            if id(resolver) in seen:
+                continue
+            seen.add(id(resolver))
+            pending.extend(pattern for pattern in resolver.url_patterns if isinstance(pattern, URLResolver))
+    except Exception:  # any import failure means "not completed", never a misleading missing-action error
+        return False
+    return True
+
+
 @register(TAG)
 def check_ancestor_declarations(app_configs=None, **kwargs):
-    """Ancestor structure of every registered nested ViewSet (phase 06.18)."""
+    """Ancestor structure and action declarations of every registered nested ViewSet (phase 06.18).
+
+    Cycles and unsupported relationships are always reported. Unregistered parents, unregistered action keys
+    and missing custom-endpoint entries depend on a completed registry: they are checked only after the
+    configured URLconf (and everything it includes) has been imported; otherwise they are deferred. Runtime
+    guards enforce all of them on the actual request regardless.
+    """
+    completed = _url_configuration_loaded()
     with _REGISTRY_LOCK:
         viewsets = list(_REGISTRY.values())
-    return _ancestor_structure_messages(viewsets)
+    messages = _ancestor_structure_messages(viewsets, completed=completed)
+    if completed:
+        messages += _ancestor_action_messages(viewsets)
+    return messages
 
 
 def _formset_uses_ordering(formset: FormSet) -> bool:

@@ -31,6 +31,8 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
     form_class = PolymorphicContentTypeForm
 
     cv_key = "create_select"
+    # ancestor authorization (phase 06.18): type selection starts a creation, so it is a Write operation
+    _cv_ancestor_operation = "write"
     cv_object = False
     cv_path = "create/select"
     cv_success_key = "list"

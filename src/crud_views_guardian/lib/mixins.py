@@ -2,7 +2,6 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
-from django.shortcuts import get_object_or_404
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
@@ -230,26 +229,21 @@ class GuardianParentPermissionMixin:
     """
     For child viewset views (any view type where cv_viewset.parent is set).
 
-    In dispatch(), before any other processing, checks per-object permission
-    on the parent instance. Raises 403 if denied. No-op when cv_viewset.parent
-    is None.
+    In dispatch(), before any other processing: incomplete compositions raise ImproperlyConfigured, anonymous
+    actors get the configured ``cv_guardian_anonymous_behavior`` response and inactive actors 403. A nested
+    request then runs the shared ancestor guard (``crud_views.lib.ancestors``): each selected ancestor is gated
+    by its own ViewSet's provider and ``ancestor_policy`` (a ``GuardianViewSet`` ancestor: strict object
+    permissions, model fallback only with its own ``accept_global_perms``; a core ancestor: model permissions).
+    No-op for top-level views.
 
-    Reads cv_guardian_parent_permission / cv_guardian_parent_create_permission
-    from the child GuardianViewSet. Respects cv_guardian_accept_global_perms
-    from the combined view class: when set, a model-level permission on the
-    parent model is accepted as a fallback for the per-object one.
+    When a parent viewset is present, overrides has_permission() to return True so that Django's model-level
+    PermissionRequiredMixin is bypassed (nested Guardian create has no child-add requirement). Object child views
+    must also include GuardianObjectPermissionMixin; list child views must include GuardianQuerysetMixin.
+    Incomplete compositions are reported by system check E001.
 
-    When a parent viewset is present, overrides has_permission() to return True
-    so that Django's model-level PermissionRequiredMixin is bypassed; the parent
-    object-level check in dispatch() gates the parent. Object child views must also
-    include GuardianObjectPermissionMixin; list child views must include
-    GuardianQuerysetMixin. Incomplete compositions raise ImproperlyConfigured
-    before processing the request and are reported by system check E001.
-
-    A parent permission key of None disables only the parent *permission* check:
-    the URL parent is still resolved (a missing parent is a 404) and no-object
-    child views (create) still run their independent cv_action_enabled state gate
-    with that parent. No child-add permission is required instead.
+    The endpoint view's ``cv_guardian_accept_global_perms`` keeps only its local meaning (object gate, list
+    filter); it never relaxes an ancestor. No-object child views (create, list) still run their independent
+    cv_action_enabled state gate with the resolved immediate parent, also when that parent is unprotected.
     """
 
     # Policy names read via getattr() below. Annotation-only on purpose: a value here
@@ -329,10 +323,19 @@ class GuardianParentPermissionMixin:
         if not request.user.is_authenticated:
             return self._guardian_deny_anonymous()
         if _guardian_inactive_actor(request.user):
-            raise PermissionDenied  # before any parent, None-policy, method or fragment handling (D-11)
-        parent_vs = self.cv_viewset.parent
-        if parent_vs is not None:
-            self._guardian_check_parent(request.user, parent_vs, kwargs)
+            raise PermissionDenied  # before any ancestor, None-policy, method or fragment handling (D-11)
+        if self.cv_viewset.parent is not None:
+            # the shared ancestor guard (crud_views.lib.ancestors) is the only ancestor traversal; it runs before
+            # any object/queryset/state work, and CrudView.dispatch() reuses its request-local result
+            response = self._cv_ancestor_guard()
+            if response is not None:
+                return response
+            # Secondary state gate — only for no-object child views (e.g. create), whose action object IS the
+            # resolved immediate parent. Object child views (detail/update/delete) carry a row and are gated in
+            # get_object() with that row, so they must NOT also be gated here with the parent (that would invoke
+            # cv_action_enabled with the wrong object type).
+            if not self.cv_object and not self.cv_action_enabled(request.user, self.cv_get_parent_object()):
+                raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def _guardian_deny_anonymous(self):
@@ -380,17 +383,3 @@ class GuardianParentPermissionMixin:
         from guardian.core import ObjectPermissionChecker
 
         return ObjectPermissionChecker(user).has_perm(parent_perm.split(".")[1], parent_obj)
-
-    def _guardian_check_parent(self, user, parent_vs, kwargs):
-        """Resolve the URL parent (404 when missing) and raise PermissionDenied unless ``user`` may act on it."""
-        parent_obj = get_object_or_404(parent_vs.viewset.model, pk=kwargs.get(parent_vs.get_pk_name()))
-        if not self._guardian_user_has_parent_perm(user, parent_obj):
-            raise PermissionDenied
-        # Secondary state gate — only for no-object child views (e.g. create),
-        # whose action object IS the parent. It runs even when the parent
-        # permission key is None (D-10). Object child-views (detail/update/
-        # delete) carry a row and are gated in get_object() with that row, so we
-        # must NOT also gate them here with the parent (that would invoke
-        # cv_action_enabled with the wrong object type).
-        if not self.cv_object and not self.cv_action_enabled(user, parent_obj):
-            raise PermissionDenied

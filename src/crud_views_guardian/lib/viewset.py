@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from collections.abc import Mapping
 from types import MappingProxyType
-from typing import Any, Self
+from typing import Any, ClassVar, Self
 
 from pydantic import model_validator
 
@@ -35,6 +35,9 @@ class GuardianViewSet(ViewSet):
     the ViewSet; passing the removed ViewSet key raises a validation error naming that replacement.
     """
 
+    # ancestor provider when ``ancestor_policy.provider`` is None: strict object permissions (phase 06.18)
+    _ancestor_provider: ClassVar[str] = "guardian"
+
     cv_guardian_parent_permission: str | None = "view"
     cv_guardian_parent_create_permission: str | None = None
 
@@ -49,6 +52,16 @@ class GuardianViewSet(ViewSet):
         if isinstance(data, Mapping) and _REMOVED_GLOBAL_PERMS_KEY in data:
             raise ValueError(_REMOVED_GLOBAL_PERMS_MESSAGE)
         return data
+
+    def _ancestor_has_permission(self, user, permission: str, obj, *, view) -> bool:
+        """Ancestor gate of this ViewSet: Guardian's strict object gate (with this ViewSet's own
+        ``ancestor_policy.accept_global_perms`` fallback); an explicit ``provider="model"`` uses the model gate."""
+        from crud_views.lib.ancestors import _effective_provider
+        from crud_views_guardian.lib.ancestors import _guardian_ancestor_has_permission
+
+        if _effective_provider(self) != "guardian":
+            return super()._ancestor_has_permission(user, permission, obj, view=view)
+        return _guardian_ancestor_has_permission(self, user, permission, obj, view=view)
 
     def get_manage_view_class(self):
         from django.utils.module_loading import import_string

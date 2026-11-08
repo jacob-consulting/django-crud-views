@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: executing
-stopped_at: Completed 06.18-01-PLAN.md
-last_updated: "2026-11-08T17:36:31.831Z"
+stopped_at: Completed 06.18-02-PLAN.md
+last_updated: "2026-11-08T18:18:09.783Z"
 last_activity: 2026-11-08
 last_activity_desc: Phase 06.18 plan 01 complete
-state_head: 246b1af4f74c85d12913852ba319f4015adf5133
+state_head: 778ee14d4e0f2b7d51733c6da4dc2488d6526826
 progress:
   total_phases: 24
   completed_phases: 22
   total_plans: 149
-  completed_plans: 138
+  completed_plans: 139
 milestone_name: milestone
 ---
 
@@ -29,11 +29,17 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 ## Current Position
 
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
-Plan: 2 of 12
+Plan: 3 of 12
 Status: Ready to execute
-Last activity: 2026-11-08 — Phase 06.18 plan 01 complete
+Last activity: 2026-11-08 — Phase 06.18 plan 02 complete
 
 Next: $gsd-execute-phase 06.18
+
+### Phase 06.18 plan 02 — 2026-11-08
+
+- One bounded ancestry walk for URL construction, parent helpers, scoped queryset and the request guard; cycles/missing parents raise a named-chain ImproperlyConfigured with no DB access. Relationships validated from model metadata (E266 + request guard); Resource parents keep the single E261.
+- Finite class-based families plus the polymorphic selector marker; exact literal-key actions (E267), nested custom endpoints need an entry (E268 + runtime, all-none too). Checks import root/included URLconfs first and defer completion-dependent messages otherwise. Task gates 40/128/90 passed at 8e7d9d09; scoped Ruff passes.
+- Transition: 18 H1-core rows closed with exact Publisher grants and independent controls; 110 open (H1-guardian 91 + 13 newly reached by Card/manage classification → 03.1, action 1 → 03.2, fragment 2 → 04.2, resource 3 → 05.2), zero H2-custom; full 5.2 suite fails only on that set. ANCE-02/03/04 stay open for sibling plans. Existing config/state.json/CLAUDE edits preserved; no push or merge.
 
 ### Phase 06.18 plan 01 — 2026-11-08
 
@@ -752,6 +758,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.17 P02 | 8min | 2 tasks | 12 files |
 | Phase 06.17 P03 | 10min | 3 tasks | 12 files |
 | Phase 06.18 P01 | 30 min | 2 tasks | 8 files |
+| Phase 06.18 P02 | 37min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -959,6 +966,9 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-01: interim family table covers only core list/detail (Read) and create/update/delete (Write); other nested endpoints without an exact actions entry do no ancestor work until 06.18-02 Task 2
 - [Phase 06.18]: 06.18-01: provider='guardian' is valid only on ViewSet classes whose _ancestor_provider is 'guardian'; GuardianViewSet inherits 'model' until 06.18-03.1
 - [Phase 06.18]: 06.18-01: CRUD_VIEWS_ANCESTOR_* defaults are validate_default settings fields; invalid values raise ValidationError when the singleton is built
+- [Phase 06.18]: 06.18-02: check IDs viewset.E266 (ancestry structure), E267 (unregistered actions key), E268 (nested custom endpoint without its entry); Resource parents keep the single viewset.E261
+- [Phase 06.18]: 06.18-02: urlpatterns validates only a finite, resolved, Resource-free chain; relationships are E266 plus the request guard
+- [Phase 06.18]: 06.18-02: completion-dependent checks run after a bounded root/included URLconf import and are deferred without ROOT_URLCONF or on failed/reentrant import
 
 ### Pending Todos
 
@@ -1024,6 +1034,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T17:36:28.874Z
-Stopped at: Completed 06.18-01-PLAN.md
+Last session: 2026-11-08T18:18:06.778Z
+Stopped at: Completed 06.18-02-PLAN.md
 Resume file: None

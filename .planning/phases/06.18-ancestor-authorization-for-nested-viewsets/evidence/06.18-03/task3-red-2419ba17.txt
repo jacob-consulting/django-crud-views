@@ -1,0 +1,31 @@
+# Task 3 RED at source 2419ba17 (tests/test1/test_ancestor_policy.py removed-declaration cases), Django 5.2.19 / Python 3.12.3
+________ test_failed_removed_field_declaration_leaves_an_existing_entry ________
+    def test_failed_removed_field_declaration_leaves_an_existing_entry(probe_name):
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[nested-none-cv_guardian_parent_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[nested-none-cv_guardian_parent_create_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[nested-view-cv_guardian_parent_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[nested-view-cv_guardian_parent_create_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[nested-change-cv_guardian_parent_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[nested-change-cv_guardian_parent_create_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[top-level-none-cv_guardian_parent_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[top-level-none-cv_guardian_parent_create_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[top-level-view-cv_guardian_parent_create_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[top-level-change-cv_guardian_parent_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[top-level-change-cv_guardian_parent_create_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_as_annotated_subclass_fields[none-cv_guardian_parent_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_as_annotated_subclass_fields[none-cv_guardian_parent_create_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_as_annotated_subclass_fields[view-cv_guardian_parent_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_as_annotated_subclass_fields[view-cv_guardian_parent_create_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_when_inherited[cv_guardian_parent_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_framework_no_longer_declares_the_removed_fields
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_when_inherited[cv_guardian_parent_create_permission]
+FAILED tests/test1/test_ancestor_policy.py::test_failed_removed_field_declaration_leaves_an_existing_entry
+FAILED tests/test1/test_ancestor_policy.py::test_shared_app_guardian_book_uses_the_default_ancestor_policy
+FAILED tests/test1/test_ancestor_policy.py::test_removed_guardian_parent_fields_are_rejected_in_the_constructor[top-level-view-cv_guardian_parent_permission]
+21 failed, 87 passed in 3.61s
+## reasons
+      1 E           AssertionError: assert 'cv_guardian_parent_permission' not in {'model': FieldInfo(annotation=Union[type[Model], type[Resource]], required=True), 'na
+      1 E           crud_views.lib.exceptions.ViewSetError: ViewSet name ancpolicy1897c7e9 is already registered by ViewSet(ancpolicy1897c7e9)
+     18 E       Failed: DID NOT RAISE ValidationError
+E       assert not True
+E        +  where True = any(<generator object test_shared_app_guardian_book_uses_the_default_ancestor_policy.<locals>.<genexpr> at 0x7338f4978900>)

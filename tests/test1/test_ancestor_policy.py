@@ -492,3 +492,117 @@ def test_none_provider_level_is_skipped_but_does_not_consume_nearest(two_ancesto
     # Book is unprotected, so Publisher becomes the nearest protected ancestor
     assert _get(two_ancestors, chain_world, _user("book_only", (Book, "view"))).status_code == 403
     assert _get(two_ancestors, chain_world, _user("publisher_only", (Publisher, "view"))).status_code == 200
+
+
+# ── removed Guardian parent-permission declarations (plan 03) ────────────────
+
+REMOVED_GUARDIAN_FIELDS = ("cv_guardian_parent_permission", "cv_guardian_parent_create_permission")
+REPLACEMENT_FRAGMENTS = ("ancestor_policy", "accept_global_perms")
+
+
+def _guardian_viewset_class():
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+
+    return GuardianViewSet
+
+
+@pytest.mark.parametrize("field", REMOVED_GUARDIAN_FIELDS)
+@pytest.mark.parametrize("value", [None, "view", "change"], ids=["none", "view", "change"])
+@pytest.mark.parametrize("nested", [True, False], ids=["nested", "top-level"])
+def test_removed_guardian_parent_fields_are_rejected_in_the_constructor(field, value, nested, probe_name):
+    guardian_vs = _guardian_viewset_class()
+    kwargs = {"model": Book, "name": probe_name, field: value}
+    if nested:
+        kwargs["parent"] = ParentViewSet(name="guardian_publisher", attribute="publisher")
+    _assert_rejected_without_side_effects(lambda: guardian_vs(**kwargs), probe_name, field, *REPLACEMENT_FRAGMENTS)
+    # the corrected declaration may reuse the name
+    kwargs.pop(field)
+    vs = guardian_vs(**kwargs)
+    assert _REGISTRY[probe_name] is vs
+    assert "manage" in vs._views
+
+
+@pytest.mark.parametrize("field", REMOVED_GUARDIAN_FIELDS)
+@pytest.mark.parametrize("value", [None, "view"], ids=["none", "view"])
+def test_removed_guardian_parent_fields_are_rejected_as_annotated_subclass_fields(field, value, probe_name):
+    guardian_vs = _guardian_viewset_class()
+    namespace = {"__annotations__": {field: str | None}, field: value, "__module__": __name__}
+    declared = type("DeclaringGuardianViewSet", (guardian_vs,), namespace)
+    assert field in declared.model_fields  # a real Pydantic field of the user class
+    _assert_rejected_without_side_effects(lambda: declared(model=Book, name=probe_name), probe_name, field)
+
+
+@pytest.mark.parametrize("field", REMOVED_GUARDIAN_FIELDS)
+def test_removed_guardian_parent_fields_are_rejected_when_inherited(field, probe_name):
+    from typing import ClassVar
+
+    guardian_vs = _guardian_viewset_class()
+    base = type(
+        "BaseGuardianViewSet",
+        (guardian_vs,),
+        {"__annotations__": {field: str | None}, field: None, "__module__": __name__},
+    )
+    inherited = type("InheritingGuardianViewSet", (base,), {"__module__": __name__})
+    assert field not in vars(inherited).get("__annotations__", {})  # declared only on the user base class
+    _assert_rejected_without_side_effects(lambda: inherited(model=Book, name=probe_name), probe_name, field)
+    # a ClassVar declaration and a plain mixin attribute are user declarations too
+    class_var = type(
+        "ClassVarGuardianViewSet",
+        (guardian_vs,),
+        {"__annotations__": {field: ClassVar[str | None]}, field: "view", "__module__": __name__},
+    )
+    _assert_rejected_without_side_effects(lambda: class_var(model=Book, name=probe_name), probe_name, field)
+    mixin = type("LegacyParentPolicy", (), {field: "view"})
+    mixed = type("MixedGuardianViewSet", (mixin, guardian_vs), {"__module__": __name__})
+    _assert_rejected_without_side_effects(lambda: mixed(model=Book, name=probe_name), probe_name, field)
+
+
+@pytest.mark.parametrize("field", REMOVED_GUARDIAN_FIELDS)
+def test_unannotated_removed_field_fails_at_class_definition(field):
+    from pydantic.errors import PydanticUserError
+
+    guardian_vs = _guardian_viewset_class()
+    with pytest.raises(PydanticUserError):
+        type("UnannotatedGuardianViewSet", (guardian_vs,), {field: "view", "__module__": __name__})
+
+
+def test_framework_no_longer_declares_the_removed_fields(probe_name):
+    guardian_vs = _guardian_viewset_class()
+    for field in REMOVED_GUARDIAN_FIELDS:
+        assert field not in guardian_vs.model_fields
+        assert not hasattr(guardian_vs, field)
+    vs = guardian_vs(
+        model=Book, name=probe_name, parent=ParentViewSet(name="guardian_publisher", attribute="publisher")
+    )
+    assert _REGISTRY[probe_name] is vs
+    assert not any(hasattr(vs, field) for field in REMOVED_GUARDIAN_FIELDS)
+
+
+def test_removed_viewset_level_global_perms_flag_is_still_rejected(probe_name):
+    guardian_vs = _guardian_viewset_class()
+    before = _registry_state()
+    with pytest.raises(ValidationError, match="cv_guardian_accept_global_perms"):
+        guardian_vs(model=Book, name=probe_name, cv_guardian_accept_global_perms=True)
+    assert _registry_state() == before
+
+
+def test_failed_removed_field_declaration_leaves_an_existing_entry(probe_name):
+    guardian_vs = _guardian_viewset_class()
+    original = guardian_vs(model=Book, name=probe_name)
+    _assert_rejected_without_side_effects(
+        lambda: guardian_vs(model=Book, name=probe_name, cv_guardian_parent_permission=None),
+        probe_name,
+        "cv_guardian_parent_permission",
+    )
+    assert _REGISTRY[probe_name] is original
+
+
+def test_shared_app_guardian_book_uses_the_default_ancestor_policy():
+    from tests.test1.app.views import cv_guardian_book, cv_guardian_publisher
+
+    # the shared Guardian Book relies on the approved defaults: Read view/view, Write change/view, strict
+    # Guardian Publisher ancestor without model fallback
+    assert cv_guardian_book.ancestor_policy == AncestorPolicy()
+    assert cv_guardian_publisher.ancestor_policy == AncestorPolicy()
+    assert cv_guardian_book.parent.name == cv_guardian_publisher.name
+    assert not any(hasattr(cv_guardian_book, field) for field in REMOVED_GUARDIAN_FIELDS)

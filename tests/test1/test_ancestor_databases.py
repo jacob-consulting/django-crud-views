@@ -713,3 +713,86 @@ def test_top_level_actor_and_auth_routes_are_not_validated(scope, events, databa
     with database_routes("default", {Permission: "shard"}):
         # the routed Permission table (empty grants on shard) denies as before; no configuration error
         assert client.get(url).status_code == 403
+
+
+# ── nested Resource leaves own their alias ────────────────────────────────────
+
+RESOURCE_EFFECTS: list = []
+
+
+class RecordingRouter:
+    """Records every model the ORM routers are asked about; decides nothing."""
+
+    def __init__(self):
+        self.models = []
+
+    def db_for_read(self, model, **hints):
+        self.models.append(model)
+
+    def db_for_write(self, model, **hints):
+        self.models.append(model)
+
+
+@pytest.mark.parametrize("key", ["touch", "remove"])
+def test_nested_resource_writes_keep_their_alias_contract(scope, events, monkeypatch, key):
+    """A Resource leaf under an ORM ancestor: its form/action POST succeeds and the Resource never reaches the ORM
+    routers (``ResourceViewMixin.cv_get_db_alias`` owns the alias)."""
+    from django import forms
+
+    from crud_views.lib.resource import ResourceViewMixin
+    from crud_views.lib.views import ActionView, ListView
+    from crud_views.lib.views.form import CustomFormView
+    from crud_views.lib.viewset import ParentViewSet
+    from tests.test1.app.resources import PublisherFile
+
+    pub_vs = scope.viewset(TracedViewSet, model=Publisher, name=scope.name("respub"), trace="outer")
+    write = AncestorPermissions(nearest="change", higher="view")
+    file_vs = scope.viewset(
+        model=PublisherFile,
+        name=scope.name("resfile"),
+        parent=ParentViewSet(name=pub_vs.name),
+        resource_permissions={"view": "app.view_s3file"},
+        ancestor_policy=AncestorPolicy(actions={"touch": write, "remove": write}),
+    )
+    item = PublisherFile(key="publisher-x/contract.pdf", size=1)
+
+    class ItemMixin(ResourceViewMixin):
+        def get_queryset(self):
+            return [item]
+
+        def get_object(self, queryset=None):
+            return item
+
+    class Touch(ItemMixin, ActionView):
+        cv_key = "touch"
+        cv_path = "touch"
+
+        def action(self, context):
+            RESOURCE_EFFECTS.append(("touch", self.object.key))
+            return True
+
+    class Remove(ItemMixin, CustomFormView):
+        cv_key = "remove"
+        cv_path = "remove"
+        form_class = forms.Form
+
+        def cv_form_valid(self, context):
+            RESOURCE_EFFECTS.append(("remove", self.object.key))
+
+    define(scope, file_vs, (ItemMixin, ListView))
+    define(scope, file_vs, Touch)
+    define(scope, file_vs, Remove)
+    scope.mount([file_vs])
+    publisher = Publisher.objects.create(name="resource parent")
+    client = client_for(make_user("resource writer", ["change_publisher"]))
+    recorder = RecordingRouter()
+    monkeypatch.setattr(router, "routers", [recorder])
+    RESOURCE_EFFECTS.clear()
+
+    from django.urls import reverse
+
+    url = reverse(file_vs.get_router_name(key), kwargs={file_vs.parent.get_pk_name(): publisher.pk, "pk": item.key_md5})
+    assert client.post(url).status_code == 302
+    assert [(key, item.key)] == RESOURCE_EFFECTS
+    assert PublisherFile not in recorder.models
+    assert events == ["outer_queryset", "outer_gate"]

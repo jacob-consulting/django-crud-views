@@ -356,8 +356,12 @@ class CrudView(metaclass=CrudViewMetaClass):
         if self._cv_nested():
             context = f"writes of view {self.cv_key!r} of ViewSet {self.cv_viewset.name!r}"
             require_default_database(using, context=context)
-            instance = getattr(self, "object", None)
-            require_default_database(router.db_for_write(self.cv_viewset.model, instance=instance), context=context)
+            # A Resource leaf is not a Django model: ResourceViewMixin.cv_get_db_alias() owns its alias (default, used
+            # only for ORM rows the view writes itself) and a Resource must never reach DATABASE_ROUTERS.
+            if issubclass(self.cv_viewset.model, Model):
+                instance = getattr(self, "object", None)
+                route = router.db_for_write(self.cv_viewset.model, instance=instance)
+                require_default_database(route, context=context)
         return using
 
     def cv_get_atomic(self):

@@ -278,14 +278,14 @@ all 26 acceptance rows, carried through Phase 06.18 CONTEXT.md. Historical AUTH-
 deliberately migrated; its independent actor/state/local permission controls remain preservation requirements.
 The initial no-ID spec-less probe skip is superseded by a probe of these concrete requirements at planning.
 
-- [x] **ANCE-01**: Validate fresh typed AncestorPolicy/AncestorPermissions and exact global defaults strictly; reject malformed pairs, ineffective top-level fields, invalid provider/fallback combinations and removed constructor/subclass fields before registry/manage mutation, allowing corrected-name retry without database queries.
-- [x] **ANCE-02**: Validate declared ORM relationships and Resource-leaf structure with one bounded metadata walk shared by URL construction, checks, requests and supported helpers; self/two-node cycles and unresolved parents fail usefully when needed while valid forward declarations remain supported.
-- [x] **ANCE-03**: Select full or nearest-protected traversal from requested/global precedence and complete Read/Write or exact action pairs; cover every finite shipped family, subclasses, renamed keys, card/list literal registration and nested custom declarations in both modes including all-none ancestry.
-- [x] **ANCE-04**: Enforce one request-local engine across plain/core/Guardian/manage/Resource/extension compositions: static checks, actual early actor admission, interleaved outer lookup and selected model/object gates, then independent local work. Preserve supported denial responses, inactive/superuser/group semantics and separate ancestor fallback; denial prevents deeper lookup, state, forms and writes.
-- [x] **ANCE-05**: Resolve every ancestor through its ViewSet queryset with the actual child view/request/kwargs, validate int/UUID FK/M2M path membership and Resource-leaf scope in both modes, and reuse the immediate structural parent's model/PK/database identity for create, state and supported helpers without unfiltered retry.
-- [x] **ANCE-06**: Permit default and explicit default selections on nested ORM/auth paths; reject reached nondefault queryset/router/read/write/auth selections without rerouting, including colliding PKs, cached vocabulary, local Guardian gates, all-none ancestry and instance hints. Preserve earlier failure order and top-level routing.
-- [x] **ANCE-07**: Replace legacy Guardian parent handling and all consumers with the shared policy; preserve local object/list/create/state/composition behavior, bound rendering helpers to immediate-parent context, and enforce nested manage/redirect with independent local gates and separate diagnostics.
-- [x] **ANCE-08**: Prove URL-path mutation boundaries in both modes, fresh-request revocation, measured one-/three-ancestor costs and no top-level ancestor work; publish executable generic configuration/migration guidance with paired Breaking/migrating-1.0 updates and report actual supported-series/full-suite evidence limits.
+- [ ] **ANCE-01**: Validate fresh typed AncestorPolicy/AncestorPermissions and exact global defaults strictly; reject malformed pairs, ineffective top-level fields, invalid provider/fallback combinations and removed constructor/subclass fields before registry/manage mutation, allowing corrected-name retry without database queries.
+- [ ] **ANCE-02**: Validate declared ORM relationships and Resource-leaf structure with one bounded metadata walk shared by URL construction, checks, requests and supported helpers; self/two-node cycles and unresolved parents fail usefully when needed while valid forward declarations remain supported.
+- [ ] **ANCE-03**: Select full or nearest-protected traversal from requested/global precedence and complete Read/Write or exact action pairs; cover every finite shipped family, subclasses, renamed keys, card/list literal registration and nested custom declarations in both modes including all-none ancestry.
+- [ ] **ANCE-04**: Enforce one request-local engine across plain/core/Guardian/manage/Resource/extension compositions: static checks, actual early actor admission, interleaved outer lookup and selected model/object gates, then independent local work. Preserve supported denial responses, inactive/superuser/group semantics and separate ancestor fallback; denial prevents deeper lookup, state, forms and writes.
+- [ ] **ANCE-05**: Resolve every ancestor through its ViewSet queryset with the actual child view/request/kwargs, validate int/UUID FK/M2M path membership and Resource-leaf scope in both modes, and reuse the immediate structural parent's model/PK/database identity for create, state and supported helpers without unfiltered retry.
+- [ ] **ANCE-06**: Permit default and explicit default selections on nested ORM/auth paths; reject reached nondefault queryset/router/read/write/auth selections without rerouting, including colliding PKs, cached vocabulary, local Guardian gates, all-none ancestry and instance hints. Preserve earlier failure order and top-level routing.
+- [ ] **ANCE-07**: Replace legacy Guardian parent handling and all consumers with the shared policy; preserve local object/list/create/state/composition behavior, bound rendering helpers to immediate-parent context, and enforce nested manage/redirect with independent local gates and separate diagnostics.
+- [ ] **ANCE-08**: Prove URL-path mutation boundaries in both modes, fresh-request revocation, measured one-/three-ancestor costs and no top-level ancestor work; publish executable generic configuration/migration guidance with paired Breaking/migrating-1.0 updates and report actual supported-series/full-suite evidence limits.
 
 ### Stability policy (plan 4)
 
@@ -458,14 +458,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ODT-04 | Phase 06.17 | Complete |
 | ODT-05 | Phase 06.17 | Complete |
 | STAB-01 | Phase 7 (plan 4) | Pending |
-| ANCE-01 | Phase 06.18 | Complete |
-| ANCE-02 | Phase 06.18 | Complete |
-| ANCE-03 | Phase 06.18 | Complete |
-| ANCE-04 | Phase 06.18 | Complete |
-| ANCE-05 | Phase 06.18 | Complete |
-| ANCE-06 | Phase 06.18 | Complete |
-| ANCE-07 | Phase 06.18 | Complete |
-| ANCE-08 | Phase 06.18 | Complete |
+| ANCE-01 | Phase 06.18 | Gaps Found |
+| ANCE-02 | Phase 06.18 | Gaps Found |
+| ANCE-03 | Phase 06.18 | Gaps Found |
+| ANCE-04 | Phase 06.18 | Gaps Found |
+| ANCE-05 | Phase 06.18 | Gaps Found |
+| ANCE-06 | Phase 06.18 | Gaps Found |
+| ANCE-07 | Phase 06.18 | Gaps Found |
+| ANCE-08 | Phase 06.18 | Gaps Found |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |
 | STAB-04 | Phase 7 (plan 4) | Pending |

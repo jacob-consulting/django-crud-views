@@ -15,6 +15,7 @@ from crud_views.lib.icons import ICON_VALUE_HINT, icon_check_messages, is_icon_v
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views.action_ordered import OrderedDownView, OrderedUpView
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
+from crud_views.lib.viewset.ancestry import parent_relationship_problem, registered_action_problems, walk_ancestors
 
 TAG = "crud_views"
 
@@ -416,3 +417,51 @@ def check_icons(app_configs=None, **kwargs):
 def check_button_classes(app_configs=None, **kwargs):
     """E360/E361/W362/E363/E364/E365 from the button class table."""
     return button_class_check_messages()
+
+
+@register(TAG)
+def check_ancestry(app_configs=None, **kwargs):
+    """E320 (ancestry structure / relationships) and E321 (action declarations) of the completed registry.
+
+    Each ViewSet reports its own edge to its parent, so a broken edge appears once, at the ViewSet declaring it; a
+    Resource parent stays with the existing viewset.E261. Reads declarations and model metadata only (no queries).
+    """
+    with _REGISTRY_LOCK:
+        viewsets = list(_REGISTRY.values())
+
+    messages = []
+    for viewset in viewsets:
+        if viewset.parent is None:
+            continue
+        try:
+            walk_ancestors(viewset)
+        except ImproperlyConfigured as exc:
+            messages.append(
+                Error(
+                    str(exc),
+                    hint="Every ParentViewSet(name=...) must name a registered ViewSet, without cycles.",
+                    id="crud_views.E320",
+                )
+            )
+            continue
+        if not viewset.parent.viewset.is_resource:  # viewset.E261 reports a Resource parent
+            problem = parent_relationship_problem(viewset)
+            if problem is not None:
+                messages.append(
+                    Error(
+                        problem,
+                        hint="Declare the relation of the nested model to its parent model with ParentViewSet("
+                        "attribute=..., many_to_many_through_attribute=...).",
+                        id="crud_views.E320",
+                    )
+                )
+        messages.extend(
+            Error(
+                problem,
+                hint="Action keys must be registered view keys of this ViewSet; nested custom endpoints need "
+                "ancestor_policy=AncestorPolicy(actions={key: AncestorPermissions(nearest=..., higher=...)}).",
+                id="crud_views.E321",
+            )
+            for problem in registered_action_problems(viewset)
+        )
+    return messages

@@ -103,7 +103,7 @@ def _view_classes(family: str):
     )
 
 
-def _build(family: str, depth: int, sfx: str, viewset_kwargs: dict) -> AncestorRoutes:
+def _build(family: str, depth: int, scope: "AncestorScope", viewset_kwargs: dict) -> AncestorRoutes:
     from crud_views.lib.viewset import ParentViewSet, ViewSet
 
     if family == "core":
@@ -116,13 +116,14 @@ def _build(family: str, depth: int, sfx: str, viewset_kwargs: dict) -> AncestorR
     list_base, detail_base, create_bases = _view_classes(family)
     routes = AncestorRoutes(family=family, depth=depth)
     chain = CHAIN[: depth + 1]
+    sfx = scope.sfx
     previous = None
     for index, (model, attribute, fields) in enumerate(chain):
         name = f"anc{family[0]}{model._meta.model_name}{sfx}"
         kwargs = dict(model=model, name=name, **viewset_kwargs.get(index, {}))
         if previous is not None:
             kwargs["parent"] = ParentViewSet(name=previous.name, attribute=attribute)
-        viewset = viewset_class(**kwargs)
+        viewset = scope.viewset(viewset_class, **kwargs)
         routes.names.append(name)
         routes.viewsets.append(viewset)
 
@@ -139,41 +140,92 @@ def _build(family: str, depth: int, sfx: str, viewset_kwargs: dict) -> AncestorR
     return routes
 
 
+@dataclass
+class AncestorScope:
+    """ViewSets and one URL module created inside ``ancestor_scope()``; all of them are removed on exit.
+
+    A ViewSet's name is recorded as soon as its construction (and thus registration) succeeds, so a scope that fails
+    halfway still removes every ViewSet it registered.
+    """
+
+    sfx: str
+    names: list = field(default_factory=list)
+    modname: str | None = None
+    _override: object = None
+
+    def name(self, base: str) -> str:
+        return f"{base}{self.sfx}"
+
+    def viewset(self, viewset_class=None, **kwargs):
+        from crud_views.lib.viewset import ViewSet
+
+        viewset = (viewset_class or ViewSet)(**kwargs)
+        self.names.append(viewset.name)
+        return viewset
+
+    def view(self, base: type, viewset, name: str | None = None, **attrs) -> type:
+        """Define (and so register) a view class of ``viewset`` derived from ``base``."""
+        class_name = f"{name or base.__name__}{self.sfx}"
+        return type(class_name, (base,), {"cv_viewset": viewset, "__module__": __name__, **attrs})
+
+    def mount(self, viewsets: list) -> None:
+        """Use a fresh URL module as ROOT_URLCONF; its ``urlpatterns`` are built lazily when Django resolves them."""
+        modname = f"tests.test1._ancestor_urls_{self.sfx}"
+        module = types.ModuleType(modname)
+
+        def urlpatterns(name):
+            if name != "urlpatterns":
+                raise AttributeError(name)
+            patterns = [pattern for viewset in viewsets for pattern in viewset.urlpatterns]
+            patterns.append(path("", include("tests.test1.project.urls")))
+            return patterns
+
+        module.__getattr__ = urlpatterns
+        sys.modules[modname] = module
+        self.modname = modname
+        self._override = override_settings(ROOT_URLCONF=modname)
+        self._override.enable()
+        clear_url_caches()
+
+    def _unmount(self) -> None:
+        if self._override is not None:
+            self._override.disable()
+            self._override = None
+        if self.modname is not None:
+            sys.modules.pop(self.modname, None)
+        clear_url_caches()
+
+
 @contextmanager
-def ancestor_routes(family: str, depth: int, viewset_kwargs: dict | None = None):
-    """Build, mount and finally remove one isolated chain; ``viewset_kwargs`` maps level index → extra kwargs."""
+def ancestor_scope():
+    """Isolate registry, settings singleton, URLconf and permission vocabulary for ad-hoc ViewSets."""
     from crud_views.lib import check as check_module
     from crud_views.lib.settings import crud_views_settings
     from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK
 
-    sfx = uuid.uuid4().hex[:8]
-    modname = f"tests.test1._ancestor_urls_{sfx}"
+    scope = AncestorScope(sfx=uuid.uuid4().hex[:8])
     vocab_snapshot = dict(check_module._VOCAB_CACHE)
     settings_snapshot = dict(crud_views_settings.__dict__)
-    names: list[str] = []
     try:
-        routes = _build(family, depth, sfx, viewset_kwargs or {})
-        names = routes.names
-        module = types.ModuleType(modname)
-        module.urlpatterns = [pattern for viewset in routes.viewsets for pattern in viewset.urlpatterns]
-        module.urlpatterns.append(path("", include("tests.test1.project.urls")))
-        sys.modules[modname] = module
-        with override_settings(ROOT_URLCONF=modname):
-            clear_url_caches()
-            try:
-                yield routes
-            finally:
-                clear_url_caches()
+        yield scope
     finally:
+        scope._unmount()
         with _REGISTRY_LOCK:
-            for name in names:
+            for name in scope.names:
                 _REGISTRY.pop(name, None)
         check_module._VOCAB_CACHE.clear()
         check_module._VOCAB_CACHE.update(vocab_snapshot)
         crud_views_settings.__dict__.clear()
         crud_views_settings.__dict__.update(settings_snapshot)
-        sys.modules.pop(modname, None)
-        clear_url_caches()
+
+
+@contextmanager
+def ancestor_routes(family: str, depth: int, viewset_kwargs: dict | None = None):
+    """Build, mount and finally remove one isolated chain; ``viewset_kwargs`` maps level index → extra kwargs."""
+    with ancestor_scope() as scope:
+        routes = _build(family, depth, scope, viewset_kwargs or {})
+        scope.mount(routes.viewsets)
+        yield routes
 
 
 def chain_objects(depth: int) -> tuple[list, list]:

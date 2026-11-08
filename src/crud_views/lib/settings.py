@@ -213,6 +213,29 @@ class CrudViewsSettings(BaseModel):
                     )
         return messages
 
+    @staticmethod
+    def _ancestor_settings_messages() -> list[CheckMessage]:
+        """E322: the current CRUD_VIEWS_ANCESTOR_* settings, read raw and validated like the fields above.
+
+        Construction already rejects invalid values at startup; this reports a value changed afterwards. It reads
+        settings only, so it runs before migrations created any table."""
+        from pydantic import TypeAdapter
+        from pydantic import ValidationError as PydanticValidationError
+
+        messages: list[CheckMessage] = []
+        for setting, value_type in (
+            ("CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE", StrictBool),
+            ("CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS", AncestorPermissions),
+            ("CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS", AncestorPermissions),
+        ):
+            if not hasattr(settings, setting):
+                continue  # an omitted setting uses its valid default
+            try:
+                TypeAdapter(value_type).validate_python(getattr(settings, setting))
+            except PydanticValidationError as exc:
+                messages.append(Error(id="crud_views.E322", msg=f"setting {setting} is invalid: {exc}"))
+        return messages
+
     @property
     def check_messages(self) -> list[CheckMessage]:
         messages: list[CheckMessage] = []
@@ -285,6 +308,7 @@ class CrudViewsSettings(BaseModel):
             )
 
         messages.extend(self._action_settings_messages())
+        messages.extend(self._ancestor_settings_messages())
 
         # deferred import: settings.py must not import check.py at module level
         from crud_views.lib.check import REGS

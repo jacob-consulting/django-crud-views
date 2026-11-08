@@ -212,11 +212,10 @@ class CrudViewBreadcrumbMixin:
         viewset = self.cv_viewset
         items: list[BreadcrumbItem] = []
 
-        parents = []
-        parent = viewset.parent
-        while parent is not None:
-            parents.append(parent)
-            parent = parent.viewset.parent
+        # deferred import: the viewset package imports the view package, which imports this module
+        from crud_views.lib.viewset.ancestry import walk_ancestors
+
+        parents = list(walk_ancestors(viewset))  # nearest first
         if not parents:
             return items
 

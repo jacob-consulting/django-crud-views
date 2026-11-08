@@ -6,6 +6,7 @@ from typing import ClassVar, Literal, Self
 
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model, Q, QuerySet
 from django.urls import URLResolver, re_path
 from django.utils.text import capfirst
@@ -34,6 +35,7 @@ from ..view.action_menu import cv_is_form_label_mode_map
 from ..view.buttons import context_button_checks, context_buttons_default
 from ..view.label_mode import LABEL_MODES, is_label_mode_map
 from ..views.manage import ManageView
+from .ancestry import walk_ancestors
 from .parentviewset import ParentViewSet
 from .path_regs import PrimaryKeys
 
@@ -253,6 +255,11 @@ class ViewSet(BaseModel):
                 )
 
         if self.parent is not None:
+            try:
+                walk_ancestors(self)
+            except ImproperlyConfigured:
+                # crud_views.E320 reports the broken ancestry; the checks below would need the parent chain
+                return
             yield CheckExpression(
                 context=self,
                 id="E261",
@@ -274,20 +281,11 @@ class ViewSet(BaseModel):
 
     def get_parent_url_args(self, first_only: bool = False) -> list[str] | str:
         """
-        Get url args for all parents
+        Get url args for all parents, nearest first
         """
-        args = []
-
-        # iterate over parents
-        if self.parent:
-            parent = self.parent
-            while parent is not None:
-                arg = parent.get_pk_name()
-                if first_only:
-                    return arg
-                args.append(parent.get_pk_name())
-                parent = parent.viewset.parent
-
+        args = [parent.get_pk_name() for parent in walk_ancestors(self)]
+        if first_only and args:
+            return args[0]
         return args
 
     @property
@@ -301,20 +299,11 @@ class ViewSet(BaseModel):
 
     def get_parent_attributes(self, first_only: bool = False) -> list[str] | str:
         """
-        Get url args for all parents
+        Get the relation attributes of all parents, nearest first
         """
-        attrs = []
-
-        # iterate over parents
-        if self.parent:
-            parent = self.parent
-            while parent is not None:
-                attr = parent.get_attribute()
-                if first_only:
-                    return attr
-                attrs.append(parent.get_attribute())
-                parent = parent.viewset.parent
-
+        attrs = [parent.get_attribute() for parent in walk_ancestors(self)]
+        if first_only and attrs:
+            return attrs[0]
         return attrs
 
     def get_queryset(self, view: CrudView) -> QuerySet:
@@ -328,19 +317,16 @@ class ViewSet(BaseModel):
         )
 
         q_kwargs = {}
-        if self.parent:
-            parent = self.parent
+        parents = walk_ancestors(self)
+        if parents:
             attribute = None
-            while parent is not None:
+            for parent in parents:
                 # parent args
                 pk_name = parent.get_pk_name()
                 attribute = parent.get_attribute() if attribute is None else f"{attribute}__{parent.get_attribute()}"
 
                 # generate q-args
                 q_kwargs.update({f"{attribute}__pk": view.kwargs[pk_name]})
-
-                # proceed to next parent
-                parent = parent.viewset.parent
 
             queryset = self.model.objects.filter(Q(**q_kwargs))
 
@@ -404,13 +390,11 @@ class ViewSet(BaseModel):
         """
         paths = []
 
-        parent = self.parent
-        while parent:
+        for parent in walk_ancestors(self):
             path_prefix = parent.viewset.get_path_prefix()
             path_pk = path_regs.get_path_pk(parent.get_pk_name(), parent.viewset.pk) + "/"
             path = f"{path_prefix}{path_pk}"
             paths.insert(0, path)
-            parent = parent.viewset.parent
 
         path_parent = "".join(paths)
         return path_parent

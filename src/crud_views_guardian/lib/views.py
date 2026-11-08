@@ -396,13 +396,14 @@ class GuardianManageView(ManageView):
             parent_viewset_info = f"{parent_vs.name} (ancestor provider: {_effective_provider(parent_vs)}{fallback})"
         else:
             parent_viewset_info = None
+        as_ancestor = context["ancestor_policy"]["as_ancestor"]
         context["guardian_config"] = {
             "parent_viewset": parent_viewset_info,
-            # this ViewSet as an ancestor of nested requests (its declared ancestor policy, phase 06.18); local
-            # view options are reported per view in get_view_data()
+            # this ViewSet as an ancestor of nested requests: the effective values of the core "ancestor_policy"
+            # entry (phase 06.18); local view options are reported per view in get_view_data()
             "ancestor_policy": {
-                "provider": _effective_provider(self.cv_viewset),
-                "accept_global_perms": self.cv_viewset.ancestor_policy.accept_global_perms,
+                "provider": as_ancestor["effective_provider"],
+                "accept_global_perms": as_ancestor["accept_global_perms"],
             },
             # the ViewSet helper's own fixed policy (D-05); global fallback is per view, see get_view_data()
             "get_objects_for_user": dict(STRICT_HELPER_POLICY),

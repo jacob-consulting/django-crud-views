@@ -119,9 +119,59 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "views": views,
                 "permission_holders": permission_holders,
                 "show_users": crud_views_settings.manage_show_users,
+                "ancestor_policy": self.get_ancestor_policy_data(),
             }
         )
         return context
+
+    def get_ancestor_policy_data(self) -> dict:
+        """The ViewSet's declared ancestor policy, for display (phase 06.18).
+
+        Configuration only, not an authorization result: nothing is evaluated for the actor and no ancestor is
+        loaded. The two scopes stay apart:
+
+        * ``as_ancestor``: provider and ancestor fallback, used when this ViewSet is the ancestor of a nested
+          request;
+        * ``requests``: cascade, Read/Write pairs and exact action entries for nested requests that target this
+          ViewSet. None at top level, where no ancestry applies.
+
+        Each inheritable value shows the declared value (None = inherited) next to the effective one. Guardian's
+        per-view ``cv_guardian_accept_global_perms`` is a separate, endpoint-local option (see GuardianManageView).
+        """
+        from crud_views.lib.ancestors import _effective_provider
+
+        viewset = self.cv_viewset
+        policy = viewset.ancestor_policy
+
+        def pair(value):
+            return value.model_dump() if value is not None else None
+
+        requests = None
+        if viewset.parent is not None:
+            cascade = policy.cascade
+            requests = {
+                "cascade": {
+                    "declared": cascade,
+                    "effective": crud_views_settings.ancestor_permission_cascade if cascade is None else cascade,
+                },
+                "read": {
+                    "declared": pair(policy.read),
+                    "effective": pair(policy.read or crud_views_settings.ancestor_read_permissions),
+                },
+                "write": {
+                    "declared": pair(policy.write),
+                    "effective": pair(policy.write or crud_views_settings.ancestor_write_permissions),
+                },
+                "actions": {key: pair(value) for key, value in policy.actions.items()},
+            }
+        return {
+            "as_ancestor": {
+                "provider": policy.provider,
+                "effective_provider": _effective_provider(viewset),
+                "accept_global_perms": policy.accept_global_perms,
+            },
+            "requests": requests,
+        }
 
     def get_view_data(self):
         data = OrderedDict()

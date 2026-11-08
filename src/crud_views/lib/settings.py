@@ -9,7 +9,7 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from pydantic import BaseModel, Field, StrictBool
 
-from .ancestor_policy import (
+from crud_views.lib.ancestor_policy import (
     DEFAULT_CASCADE,
     DEFAULT_READ_PERMISSIONS,
     DEFAULT_WRITE_PERMISSIONS,

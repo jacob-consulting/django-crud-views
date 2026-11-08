@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 1
+open_count: 0
 waived_count: 9
-fixed_count: 27
+fixed_count: 28
 total_count: 37
-last_updated: 2026-11-08T17:34:13.035Z
+last_updated: 2026-11-08T18:15:32.509Z
 ---
 
 # Broken Windows Ledger
@@ -51,7 +51,7 @@ last_updated: 2026-11-08T17:34:13.035Z
 | 34 | 06.10 | unrun-verify | .planning/phases/06.10-simplify-protected-object-previews-and-cap-total-displayed-o/06.10-ACCEPTANCE.md |  | Human stock/copied page/modal presentation, keyboard acceptance and UI kind confirmation remain pending at the normal end-of-phase check. | fixed |  | 2026-11-04T21:30:19.709Z | 2026-11-05T09:25:26.031Z |
 | 35 | 06.16 | deviation | tests/test1/od/test_help_text_policy.py |  | Plan 02 task 2 is test-only expansion of task 1 behavior; no separate failing RED or production GREEN commit was needed. | fixed |  | 2026-11-06T19:15:57.137Z | 2026-11-06T19:16:25.752Z |
 | 36 | 06.17 | deviation | docs/reference/javascript.md |  | Task 1 documentation edits began before RED evidence classifier approval; actual pre-edit report subsequently approved, final executable recipes and all regression gates pass. | waived | Independent deep review found no product defect: genuine pre-edit failures were preserved and later classifier-approved; final executable recipe and full regression checks pass. Accept the documentation-only ordering exception while retaining the historical violation; no retroactive compliance claimed. | 2026-11-07T10:17:20.705Z | 2026-11-07T10:25:35.767Z |
-| 37 | 06.18 | deviation | src/crud_views/lib/ancestors.py |  | Interim (06.18-01): nested endpoints outside the core list/detail/create/update/delete families without an exact actions entry perform no ancestor work until 06.18-02 Task 2 adds the finite family table and custom-declaration guards | open |  | 2026-11-08T17:34:13.035Z |  |
+| 37 | 06.18 | deviation | src/crud_views/lib/ancestors.py |  | Interim (06.18-01): nested endpoints outside the core list/detail/create/update/delete families without an exact actions entry perform no ancestor work until 06.18-02 Task 2 adds the finite family table and custom-declaration guards | fixed |  | 2026-11-08T17:34:13.035Z | 2026-11-08T18:15:32.509Z |
 
 ````json
 [
@@ -521,10 +521,10 @@ last_updated: 2026-11-08T17:34:13.035Z
     "file": "src/crud_views/lib/ancestors.py",
     "line": null,
     "description": "Interim (06.18-01): nested endpoints outside the core list/detail/create/update/delete families without an exact actions entry perform no ancestor work until 06.18-02 Task 2 adds the finite family table and custom-declaration guards",
-    "status": "open",
+    "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-08T17:34:13.035Z",
-    "resolved_at": null,
+    "resolved_at": "2026-11-08T18:15:32.509Z",
     "milestone": "v1.0"
   }
 ]

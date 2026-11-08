@@ -1,15 +1,15 @@
 ---
 schema_version: 1
-open_count: 1
+open_count: 2
 waived_count: 9
 fixed_count: 29
-total_count: 39
-last_updated: 2026-11-08T19:47:55.487Z
+total_count: 40
+last_updated: 2026-11-08T20:21:21.236Z
 ---
 
 # Broken Windows Ledger
 
-> Cross-phase defect register. `/gsd-ship` blocks while `open_count > 0`.
+> Cross-phase defect register. With `workflow.windows_enforce` enabled, `/gsd-ship` blocks while `open_count > 0`.
 > Waive with `gsd-tools windows waive <id> "<reason>"` (reason required).
 > Mark fixed with `gsd-tools windows fixed <id>`.
 
@@ -54,6 +54,7 @@ last_updated: 2026-11-08T19:47:55.487Z
 | 37 | 06.18 | deviation | src/crud_views/lib/ancestors.py |  | Interim (06.18-01): nested endpoints outside the core list/detail/create/update/delete families without an exact actions entry perform no ancestor work until 06.18-02 Task 2 adds the finite family table and custom-declaration guards | fixed |  | 2026-11-08T17:34:13.035Z | 2026-11-08T18:15:32.509Z |
 | 38 | 06.18 | deviation | tests/test1/test_authorization_matrix.py |  | Interim (06.18-03): eight legacy Guardian authorization modules still declare/patch the removed cv_guardian_parent_* fields (1044 setup errors, 5 monkeypatch AttributeErrors, 2 removed-name manage assertions) and 3 test_guardian.py cases assert child-view fallback relaxing the Publisher ancestor (H2-removed/H2-semantics); fixture/expectation migration owned by 06.18-08 | open |  | 2026-11-08T18:42:19.870Z |  |
 | 39 | 06.18 | deviation | tests/test1/test_resource_views.py |  | Interim (06.18-04): with ancestry before has_permission(), test_resource_views.py::test_nested_detail_scoped_to_parent_404 now returns 403 (S3 viewer lacks Publisher view) instead of the masked Resource-loader 404; it joins the 3 open H1-resource rows owned by 06.18-05 Task 2 (Publisher-view + Resource-view actor migration) | fixed |  | 2026-11-08T19:18:23.782Z | 2026-11-08T19:47:55.487Z |
+| 40 | 06.18 | unmet-truth | src/crud_views/lib/view/base.py |  | Found during 06.18-06: CrudView.get_context_data applies _scope_child_queryset only when object_list is not a keyword; django-filter's BaseFilterView.get passes object_list=..., so a nested ListViewTableFilterMixin list whose get_queryset omits the parent filter lists other parents' rows (ANCE-05, 06.18-05 seam; see deferred-items.md). Default ViewSet querysets already filter. | open |  | 2026-11-08T20:21:21.236Z |  |
 
 ````json
 [
@@ -524,6 +525,19 @@ last_updated: 2026-11-08T19:47:55.487Z
     "reason": "",
     "recorded_at": "2026-11-08T19:18:23.782Z",
     "resolved_at": "2026-11-08T19:47:55.487Z"
+  },
+  {
+    "id": 40,
+    "kind": "unmet-truth",
+    "phase": "06.18",
+    "file": "src/crud_views/lib/view/base.py",
+    "line": null,
+    "description": "Found during 06.18-06: CrudView.get_context_data applies _scope_child_queryset only when object_list is not a keyword; django-filter's BaseFilterView.get passes object_list=..., so a nested ListViewTableFilterMixin list whose get_queryset omits the parent filter lists other parents' rows (ANCE-05, 06.18-05 seam; see deferred-items.md). Default ViewSet querysets already filter.",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-11-08T20:21:21.236Z",
+    "resolved_at": null,
+    "milestone": "v1.0"
   }
 ]
 ````

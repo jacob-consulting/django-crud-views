@@ -399,7 +399,76 @@ ancestor pks arrive in `url_kwargs`.
 
 Declaring `ParentViewSet(name=...)` that points at a Resource ViewSet fails a
 startup system check (**E261**) — "Resources can only be leaves in the
-nesting hierarchy."
+nesting hierarchy." URL construction and requests refuse such a chain with
+`ImproperlyConfigured` as well.
+
+### Ancestor authorization of a Resource leaf
+
+A nested Resource request is authorized like any nested request (see
+[Ancestor authorization](nested.md#ancestor-authorization)): its ORM ancestors
+are resolved outermost first through their ViewSet querysets, their
+relationships are validated and the selected ancestor gates are checked —
+before `cv_get_items()` or `cv_get_item()` is called. A denied, anonymous or
+mismatched ancestry never reaches your loader. List and detail Resource views
+are Read; a nested custom action or form view on a Resource needs its exact
+`actions` entry like any other nested custom endpoint. This holds for plain
+Resource views too: the ancestors protect them even without a permission of
+their own.
+
+What the framework does **not** do is decide which rows belong to the URL
+parent. There is no ORM relation between a Resource row and its parent, so
+membership is application-owned: the loader must restrict what it returns to
+the parent named in `url_kwargs`, as below. A row of another publisher that the
+loader does not return is a 404 from the default `cv_get_item()`. The ORM
+ancestors and the authorization records follow the nested default-database
+rule; your loader's own data access is not checked.
+
+```python
+import django_tables2 as tables
+
+from crud_views.lib.resource import Resource, ResourceViewMixin
+from crud_views.lib.table import Table
+from crud_views.lib.viewset import ParentViewSet, ViewSet
+from crud_views.lib.views import ListView, ListViewTableMixin
+
+from myapp.storage import list_files
+
+
+class PublisherFile(Resource):
+    key: str
+    publisher_id: int
+
+    class Meta:
+        verbose_name = "publisher file"
+        verbose_name_plural = "publisher files"
+        pk_field = "key"
+
+    def __str__(self) -> str:
+        return self.key
+
+    @classmethod
+    def cv_get_items(cls, request, **url_kwargs):
+        # runs only after the Publisher ancestry passed; membership is still yours to enforce
+        publisher_pk = int(url_kwargs["publisher_pk"])
+        return [cls.model_validate(row) for row in list_files() if row["publisher_id"] == publisher_pk]
+
+
+class PublisherFileTable(Table):
+    key = tables.Column()
+
+
+cv_publisher_file = ViewSet(
+    model=PublisherFile,
+    name="publisherfile",
+    parent=ParentViewSet(name="publisher"),  # an ORM ViewSet
+)
+
+
+class PublisherFileListView(ResourceViewMixin, ListViewTableMixin, ListView):  # Read: Publisher view
+    cv_viewset = cv_publisher_file
+    table_class = PublisherFileTable
+    cv_list_actions = []
+```
 
 ## A note on pydantic warnings
 

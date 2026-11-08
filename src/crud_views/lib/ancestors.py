@@ -16,8 +16,9 @@ One request engine, ``_authorize_ancestors(view)``, runs before an endpoint's ow
    Guardian keeps its explicit actor rules, manage its settings); it never calls a child- or state-loading
    ``has_permission()``.
 4. Outermost inward, each ancestor is resolved through its own ViewSet queryset (called with the real child
-   view), constrained to the URL PK and to the already resolved outer ancestor; missing → 404. A selected
-   level's gate is checked immediately, before the next deeper lookup; denial → 403.
+   view), constrained to the URL PK and to the already resolved outer ancestor; a queryset selecting another
+   database than ``default`` is refused before it is read (``ancestor_db``); missing → 404. A selected level's
+   gate is checked immediately, before the next deeper lookup; denial → 403.
 5. On success the resolved chain is stored on the view instance (request-local) and the request continues
    through its existing path; ``cv_get_parent_object()`` reuses the resolved immediate parent.
 6. The ORM child itself is checked against that immediate structural parent where it is consumed, so a child
@@ -47,6 +48,7 @@ from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured, Perm
 from django.db.models import QuerySet
 from django.http import Http404
 
+from crud_views.lib.ancestor_db import _require_default_alias
 from crud_views.lib.ancestor_policy import AncestorPermissions
 from crud_views.lib.exceptions import ViewSetNotFoundError
 from crud_views.lib.settings import crud_views_settings
@@ -369,6 +371,8 @@ def _resolve_ancestor(view: CrudView, edge: ParentViewSet, ancestor: ViewSet, ou
     queryset = ancestor.get_queryset(view=view).filter(pk=view.kwargs[edge.get_pk_name()])
     if outer is not None:
         queryset = queryset.filter(**{f"{ancestor.parent.get_attribute()}__pk": outer.pk})
+    # nested traversal supports the default database only: refuse another selection before it is read
+    _require_default_alias(queryset.db, view=view, operation=f"ancestor ViewSet {ancestor.name!r} queryset")
     obj = queryset.first()
     if obj is None:
         raise Http404(f"{ancestor.model._meta.verbose_name} not found")

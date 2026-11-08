@@ -24,6 +24,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from types import SimpleNamespace
 
+import django_filters
 import pytest
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -32,6 +33,7 @@ from django.db import connections, router
 from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
 from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.list import MultipleObjectMixin
 
 from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
 from tests.test1.app.models import Book, BookNote, Publisher
@@ -104,6 +106,12 @@ def _superclient(name="ad_super"):
 # ── dynamic ViewSets ─────────────────────────────────────────────────────────
 
 
+class BookFilter(django_filters.FilterSet):
+    class Meta:
+        model = Book
+        fields = ["title"]
+
+
 class DefaultUsingViewSet(ViewSet):
     """An ancestor ViewSet whose queryset carries an explicit ``.using("default")`` selection."""
 
@@ -137,7 +145,7 @@ SELECTION_STYLES = ["override", "queryset-attribute"]
 
 @pytest.fixture
 def dbv():
-    from crud_views.lib.views import DeleteView, DetailView, ListView, UpdateView
+    from crud_views.lib.views import DeleteView, DetailView, ListView, ListViewTableFilterMixin, UpdateView
 
     def view(base, vs, **attrs):
         return type(base.__name__, (base,), {"cv_viewset": vs, "cv_context_actions": [], **attrs})
@@ -155,6 +163,13 @@ def dbv():
         ns.PubDelete = view(DeleteView, ns.pub, cv_show_related_objects=True)
         ns.book = ViewSet(model=Book, name=f"adbook{sfx}", parent=ParentViewSet(name=ns.pub.name, **edge))
         ns.BookList, ns.BookDetail = lst(ns.book), view(DetailView, ns.book)
+        # a filtered list: django-filter hands its collection to get_context_data as ``object_list``
+        ns.fbook = ViewSet(model=Book, name=f"adfbook{sfx}", parent=ParentViewSet(name=ns.pub.name, **edge))
+        ns.FBookList = type(
+            "FilterList",
+            (ListViewTableFilterMixin, ListView),
+            {"cv_viewset": ns.fbook, "cv_list_actions": [], "cv_context_actions": [], "filterset_class": BookFilter},
+        )
         ns.BookUpdate = view(UpdateView, ns.book, fields=["title"])
         ns.BookDelete = view(DeleteView, ns.book, cv_show_related_objects=True)
         ns.note = ViewSet(
@@ -172,7 +187,9 @@ def dbv():
                     parent=ParentViewSet(name=ns.pub.name, **edge),
                 )
                 attrs = _selection_attrs(style, alias)
-                list_attrs = attrs if style == "override" else {**attrs, "get_queryset": ListView.get_queryset}
+                list_attrs = (
+                    attrs if style == "override" else {**attrs, "get_queryset": MultipleObjectMixin.get_queryset}
+                )
                 ns.sel[style, alias] = SimpleNamespace(
                     vs=vs, Detail=view(DetailView, vs, **attrs), List=lst(vs, **list_attrs)
                 )
@@ -201,6 +218,7 @@ def dbv():
         routed = [
             ns.pub,
             ns.book,
+            ns.fbook,
             ns.note,
             *(entry.vs for entry in ns.sel.values()),
             ns.dpub,
@@ -283,6 +301,18 @@ def test_router_selected_shard_ancestor_is_refused_before_it_is_read(dbv, worlds
     assert "'shard'" in str(caught.value)
     assert _sql(sql.shard) == []
     assert _sql(sql.default, "app_publisher") == [] and _sql(sql.default, "app_book") == []
+
+
+def test_filtered_list_collection_is_checked_where_it_is_consumed(dbv, worlds, routes):
+    """django-filter passes its collection to get_context_data directly; that collection is still checked."""
+    client = _superclient()
+    kwargs = {f"{dbv.pub.name}_pk": 41}
+    response = client.get(_url(dbv.fbook, "list", **kwargs))
+    assert response.status_code == 200 and [b.title for b in response.context["object_list"]] == ["default child"]
+    routes.read[Book] = "shard"
+    with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
+        client.get(_url(dbv.fbook, "list", **kwargs))
+    assert _sql(sql.shard) == [] and _sql(sql.default, "app_book") == []
 
 
 def test_explicit_shard_ancestor_queryset_is_refused(dbv, worlds, routes):

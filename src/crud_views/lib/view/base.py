@@ -250,19 +250,27 @@ class CrudView(metaclass=CrudViewMetaClass):
         return self.cv_viewset.get_queryset(view=self)
 
     def get_object(self, queryset=None):
-        """Django's object lookup; for a nested ORM request the reached object must also belong to the resolved
-        immediate parent (404 otherwise), even when ``get_queryset`` omits the parent filter (phase 06.18)."""
-        obj = super().get_object(queryset)
+        """Django's object lookup; for a nested ORM request the queryset must read the default database and the
+        reached object must belong to the resolved immediate parent (404 otherwise), even when ``get_queryset``
+        omits the parent filter or selects a database itself (phase 06.18)."""
+        from crud_views.lib.ancestor_db import _check_nested_queryset
         from crud_views.lib.ancestors import _validate_child_parent
 
+        if queryset is None:
+            queryset = self.get_queryset()
+        obj = super().get_object(_check_nested_queryset(self, queryset))
         return _validate_child_parent(self, obj)
 
     def get_context_data(self, **kwargs):
+        from crud_views.lib.ancestor_db import _check_nested_queryset
+
         if "object_list" not in kwargs and getattr(self, "object_list", None) is not None:
             # where list views consume their collection: a nested one stays scoped to the resolved parent
             from crud_views.lib.ancestors import _scope_child_queryset
 
             self.object_list = _scope_child_queryset(self, self.object_list)
+        # the collection Django's list context will paginate must read the default database (nested only)
+        _check_nested_queryset(self, kwargs.get("object_list", getattr(self, "object_list", None)))
         context = super().get_context_data(**kwargs)
         context["cv_extends"] = self.cv_get_extends_template()
         return context

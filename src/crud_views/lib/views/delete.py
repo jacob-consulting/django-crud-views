@@ -11,6 +11,7 @@ from django.db.models import Model
 from django.urls import NoReverseMatch, reverse
 from django.views import generic
 
+from crud_views.lib.ancestor_db import _check_nested_alias, _is_nested_orm
 from crud_views.lib.check import Check, CheckExpression
 from crud_views.lib.deletion import (
     RelatedObjects,
@@ -148,17 +149,19 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         return router.db_for_write(type(self.object), instance=self.object)
 
     def cv_get_delete_db_alias(self) -> str:
-        """Pin the selection once, after authorized resolution of a saved target."""
-        if hasattr(self, "_cv_delete_db_alias"):
-            return self._cv_delete_db_alias
-        target = getattr(self, "object", None)
-        if not isinstance(target, Model) or target._state.adding or target.pk is None:
-            raise ImproperlyConfigured("Resolve a saved self.object before calling cv_get_delete_db_alias()")
-        using = self.cv_get_db_alias()
-        if not isinstance(using, str) or not using or using not in connections:
-            raise ImproperlyConfigured("cv_get_db_alias() must select a configured database alias")
-        self._cv_delete_db_alias = using
-        return self._cv_delete_db_alias
+        """Pin the selection once, after authorized resolution of a saved target.
+
+        A nested ViewSet supports only the default database: a newly selected or pinned nondefault alias is
+        refused each time it is consumed (preview collection, transaction, deletion), never rerouted."""
+        if not hasattr(self, "_cv_delete_db_alias"):
+            target = getattr(self, "object", None)
+            if not isinstance(target, Model) or target._state.adding or target.pk is None:
+                raise ImproperlyConfigured("Resolve a saved self.object before calling cv_get_delete_db_alias()")
+            using = self.cv_get_db_alias()
+            if not isinstance(using, str) or not using or using not in connections:
+                raise ImproperlyConfigured("cv_get_db_alias() must select a configured database alias")
+            self._cv_delete_db_alias = using
+        return _check_nested_alias(self, self._cv_delete_db_alias, operation="delete database alias")
 
     def cv_get_atomic(self):
         using = self.cv_get_delete_db_alias()
@@ -308,6 +311,9 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
     def get_context_data(self, **kwargs):
         limit = self._cv_get_delete_preview_limit()
         context = super().get_context_data(**kwargs)
+        if _is_nested_orm(self):
+            # nested: the delete alias must be default before protection hooks and preview collection (06.18)
+            self.cv_get_delete_db_alias()
         errors = self.cv_check_delete_protection()
         if errors:
             context["delete_protection_errors"] = errors

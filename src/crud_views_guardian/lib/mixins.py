@@ -21,6 +21,23 @@ def _guardian_inactive_actor(user) -> bool:
     return bool(getattr(user, "is_authenticated", False)) and not getattr(user, "is_active", True)
 
 
+def _guardian_actor_response(view):
+    """Guardian's explicit actor rules, with or without protected ancestry: an anonymous actor gets the view's
+    configured ``cv_guardian_anonymous_behavior`` (login redirect, or raise 403/404), an authenticated inactive
+    actor 403. None for an active authenticated actor. Loads nothing."""
+    user = view.request.user
+    if not user.is_authenticated:
+        behavior = getattr(view, "cv_guardian_anonymous_behavior", "redirect")
+        if behavior == "404":
+            raise Http404
+        if behavior == "403":
+            raise PermissionDenied
+        return view.handle_no_permission()  # redirect to login
+    if _guardian_inactive_actor(user):
+        raise PermissionDenied
+    return None
+
+
 class GuardianObjectPermissionMixin:
     """
     For single-object views (Detail, Update, Delete, Action).
@@ -58,6 +75,10 @@ class GuardianObjectPermissionMixin:
         if _guardian_inactive_actor(self.request.user):
             raise PermissionDenied
         return True
+
+    def _cv_ancestor_actor_response(self, *, protected: bool):
+        # nested requests: Guardian's explicit actor rules in both ancestry modes (phase 06.18)
+        return _guardian_actor_response(self)
 
     def _check_object_perm(self, user, perm: str, obj) -> bool:
         if _guardian_inactive_actor(user):
@@ -138,6 +159,10 @@ class GuardianQuerysetMixin:
         if _guardian_inactive_actor(self.request.user):
             raise PermissionDenied
         return True
+
+    def _cv_ancestor_actor_response(self, *, protected: bool):
+        # nested requests: Guardian's explicit actor rules in both ancestry modes (phase 06.18)
+        return _guardian_actor_response(self)
 
     @classmethod
     def cv_has_access(cls, user, obj=None):
@@ -339,10 +364,9 @@ class GuardianParentPermissionMixin:
                 raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
+    def _cv_ancestor_actor_response(self, *, protected: bool):
+        # dispatch() already applied these rules before the guard; kept so every bridge sees the same answer
+        return _guardian_actor_response(self)
+
     def _guardian_deny_anonymous(self):
-        behavior = getattr(self, "cv_guardian_anonymous_behavior", "redirect")
-        if behavior == "404":
-            raise Http404
-        if behavior == "403":
-            raise PermissionDenied
-        return self.handle_no_permission()  # redirect to login
+        return _guardian_actor_response(self)

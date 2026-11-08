@@ -277,6 +277,18 @@ class CrudView(metaclass=CrudViewMetaClass):
 
         return _authorize_ancestors(self)
 
+    def _cv_ancestor_actor_response(self, *, protected: bool):
+        """Private actor-admission adapter of the ancestor guard, called before any ancestor lookup.
+
+        ``protected``: at least one ancestor gate is selected — anonymous actors get the login redirect,
+        authenticated inactive actors 403. All-none ancestry: a plain endpoint has no actor rule of its own and
+        admits everybody. Returns None to continue, a response, or raises."""
+        if protected:
+            from crud_views.lib.ancestors import _protected_actor_response
+
+            return _protected_actor_response(self)
+        return None
+
     def _cv_consume_cancel_restore(self, request):
         if request.method != "GET" or not is_cancel_list_destination(type(self)):
             return
@@ -1091,6 +1103,33 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
             f"a server started before the migration may need a restart"
         )
         return perm
+
+    def dispatch(self, request, *args, **kwargs):
+        # Nested requests authorize their ancestors first: Django's PermissionRequiredMixin.dispatch calls
+        # has_permission(), which loads the child object / parent and checks action state (phase 06.18).
+        response = self._cv_ancestor_guard()
+        if response is not None:
+            return response
+        return super().dispatch(request, *args, **kwargs)
+
+    def _cv_ancestor_actor_response(self, *, protected: bool):
+        """Actor admission of a nested permission-required request, before any ancestor lookup.
+
+        Protected ancestry: the shared actor rule (anonymous → ``handle_no_permission()``, inactive → 403).
+        All-none ancestry: the endpoint's actual early admission for anonymous and inactive actors — its model
+        permission (``PermissionRequiredMixin.has_permission``), so a backend that grants such actors still
+        admits them. Never the state-loading ``has_permission()`` override: for active actors the model
+        permission and action state are local gates that run after ancestry."""
+        if protected:
+            from crud_views.lib.ancestors import _protected_actor_response
+
+            return _protected_actor_response(self)
+        user = self.request.user
+        if user.is_authenticated and user.is_active:
+            return None
+        if PermissionRequiredMixin.has_permission(self):
+            return None
+        return self.handle_no_permission()
 
     def has_permission(self):
         if not super().has_permission():

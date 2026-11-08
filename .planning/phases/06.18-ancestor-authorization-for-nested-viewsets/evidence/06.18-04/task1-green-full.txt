@@ -1,0 +1,24 @@
+# Task 1 GREEN gate: PYTHONPATH=$PWD/src .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_ancestor_actors.py tests/test1/test_ancestor_guardian.py -n 4 -q
+81 passed in 6.17s
+# full Django 5.2 suite (tests -n 8 -q -rfE), working tree = HEAD eea1d85a + Task 1 GREEN edits
+16 failed, 10160 passed, 1 skipped, 1044 errors in 118.14s (0:01:58)
+# failing nodes not in the 06.18-03 transition set:
+tests/test1/test_resource_views.py::test_nested_detail_scoped_to_parent_404
+# errors not in the 06.18-03 transition set: none
+# all failing nodes:
+FAILED tests/test1/test_fragment_authorization.py::test_authorized_guardian_child_update_and_create_fragments
+FAILED tests/test1/test_fragment_authorization.py::test_wrong_url_parent_guardian_child_fragment_is_404
+FAILED tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_create
+FAILED tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_detail
+FAILED tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_list
+FAILED tests/test1/test_guardian.py::test_create_cv_has_access_parent_none_policy_resolves_without_permission
+FAILED tests/test1/test_guardian.py::test_guardian_manage_config_renders_in_an_alert
+FAILED tests/test1/test_guardian.py::test_guardian_manage_context_has_guardian_config
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[global]
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[group]
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[ordinary]
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[superuser]
+FAILED tests/test1/test_resource_views.py::test_nested_detail_scoped_to_parent_404
+FAILED tests/test1/test_resource_views.py::test_nested_detail_url_contains_parent_pk
+FAILED tests/test1/test_resource_views.py::test_nested_list_empty_for_parent_without_files
+FAILED tests/test1/test_resource_views.py::test_nested_list_scoped_to_parent

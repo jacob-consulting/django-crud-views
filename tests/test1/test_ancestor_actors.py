@@ -137,12 +137,14 @@ def _three_targets(routes, pkind, ckind, world):
 
 @pytest.fixture
 def events(monkeypatch):
-    """Ordered framework events: ViewSet querysets, model permission checks and the state-loading local
+    """Ordered framework events: ViewSet querysets, model permission checks (authenticated and anonymous actors)
+    and the state-loading local
     ``has_permission`` / ``cv_get_action_object`` of core permission-required views."""
     recorded: list[tuple[str, str]] = []
     original_queryset = ViewSet.get_queryset
     original_has_perm = PermissionsMixin.has_perm
     original_local = CrudViewPermissionRequiredMixin.has_permission
+    original_anonymous = AnonymousUser.has_perm
 
     def queryset_spy(self, view):
         recorded.append(("queryset", self.name))
@@ -152,12 +154,17 @@ def events(monkeypatch):
         recorded.append(("model_perm", perm))
         return original_has_perm(self, perm, obj)
 
+    def anonymous_spy(self, perm, obj=None):
+        recorded.append(("model_perm", perm))
+        return original_anonymous(self, perm, obj)
+
     def local_spy(self):
         recorded.append(("local_has_permission", self.cv_viewset.name))
         return original_local(self)
 
     monkeypatch.setattr(ViewSet, "get_queryset", queryset_spy)
     monkeypatch.setattr(PermissionsMixin, "has_perm", has_perm_spy)
+    monkeypatch.setattr(AnonymousUser, "has_perm", anonymous_spy)
     monkeypatch.setattr(CrudViewPermissionRequiredMixin, "has_permission", local_spy)
     return recorded
 

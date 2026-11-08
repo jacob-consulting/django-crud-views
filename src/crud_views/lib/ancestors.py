@@ -8,13 +8,24 @@ One request engine, ``_authorize_ancestors(view)``, runs before an endpoint's ow
    action declarations, the requested operation's permission pair, each ancestor's effective provider and the
    levels selected for a permission gate (full cascade: every protected ancestor; nearest-only: the nearest
    protected one).
-3. Actor admission when a gate is selected: anonymous actors get the endpoint's login/no-permission response,
-   inactive authenticated actors 403 — both before any ancestor lookup.
+3. Actor admission, before any ancestor lookup, through the endpoint's private
+   ``_cv_ancestor_actor_response(protected=...)`` adapter. Protected ancestry (a gate is selected): anonymous
+   actors get the endpoint's anonymous response (login redirect by default; Guardian keeps its configured
+   403/404), inactive authenticated actors 403. All-none ancestry: only the endpoint's own early admission
+   rule applies (core permission-required views ask their model permission, plain views admit everybody,
+   Guardian keeps its explicit actor rules, manage its settings); it never calls a child- or state-loading
+   ``has_permission()``.
 4. Outermost inward, each ancestor is resolved through its own ViewSet queryset (called with the real child
    view), constrained to the URL PK and to the already resolved outer ancestor; missing → 404. A selected
    level's gate is checked immediately, before the next deeper lookup; denial → 403.
 5. On success the resolved chain is stored on the view instance (request-local) and the request continues
    through its existing path; ``cv_get_parent_object()`` reuses the resolved immediate parent.
+
+Every shipped composition reaches the engine before its own local work: plain views through
+``CrudView.dispatch``, permission-required views through ``CrudViewPermissionRequiredMixin.dispatch`` (before
+Django's ``PermissionRequiredMixin`` runs the state-loading ``has_permission()``), Guardian views through
+``GuardianParentPermissionMixin.dispatch`` and manage views through ``ManageView.dispatch``. The engine runs
+once per request: a later bridge reuses the stored result.
 
 Operations come from a finite family table (``_operation_family``); an endpoint outside it — a generic action,
 custom form, workflow or other custom view — needs an exact ``actions`` entry when nested, otherwise the request
@@ -334,6 +345,17 @@ def _deny_anonymous(view: CrudView):
     return redirect_to_login(view.request.get_full_path())
 
 
+def _protected_actor_response(view: CrudView):
+    """Actor rule of protected ancestry: anonymous → the endpoint's anonymous response, authenticated inactive
+    (superusers included) → 403, else None. Used by the views' ``_cv_ancestor_actor_response`` adapters."""
+    user = view.request.user
+    if not user.is_authenticated:
+        return _deny_anonymous(view)
+    if not user.is_active:
+        raise PermissionDenied
+    return None
+
+
 def _resolve_ancestor(view: CrudView, edge: ParentViewSet, ancestor: ViewSet, outer: Model | None) -> Model:
     """Load one ancestor through its ViewSet queryset, constrained to its URL PK and to the resolved outer
     ancestor (so a queryset override cannot waive the declared relationship). Missing → 404."""
@@ -371,13 +393,12 @@ def _authorize_ancestors(view: CrudView):
     pair = _operation_requirements(type(view))
     selected = _selected_gates(viewset, chain)
 
-    user = view.request.user
-    if selected:
-        if not user.is_authenticated:
-            return _deny_anonymous(view)
-        if not user.is_active:
-            raise PermissionDenied
+    # actor admission before any lookup; all-none ancestry keeps only the endpoint's own early rule
+    response = view._cv_ancestor_actor_response(protected=bool(selected))
+    if response is not None:
+        return response
 
+    user = view.request.user
     resolved: list[Model] = []
     outer = None
     for index in reversed(range(len(chain))):

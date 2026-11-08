@@ -37,7 +37,8 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
-from tests.test1.app.models import Book, BookNote, Genre, Publisher
+from crud_views_workflow.lib.forms import WorkflowForm
+from tests.test1.app.models import Book, BookNote, FolderTask, Genre, Publisher, TaskFolder
 from tests.test1.test_ancestor_authorization import _client, _url, _user, isolated_routes
 from tests.test1.test_ancestor_resolution import _register_project_viewsets
 
@@ -83,7 +84,10 @@ def _rows(using):
     publisher = Publisher.objects.using(using).create(pk=41, name=f"{using} publisher")
     book = Book.objects.using(using).create(pk=71, publisher_id=publisher.pk, title=f"{using} child")
     note = BookNote.objects.using(using).create(pk=91, book_id=book.pk, note=f"{using} note")
-    return SimpleNamespace(publisher=publisher, book=book, note=note)
+    folder = TaskFolder.objects.using(using).create(pk=61, name=f"{using} folder")
+    first = FolderTask.objects.using(using).create(pk=81, folder_id=folder.pk, name=f"{using} first", order=0)
+    second = FolderTask.objects.using(using).create(pk=82, folder_id=folder.pk, name=f"{using} second", order=1)
+    return SimpleNamespace(publisher=publisher, book=book, note=note, folder=folder, first=first, second=second)
 
 
 @pytest.fixture
@@ -116,6 +120,17 @@ class BookFilter(django_filters.FilterSet):
 
 class EmptyForm(forms.Form):
     """A custom form without fields: always valid."""
+
+
+class FolderTaskWorkflowForm(WorkflowForm):
+    class Meta(WorkflowForm.Meta):
+        model = FolderTask
+
+
+def _touch(self, context):
+    self.object.title = "touched"
+    self.object.save()
+    return True
 
 
 def _rename(self, context):
@@ -160,6 +175,7 @@ SELECTION_STYLES = ["override", "queryset-attribute"]
 
 @pytest.fixture
 def dbv():
+    from crud_views.lib.crispy import CrispyViewMixin
     from crud_views.lib.views import (
         CreateView,
         CreateViewParentMixin,
@@ -169,13 +185,20 @@ def dbv():
         ListViewTableFilterMixin,
         UpdateView,
     )
+    from crud_views.lib.views.action import ActionView
+    from crud_views.lib.views.action_ordered import OrderedDownView, OrderedUpView
     from crud_views.lib.views.form import CustomFormNoObjectView, CustomFormView
+    from crud_views_workflow.lib.views import WorkflowView
 
     def view(base, vs, **attrs):
         return type(base.__name__, (base,), {"cv_viewset": vs, "cv_context_actions": [], **attrs})
 
     def lst(vs, **attrs):
         return view(ListView, vs, cv_list_actions=[], **attrs)
+
+    def workflow(vs):
+        attrs = {"cv_viewset": vs, "cv_context_actions": [], "form_class": FolderTaskWorkflowForm}
+        return type("Workflow", (CrispyViewMixin, WorkflowView), attrs)
 
     def create(vs, fields, **attrs):
         return type(
@@ -279,12 +302,43 @@ def dbv():
                 vs=vs, Create=create(vs, ["title"], **pinned), Update=view(UpdateView, vs, fields=["title"], **pinned)
             )
 
+        # ── action, ordered and workflow writes (Task 3) ──
+        ns.abook = ViewSet(
+            model=Book,
+            name=f"adabook{sfx}",
+            parent=ParentViewSet(name=ns.pub.name, **edge),
+            ancestor_policy=AncestorPolicy(actions={"touch": WRITE}),
+        )
+        ns.ABookList = lst(ns.abook)
+        ns.Touch = view(ActionView, ns.abook, cv_key="touch", cv_path="touch", action=_touch)
+        ns.folder = ViewSet(model=TaskFolder, name=f"adfolder{sfx}")
+        ns.task = ViewSet(
+            model=FolderTask,
+            name=f"adtask{sfx}",
+            parent=ParentViewSet(name=ns.folder.name, attribute="folder"),
+            ancestor_policy=AncestorPolicy(actions={"workflow": WRITE}),
+        )
+        ns.TaskList, ns.Up, ns.Down = lst(ns.task), view(OrderedUpView, ns.task), view(OrderedDownView, ns.task)
+        ns.Workflow = workflow(ns.task)
+        # top-level controls of the same families
+        ns.tbook = ViewSet(model=Book, name=f"adtbook{sfx}")
+        ns.TBookList = lst(ns.tbook)
+        ns.TTouch = view(ActionView, ns.tbook, cv_key="touch", cv_path="touch", action=_touch)
+        ns.ttask = ViewSet(model=FolderTask, name=f"adttask{sfx}")
+        ns.TTaskList, ns.TUp, ns.TDown = lst(ns.ttask), view(OrderedUpView, ns.ttask), view(OrderedDownView, ns.ttask)
+        ns.TWorkflow = workflow(ns.ttask)
+
         routed = [
             ns.pub,
             ns.book,
             ns.fbook,
             ns.genre,
             ns.cbook,
+            ns.abook,
+            ns.folder,
+            ns.task,
+            ns.tbook,
+            ns.ttask,
             *(entry.vs for entry in ns.aform.values()),
             ns.note,
             *(entry.vs for entry in ns.sel.values()),
@@ -580,7 +634,7 @@ def effects(monkeypatch):
 
     def receiver(name):
         def record(sender, **kwargs):
-            if sender._meta.app_label == "app":  # the test data; logins and sessions are not under test here
+            if sender._meta.app_label in ("app", "cvw"):  # test data + workflow history; not logins/sessions
                 recorded.append((name, sender, kwargs.get("using")))
 
         return record
@@ -609,7 +663,7 @@ def _poison(monkeypatch, cls, *names):
 def _write_sql(sql) -> list[str]:
     """Data writes on either alias (test-data tables only; logins and sessions are not under test here)."""
     statements = [q for capture in (sql.default, sql.shard) for q in _sql(capture)]
-    return [q for q in statements if q.lstrip().upper().startswith(WRITE_SQL) and '"app_' in q]
+    return [q for q in statements if q.lstrip().upper().startswith(WRITE_SQL) and ('"app_' in q or '"cvw_' in q)]
 
 
 ATOMIC = pytest.mark.parametrize("atomic", [True, False], ids=["atomic", "autocommit"])
@@ -780,3 +834,247 @@ def test_top_level_routed_writes_are_unchanged(dbv, worlds, routes, effects, mon
     assert names == {"create": ["shard edit", "shard publisher"], "update": ["shard edit"], "delete": []}[kind]
     assert list(Publisher.objects.using("default").values_list("name", flat=True)) == ["default publisher"]
     assert [using for name, _, using in effects if name == "on_commit"] == ["shard"]
+
+
+# ── Task 3: action, ordered and workflow write boundaries ────────────────────
+
+# Every shipped nested write family with its actual POST wrapper, its alias source, its earliest side-effect
+# hook (the first hook the boundary must precede) and the atomic settings proven below. Ordered up/down have no
+# wrapper of their own: they inherit ActionView's (action_ordered.py is unchanged).
+WRITE_INVENTORY = {
+    "create": ("CrudViewProcessFormMixin.post / cv_form_valid_process", "cv_get_db_alias", "cv_post_hook"),
+    "update": ("CrudViewProcessFormMixin.post / cv_form_valid_process", "cv_get_db_alias", "cv_post_hook"),
+    "m2m-create": ("CrudViewProcessFormMixin.post / cv_form_valid_process", "cv_get_db_alias", "cv_post_hook"),
+    "custom-object": ("CrudViewProcessFormMixin.post / cv_form_valid_process", "cv_get_db_alias", "cv_post_hook"),
+    "custom-no-object": ("CrudViewProcessFormMixin.post / cv_form_valid_process", "cv_get_db_alias", "cv_post_hook"),
+    "delete": ("DeleteView.post / cv_form_valid_process", "cv_get_delete_db_alias", "cv_check_delete_protection"),
+    "action": ("ActionView.post / cv_action_process", "cv_get_db_alias", "get_context_data"),
+    "up": ("ActionView.post / cv_action_process (inherited)", "cv_get_db_alias", "get_context_data"),
+    "down": ("ActionView.post / cv_action_process (inherited)", "cv_get_db_alias", "get_context_data"),
+    "workflow": ("WorkflowView.post / cv_form_valid_process", "_cv_get_workflow_db_alias", "get_context_data"),
+}
+
+# (view attribute, URL key, ViewSet attribute, kwargs builder, POST data, poisoned view hooks)
+ACTION_HOOKS = ("get_context_data", "action", "cv_action_success", "cv_action_error", "cv_on_commit")
+ACTION_WRITES = {
+    "action": ("Touch", "touch", "abook", lambda ns: {f"{ns.pub.name}_pk": 41, "pk": 71}, {}, ACTION_HOOKS),
+    "up": ("Up", "up", "task", lambda ns: {f"{ns.folder.name}_pk": 61, "pk": 82}, {}, (*ACTION_HOOKS, "up")),
+    "down": ("Down", "down", "task", lambda ns: {f"{ns.folder.name}_pk": 61, "pk": 81}, {}, (*ACTION_HOOKS, "down")),
+    "workflow": (
+        "Workflow",
+        "workflow",
+        "task",
+        lambda ns: {f"{ns.folder.name}_pk": 61, "pk": 81},
+        {"transition": "wf_activate", "comment": ""},
+        ("get_context_data", *HOOKS, "on_transition"),
+    ),
+}
+
+
+def test_write_inventory_covers_every_shipped_nested_write_family(dbv):
+    from crud_views.lib.ancestors import _WRITE, _family_table
+
+    families = {base.__name__ for base, family in _family_table() if family == _WRITE}
+    covered = {
+        "CreateView": "create",
+        "UpdateView": "update",
+        "DeleteView": "delete",
+        "OrderedUpView": "up",
+        "OrderedDownView": "down",
+    }
+    assert families == set(covered)
+    assert set(WRITE_INVENTORY) == set(FORM_WRITES) | set(ACTION_WRITES)
+    for kind, (attr, *_rest) in {**FORM_WRITES, **ACTION_WRITES}.items():
+        view_class = getattr(dbv, attr)
+        wrapper, alias_source, first_hook = WRITE_INVENTORY[kind]
+        for method in ("post", "cv_form_valid_process" if "cv_form_valid_process" in wrapper else "cv_action_process"):
+            assert callable(getattr(view_class, method))
+        assert callable(getattr(view_class, alias_source)) and callable(getattr(view_class, first_hook))
+
+
+def _action_view(dbv, kind):
+    return getattr(dbv, ACTION_WRITES[kind][0])
+
+
+def _action_post(ns, client, kind):
+    _attr, key, vs_attr, kwargs, data, _hooks = ACTION_WRITES[kind]
+    return client.post(_url(getattr(ns, vs_attr), key, **kwargs(ns)), data)
+
+
+def _task_state(using):
+    return sorted(FolderTask.objects.using(using).values_list("pk", "order", "state"))
+
+
+def _action_state():
+    from crud_views_workflow.models import WorkflowInfo
+
+    return tuple(
+        (
+            sorted(Book.objects.using(alias).values_list("pk", "title")),
+            _task_state(alias),
+            WorkflowInfo.objects.using(alias).count(),
+        )
+        for alias in ALIASES
+    )
+
+
+def _poison_models(monkeypatch):
+    for model in (Book, FolderTask):
+        monkeypatch.setattr(model, "save", lambda self, *a, **kw: pytest.fail(f"{type(self).__name__}.save reached"))
+    for name in ("up", "down", "wf_activate"):
+        monkeypatch.setattr(FolderTask, name, lambda self, *a, _n=name, **kw: pytest.fail(f"FolderTask.{_n} reached"))
+
+
+def _refused_action(dbv, kind, monkeypatch, effects, match=REFUSED):
+    view_class = _action_view(dbv, kind)
+    _poison(monkeypatch, view_class, *ACTION_WRITES[kind][5])
+    client = _superclient()
+    before = _action_state()
+    _poison_models(monkeypatch)
+    with captured() as sql, pytest.raises(ImproperlyConfigured, match=match) as caught:
+        _action_post(dbv, client, kind)
+    assert effects == [] and _write_sql(sql) == []
+    assert _action_state() == before
+    return caught.value
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", list(ACTION_WRITES))
+def test_nested_action_family_writes_on_default_and_commit_once(
+    dbv, worlds, routes, effects, monkeypatch, kind, atomic
+):
+    from crud_views_workflow.models import WorkflowInfo
+
+    view_class = _action_view(dbv, kind)
+    monkeypatch.setattr(view_class, "cv_atomic", atomic)
+    committed, selected = [], []
+    monkeypatch.setattr(view_class, "cv_on_commit", lambda self, context: committed.append(kind))
+    original_selector = view_class.cv_get_db_alias
+
+    def selector(self):
+        selected.append(kind)
+        return original_selector(self)
+
+    monkeypatch.setattr(view_class, "cv_get_db_alias", selector)
+    shard_before = _action_state()[1]
+    with captured() as sql:
+        response = _action_post(dbv, _superclient(), kind)
+    assert response.status_code == 302
+    assert committed == [kind]
+    assert [using for name, _, using in effects if name == "on_commit"] == ["default"]
+    assert {using for name, _, using in effects if name != "on_commit"} == {"default"}
+    assert _sql(sql.shard) == [] and _action_state()[1] == shard_before
+    if kind == "workflow":
+        assert selected == [kind]  # the workflow alias is still selected once and pinned
+        assert FolderTask.objects.get(pk=81).state == "active"
+        assert WorkflowInfo.objects.using("default").get().transition == "wf_activate"
+    elif kind == "action":
+        assert Book.objects.get(pk=71).title == "touched"
+    else:
+        assert [(pk, order) for pk, order, _ in _task_state("default")] == [(81, 1), (82, 0)]
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", list(ACTION_WRITES))
+def test_router_only_shard_action_write_is_refused_before_effects(
+    dbv, worlds, routes, effects, monkeypatch, kind, atomic
+):
+    """Reads stay on default (the object resolves there); the router sends every write to shard."""
+    monkeypatch.setattr(_action_view(dbv, kind), "cv_atomic", atomic)
+    routes.write[Book] = routes.write[FolderTask] = "shard"
+    _refused_action(dbv, kind, monkeypatch, effects)
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", list(ACTION_WRITES))
+def test_instance_hinted_shard_action_write_is_refused_before_effects(
+    dbv, worlds, routes, effects, monkeypatch, kind, atomic
+):
+    """Only the instance hint selects shard. The selectors consult it (core: nested instance-hinted
+    ``cv_get_db_alias``; workflow: its existing pinned selector), so the write alias itself is refused."""
+    monkeypatch.setattr(_action_view(dbv, kind), "cv_atomic", atomic)
+    routes.write[Book] = routes.write[FolderTask] = _hinted("shard")
+    _refused_action(dbv, kind, monkeypatch, effects, match="write transaction alias selected database 'shard'")
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", list(ACTION_WRITES))
+def test_custom_nondefault_action_alias_is_refused(dbv, worlds, routes, effects, monkeypatch, kind, atomic):
+    view_class = _action_view(dbv, kind)
+    monkeypatch.setattr(view_class, "cv_atomic", atomic)
+    monkeypatch.setattr(view_class, "cv_get_db_alias", lambda self: "shard")
+    _refused_action(dbv, kind, monkeypatch, effects, match="write transaction alias selected database 'shard'")
+
+
+def test_core_write_selector_consults_the_instance_hint_only_when_nested(dbv, worlds, routes, rf):
+    routes.write[Book] = _hinted("shard")
+    request = rf.post("/")
+    nested, top = dbv.Touch(), dbv.TTouch()
+    nested.setup(request, **{f"{dbv.pub.name}_pk": 41, "pk": 71})
+    top.setup(request, pk=71)
+    nested.object = top.object = Book.objects.get(pk=71)
+    assert nested.cv_get_db_alias() == "shard"  # what the object's own save() would route to
+    assert top.cv_get_db_alias() == "default"  # top-level selection unchanged: model only, no hint
+
+
+@pytest.mark.parametrize("kind", ["action", "workflow"])
+def test_direct_action_and_workflow_wrappers_are_guarded(dbv, worlds, routes, effects, monkeypatch, rf, kind):
+    """Callers driving ``cv_action_process`` / ``cv_form_valid_process`` themselves meet the boundary too."""
+    routes.write[Book] = routes.write[FolderTask] = _hinted("shard")
+    view_class = _action_view(dbv, kind)
+    _poison(monkeypatch, view_class, *(h for h in ACTION_WRITES[kind][5] if h != "get_context_data"))
+    request = rf.post("/")
+    request.user = User.objects.create_superuser(username=f"ad_direct_{kind}", password="pw")
+    for atomic in (True, False):
+        view = view_class()
+        view.setup(request, **ACTION_WRITES[kind][3](dbv))
+        view.object = (Book if kind == "action" else FolderTask).objects.get(pk=view.kwargs["pk"])
+        view.cv_atomic = atomic
+        process = view.cv_action_process if kind == "action" else view.cv_form_valid_process
+        with pytest.raises(ImproperlyConfigured, match=REFUSED):
+            process({"form": None, "object": view.object})
+    assert effects == []
+
+
+def test_action_family_after_an_ancestor_denial_selects_no_write_route(dbv, worlds, routes, effects, monkeypatch):
+    routes.write[Book] = routes.write[FolderTask] = "shard"
+    client = _client(
+        _user("ad_actor", (Publisher, "view"), (TaskFolder, "view"), (Book, "change"), (FolderTask, "change"))
+    )
+    for kind in ACTION_WRITES:
+        _poison(monkeypatch, _action_view(dbv, kind), *ACTION_WRITES[kind][5])
+        assert _action_post(dbv, client, kind).status_code == 403  # nested writes need the parent's change
+    assert ("write", Book) not in routes.calls and ("write", FolderTask) not in routes.calls
+    assert effects == []
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", ["action", "up", "down", "workflow"])
+def test_top_level_routed_action_family_is_unchanged(dbv, worlds, routes, effects, monkeypatch, kind, atomic):
+    from crud_views_workflow.models import WorkflowInfo
+
+    routes.read[Book] = routes.write[Book] = routes.read[FolderTask] = routes.write[FolderTask] = "shard"
+    view_class, vs, pk, data = {
+        "action": (dbv.TTouch, dbv.tbook, 71, {}),
+        "up": (dbv.TUp, dbv.ttask, 82, {}),
+        "down": (dbv.TDown, dbv.ttask, 81, {}),
+        "workflow": (dbv.TWorkflow, dbv.ttask, 81, {"transition": "wf_activate", "comment": ""}),
+    }[kind]
+    monkeypatch.setattr(view_class, "cv_atomic", atomic)
+    if kind == "workflow":  # existing contract: the workflow actor is saved on the selected database
+        routes.read[User] = routes.write[User] = "shard"
+    response = _superclient().post(_url(vs, view_class.cv_key, pk=pk), data)
+    assert response.status_code == 302
+    assert [using for name, _, using in effects if name == "on_commit"] == ["shard"]
+    assert _action_state()[0] == (
+        [(71, "default child")],
+        [(81, 0, "new"), (82, 1, "new")],
+        0,
+    )
+    if kind == "action":
+        assert Book.objects.using("shard").get(pk=71).title == "touched"
+    elif kind == "workflow":
+        assert FolderTask.objects.using("shard").get(pk=81).state == "active"
+        assert WorkflowInfo.objects.using("shard").count() == 1
+    else:
+        assert [(p, o) for p, o, _ in _task_state("shard")] == [(81, 1), (82, 0)]

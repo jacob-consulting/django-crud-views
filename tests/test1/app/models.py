@@ -304,3 +304,40 @@ class UUIDFragmentLeaf(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class TaskFolder(models.Model):
+    """Parent of FolderTask (phase 06.18 nested write-boundary tests)."""
+
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class FolderTask(WorkflowModelMixin, OrderedModel):
+    """Ordered workflow child of TaskFolder: real nested ordered up/down and workflow endpoints (phase 06.18
+    nested write-boundary tests)."""
+
+    STATE_CHOICES = CampaignState
+    STATE_BADGES = {CampaignState.NEW: BadgeEnum.LIGHT, CampaignState.ACTIVE: BadgeEnum.INFO}
+
+    folder = models.ForeignKey(TaskFolder, on_delete=models.CASCADE, related_name="tasks")
+    name = models.CharField(max_length=100)
+    state = FSMField(default=CampaignState.NEW, choices=CampaignState.choices)
+    order_with_respect_to = "folder"
+
+    class Meta(OrderedModel.Meta):
+        pass
+
+    def __str__(self):
+        return self.name
+
+    @transition(
+        field=state,
+        source=CampaignState.NEW,
+        target=CampaignState.ACTIVE,
+        custom={"label": "Activate", "comment": WorkflowComment.NONE},
+    )
+    def wf_activate(self, by=None, comment=None):
+        pass

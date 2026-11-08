@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: executing
-stopped_at: Completed 06.18-10-PLAN.md
-last_updated: "2026-11-08T22:11:39.731Z"
+stopped_at: Completed 06.18-11-PLAN.md
+last_updated: "2026-11-08T22:34:22.842Z"
 last_activity: 2026-11-08
 last_activity_desc: Phase 06.18 plan 08 complete
-state_head: 977fc4d8fe209d89362533579048c61bae48a2ce
+state_head: e6adfd24411746886e74dc8c09754ae87ac1de27
 progress:
   total_phases: 24
   completed_phases: 21
   total_plans: 149
-  completed_plans: 147
+  completed_plans: 148
 milestone_name: milestone
 ---
 
@@ -29,11 +29,16 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 ## Current Position
 
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
-Plan: 11 of 12
+Plan: 12 of 12
 Status: Ready to execute
-Last activity: 2026-11-08 — Phase 06.18 plan 09 complete
+Last activity: 2026-11-08 — Phase 06.18 plan 11 complete
 
 Next: $gsd-execute-phase 06.18
+
+### Phase 06.18 plan 11 — 2026-11-08
+
+- Published the ancestor-authorization guidance in nested/settings/resources/request_lifecycle/guardian docs, tutorials 5/6 and the reference index. Six published fences are executed by the new test_ancestor_docs.py (31 cases): the canonical Publisher -> Book example with an exact approve pair, settings, Resource leaf scoping, the hint-sensitive router refusal (atomic on/off, top-level control), and the Guardian parent and fallback examples with direct/group grants, child-denial controls and nested manage.
+- Full Django 5.2 suite: 12156 passed, 1 existing skip. Strict MkDocs passes. ANCE IDs stay open for plan 12, which owns the Breaking/migration entry, its anchor link from nested.md#databases, and the final gates. Existing config/state.json/CLAUDE edits preserved; no push or merge.
 
 ### Phase 06.18 plan 09 — 2026-11-08
 
@@ -797,6 +802,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P08 | 25 min | 2 tasks | 10 files |
 | Phase 06.18 P09 | 14min | 2 tasks | 5 files |
 | Phase 06.18 P10 | 20min | 2 tasks | 3 files |
+| Phase 06.18 P11 | 20 min | 2 tasks | 9 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1028,6 +1034,8 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-10: plan 10 adds pins only, with no production change. The URL-path mutation boundary, fresh-request revocation and the cost matrix were already implemented by plans 01-09; nine reverted mutations show the pins are meaningful.
 - [Phase 06.18]: 06.18-10: the cost tests assert attribution and prohibited repeated work (each ancestor resolved once, nearest-only gate event list, plain rest equals the pre-edit baseline, warm guards still query permissions), never a query budget. The baseline totals are embedded with SHA d5567ba2.
 - [Phase 06.18]: 06.18-10: one Guardian object-permission pair per ancestor gate is permitted, distinct work. Prefetching all ancestors' permissions would conflict with gating each level before the next lookup (D-32).
+- [Phase 06.18]: Published fences use natural registry names; the docs fixture empties and restores the ViewSet registry
+- [Phase 06.18]: Nested DB docs link the migration guide page without an anchor until plan 12 creates the ancestor migration section
 
 ### Pending Todos
 
@@ -1093,6 +1101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T22:11:36.303Z
-Stopped at: Completed 06.18-10-PLAN.md
+Last session: 2026-11-08T22:34:19.342Z
+Stopped at: Completed 06.18-11-PLAN.md
 Resume file: None

@@ -261,10 +261,21 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def dispatch(self, request, *args, **kwargs):
         self._cv_consume_cancel_restore(request)
-        response = super().dispatch(request, *args, **kwargs)
+        response = self._cv_ancestor_guard()
+        if response is None:
+            response = super().dispatch(request, *args, **kwargs)
         if self.cv_modal:
             patch_vary_headers(response, ["X-CV-Modal"])
         return response
+
+    def _cv_ancestor_guard(self):
+        """Authorize this nested request's ancestors once (crud_views.lib.ancestors); None to continue,
+        else the response to return. Top-level requests do no ancestor work."""
+        if getattr(self, "_cv_ancestor_state", None) is not None:
+            return None
+        from crud_views.lib.ancestors import _authorize_ancestors
+
+        return _authorize_ancestors(self)
 
     def _cv_consume_cancel_restore(self, request):
         if request.method != "GET" or not is_cancel_list_destination(type(self)):
@@ -1032,6 +1043,13 @@ class CrudView(metaclass=CrudViewMetaClass):
         self.cv_assert_parent()
 
         assert self.cv_viewset.has_parent, "this ViewSet has no parent"
+
+        # reuse the parent the ancestor guard resolved on this request (same model/PK/database identity)
+        from crud_views.lib.ancestors import _resolved_parent
+
+        resolved = _resolved_parent(self)
+        if resolved is not None:
+            return resolved
 
         # get the parent object
         parent_model = self.cv_viewset.get_parent_model()

@@ -12,6 +12,8 @@ from django.utils.text import capfirst
 from django.utils.translation import gettext as _
 from pydantic import BaseModel, Field, PrivateAttr, field_validator, model_validator
 
+from crud_views.lib.ancestor_policy import AncestorPermissions as AncestorPermissions
+from crud_views.lib.ancestor_policy import AncestorPolicy
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ViewSetNotFoundError, cv_raise
 from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
@@ -64,6 +66,8 @@ class ViewSet(BaseModel):
     """
 
     PK: ClassVar[type[PrimaryKeys]] = PrimaryKeys
+    # ancestor permission provider when ``ancestor_policy.provider`` is None (core: model permissions)
+    _ancestor_provider: ClassVar[str] = "model"
 
     model: type[Model] | type[Resource]
     name: str
@@ -92,6 +96,9 @@ class ViewSet(BaseModel):
     # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
     # None means: no permissions declared (only non-PermissionRequired views).
     resource_permissions: dict[str, str] | None = None
+    # ancestor authorization (phase 06.18): provider/fallback apply when this ViewSet is an ancestor,
+    # cascade/read/write/actions to requests targeting it; see crud_views.lib.ancestors
+    ancestor_policy: AncestorPolicy = Field(default_factory=AncestorPolicy)
 
     _views: dict[str, type[CrudView]] = PrivateAttr(default_factory=empty_dict)
     _default_permissions: OrderedDict[str, str] | None = PrivateAttr(default=None)
@@ -468,6 +475,10 @@ class ViewSet(BaseModel):
         if permissions:
             self._default_permissions = permissions
         return permissions
+
+    def _ancestor_has_permission(self, user, permission: str, obj, *, view: CrudView) -> bool:
+        """Ancestor gate of the model provider: the actor holds ``permission`` as a model permission."""
+        return user.has_perm(permission)
 
     @property
     def permissions(self) -> OrderedDict[str, str]:

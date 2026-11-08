@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: executing
-stopped_at: Completed 06.18-09-PLAN.md
-last_updated: "2026-11-08T21:48:51.654Z"
+stopped_at: Completed 06.18-10-PLAN.md
+last_updated: "2026-11-08T22:11:39.731Z"
 last_activity: 2026-11-08
 last_activity_desc: Phase 06.18 plan 08 complete
-state_head: 63d1bed396125c47512e3c787e20dcb7275ae1a9
+state_head: 977fc4d8fe209d89362533579048c61bae48a2ce
 progress:
   total_phases: 24
   completed_phases: 21
   total_plans: 149
-  completed_plans: 146
+  completed_plans: 147
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 ## Current Position
 
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
-Plan: 10 of 12
+Plan: 11 of 12
 Status: Ready to execute
 Last activity: 2026-11-08 — Phase 06.18 plan 09 complete
 
@@ -796,6 +796,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P07 | 33 min | 3 tasks | 10 files |
 | Phase 06.18 P08 | 25 min | 2 tasks | 10 files |
 | Phase 06.18 P09 | 14min | 2 tasks | 5 files |
+| Phase 06.18 P10 | 20min | 2 tasks | 3 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1024,6 +1025,9 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-08: GuardianParentPermissionMixin.dispatch gates no-object child state with the guard-resolved parent instead of the overridable cv_get_parent_object() hook
 - [Phase 06.18]: Core ManageView owns declared ancestor-policy diagnostics (as_ancestor / requests with declared vs effective); Guardian alert rows read the same entry
 - [Phase 06.18]: Built-in child redirect needed no production change; Task 2 pins it with tests plus two mutation checks
+- [Phase 06.18]: 06.18-10: plan 10 adds pins only, with no production change. The URL-path mutation boundary, fresh-request revocation and the cost matrix were already implemented by plans 01-09; nine reverted mutations show the pins are meaningful.
+- [Phase 06.18]: 06.18-10: the cost tests assert attribution and prohibited repeated work (each ancestor resolved once, nearest-only gate event list, plain rest equals the pre-edit baseline, warm guards still query permissions), never a query budget. The baseline totals are embedded with SHA d5567ba2.
+- [Phase 06.18]: 06.18-10: one Guardian object-permission pair per ancestor gate is permitted, distinct work. Prefetching all ancestors' permissions would conflict with gating each level before the next lookup (D-32).
 
 ### Pending Todos
 
@@ -1089,6 +1093,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T21:48:48.409Z
-Stopped at: Completed 06.18-09-PLAN.md
+Last session: 2026-11-08T22:11:36.303Z
+Stopped at: Completed 06.18-10-PLAN.md
 Resume file: None

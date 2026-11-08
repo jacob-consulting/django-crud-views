@@ -20,6 +20,12 @@ One request engine, ``_authorize_ancestors(view)``, runs before an endpoint's ow
    level's gate is checked immediately, before the next deeper lookup; denial → 403.
 5. On success the resolved chain is stored on the view instance (request-local) and the request continues
    through its existing path; ``cv_get_parent_object()`` reuses the resolved immediate parent.
+6. The ORM child itself is checked against that immediate structural parent where it is consumed, so a child
+   ``get_queryset`` override that omits the parent filter cannot reach another parent's data:
+   ``CrudView.get_object`` validates a reached object (``_validate_child_parent``, 404 on mismatch, before
+   state hooks, forms and writes) and list views scope the collection they render
+   (``_scope_child_queryset``, applied to ``object_list`` in ``CrudView.get_context_data``). Resource leaves
+   are skipped: their loading and membership stay application-owned (``cv_get_items`` / ``cv_get_item``).
 
 Every shipped composition reaches the engine before its own local work: plain views through
 ``CrudView.dispatch``, permission-required views through ``CrudViewPermissionRequiredMixin.dispatch`` (before
@@ -38,6 +44,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured, PermissionDenied
+from django.db.models import QuerySet
 from django.http import Http404
 
 from crud_views.lib.ancestor_policy import AncestorPermissions
@@ -419,6 +426,67 @@ def _resolved_parent(view: CrudView) -> Model | None:
     """The immediate parent resolved by a successful guard on this request, or None."""
     state = getattr(view, "_cv_ancestor_state", None)
     return state.parent if state is not None else None
+
+
+def _resolved_ancestor(view: CrudView, name: str) -> Model | None:
+    """The ancestor of ViewSet ``name`` resolved by a successful guard on this request, or None (no guard state,
+    or ``name`` is not in the view's ancestry). Lets request helpers reuse the resolved identity."""
+    state = getattr(view, "_cv_ancestor_state", None)
+    if state is None:
+        return None
+    for (_, ancestor), obj in zip(_walk_ancestors(view.cv_viewset), state.objects, strict=True):
+        if ancestor.name == name:
+            return obj
+    return None
+
+
+def _child_edge(view: CrudView) -> tuple[str, Model] | None:
+    """``(relation attribute, resolved immediate parent)`` of a guarded nested ORM request, else None (top-level,
+    Resource leaf, or no successful guard on this view, e.g. outside a request)."""
+    viewset = view.cv_viewset
+    state = getattr(view, "_cv_ancestor_state", None)
+    if state is None or viewset is None or viewset.parent is None or viewset.is_resource:
+        return None
+    return viewset.parent.get_attribute(), state.parent
+
+
+def _validate_child_parent(view: CrudView, obj):
+    """A reached ORM child object must belong to the request's resolved immediate parent; 404 otherwise.
+
+    Called by ``CrudView.get_object``, so it runs wherever the object is consumed (the permission phase's
+    ``cv_get_action_object`` included) and before state hooks, forms and writes. A forward FK/one-to-one compares
+    the stored key, without a query; an M2M or reverse relation checks membership of this row with one query.
+    An object of another model is application-owned and returned unchanged.
+    """
+    edge = _child_edge(view)
+    model = view.cv_viewset.model if edge is not None else None
+    if edge is None or not isinstance(obj, model):
+        return obj
+    attribute, parent = edge
+    field = model._meta.get_field(attribute)
+    if field.concrete and (field.many_to_one or field.one_to_one):
+        belongs = getattr(obj, field.attname) == getattr(parent, field.target_field.attname)
+    else:
+        rows = type(obj)._base_manager.using(obj._state.db)
+        belongs = rows.filter(pk=obj.pk, **{f"{attribute}__pk": parent.pk}).exists()
+    if not belongs:
+        raise Http404(f"{model._meta.verbose_name} not found")
+    return obj
+
+
+def _scope_child_queryset(view: CrudView, queryset):
+    """A nested ORM child collection restricted to the request's resolved immediate parent.
+
+    Applied where list views consume ``object_list`` (``CrudView.get_context_data``), so a ``get_queryset``
+    override that omits the parent filter still renders only this parent's children. The default ViewSet
+    queryset already carries the filter; adding it again does not change its rows. Anything that is not a
+    queryset of the ViewSet's model (application-owned data) is returned unchanged.
+    """
+    edge = _child_edge(view)
+    if edge is None or not isinstance(queryset, QuerySet) or not issubclass(queryset.model, view.cv_viewset.model):
+        return queryset
+    attribute, parent = edge
+    return queryset.filter(**{f"{attribute}__pk": parent.pk})
 
 
 def _same_row(a: Model, b: Model) -> bool:

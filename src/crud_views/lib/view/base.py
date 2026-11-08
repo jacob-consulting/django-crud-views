@@ -249,7 +249,20 @@ class CrudView(metaclass=CrudViewMetaClass):
     def get_queryset(self):
         return self.cv_viewset.get_queryset(view=self)
 
+    def get_object(self, queryset=None):
+        """Django's object lookup; for a nested ORM request the reached object must also belong to the resolved
+        immediate parent (404 otherwise), even when ``get_queryset`` omits the parent filter (phase 06.18)."""
+        obj = super().get_object(queryset)
+        from crud_views.lib.ancestors import _validate_child_parent
+
+        return _validate_child_parent(self, obj)
+
     def get_context_data(self, **kwargs):
+        if "object_list" not in kwargs and getattr(self, "object_list", None) is not None:
+            # where list views consume their collection: a nested one stays scoped to the resolved parent
+            from crud_views.lib.ancestors import _scope_child_queryset
+
+            self.object_list = _scope_child_queryset(self, self.object_list)
         context = super().get_context_data(**kwargs)
         context["cv_extends"] = self.cv_get_extends_template()
         return context

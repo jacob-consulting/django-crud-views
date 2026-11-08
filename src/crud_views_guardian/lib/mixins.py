@@ -5,6 +5,7 @@ from django.http import Http404
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
+from crud_views.lib.ancestor_databases import validate_authorization_databases
 from crud_views.lib.view import CrudView
 from crud_views.lib.view.ancestors import immediate_parent_has_permission
 
@@ -19,6 +20,12 @@ def _guardian_inactive_actor(user) -> bool:
     not "inactive actors" here; their configured anonymous behavior applies unchanged.
     """
     return bool(getattr(user, "is_authenticated", False)) and not getattr(user, "is_active", True)
+
+
+def _validate_child_gate_databases(view) -> None:
+    """Nested Guardian child gates read auth and grant records: on default only, validated at the gate using them."""
+    if view.cv_viewset.has_parent:
+        validate_authorization_databases(view.request.user, provider="guardian", model=view.cv_viewset.model)
 
 
 def _guardian_actor_response(view):
@@ -95,6 +102,7 @@ class GuardianObjectPermissionMixin:
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset=queryset)
+        _validate_child_gate_databases(self)
         perm = self.cv_viewset.permissions.get(self.cv_permission)
         if not self._check_object_perm(self.request.user, perm, obj):
             raise PermissionDenied
@@ -241,6 +249,7 @@ class GuardianQuerysetMixin:
         qs = super().get_queryset()
         if _guardian_inactive_actor(self.request.user):
             return qs.none()
+        _validate_child_gate_databases(self)
         perm = self.cv_viewset.permissions.get(self.cv_permission)
         return get_objects_for_user(
             self.request.user,

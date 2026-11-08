@@ -54,10 +54,12 @@ class CrudViewProcessFormMixin:
         cv_get_atomic(); cv_on_commit is scheduled to run after the commit (never after a
         rollback). A subclass overriding post() should call this to keep the transaction.
         """
+        # pin (and, nested, validate) the write alias before the transaction or any save, even with cv_atomic=False
+        using = self._cv_require_default_write(self.cv_get_db_alias())
         with self.cv_get_atomic():
             self.cv_form_valid(context)
             self.cv_form_valid_hook(context)
-            transaction.on_commit(partial(self.cv_on_commit, context), using=self.cv_get_db_alias())
+            transaction.on_commit(partial(self.cv_on_commit, context), using=using)
 
     def cv_post_hook(self, context: dict):
         """

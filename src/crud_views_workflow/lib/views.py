@@ -113,7 +113,8 @@ class WorkflowView(CustomFormView):
             using = self.cv_get_db_alias()
             if not isinstance(using, str) or not using or using not in connections:
                 raise ImproperlyConfigured("cv_get_db_alias() must select a configured database alias")
-            self._cv_workflow_db_alias = using
+            # nested: this override of cv_get_db_alias() bypasses the base check, so validate the pinned alias here
+            self._cv_workflow_db_alias = self._cv_require_default_write(using)
         return self._cv_workflow_db_alias
 
     def cv_get_atomic(self):

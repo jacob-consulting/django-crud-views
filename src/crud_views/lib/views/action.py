@@ -26,11 +26,13 @@ class ActionView(CrudView, SingleObjectMixin, generic.View):
         cv_get_atomic(); on success cv_on_commit is scheduled to run after the commit.
         A falsy result does NOT roll back; call transaction.set_rollback(True) in action() for that.
         """
+        # pin (and, nested, validate) the write alias before the transaction or the action, even with cv_atomic=False
+        using = self._cv_require_default_write(self.cv_get_db_alias())
         with self.cv_get_atomic():
             result = self.action(context)
             if result:
                 self.cv_action_success(context)
-                transaction.on_commit(partial(self.cv_on_commit, context), using=self.cv_get_db_alias())
+                transaction.on_commit(partial(self.cv_on_commit, context), using=using)
             else:
                 self.cv_action_error(context)
         return result

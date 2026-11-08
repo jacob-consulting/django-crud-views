@@ -16,7 +16,7 @@ from typing import Self
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.db import router, transaction
-from django.db.models import Model
+from django.db.models import Model, QuerySet
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template import Context as TemplateContext
@@ -40,7 +40,7 @@ from crud_views.lib.check import (
 )
 from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
 
-from ..ancestor_databases import require_default_database
+from ..ancestor_databases import require_default_database, validate_authorization_databases
 from ..settings import crud_views_settings
 from .action_menu import (
     ActionGroup,
@@ -250,10 +250,40 @@ class CrudView(metaclass=CrudViewMetaClass):
     def get_queryset(self):
         queryset = self.cv_viewset.get_queryset(view=self)
         if self.cv_viewset.has_parent:
-            require_default_database(queryset.db, context=f"view {self.cv_key!r} of ViewSet {self.cv_viewset.name!r}")
+            require_default_database(queryset.db, context=self._cv_data_context())
         return queryset
 
+    def get_object(self, queryset=None):
+        """Nested: the queryset actually used (a supplied argument or this view's, overrides included) must select
+        the default database before it is evaluated, and so must the loaded object.
+
+        The base ``get_queryset()`` check alone is not enough: a subclass may add ``.using()`` after it or a caller
+        may pass its own queryset. The loaded object's own ``_state.db`` is checked as well, for a ``get_object()``
+        further down the MRO that does not load through the given queryset. Top level: Django's ``get_object()``
+        unchanged.
+        """
+        if not self._cv_nested():
+            return super().get_object(queryset)
+        if queryset is None:
+            queryset = self.get_queryset()
+        require_default_database(queryset.db, context=self._cv_data_context())
+        obj = super().get_object(queryset)
+        require_default_database(obj._state.db, context=self._cv_data_context())
+        return obj
+
+    def _cv_nested(self) -> bool:
+        """Whether this view belongs to a nested ViewSet (a view without a ViewSet is treated as top level)."""
+        return self.cv_viewset is not None and self.cv_viewset.has_parent
+
+    def _cv_data_context(self) -> str:
+        return f"view {self.cv_key!r} of ViewSet {self.cv_viewset.name!r}"
+
     def get_context_data(self, **kwargs):
+        # Nested list families: the effective object_list (after queryset overrides and filtering) must select the
+        # default database before pagination, tables or templates evaluate it. Resource lists are not querysets.
+        object_list = kwargs.get("object_list", getattr(self, "object_list", None))
+        if isinstance(object_list, QuerySet) and self._cv_nested():
+            require_default_database(object_list.db, context=self._cv_data_context())
         context = super().get_context_data(**kwargs)
         context["cv_extends"] = self.cv_get_extends_template()
         return context
@@ -315,6 +345,20 @@ class CrudView(metaclass=CrudViewMetaClass):
                 alias, context=f"writes of view {self.cv_key!r} of ViewSet {self.cv_viewset.name!r}"
             )
         return alias
+
+    def _cv_require_default_write(self, using: str) -> str:
+        """Nested: the pinned write alias and the model's write route must be the default database; returns ``using``.
+
+        Called where a write phase pins its alias, before the transaction or any save, so it also holds with
+        ``cv_atomic = False`` and for an overridden ``cv_get_db_alias()`` (whose base check it would bypass); the
+        router check covers an override that names ``default`` while saves would still be routed elsewhere.
+        """
+        if self._cv_nested():
+            context = f"writes of view {self.cv_key!r} of ViewSet {self.cv_viewset.name!r}"
+            require_default_database(using, context=context)
+            instance = getattr(self, "object", None)
+            require_default_database(router.db_for_write(self.cv_viewset.model, instance=instance), context=context)
+        return using
 
     def cv_get_atomic(self):
         """
@@ -1139,6 +1183,9 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         return perm
 
     def has_permission(self):
+        if self._cv_nested():
+            # the local model-permission gate reads auth records: on default only (nested), checked at this gate
+            validate_authorization_databases(self.request.user, provider="model")
         if not super().has_permission():
             return False
         # Secondary state gate — a disabled action is denied even with permission.

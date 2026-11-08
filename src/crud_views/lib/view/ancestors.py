@@ -26,7 +26,7 @@ from django.db.models import ForeignObjectRel
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 
-from ..ancestor_databases import require_default_database
+from ..ancestor_databases import require_default_database, validate_authorization_databases
 from ..settings import crud_views_settings
 from ..viewset.ancestry import operation_permissions, validate_relationships, walk_ancestors
 
@@ -130,10 +130,19 @@ def _related(obj: Model, parent: ParentViewSet, parent_obj: Model) -> bool:
 
 
 def _check_gate(view: CrudView, ancestor: ViewSet, obj: Model, key: str) -> None:
-    """Resolve ``key`` in the ancestor's own permission map and evaluate its provider; deny with 403."""
+    """Resolve ``key`` in the ancestor's own permission map and evaluate its provider; deny with 403.
+
+    The auth records this provider reads are validated first, at this reached gate (an outer denial never validates
+    a deeper gate's routes); a nondefault route is a configuration error, never a denial from another database.
+    """
+    _validate_gate_databases(view.request.user, ancestor)
     permission = _permission(type(view), ancestor, key)
     if not ancestor._ancestor_has_permission(view.request.user, obj, permission):
         raise PermissionDenied
+
+
+def _validate_gate_databases(user, ancestor: ViewSet) -> None:
+    validate_authorization_databases(user, provider=ancestor._ancestor_provider(), model=ancestor.model)
 
 
 def _permission(view_class: type[CrudView], ancestor: ViewSet, key: str) -> str:
@@ -166,4 +175,5 @@ def immediate_parent_has_permission(view_class: type[CrudView], user, parent_obj
         return False
     if not protected:
         return True
+    _validate_gate_databases(user, ancestor)
     return ancestor._ancestor_has_permission(user, parent_obj, permission)

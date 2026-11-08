@@ -377,3 +377,62 @@ def test_reverse_m2m_edge_uses_its_accessor_not_its_query_name(scope, events, in
     events.clear()
     assert client.get(routes.url("detail", [actor, stranger], obj=grant(stranger))).status_code == 404
     assert events == ["outer_queryset", "outer_gate", "inner_queryset"]
+
+
+class SoftDeleteViewSet(TracedViewSet):
+    """Soft-delete scope on top of the default (parent-filtered) queryset."""
+
+    def get_queryset(self, view):
+        return super().get_queryset(view).exclude(title="hidden")
+
+
+class TenantViewSet(TracedViewSet):
+    """Tenant scope derived from the actual request actor."""
+
+    def get_queryset(self, view):
+        return super().get_queryset(view).filter(title__startswith=view.request.user.username)
+
+
+class ManagerViewSet(TracedViewSet):
+    """A manager-level replacement: drops the parent filter and excludes hidden rows."""
+
+    def get_queryset(self, view):
+        super().get_queryset(view)
+        return Book.objects.exclude(title="hidden")
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("cascade", [True, False], ids=["cascade", "nearest_only"])
+@pytest.mark.parametrize("provider", [None, "none"], ids=["protected", "none_level"])
+@pytest.mark.parametrize("inner_class", [SoftDeleteViewSet, TenantViewSet, ManagerViewSet])
+def test_scoped_ancestor_visibility_is_authoritative(scope, events, inner_class, provider, cascade):
+    from crud_views.lib.views import DetailView
+
+    policies = {2: AncestorPolicy(cascade=cascade)}
+    if provider is not None:
+        policies[1] = AncestorPolicy(provider=provider)
+    routes = traced_chain(scope, TWO, policies=policies, viewset_classes={1: inner_class})
+    define(scope, routes.endpoint, DetailView)
+    scope.mount([routes.endpoint])
+    publisher, book, note, _attachment, other_book = data()
+    actor = make_user("granted", ["view_publisher", "view_book"])
+    client = client_for(actor)
+    url = routes.url("detail", [publisher, book], obj=note)
+
+    Book.objects.filter(pk=book.pk).update(title="granted visible")
+    assert client.get(url).status_code == 200
+
+    # excluded by the ancestor ViewSet's scope despite valid grants: 404, the endpoint is never reached
+    Book.objects.filter(pk=book.pk).update(title="hidden")
+    events.clear()
+    with CaptureQueriesContext(connection) as ctx:
+        assert client.get(url).status_code == 404
+    assert "child" not in events and events[-1] == "inner_queryset"
+    assert book_selects(ctx) == 1  # no retry through an unfiltered manager
+
+    # an overridden queryset cannot waive the declared membership: another publisher's visible book is a 404
+    Book.objects.filter(pk=other_book.pk).update(title="granted other")
+    events.clear()
+    other_note = BookNote.objects.create(book=other_book, note="Other note")
+    assert client.get(routes.url("detail", [publisher, other_book], obj=other_note)).status_code == 404
+    assert "child" not in events and events[-1] == "inner_queryset"

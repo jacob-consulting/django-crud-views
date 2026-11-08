@@ -1,20 +1,20 @@
 ---
-gsd_state_version: 1.0
+gsd_state_version: "1.0"
 milestone: v1.0
-milestone_name: milestone
-current_phase: 06.18
+current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: executing
-stopped_at: Completed 06.18-05-PLAN.md
-last_updated: "2026-11-08T19:49:45.223Z"
+stopped_at: Completed 06.18-06-PLAN.md
+last_updated: "2026-11-08T20:23:36.505Z"
 last_activity: 2026-11-08
 last_activity_desc: Phase 06.18 plan 02 complete
+state_head: ae45bdd19d3c8b1ce558af93b42a151707ccb4d0
 progress:
-  total_phases: 23
+  total_phases: 24
   completed_phases: 21
-  total_plans: 150
-  completed_plans: 142
-state_head: ba0aad5618d1cfc585d42da100698eeaa6863c38
+  total_plans: 149
+  completed_plans: 143
+milestone_name: milestone
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 ## Current Position
 
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
-Plan: 6 of 12
+Plan: 7 of 12
 Status: Ready to execute
 Last activity: 2026-11-08 — Phase 06.18 plan 02 complete
 
@@ -780,6 +780,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P03 | 19min | 3 tasks | 12 files |
 | Phase 06.18 P04 | 33 min | 2 tasks | 7 files |
 | Phase 06.18 P05 | 25min | 2 tasks | 7 files |
+| Phase 06.18 P06 | 25min | 3 tasks | 10 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -997,6 +998,8 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-04: CrudViewPermissionRequiredMixin.dispatch and ManageView.dispatch run the idempotent ancestor guard before PermissionRequiredMixin's state-/group-loading has_permission(); every shipped composition reaches the guard at its first dispatch
 - [Phase 06.18]: 06.18-04: actor admission via private _cv_ancestor_actor_response(protected=...) adapters — protected ancestry denies anonymous (endpoint response) and inactive (403); all-none keeps only the endpoint's own early rule (core: model permission for anonymous/inactive only, plain: public, Guardian: configured rules, manage: actual yes/debug_only, anonymous denied)
 - [Phase 06.18]: 06.18-04: H1-fragment closed with Publisher change grants; test_resource_views.py::test_nested_detail_scoped_to_parent_404 newly exposed (403 before the Resource loader) and handed to 05.2 with the three H1-resource rows (WINDOWS entry 39)
+- [Phase 06.18]: 06.18-06: nested ORM requests refuse a nondefault database where it is reached (ancestor/child querysets, consumed collections, delete alias, write alias/instance route/FK-M2M attachment) via crud_views.lib.ancestor_db; inspect-and-refuse only, never reroute; top-level unchanged
+- [Phase 06.18]: 06.18-06: write boundary runs in each POST before the first hook and again at the write wrapper (form mixin, delete, action incl. ordered, workflow), atomic on/off; nested CrudView.cv_get_db_alias passes the resolved object as instance hint (top-level model-only)
 
 ### Pending Todos
 
@@ -1062,6 +1065,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T19:49:45.177Z
-Stopped at: Completed 06.18-05-PLAN.md
+Last session: 2026-11-08T20:23:33.514Z
+Stopped at: Completed 06.18-06-PLAN.md
 Resume file: None

@@ -5,16 +5,16 @@
         <th scope="col">{% translate "Value" %}</th>
     </tr>
     <tr>
-        <td>cv_guardian_parent_permission</td>
-        <td>{{ guardian_config.cv_guardian_parent_permission }}</td>
-    </tr>
-    <tr>
-        <td>cv_guardian_parent_create_permission</td>
-        <td>{{ guardian_config.cv_guardian_parent_create_permission }}</td>
-    </tr>
-    <tr>
         <td>parent_viewset</td>
         <td>{{ guardian_config.parent_viewset }}</td>
+    </tr>
+    <tr>
+        <td>ancestor_policy.provider</td>
+        <td>{{ guardian_config.ancestor_policy.provider }}</td>
+    </tr>
+    <tr>
+        <td>ancestor_policy.accept_global_perms</td>
+        <td>{{ guardian_config.ancestor_policy.accept_global_perms }}</td>
     </tr>
     <tr>
         <td>GuardianViewSet.get_objects_for_user()</td>

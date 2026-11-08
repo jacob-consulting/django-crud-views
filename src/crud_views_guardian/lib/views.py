@@ -384,27 +384,25 @@ class GuardianManageView(ManageView):
     template_name = "crud_views/view_guardian_manage.html"
 
     def get_context_data(self, **kwargs):
+        from crud_views.lib.ancestors import _effective_provider
         from crud_views_guardian.lib.viewset import STRICT_HELPER_POLICY
 
         context = super().get_context_data(**kwargs)
         parent = self.cv_viewset.parent
         if parent is not None:
             parent_vs = parent.viewset
-            perm_key = self.cv_viewset.cv_guardian_parent_permission
-            perm_codename = (
-                parent_vs.permissions.get(perm_key, perm_key).split(".")[-1] if perm_key is not None else None
-            )
-            parent_viewset_info = (
-                f"{parent_vs.name} ({perm_codename} → guardian)"
-                if perm_codename is not None
-                else f"{parent_vs.name} (no permission)"
-            )
+            fallback = " + model fallback" if parent_vs.ancestor_policy.accept_global_perms else ""
+            parent_viewset_info = f"{parent_vs.name} (ancestor provider: {_effective_provider(parent_vs)}{fallback})"
         else:
             parent_viewset_info = None
         context["guardian_config"] = {
-            "cv_guardian_parent_permission": self.cv_viewset.cv_guardian_parent_permission,
-            "cv_guardian_parent_create_permission": self.cv_viewset.cv_guardian_parent_create_permission,
             "parent_viewset": parent_viewset_info,
+            # this ViewSet as an ancestor of nested requests (its declared ancestor policy, phase 06.18); local
+            # view options are reported per view in get_view_data()
+            "ancestor_policy": {
+                "provider": _effective_provider(self.cv_viewset),
+                "accept_global_perms": self.cv_viewset.ancestor_policy.accept_global_perms,
+            },
             # the ViewSet helper's own fixed policy (D-05); global fallback is per view, see get_view_data()
             "get_objects_for_user": dict(STRICT_HELPER_POLICY),
         }
@@ -467,12 +465,9 @@ class GuardianManageView(ManageView):
     def _guardian_global_fallback_applicable(self, view_class) -> bool:
         """Whether ``view_class`` ever consults its own ``cv_guardian_accept_global_perms`` (D-06).
 
-        Object and queryset views always do. A parent-only view does so only in its parent check, i.e. with an
-        actual parent and a non-None effective parent permission (the shared resolver used by dispatch and the
-        create helpers). Plain views, manage and top-level creates never do. The ViewSet is never consulted.
+        Only object and queryset views do (their local object gate / list filter). Parent-only views (nested
+        create) no longer do: ancestors are gated by the shared ancestor policy, whose model fallback is the
+        ancestor ViewSet's ``ancestor_policy.accept_global_perms``. Plain views, manage and top-level creates
+        never do. The ViewSet is never consulted.
         """
-        if issubclass(view_class, (GuardianObjectPermissionMixin, GuardianQuerysetMixin)):
-            return True
-        if issubclass(view_class, GuardianParentPermissionMixin) and self.cv_viewset.parent is not None:
-            return view_class._guardian_resolve_parent_perm_key() is not None
-        return False
+        return issubclass(view_class, (GuardianObjectPermissionMixin, GuardianQuerysetMixin))

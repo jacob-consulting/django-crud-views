@@ -346,15 +346,3 @@ class GuardianParentPermissionMixin:
         if behavior == "403":
             raise PermissionDenied
         return self.handle_no_permission()  # redirect to login
-
-    @classmethod
-    def _guardian_resolve_parent_perm_key(cls) -> str | None:
-        """The parent permission key for this view class: create views use
-        cv_guardian_parent_create_permission, falling back (when None) to
-        cv_guardian_parent_permission. None means: no parent permission check."""
-        perm_key = None
-        if getattr(cls, "cv_permission", None) == "add":
-            perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_create_permission", None)
-        if perm_key is None:
-            perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_permission", "view")
-        return perm_key

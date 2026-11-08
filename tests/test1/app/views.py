@@ -743,8 +743,9 @@ cv_guardian_book = GuardianViewSet(
     name="guardian_book",
     parent=ParentViewSet(name="guardian_publisher", attribute="publisher"),
     icon_header="fa-regular fa-address-book",
-    cv_guardian_parent_permission="view",
-    cv_guardian_parent_create_permission="change",
+    # ancestor policy (phase 06.18): the defaults — Read view/view, Write change/view — on the strict Guardian
+    # Publisher ancestor replace the removed cv_guardian_parent_permission="view" /
+    # cv_guardian_parent_create_permission="change" (list/detail/create unchanged; update/delete now need change)
     context_buttons=[
         *context_buttons_default(),
         ContextButton(key="create_button", key_target="create"),  # key != key_target

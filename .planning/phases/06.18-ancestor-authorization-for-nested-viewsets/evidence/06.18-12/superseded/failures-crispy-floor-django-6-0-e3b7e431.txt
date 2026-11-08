@@ -1,0 +1,6 @@
+FAILED tests/test1/test_ancestor_resolution.py::test_filtered_child_collection_is_scoped_to_the_resolved_parent[-override-table]
+FAILED tests/test1/test_ancestor_resolution.py::test_filtered_child_collection_is_scoped_to_the_resolved_parent[-queryset-attribute-table]
+FAILED tests/test1/test_ancestor_resolution.py::test_filtered_child_collection_is_scoped_to_the_resolved_parent[?title=-override-table]
+FAILED tests/test1/test_ancestor_resolution.py::test_filtered_child_collection_is_scoped_to_the_resolved_parent[?title=-queryset-attribute-table]
+FAILED tests/test1/test_ancestor_resolution.py::test_filtered_child_collection_is_scoped_to_the_resolved_parent[?title=Foreign-override-table]
+FAILED tests/test1/test_ancestor_resolution.py::test_filtered_child_collection_is_scoped_to_the_resolved_parent[?title=Foreign-queryset-attribute-table]

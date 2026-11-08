@@ -16,3 +16,13 @@
   status: open
   **What:** the core vocabulary loop (`src/crud_views/lib/viewset/__init__.py`, `default_permissions`) accesses `permission.content_type` per row, so a cold core ViewSet costs one `get_for_model` + one Permission query + one ContentType read per row (ct 5 for a four-permission model). Measured in `06.18-COSTS.md`: full cascade at depth 3 shows ct 15 cold. `GuardianViewSet.default_permissions` uses the single resolved content type (ct 1).
   **Scope:** pre-existing, once per ViewSet per process, vocabulary only (no access state). Outside 06.18-10's file list (tests/COSTS only). Possible fix: reuse the resolved `content_type` (as the Guardian override does) or `select_related("content_type")`.
+
+- A filter list without `formhelper_class` cannot render on crispy-forms before 2.7 (found during 06.18-12)
+  status: open
+  **What:** `list_filter.inner.html` renders `{% crispy filter.form filter.form.helper %}`. `ListViewTableFilterMixin` sets `filter.form.helper` only when `formhelper_class` is declared. crispy-forms 2.7 swallows the failed `helper` lookup; 2.5 (cached Django 4.2 env) and 2.0 (the 6.0 crispy floor) raise `VariableDoesNotExist`. The documented examples always declare `formhelper_class`.
+  **Scope:** pre-existing package behavior, not caused by phase 06.18. It surfaced because `test_ancestor_resolution.py`'s filtered fixtures omitted the helper; 06.18-12 gave them the documented helper (`5829cae7`). Possible fix: render without the helper argument when none is set, or document `formhelper_class` as required.
+
+- Django 4.2 error emails evaluate refused nested querysets (found during 06.18-12)
+  status: open
+  **What:** a nested default-database refusal is an `ImproperlyConfigured` 500. Django 4.2's `AdminEmailHandler` builds an `ExceptionReporter` even without `ADMINS` (5.x returns early), and the report's frame-local `repr()` runs the refused queryset (one read on the refused alias, after the refusal and after no package work). Observed by `test_ancestor_databases.py` on Django 4.2.30 only.
+  **Scope:** Django's error reporting, outside the package's request work. 06.18-12 no-ops the handler in that test module (`5829cae7`) so its "no shard SQL" captures measure the package. Not fixed in the package; a deployment with `ADMINS` on Django 4.2 can see that read in its error report.

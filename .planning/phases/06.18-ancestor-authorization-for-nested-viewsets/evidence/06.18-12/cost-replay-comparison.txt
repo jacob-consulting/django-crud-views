@@ -1,0 +1,14 @@
+comparison: evidence/06.18-12/cost-observations (5829cae7) vs evidence/06.18-10/cost-observations (e85ed2b4); meta.source_sha and random 8-hex ViewSet-name suffixes normalized
+depth1-guardian-list-with-create-button.json: identical
+depth1-guardian.json: identical
+depth1-plain-list-with-create-button.json: identical
+depth1-plain.json: identical
+depth3-guardian-list-with-create-button.json: DIFFERENT
+depth3-guardian.json: identical
+depth3-plain-list-with-create-button.json: identical
+depth3-plain.json: identical
+top-level.json: identical
+files=9 different=1
+depth3-guardian-list-with-create-button.json gate[0] now: ['guard', 'obsg0aa1cd256', 'app.view_publisher', 2] | then: ['guard', 'obsg02cc9c727', 'app.view_publisher', 1]
+non-gate fields (totals, guard/rest, categories) identical: True
+explanation: the only remaining difference is gate tuple field [3], the gated object's primary key (2 vs 1), which depends on row-creation order in the worker; counts and categories are identical

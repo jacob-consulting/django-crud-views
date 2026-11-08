@@ -1,0 +1,27 @@
+# source f0e18a7df3bc1850c7cf287d6a3fbad4a28dfe75; Python 3.12.3 Django 5.2.19 Pydantic 2.14.3; import path: /home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py
+## Task 1 gate
+89 passed in 6.40s
+## Task 2 gate
+394 passed in 26.34s
+## exact H1-fragment nodes
+5 passed in 1.78s
+## full Django 5.2 suite at f0e18a7d (tests -n 8 -q -rfE)
+14 failed, 10422 passed, 1 skipped, 1044 errors in 131.75s (0:02:11)
+failing nodes:
+tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_create
+tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_detail
+tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_list
+tests/test1/test_guardian.py::test_create_cv_has_access_parent_none_policy_resolves_without_permission
+tests/test1/test_guardian.py::test_guardian_manage_config_renders_in_an_alert
+tests/test1/test_guardian.py::test_guardian_manage_context_has_guardian_config
+tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[global]
+tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[group]
+tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[ordinary]
+tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[superuser]
+tests/test1/test_resource_views.py::test_nested_detail_scoped_to_parent_404
+tests/test1/test_resource_views.py::test_nested_detail_url_contains_parent_pk
+tests/test1/test_resource_views.py::test_nested_list_empty_for_parent_without_files
+tests/test1/test_resource_views.py::test_nested_list_scoped_to_parent
+errors: 1044, all in the 06.18-03 transition set (H2-removed setup)
+## after e8b1ce38 (test-only addition: static error precedes actor admission)
+gates (ordering + actors + fragment + guardian ancestors): 435 passed

@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 1
+open_count: 2
 waived_count: 9
 fixed_count: 28
-total_count: 38
-last_updated: 2026-11-08T18:42:19.870Z
+total_count: 39
+last_updated: 2026-11-08T19:18:23.782Z
 ---
 
 # Broken Windows Ledger
@@ -53,6 +53,7 @@ last_updated: 2026-11-08T18:42:19.870Z
 | 36 | 06.17 | deviation | docs/reference/javascript.md |  | Task 1 documentation edits began before RED evidence classifier approval; actual pre-edit report subsequently approved, final executable recipes and all regression gates pass. | waived | Independent deep review found no product defect: genuine pre-edit failures were preserved and later classifier-approved; final executable recipe and full regression checks pass. Accept the documentation-only ordering exception while retaining the historical violation; no retroactive compliance claimed. | 2026-11-07T10:17:20.705Z | 2026-11-07T10:25:35.767Z |
 | 37 | 06.18 | deviation | src/crud_views/lib/ancestors.py |  | Interim (06.18-01): nested endpoints outside the core list/detail/create/update/delete families without an exact actions entry perform no ancestor work until 06.18-02 Task 2 adds the finite family table and custom-declaration guards | fixed |  | 2026-11-08T17:34:13.035Z | 2026-11-08T18:15:32.509Z |
 | 38 | 06.18 | deviation | tests/test1/test_authorization_matrix.py |  | Interim (06.18-03): eight legacy Guardian authorization modules still declare/patch the removed cv_guardian_parent_* fields (1044 setup errors, 5 monkeypatch AttributeErrors, 2 removed-name manage assertions) and 3 test_guardian.py cases assert child-view fallback relaxing the Publisher ancestor (H2-removed/H2-semantics); fixture/expectation migration owned by 06.18-08 | open |  | 2026-11-08T18:42:19.870Z |  |
+| 39 | 06.18 | deviation | tests/test1/test_resource_views.py |  | Interim (06.18-04): with ancestry before has_permission(), test_resource_views.py::test_nested_detail_scoped_to_parent_404 now returns 403 (S3 viewer lacks Publisher view) instead of the masked Resource-loader 404; it joins the 3 open H1-resource rows owned by 06.18-05 Task 2 (Publisher-view + Resource-view actor migration) | open |  | 2026-11-08T19:18:23.782Z |  |
 
 ````json
 [
@@ -538,6 +539,19 @@ last_updated: 2026-11-08T18:42:19.870Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-11-08T18:42:19.870Z",
+    "resolved_at": null,
+    "milestone": "v1.0"
+  },
+  {
+    "id": 39,
+    "kind": "deviation",
+    "phase": "06.18",
+    "file": "tests/test1/test_resource_views.py",
+    "line": null,
+    "description": "Interim (06.18-04): with ancestry before has_permission(), test_resource_views.py::test_nested_detail_scoped_to_parent_404 now returns 403 (S3 viewer lacks Publisher view) instead of the masked Resource-loader 404; it joins the 3 open H1-resource rows owned by 06.18-05 Task 2 (Publisher-view + Resource-view actor migration)",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-11-08T19:18:23.782Z",
     "resolved_at": null,
     "milestone": "v1.0"
   }

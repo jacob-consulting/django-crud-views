@@ -106,6 +106,15 @@ def test_policy_defaults_are_independent(names, db):
     )
 
 
+def test_policy_types_are_frozen():
+    """Post-construction assignment would bypass validation and leak into every ViewSet sharing the object."""
+    policy = AncestorPolicy(read=AncestorPermissions(**PAIR))
+    with pytest.raises(ValidationError):
+        policy.cascade = True
+    with pytest.raises(ValidationError):
+        policy.read.nearest = "delete"
+
+
 def test_policy_types_are_exported_from_viewset_package():
     import crud_views.lib.ancestor_policy as module
     import crud_views.lib.viewset as package

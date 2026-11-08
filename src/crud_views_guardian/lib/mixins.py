@@ -28,11 +28,12 @@ def _validate_child_gate_databases(view) -> None:
         validate_authorization_databases(view.request.user, provider="guardian", model=view.cv_viewset.model)
 
 
-def _guardian_actor_response(view):
-    """The Guardian early actor rule (``_cv_ancestor_actor_response``): no object, queryset or state work.
+def _guardian_actor_admitted(view) -> bool:
+    """The one Guardian early actor rule: no object, queryset or state work.
 
-    Anonymous: the view's ``cv_guardian_anonymous_behavior`` (404, 403 or the login redirect); inactive: 403;
-    otherwise None (admitted).
+    Anonymous: the view's ``cv_guardian_anonymous_behavior`` raises 404 or 403, or returns False (the caller's
+    login redirect); inactive: 403; otherwise True (admitted). ``has_permission()`` returns the result; the
+    ancestor actor hook turns False into ``handle_no_permission()``.
     """
     user = view.request.user
     if not user.is_authenticated:
@@ -41,10 +42,15 @@ def _guardian_actor_response(view):
             raise Http404
         if behavior == "403":
             raise PermissionDenied
-        return view.handle_no_permission()  # redirect to login
+        return False
     if _guardian_inactive_actor(user):
         raise PermissionDenied
-    return None
+    return True
+
+
+def _guardian_actor_response(view):
+    """``_cv_ancestor_actor_response`` of the Guardian mixins: None admits, else the login redirect."""
+    return None if _guardian_actor_admitted(view) else view.handle_no_permission()
 
 
 class GuardianObjectPermissionMixin:
@@ -75,15 +81,7 @@ class GuardianObjectPermissionMixin:
         return super()._cv_cancel_target_available(user, obj, rendering_view)
 
     def has_permission(self):
-        if not self.request.user.is_authenticated:
-            if self.cv_guardian_anonymous_behavior == "404":
-                raise Http404
-            if self.cv_guardian_anonymous_behavior == "403":
-                raise PermissionDenied
-            return False  # triggers Django's handle_no_permission() → redirect to login
-        if _guardian_inactive_actor(self.request.user):
-            raise PermissionDenied
-        return True
+        return _guardian_actor_admitted(self)  # False triggers handle_no_permission() → redirect to login
 
     def _cv_ancestor_actor_response(self):
         return _guardian_actor_response(self)
@@ -159,15 +157,7 @@ class GuardianQuerysetMixin:
         return super()._cv_cancel_target_available(user, obj, rendering_view)
 
     def has_permission(self):
-        if not self.request.user.is_authenticated:
-            if self.cv_guardian_anonymous_behavior == "404":
-                raise Http404
-            if self.cv_guardian_anonymous_behavior == "403":
-                raise PermissionDenied
-            return False  # triggers Django's handle_no_permission() → redirect to login
-        if _guardian_inactive_actor(self.request.user):
-            raise PermissionDenied
-        return True
+        return _guardian_actor_admitted(self)  # False triggers handle_no_permission() → redirect to login
 
     def _cv_ancestor_actor_response(self):
         return _guardian_actor_response(self)

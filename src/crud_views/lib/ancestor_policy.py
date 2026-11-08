@@ -27,7 +27,7 @@ class AncestorPermissions(BaseModel):
     A pair is always complete and replaces an inherited pair whole; there is no partial merge or ``None`` skip.
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", frozen=True)
 
     nearest: PermissionKey
     higher: PermissionKey
@@ -42,7 +42,7 @@ class AncestorPolicy(BaseModel):
     setting (``cascade``, ``read``, ``write``).
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", frozen=True)
 
     provider: Literal["model", "guardian", "none"] | None = None
     accept_global_perms: StrictBool = False

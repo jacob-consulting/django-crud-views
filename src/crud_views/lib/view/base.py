@@ -311,7 +311,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         child lookups, state and forms. It runs once per view instance: only a completed traversal is marked, a
         denial ends the request. Top-level: no work.
         """
-        if not self.cv_viewset.has_parent or getattr(self, "_cv_ancestors_authorized", False):
+        if not self._cv_nested() or getattr(self, "_cv_ancestors_authorized", False):
             return None
         from .ancestors import authorize_ancestors
 

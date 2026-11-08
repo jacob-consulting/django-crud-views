@@ -383,6 +383,23 @@ def test_each_ancestor_resolves_its_own_permission_map(scope, events):
     assert events == ["outer_queryset", "outer_gate"]
 
 
+@pytest.mark.django_db
+def test_unregistered_action_key_fails_the_request_before_lookup(scope, events):
+    """The runtime guard of E321: a completed registry with a stale ``actions`` key rejects every request."""
+    from crud_views.lib.views import DetailView
+
+    actions = {"approve": AncestorPermissions(nearest="change", higher="view")}
+    routes = traced_chain(scope, TWO, policies={2: AncestorPolicy(actions=actions)})
+    define(scope, routes.endpoint, DetailView)  # "approve" is never registered
+    scope.mount([routes.endpoint])
+    publisher, book, note, *_ = data()
+
+    url = routes.url("detail", [publisher, book], obj=note)
+    with pytest.raises(ImproperlyConfigured, match=r"ancestor_policy.actions\['approve'\].*names no registered view"):
+        client_for(make_user("reader", ["view_publisher", "view_book"])).get(url)
+    assert events == [] and CHECKED == []
+
+
 # ── interleaved order ─────────────────────────────────────────────────────────
 
 

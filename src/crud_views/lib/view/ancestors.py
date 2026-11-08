@@ -3,8 +3,9 @@
 ``authorize_ancestors(view)`` runs once per nested request, before any endpoint-local work: the dispatch bridges call
 ``CrudView._cv_authorize_ancestors()``, which calls it. It works in this order and stops at the first failure:
 
-1. Static: the ancestor chain, its relationships and the operation's ``AncestorPermissions`` pair; the gates are
-   selected from configuration only (providers and cascade depth). No database access.
+1. Static: the ancestor chain, its relationships, the ViewSet's action declarations against its registered views
+   and the operation's ``AncestorPermissions`` pair; the gates are selected from configuration only (providers and
+   cascade depth). No database access.
 2. Actor: with a protected (selected) ancestor, an anonymous actor gets the endpoint's no-permission response (a login
    redirect by default) and an inactive one 403. With all-``none`` ancestry only the endpoint's own early actor rule
    applies (``CrudView._cv_ancestor_actor_response()``).
@@ -28,7 +29,12 @@ from django.shortcuts import get_object_or_404
 
 from ..ancestor_databases import require_default_database, validate_authorization_databases
 from ..settings import crud_views_settings
-from ..viewset.ancestry import operation_permissions, validate_relationships, walk_ancestors
+from ..viewset.ancestry import (
+    operation_permissions,
+    validate_registered_actions,
+    validate_relationships,
+    walk_ancestors,
+)
 
 if TYPE_CHECKING:
     from django.db.models import Model
@@ -47,6 +53,7 @@ def authorize_ancestors(view: CrudView) -> HttpResponse | None:
     viewset = view.cv_viewset
     chain = walk_ancestors(viewset)  # nearest first
     validate_relationships(viewset)
+    validate_registered_actions(viewset)  # the registry is complete once requests arrive (E321 at check time)
     gates = selected_gates(viewset, chain, operation_permissions(type(view)))
 
     response = _actor_response(view, protected=bool(gates))

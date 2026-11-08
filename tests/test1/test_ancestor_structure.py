@@ -29,6 +29,8 @@ from django.db import connections
 from django.test import Client, override_settings
 from django.urls import clear_url_caches, get_resolver, include, path, reverse
 
+import tests.test1.project.urls  # noqa: F401 - registers the shared app ViewSets before any registry snapshot
+from crud_views.lib import check as check_module
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet, ViewSet
 from tests.test1.app.models import Book, BookNote, Genre, Publisher
 from tests.test1.app.resources import PublisherFile
@@ -50,12 +52,17 @@ def registry():
     """Snapshot the ViewSet registry and restore it (and the URL caches) afterwards."""
     with _REGISTRY_LOCK:
         snapshot = dict(_REGISTRY)
+    # the W280 vocabulary cache is keyed by the registered view count: a temporary registry must not leave a
+    # stale entry behind for a later, differently composed registry of the same size
+    vocab_snapshot = dict(check_module._VOCAB_CACHE)
     try:
         yield
     finally:
         with _REGISTRY_LOCK:
             _REGISTRY.clear()
             _REGISTRY.update(snapshot)
+        check_module._VOCAB_CACHE.clear()
+        check_module._VOCAB_CACHE.update(vocab_snapshot)
         clear_url_caches()
 
 

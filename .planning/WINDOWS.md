@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 1
+open_count: 0
 waived_count: 9
-fixed_count: 30
+fixed_count: 31
 total_count: 40
-last_updated: 2026-11-08T20:57:48.948Z
+last_updated: 2026-11-08T21:26:13.660Z
 ---
 
 # Broken Windows Ledger
@@ -52,7 +52,7 @@ last_updated: 2026-11-08T20:57:48.948Z
 | 35 | 06.16 | deviation | tests/test1/od/test_help_text_policy.py |  | Plan 02 task 2 is test-only expansion of task 1 behavior; no separate failing RED or production GREEN commit was needed. | fixed |  | 2026-11-06T19:15:57.137Z | 2026-11-06T19:16:25.752Z |
 | 36 | 06.17 | deviation | docs/reference/javascript.md |  | Task 1 documentation edits began before RED evidence classifier approval; actual pre-edit report subsequently approved, final executable recipes and all regression gates pass. | waived | Independent deep review found no product defect: genuine pre-edit failures were preserved and later classifier-approved; final executable recipe and full regression checks pass. Accept the documentation-only ordering exception while retaining the historical violation; no retroactive compliance claimed. | 2026-11-07T10:17:20.705Z | 2026-11-07T10:25:35.767Z |
 | 37 | 06.18 | deviation | src/crud_views/lib/ancestors.py |  | Interim (06.18-01): nested endpoints outside the core list/detail/create/update/delete families without an exact actions entry perform no ancestor work until 06.18-02 Task 2 adds the finite family table and custom-declaration guards | fixed |  | 2026-11-08T17:34:13.035Z | 2026-11-08T18:15:32.509Z |
-| 38 | 06.18 | deviation | tests/test1/test_authorization_matrix.py |  | Interim (06.18-03): eight legacy Guardian authorization modules still declare/patch the removed cv_guardian_parent_* fields (1044 setup errors, 5 monkeypatch AttributeErrors, 2 removed-name manage assertions) and 3 test_guardian.py cases assert child-view fallback relaxing the Publisher ancestor (H2-removed/H2-semantics); fixture/expectation migration owned by 06.18-08 | open |  | 2026-11-08T18:42:19.870Z |  |
+| 38 | 06.18 | deviation | tests/test1/test_authorization_matrix.py |  | Interim (06.18-03): eight legacy Guardian authorization modules still declare/patch the removed cv_guardian_parent_* fields (1044 setup errors, 5 monkeypatch AttributeErrors, 2 removed-name manage assertions) and 3 test_guardian.py cases assert child-view fallback relaxing the Publisher ancestor (H2-removed/H2-semantics); fixture/expectation migration owned by 06.18-08 | fixed |  | 2026-11-08T18:42:19.870Z | 2026-11-08T21:26:13.660Z |
 | 39 | 06.18 | deviation | tests/test1/test_resource_views.py |  | Interim (06.18-04): with ancestry before has_permission(), test_resource_views.py::test_nested_detail_scoped_to_parent_404 now returns 403 (S3 viewer lacks Publisher view) instead of the masked Resource-loader 404; it joins the 3 open H1-resource rows owned by 06.18-05 Task 2 (Publisher-view + Resource-view actor migration) | fixed |  | 2026-11-08T19:18:23.782Z | 2026-11-08T19:47:55.487Z |
 | 40 | 06.18 | unmet-truth | src/crud_views/lib/view/base.py |  | Found during 06.18-06: CrudView.get_context_data applies _scope_child_queryset only when object_list is not a keyword; django-filter's BaseFilterView.get passes object_list=..., so a nested ListViewTableFilterMixin list whose get_queryset omits the parent filter lists other parents' rows (ANCE-05, 06.18-05 seam; see deferred-items.md). Default ViewSet querysets already filter. | fixed |  | 2026-11-08T20:21:21.236Z | 2026-11-08T20:57:48.948Z |
 
@@ -509,10 +509,10 @@ last_updated: 2026-11-08T20:57:48.948Z
     "file": "tests/test1/test_authorization_matrix.py",
     "line": null,
     "description": "Interim (06.18-03): eight legacy Guardian authorization modules still declare/patch the removed cv_guardian_parent_* fields (1044 setup errors, 5 monkeypatch AttributeErrors, 2 removed-name manage assertions) and 3 test_guardian.py cases assert child-view fallback relaxing the Publisher ancestor (H2-removed/H2-semantics); fixture/expectation migration owned by 06.18-08",
-    "status": "open",
+    "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-08T18:42:19.870Z",
-    "resolved_at": null
+    "resolved_at": "2026-11-08T21:26:13.660Z"
   },
   {
     "id": 39,

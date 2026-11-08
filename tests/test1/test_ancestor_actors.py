@@ -541,3 +541,34 @@ def test_protected_manage_group_membership_does_not_bypass_ancestry(routes, worl
     # ancestry passes, the group gate still denies a non-member
     outsider = _user(f"aa_mg_outsider_{ckind}", (Publisher, "view"))
     assert _client(outsider).get(_manage_url(routes, "protected", world.penguin.pk, ckind)).status_code == 403
+
+
+# ── static validation precedes actor admission ───────────────────────────────
+
+
+@pytest.fixture
+def undeclared_custom():
+    """A nested custom ActionView without its exact ancestor_policy.actions entry, plain and permission-required."""
+    from crud_views.lib.views import ActionView, ActionViewPermissionRequired
+
+    def build(sfx):
+        pub = ViewSet(model=Publisher, name=f"aaspub{sfx}")
+        child = ViewSet(model=Book, name=f"aasbook{sfx}", parent=ParentViewSet(name=pub.name, attribute="publisher"))
+        for key, base in (("act", ActionView), ("pact", ActionViewPermissionRequired)):
+            type(f"Undeclared{key}", (base,), {"cv_viewset": child, "cv_key": key, "cv_path": key})
+        return SimpleNamespace(pub=pub, child=child), [pub, child]
+
+    with isolated_routes(build) as ns:
+        yield ns
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["act", "pact"])
+def test_static_configuration_error_precedes_actor_admission(undeclared_custom, world, events, key):
+    from django.core.exceptions import ImproperlyConfigured
+
+    ns = undeclared_custom
+    url = _url(ns.child, key, **{f"{ns.pub.name}_pk": 987654, "pk": world.book.pk})
+    with pytest.raises(ImproperlyConfigured, match=r"ancestor_policy\.actions\["):
+        _client(None).post(url)  # anonymous: no login redirect hides the configuration error
+    assert events == []

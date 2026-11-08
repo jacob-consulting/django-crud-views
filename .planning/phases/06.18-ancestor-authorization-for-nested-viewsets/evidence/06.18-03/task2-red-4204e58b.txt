@@ -1,0 +1,39 @@
+# Task 2 RED at source 4204e58b (tests/test1/test_ancestor_helpers.py), Django 5.2.19 / Python 3.12.3
+FAILED tests/test1/test_ancestor_helpers.py::test_ambiguous_m2m_child_input_stays_unavailable
+FAILED tests/test1/test_ancestor_helpers.py::test_none_immediate_parent_skips_only_its_gate
+FAILED tests/test1/test_ancestor_helpers.py::test_immediate_parent_uses_the_target_operation_nearest_key
+FAILED tests/test1/test_ancestor_helpers.py::test_invalid_nearest_key_surfaces_as_configuration_error
+FAILED tests/test1/test_ancestor_helpers.py::test_helper_never_evaluates_a_farther_ancestor
+FAILED tests/test1/test_ancestor_helpers.py::test_anonymous_and_inactive_actors_get_no_create_access
+FAILED tests/test1/test_ancestor_helpers.py::test_create_helpers_follow_the_immediate_parent_policy
+FAILED tests/test1/test_ancestor_helpers.py::test_rendering_view_reuses_the_request_resolved_parent
+FAILED tests/test1/test_ancestor_helpers.py::test_core_immediate_parent_uses_model_permissions
+FAILED tests/test1/test_ancestor_helpers.py::test_uuid_parent_identity_and_declarations_survive_repeated_calls
+FAILED tests/test1/test_ancestor_helpers.py::test_cancel_availability_of_none_parent_retains_state
+FAILED tests/test1/test_ancestor_helpers.py::test_list_page_create_button_uses_the_resolved_parent[view]
+FAILED tests/test1/test_ancestor_helpers.py::test_cancel_availability_uses_the_immediate_parent_policy
+13 failed, 3 passed in 2.89s
+## reasons (deduplicated E lines)
+      3 E       AssertionError: assert False is True
+      3 E           AttributeError: module 'crud_views.lib.ancestors' has no attribute '_immediate_parent_access'
+      2 E       AttributeError: module 'crud_views.lib.ancestors' has no attribute '_immediate_parent_access'
+      2 E        +    where cv_has_access = <class 'crud_views.lib.view.meta.Create'>.cv_has_access
+      2 E        +    and   <Publisher: Penguin> = namespace(penguin=<Publisher: Penguin>, other=<Publisher: Other>, book=<Book: Hitchhiker>, genre=<Genre: Fiction>, author=<Author: Douglas Adams>).pe
+      1 E       assert ('/ahpub30fa1e35/1/ahbook30fa1e35/create/' in '\n\n\n<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="utf-8"/>\n    <meta http-equiv="x-ua-compatible" ... <th>Actio
+      1 E       IndexError: list index out of range
+      1 E        +  where False = cv_has_access(<User: ah_m2m_editor>, <Publisher: Penguin>)
+      1 E        +  where False = cv_has_access(<User: ah_core_model>, <Publisher: Penguin>)
+      1 E        +  where False = _cv_cancel_target_available(<User: ah_cancel_none>, None, <crud_views.lib.view.meta.List object at 0x7ef422ba1ac0>)
+      1 E        +  where '\n\n\n<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="utf-8"/>\n    <meta http-equiv="x-ua-compatible" ... <th>Action</th>\n    </tr>\n    \n</table>\n\n\n    
+      1 E        +    where _cv_cancel_target_available = <class 'crud_views.lib.view.meta.Create'>._cv_cancel_target_available
+      1 E        +    where <built-in method decode of bytes object at 0x1c030670> = b'\n\n\n<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="utf-8"/>\n    <meta http-equiv="x-ua-compatib
+      1 E        +      where b'\n\n\n<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="utf-8"/>\n    <meta http-equiv="x-ua-compatible"... <th>Action</th>\n    </tr>\n    \n</table>\n\n\n
+      1 E        +      where <class 'crud_views.lib.view.meta.Create'> = namespace(vs=ViewSet(ahcbook1941e01e), List=<class 'crud_views.lib.view.meta.List'>, Detail=<class 'crud_views.lib.view.meta.D
+      1 E        +        where namespace(vs=ViewSet(ahcbook1941e01e), List=<class 'crud_views.lib.view.meta.List'>, Detail=<class 'crud_views.lib.view.meta.Detail'>, Create=<class 'crud_views.lib.vie
+      1 E         - view+change
+      1 E         + view)
+      1 E           django.contrib.auth.models.User.DoesNotExist: User matching query does not exist.
+      1 E           assert False is True
+
+## tests/test1/test_action_enabled.py (H1-action migration + controls) at the same source
+12 passed in 2.87s

@@ -28,13 +28,9 @@ from typing import TYPE_CHECKING
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
 
-from crud_views.lib.ancestor_policy import (
-    DEFAULT_CASCADE,
-    DEFAULT_READ_PERMISSIONS,
-    DEFAULT_WRITE_PERMISSIONS,
-    AncestorPermissions,
-)
+from crud_views.lib.ancestor_policy import AncestorPermissions
 from crud_views.lib.exceptions import ViewSetNotFoundError
+from crud_views.lib.settings import crud_views_settings
 
 if TYPE_CHECKING:
     from django.db.models import Model
@@ -109,9 +105,9 @@ def _operation_requirements(view_class: type[CrudView]) -> AncestorPermissions |
         return policy.actions[view_class.cv_key]
     family = _family(view_class)
     if family == "read":
-        return policy.read or AncestorPermissions(**DEFAULT_READ_PERMISSIONS)
+        return policy.read or crud_views_settings.ancestor_read_permissions
     if family == "write":
-        return policy.write or AncestorPermissions(**DEFAULT_WRITE_PERMISSIONS)
+        return policy.write or crud_views_settings.ancestor_write_permissions
     return None
 
 
@@ -127,7 +123,7 @@ def _selected_gates(viewset: ViewSet, chain: list[tuple[ParentViewSet, ViewSet]]
         return {}
     cascade = viewset.ancestor_policy.cascade
     if cascade is None:
-        cascade = DEFAULT_CASCADE
+        cascade = crud_views_settings.ancestor_permission_cascade
     selected = {protected[0]: "nearest"}
     if cascade:
         selected.update(dict.fromkeys(protected[1:], "higher"))

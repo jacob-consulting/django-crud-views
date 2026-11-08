@@ -7,7 +7,14 @@ from django.core.checks import CheckMessage, Error
 from django.core.checks import Warning as CheckWarning
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, StrictBool
+
+from .ancestor_policy import (
+    DEFAULT_CASCADE,
+    DEFAULT_READ_PERMISSIONS,
+    DEFAULT_WRITE_PERMISSIONS,
+    AncestorPermissions,
+)
 
 
 def from_settings(name, default=None) -> Any:
@@ -74,6 +81,22 @@ class CrudViewsSettings(BaseModel):
     # ViewSet's form_actions_label_mode, then this setting); a form without a crud_views owner uses this setting.
     # Captured at startup like the other maps; kinds not named take the lazy "form" floor (package default "label")
     form_actions_label_mode: Any = from_settings("CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE", default={})
+
+    # ancestor authorization of nested ViewSets (phase 06.18). Captured at startup and validated strictly here
+    # (validate_default): a non-boolean cascade or an incomplete/padded pair fails when the singleton is built.
+    # A ViewSet's AncestorPolicy(cascade/read/write) replaces these for requests targeting it, never merged
+    ancestor_permission_cascade: StrictBool = Field(
+        default=from_settings("CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE", default=DEFAULT_CASCADE),
+        validate_default=True,
+    )
+    ancestor_read_permissions: AncestorPermissions = Field(
+        default=from_settings("CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS", default=dict(DEFAULT_READ_PERMISSIONS)),
+        validate_default=True,
+    )
+    ancestor_write_permissions: AncestorPermissions = Field(
+        default=from_settings("CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS", default=dict(DEFAULT_WRITE_PERMISSIONS)),
+        validate_default=True,
+    )
 
     # breadcrumb
     breadcrumb_prefix: list[dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])

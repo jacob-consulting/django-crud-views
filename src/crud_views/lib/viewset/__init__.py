@@ -129,10 +129,41 @@ class ViewSet(BaseModel):
             raise ValueError(f"must map form kinds {sorted(FORM_KINDS)} to one of {sorted(LABEL_MODES)}, got {value!r}")
         return value
 
+    def _validate_ancestor_policy(self) -> None:
+        """Owning-ViewSet constraints of ``ancestor_policy``, decidable at construction (no database, no other
+        ViewSet). Called by ``register()`` before any registry or manage-view side effect."""
+        policy = self.ancestor_policy
+        if not isinstance(policy, AncestorPolicy):  # e.g. a subclass default given as a mapping
+            policy = self.ancestor_policy = AncestorPolicy.model_validate(policy)
+        class_provider = type(self)._ancestor_provider
+        if policy.provider == "guardian" and class_provider != "guardian":
+            raise ValueError(
+                f"ancestor_policy.provider='guardian' is not supported by {type(self).__name__} {self.name!r}: "
+                f"use GuardianViewSet for object-permission ancestors"
+            )
+        provider = policy.provider if policy.provider is not None else class_provider
+        if policy.accept_global_perms and provider != "guardian":
+            raise ValueError(
+                f"ancestor_policy.accept_global_perms=True has no effect on ViewSet {self.name!r}: its ancestor "
+                f"provider is {provider!r}, the flag applies only to a Guardian provider"
+            )
+        if self.parent is None:
+            ineffective = [field for field in ("cascade", "read", "write") if getattr(policy, field) is not None] + (
+                ["actions"] if policy.actions else []
+            )
+            if ineffective:
+                raise ValueError(
+                    f"ancestor_policy fields {', '.join(ineffective)} of top-level ViewSet {self.name!r} have no "
+                    f"effect: they describe requests to a nested ViewSet (leave them None/empty)"
+                )
+
     @model_validator(mode="after")
     def register(self) -> Self:
         if not self.is_resource and self.resource_permissions is not None:
             raise ValueError(f"resource_permissions is only allowed for Resource-based ViewSets, got it at {self!r}")
+
+        # every construction-decidable ancestor policy constraint precedes registration (no rollback needed)
+        self._validate_ancestor_policy()
 
         if self.pk is None:
             if self.is_resource:

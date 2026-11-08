@@ -284,7 +284,18 @@ def _break_relation(chain):
     return r"title"
 
 
-BREAKS = {"missing_parent": _break_missing, "cycle": _break_cycle, "non_relational_attribute": _break_relation}
+def _break_resource_parent(chain):
+    resource_vs = _resource_viewset(f"{chain.pub_vs.name}_res")
+    chain.book_vs.parent = ParentViewSet(name=resource_vs.name, attribute="publisher")
+    return rf"{resource_vs.name}.*Resource"
+
+
+BREAKS = {
+    "missing_parent": _break_missing,
+    "cycle": _break_cycle,
+    "non_relational_attribute": _break_relation,
+    "resource_parent": _break_resource_parent,
+}
 
 
 @pytest.mark.parametrize("breakage", BREAKS)
@@ -336,7 +347,9 @@ INVALID_RELATIONS = {
 
 
 @pytest.mark.parametrize("case", INVALID_RELATIONS)
-def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounded, no_db):
+def test_invalid_relationship_fails_check_and_request_before_lookup(case, sfx, bounded, no_db, monkeypatch):
+    """Relationship errors are a system-check error plus a request guard (v2 validation table); URL
+    construction only requires a finite, resolved, Resource-free chain, so the route itself still builds."""
     from crud_views.lib.ancestors import _validate_ancestor_structure
 
     model, edge, expected = INVALID_RELATIONS[case]
@@ -344,11 +357,27 @@ def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounde
     child = _viewset(model, f"st_c_{sfx}", ParentViewSet(name=pub_vs.name, **edge))
     with pytest.raises(ImproperlyConfigured, match=expected):
         _validate_ancestor_structure(child)
-    with pytest.raises(ImproperlyConfigured, match=expected):
-        _ = child.urlpatterns
     messages = _structure_messages(child)
     assert [m.id for m in messages] == ["viewset.E266"]
     assert child.name in messages[0].msg
+
+    lookups = []
+    original = ViewSet.get_queryset
+    monkeypatch.setattr(ViewSet, "get_queryset", lambda self, view: lookups.append(self.name) or original(self, view))
+    modname = f"tests.test1._st_rel_urls_{sfx}"
+    module = type(sys)(modname)
+    module.urlpatterns = [*pub_vs.urlpatterns, *child.urlpatterns, path("", include("tests.test1.project.urls"))]
+    sys.modules[modname] = module
+    try:
+        with override_settings(ROOT_URLCONF=modname):
+            clear_url_caches()
+            url = reverse(child.get_router_name("list"), kwargs={child.parent.get_pk_name(): 1})
+            with pytest.raises(ImproperlyConfigured, match=expected):
+                Client().get(url)
+    finally:
+        sys.modules.pop(modname, None)
+        clear_url_caches()
+    assert lookups == []
 
 
 def test_supported_relationships_validate(sfx, bounded, no_db):

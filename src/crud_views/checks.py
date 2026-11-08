@@ -8,6 +8,7 @@ from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from crud_views.lib import assets
 from crud_views.lib import ordered as ordered_helper
 from crud_views.lib import pipeline as pipeline_helper
+from crud_views.lib.ancestors import _AncestryError, _validate_ancestor_structure
 from crud_views.lib.button_classes import button_class_check_messages
 from crud_views.lib.conditional.group import ConditionalGroupFormMixin, resolve_conditional_empty_value
 from crud_views.lib.formsets.formsets import FormSet
@@ -29,6 +30,41 @@ def check_viewsets(app_configs=None, **kwargs):
         for message in check.messages():
             errors.append(message)
     return errors
+
+
+def _ancestor_structure_messages(viewsets) -> list:
+    """viewset.E266 for every nested ViewSet whose declared ancestry cannot be walked or expressed: a cycle, an
+    unregistered parent or an unsupported relationship. Declarations and model metadata only — no database.
+
+    A Resource parent is not repeated here: the owning child ViewSet already reports that edge once as
+    viewset.E261 (ViewSet.checks()). URL construction and requests raise ImproperlyConfigured for all kinds.
+    """
+    messages = []
+    for viewset in viewsets:
+        if viewset.parent is None:
+            continue
+        try:
+            _validate_ancestor_structure(viewset)
+        except _AncestryError as exc:
+            if exc.kind == "resource_parent":
+                continue
+            messages.append(
+                Error(
+                    str(exc),
+                    hint="Fix the ParentViewSet declaration (name, attribute, many_to_many_through_attribute).",
+                    obj=viewset,
+                    id="viewset.E266",
+                )
+            )
+    return messages
+
+
+@register(TAG)
+def check_ancestor_declarations(app_configs=None, **kwargs):
+    """Ancestor structure of every registered nested ViewSet (phase 06.18)."""
+    with _REGISTRY_LOCK:
+        viewsets = list(_REGISTRY.values())
+    return _ancestor_structure_messages(viewsets)
 
 
 def _formset_uses_ordering(formset: FormSet) -> bool:

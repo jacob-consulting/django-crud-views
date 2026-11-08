@@ -25,7 +25,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured, PermissionDenied
 from django.http import Http404
 
 from crud_views.lib.ancestor_policy import AncestorPermissions
@@ -51,12 +51,25 @@ class _AncestorState:
         return self.objects[0]
 
 
-def _walk_ancestors(viewset: ViewSet) -> list[tuple[ParentViewSet, ViewSet]]:
+class _AncestryError(ImproperlyConfigured):
+    """A declared ancestry that cannot be walked or expressed. ``kind`` is one of ``"missing"``, ``"cycle"``,
+    ``"resource_parent"`` or ``"relation"`` (the system check maps kinds to its messages)."""
+
+    def __init__(self, message: str, *, kind: str):
+        super().__init__(message)
+        self.kind = kind
+
+
+def _walk_ancestors(viewset: ViewSet, *, first_only: bool = False) -> list[tuple[ParentViewSet, ViewSet]]:
     """Declared ancestry of ``viewset``, nearest first, as ``(edge, ancestor)`` pairs.
 
     ``edge`` is the ``ParentViewSet`` declaration pointing at ``ancestor`` (its URL PK name and the relation
-    attribute on the model below it). The walk is bounded: a missing or repeated ViewSet raises
-    ``ImproperlyConfigured`` instead of looping. It touches no database.
+    attribute on the model below it). The walk is bounded by the visited ViewSet names: a missing or repeated
+    ViewSet raises ``ImproperlyConfigured`` naming the chain instead of looping. ``first_only`` stops after the
+    immediate edge. It reads only the registry and declarations — no database.
+
+    Every supported ancestry walk (URL construction, the parent URL-argument/attribute helpers, the scoped
+    queryset and the request guard) goes through this function.
     """
     chain: list[tuple[ParentViewSet, ViewSet]] = []
     seen = [viewset.name]
@@ -65,18 +78,107 @@ def _walk_ancestors(viewset: ViewSet) -> list[tuple[ParentViewSet, ViewSet]]:
         try:
             ancestor = edge.viewset
         except ViewSetNotFoundError as exc:
-            raise ImproperlyConfigured(
+            raise _AncestryError(
                 f"ViewSet {viewset.name!r}: parent ViewSet {edge.name!r} is not registered "
-                f"(ancestry {' -> '.join(seen)} -> {edge.name})"
+                f"(ancestry {' -> '.join(seen)} -> {edge.name})",
+                kind="missing",
             ) from exc
         if ancestor.name in seen:
-            raise ImproperlyConfigured(
-                f"ViewSet {viewset.name!r}: ancestry cycle {' -> '.join(seen)} -> {ancestor.name}"
+            raise _AncestryError(
+                f"ViewSet {viewset.name!r}: ancestry cycle {' -> '.join(seen)} -> {ancestor.name}", kind="cycle"
             )
         seen.append(ancestor.name)
         chain.append((edge, ancestor))
+        if first_only:
+            break
         edge = ancestor.parent
     return chain
+
+
+def _validate_ancestor_structure(viewset: ViewSet, *, relations: bool = True) -> list[tuple[ParentViewSet, ViewSet]]:
+    """The bounded ancestry of ``viewset`` (see ``_walk_ancestors``) after validating every declared edge.
+
+    A Resource may only be the requested leaf: a Resource ancestor is rejected. With ``relations`` each ORM edge
+    must name one supported relation on the model below it (see ``_validate_relationship``); the edge below a
+    Resource leaf is application-scoped and not inspected. Model metadata only — no database, no permission
+    vocabulary. URL construction passes ``relations=False``: it needs a finite, Resource-free chain, while
+    relationships are enforced by the system check and by the request guard before any lookup.
+    """
+    chain = _walk_ancestors(viewset)
+    below = viewset
+    for edge, ancestor in chain:
+        if ancestor.is_resource:
+            names = " -> ".join([viewset.name, *(a.name for _, a in chain)])
+            raise _AncestryError(
+                f"ViewSet {viewset.name!r}: ancestor ViewSet {ancestor.name!r} is Resource-based — a Resource can "
+                f"only be the requested leaf (ancestry {names})",
+                kind="resource_parent",
+            )
+        if relations and not below.is_resource:
+            _validate_relationship(viewset, below, edge, ancestor)
+        below = ancestor
+    return chain
+
+
+def _validate_relationship(viewset: ViewSet, below: ViewSet, edge: ParentViewSet, ancestor: ViewSet) -> None:
+    """``edge`` must name one relation on ``below.model`` that points to ``ancestor.model``.
+
+    Supported: a forward FK/one-to-one, a reverse relation or a many-to-many (forward or reverse), queried as
+    ``<attribute>__pk``. A declared ``many_to_many_through_attribute`` must be a many-to-many relation on the
+    ancestor model pointing back to ``below.model`` (the create attachment uses it). Rejected: a missing field,
+    a non-relational or generic field, a relation to another model and a ``__`` relation path.
+    """
+    model, target = below.model, ancestor.model
+    attribute = edge.get_attribute()
+    where = f"ViewSet {viewset.name!r}: relation {below.name!r} -> parent ViewSet {ancestor.name!r}"
+    if "__" in attribute:
+        raise _AncestryError(
+            f"{where}: a relation path ({attribute!r}) is not supported; set ParentViewSet(attribute=...) to the "
+            f"single field of {model.__name__} pointing at {target.__name__}",
+            kind="relation",
+        )
+    try:
+        field = model._meta.get_field(attribute)
+    except FieldDoesNotExist:
+        raise _AncestryError(
+            f"{where}: {model.__name__} has no field {attribute!r}; set ParentViewSet(attribute=...) to the field "
+            f"of {model.__name__} pointing at {target.__name__}",
+            kind="relation",
+        ) from None
+    related = getattr(field, "related_model", None)
+    if not field.is_relation or not isinstance(related, type):
+        raise _AncestryError(
+            f"{where}: {model.__name__} field {attribute!r} is not a relation to {target.__name__} "
+            f"(generic relations are not supported)",
+            kind="relation",
+        )
+    if not issubclass(target, related):
+        raise _AncestryError(
+            f"{where}: {model.__name__}.{attribute} points to {related.__name__}, not {target.__name__}",
+            kind="relation",
+        )
+    through = edge.many_to_many_through_attribute
+    if through is None:
+        return
+    if not field.many_to_many:
+        raise _AncestryError(
+            f"{where}: many_to_many_through_attribute requires attribute {attribute!r} to be a many-to-many "
+            f"relation, but {model.__name__}.{attribute} is not",
+            kind="relation",
+        )
+    try:
+        back = target._meta.get_field(through)
+    except FieldDoesNotExist:
+        raise _AncestryError(
+            f"{where}: {target.__name__} has no field {through!r} (many_to_many_through_attribute)", kind="relation"
+        ) from None
+    back_related = getattr(back, "related_model", None)
+    if not back.many_to_many or not isinstance(back_related, type) or not issubclass(model, back_related):
+        raise _AncestryError(
+            f"{where}: many_to_many_through_attribute {through!r} of {target.__name__} is not a many-to-many "
+            f"relation to {model.__name__}",
+            kind="relation",
+        )
 
 
 def _family(view_class: type[CrudView]) -> str | None:
@@ -171,10 +273,11 @@ def _authorize_ancestors(view: CrudView):
     viewset = view.cv_viewset
     if viewset is None or viewset.parent is None:
         return None
+    # static validation first: structure and relationships, before any actor, object or permission work
+    chain = _validate_ancestor_structure(viewset)
     pair = _operation_requirements(type(view))
     if pair is None:
         return None
-    chain = _walk_ancestors(viewset)
     selected = _selected_gates(viewset, chain)
 
     user = view.request.user

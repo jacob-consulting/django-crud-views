@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, PrivateAttr, field_validator, model_valid
 
 from crud_views.lib.ancestor_policy import AncestorPermissions as AncestorPermissions
 from crud_views.lib.ancestor_policy import AncestorPolicy
+from crud_views.lib.ancestors import _validate_ancestor_structure, _walk_ancestors
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ViewSetNotFoundError, cv_raise
 from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
@@ -251,7 +252,8 @@ class ViewSet(BaseModel):
                     ),
                 )
 
-        if self.parent is not None:
+        # a missing parent is reported by the ancestor structure check (crud_views.checks), not as a crash here
+        if self.parent is not None and self.parent.name in _REGISTRY:
             yield CheckExpression(
                 context=self,
                 id="E261",
@@ -275,18 +277,10 @@ class ViewSet(BaseModel):
         """
         Get url args for all parents
         """
-        args = []
-
-        # iterate over parents
-        if self.parent:
-            parent = self.parent
-            while parent is not None:
-                arg = parent.get_pk_name()
-                if first_only:
-                    return arg
-                args.append(parent.get_pk_name())
-                parent = parent.viewset.parent
-
+        # bounded walk (crud_views.lib.ancestors): a cycle or missing parent raises ImproperlyConfigured
+        args = [edge.get_pk_name() for edge, _ in _walk_ancestors(self, first_only=first_only)]
+        if first_only and args:
+            return args[0]
         return args
 
     @property
@@ -302,18 +296,9 @@ class ViewSet(BaseModel):
         """
         Get url args for all parents
         """
-        attrs = []
-
-        # iterate over parents
-        if self.parent:
-            parent = self.parent
-            while parent is not None:
-                attr = parent.get_attribute()
-                if first_only:
-                    return attr
-                attrs.append(parent.get_attribute())
-                parent = parent.viewset.parent
-
+        attrs = [edge.get_attribute() for edge, _ in _walk_ancestors(self, first_only=first_only)]
+        if first_only and attrs:
+            return attrs[0]
         return attrs
 
     def get_queryset(self, view: CrudView) -> QuerySet:
@@ -328,18 +313,10 @@ class ViewSet(BaseModel):
 
         q_kwargs = {}
         if self.parent:
-            parent = self.parent
             attribute = None
-            while parent is not None:
-                # parent args
-                pk_name = parent.get_pk_name()
-                attribute = parent.get_attribute() if attribute is None else f"{attribute}__{parent.get_attribute()}"
-
-                # generate q-args
-                q_kwargs.update({f"{attribute}__pk": view.kwargs[pk_name]})
-
-                # proceed to next parent
-                parent = parent.viewset.parent
+            for edge, _ancestor in _walk_ancestors(self):  # bounded: a cycle or missing parent raises
+                attribute = edge.get_attribute() if attribute is None else f"{attribute}__{edge.get_attribute()}"
+                q_kwargs[f"{attribute}__pk"] = view.kwargs[edge.get_pk_name()]
 
             queryset = self.model.objects.filter(Q(**q_kwargs))
 
@@ -402,14 +379,9 @@ class ViewSet(BaseModel):
         Return path_parent of URL pattern [path_parent/]path_prefix/[path_pk/]path_view/
         """
         paths = []
-
-        parent = self.parent
-        while parent:
-            path_prefix = parent.viewset.get_path_prefix()
-            path_pk = path_regs.get_path_pk(parent.get_pk_name(), parent.viewset.pk) + "/"
-            path = f"{path_prefix}{path_pk}"
-            paths.insert(0, path)
-            parent = parent.viewset.parent
+        for edge, ancestor in _walk_ancestors(self):  # bounded: a cycle or missing parent raises
+            path_pk = path_regs.get_path_pk(edge.get_pk_name(), ancestor.pk) + "/"
+            paths.insert(0, f"{ancestor.get_path_prefix()}{path_pk}")
 
         path_parent = "".join(paths)
         return path_parent
@@ -446,6 +418,12 @@ class ViewSet(BaseModel):
 
         # check if any views are registered
         cv_raise(len(self._views.keys()) > 0, f"no views registered at {self}")
+
+        # URLconf import may precede system checks: the declared ancestry must be finite, resolved and free of
+        # Resource ancestors before any parent path is built (ImproperlyConfigured otherwise). Relationships are
+        # enforced by the ancestor system check and by the request guard before any lookup.
+        if self.parent is not None:
+            _validate_ancestor_structure(self, relations=False)
 
         urlpatterns = []
 

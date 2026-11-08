@@ -7,6 +7,22 @@ these guards, so their existing database behavior is unchanged.
 
 The guards inspect selections (``QuerySet.db``, ``Model._state.db``, ``router.db_for_read/write``); they never run a
 query and never intercept SQL. They are bounded to the Django auth and Guardian tables the shipped providers read.
+
+Where the guards are called (each only on a nested path):
+
+- ancestor traversal, ``crud_views/lib/view/ancestors.py``: ``_resolve()`` (each ancestor queryset) and
+  ``_validate_gate_databases()`` (auth records before a reached ancestor gate, also for
+  ``immediate_parent_has_permission()``)
+- child data, ``CrudView`` in ``crud_views/lib/view/base.py``: ``get_queryset()``, ``get_object()`` (the queryset
+  used and the loaded object) and ``get_context_data()`` (the effective list ``object_list`` before pagination)
+- child writes, ``CrudView.cv_get_db_alias()`` (the routed write alias) and ``CrudView._cv_require_default_write()``
+  (the pinned alias and the model's write route), which the write phases call when they pin their alias:
+  ``CrudViewProcessFormMixin.cv_form_valid_process()``, ``ActionView.cv_action_process()``,
+  ``DeleteView.cv_get_delete_db_alias()`` and ``WorkflowView._cv_get_workflow_db_alias()`` (the last two because
+  their ``cv_get_db_alias()`` overrides bypass the base check)
+- local permission gates: ``CrudViewPermissionRequiredMixin.has_permission()`` (model auth records) and Guardian's
+  ``_validate_child_gate_databases()`` in ``GuardianObjectPermissionMixin.get_object()`` and
+  ``GuardianQuerysetMixin.get_queryset()`` (Guardian grant records)
 """
 
 from django.core.exceptions import ImproperlyConfigured

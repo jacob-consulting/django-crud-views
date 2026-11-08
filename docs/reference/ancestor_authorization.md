@@ -237,8 +237,9 @@ A missing or unknown entry fails in both cascade modes, also when every ancestor
 
 - `manage.py check` reports `crud_views.E321`, naming the ViewSet and the missing `actions['<key>']` (or the key that
   is not registered).
-- A request to the endpoint raises `ImproperlyConfigured` before any lookup, for every actor. Rendering helpers that
-  check the endpoint (for example a context button) raise the same error.
+- A request to any view of the ViewSet raises `ImproperlyConfigured` before any lookup, for every actor. The Guardian
+  rendering helpers that check the endpoint's immediate parent (through `immediate_parent_has_permission`) raise the
+  same error for a missing entry; core context buttons do not consult the ancestor policy.
 
 Exceptions:
 

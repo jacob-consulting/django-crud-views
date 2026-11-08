@@ -383,7 +383,8 @@ objects and reparenting belong to the endpoint or application. For example, leav
 edit forms and offer a separate move action that checks the destination:
 
 ```python
-from django.core.exceptions import PermissionDenied
+from django import forms
+from django.core.exceptions import PermissionDenied, ValidationError
 
 from crud_views.lib.crispy import CrispyModelForm
 from crud_views.lib.views import ActionViewPermissionRequired
@@ -402,9 +403,16 @@ class BookMoveView(ActionViewPermissionRequired):
     cv_permission = "change"
 
     def action(self, context) -> bool:
-        target = cv_publisher.get_queryset(view=self).get(pk=self.request.POST["publisher"])
-        if not self.request.user.has_perm("app.change_publisher", target):
+        user = self.request.user
+        # core ViewSet parent (model provider): require the model permission on the destination
+        if not user.has_perm(cv_publisher.permissions["change"]):
             raise PermissionDenied
+        destinations = cv_publisher.get_queryset(view=self)  # only destinations visible in the parent's scope
+        # GuardianViewSet parent instead: destinations = cv_publisher.get_objects_for_user(user, "change")
+        try:
+            target = forms.ModelChoiceField(queryset=destinations).clean(self.request.POST.get("publisher"))
+        except ValidationError:
+            return False  # missing, malformed or invisible destination: the action's error path, no write
         self.object.publisher = target
         self.object.save(update_fields=["publisher"])
         return True

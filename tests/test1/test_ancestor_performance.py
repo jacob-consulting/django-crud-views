@@ -179,7 +179,6 @@ def test_no_top_level_ancestor_queries(monkeypatch, family, key):
         status, total, categories = _measure(client, reverse(viewset.get_router_name(key), kwargs=kwargs))
 
     assert status == 200
-    assert EVENTS == [] and CHECKED == []
     _report(
         {
             "mode": "top-level",

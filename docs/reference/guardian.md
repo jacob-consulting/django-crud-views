@@ -372,8 +372,10 @@ parent-access or general URL-resolution API is introduced by this correction.
 
 ### Custom child-view compositions
 
-Prefer the shipped `Guardian*ViewPermissionRequired` classes. `GuardianParentPermissionMixin` authorizes the
-URL parent; it does not replace authorization of the child row or queryset. A custom nested object view must
+Prefer the shipped `Guardian*ViewPermissionRequired` classes. `GuardianParentPermissionMixin` is a composition
+and state adapter: it runs the shared [ancestor authorization](ancestor_authorization.md) first in `dispatch()`, keeps
+the Guardian actor rules and the nested create state gate, and does not replace authorization of the child row or
+queryset. A custom nested object view must
 also include `GuardianObjectPermissionMixin`, and a nested list/card view must include `GuardianQuerysetMixin`,
 before the core view class in the inheritance list. For example:
 

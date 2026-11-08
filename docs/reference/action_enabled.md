@@ -99,9 +99,10 @@ calls `cv_get_action_object()` then `cv_action_enabled()`. Returning `False` cau
 - `GuardianObjectPermissionMixin.get_object()` — for object actions (detail, update, delete,
   action views). After the per-object guardian check, it calls `cv_action_enabled()` and raises
   `PermissionDenied` if it returns `False`.
-- `GuardianParentPermissionMixin.dispatch()` — for child-create views. After checking the parent
-  permission, it calls `cv_action_enabled()` with the resolved parent and raises `PermissionDenied`
-  if it returns `False`.
+- `GuardianParentPermissionMixin.dispatch()` — for child-create views. After the shared
+  [ancestor authorization](ancestor_authorization.md) has passed (the mixin is a composition and state adapter;
+  it does not check parent permissions itself), it calls `cv_action_enabled()` with the resolved parent and raises
+  `PermissionDenied` if it returns `False`.
 
 ## See Also
 

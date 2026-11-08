@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: executing
-stopped_at: Completed 06.18-03-PLAN.md
-last_updated: "2026-11-08T18:45:03.515Z"
+stopped_at: Completed 06.18-04-PLAN.md
+last_updated: "2026-11-08T19:21:29.240Z"
 last_activity: 2026-11-08
 last_activity_desc: Phase 06.18 plan 01 complete
-state_head: cc18683ead537cb6ab30281c5d65f850d27b7e79
+state_head: ba0aad5618d1cfc585d42da100698eeaa6863c38
 progress:
   total_phases: 24
   completed_phases: 22
   total_plans: 149
-  completed_plans: 140
+  completed_plans: 141
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 ## Current Position
 
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
-Plan: 4 of 12
+Plan: 5 of 12
 Status: Ready to execute
 Last activity: 2026-11-08 — Phase 06.18 plan 02 complete
 
@@ -760,6 +760,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P01 | 30 min | 2 tasks | 8 files |
 | Phase 06.18 P02 | 37min | 3 tasks | 12 files |
 | Phase 06.18 P03 | 19min | 3 tasks | 12 files |
+| Phase 06.18 P04 | 33 min | 2 tasks | 7 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -974,6 +975,9 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-03: Guardian dispatch bridge order is composition error, configured anonymous response, inactive 403, shared ancestor guard, then the no-object state gate on the guard's resolved parent; no second parent lookup
 - [Phase 06.18]: 06.18-03: Rendering/access helpers use _immediate_parent_access (immediate parent provider + target nearest key, provider none skips only that gate, no farther ancestor or lookup)
 - [Phase 06.18]: 06.18-03: cv_guardian_parent_permission / cv_guardian_parent_create_permission removed; constructor and subclass declarations raise ValidationError before registration
+- [Phase 06.18]: 06.18-04: CrudViewPermissionRequiredMixin.dispatch and ManageView.dispatch run the idempotent ancestor guard before PermissionRequiredMixin's state-/group-loading has_permission(); every shipped composition reaches the guard at its first dispatch
+- [Phase 06.18]: 06.18-04: actor admission via private _cv_ancestor_actor_response(protected=...) adapters — protected ancestry denies anonymous (endpoint response) and inactive (403); all-none keeps only the endpoint's own early rule (core: model permission for anonymous/inactive only, plain: public, Guardian: configured rules, manage: actual yes/debug_only, anonymous denied)
+- [Phase 06.18]: 06.18-04: H1-fragment closed with Publisher change grants; test_resource_views.py::test_nested_detail_scoped_to_parent_404 newly exposed (403 before the Resource loader) and handed to 05.2 with the three H1-resource rows (WINDOWS entry 39)
 
 ### Pending Todos
 
@@ -1039,6 +1043,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T18:45:00.840Z
-Stopped at: Completed 06.18-03-PLAN.md
+Last session: 2026-11-08T19:21:26.246Z
+Stopped at: Completed 06.18-04-PLAN.md
 Resume file: None

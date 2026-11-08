@@ -1180,7 +1180,7 @@ about genuine conflicts supported by new code evidence. Developer maintainabilit
 Full ancestor-aware navigation, Resource ancestors, nondefault nested ORM/auth support, destination-parent or
 all-membership authorization, generic mutation engines and persistent authorization caches remain out of scope.
 This insertion assigns the phase; detailed planning and implementation remain pending.
-**Plans:** 2/12 plans executed
+**Plans:** 3/12 plans executed
 
 Plans:
 **Wave 1**
@@ -1190,7 +1190,7 @@ Plans:
 - [x] 06.18-02-PLAN.md — Bound ancestry walks and classify exact endpoint operations
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.18-03-PLAN.md — Integrate Guardian ancestry and retire legacy parent policy
+- [x] 06.18-03-PLAN.md — Integrate Guardian ancestry and retire legacy parent policy
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06.18-04-PLAN.md — Preserve early admission and enforce ordering across shipped MROs
@@ -1314,5 +1314,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.13.1. Workflow validation and execution | 5/5 | Complete    | 2026-11-06 |
 | 6.14. Card template insertion blocks and cards-first ViewSets | 2/2 | Complete | 2026-11-06 |
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
-| 06.18. Ancestor authorization for nested ViewSets | 2/12 | In Progress | - |
+| 06.18. Ancestor authorization for nested ViewSets | 3/12 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

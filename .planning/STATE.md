@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: executing
-stopped_at: Completed 06.18-02-PLAN.md
-last_updated: "2026-11-08T18:18:09.783Z"
+stopped_at: Completed 06.18-03-PLAN.md
+last_updated: "2026-11-08T18:45:03.515Z"
 last_activity: 2026-11-08
 last_activity_desc: Phase 06.18 plan 01 complete
-state_head: 778ee14d4e0f2b7d51733c6da4dc2488d6526826
+state_head: cc18683ead537cb6ab30281c5d65f850d27b7e79
 progress:
   total_phases: 24
   completed_phases: 22
   total_plans: 149
-  completed_plans: 139
+  completed_plans: 140
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 ## Current Position
 
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
-Plan: 3 of 12
+Plan: 4 of 12
 Status: Ready to execute
 Last activity: 2026-11-08 — Phase 06.18 plan 02 complete
 
@@ -759,6 +759,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.17 P03 | 10min | 3 tasks | 12 files |
 | Phase 06.18 P01 | 30 min | 2 tasks | 8 files |
 | Phase 06.18 P02 | 37min | 3 tasks | 12 files |
+| Phase 06.18 P03 | 19min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -969,6 +970,10 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-02: check IDs viewset.E266 (ancestry structure), E267 (unregistered actions key), E268 (nested custom endpoint without its entry); Resource parents keep the single viewset.E261
 - [Phase 06.18]: 06.18-02: urlpatterns validates only a finite, resolved, Resource-free chain; relationships are E266 plus the request guard
 - [Phase 06.18]: 06.18-02: completion-dependent checks run after a bounded root/included URLconf import and are deferred without ROOT_URLCONF or on failed/reentrant import
+- [Phase 06.18]: 06.18-03: GuardianViewSet ancestors default to a strict object gate (direct/group grants, guardian.ctypes content types); model fallback only from the ancestor's own ancestor_policy.accept_global_perms, never from a child view's cv_guardian_accept_global_perms
+- [Phase 06.18]: 06.18-03: Guardian dispatch bridge order is composition error, configured anonymous response, inactive 403, shared ancestor guard, then the no-object state gate on the guard's resolved parent; no second parent lookup
+- [Phase 06.18]: 06.18-03: Rendering/access helpers use _immediate_parent_access (immediate parent provider + target nearest key, provider none skips only that gate, no farther ancestor or lookup)
+- [Phase 06.18]: 06.18-03: cv_guardian_parent_permission / cv_guardian_parent_create_permission removed; constructor and subclass declarations raise ValidationError before registration
 
 ### Pending Todos
 
@@ -1034,6 +1039,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T18:18:06.778Z
-Stopped at: Completed 06.18-02-PLAN.md
+Last session: 2026-11-08T18:45:00.840Z
+Stopped at: Completed 06.18-03-PLAN.md
 Resume file: None

@@ -1,0 +1,1056 @@
+bringing up nodes...
+bringing up nodes...
+
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFFFFFFFF.FF.FFF.F.... [ 56%]
+.......................................F..FFFF....F.F.F.                 [100%]
+=================================== FAILURES ===================================
+______________ test_family_inventory[read-crud_views.DetailView] _______________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.detail.DetailView'>, family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_____ test_family_inventory[read-crud_views.DetailViewPermissionRequired] ______
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.detail.DetailViewPermissionRequired'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+____ test_family_inventory[read-crud_views_object_detail.ObjectDetailView] _____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_object_detail.lib.views.ObjectDetailView'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[read-crud_views_object_detail.ObjectDetailViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_object_detail.lib.views.ObjectDetailViewPermissionRequired'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+___ test_family_inventory[read-crud_views_polymorphic.PolymorphicDetailView] ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.detail.PolymorphicDetailView'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[read-crud_views_polymorphic.PolymorphicDetailViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.detail.PolymorphicDetailViewPermissionRequired'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+___________ test_family_inventory[read-crud_views.RedirectChildView] ___________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.child.RedirectChildView'>, family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+______________ test_family_inventory[read-crud_views.ManageView] _______________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.manage.ManageView'>, family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+______ test_family_inventory[read-crud_views_guardian.GuardianManageView] ______
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_guardian.lib.views.GuardianManageView'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[read-crud_views_guardian.GuardianListViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_guardian.lib.views.GuardianListViewPermissionRequired'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[read-crud_views_guardian.GuardianCardListViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_guardian.lib.views.GuardianCardListViewPermissionRequired'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[read-crud_views_guardian.GuardianDetailViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_guardian.lib.views.GuardianDetailViewPermissionRequired'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+______________ test_family_inventory[write-crud_views.CreateView] ______________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.create.CreateView'>, family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_____ test_family_inventory[write-crud_views.CreateViewPermissionRequired] _____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.create.CreateViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+______________ test_family_inventory[write-crud_views.UpdateView] ______________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.update.UpdateView'>, family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_____ test_family_inventory[write-crud_views.UpdateViewPermissionRequired] _____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.update.UpdateViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+______________ test_family_inventory[write-crud_views.DeleteView] ______________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.delete.DeleteView'>, family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_____ test_family_inventory[write-crud_views.DeleteViewPermissionRequired] _____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.delete.DeleteViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+__ test_family_inventory[write-crud_views_polymorphic.PolymorphicCreateView] ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.create.PolymorphicCreateView'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[write-crud_views_polymorphic.PolymorphicCreateViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.create.PolymorphicCreateViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+__ test_family_inventory[write-crud_views_polymorphic.PolymorphicUpdateView] ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.update.PolymorphicUpdateView'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[write-crud_views_polymorphic.PolymorphicUpdateViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.update.PolymorphicUpdateViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+__ test_family_inventory[write-crud_views_polymorphic.PolymorphicDeleteView] ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.delete.PolymorphicDeleteView'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[write-crud_views_polymorphic.PolymorphicDeleteViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.delete.PolymorphicDeleteViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[write-crud_views_polymorphic.PolymorphicCreateSelectView] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.create_select.PolymorphicCreateSelectView'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[write-crud_views_polymorphic.PolymorphicCreateSelectViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_polymorphic.lib.create_select.PolymorphicCreateSelectViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+____________ test_family_inventory[write-crud_views.OrderedUpView] _____________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.action_ordered.OrderedUpView'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+___ test_family_inventory[write-crud_views.OrderedUpViewPermissionRequired] ____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.action_ordered.OrderedUpViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+___________ test_family_inventory[write-crud_views.OrderedDownView] ____________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.action_ordered.OrderedDownView'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+___ test_family_inventory[write-crud_views.OrderedUpDownPermissionRequired] ____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.action_ordered.OrderedUpDownPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[write-crud_views_guardian.GuardianCreateViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_guardian.lib.views.GuardianCreateViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[write-crud_views_guardian.GuardianUpdateViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_guardian.lib.views.GuardianUpdateViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[write-crud_views_guardian.GuardianDeleteViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_guardian.lib.views.GuardianDeleteViewPermissionRequired'>
+family = 'write'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+______________ test_family_inventory[None-crud_views.ActionView] _______________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.action.ActionView'>, family = None
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_____ test_family_inventory[None-crud_views.ActionViewPermissionRequired] ______
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.action.ActionViewPermissionRequired'>
+family = None
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+____________ test_family_inventory[None-crud_views.CustomFormView] _____________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.form.CustomFormView'>, family = None
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+___ test_family_inventory[None-crud_views.CustomFormViewPermissionRequired] ____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.form.CustomFormViewPermissionRequired'>
+family = None
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+________ test_family_inventory[None-crud_views.CustomFormNoObjectView] _________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.form.CustomFormNoObjectView'>, family = None
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[None-crud_views.CustomFormNoObjectViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.form.CustomFormNoObjectViewPermissionRequired'>
+family = None
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_________ test_family_inventory[None-crud_views_workflow.WorkflowView] _________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_workflow.lib.views.WorkflowView'>, family = None
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[None-crud_views_workflow.WorkflowViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_workflow.lib.views.WorkflowViewPermissionRequired'>
+family = None
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_family_inventory[None-crud_views_guardian.GuardianActionViewPermissionRequired] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views_guardian.lib.views.GuardianActionViewPermissionRequired'>
+family = None
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+__ test_classification_ignores_key_names_local_permissions_and_django_detail ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+    def test_classification_ignores_key_names_local_permissions_and_django_detail():
+        from django.views.generic import DetailView as DjangoDetailView
+    
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:195: ImportError
+________________ test_selector_marker_is_private_and_inherited _________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+    def test_selector_marker_is_private_and_inherited():
+        from crud_views.lib.view import CrudView
+        from crud_views_polymorphic.lib import PolymorphicCreateSelectView
+    
+>       assert PolymorphicCreateSelectView._cv_ancestor_operation == "write"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: type object 'PolymorphicCreateSelectView' has no attribute '_cv_ancestor_operation'
+
+tests/test1/test_ancestor_operations.py:213: AttributeError
+________________ test_renamed_key_uses_its_literal_registration ________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = 'eb6e092f', no_db = None
+
+    def test_renamed_key_uses_its_literal_registration(registry, sfx, no_db):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:263: ImportError
+__________ test_card_only_accepts_card_and_rejects_unregistered_list ___________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '89d17b5a', no_db = None
+
+    def test_card_only_accepts_card_and_rejects_unregistered_list(registry, sfx, no_db):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:277: ImportError
+_________________ test_card_and_list_entries_stay_independent __________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '90a79166', no_db = None
+
+    def test_card_and_list_entries_stay_independent(registry, sfx, no_db):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:295: ImportError
+___ test_nested_custom_endpoint_requires_an_exact_entry[core-protected-True] ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = 'ed5ac3a5', no_db = None, cascade = True
+all_none = False, viewset_kind = 'core'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+_ test_nested_custom_request_without_entry_fails_before_any_lookup[all-none-False] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+chain_world = namespace(pub=<Publisher: Pub>, book=<Book: Book>, note=<BookNote: note>)
+events = [], sfx = '21e8ffda', cascade = False, all_none = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("cascade", [True, False])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    def test_nested_custom_request_without_entry_fails_before_any_lookup(chain_world, events, sfx, cascade, all_none):
+        none = AncestorPolicy(provider="none")
+        with _three_level(
+            sfx, pub=none if all_none else None, book=none if all_none else None, note=AncestorPolicy(cascade=cascade)
+        ) as ns:
+            user = _user(f"u_c_{sfx}", (Book, "change"), (Publisher, "view"))
+>           with pytest.raises(ImproperlyConfigured, match=r"'approve'"):
+E           Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_ancestor_operations.py:624: Failed
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Method Not Allowed (GET): /sel_pub_21e8ffda/1/sel_book_21e8ffda/1/sel_note_21e8ffda/1/
+__ test_nested_custom_endpoint_requires_an_exact_entry[core-protected-False] ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = 'a95785b2', no_db = None, cascade = False
+all_none = False, viewset_kind = 'core'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+___ test_nested_custom_endpoint_requires_an_exact_entry[core-protected-None] ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = 'dbf057c4', no_db = None, cascade = None
+all_none = False, viewset_kind = 'core'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+___ test_nested_custom_endpoint_requires_an_exact_entry[core-all-none-True] ____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '47d9cf6b', no_db = None, cascade = True, all_none = True
+viewset_kind = 'core'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+___ test_nested_custom_endpoint_requires_an_exact_entry[core-all-none-False] ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '9c144d6b', no_db = None, cascade = False
+all_none = True, viewset_kind = 'core'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+___ test_nested_custom_endpoint_requires_an_exact_entry[core-all-none-None] ____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = 'ff299d32', no_db = None, cascade = None, all_none = True
+viewset_kind = 'core'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+_ test_nested_custom_endpoint_requires_an_exact_entry[guardian-protected-True] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '18f56ffb', no_db = None, cascade = True
+all_none = False, viewset_kind = 'guardian'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+_ test_nested_custom_endpoint_requires_an_exact_entry[guardian-protected-False] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '4cfd4763', no_db = None, cascade = False
+all_none = False, viewset_kind = 'guardian'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+_ test_nested_custom_endpoint_requires_an_exact_entry[guardian-protected-None] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '1416081c', no_db = None, cascade = None
+all_none = False, viewset_kind = 'guardian'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+_ test_nested_custom_endpoint_requires_an_exact_entry[guardian-all-none-True] __
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = 'ab042238', no_db = None, cascade = True, all_none = True
+viewset_kind = 'guardian'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+_ test_nested_custom_endpoint_requires_an_exact_entry[guardian-all-none-False] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '386e6198', no_db = None, cascade = False
+all_none = True, viewset_kind = 'guardian'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+_ test_nested_custom_endpoint_requires_an_exact_entry[guardian-all-none-None] __
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '075e7c6d', no_db = None, cascade = None, all_none = True
+viewset_kind = 'guardian'
+
+    @pytest.mark.parametrize("cascade", [True, False, None])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    @pytest.mark.parametrize("viewset_kind", ["core", "guardian"])
+    def test_nested_custom_endpoint_requires_an_exact_entry(registry, sfx, no_db, cascade, all_none, viewset_kind):
+>       from crud_views.lib.ancestors import _operation_requirements, _validate_action_declarations
+E       ImportError: cannot import name '_validate_action_declarations' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:317: ImportError
+________________ test_private_completed_registry_action_checks _________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '45f7d1ac', no_db = None
+
+    def test_private_completed_registry_action_checks(registry, sfx, no_db):
+        _, unknown = _nested(sfx + "u", policy=AncestorPolicy(actions={"nope": READ}))
+        _view(_core("ListView"), unknown)
+        _, missing = _nested(sfx + "m")
+        _view(_core("ActionView"), missing, key="approve")
+        _, complete = _nested(sfx + "c", policy=AncestorPolicy(actions={"approve": WRITE}))
+        _view(_core("ActionView"), complete, key="approve")
+        _view(_core("ListView"), complete)
+        _, card_only = _nested(sfx + "k", policy=AncestorPolicy(actions={"list": READ}))
+        _view(_core("CardListView"), card_only)
+        top = ViewSet(model=Publisher, name=f"op_top_{sfx}")
+        _view(_core("ActionView"), top, key="approve")  # top-level custom endpoints need no declaration
+    
+>       assert _action_messages(unknown, missing, complete, card_only, top) == [
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            ("viewset.E267", unknown.name),
+            ("viewset.E268", missing.name),
+            ("viewset.E267", card_only.name),
+        ]
+
+tests/test1/test_ancestor_operations.py:356: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+viewsets = (ViewSet(op_book_45f7d1acu), ViewSet(op_book_45f7d1acm), ViewSet(op_book_45f7d1acc), ViewSet(op_book_45f7d1ack), ViewSet(op_top_45f7d1ac))
+
+    def _action_messages(*viewsets):
+>       from crud_views.checks import _ancestor_action_messages
+E       ImportError: cannot import name '_ancestor_action_messages' from 'crud_views.checks' (/home/alex/projects/alex/django-crud-views/src/crud_views/checks.py)
+
+tests/test1/test_ancestor_operations.py:338: ImportError
+_______ test_barrier_imports_root_and_included_urlconfs_before_snapshot ________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '98b11017', no_db = None
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-2326/popen-gw3/test_barrier_imports_root_and_0')
+late_modules = namespace(root='op_root_98b11017', inner='op_inner_98b11017', late='op_late_98b11017')
+
+    def test_barrier_imports_root_and_included_urlconfs_before_snapshot(registry, sfx, no_db, tmp_path, late_modules):
+        from crud_views.checks import check_ancestor_declarations
+    
+        _, early = _nested(sfx, policy=AncestorPolicy(actions={"approve": WRITE}))
+        _view(_core("ListView"), early)
+        _, invalid = _nested(sfx + "i", policy=AncestorPolicy(actions={"nope": WRITE}))
+        _view(_core("ListView"), invalid)
+        _write_module(tmp_path, late_modules.late, _late_view_source(early.name))
+        _write_module(tmp_path, late_modules.inner, f"import {late_modules.late}\nurlpatterns = []\n")
+        _write_module(
+            tmp_path,
+            late_modules.root,
+            f"from django.urls import include, path\nurlpatterns = [path('x/', include({late_modules.inner!r}))]\n",
+        )
+        assert not early.is_view_registered("approve")
+        with override_settings(ROOT_URLCONF=late_modules.root):
+            clear_url_caches()
+            first = check_ancestor_declarations()
+>           assert early.is_view_registered("approve")  # registered by the late import, not reported missing
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert False
+E            +  where False = is_view_registered('approve')
+E            +    where is_view_registered = ViewSet(op_book_98b11017).is_view_registered
+
+tests/test1/test_ancestor_operations.py:413: AssertionError
+_________ test_absent_urlconf_defers_only_completion_dependent_checks __________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '552c2673', no_db = None
+
+    def test_absent_urlconf_defers_only_completion_dependent_checks(registry, sfx, no_db):
+        from crud_views.checks import check_ancestor_declarations
+    
+        _, invalid = _nested(sfx, policy=AncestorPolicy(actions={"nope": WRITE}))
+        _view(_core("ActionView"), invalid, key="approve")
+        orphan = ViewSet(model=Book, name=f"op_orphan_{sfx}", parent=ParentViewSet(name=f"op_later_{sfx}"))
+        cyclic = ViewSet(model=Book, name=f"op_cyc_{sfx}", parent=ParentViewSet(name=f"op_cyc_{sfx}"))
+        with override_settings(ROOT_URLCONF=None):
+            messages = check_ancestor_declarations()
+        # action keys, missing entries and unresolved parents wait for completion; a cycle is reported now
+>       assert _ours(messages, invalid, orphan, cyclic) == [("viewset.E266", cyclic.name)]
+E       AssertionError: assert [('viewset.E2...an_552c2673')] == [('viewset.E2...yc_552c2673')]
+E         
+E         Left contains one more item: ('viewset.E266', 'op_orphan_552c2673')
+E         Use -v to get more diff
+
+tests/test1/test_ancestor_operations.py:429: AssertionError
+______________ test_reentrant_check_during_urlconf_import_defers _______________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+registry = None, sfx = '0c5a3b77', no_db = None
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-2326/popen-gw3/test_reentrant_check_during_ur0')
+late_modules = namespace(root='op_root_0c5a3b77', inner='op_inner_0c5a3b77', late='op_late_0c5a3b77')
+
+    def test_reentrant_check_during_urlconf_import_defers(registry, sfx, no_db, tmp_path, late_modules):
+        _, early = _nested(sfx, policy=AncestorPolicy(actions={"approve": WRITE}))
+        _view(_core("ListView"), early)
+        _write_module(tmp_path, late_modules.late, _late_view_source(early.name))
+        _write_module(
+            tmp_path,
+            late_modules.root,
+            "from crud_views.checks import check_ancestor_declarations\n"
+            "DURING_IMPORT = check_ancestor_declarations()\n"
+            f"import {late_modules.late}\n"
+            "urlpatterns = []\n",
+        )
+        from crud_views.checks import check_ancestor_declarations
+    
+        with override_settings(ROOT_URLCONF=late_modules.root):
+            clear_url_caches()
+            after = check_ancestor_declarations()
+>           during = sys.modules[late_modules.root].DURING_IMPORT
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'op_root_0c5a3b77'
+
+tests/test1/test_ancestor_operations.py:461: KeyError
+________________ test_unknown_action_key_fails_nested_requests _________________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+chain_world = namespace(pub=<Publisher: Pub>, book=<Book: Book>, note=<BookNote: note>)
+sfx = '1482b69e'
+
+    @pytest.mark.django_db
+    def test_unknown_action_key_fails_nested_requests(chain_world, sfx):
+        with _three_level(sfx, note=AncestorPolicy(actions={"nope": READ})) as ns:
+            user = _user(f"u_k_{sfx}", (Book, "view"), (Publisher, "view"))
+>           with pytest.raises(ImproperlyConfigured, match=r"actions\['nope'\]"):
+E           Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_ancestor_operations.py:642: Failed
+_______________ test_family_inventory[read-crud_views.ListView] ________________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.list.ListView'>, family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+______ test_family_inventory[read-crud_views.ListViewPermissionRequired] _______
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.list.ListViewPermissionRequired'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_____________ test_family_inventory[read-crud_views.CardListView] ______________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.card.CardListView'>, family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+____ test_family_inventory[read-crud_views.CardListViewPermissionRequired] _____
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cls = <class 'crud_views.lib.views.card.CardListViewPermissionRequired'>
+family = 'read'
+
+    @pytest.mark.parametrize(("cls", "family"), list(_family_cases()))
+    def test_family_inventory(cls, family):
+>       from crud_views.lib.ancestors import _operation_family
+E       ImportError: cannot import name '_operation_family' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_operations.py:184: ImportError
+_ test_nested_custom_request_without_entry_fails_before_any_lookup[protected-True] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+chain_world = namespace(pub=<Publisher: Pub>, book=<Book: Book>, note=<BookNote: note>)
+events = [], sfx = 'ea2d5cd8', cascade = True, all_none = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("cascade", [True, False])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    def test_nested_custom_request_without_entry_fails_before_any_lookup(chain_world, events, sfx, cascade, all_none):
+        none = AncestorPolicy(provider="none")
+        with _three_level(
+            sfx, pub=none if all_none else None, book=none if all_none else None, note=AncestorPolicy(cascade=cascade)
+        ) as ns:
+            user = _user(f"u_c_{sfx}", (Book, "change"), (Publisher, "view"))
+>           with pytest.raises(ImproperlyConfigured, match=r"'approve'"):
+E           Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_ancestor_operations.py:624: Failed
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Method Not Allowed (GET): /sel_pub_ea2d5cd8/1/sel_book_ea2d5cd8/1/sel_note_ea2d5cd8/1/
+_ test_nested_custom_request_without_entry_fails_before_any_lookup[protected-False] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+chain_world = namespace(pub=<Publisher: Pub>, book=<Book: Book>, note=<BookNote: note>)
+events = [], sfx = 'd633afee', cascade = False, all_none = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("cascade", [True, False])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    def test_nested_custom_request_without_entry_fails_before_any_lookup(chain_world, events, sfx, cascade, all_none):
+        none = AncestorPolicy(provider="none")
+        with _three_level(
+            sfx, pub=none if all_none else None, book=none if all_none else None, note=AncestorPolicy(cascade=cascade)
+        ) as ns:
+            user = _user(f"u_c_{sfx}", (Book, "change"), (Publisher, "view"))
+>           with pytest.raises(ImproperlyConfigured, match=r"'approve'"):
+E           Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_ancestor_operations.py:624: Failed
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Method Not Allowed (GET): /sel_pub_d633afee/1/sel_book_d633afee/1/sel_note_d633afee/1/
+_ test_nested_custom_request_without_entry_fails_before_any_lookup[all-none-True] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+chain_world = namespace(pub=<Publisher: Pub>, book=<Book: Book>, note=<BookNote: note>)
+events = [], sfx = '5c7d73c0', cascade = True, all_none = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("cascade", [True, False])
+    @pytest.mark.parametrize("all_none", [False, True], ids=["protected", "all-none"])
+    def test_nested_custom_request_without_entry_fails_before_any_lookup(chain_world, events, sfx, cascade, all_none):
+        none = AncestorPolicy(provider="none")
+        with _three_level(
+            sfx, pub=none if all_none else None, book=none if all_none else None, note=AncestorPolicy(cascade=cascade)
+        ) as ns:
+            user = _user(f"u_c_{sfx}", (Book, "change"), (Publisher, "view"))
+>           with pytest.raises(ImproperlyConfigured, match=r"'approve'"):
+E           Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_ancestor_operations.py:624: Failed
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Method Not Allowed (GET): /sel_pub_5c7d73c0/1/sel_book_5c7d73c0/1/sel_note_5c7d73c0/1/
+=========================== short test summary info ============================
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views.DetailView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views.DetailViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views_object_detail.ObjectDetailView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views_object_detail.ObjectDetailViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views_polymorphic.PolymorphicDetailView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views_polymorphic.PolymorphicDetailViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views.RedirectChildView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views.ManageView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views_guardian.GuardianManageView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views_guardian.GuardianListViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views_guardian.GuardianCardListViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views_guardian.GuardianDetailViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.CreateView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.CreateViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.UpdateView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.UpdateViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.DeleteView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.DeleteViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_polymorphic.PolymorphicCreateView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_polymorphic.PolymorphicCreateViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_polymorphic.PolymorphicUpdateView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_polymorphic.PolymorphicUpdateViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_polymorphic.PolymorphicDeleteView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_polymorphic.PolymorphicDeleteViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_polymorphic.PolymorphicCreateSelectView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_polymorphic.PolymorphicCreateSelectViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.OrderedUpView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.OrderedUpViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.OrderedDownView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views.OrderedUpDownPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_guardian.GuardianCreateViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_guardian.GuardianUpdateViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[write-crud_views_guardian.GuardianDeleteViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[None-crud_views.ActionView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[None-crud_views.ActionViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[None-crud_views.CustomFormView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[None-crud_views.CustomFormViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[None-crud_views.CustomFormNoObjectView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[None-crud_views.CustomFormNoObjectViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[None-crud_views_workflow.WorkflowView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[None-crud_views_workflow.WorkflowViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[None-crud_views_guardian.GuardianActionViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_classification_ignores_key_names_local_permissions_and_django_detail
+FAILED tests/test1/test_ancestor_operations.py::test_selector_marker_is_private_and_inherited
+FAILED tests/test1/test_ancestor_operations.py::test_renamed_key_uses_its_literal_registration
+FAILED tests/test1/test_ancestor_operations.py::test_card_only_accepts_card_and_rejects_unregistered_list
+FAILED tests/test1/test_ancestor_operations.py::test_card_and_list_entries_stay_independent
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[core-protected-True]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_request_without_entry_fails_before_any_lookup[all-none-False]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[core-protected-False]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[core-protected-None]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[core-all-none-True]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[core-all-none-False]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[core-all-none-None]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[guardian-protected-True]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[guardian-protected-False]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[guardian-protected-None]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[guardian-all-none-True]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[guardian-all-none-False]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_endpoint_requires_an_exact_entry[guardian-all-none-None]
+FAILED tests/test1/test_ancestor_operations.py::test_private_completed_registry_action_checks
+FAILED tests/test1/test_ancestor_operations.py::test_barrier_imports_root_and_included_urlconfs_before_snapshot
+FAILED tests/test1/test_ancestor_operations.py::test_absent_urlconf_defers_only_completion_dependent_checks
+FAILED tests/test1/test_ancestor_operations.py::test_reentrant_check_during_urlconf_import_defers
+FAILED tests/test1/test_ancestor_operations.py::test_unknown_action_key_fails_nested_requests
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views.ListView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views.ListViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views.CardListView]
+FAILED tests/test1/test_ancestor_operations.py::test_family_inventory[read-crud_views.CardListViewPermissionRequired]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_request_without_entry_fails_before_any_lookup[protected-True]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_request_without_entry_fails_before_any_lookup[protected-False]
+FAILED tests/test1/test_ancestor_operations.py::test_nested_custom_request_without_entry_fails_before_any_lookup[all-none-True]
+72 failed, 56 passed in 4.94s

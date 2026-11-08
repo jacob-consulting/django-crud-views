@@ -30,9 +30,10 @@ REMOVED_KEY = "cv_guardian_accept_global_perms"
 def pol():
     """Fresh Guardian routes covering every global-fallback applicability category.
 
-    Publisher ViewSet: strict list, global-accepting detail, plain (non-Guardian) update, top-level create with
-    fallback=True. Book child (parent permission "view"): global-accepting list and parent-only create. Free child
-    (both parent permissions None): strict list and a parent-only create with fallback=True.
+    Publisher ViewSet (a default, strict Guardian ancestor): strict list, global-accepting detail, plain
+    (non-Guardian) update, top-level create with fallback=True. Book child of it: global-accepting list and
+    parent-only create. Free child of a second Publisher ViewSet declaring ancestor provider "none": strict list and a
+    parent-only create with fallback=True.
     """
     from crud_views.lib import check as check_module
     from crud_views.lib.crispy import CrispyViewMixin
@@ -48,19 +49,12 @@ def pol():
     from tests.test1.app.views import BookForm, PublisherForm
 
     sfx = uuid.uuid4().hex[:8]
-    names = [f"polpub{sfx}", f"polbook{sfx}", f"polfree{sfx}"]
+    names = [f"polpub{sfx}", f"polbook{sfx}", f"polfree{sfx}", f"polfreepub{sfx}"]
     vocab_snapshot = dict(check_module._VOCAB_CACHE)
     modname = f"tests.test1._pol_urls_{sfx}"
 
     try:
-        # Until the legacy parent fields are removed, the child policies here are those of the legacy parent gate
-        # alone: the Publisher ancestor declares provider "none" for ancestor authorization.
-        pub_vs = GuardianViewSet(
-            model=Publisher,
-            name=names[0],
-            icon_header="fa-regular fa-building",
-            ancestor_policy=AncestorPolicy(provider="none"),
-        )
+        pub_vs = GuardianViewSet(model=Publisher, name=names[0], icon_header="fa-regular fa-building")
 
         class PolPublisherListView(GuardianListViewPermissionRequired):
             cv_viewset = pub_vs  # strict (default)
@@ -91,29 +85,39 @@ def pol():
 
         class PolBookCreateView(CrispyViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
             form_class = BookForm
-            cv_viewset = book_vs  # parent-only view, resolved parent permission "view": strict
+            cv_viewset = book_vs  # parent-only view: the strict Publisher ancestor gates it, never this view's flag
+
+        # an unprotected parent: the ancestor-authorization replacement of the removed "None" parent permission
+        free_pub_vs = GuardianViewSet(
+            model=Publisher,
+            name=names[3],
+            icon_header="fa-regular fa-building",
+            ancestor_policy=AncestorPolicy(provider="none"),
+        )
+
+        class PolFreePublisherListView(GuardianListViewPermissionRequired):
+            cv_viewset = free_pub_vs
 
         free_vs = GuardianViewSet(
             model=Book,
             name=names[2],
-            parent=ParentViewSet(name=names[0], attribute="publisher"),
+            parent=ParentViewSet(name=names[3], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
-            cv_guardian_parent_permission=None,
-            cv_guardian_parent_create_permission=None,
         )
 
         class PolFreeListView(GuardianListViewPermissionRequired):
-            cv_viewset = free_vs  # strict queryset policy stays applicable despite the None parent policy
+            cv_viewset = free_vs  # strict queryset policy stays applicable under a "none" parent
 
         class PolFreeCreateView(CrispyViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
             form_class = BookForm
             cv_viewset = free_vs
-            cv_guardian_accept_global_perms = True  # parent permission None: fallback never consulted
+            cv_guardian_accept_global_perms = True  # parent-only view: fallback never consulted
 
         module = types.ModuleType(modname)
         module.urlpatterns = [
             *pub_vs.urlpatterns,
             *book_vs.urlpatterns,
+            *free_pub_vs.urlpatterns,
             *free_vs.urlpatterns,
             path("", include("tests.test1.project.urls")),
         ]
@@ -507,15 +511,17 @@ def test_manage_context_reports_mixed_policies_on_one_viewset(pol, client):
 @pytest.mark.django_db
 def test_manage_context_reports_parent_only_applicability(pol, client, publishers):
     a, _b = publishers
-    client.force_login(_user("manager"))
+    manager = _user("manager")
+    pol.pub_vs.assign_perm("view", manager, a)  # nested manage also passes the strict Publisher ancestor
+    client.force_login(manager)
 
-    # parent permission "view": the parent-only create consults its (default, strict) fallback
+    # a parent-only create has no local gate that consults its flag: ancestors use their own ancestor_policy
     book = _views_policy(_manage(client, pol.book_vs, parent_pk=a.pk))
     assert book["list"] == _policy(applicable=True, accept=True)
-    assert book["create"] == _policy(applicable=True, accept=False)
+    assert book["create"] == _policy(applicable=False)
     assert book["manage"] == _policy(applicable=False)
 
-    # both parent permissions None: the parent-only create never consults fallback=True; the queryset view still does
+    # under a "none" parent: the parent-only create never consults fallback=True; the queryset view still does
     free = _views_policy(_manage(client, pol.free_vs, parent_pk=a.pk))
     assert free["list"] == _policy(applicable=True, accept=False)
     assert free["create"] == _policy(applicable=False)
@@ -578,17 +584,23 @@ def test_parent_none_create_with_fallback_succeeds_without_grants(pol, client, p
 
 @pytest.mark.django_db
 def test_reported_child_policies_match_access_for_a_global_only_user(pol, client, publishers):
-    """Reported "global fallback" list admits a model permission; reported "strict" create does not."""
+    """Reported "global fallback" list admits a model Book permission once the strict Publisher ancestor passes;
+    the view flag never relaxes that ancestor, and the create (reported not applicable) needs Publisher change."""
     from tests.test1.app.models import Book
 
     a, _b = publishers
     book = Book.objects.create(title="Shared Book", publisher=a)
-    client.force_login(_grant_global(_user("global_only"), "view_publisher", "view_book"))
+    global_only = _grant_global(_user("global_only"), "view_publisher", "view_book")
+    client.force_login(global_only)
+    assert client.get(_url(pol.book_vs, "list", parent_pk=a.pk)).status_code == 403  # strict ancestor
 
+    pol.pub_vs.assign_perm("view", global_only, a)
     response = client.get(_url(pol.book_vs, "list", parent_pk=a.pk))
     assert response.status_code == 200
     assert _pks(response.context["object_list"]) == [book.pk]
-    assert client.get(_url(pol.book_vs, "create", parent_pk=a.pk)).status_code == 403
+    assert client.get(_url(pol.book_vs, "create", parent_pk=a.pk)).status_code == 403  # write: Publisher change
+    pol.pub_vs.assign_perm("change", global_only, a)
+    assert client.get(_url(pol.book_vs, "create", parent_pk=a.pk)).status_code == 200
 
 
 # ── manage gate preserved (A20): patched singleton modes/groups, live DEBUG ───

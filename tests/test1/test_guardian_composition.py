@@ -60,7 +60,7 @@ def test_incomplete_child_composition_rejected_before_parent_or_view_processing(
 ):
     monkeypatch.setattr(view_class, "cv_viewset", child_viewset)
     calls = []
-    monkeypatch.setattr(view_class, "_guardian_check_parent", lambda *a, **k: calls.append("parent"))
+    monkeypatch.setattr(view_class, "_cv_authorize_ancestors", lambda *a, **k: calls.append("ancestors"))
     monkeypatch.setattr(view_class, method, lambda *a, **k: HttpResponse("unguarded handler reached"), raising=False)
     request = getattr(RequestFactory(), method)("/")
     request.user = SimpleNamespace(is_authenticated=True, is_active=True)

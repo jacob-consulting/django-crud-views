@@ -226,7 +226,7 @@ def mx(monkeypatch):
     from tests.test1.app.views import BookForm
 
     sfx = uuid.uuid4().hex[:8]
-    names = [f"mxcore{sfx}", f"mxg{sfx}", f"mxbook{sfx}", f"mxfree{sfx}"]
+    names = [f"mxcore{sfx}", f"mxg{sfx}", f"mxbook{sfx}", f"mxfree{sfx}", f"mxfreepub{sfx}"]
     modname = f"tests.test1._mx_urls_{sfx}"
     vocab_snapshot = dict(check_module._VOCAB_CACHE)
     hooks: Counter = Counter()
@@ -254,9 +254,7 @@ def mx(monkeypatch):
             name=names[2],
             parent=ParentViewSet(name=names[1], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
-            cv_guardian_parent_permission="view",
-            cv_guardian_parent_create_permission="change",
-            # the same parent requirements through ancestor authorization: view for every page, change to create
+            # parent requirements through ancestor authorization: view for every page, change to create
             ancestor_policy=AncestorPolicy(
                 write=AncestorPermissions(nearest="view", higher="view"),
                 actions={"create": AncestorPermissions(nearest="change", higher="view")},
@@ -294,13 +292,18 @@ def mx(monkeypatch):
                 super().cv_form_valid_hook(context)
                 hooks["book_create"] += 1
 
+        # an unprotected Publisher parent (ancestor provider "none"): free children need no parent permission
+        GuardianViewSet(
+            model=Publisher,
+            name=names[4],
+            icon_header="fa-regular fa-building",
+            ancestor_policy=AncestorPolicy(provider="none"),
+        )
         free_vs = GuardianViewSet(
             model=Book,
             name=names[3],
-            parent=ParentViewSet(name=names[1], attribute="publisher"),
+            parent=ParentViewSet(name=names[4], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
-            cv_guardian_parent_permission=None,
-            cv_guardian_parent_create_permission=None,
         )
 
         class MxFreeListView(GuardianListViewPermissionRequired):
@@ -932,13 +935,8 @@ def _record_contexts(monkeypatch, view_cls):
 
 
 def _free_parent_actor(mx, world):
-    """No child grant; only the ancestor grants (Guardian Publisher view and change) ancestor authorization needs."""
-    from guardian.shortcuts import assign_perm
-
-    user = _make_actor("none", name="free_parent_actor")
-    for perm in ("view", "change"):
-        assign_perm(mx.g.vs.permissions[perm], user, world.a)
-    return _refetch(user)
+    """No grant at all: the free routes' Publisher parent declares ancestor provider "none"."""
+    return _make_actor("none", name="free_parent_actor")
 
 
 @pytest.mark.django_db

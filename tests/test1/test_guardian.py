@@ -128,7 +128,7 @@ def test_top_level_create_denied_without_model_level_perm(client_guardian):
 
 @pytest.mark.django_db
 def test_child_create_requires_parent_change_perm(client_guardian, user_guardian, cv_guardian_publisher, publisher_a):
-    """Child create requires cv_guardian_parent_create_permission ('change') on parent."""
+    """Child create requires the ancestor policy's create requirement ('change') on the parent."""
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
     pk = publisher_a.pk
     response = client_guardian.get(f"/guardian_publisher/{pk}/guardian_book/create/")
@@ -159,7 +159,7 @@ def test_child_create_denied_without_parent_perm(client_guardian, publisher_a):
 
 @pytest.mark.django_db
 def test_child_list_requires_parent_view_perm(client_guardian, user_guardian, cv_guardian_publisher, publisher_a):
-    """Child list requires cv_guardian_parent_permission ('view') on parent."""
+    """Child list requires the ancestor read requirement ('view') on the parent."""
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
     pk = publisher_a.pk
     response = client_guardian.get(f"/guardian_publisher/{pk}/guardian_book/")
@@ -386,14 +386,14 @@ def test_create_cv_has_access_child_missing_relation_denied(user_guardian):
 
 @pytest.mark.django_db
 def test_create_cv_has_access_parent_none_policy_resolves_without_permission(
-    user_guardian, cv_guardian_book, publisher_a, book_under_publisher_a, author_douglas_adams, monkeypatch
+    user_guardian, cv_guardian_publisher, publisher_a, book_under_publisher_a, author_douglas_adams, monkeypatch
 ):
-    """Parent permission None: a resolvable parent (direct or via own child) needs no grant; None and
-    unrelated inputs still deny. The helpers no longer crash on the None key (B6)."""
+    """An unprotected (provider "none") parent: a resolvable parent (direct or via own child) needs no grant;
+    None and unrelated inputs still deny (B6)."""
+    from crud_views.lib.viewset import AncestorPolicy
     from tests.test1.app.views import GuardianBookCreateView
 
-    monkeypatch.setattr(cv_guardian_book, "cv_guardian_parent_permission", None)
-    monkeypatch.setattr(cv_guardian_book, "cv_guardian_parent_create_permission", None)
+    monkeypatch.setattr(cv_guardian_publisher, "ancestor_policy", AncestorPolicy(provider="none"))
 
     assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is True
     assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is True
@@ -702,8 +702,9 @@ def test_guardian_manage_context_has_guardian_config(client_guardian, cv_guardia
     assert response.status_code == 200
     assert "guardian_config" in response.context
     config = response.context["guardian_config"]
-    assert "cv_guardian_parent_permission" in config
-    assert "cv_guardian_parent_create_permission" in config
+    # the removed parent fields are no longer reported; ancestor requirements are the ViewSet's ancestor_policy
+    assert "cv_guardian_parent_permission" not in config
+    assert "cv_guardian_parent_create_permission" not in config
     # the removed ViewSet flag is gone (D-04); the ViewSet helper's own strict policy is reported (D-05)
     assert "cv_guardian_accept_global_perms" not in config
     assert config["get_objects_for_user"] == {"policy": "strict", "accept_global_perms": False, "use_groups": True}
@@ -717,7 +718,8 @@ def test_guardian_manage_config_renders_in_an_alert(client_guardian, cv_guardian
     """#250: the guardian config table is the body of a warning alert from tags/alert.html."""
     content = re.sub(r"\s+", " ", client_guardian.get("/guardian_author/manage/").content.decode())
     assert re.search(r'class="alert alert-warning" role="alert">.*?<table class="table table-striped mb-0">', content)
-    assert "cv_guardian_parent_permission" in content
+    assert "<td>parent_viewset</td>" in content
+    assert "cv_guardian_parent_permission" not in content
 
 
 @pytest.mark.django_db
@@ -954,7 +956,7 @@ def test_accept_global_parent_global_perm_grants_child_detail(
 
 @pytest.mark.django_db
 def test_accept_global_parent_global_perm_grants_child_create(client, user_guardian, publisher_a, monkeypatch):
-    """Create needs cv_guardian_parent_create_permission ('change') on the parent."""
+    """Create needs the ancestor policy's create requirement ('change') on the parent."""
     from tests.test1.app.views import GuardianBookCreateView
 
     monkeypatch.setattr(GuardianBookCreateView, "cv_guardian_accept_global_perms", True, raising=False)

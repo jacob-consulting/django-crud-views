@@ -740,9 +740,7 @@ cv_guardian_book = GuardianViewSet(
     name="guardian_book",
     parent=ParentViewSet(name="guardian_publisher", attribute="publisher"),
     icon_header="fa-regular fa-address-book",
-    cv_guardian_parent_permission="view",
-    cv_guardian_parent_create_permission="change",
-    # the same parent requirements through ancestor authorization: view for every page, change to create
+    # parent requirements through ancestor authorization: Publisher view for every page, change to create
     ancestor_policy=AncestorPolicy(
         write=AncestorPermissions(nearest="view", higher="view"),
         actions={"create": AncestorPermissions(nearest="change", higher="view")},

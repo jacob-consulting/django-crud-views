@@ -2,11 +2,11 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
-from django.shortcuts import get_object_or_404
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
 from crud_views.lib.view import CrudView
+from crud_views.lib.view.ancestors import immediate_parent_has_permission
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,25 @@ def _guardian_inactive_actor(user) -> bool:
     not "inactive actors" here; their configured anonymous behavior applies unchanged.
     """
     return bool(getattr(user, "is_authenticated", False)) and not getattr(user, "is_active", True)
+
+
+def _guardian_actor_response(view):
+    """The Guardian early actor rule (``_cv_ancestor_actor_response``): no object, queryset or state work.
+
+    Anonymous: the view's ``cv_guardian_anonymous_behavior`` (404, 403 or the login redirect); inactive: 403;
+    otherwise None (admitted).
+    """
+    user = view.request.user
+    if not user.is_authenticated:
+        behavior = getattr(view, "cv_guardian_anonymous_behavior", "redirect")
+        if behavior == "404":
+            raise Http404
+        if behavior == "403":
+            raise PermissionDenied
+        return view.handle_no_permission()  # redirect to login
+    if _guardian_inactive_actor(user):
+        raise PermissionDenied
+    return None
 
 
 class GuardianObjectPermissionMixin:
@@ -58,6 +77,9 @@ class GuardianObjectPermissionMixin:
         if _guardian_inactive_actor(self.request.user):
             raise PermissionDenied
         return True
+
+    def _cv_ancestor_actor_response(self):
+        return _guardian_actor_response(self)
 
     def _check_object_perm(self, user, perm: str, obj) -> bool:
         if _guardian_inactive_actor(user):
@@ -139,6 +161,9 @@ class GuardianQuerysetMixin:
             raise PermissionDenied
         return True
 
+    def _cv_ancestor_actor_response(self):
+        return _guardian_actor_response(self)
+
     @classmethod
     def cv_has_access(cls, user, obj=None):
         return not _guardian_inactive_actor(user)
@@ -152,10 +177,10 @@ class GuardianQuerysetMixin:
         access = super()._cv_child_link_has_access(user, parent_obj)
         if not access:
             return access
-        # Standalone queryset compositions have no parent request gate to mirror.
-        if not hasattr(cls, "_guardian_user_has_parent_perm"):
+        # Standalone queryset compositions keep their former link rule (no parent gate mirrored).
+        if not issubclass(cls, GuardianParentPermissionMixin):
             return access
-        return cls._guardian_user_has_parent_perm(user, parent_obj)
+        return immediate_parent_has_permission(cls, user, parent_obj)
 
     def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
         """
@@ -230,26 +255,19 @@ class GuardianParentPermissionMixin:
     """
     For child viewset views (any view type where cv_viewset.parent is set).
 
-    In dispatch(), before any other processing, checks per-object permission
-    on the parent instance. Raises 403 if denied. No-op when cv_viewset.parent
-    is None.
-
-    Reads cv_guardian_parent_permission / cv_guardian_parent_create_permission
-    from the child GuardianViewSet. Respects cv_guardian_accept_global_perms
-    from the combined view class: when set, a model-level permission on the
-    parent model is accepted as a fallback for the per-object one.
+    dispatch() first validates the composition, then runs the shared ancestor authorization
+    (``CrudView._cv_authorize_ancestors()``: actor, then every ancestor outermost first, through each ancestor
+    ViewSet's own provider and ``ancestor_policy``). It keeps the Guardian actor rules and, for no-object child views
+    (create, list), the independent cv_action_enabled state gate with the immediate parent ancestry resolved. The
+    view's own ``cv_guardian_accept_global_perms`` never affects an ancestor; set
+    ``AncestorPolicy(accept_global_perms=True)`` on the ancestor ViewSet instead.
 
     When a parent viewset is present, overrides has_permission() to return True
-    so that Django's model-level PermissionRequiredMixin is bypassed; the parent
-    object-level check in dispatch() gates the parent. Object child views must also
-    include GuardianObjectPermissionMixin; list child views must include
+    so that Django's model-level PermissionRequiredMixin is bypassed: a nested create
+    needs no child-add permission. Object child views must also include
+    GuardianObjectPermissionMixin; list child views must include
     GuardianQuerysetMixin. Incomplete compositions raise ImproperlyConfigured
     before processing the request and are reported by system check E001.
-
-    A parent permission key of None disables only the parent *permission* check:
-    the URL parent is still resolved (a missing parent is a 404) and no-object
-    child views (create) still run their independent cv_action_enabled state gate
-    with that parent. No child-add permission is required instead.
     """
 
     # Policy names read via getattr() below. Annotation-only on purpose: a value here
@@ -269,7 +287,7 @@ class GuardianParentPermissionMixin:
             return super()._cv_cancel_target_available(user, obj, rendering_view)
 
         parent_obj = rendering_view._cv_cancel_parent_object()
-        if parent_obj is None or not cls._guardian_user_has_parent_perm(user, parent_obj):
+        if parent_obj is None or not immediate_parent_has_permission(cls, user, parent_obj):
             return False
         if cls.cv_object:
             if not cls.cv_has_access(user, obj):
@@ -326,71 +344,26 @@ class GuardianParentPermissionMixin:
 
     def dispatch(self, request, *args, **kwargs):
         self._guardian_validate_child_composition()
-        if not request.user.is_authenticated:
-            return self._guardian_deny_anonymous()
-        if _guardian_inactive_actor(request.user):
-            raise PermissionDenied  # before any parent, None-policy, method or fragment handling (D-11)
-        parent_vs = self.cv_viewset.parent
-        if parent_vs is not None:
-            self._guardian_check_parent(request.user, parent_vs, kwargs)
+        # bridge: the shared ancestor authorization before the Guardian actor, state and local work
+        response = self._cv_authorize_ancestors()
+        if response is None:
+            # the Guardian actor rule before any state, method or fragment handling (D-11); at the top level the
+            # shared guard did no actor work, a nested actor was already admitted by it (the same rule)
+            response = _guardian_actor_response(self)
+        if response is not None:
+            return response
+        # Secondary state gate — only for no-object child views (e.g. create), whose action object IS the
+        # immediate parent (the one ancestry resolved, also when that parent's provider is "none"). Object
+        # child-views (detail/update/delete) carry a row and are gated in get_object() with that row, so they
+        # must NOT also be gated here with the parent (wrong object type for cv_action_enabled).
+        parent = self.cv_viewset.parent
+        if (
+            parent is not None
+            and not self.cv_object
+            and not self.cv_action_enabled(request.user, self._cv_resolved_ancestor(parent.name))
+        ):
+            raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
-    def _guardian_deny_anonymous(self):
-        behavior = getattr(self, "cv_guardian_anonymous_behavior", "redirect")
-        if behavior == "404":
-            raise Http404
-        if behavior == "403":
-            raise PermissionDenied
-        return self.handle_no_permission()  # redirect to login
-
-    @classmethod
-    def _guardian_resolve_parent_perm_key(cls) -> str | None:
-        """The parent permission key for this view class: create views use
-        cv_guardian_parent_create_permission, falling back (when None) to
-        cv_guardian_parent_permission. None means: no parent permission check."""
-        perm_key = None
-        if getattr(cls, "cv_permission", None) == "add":
-            perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_create_permission", None)
-        if perm_key is None:
-            perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_permission", "view")
-        return perm_key
-
-    def _guardian_parent_perm_key(self) -> str | None:
-        return self._guardian_resolve_parent_perm_key()
-
-    @classmethod
-    def _guardian_user_has_parent_perm(cls, user, parent_obj) -> bool:
-        """Whether ``user`` holds this view's parent permission on the resolved ``parent_obj``.
-
-        Shared by dispatch and the create access helpers. A None permission key skips only this
-        permission evaluation (True); parent resolution and action state are the callers' concern.
-        Inactive actors are always denied.
-        """
-        if _guardian_inactive_actor(user):
-            return False
-        perm_key = cls._guardian_resolve_parent_perm_key()
-        if perm_key is None:
-            return True
-        parent_perm = cls.cv_viewset.parent.viewset.permissions.get(perm_key)
-        # accept_global: the model-level permission is a fallback. Note that
-        # user.has_perm(perm, obj) would NOT do this — Django's ModelBackend returns
-        # nothing once an object is passed, and guardian checks object perms only.
-        if getattr(cls, "cv_guardian_accept_global_perms", False) and user.has_perm(parent_perm):
-            return True
-        from guardian.core import ObjectPermissionChecker
-
-        return ObjectPermissionChecker(user).has_perm(parent_perm.split(".")[1], parent_obj)
-
-    def _guardian_check_parent(self, user, parent_vs, kwargs):
-        """Resolve the URL parent (404 when missing) and raise PermissionDenied unless ``user`` may act on it."""
-        parent_obj = get_object_or_404(parent_vs.viewset.model, pk=kwargs.get(parent_vs.get_pk_name()))
-        if not self._guardian_user_has_parent_perm(user, parent_obj):
-            raise PermissionDenied
-        # Secondary state gate — only for no-object child views (e.g. create),
-        # whose action object IS the parent. It runs even when the parent
-        # permission key is None (D-10). Object child-views (detail/update/
-        # delete) carry a row and are gated in get_object() with that row, so we
-        # must NOT also gate them here with the parent (that would invoke
-        # cv_action_enabled with the wrong object type).
-        if not self.cv_object and not self.cv_action_enabled(user, parent_obj):
-            raise PermissionDenied
+    def _cv_ancestor_actor_response(self):
+        return _guardian_actor_response(self)

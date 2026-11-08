@@ -131,11 +131,32 @@ def _related(obj: Model, parent: ParentViewSet, parent_obj: Model) -> bool:
 
 def _check_gate(view: CrudView, ancestor: ViewSet, obj: Model, key: str) -> None:
     """Resolve ``key`` in the ancestor's own permission map and evaluate its provider; deny with 403."""
+    permission = _permission(type(view), ancestor, key)
+    if not ancestor._ancestor_has_permission(view.request.user, obj, permission):
+        raise PermissionDenied
+
+
+def _permission(view_class: type[CrudView], ancestor: ViewSet, key: str) -> str:
+    """The fully qualified permission of ``key`` in the ancestor's own map; a missing key is a configuration error."""
     permission = ancestor.permissions.get(key)
     if permission is None:
         raise ImproperlyConfigured(
-            f"ancestor ViewSet {ancestor.name!r} has no permission {key!r}, required by view {view.cv_key!r} of "
-            f"ViewSet {view.cv_viewset.name!r} (available: {', '.join(ancestor.permissions) or 'none'})"
+            f"ancestor ViewSet {ancestor.name!r} has no permission {key!r}, required by view {view_class.cv_key!r} "
+            f"of ViewSet {view_class.cv_viewset.name!r} (available: {', '.join(ancestor.permissions) or 'none'})"
         )
-    if not ancestor._ancestor_has_permission(view.request.user, obj, permission):
-        raise PermissionDenied
+    return permission
+
+
+def immediate_parent_has_permission(view_class: type[CrudView], user, parent_obj: Model) -> bool:
+    """Whether ``user`` passes the immediate parent's gate for a request to ``view_class`` (rendering helpers).
+
+    The target's nearest requirement, resolved in the immediate parent's permission map and evaluated by that
+    parent's provider (and its own ancestor fallback). A ``none`` parent returns True without walking farther: the
+    request itself still authorizes the whole chain. Actor, state and custom denials stay with the callers; an
+    invalid configuration raises.
+    """
+    ancestor = view_class.cv_viewset.parent.viewset
+    if ancestor._ancestor_provider() == "none":
+        return True
+    permission = _permission(view_class, ancestor, operation_permissions(view_class).nearest)
+    return ancestor._ancestor_has_permission(user, parent_obj, permission)

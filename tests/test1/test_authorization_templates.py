@@ -209,9 +209,7 @@ def tp(monkeypatch):
             name=names[2],
             parent=ParentViewSet(name=names[0], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
-            cv_guardian_parent_permission="view",
-            cv_guardian_parent_create_permission="change",
-            # the same parent requirements through ancestor authorization: view for every page, change to create
+            # parent requirements through ancestor authorization: view for every page, change to create
             ancestor_policy=AncestorPolicy(
                 write=AncestorPermissions(nearest="view", higher="view"),
                 actions={"create": AncestorPermissions(nearest="change", higher="view")},

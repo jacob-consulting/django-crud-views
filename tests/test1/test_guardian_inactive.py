@@ -418,16 +418,19 @@ def test_inactive_permitted_pks_cache_is_empty(world, kind, accept_global):
 @pytest.mark.parametrize("kind", ACTORS)
 @pytest.mark.django_db
 def test_inactive_access_helpers_deny(world, monkeypatch, kind):
+    from crud_views.lib.viewset import AncestorPolicy
     from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin
     from tests.test1.app.views import (
         GuardianAuthorDetailView,
         GuardianAuthorListView,
         GuardianBookCreateView,
         cv_guardian_book,
+        cv_guardian_publisher,
     )
 
     monkeypatch.setattr(GuardianObjectPermissionMixin, "cv_guardian_accept_global_perms", kind == "global")
-    monkeypatch.setattr(GuardianBookCreateView, "cv_guardian_accept_global_perms", kind == "global", raising=False)
+    # the global actor's Publisher model grant would pass the parent only through the Publisher's ancestor fallback
+    monkeypatch.setattr(cv_guardian_publisher, "ancestor_policy", AncestorPolicy(accept_global_perms=kind == "global"))
     user = _actor(world, kind)
 
     assert GuardianAuthorDetailView.cv_has_access(user, world.author) is False
@@ -437,9 +440,9 @@ def test_inactive_access_helpers_deny(world, monkeypatch, kind):
     assert GuardianBookCreateView.cv_has_access(user, world.book) is False
     assert GuardianBookCreateView.cv_create_has_access(user, None, world.publisher) is False
 
-    # a None parent policy skips only the permission evaluation — never the inactive denial
-    monkeypatch.setattr(cv_guardian_book, "cv_guardian_parent_permission", None)
-    monkeypatch.setattr(cv_guardian_book, "cv_guardian_parent_create_permission", None)
+    # an unprotected (provider "none") parent skips only the permission evaluation — never the inactive denial
+    monkeypatch.setattr(cv_guardian_publisher, "ancestor_policy", AncestorPolicy(provider="none"))
+    assert cv_guardian_book.parent.viewset is cv_guardian_publisher
     assert GuardianBookCreateView.cv_has_access(user, world.publisher) is False
     assert GuardianBookCreateView.cv_create_has_access(user, None, world.publisher) is False
 

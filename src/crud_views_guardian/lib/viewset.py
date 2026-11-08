@@ -19,37 +19,54 @@ _REMOVED_GLOBAL_PERMS_MESSAGE = (
     "model permissions. GuardianViewSet.get_objects_for_user() stays strict and has no global-permission option."
 )
 
+_REMOVED_PARENT_FIELDS = ("cv_guardian_parent_permission", "cv_guardian_parent_create_permission")
+_REMOVED_PARENT_MESSAGE = (
+    "GuardianViewSet no longer accepts {name}{where}: parent permissions are checked by ancestor authorization. "
+    "Remove it and declare the requirement on the nested ViewSet with ancestor_policy=AncestorPolicy(read=..., "
+    "write=..., actions={{...}}) using AncestorPermissions(nearest=..., higher=...); for a parent without a "
+    'permission check set ancestor_policy=AncestorPolicy(provider="none") on the parent ViewSet. See '
+    "docs/migrating-1.0.md."
+)
+
+
+def _declares(cls: type, name: str) -> bool:
+    """Whether a (user) subclass declares ``name``: a Pydantic field, a class variable or a plain class attribute,
+    also inherited. The framework classes no longer define either removed name."""
+    return name in cls.model_fields or name in cls.__class_vars__ or hasattr(cls, name)
+
 
 class GuardianViewSet(ViewSet):
     """
     ViewSet subclass with per-object permission support via django-guardian.
 
-    Attributes:
-        cv_guardian_parent_permission: permission key checked on parent object
-            for child list/detail/update/delete views. None = skip check.
-        cv_guardian_parent_create_permission: permission key checked on parent
-            object for child create views. None = falls back to
-            cv_guardian_parent_permission.
+    As an ancestor of a nested ViewSet it requires the selected permission on the resolved object by default
+    (provider ``"guardian"``); ``ancestor_policy`` chooses another provider or accepts model permissions too. The
+    removed parent fields ``cv_guardian_parent_permission`` / ``cv_guardian_parent_create_permission`` are rejected.
 
-    Global model-permission fallback is configured per view class (``cv_guardian_accept_global_perms``), never on
-    the ViewSet; passing the removed ViewSet key raises a validation error naming that replacement.
+    Global model-permission fallback of a view's own local gate is configured per view class
+    (``cv_guardian_accept_global_perms``), never on the ViewSet; passing the removed ViewSet key raises a validation
+    error naming that replacement.
     """
 
     _ANCESTOR_PROVIDERS: ClassVar[tuple[str, ...]] = ("model", "guardian", "none")
 
-    cv_guardian_parent_permission: str | None = "view"
-    cv_guardian_parent_create_permission: str | None = None
-
     @model_validator(mode="before")
     @classmethod
-    def reject_removed_global_perms_flag(cls, data: Any) -> Any:
-        """Reject the removed ViewSet flag before Pydantic would silently ignore it as an extra (D-04).
+    def reject_removed_declarations(cls, data: Any) -> Any:
+        """Reject removed declarations before Pydantic would silently ignore them (D-04).
 
-        Only mapping input is inspected; anything else (an existing instance, invalid input) passes through to
-        Pydantic's established validation. Raising here precedes the after-validator, so nothing is registered.
+        Constructor input: the removed ViewSet flag and both removed parent fields. A subclass declaring a removed
+        parent field (field, class variable or attribute, inherited too) is rejected on construction. Anything else
+        passes through to Pydantic's established validation. Raising here precedes the after-validator, so nothing
+        is registered.
         """
         if isinstance(data, Mapping) and _REMOVED_GLOBAL_PERMS_KEY in data:
             raise ValueError(_REMOVED_GLOBAL_PERMS_MESSAGE)
+        for name in _REMOVED_PARENT_FIELDS:
+            if isinstance(data, Mapping) and name in data:
+                raise ValueError(_REMOVED_PARENT_MESSAGE.format(name=name, where=""))
+            if _declares(cls, name):
+                raise ValueError(_REMOVED_PARENT_MESSAGE.format(name=name, where=f" (declared on {cls.__name__})"))
         return data
 
     def _ancestor_provider(self) -> Literal["model", "guardian", "none"]:
@@ -58,8 +75,10 @@ class GuardianViewSet(ViewSet):
 
     def _ancestor_has_permission(self, user, obj, permission: str) -> bool:
         """The ``"guardian"`` provider: the object permission on ``obj`` (direct or group grant, Guardian's
-        content-type semantics); ``ancestor_policy.accept_global_perms`` also accepts the model permission.
-        Inactive actors are denied. An explicit ``"model"`` provider uses the core model check."""
+        content-type semantics); ``ancestor_policy.accept_global_perms`` also accepts the model permission, checked
+        separately without ``obj`` (Django's model backend grants nothing once an object is passed). Inactive actors
+        are denied; an active superuser follows the backends. The checker lives for this call only. An explicit
+        ``"model"`` provider uses the core model check."""
         if self._ancestor_provider() != "guardian":
             return super()._ancestor_has_permission(user, obj, permission)
         from guardian.core import ObjectPermissionChecker

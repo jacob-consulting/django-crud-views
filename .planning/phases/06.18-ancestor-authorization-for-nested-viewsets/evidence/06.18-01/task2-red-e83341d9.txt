@@ -1,0 +1,87 @@
+_______ test_failed_declaration_for_existing_name_leaves_existing_entry ________
+    def test_failed_declaration_for_existing_name_leaves_existing_entry(probe_name):
+PASSED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'higher': 'view'}]
+PASSED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{}]
+PASSED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': None, 'higher': 'view'}]
+PASSED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': 'view', 'higher': None}]
+PASSED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': 1, 'higher': 'view'}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_accepts_documented_providers[None]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_exact_defaults
+PASSED tests/test1/test_ancestor_policy.py::test_policy_accepts_documented_providers[model]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_accepts_documented_providers[guardian]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_accepts_documented_providers[none]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_defaults_are_fresh_values
+PASSED tests/test1/test_ancestor_policy.py::test_policy_accepts_complete_pairs_as_mappings
+PASSED tests/test1/test_ancestor_policy.py::test_policy_accepts_explicit_none_and_empty_inheritance
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'provider': 'Model'}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'provider': ''}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'provider': 'object'}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'read': {'nearest': 'view'}}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'write': {'higher': 'view'}}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'accept_global_perms': None}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'read': 'view'}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'actions': {'approve': None}}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'actions': {'approve': {'nearest': 'change'}}}]
+PASSED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'actions': None}]
+PASSED tests/test1/test_ancestor_policy.py::test_top_level_default_policy_and_provider_choices_are_valid[omitted]
+PASSED tests/test1/test_ancestor_policy.py::test_top_level_default_policy_and_provider_choices_are_valid[explicit-none-empty]
+PASSED tests/test1/test_ancestor_policy.py::test_top_level_default_policy_and_provider_choices_are_valid[model]
+PASSED tests/test1/test_ancestor_policy.py::test_top_level_default_policy_and_provider_choices_are_valid[none]
+PASSED tests/test1/test_ancestor_policy.py::test_top_level_default_policy_and_provider_choices_are_valid[fallback-false]
+PASSED tests/test1/test_ancestor_policy.py::test_nested_request_policy_with_forward_parent_and_unregistered_action_is_valid
+PASSED tests/test1/test_ancestor_policy.py::test_each_viewset_owns_fresh_policy_values
+PASSED tests/test1/test_ancestor_policy.py::test_pair_requires_both_named_strings
+PASSED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': 'view'}]
+PASSED tests/test1/test_ancestor_policy.py::test_requested_cascade_false_overrides_global_true
+PASSED tests/test1/test_ancestor_policy.py::test_ancestor_cascade_does_not_stop_descendant_traversal
+FAILED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': 'view', 'higher': ''}]
+FAILED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': ' view', 'higher': 'view'}]
+FAILED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': 'view', 'higher': 'view '}]
+FAILED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': '', 'higher': 'view'}]
+FAILED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': 'view\\n', 'higher': 'view'}]
+FAILED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': b'view', 'higher': 'view'}]
+FAILED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': '   ', 'higher': 'view'}]
+FAILED tests/test1/test_ancestor_policy.py::test_pair_rejects_incomplete_none_empty_padded_coerced_and_extra[{'nearest': 'view', 'higher': 'view', 'extra': 'view'}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'unknown': True}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'accept_global_perms': 1}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'cv_guardian_parent_permission': 'view'}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'accept_global_perms': 0}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'cascade': 'false'}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'accept_global_perms': 'true'}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'actions': {'': {'nearest': 'change', 'higher': 'view'}}}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'cascade': 1}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'actions': {' approve': {'nearest': 'change', 'higher': 'view'}}}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'actions': {'approve ': {'nearest': 'change', 'higher': 'view'}}}]
+FAILED tests/test1/test_ancestor_policy.py::test_policy_rejects_unknown_coerced_and_incomplete_values[{'cascade': 0}]
+FAILED tests/test1/test_ancestor_policy.py::test_top_level_request_policy_is_rejected_before_registration[write-default-pair]
+FAILED tests/test1/test_ancestor_policy.py::test_top_level_request_policy_is_rejected_before_registration[cascade-true]
+FAILED tests/test1/test_ancestor_policy.py::test_top_level_request_policy_is_rejected_before_registration[actions]
+FAILED tests/test1/test_ancestor_policy.py::test_top_level_request_policy_is_rejected_before_registration[cascade-false]
+FAILED tests/test1/test_ancestor_policy.py::test_top_level_request_policy_is_rejected_before_registration[read-default-pair]
+FAILED tests/test1/test_ancestor_policy.py::test_core_viewset_rejects_guardian_provider
+FAILED tests/test1/test_ancestor_policy.py::test_fallback_flag_requires_guardian_provider[model]
+FAILED tests/test1/test_ancestor_policy.py::test_fallback_flag_requires_guardian_provider[None]
+FAILED tests/test1/test_ancestor_policy.py::test_fallback_flag_requires_guardian_provider[none]
+FAILED tests/test1/test_ancestor_policy.py::test_constructor_mapping_policy_is_validated_strictly
+FAILED tests/test1/test_ancestor_policy.py::test_subclass_policy_default_is_validated_before_registration
+FAILED tests/test1/test_ancestor_policy.py::test_failed_declaration_for_existing_name_leaves_existing_entry
+FAILED tests/test1/test_ancestor_policy.py::test_settings_defaults_are_the_approved_pairs
+FAILED tests/test1/test_ancestor_policy.py::test_global_read_pair_replaces_the_default_whole
+FAILED tests/test1/test_ancestor_policy.py::test_requested_read_pair_overrides_global
+FAILED tests/test1/test_ancestor_policy.py::test_none_provider_level_is_skipped_but_does_not_consume_nearest
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS-{"nearest": "view"}]
+FAILED tests/test1/test_ancestor_policy.py::test_global_full_cascade_requires_every_protected_ancestor
+FAILED tests/test1/test_ancestor_policy.py::test_global_nearest_only_checks_nearest_protected_ancestor
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS-{"higher": "view"}]
+FAILED tests/test1/test_ancestor_policy.py::test_requested_cascade_true_overrides_global_false
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS-{"nearest": "change", "higher": None}]
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS-{"nearest": "change", "higher": "view", "extra": "x"}]
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS-{"nearest": "change ", "higher": "view"}]
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS-None]
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS-"view"]
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE-1]
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE-"true"]
+FAILED tests/test1/test_ancestor_policy.py::test_invalid_global_settings_fail_at_fresh_settings_initialization[CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE-None]
+FAILED tests/test1/test_ancestor_policy.py::test_complete_global_settings_replace_whole_pairs
+FAILED tests/test1/test_ancestor_policy.py::test_core_policy_configures_without_guardian
+50 failed, 34 passed in 2.69s

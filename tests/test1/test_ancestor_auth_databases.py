@@ -31,7 +31,7 @@ from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db import router
-from django.test import RequestFactory
+from django.test import RequestFactory, override_settings
 from django.urls import resolve
 from guardian.models import GroupObjectPermission, UserObjectPermission
 from guardian.shortcuts import assign_perm
@@ -48,6 +48,7 @@ from tests.test1.app.models import (
     ShelfItem,
     ShelfUserObjectPermission,
 )
+from tests.test1.test_ancestor_actors import ANONYMOUS_READER
 from tests.test1.test_ancestor_authorization import _client, _url, isolated_routes
 from tests.test1.test_ancestor_databases import _sql, captured
 from tests.test1.test_ancestor_resolution import _register_project_viewsets
@@ -721,3 +722,121 @@ def test_top_level_guardian_and_manage_keep_their_routing(adb, world, routes, mo
     _manage_mode(monkeypatch, "no")
     routes.read[Group] = "shard"
     assert client.get(_url(adb.ctop, "manage")).status_code == 403  # the shard copy is no manage member
+
+
+# ── Task 3: core early and local permission checks ───────────────────────────
+
+
+@pytest.mark.parametrize("key", ["detail", "list"])
+@pytest.mark.parametrize("actor", ["anonymous", "inactive"])
+def test_all_none_early_core_admission_refuses_shard_auth_records(adb, world, routes, events, actor, key):
+    """All-none ancestry: the core early admission of anonymous/inactive actors asks the model permission; its
+    auth records are validated first, before the vocabulary and with no child or state lookup."""
+    user = None if actor == "anonymous" else _actor("aa_ce_inactive", active=False)
+    url = _local_url(adb, adb.cloc, key, pk=key == "detail")
+    with override_settings(AUTHENTICATION_BACKENDS=[ALLOW_INACTIVE, ANONYMOUS_READER]):
+        client = _client(user)  # logged in through the overridden backend, so the session loads the inactive actor
+        expected = 200 if actor == "anonymous" else 403
+        assert client.get(url).status_code == expected
+        routes.read[Permission] = "shard"
+        events.clear()
+        with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
+            client.get(url)
+    _assert_refused_without_auth_reads(sql)
+    assert _auth_events(events) == [("auth", "Book", "model")]
+    assert [event for event in events if event[0] in ("child", "state", "vocabulary")] == []
+
+
+@pytest.mark.parametrize("vocabulary", ["cold", "warm"])
+@pytest.mark.parametrize("table", CORE)
+@pytest.mark.parametrize("key", ["detail", "list"])
+def test_local_core_gate_refuses_shard_auth_records_before_child_and_state(
+    adb, world, routes, events, key, table, vocabulary
+):
+    """After all-none ancestry, the core local permission check validates its auth records before the
+    permission map (``permission_required``), the superuser shortcut, the child lookup and action state."""
+    client = _client(_actor("aa_cl", superuser=True))
+    url = _local_url(adb, adb.cloc, key, pk=key == "detail")
+    assert client.get(url).status_code == 200
+    if vocabulary == "warm":
+        warm = adb.cloc.permissions
+    else:
+        adb.cloc._default_permissions = None
+        ContentType.objects.clear_cache()
+    routes.read[TABLES[table]] = "shard"
+    events.clear()
+    with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
+        client.get(url)
+    _assert_refused_without_auth_reads(sql)
+    assert [event for event in events if event[0] in ("child", "state", "vocabulary")] == []
+    if vocabulary == "warm":
+        assert adb.cloc._default_permissions is warm
+
+
+def test_local_core_gate_on_default_keeps_its_outcome(adb, world, routes):
+    reader, stranger = _actor("aa_cd_yes"), _actor("aa_cd_no")
+    _model_perm(reader, Book, "view")
+    url = _local_url(adb, adb.cloc, "detail")
+    with captured() as sql:
+        assert _client(reader).get(url).status_code == 200
+        assert _client(stranger).get(url).status_code == 403
+    assert _sql(sql.shard) == []
+
+
+def test_local_core_gate_refuses_an_actor_bound_to_shard(adb, world, routes, events):
+    shard_actor = User.objects.using("shard").get(pk=_actor("aa_cb", superuser=True).pk)
+    events.clear()
+    with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
+        _call(_local_url(adb, adb.cloc, "detail"), shard_actor)
+    _assert_refused_without_auth_reads(sql)
+    assert [event for event in events if event[0] in ("child", "state")] == []
+
+
+def test_protected_core_child_checks_the_ancestor_then_the_local_records(adb, world, routes, events):
+    """Ancestor gate first (Publisher), then the local gate (Book), both before the child lookup; a local denial
+    after ancestor success keeps its 403."""
+    reader, parent_only = _actor("aa_pc_yes"), _actor("aa_pc_parent")
+    for user in (reader, parent_only):
+        _model_perm(user, Publisher, "view")
+    _model_perm(reader, Book, "view")
+    url = _url(adb.pcbook, "detail", **{f"{adb.ppub.name}_pk": 41, "pk": 71})
+    events.clear()
+    assert _client(reader).get(url).status_code == 200
+    order = [event for event in events if event[0] in ("auth", "child")]
+    assert order[:3] == [("auth", "Publisher", "model"), ("auth", "Book", "model"), ("child", adb.pcbook.name)]
+    assert _client(parent_only).get(url).status_code == 403
+    routes.read[Permission] = "shard"
+    events.clear()
+    with pytest.raises(ImproperlyConfigured, match=REFUSED):
+        _client(reader).get(url)
+    assert _auth_events(events) == [("auth", "Publisher", "model")]
+
+
+def test_plain_nested_endpoints_do_no_auth_work(adb, world, routes, events):
+    """A nested endpoint without a permission check acquires no auth consumer: shard auth routes do not matter."""
+    for table in TABLES.values():
+        if table is not User:
+            routes.read[table] = "shard"
+    events.clear()
+    with captured() as sql:
+        assert _client(None).get(_local_url(adb, adb.ploc, "detail")).status_code == 200
+        assert _client(None).get(_local_url(adb, adb.ploc, "list", pk=False)).status_code == 200
+    assert _auth_events(events) == []
+    assert _sql(sql.shard) == []
+
+
+def test_core_access_helper_refuses_nested_shard_auth_records(adb, world, routes):
+    user = _actor("aa_ch")
+    _model_perm(user, Book, "view")
+    assert adb.CDetail.cv_has_access(user) is True
+    routes.read[Permission] = "shard"
+    with pytest.raises(ImproperlyConfigured, match=REFUSED):
+        adb.CDetail.cv_has_access(User.objects.get(pk=user.pk))
+    adb.CTDetail.cv_has_access(User.objects.get(pk=user.pk))  # top-level: routed as before
+
+
+def test_top_level_core_permission_views_keep_their_routing(adb, world, routes):
+    client = _client(_actor("aa_ct", superuser=True))
+    routes.read[Permission] = routes.read[ContentType] = "shard"
+    assert client.get(_url(adb.ctop, "detail", pk=71)).status_code == 200
+    assert client.get(_url(adb.ctop, "list")).status_code == 200

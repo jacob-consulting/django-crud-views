@@ -167,7 +167,11 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         using = self.cv_get_delete_db_alias()
         return transaction.atomic(using=using) if self.cv_atomic else nullcontext()
 
+    def _cv_write_alias(self) -> str:
+        return self.cv_get_delete_db_alias()
+
     def cv_form_valid_process(self, context: dict) -> None:
+        self._cv_check_nested_write(context)
         using = self.cv_get_delete_db_alias()
         with self.cv_get_atomic():
             self.cv_form_valid(context)
@@ -352,6 +356,8 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         self.object = self.get_object()
 
         context = self.get_context_data(**kwargs)
+        # nested ViewSets: refuse a nondefault write route before any hook (phase 06.18)
+        self._cv_check_nested_write(context)
         self.cv_post_hook(context)
         if self.cv_form_is_valid(context):
             # get_context_data already ran the delete protection check

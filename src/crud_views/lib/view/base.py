@@ -341,6 +341,33 @@ class CrudView(metaclass=CrudViewMetaClass):
         """
         pass
 
+    def _cv_write_alias(self) -> str:
+        """The alias this view's write phase uses (transaction and commit callback); views with their own pinned
+        selector (delete, workflow) return that one."""
+        return self.cv_get_db_alias()
+
+    def _cv_attachment_routes(self) -> tuple:
+        """``(model, hint)`` routes of the parent attachment a write performs (``CreateViewParentMixin``)."""
+        return ()
+
+    def _cv_check_nested_write(self, context: dict | None = None) -> None:
+        """Default-database boundary of a nested ORM write (phase 06.18, ``ancestor_db._check_nested_write``):
+        the write alias, the written instance (the form's model instance, else ``self.object``) and parent
+        attachments must be ``default``. Call it after the object is resolved and before any hook or write.
+        Top-level views return immediately."""
+        from crud_views.lib.ancestor_db import _check_nested_write, _is_nested_orm
+
+        if not _is_nested_orm(self):
+            return
+        instance = getattr((context or {}).get("form"), "instance", None)
+        if not isinstance(instance, Model):
+            instance = getattr(self, "object", None)
+        _check_nested_write(
+            self,
+            instance=instance if isinstance(instance, Model) else None,
+            related=self._cv_attachment_routes(),
+        )
+
     def cv_get_extends_template(self) -> str:
         if self.cv_extends_template:
             return self.cv_extends_template

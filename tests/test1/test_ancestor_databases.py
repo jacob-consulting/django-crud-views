@@ -694,13 +694,12 @@ def test_router_only_shard_write_is_refused_before_hooks(dbv, worlds, routes, ef
 
 
 @ATOMIC
-@pytest.mark.parametrize("kind", list(FORM_WRITES))
+@pytest.mark.parametrize("kind", [kind for kind in FORM_WRITES if kind != "custom-no-object"])
 def test_instance_hinted_shard_write_is_refused_before_hooks(dbv, worlds, routes, effects, monkeypatch, kind, atomic):
-    """Only an instance hint selects shard: the colliding default row is not written on either alias."""
+    """Only an instance hint selects shard: the colliding default row is not written on either alias. (The
+    no-object custom form writes no instance of its own: the router-only case covers it.)"""
     monkeypatch.setattr(getattr(dbv, FORM_WRITES[kind][0]), "cv_atomic", atomic)
     routes.write[Book] = routes.write[Genre] = _hinted("shard")
-    if kind == "custom-no-object":
-        pytest.skip("no written instance: covered by the router-only and custom-alias cases")
     _refused(dbv, kind, monkeypatch, effects)
 
 

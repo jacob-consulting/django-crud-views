@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
-status: Ready to execute — Phase 06.18 converged in 3 review cycles
-stopped_at: Phase 06.18 plan convergence complete in 3 cycles; zero HIGH or actionable non-HIGH findings
-last_updated: "2026-11-08T16:41:17.465Z"
+status: executing
+stopped_at: Completed 06.18-01-PLAN.md
+last_updated: "2026-11-08T17:36:31.831Z"
 last_activity: 2026-11-08
-last_activity_desc: Phase 06.18 planning complete
-state_head: bd63f9ac46acd20121c95a90ec5f4d74b73fe735
+last_activity_desc: Phase 06.18 plan 01 complete
+state_head: 246b1af4f74c85d12913852ba319f4015adf5133
 progress:
   total_phases: 24
   completed_phases: 22
   total_plans: 149
-  completed_plans: 137
+  completed_plans: 138
 milestone_name: milestone
 ---
 
@@ -28,12 +28,18 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 
 ## Current Position
 
-Phase: 06.18 (Ancestor authorization for nested ViewSets) — READY TO EXECUTE
-Plan: 0/12 complete — planning and review complete
-Status: Ready to execute — Phase 06.18 converged in 3 review cycles
-Last activity: 2026-11-08 — Phase 06.18 planning complete
+Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
+Plan: 2 of 12
+Status: Ready to execute
+Last activity: 2026-11-08 — Phase 06.18 plan 01 complete
 
 Next: $gsd-execute-phase 06.18
+
+### Phase 06.18 plan 01 — 2026-11-08
+
+- Shared request-local ancestor guard in CrudView.dispatch with strict AncestorPolicy/AncestorPermissions, validated CRUD_VIEWS_ANCESTOR_* settings and pre-registration ViewSet policy validation. Behavioral proof is limited to the plain nested list/create composition.
+- Pre-edit baseline at d5567ba2 (transition 1475 passed; query observations one/three ancestors, plain/Guardian, list/object/create, cold/warm) retained under evidence/06.18-01. Task gates: 13 and 97 passed at f717e58d; scoped Ruff passes.
+- After plan 01 the transition observation has 115 eligible failures (H1-core 18 → 02.3, H1-guardian 91 → 03.1, H1-action 1 → 03.2, H1-fragment 2 → 04.2, H1-resource 3 → 05.2), no collection loss; full 5.2 suite has no failure outside that set. Interim: unclassified nested families do no ancestor work until 02.2 (WINDOWS). ANCE-01/04/08 stay open for sibling plans. Existing config/state.json/CLAUDE edits preserved; no push or merge.
 
 ### Phase 06.17 completion — 2026-11-07
 
@@ -745,6 +751,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.17 P01 | 6min | 2 tasks | 10 files |
 | Phase 06.17 P02 | 8min | 2 tasks | 12 files |
 | Phase 06.17 P03 | 10min | 3 tasks | 12 files |
+| Phase 06.18 P01 | 30 min | 2 tasks | 8 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -949,6 +956,9 @@ Recent decisions affecting current work:
 - [Phase 06.17]: Accordion initial state consumes presentation.selected; existing Collapse owns switching and close-all.
 - [Phase 06.17]: Tab adapter absence is a no-op; present entries require callable init/dispose, resolved on every owned lifecycle dispatch.
 - [Phase 06.17]: Document selected-theme wiring before initialization, including ready documents; late providers require the existing initializer.
+- [Phase 06.18]: 06.18-01: interim family table covers only core list/detail (Read) and create/update/delete (Write); other nested endpoints without an exact actions entry do no ancestor work until 06.18-02 Task 2
+- [Phase 06.18]: 06.18-01: provider='guardian' is valid only on ViewSet classes whose _ancestor_provider is 'guardian'; GuardianViewSet inherits 'model' until 06.18-03.1
+- [Phase 06.18]: 06.18-01: CRUD_VIEWS_ANCESTOR_* defaults are validate_default settings fields; invalid values raise ValidationError when the singleton is built
 
 ### Pending Todos
 
@@ -1014,6 +1024,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T16:41:03.608Z
-Stopped at: Phase 06.18 plan convergence complete in 3 cycles; zero HIGH or actionable non-HIGH findings
-Resume file: .planning/phases/06.18-ancestor-authorization-for-nested-viewsets/06.18-REVIEWS.md
+Last session: 2026-11-08T17:36:28.874Z
+Stopped at: Completed 06.18-01-PLAN.md
+Resume file: None

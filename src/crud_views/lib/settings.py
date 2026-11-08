@@ -7,7 +7,9 @@ from django.core.checks import CheckMessage, Error
 from django.core.checks import Warning as CheckWarning
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, StrictBool
+
+from crud_views.lib.ancestor_policy import AncestorPermissions
 
 
 def from_settings(name, default=None) -> Any:
@@ -81,6 +83,25 @@ class CrudViewsSettings(BaseModel):
     # filter
     filter_persistence: bool = from_settings("CRUD_VIEWS_FILTER_PERSISTENCE", default=True)
     filter_pinned: bool = from_settings("CRUD_VIEWS_FILTER_PINNED", default=False)
+
+    # ancestor authorization of nested ViewSets: global depth and the Read / Write pairs a nested ViewSet inherits.
+    # Validated strictly (no coercion, complete pairs only); an omitted setting uses its default
+    ancestor_permission_cascade: StrictBool = Field(
+        default_factory=lambda: from_settings("CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE", default=True),
+        validate_default=True,
+    )
+    ancestor_read_permissions: AncestorPermissions = Field(
+        default_factory=lambda: from_settings(
+            "CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS", default={"nearest": "view", "higher": "view"}
+        ),
+        validate_default=True,
+    )
+    ancestor_write_permissions: AncestorPermissions = Field(
+        default_factory=lambda: from_settings(
+            "CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS", default={"nearest": "change", "higher": "view"}
+        ),
+        validate_default=True,
+    )
 
     # view defaults
     list_actions: list[str] = from_settings("CRUD_VIEWS_LIST_ACTIONS", default=["detail", "update", "delete"])

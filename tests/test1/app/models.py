@@ -304,3 +304,13 @@ class UUIDFragmentLeaf(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class AncestorAttachment(models.Model):
+    """Test-only leaf of BookNote: the deepest level of the Publisher → Book → BookNote → attachment ancestry chain."""
+
+    note = models.ForeignKey(BookNote, on_delete=models.CASCADE, related_name="ancestor_attachments")
+    text = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.text

@@ -17,6 +17,8 @@ from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
 
 from .. import check
+from ..ancestor_policy import AncestorPermissions as AncestorPermissions
+from ..ancestor_policy import AncestorPolicy
 from ..button_classes import FORM_KINDS
 from ..check import Check, CheckAttributeReg, CheckExpression, CheckTemplate
 from ..settings import crud_views_settings
@@ -64,6 +66,8 @@ class ViewSet(BaseModel):
     """
 
     PK: ClassVar[type[PrimaryKeys]] = PrimaryKeys
+    # ancestor providers this class can evaluate; the Guardian provider belongs to GuardianViewSet
+    _ANCESTOR_PROVIDERS: ClassVar[tuple[str, ...]] = ("model", "none")
 
     model: type[Model] | type[Resource]
     name: str
@@ -92,6 +96,8 @@ class ViewSet(BaseModel):
     # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
     # None means: no permissions declared (only non-PermissionRequired views).
     resource_permissions: dict[str, str] | None = None
+    # ancestor authorization: provider/fallback apply when this ViewSet is an ancestor, the rest to its own requests
+    ancestor_policy: AncestorPolicy = Field(default_factory=AncestorPolicy)
 
     _views: dict[str, type[CrudView]] = PrivateAttr(default_factory=empty_dict)
     _default_permissions: OrderedDict[str, str] | None = PrivateAttr(default=None)
@@ -122,8 +128,41 @@ class ViewSet(BaseModel):
             raise ValueError(f"must map form kinds {sorted(FORM_KINDS)} to one of {sorted(LABEL_MODES)}, got {value!r}")
         return value
 
+    def _ancestor_provider(self) -> Literal["model", "guardian", "none"]:
+        """The provider gating this ViewSet when it is an ancestor; ``None`` selects the class default."""
+        return self.ancestor_policy.provider or "model"
+
+    def _validate_ancestor_policy(self) -> None:
+        """Owning-ViewSet checks of ``ancestor_policy``; ``register()`` runs them before any side effect.
+
+        Only what this declaration decides alone is checked here: no parent lookup and no database access, so a
+        child may still precede its parent. Cross-ViewSet and action-key checks run once the registry is complete.
+        """
+        policy = self.ancestor_policy
+        if policy.provider is not None and policy.provider not in self._ANCESTOR_PROVIDERS:
+            raise ValueError(
+                f"ancestor_policy.provider={policy.provider!r} is not available on {type(self).__name__} "
+                f"{self.name!r}; use GuardianViewSet for the Guardian provider"
+            )
+        if policy.accept_global_perms and self._ancestor_provider() != "guardian":
+            raise ValueError(
+                f"ancestor_policy.accept_global_perms=True has no effect on {type(self).__name__} {self.name!r}: "
+                f"its ancestor provider is {self._ancestor_provider()!r}, the fallback applies only to 'guardian'"
+            )
+        if self.parent is None:
+            ineffective = [field for field in ("cascade", "read", "write") if getattr(policy, field) is not None]
+            if policy.actions:
+                ineffective.append("actions")
+            if ineffective:
+                raise ValueError(
+                    f"ancestor_policy fields {', '.join(ineffective)} of top-level ViewSet {self.name!r} have no "
+                    f"effect: they configure requests of a nested ViewSet; remove them or set a parent"
+                )
+
     @model_validator(mode="after")
     def register(self) -> Self:
+        self._validate_ancestor_policy()
+
         if not self.is_resource and self.resource_permissions is not None:
             raise ValueError(f"resource_permissions is only allowed for Resource-based ViewSets, got it at {self!r}")
 

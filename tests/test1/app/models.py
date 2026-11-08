@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext as _
 from django_fsm import FSMField, transition
+from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
@@ -341,3 +342,34 @@ class FolderTask(WorkflowModelMixin, OrderedModel):
     )
     def wf_activate(self, by=None, comment=None):
         pass
+
+
+class Shelf(models.Model):
+    """Ancestor with direct Guardian grant tables (phase 06.18 nested auth-route tests)."""
+
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class ShelfUserObjectPermission(UserObjectPermissionBase):
+    """Direct Guardian user grants on Shelf."""
+
+    content_object = models.ForeignKey(Shelf, on_delete=models.CASCADE)
+
+
+class ShelfGroupObjectPermission(GroupObjectPermissionBase):
+    """Direct Guardian group grants on Shelf."""
+
+    content_object = models.ForeignKey(Shelf, on_delete=models.CASCADE)
+
+
+class ShelfItem(models.Model):
+    """Nested child of Shelf (phase 06.18 nested auth-route tests)."""
+
+    shelf = models.ForeignKey(Shelf, on_delete=models.CASCADE, related_name="items")
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name

@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: executing
-stopped_at: Completed 06.18-08-PLAN.md
-last_updated: "2026-11-08T21:28:35.109Z"
+stopped_at: Completed 06.18-09-PLAN.md
+last_updated: "2026-11-08T21:48:51.654Z"
 last_activity: 2026-11-08
 last_activity_desc: Phase 06.18 plan 08 complete
-state_head: cc91b809d208d408b763eb9ccf5275e426b92a8d
+state_head: 63d1bed396125c47512e3c787e20dcb7275ae1a9
 progress:
   total_phases: 24
   completed_phases: 21
   total_plans: 149
-  completed_plans: 145
+  completed_plans: 146
 milestone_name: milestone
 ---
 
@@ -29,11 +29,17 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 ## Current Position
 
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
-Plan: 9 of 12
+Plan: 10 of 12
 Status: Ready to execute
-Last activity: 2026-11-08 — Phase 06.18 plan 08 complete
+Last activity: 2026-11-08 — Phase 06.18 plan 09 complete
 
 Next: $gsd-execute-phase 06.18
+
+### Phase 06.18 plan 09 — 2026-11-08
+
+- Manage pages report the declared ancestor policy: new ManageView context entry ancestor_policy with as_ancestor (provider, effective provider, ancestor fallback) and requests (cascade/read/write declared vs effective, exact actions; None at top level), rendered as a configuration-only table. Guardian alert rows read the same entry; local per-view fallback and strict helper rows unchanged.
+- New test_ancestor_manage.py (34) pins nested manage as ancestry AND the local settings/group gate across core/Guardian, public/group, both cascade modes, all-none and top-level. New test_ancestor_redirect.py (28) pins the built-in redirect as Read before lookup with an independently authorized destination; no child.py change needed (mutation checks 24/16 failed).
+- Full Django 5.2 suite: 12068 passed, 1 existing skip. ANCE-03/07 stay open for sibling plans. Existing config/state.json/CLAUDE edits preserved; no push or merge.
 
 ### Phase 06.18 plan 08 — 2026-11-08
 
@@ -789,6 +795,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P06 | 25min | 3 tasks | 10 files |
 | Phase 06.18 P07 | 33 min | 3 tasks | 10 files |
 | Phase 06.18 P08 | 25 min | 2 tasks | 10 files |
+| Phase 06.18 P09 | 14min | 2 tasks | 5 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1015,6 +1022,8 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-08: where child page access must stay independent of the create-parent permission, the child ViewSet declares an explicit update/delete=view/view override; the default Write pair and its view-only denial are pinned in test_ancestor_migration.py
 - [Phase 06.18]: 06.18-08: every former child-flag parent relaxation uses the parent's ancestor_policy.accept_global_perms, parametrized against the child flag
 - [Phase 06.18]: 06.18-08: GuardianParentPermissionMixin.dispatch gates no-object child state with the guard-resolved parent instead of the overridable cv_get_parent_object() hook
+- [Phase 06.18]: Core ManageView owns declared ancestor-policy diagnostics (as_ancestor / requests with declared vs effective); Guardian alert rows read the same entry
+- [Phase 06.18]: Built-in child redirect needed no production change; Task 2 pins it with tests plus two mutation checks
 
 ### Pending Todos
 
@@ -1080,6 +1089,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T21:28:31.852Z
-Stopped at: Completed 06.18-08-PLAN.md
+Last session: 2026-11-08T21:48:48.409Z
+Stopped at: Completed 06.18-09-PLAN.md
 Resume file: None

@@ -27,12 +27,39 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     cv_icon_action = "manage"
     cv_icon_header = "manage"
 
-    def has_permission(self):
+    def dispatch(self, request, *args, **kwargs):
+        # Nested manage: ancestry first (phase 06.18), then the unchanged local settings/group gate that
+        # PermissionRequiredMixin.dispatch runs through has_permission().
+        response = self._cv_ancestor_guard()
+        if response is not None:
+            return response
+        return super().dispatch(request, *args, **kwargs)
+
+    @staticmethod
+    def _cv_manage_public() -> bool:
+        """The settings make manage pages public ("yes", or "debug_only" with DEBUG on)."""
         if crud_views_settings.manage_views_enabled == "yes":
             return True
         from django.conf import settings as django_settings
 
-        if crud_views_settings.manage_views_enabled == "debug_only" and django_settings.DEBUG:
+        return crud_views_settings.manage_views_enabled == "debug_only" and django_settings.DEBUG
+
+    def _cv_ancestor_actor_response(self, *, protected: bool):
+        """Actor admission of a nested manage request, before any ancestor lookup.
+
+        Protected ancestry: the shared actor rule (anonymous → login, inactive → 403), even when the settings
+        make manage public. All-none ancestry: the manage gate's actual early rule — public settings admit
+        everybody, otherwise an anonymous actor is denied; group membership stays a local gate after ancestry."""
+        if protected:
+            from crud_views.lib.ancestors import _protected_actor_response
+
+            return _protected_actor_response(self)
+        if self._cv_manage_public() or self.request.user.is_authenticated:
+            return None
+        return self.handle_no_permission()
+
+    def has_permission(self):
+        if self._cv_manage_public():
             return True
         if not self.request.user.is_authenticated:
             return False

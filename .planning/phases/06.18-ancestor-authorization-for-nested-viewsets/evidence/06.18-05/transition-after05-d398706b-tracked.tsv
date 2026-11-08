@@ -1,0 +1,16 @@
+node	after04_f0e18a7d	after05_d398706b	owner	disposition (06.18-05)
+tests/test1/test_resource_views.py::test_nested_list_scoped_to_parent	failure (403: Resource-only actor lacks Publisher view)	passed	H1-resource 05.2	closed: module-local client_user_publisher_file_view (Publisher view + Resource view)
+tests/test1/test_resource_views.py::test_nested_detail_url_contains_parent_pk	failure (403: Resource-only actor lacks Publisher view)	passed	H1-resource 05.2	closed: module-local client_user_publisher_file_view (Publisher view + Resource view)
+tests/test1/test_resource_views.py::test_nested_list_empty_for_parent_without_files	failure (403: Resource-only actor lacks Publisher view)	passed	H1-resource 05.2	closed: module-local client_user_publisher_file_view (Publisher view + Resource view)
+tests/test1/test_resource_views.py::test_nested_detail_scoped_to_parent_404	failure (403: Resource-only actor lacks Publisher view)	passed	H1-resource 05.2	closed: module-local client_user_publisher_file_view (Publisher view + Resource view)
+tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_create	failure	failure	H2 -> 08	unchanged by 06.18-05
+tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_detail	failure	failure	H2 -> 08	unchanged by 06.18-05
+tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_list	failure	failure	H2 -> 08	unchanged by 06.18-05
+tests/test1/test_guardian.py::test_create_cv_has_access_parent_none_policy_resolves_without_permission	failure	failure	H2 -> 08	unchanged by 06.18-05
+tests/test1/test_guardian.py::test_guardian_manage_config_renders_in_an_alert	failure	failure	H2 -> 08	unchanged by 06.18-05
+tests/test1/test_guardian.py::test_guardian_manage_context_has_guardian_config	failure	failure	H2 -> 08	unchanged by 06.18-05
+tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[global]	failure	failure	H2 -> 08	unchanged by 06.18-05
+tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[group]	failure	failure	H2 -> 08	unchanged by 06.18-05
+tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[ordinary]	failure	failure	H2 -> 08	unchanged by 06.18-05
+tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[superuser]	failure	failure	H2 -> 08	unchanged by 06.18-05
+1044 setup errors (H2-removed fixtures)	error	error	H2-removed -> 08.1/08.2	unchanged by 06.18-05

@@ -1,15 +1,15 @@
 ---
 schema_version: 1
-open_count: 2
+open_count: 1
 waived_count: 9
-fixed_count: 28
+fixed_count: 29
 total_count: 39
-last_updated: 2026-11-08T19:18:23.782Z
+last_updated: 2026-11-08T19:47:55.487Z
 ---
 
 # Broken Windows Ledger
 
-> Cross-phase defect register. With `workflow.windows_enforce` enabled, `/gsd-ship` blocks while `open_count > 0`.
+> Cross-phase defect register. `/gsd-ship` blocks while `open_count > 0`.
 > Waive with `gsd-tools windows waive <id> "<reason>"` (reason required).
 > Mark fixed with `gsd-tools windows fixed <id>`.
 
@@ -53,7 +53,7 @@ last_updated: 2026-11-08T19:18:23.782Z
 | 36 | 06.17 | deviation | docs/reference/javascript.md |  | Task 1 documentation edits began before RED evidence classifier approval; actual pre-edit report subsequently approved, final executable recipes and all regression gates pass. | waived | Independent deep review found no product defect: genuine pre-edit failures were preserved and later classifier-approved; final executable recipe and full regression checks pass. Accept the documentation-only ordering exception while retaining the historical violation; no retroactive compliance claimed. | 2026-11-07T10:17:20.705Z | 2026-11-07T10:25:35.767Z |
 | 37 | 06.18 | deviation | src/crud_views/lib/ancestors.py |  | Interim (06.18-01): nested endpoints outside the core list/detail/create/update/delete families without an exact actions entry perform no ancestor work until 06.18-02 Task 2 adds the finite family table and custom-declaration guards | fixed |  | 2026-11-08T17:34:13.035Z | 2026-11-08T18:15:32.509Z |
 | 38 | 06.18 | deviation | tests/test1/test_authorization_matrix.py |  | Interim (06.18-03): eight legacy Guardian authorization modules still declare/patch the removed cv_guardian_parent_* fields (1044 setup errors, 5 monkeypatch AttributeErrors, 2 removed-name manage assertions) and 3 test_guardian.py cases assert child-view fallback relaxing the Publisher ancestor (H2-removed/H2-semantics); fixture/expectation migration owned by 06.18-08 | open |  | 2026-11-08T18:42:19.870Z |  |
-| 39 | 06.18 | deviation | tests/test1/test_resource_views.py |  | Interim (06.18-04): with ancestry before has_permission(), test_resource_views.py::test_nested_detail_scoped_to_parent_404 now returns 403 (S3 viewer lacks Publisher view) instead of the masked Resource-loader 404; it joins the 3 open H1-resource rows owned by 06.18-05 Task 2 (Publisher-view + Resource-view actor migration) | open |  | 2026-11-08T19:18:23.782Z |  |
+| 39 | 06.18 | deviation | tests/test1/test_resource_views.py |  | Interim (06.18-04): with ancestry before has_permission(), test_resource_views.py::test_nested_detail_scoped_to_parent_404 now returns 403 (S3 viewer lacks Publisher view) instead of the masked Resource-loader 404; it joins the 3 open H1-resource rows owned by 06.18-05 Task 2 (Publisher-view + Resource-view actor migration) | fixed |  | 2026-11-08T19:18:23.782Z | 2026-11-08T19:47:55.487Z |
 
 ````json
 [
@@ -175,8 +175,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "CT-01 independently repaired and reviewed; AUTH-06 classifier fallback dismissed by recovered-source investigation (06.3-UNCLASSIFIED-REVIEW.md).",
     "recorded_at": "2026-10-30T13:35:57.187Z",
-    "resolved_at": "2026-11-01T07:57:07.320Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-01T07:57:07.320Z"
   },
   {
     "id": 11,
@@ -188,8 +187,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "waived",
     "reason": "Maintainer authorized formal scope reconciliation on 2026-11-01: tested int/UUID/exact-key/queryset/alias predicate is the phase contract; broader custom-PK/cast/collation compatibility remains unverified follow-up in issue 286. Not a universal precision pass.",
     "recorded_at": "2026-10-30T13:36:14.791Z",
-    "resolved_at": "2026-11-01T07:57:07.320Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-01T07:57:07.320Z"
   },
   {
     "id": 12,
@@ -201,8 +199,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-30T23:41:34.442Z",
-    "resolved_at": "2026-10-30T23:41:41.882Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-10-30T23:41:41.882Z"
   },
   {
     "id": 13,
@@ -214,8 +211,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-30T23:46:34.873Z",
-    "resolved_at": "2026-10-30T23:47:17.135Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-10-30T23:47:17.135Z"
   },
   {
     "id": 14,
@@ -227,8 +223,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-31T00:00:58.208Z",
-    "resolved_at": "2026-10-31T00:01:09.404Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-10-31T00:01:09.404Z"
   },
   {
     "id": 15,
@@ -240,8 +235,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-31T00:05:45.859Z",
-    "resolved_at": "2026-10-31T00:05:46.035Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-10-31T00:05:46.035Z"
   },
   {
     "id": 16,
@@ -253,8 +247,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "UI-F01/CR-04 and CR-05 repaired; current twelve-case browser evidence source-validated and owner keyboard review accepted.",
     "recorded_at": "2026-10-31T00:26:22.293Z",
-    "resolved_at": "2026-11-01T07:57:07.320Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-01T07:57:07.320Z"
   },
   {
     "id": 17,
@@ -266,8 +259,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "All twelve owner responses preserved; four detector flags dismissed after investigation; bounded precision predicate established and broader scope deferred to issue 286 under formal reconciliation.",
     "recorded_at": "2026-10-31T00:26:22.432Z",
-    "resolved_at": "2026-11-01T07:57:07.320Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-01T07:57:07.320Z"
   },
   {
     "id": 18,
@@ -279,8 +271,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-01T10:52:17.888Z",
-    "resolved_at": "2026-11-01T10:53:29.098Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-01T10:53:29.098Z"
   },
   {
     "id": 19,
@@ -292,8 +283,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-01T11:10:51.632Z",
-    "resolved_at": "2026-11-01T11:11:17.692Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-01T11:11:17.692Z"
   },
   {
     "id": 20,
@@ -305,8 +295,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "waived",
     "reason": "Explicitly deferred for the 06.15 ship gate: WR-03 evidence checker gap and referenced security findings T22/T28/T33 remain unresolved. Track a dedicated phase 06.4 evidence/security follow-up; this waiver does not claim the checks are safe or complete.",
     "recorded_at": "2026-11-01T17:22:40.240Z",
-    "resolved_at": "2026-11-06T12:43:45.979Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-06T12:43:45.979Z"
   },
   {
     "id": 21,
@@ -318,8 +307,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "waived",
     "reason": "Explicitly deferred for the 06.15 ship gate: WR-04 screenshot inventory/hash contract gap and referenced security findings T22/T33/T31 remain unresolved. Track a dedicated phase 06.4 evidence/security follow-up; this waiver does not claim the checks are safe or complete.",
     "recorded_at": "2026-11-01T17:22:40.406Z",
-    "resolved_at": "2026-11-06T12:43:46.147Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-06T12:43:46.147Z"
   },
   {
     "id": 22,
@@ -331,8 +319,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "waived",
     "reason": "User explicitly authorized existing CRISPY_FLOOR_DESELECT for only test_form_buttons_golden.py::test_filter_form_baseline and multicore rerun on 2026-11-02. Reconciled plan09 command passed 8328 tests with -n 4 in 256.14s, zero skips/failures; companion controls and Django6 CSP executed. Separate 09-evidence/django60-floor-multicore.log/xml; original django60.log remains byte-identical to de61f3c with 1 failed, 8328 passed. Wrapper mismatch not fixed; no other exclusion or install authorized.",
     "recorded_at": "2026-11-02T13:17:44.247Z",
-    "resolved_at": "2026-11-02T13:51:14.237Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-02T13:51:14.237Z"
   },
   {
     "id": 23,
@@ -344,8 +331,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-02T21:10:26.684Z",
-    "resolved_at": "2026-11-02T21:25:49.151Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-02T21:25:49.151Z"
   },
   {
     "id": 24,
@@ -357,8 +343,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-03T16:41:44.156Z",
-    "resolved_at": "2026-11-03T16:41:52.777Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-03T16:41:52.777Z"
   },
   {
     "id": 25,
@@ -370,8 +355,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-03T16:41:44.314Z",
-    "resolved_at": "2026-11-03T16:41:52.936Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-03T16:41:52.936Z"
   },
   {
     "id": 26,
@@ -383,8 +367,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-03T16:54:56.249Z",
-    "resolved_at": "2026-11-03T16:55:04.782Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-03T16:55:04.782Z"
   },
   {
     "id": 27,
@@ -396,8 +379,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-03T16:54:56.421Z",
-    "resolved_at": "2026-11-03T16:55:04.913Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-03T16:55:04.913Z"
   },
   {
     "id": 28,
@@ -409,8 +391,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-03T17:03:26.320Z",
-    "resolved_at": "2026-11-03T17:04:29.345Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-03T17:04:29.345Z"
   },
   {
     "id": 29,
@@ -422,8 +403,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-03T18:10:58.862Z",
-    "resolved_at": "2026-11-03T18:13:00.670Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-03T18:13:00.670Z"
   },
   {
     "id": 30,
@@ -435,8 +415,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-03T18:10:59.020Z",
-    "resolved_at": "2026-11-03T19:53:19.111Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-03T19:53:19.111Z"
   },
   {
     "id": 31,
@@ -448,8 +427,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-03T18:17:50.004Z",
-    "resolved_at": "2026-11-03T18:17:50.177Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-03T18:17:50.177Z"
   },
   {
     "id": 32,
@@ -461,8 +439,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-04T10:12:29.437Z",
-    "resolved_at": "2026-11-04T10:12:55.657Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-04T10:12:55.657Z"
   },
   {
     "id": 33,
@@ -474,8 +451,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-04T21:29:51.737Z",
-    "resolved_at": "2026-11-04T21:30:19.548Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-04T21:30:19.548Z"
   },
   {
     "id": 34,
@@ -487,8 +463,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-04T21:30:19.709Z",
-    "resolved_at": "2026-11-05T09:25:26.031Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-05T09:25:26.031Z"
   },
   {
     "id": 35,
@@ -500,8 +475,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-06T19:15:57.137Z",
-    "resolved_at": "2026-11-06T19:16:25.752Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-06T19:16:25.752Z"
   },
   {
     "id": 36,
@@ -513,8 +487,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "waived",
     "reason": "Independent deep review found no product defect: genuine pre-edit failures were preserved and later classifier-approved; final executable recipe and full regression checks pass. Accept the documentation-only ordering exception while retaining the historical violation; no retroactive compliance claimed.",
     "recorded_at": "2026-11-07T10:17:20.705Z",
-    "resolved_at": "2026-11-07T10:25:35.767Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-07T10:25:35.767Z"
   },
   {
     "id": 37,
@@ -526,8 +499,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-08T17:34:13.035Z",
-    "resolved_at": "2026-11-08T18:15:32.509Z",
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-08T18:15:32.509Z"
   },
   {
     "id": 38,
@@ -539,8 +511,7 @@ last_updated: 2026-11-08T19:18:23.782Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-11-08T18:42:19.870Z",
-    "resolved_at": null,
-    "milestone": "v1.0"
+    "resolved_at": null
   },
   {
     "id": 39,
@@ -549,11 +520,10 @@ last_updated: 2026-11-08T19:18:23.782Z
     "file": "tests/test1/test_resource_views.py",
     "line": null,
     "description": "Interim (06.18-04): with ancestry before has_permission(), test_resource_views.py::test_nested_detail_scoped_to_parent_404 now returns 403 (S3 viewer lacks Publisher view) instead of the masked Resource-loader 404; it joins the 3 open H1-resource rows owned by 06.18-05 Task 2 (Publisher-view + Resource-view actor migration)",
-    "status": "open",
+    "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-08T19:18:23.782Z",
-    "resolved_at": null,
-    "milestone": "v1.0"
+    "resolved_at": "2026-11-08T19:47:55.487Z"
   }
 ]
 ````

@@ -1,0 +1,35 @@
+# final gates at d398706b (2026-11-08T19:43:33Z)
+python 3.12.3 django 5.2.19 pydantic 2.14.3 import /home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py
+$ task1 gate
+73 passed in 5.12s
+$ task2 gate
+75 passed in 6.35s
+$ prior ancestor modules
+780 passed in 24.73s
+$ ruff check / format --check
+All checks passed!
+7 files already formatted
+$ examples manage.py check
+System check identified no issues (0 silenced).
+$ transition observation (plan 01 command, junitxml to scratchpad)
+10 failed, 439 passed, 1044 errors in 33.19s
+exit=1
+# full Django 5.2 suite at d398706b: pytest tests -n 8 -q -rfE
+10 failed, 10500 passed, 1 skipped, 1044 errors in 142.47s (0:02:22)
+FAILED tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_create
+FAILED tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_detail
+FAILED tests/test1/test_guardian.py::test_accept_global_parent_global_perm_grants_child_list
+FAILED tests/test1/test_guardian.py::test_create_cv_has_access_parent_none_policy_resolves_without_permission
+FAILED tests/test1/test_guardian.py::test_guardian_manage_config_renders_in_an_alert
+FAILED tests/test1/test_guardian.py::test_guardian_manage_context_has_guardian_config
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[global]
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[group]
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[ordinary]
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_access_helpers_deny[superuser]
+# setup errors by module
+    550 ERROR tests/test1/test_authorization_matrix.py
+    135 ERROR tests/test1/test_authorization_templates.py
+     29 ERROR tests/test1/test_cancel_permissions.py
+    107 ERROR tests/test1/test_guardian_child_link_visibility.py
+     37 ERROR tests/test1/test_guardian_parent_none.py
+    186 ERROR tests/test1/test_guardian_policy.py

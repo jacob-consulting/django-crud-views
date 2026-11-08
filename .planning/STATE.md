@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: executing
-stopped_at: Completed 06.18-07-PLAN.md
-last_updated: "2026-11-08T21:00:14.305Z"
+stopped_at: Completed 06.18-08-PLAN.md
+last_updated: "2026-11-08T21:28:35.109Z"
 last_activity: 2026-11-08
-last_activity_desc: Phase 06.18 plan 02 complete
-state_head: 42768506c3f76be659e97d73e50d625d5b5e3663
+last_activity_desc: Phase 06.18 plan 08 complete
+state_head: cc91b809d208d408b763eb9ccf5275e426b92a8d
 progress:
   total_phases: 24
   completed_phases: 21
   total_plans: 149
-  completed_plans: 144
+  completed_plans: 145
 milestone_name: milestone
 ---
 
@@ -29,11 +29,17 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 ## Current Position
 
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
-Plan: 8 of 12
+Plan: 9 of 12
 Status: Ready to execute
-Last activity: 2026-11-08 — Phase 06.18 plan 02 complete
+Last activity: 2026-11-08 — Phase 06.18 plan 08 complete
 
 Next: $gsd-execute-phase 06.18
+
+### Phase 06.18 plan 08 — 2026-11-08
+
+- Eight legacy Guardian authorization modules migrated to explicit AncestorPolicy declarations. Old None scenarios use their own provider "none" parents, and strict siblings stay protected. Update/delete page overrides are used only where the create control must stay independent of page access. Parent-owned fallback replaces child flags. Every new grant has a paired deny control.
+- New test_ancestor_migration.py (21 cases) covers core/Guardian opposite outcomes, the default Write pair, fallback independence across descendants, nested create state without child add, and legacy rejection. Rule 1 fix: the Guardian nested no-object state gate now reads the guard-resolved parent.
+- Plan 01 observation command: exit 0, 1522 passed. Full Django 5.2 suite: 12004 passed, 1 existing skip. No H1/H2 transition row remains, and WINDOWS 38 is fixed. ANCE-01/04/07 stay open for sibling plans. Existing config/state.json/CLAUDE edits preserved; no push or merge.
 
 ### Phase 06.18 plan 02 — 2026-11-08
 
@@ -782,6 +788,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P05 | 25min | 2 tasks | 7 files |
 | Phase 06.18 P06 | 25min | 3 tasks | 10 files |
 | Phase 06.18 P07 | 33 min | 3 tasks | 10 files |
+| Phase 06.18 P08 | 25 min | 2 tasks | 10 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1004,6 +1011,10 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-07: nested permission checks validate their own auth records where reached (actor db, object db, Django auth tables + through tables, Guardian generic/direct grant tables via managers and actor/object-hinted routes) with ancestor_db._check_nested_auth, before vocabulary or superuser/fallback shortcuts; no rerouting
 - [Phase 06.18]: 06.18-07: the ancestor-gate auth check sits at the gate call site in ancestors.py before the permission map, so a warm vocabulary cannot bypass it; ViewSet.permissions stays side-effect-free and unselected nearest-only levels are never touched
 - [Phase 06.18]: 06.18-07: filtered nested lists scope the keyword object_list too (directed Rule 1 fix of the 06.18-06 finding)
+- [Phase 06.18]: 06.18-08: child-specific old None scenarios get their own provider='none' Publisher parent ViewSet; the strict parent shared with protected siblings is never set to none
+- [Phase 06.18]: 06.18-08: where child page access must stay independent of the create-parent permission, the child ViewSet declares an explicit update/delete=view/view override; the default Write pair and its view-only denial are pinned in test_ancestor_migration.py
+- [Phase 06.18]: 06.18-08: every former child-flag parent relaxation uses the parent's ancestor_policy.accept_global_perms, parametrized against the child flag
+- [Phase 06.18]: 06.18-08: GuardianParentPermissionMixin.dispatch gates no-object child state with the guard-resolved parent instead of the overridable cv_get_parent_object() hook
 
 ### Pending Todos
 
@@ -1069,6 +1080,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T21:00:11.122Z
-Stopped at: Completed 06.18-07-PLAN.md
+Last session: 2026-11-08T21:28:31.852Z
+Stopped at: Completed 06.18-08-PLAN.md
 Resume file: None

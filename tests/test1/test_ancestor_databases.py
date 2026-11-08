@@ -51,6 +51,20 @@ WRITE = AncestorPermissions(nearest="change", higher="view")
 # ── routing, rows and captures ──────────────────────────────────────────────
 
 
+@pytest.fixture(autouse=True)
+def _no_admin_email_report(monkeypatch):
+    """Keep Django's error *report* out of the SQL captures.
+
+    A refusal is an ``ImproperlyConfigured`` 500, which ``django.request`` logs. Django 4.2's ``AdminEmailHandler``
+    renders an ``ExceptionReporter`` even without ``ADMINS`` (5.x returns early), and the report's frame-local
+    ``repr()`` evaluates the refused querysets after the refusal. The "no shard SQL" assertions are about the
+    package's own work, so the handler is a no-op here, as it already is on Django 5.x without ``ADMINS``.
+    """
+    from django.utils.log import AdminEmailHandler
+
+    monkeypatch.setattr(AdminEmailHandler, "emit", lambda self, record: None)
+
+
 @pytest.fixture
 def routes(monkeypatch):
     """Module-local hint-aware router; every consulted (operation, model) is recorded in ``calls``."""

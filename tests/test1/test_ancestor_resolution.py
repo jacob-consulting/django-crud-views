@@ -27,6 +27,7 @@ from types import SimpleNamespace
 
 import django_filters
 import pytest
+from crispy_forms.layout import Layout, Row
 from django.contrib.auth.models import User
 from django.db import connection, models
 from django.test import Client, RequestFactory
@@ -35,7 +36,9 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
 from crud_views.lib import ancestors
+from crud_views.lib.crispy import Column4
 from crud_views.lib.table import Table
+from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
 from tests.test1.app.models import Author, Book, BookNote, Genre, Publisher, UUIDFragmentRow
 from tests.test1.test_ancestor_authorization import _client, _url, _user, isolated_routes
@@ -53,6 +56,12 @@ class BookTitleFilter(django_filters.FilterSet):
     class Meta:
         model = Book
         fields = ["title"]
+
+
+class BookTitleFilterFormHelper(ListViewFilterFormHelper):
+    """The documented filter helper: crispy-forms releases before 2.7 cannot render a filter form without one."""
+
+    layout = Layout(Row(Column4("title")))
 
 
 class BookTitleTable(Table):
@@ -187,7 +196,12 @@ def res():
                     name=f"arf{kind}{style.replace('-', '')}{sfx}",
                     parent=ParentViewSet(name=ns.pub.name, attribute="publisher"),
                 )
-                attrs = {"filterset_class": BookTitleFilter, **extra, **_list_attrs(style, Book, _all_books)}
+                attrs = {
+                    "filterset_class": BookTitleFilter,
+                    "formhelper_class": BookTitleFilterFormHelper,
+                    **extra,
+                    **_list_attrs(style, Book, _all_books),
+                }
                 listing = type(
                     "FilterList", bases, {"cv_viewset": vs, "cv_list_actions": [], "cv_context_actions": [], **attrs}
                 )

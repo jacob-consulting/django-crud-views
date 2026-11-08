@@ -102,9 +102,44 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "views": views,
                 "permission_holders": permission_holders,
                 "show_users": crud_views_settings.manage_show_users,
+                "ancestor_config": self.get_ancestor_config(),
             }
         )
         return context
+
+    def get_ancestor_config(self) -> dict:
+        """The declared ``ancestor_policy`` of this ViewSet and the values it takes effect with (configuration only).
+
+        ``provider`` / ``accept_global_perms`` describe this ViewSet as an ancestor of descendant requests. The other
+        entries describe requests to this ViewSet's views and are ``None`` (``actions`` empty) for a top-level
+        ViewSet. Declared ``None`` means the class default or global setting. Nothing here evaluates a permission or
+        tells whether a user can access a chain. Pairs are detached plain dicts.
+        """
+        viewset = self.cv_viewset
+        policy = viewset.ancestor_policy
+        nested = viewset.parent is not None
+
+        def pair(value):
+            return None if value is None else value.model_dump()
+
+        def effective(declared, default):
+            if not nested:
+                return None
+            return declared if declared is not None else default
+
+        return {
+            "nested": nested,
+            "provider": policy.provider,
+            "effective_provider": viewset._ancestor_provider(),
+            "accept_global_perms": policy.accept_global_perms,
+            "cascade": policy.cascade,
+            "effective_cascade": effective(policy.cascade, crud_views_settings.ancestor_permission_cascade),
+            "read": pair(policy.read),
+            "effective_read": pair(effective(policy.read, crud_views_settings.ancestor_read_permissions)),
+            "write": pair(policy.write),
+            "effective_write": pair(effective(policy.write, crud_views_settings.ancestor_write_permissions)),
+            "actions": {key: pair(value) for key, value in policy.actions.items()},
+        }
 
     def get_view_data(self):
         data = OrderedDict()

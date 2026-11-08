@@ -147,16 +147,23 @@ def _permission(view_class: type[CrudView], ancestor: ViewSet, key: str) -> str:
     return permission
 
 
-def immediate_parent_has_permission(view_class: type[CrudView], user, parent_obj: Model) -> bool:
+def immediate_parent_has_permission(view_class: type[CrudView], user, parent_obj: Model | None) -> bool:
     """Whether ``user`` passes the immediate parent's gate for a request to ``view_class`` (rendering helpers).
 
     The target's nearest requirement, resolved in the immediate parent's permission map and evaluated by that
     parent's provider (and its own ancestor fallback). A ``none`` parent returns True without walking farther: the
-    request itself still authorizes the whole chain. Actor, state and custom denials stay with the callers; an
-    invalid configuration raises.
+    request itself still authorizes the whole chain. Missing parent context (``None``) returns False; the caller
+    never invents a parent. Actor, state and custom denials stay with the callers.
+
+    The configuration is resolved first, so an undeclared nested custom endpoint or a requirement key missing from
+    the parent's permission map raises ``ImproperlyConfigured`` whatever the parent input or provider.
     """
     ancestor = view_class.cv_viewset.parent.viewset
-    if ancestor._ancestor_provider() == "none":
+    key = operation_permissions(view_class).nearest
+    protected = ancestor._ancestor_provider() != "none"
+    permission = _permission(view_class, ancestor, key) if protected else None
+    if parent_obj is None:
+        return False
+    if not protected:
         return True
-    permission = _permission(view_class, ancestor, operation_permissions(view_class).nearest)
     return ancestor._ancestor_has_permission(user, parent_obj, permission)

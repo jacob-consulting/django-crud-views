@@ -60,6 +60,52 @@
         </tr>
     </table>
 
+    {% block ancestor_config %}
+    {% with ac=ancestor_config %}
+    <h4>{% translate "Ancestor authorization" %}</h4>
+    <table class="table table-striped">
+        <tr>
+            <th scope="col">ancestor_policy</th>
+            <th scope="col">{% translate "Declared" %}</th>
+            <th scope="col">{% translate "Effective" %}</th>
+        </tr>
+        <tr>
+            <td>provider</td>
+            <td>{% if ac.provider is None %}default{% else %}{{ ac.provider }}{% endif %}</td>
+            <td>{{ ac.effective_provider }}</td>
+        </tr>
+        <tr>
+            <td>accept_global_perms</td>
+            <td>{{ ac.accept_global_perms }}</td>
+            <td>{% if ac.effective_provider != "guardian" %}{% translate "not applicable: provider" %} {{ ac.effective_provider }}{% elif ac.accept_global_perms %}{% translate "object or model permission" %}{% else %}{% translate "object permission only" %}{% endif %}</td>
+        </tr>
+        <tr>
+            <td>cascade</td>
+            <td>{% if ac.cascade is None %}default{% else %}{{ ac.cascade }}{% endif %}</td>
+            <td>{% if not ac.nested %}{% translate "not applicable: top-level ViewSet" %}{% elif ac.effective_cascade %}{% translate "all protected ancestors" %}{% else %}{% translate "nearest protected ancestor only" %}{% endif %}</td>
+        </tr>
+        <tr>
+            <td>read</td>
+            <td>{% if ac.read is None %}default{% else %}nearest={{ ac.read.nearest }}, higher={{ ac.read.higher }}{% endif %}</td>
+            <td>{% if not ac.nested %}{% translate "not applicable: top-level ViewSet" %}{% else %}nearest={{ ac.effective_read.nearest }}, higher={{ ac.effective_read.higher }}{% endif %}</td>
+        </tr>
+        <tr>
+            <td>write</td>
+            <td>{% if ac.write is None %}default{% else %}nearest={{ ac.write.nearest }}, higher={{ ac.write.higher }}{% endif %}</td>
+            <td>{% if not ac.nested %}{% translate "not applicable: top-level ViewSet" %}{% else %}nearest={{ ac.effective_write.nearest }}, higher={{ ac.effective_write.higher }}{% endif %}</td>
+        </tr>
+        {% for key, pair in ac.actions.items %}
+        <tr>
+            <td>actions['{{ key }}']</td>
+            <td>nearest={{ pair.nearest }}, higher={{ pair.higher }}</td>
+            <td>nearest={{ pair.nearest }}, higher={{ pair.higher }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p>{% translate "provider and accept_global_perms apply when a descendant request checks this ViewSet as an ancestor; cascade, read, write and actions apply to requests to this ViewSet's own views. This is configuration only: it does not show whether a user can access a chain." %}</p>
+    {% endwith %}
+    {% endblock ancestor_config %}
+
     {% block guardian_config %}{% endblock guardian_config %}
 
     <h4>{% translate "Permissions" %}</h4>

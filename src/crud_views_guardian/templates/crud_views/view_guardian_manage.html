@@ -5,7 +5,7 @@
 <h4>{% translate "Guardian Configuration" %}</h4>
 {% cv_alert "warning" body_template="crud_views/snippets/guardian/config_table.html" %}
 
-<h4>{% translate "Global permission fallback" %}</h4>
+<h4>{% translate "Global permission fallback (endpoint-local)" %}</h4>
 <table class="table table-striped">
     <tr>
         <th scope="col">{% translate "View" %}</th>
@@ -20,7 +20,7 @@
     </tr>
     {% endfor %}
 </table>
-<p>{% translate "Global fallback is configured on each view class. GuardianViewSet.get_objects_for_user() is independent of these view policies and always strict." %}</p>
+<p>{% translate "cv_guardian_accept_global_perms is configured on each view class and applies only to that view's own object or queryset gate; it never relaxes an ancestor (see ancestor_policy.accept_global_perms of the ancestor ViewSet)." %} {% translate "GuardianViewSet.get_objects_for_user() is independent of these view policies and always strict." %}</p>
 {% endblock guardian_config %}
 
 {% block permission_holders %}

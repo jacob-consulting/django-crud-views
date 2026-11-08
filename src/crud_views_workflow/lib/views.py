@@ -86,6 +86,8 @@ class WorkflowView(CustomFormView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        # nested ViewSets: refuse a nondefault pinned alias before any context, hook or transition (phase 06.18)
+        self._cv_check_nested_write()
         context = self.get_context_data(**kwargs)
         self.cv_post_hook(context)
         if self.cv_form_is_valid(context):
@@ -116,11 +118,15 @@ class WorkflowView(CustomFormView):
             self._cv_workflow_db_alias = using
         return self._cv_workflow_db_alias
 
+    def _cv_write_alias(self) -> str:
+        return self._cv_get_workflow_db_alias()
+
     def cv_get_atomic(self):
         using = self._cv_get_workflow_db_alias()
         return transaction.atomic(using=using) if self.cv_atomic else nullcontext()
 
     def cv_form_valid_process(self, context: dict) -> None:
+        self._cv_check_nested_write(context)
         using = self._cv_get_workflow_db_alias()
         with self.cv_get_atomic():
             self.cv_form_valid(context)

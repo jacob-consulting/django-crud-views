@@ -320,8 +320,16 @@ class CrudView(metaclass=CrudViewMetaClass):
         request.META["QUERY_STRING"] = request.GET.urlencode()
 
     def cv_get_db_alias(self) -> str:
-        """Database alias of the POST write phase; follows DATABASE_ROUTERS for the ViewSet's model."""
-        return router.db_for_write(self.cv_viewset.model)
+        """Database alias of the POST write phase; follows DATABASE_ROUTERS for the ViewSet's model.
+
+        A nested ORM request with a resolved ``self.object`` passes it as the router's instance hint, so the
+        alias is the one the object's own ``save()`` routes to (and the nested default-database boundary checks
+        that one, phase 06.18). Top-level selection is unchanged: model only, no hint."""
+        viewset = self.cv_viewset
+        obj = getattr(self, "object", None)
+        if viewset.parent is not None and not viewset.is_resource and isinstance(obj, Model):
+            return router.db_for_write(type(obj), instance=obj)
+        return router.db_for_write(viewset.model)
 
     def cv_get_atomic(self):
         """

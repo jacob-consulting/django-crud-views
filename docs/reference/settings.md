@@ -36,6 +36,22 @@ occurrence and may increase label/URL/rendering costs; neither policy bounds tot
 total queries. See [Delete preview display limit](delete_view.md#display-limit) and the
 [copied-template migration](../migrating-1.0.md#copied-delete-templates-with-incomplete-previews).
 
+## Ancestor authorization
+
+Defaults for the [ancestor authorization](ancestor_authorization.md) of nested ViewSets. A nested ViewSet inherits
+them unless its `ancestor_policy` sets `cascade`, `read` or `write`.
+
+| Key | Description | Type | Default |
+|---|---|---|---|
+| CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE | `True` checks every protected ancestor of a nested request; `False` only the nearest protected one. Relationships are validated at every level either way. | `bool` | `True` |
+| CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS | Permission-map keys required for Read operations (list, card, detail, redirect, manage): `nearest` on the nearest protected ancestor, `higher` on the farther checked ones. | `dict` with `nearest` and `higher` | `{"nearest": "view", "higher": "view"}` |
+| CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS | The same for Write operations (create, update, delete, ordering, polymorphic type selection), including their form GET. | `dict` with `nearest` and `higher` | `{"nearest": "change", "higher": "view"}` |
+
+Both mappings must contain both keys as nonempty strings without surrounding whitespace; the cascade value must be a
+boolean, not `None`. Only an omitted setting uses its default. Values are captured at startup: an invalid value
+raises a Pydantic `ValidationError` when the settings module is imported, and system check `crud_views.E322`
+reports a value changed afterwards. There is no global provider, Guardian fallback or action map setting.
+
 ## Session
 
 Session settings.

@@ -59,7 +59,8 @@ The rejection comes after the gates that already ran before it, so it reveals no
 - An anonymous user is still redirected to the login page (or gets the Guardian view's configured 403/404).
 - On a core view, a user without the `delete` permission gets 403. The core permission phase also loads the object,
   so a missing object is a 404, and a disabled action state is a 403.
-- On a Guardian child view the parent gate runs first (404 for a missing parent, 403 without the parent permission).
+- On a nested view the [ancestor checks](ancestor_authorization.md) run first (404 for a missing or mismatched
+  ancestor, 403 when a checked ancestor permission is missing).
   An inactive user gets 403 (see [Inactive users](guardian.md#inactive-users)).
 - An active user on a top-level Guardian view gets the 405 before any object lookup, with or without a grant and
   whether or not the object exists.

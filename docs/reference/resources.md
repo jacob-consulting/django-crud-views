@@ -401,6 +401,24 @@ Declaring `ParentViewSet(name=...)` that points at a Resource ViewSet fails a
 startup system check (**E261**) — "Resources can only be leaves in the
 nesting hierarchy."
 
+### Ancestor authorization of a Resource leaf
+
+A nested Resource request authorizes its ORM ancestors like any nested request
+(see [Ancestor authorization](ancestor_authorization.md)): each ancestor is
+looked up through its ViewSet queryset, the relationships between the ancestors
+are validated, and the selected ancestor permissions are checked — all before
+`cv_get_items()` / `cv_get_item()` run. A denied or missing ancestor ends the
+request without calling the loaders. Read views (list, detail) use the Read pair;
+a nested `ActionView` or `CustomFormView` on a Resource is a custom endpoint and
+needs an `actions` entry on the Resource ViewSet's `ancestor_policy`.
+
+The framework does **not** check that a Resource item belongs to the parent:
+`cv_get_items()` and `cv_get_item()` must still restrict the collection and the
+item to the URL kwargs, as in the example above. The local
+`resource_permissions` gate of a `*PermissionRequired` view stays independent.
+The ancestors and their authorization records must be on the `default` database;
+the Resource loaders themselves keep their existing contract.
+
 ## A note on pydantic warnings
 
 If you build a `Resource` subclass hierarchy where an intermediate base class

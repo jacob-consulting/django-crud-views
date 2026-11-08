@@ -154,8 +154,9 @@ runs the gates of the page it belongs to:
 
 - An update view loads its object through `get_object()`. A Guardian view therefore checks the object permission and
   the action state, and a missing object, or one under a different URL parent, is a 404.
-- A create view runs its dispatch gates: the model-level `add` permission at top level, the parent permission and the
-  parent's action state for a nested create.
+- A create view runs its dispatch gates: the model-level `add` permission at top level, the
+  [ancestor authorization](ancestor_authorization.md) of the owning create (a Write) and the parent's action state
+  for a nested create.
 - A core view checks its permission and action state as on the full page.
 
 A denied request gets 403, or the login redirect or configured anonymous behavior for an anonymous user. An inactive

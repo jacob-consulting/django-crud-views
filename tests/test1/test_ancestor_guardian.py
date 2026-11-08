@@ -610,3 +610,59 @@ def test_guardian_order_matches_core_order(scope, events, monkeypatch):
         assert events[:4] == ["outer_queryset", "outer_gate", "inner_queryset", "inner_gate"]
         assert events.index("local_object") > events.index("inner_gate")
         assert len(calls) == 1
+
+
+# ── revocation ────────────────────────────────────────────────────────────────
+
+REVOCATIONS = {
+    # id: (ancestor ViewSet class, ancestor fallback, grant kind); the grant satisfies the Publisher gate until revoked
+    "guardian-direct": (GuardianViewSet, False, "direct"),
+    "guardian-group-grant": (GuardianViewSet, False, "group-grant"),
+    "guardian-group-membership": (GuardianViewSet, False, "group-membership"),
+    "guardian-fallback-model": (GuardianViewSet, True, "model"),
+    "core-model": (ViewSet, False, "model"),
+    "core-model-group": (ViewSet, False, "model-group"),
+}
+
+
+@pytest.mark.parametrize("case", REVOCATIONS)
+@pytest.mark.django_db
+def test_revocation_applies_on_next_request(scope, case):
+    """A grant revoked between two requests of the same session denies the next request: nothing is cached across
+    requests (each request loads its actor afresh; provider checkers are request-local)."""
+    pub_class, fallback, kind = REVOCATIONS[case]
+    _pub_vs, book_vs = publisher_book(
+        scope, pub_class=pub_class, pub_policy=AncestorPolicy(accept_global_perms=fallback)
+    )
+    pub_vs = book_vs.parent.viewset
+    publisher = Publisher.objects.create(name="P")
+    user = make_user("actor")
+    group = Group.objects.create(name="ancestor-readers")
+    view_publisher = Permission.objects.get(codename="view_publisher", content_type__app_label="app")
+    if kind == "direct":
+        pub_vs.assign_perm("view", user, publisher)
+    elif kind in ("group-grant", "group-membership"):
+        user.groups.add(group)
+        pub_vs.assign_perm("view", group, publisher)
+    elif kind == "model":
+        user.user_permissions.add(view_publisher)
+    else:  # model-group
+        user.groups.add(group)
+        group.permissions.add(view_publisher)
+    client = client_for(user)  # one session for both requests
+    target = url(book_vs, "list", publisher.pk)
+
+    assert client.get(target).status_code == 200
+
+    if kind == "direct":
+        pub_vs.remove_perm("view", user, publisher)
+    elif kind == "group-grant":
+        pub_vs.remove_perm("view", group, publisher)
+    elif kind == "group-membership":
+        user.groups.remove(group)
+    elif kind == "model":
+        user.user_permissions.remove(view_publisher)
+    else:
+        group.permissions.remove(view_publisher)
+
+    assert client.get(target).status_code == 403

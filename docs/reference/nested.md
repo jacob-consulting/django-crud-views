@@ -4,6 +4,8 @@ A child ViewSet can declare a parent ViewSet. Once declared:
 
 - the child's URLs are nested under the parent's URL (`parent_prefix/<parent_pk>/child_prefix/...`)
 - the child's querysets are automatically filtered to the current parent object
+- every request to the child first authorizes its ancestors: they must exist, belong together, and grant the
+  required permissions (see [Ancestor authorization](ancestor_authorization.md))
 - create views can auto-set the parent foreign key with `CreateViewParentMixin`
 - context buttons can jump up (`parent`), down (`ChildContextButton`), or sideways
   (`SiblingContextButton`) across the hierarchy
@@ -54,10 +56,15 @@ cv_employee = ViewSet(
 | `name` | `str` | required | Registry name of the parent ViewSet |
 | `attribute` | `str \| None` | parent's `name` | Model attribute holding the `ForeignKey` to the parent |
 | `pk_name` | `str \| None` | `f"{parent.name}_pk"` | Name of the parent's primary key in the URL pattern |
-| `many_to_many_through_attribute` | `str \| None` | `None` | Set for a `ManyToMany` parent relation instead of a `ForeignKey` |
+| `many_to_many_through_attribute` | `str \| None` | `None` | For a `ManyToMany` parent relation: the parent-side end of the same relation (optional) |
 
 Set `attribute` when the `ForeignKey` field name doesn't match the parent's registry name;
 set `pk_name` only if the default URL kwarg name would collide with another kwarg.
+
+For a `ManyToMany` parent, `attribute` names the child's relation (either end) whose related model is the parent
+model. `many_to_many_through_attribute` may be omitted; when set, it must be the other end of that same relation.
+Relationships are validated by system check `crud_views.E320` and before URLs are built: an unknown parent, a cycle,
+or a field that does not lead to the parent model is a configuration error.
 
 ## URL structure
 
@@ -115,6 +122,41 @@ MRO, as shown above.
     `BreadcrumbMixin` above is a small project-level mixin around
     `CrudViewBreadcrumbMixin` (see [Breadcrumb](breadcrumb.md)) — it is unrelated to nesting
     itself; every view in the example app uses it to render the breadcrumb trail.
+
+## Ancestor authorization
+
+A nested request is authorized along its whole URL before the child view does any work. With the defaults:
+
+| Request to `Employee` (`company/<company_pk>/department/<department_pk>/employee/...`) | Required on Department (nearest) | Required on Company (higher) |
+|---|---|---|
+| List, detail (Read) | `view` | `view` |
+| Create, update, delete, including the form GET (Write) | `change` | `view` |
+
+Core ViewSets check model permissions; a `GuardianViewSet` ancestor checks object permissions. A missing ancestor,
+one hidden by its ViewSet's `get_queryset()`, or a `department_pk` that does not belong to `company_pk` is a 404;
+a missing permission on a checked ancestor is a 403. The child view's own permission (for example
+`CreateViewPermissionRequired`'s `add`) is checked afterwards and independently.
+
+Configure it per ViewSet with `ancestor_policy`:
+
+```python
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
+
+cv_office = ViewSet(
+    model=Office,
+    name="office",
+    parent=ParentViewSet(name="company"),
+    # writes to offices need only "view" on the company
+    ancestor_policy=AncestorPolicy(write=AncestorPermissions(nearest="view", higher="view")),
+)
+```
+
+`AncestorPolicy(provider="none")` on a ViewSet removes its permission gate when it is an ancestor (its existence and
+relationship are still checked), and `AncestorPolicy(cascade=False)` on a nested ViewSet checks only the nearest
+protected ancestor for its requests. A nested custom endpoint (`ActionView`, `CustomFormView`, `WorkflowView`, ...)
+must declare its pair under `actions`. Global defaults are [settings](settings.md#ancestor-authorization). The full
+contract, including Resource leaves, manage pages, databases and the mutation boundary, is in
+[Ancestor authorization](ancestor_authorization.md).
 
 ## Navigating between parent and child
 
@@ -198,3 +240,4 @@ Use `ChildContextButton` on the parent view to go *down* to a child, and
 - [`examples/bootstrap5/nested/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/nested) — the full three-level example app these snippets are drawn from
 - [Context Buttons](context_buttons.md) — `ParentContextButton`, `ChildContextButton`, `SiblingContextButton` in full
 - [Breadcrumb](breadcrumb.md) — renders the same parent chain as a Bootstrap breadcrumb
+- [Ancestor authorization](ancestor_authorization.md) — how nested requests authorize their ancestors

@@ -118,6 +118,9 @@ class AuthorDetailView(GuardianDetailViewPermissionRequired):
 
 The fallback is a **view** setting and nothing else. Each view class reads its own `cv_guardian_accept_global_perms`,
 so two views of one `GuardianViewSet` can follow different policies. The ViewSet does not pass a value on to its views.
+The flag applies only to the view's own object or queryset gate. It never relaxes an ancestor of a nested request: when
+a `GuardianViewSet` is checked as an ancestor, its own `AncestorPolicy(accept_global_perms=True)` decides whether
+model permissions count there (see [Parent ViewSets](#parent-viewsets)).
 
 `GuardianViewSet` no longer accepts a `cv_guardian_accept_global_perms` key. The key never changed access, and
 passing it now (as `True` or `False`, as a keyword or in `GuardianViewSet.model_validate({...})`) fails with a
@@ -172,10 +175,12 @@ yet. Two cases:
 `add_<model>` permission is checked. Grant this globally to users who should
 be able to create objects.
 
-**Child creates** (with parent viewset): The parent object exists. Guardian
-checks per-object permission on the parent using
-`cv_guardian_parent_create_permission`. No model-level check is made on the
-child model.
+**Child creates** (with parent viewset): The parent object exists. The create
+request is a Write, so [ancestor authorization](ancestor_authorization.md) requires
+`change` on the parent by default (`view` on higher ancestors), checked by the
+parent ViewSet's provider: an object permission for a `GuardianViewSet` parent, a
+model permission for a core `ViewSet` parent. No model-level `add_<model>` check is
+made on the child model.
 
 Child create views **must** use `GuardianCreateViewPermissionRequired` (not
 plain `CreateViewPermissionRequired`). Using the plain variant causes the
@@ -194,9 +199,10 @@ override detects the child create case, fetches the parent object from the
 URL kwargs via `cv_get_parent_object()`, and calls `cv_create_has_access` on
 the create view class with the resolved parent.
 
-The default `cv_create_has_access` checks `cv_guardian_parent_create_permission`
-on the parent via guardian's `ObjectPermissionChecker`. Override it on the
-create view class for custom logic:
+The default `cv_create_has_access` checks the create operation's `nearest` key
+(`change` by default, or the ViewSet's `write` pair or `actions["create"]` entry) on
+the immediate parent, with that parent's provider and ancestor fallback. Override it
+on the create view class for custom logic:
 
 ```python
 class BookCreateView(CreateViewParentMixin, GuardianCreateViewPermissionRequired):
@@ -217,11 +223,11 @@ class BookCreateView(CreateViewParentMixin, GuardianCreateViewPermissionRequired
         return ObjectPermissionChecker(user).has_perm("change_publisher", parent_obj)
 ```
 
-When `cv_create_has_access` is not overridden, the default implementation
-uses `cv_guardian_parent_create_permission` (falling back to
-`cv_guardian_parent_permission`) — no extra configuration needed for the
-standard case. It applies the same rule as the create view's dispatch, including the view's
-`cv_guardian_accept_global_perms` fallback and a `None` permission key.
+When `cv_create_has_access` is not overridden, the default implementation applies
+the immediate parent's gate exactly as the create request checks it: the parent's
+provider, its `AncestorPolicy.accept_global_perms`, and no check when the parent's
+provider is `"none"`. The create view's own `cv_guardian_accept_global_perms` plays no
+part. Higher ancestors are not checked for rendering; the request still checks them.
 
 The URL-bound list override above is unchanged. On a child list page the parent comes from the URL, so `cv_access`
 and `cv_action_enabled` of the create control are both computed from that parent. If the parent cannot be resolved
@@ -251,8 +257,8 @@ does work for `ManyToMany` nesting:
 
 - the helpers with an explicit parent instance, `Genre` create checked against `publisher_a`;
 - the URL-bound child list, whose create control resolves the parent from the URL;
-- direct create GET and POST under an authorized URL parent, including the `None` parent policy and the independent
-  state rule.
+- direct create GET and POST under an authorized URL parent, including a parent with `provider="none"` and the
+  independent state rule.
 
 On list pages, place the control through the URL-aware
 [resolved button loop](../faq.md#render-a-custom-loop-of-buttons). Route-aware create controls for a `ManyToMany`
@@ -264,29 +270,46 @@ object grants never stand in for it.
 
 ## Parent Viewsets
 
-The shipped Guardian child views check permission on the URL parent before dispatching.
-Custom compositions need the parent authorization mixin described below.
-
-Configure what permission is required on the parent:
+Nested Guardian views authorize their ancestors through the shared
+[ancestor authorization](ancestor_authorization.md) of all nested ViewSets. A `GuardianViewSet` used as an ancestor
+is checked with **object permissions** by default: the user needs the required permission on the resolved parent
+object, through a direct or group grant. The requirement is declared on the nested (requested) ViewSet:
 
 ```python
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet
+from crud_views_guardian.lib.viewset import GuardianViewSet
+
+cv_author = GuardianViewSet(model=Author, name="author")
 cv_book = GuardianViewSet(
     model=Book,
     name="book",
     parent=ParentViewSet(name="author"),
-    cv_guardian_parent_permission="view",  # for list/detail/update/delete
-    cv_guardian_parent_create_permission="change",  # for create (None = use above)
+    # the defaults, spelled out: Read needs view, Write needs change on the author
+    ancestor_policy=AncestorPolicy(
+        read=AncestorPermissions(nearest="view", higher="view"),
+        write=AncestorPermissions(nearest="change", higher="view"),
+    ),
 )
 ```
 
-`cv_guardian_parent_create_permission=None` (the default) means create views use
-`cv_guardian_parent_permission` as well. Setting `cv_guardian_parent_permission=None`
-disables the parent **permission** check, for create views too unless they have their own
-`cv_guardian_parent_create_permission`.
+| Field | Declared on | Effect |
+| --- | --- | --- |
+| `read`, `write`, `actions`, `cascade` | The nested ViewSet (`cv_book`) | Which permission keys its requests need on the parent (`nearest`) and on farther ancestors (`higher`) |
+| `provider` | The parent ViewSet (`cv_author`) | `"guardian"` (default): object permission; `"model"`: model permission; `"none"`: no permission check at this level |
+| `accept_global_perms` | The parent `GuardianViewSet` | `True`: a model permission on the parent model (for example `app.view_author`) also satisfies its gate |
 
-`None` disables only that permission check. The rest still applies:
+The ancestor fallback `accept_global_perms` is independent of the child view's `cv_guardian_accept_global_perms`.
+Enabling the view flag on a Book view does not relax a strict Author ancestor, and enabling the Author fallback does
+not relax a strict Book object gate. The Author fallback applies to every descendant request that checks Author.
 
-- The URL parent is still resolved, and a missing parent is a 404 for every child view, list included.
+A core `ViewSet` parent of a `GuardianViewSet` child is checked with **model** permissions: an object grant on that
+parent no longer counts. Make the parent a `GuardianViewSet` to protect it with object permissions;
+`provider="guardian"` on a core `ViewSet` is rejected.
+
+`provider="none"` on the parent removes only its permission check. The rest still applies:
+
+- The URL parent is still resolved through its ViewSet queryset, and a missing parent is a 404 for every child view,
+  list included.
 - A create view still runs its `cv_action_enabled(user, parent)` state check with the URL parent, so a disabled
   parent answers GET and POST with 403 and writes nothing.
 - With `CreateViewParentMixin`, the created child is bound to the URL parent, whatever parent value the POST
@@ -294,33 +317,34 @@ disables the parent **permission** check, for create views too unless they have 
 - No child-model `add_<model>` permission is required instead.
 - The create access helpers return `True` for the parent and for a `ForeignKey` own child without any grant, and keep
   denying `None`, unrelated objects and `ManyToMany` own children.
+- A farther protected ancestor, if any, becomes the nearest protected one and is checked by the request.
 
-The parent check follows the child view's `cv_guardian_accept_global_perms`: in
-strict mode (the default) only a per-object grant on the parent counts; with the
-flag set, a model-level permission on the parent model (e.g. `app.view_author`) is
-accepted as a fallback.
+The former `cv_guardian_parent_permission` and `cv_guardian_parent_create_permission` fields were removed. Declaring
+either one, in the constructor or on a subclass, even with `None` or its old default, fails with a `ValidationError`
+before registration. See [Migrating to 1.0.0](../migrating-1.0.md#ancestor-authorization-for-nested-viewsets).
 
 ### Parent-to-child collection links
 
-`ChildContextButton` and child `CardAction` links to Guardian list/card collections check the configured
-parent permission on the exact parent object used to build their destination URL. For example, a user with
-`view` on Publisher A can open its detail/card page, but if the Books child ViewSet requires
-`cv_guardian_parent_permission="change"`, its Books action is hidden or disabled and that collection request
-returns 403. Grant `change` on Publisher A: the action becomes usable and the collection returns 200, even
-with no visible Books. A grant on Publisher B does not authorize Publisher A's link.
+`ChildContextButton` and child `CardAction` links to Guardian list/card collections check the target's
+immediate-parent gate on the exact parent object used to build their destination URL. For example, a user with
+`view` on Publisher A can open its detail/card page, but if the Books child ViewSet declares
+`AncestorPolicy(read=AncestorPermissions(nearest="change", higher="view"))`, its Books action is hidden or disabled
+and that collection request returns 403. Grant `change` on Publisher A: the action becomes usable and the collection
+returns 200, even with no visible Books. A grant on Publisher B does not authorize Publisher A's link.
 
 This applies to the shipped `GuardianListViewPermissionRequired` and `GuardianCardListViewPermissionRequired`
-and compatible queryset compositions supplying the existing parent permission helper. A legal
-`GuardianQuerysetMixin` composition without that helper retains its delegated access result after the actor
-check; rendering does not add parent authorization to it. Prefer the shipped classes when that gate is required.
+and compositions that include `GuardianParentPermissionMixin`. A legal `GuardianQuerysetMixin` composition without
+that mixin retains its delegated access result after the actor check; rendering does not add parent authorization
+to it, so its link can be visible while the request is denied by ancestor authorization. Prefer the shipped classes.
 
-The rule uses the target view's `cv_guardian_accept_global_perms`: object/group grants count in strict mode,
-and model-level parent permissions count only with that fallback enabled. Active superusers retain the existing
-parent permission behavior. Anonymous and inactive actors are denied for these nested collection links.
-`cv_guardian_parent_permission=None` skips only the parent permission check; actor handling, custom access
-denials and the independent `cv_action_enabled` state check still apply. Custom `cv_has_access(user, obj)`
-overrides receive the same supplied parent object. Child create links keep their existing parent/create
-permission and state policy, without an additional collection check.
+The rule uses the parent ViewSet's provider and its `AncestorPolicy.accept_global_perms`: object/group grants count
+for a strict Guardian parent, and model-level parent permissions count only with that ancestor fallback enabled.
+The target view's `cv_guardian_accept_global_perms` plays no part. Active superusers follow the backends. Anonymous
+and inactive actors are denied for these nested collection links. A parent with `provider="none"` skips only this
+permission check; actor handling, custom access denials and the independent `cv_action_enabled` state check still
+apply. Only the immediate parent is checked for rendering; the request checks the whole chain. Custom
+`cv_has_access(user, obj)` overrides receive the same supplied parent object. Child create links keep their create
+requirement and state policy, without an additional collection check.
 
 Denied actions use the target's [hide/disable mode](inaccessible_actions.md); disabled actions have the
 permission reason and no usable URL. State denial remains separate. The parent is reused without another
@@ -335,10 +359,10 @@ navigation, DataPanel/DataView or other off-page callers. In particular, `LinkCh
 check. Supplying an explicit parent works for M2M rendering without inferring ancestry or proving child
 membership; matching model types likewise does not establish a parent relationship.
 
-A missing Guardian parent permission declaration can now raise while the **hosting page renders its child
-action**, because this collection rendering path now invokes the existing parent helper. Previously that
-path did not invoke it. This configuration failure is preserved, not caught or converted to hidden/disabled
-output; the core missing-declaration guard does not harden Guardian overrides.
+A requirement key missing from the parent's permission map, or a nested custom target without its `actions`
+entry, raises `ImproperlyConfigured` while the **hosting page renders its child action**, because this collection
+rendering path invokes the parent helper. This configuration failure is preserved, not caught or converted to
+hidden/disabled output; the core missing-declaration guard does not harden Guardian overrides.
 
 [Issue #318](https://github.com/jacob-consulting/django-crud-views/issues/318) supersedes
 [#312](https://github.com/jacob-consulting/django-crud-views/issues/312) for the core declaration guard and this
@@ -365,7 +389,8 @@ class BookUpdateView(GuardianParentPermissionMixin, GuardianObjectPermissionMixi
 
 System check `crud_views_guardian.E001` names a missing or unreachable companion mixin. An incomplete or incorrectly ordered nested composition also
 raises `ImproperlyConfigured` at request dispatch and permission evaluation, before it can load or mutate child
-rows. Nested create views keep their parent permission/state gate without requiring a child-object mixin.
+rows. Nested create views keep their parent state gate (and the shared ancestor checks) without requiring a
+child-object mixin.
 Top-level views retain their existing permission delegation. Custom overrides must preserve cooperative `super()`
 calls; the check does not prove that an application override enforces authorization.
 
@@ -503,20 +528,25 @@ When `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` is enabled (or a user is in the `CRUD_VIE
 
 In addition to the standard ManageView content, GuardianManageView adds:
 
+**Ancestor policy** (on every manage page, core and Guardian) — the declared and effective `ancestor_policy`:
+provider and `accept_global_perms` (used when this ViewSet is an ancestor), cascade, Read and Write pairs and the
+`actions` entries (used by requests to this ViewSet's views). It is configuration only and does not show whether a
+user can access a chain. The context key is `ancestor_config`.
+
 **Guardian Configuration** — a table showing:
-- `cv_guardian_parent_permission` — permission key checked on parent object for child views
-- `cv_guardian_parent_create_permission` — permission key for child create views (falls back to `cv_guardian_parent_permission` if None)
-- `parent_viewset` — parent viewset name and the permission used to grant access
+- `parent_viewset` — the parent ViewSet's name
 - `GuardianViewSet.get_objects_for_user()` — the helper's fixed strict policy (object and group grants only)
 
-**Global permission fallback** — one row per registered view with its own `cv_guardian_accept_global_perms` and the
-effective policy:
+**Global permission fallback (endpoint-local)** — one row per registered view with its own
+`cv_guardian_accept_global_perms` and the effective policy:
 
 | Effective policy | When |
 |---|---|
-| strict | the view checks object permissions (object or queryset mixin, or a parent check), and its flag is `False` |
+| strict | the view checks object permissions itself (object or queryset mixin), and its flag is `False` |
 | global fallback | the same, with the flag `True` |
-| not applicable | the view never consults the flag: a plain or manage view, a top-level create, or a parent-only view whose parent permission key is `None` |
+| not applicable | the view never consults the flag: a plain or manage view, a top-level create, or a nested view whose only Guardian check is its parent (nested create) |
+
+The view flag never relaxes an ancestor; the ancestor fallback is shown in the ancestor policy table.
 
 The values come from each view class, never from the ViewSet. Below the table the page states that
 `get_objects_for_user()` is independent of these view policies and always strict.
@@ -527,9 +557,10 @@ holds `global_fallback_applicable`, `cv_guardian_accept_global_perms` (`None` wh
 `effective_policy` (`"strict"`, `"global fallback"` or `"not applicable"`). The `guardian_config` key
 `cv_guardian_accept_global_perms` is gone.
 
-Who may open the manage page has not changed: `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` (`"yes"`, `"debug_only"` with
-`DEBUG`, or `"no"`) and membership of the `CRUD_VIEWS_MANAGE_GROUP` group (default `CRUD_VIEWS_MANAGE`) still
-decide, not object permissions.
+Who may open a top-level manage page has not changed: `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` (`"yes"`, `"debug_only"`
+with `DEBUG`, or `"no"`) and membership of the `CRUD_VIEWS_MANAGE_GROUP` group (default `CRUD_VIEWS_MANAGE`) still
+decide, not object permissions. A nested manage page additionally requires the Read ancestor permissions; neither
+setting nor group membership bypasses them.
 
 **Permission Holders** — extends the standard group listing with an "Objects (guardian)" column showing how many objects each group has per-object access to.
 

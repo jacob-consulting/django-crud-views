@@ -6,6 +6,54 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Ancestor authorization for nested ViewSets.** Every request to a nested ViewSet, plain and permission-required
+  views alike, now authorizes its URL ancestors before any endpoint work. Each ancestor is looked up through its
+  ViewSet `get_queryset(view=<requested view>)`, its relationship to the level above is validated (missing,
+  excluded or mismatched: 404), and the selected ancestor permissions are checked outermost first (denied: 403).
+  Defaults: Read (list, card, detail, redirect, manage) needs `view` on every ancestor; Write (create, update,
+  delete, ordering, polymorphic type selection, **including the form GET**) needs `change` on the nearest protected
+  ancestor and `view` above it. Deleting a child therefore needs parent `change`, not `delete`. Endpoint-local
+  permissions, querysets, state and forms stay independent and run afterwards.
+  - **Core nested views gain ancestor gates.** A core `ViewSet` ancestor is checked with **model** permissions, so a
+    user needs, for example, `app.view_company` to list a company's departments, also on plain views without a
+    local gate. Declare `ancestor_policy=AncestorPolicy(provider="none")` on a ViewSet whose descendants should not
+    require a permission on it.
+  - **Guardian parent fields removed.** `cv_guardian_parent_permission` and `cv_guardian_parent_create_permission`
+    are gone; declaring either one (constructor or subclass, even `None` or the old default) raises a
+    `ValidationError` before registration. The old default (`view` for every child view) becomes Read `view` and
+    Write `change` on the parent, plus `view` on higher ancestors under full cascade. Translate explicitly with
+    `AncestorPolicy(read=..., write=..., actions={"create": ...})` on the nested ViewSet, and an old `None` with
+    `provider="none"` on the parent ViewSet; no declaration is translated automatically.
+  - **Provider defaults.** A `GuardianViewSet` ancestor needs an object (direct or group) grant; a core `ViewSet`
+    ancestor needs a model grant, so a Guardian child under a core parent no longer accepts an object grant on that
+    parent. Make the parent a `GuardianViewSet` to keep object-based protection.
+  - **Independent global fallback.** A child view's `cv_guardian_accept_global_perms` now affects only its own object
+    or queryset gate and never relaxes the parent. Accept model grants on a Guardian ancestor with
+    `AncestorPolicy(accept_global_perms=True)` on that ancestor; it applies to every descendant request that checks
+    it, so choose it deliberately.
+  - **Nested custom endpoints need a declaration.** A nested `ActionView`, `CustomFormView`,
+    `CustomFormNoObjectView`, `WorkflowView`, Guardian action or other unclassified view must declare its exact
+    registered key with a complete pair, for example
+    `AncestorPolicy(actions={"approve": AncestorPermissions(nearest="change", higher="view")})`. A missing or
+    unregistered key fails `crud_views.E321` and raises `ImproperlyConfigured` on request, in both cascade modes and
+    even when no ancestor is protected. Built-in classified views and top-level custom endpoints need no entry.
+  - **Nested manage pages** need the Read ancestor permissions in addition to the unchanged manage gate;
+    `CRUD_VIEWS_MANAGE_VIEWS_ENABLED = "yes"` or manage-group membership does not bypass them.
+  - **Boundaries.** Nested ancestry, child data and the authorization records it reads must be on the `default`
+    database; a reached nondefault selection raises `ImproperlyConfigured` (top-level routing is unchanged).
+    Authorization covers the URL path only: shared objects, moves to another parent and deletes are not checked
+    against other parents. Resource leaves still scope their items in `cv_get_items()` / `cv_get_item()`. Links and
+    buttons are not fully ancestor-aware; a visible link can lead to a denied request.
+  - **Write alias timing.** Form and action views now call `cv_get_db_alias()` before the write phase (before
+    `cv_form_valid()` / `action()`), on top-level views too, and register `cv_on_commit` on that alias. An override
+    that reads `self.object` there sees `None` on a create view.
+  - Configure with `AncestorPolicy` / `AncestorPermissions` from `crud_views.lib.viewset` and the settings
+    `CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE`, `CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS` and
+    `CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS`. Malformed settings raise a `ValidationError` at import
+    (`crud_views.E322`); unknown parents, cycles and unsupported relationships are `crud_views.E320`. See the
+    [reference tables](docs/reference/ancestor_authorization.md) and the
+    [migration](docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets).
+
 - **Object-detail accordion defaults and tab adapters.** The first accordion group now starts open on pages
   and fresh modal loads. Copied group templates must use `presentation.selected` for button collapsed styling,
   expanded ARIA and panel visibility. Complete custom adapter maps must include both `tab.init(el)` and
@@ -286,7 +334,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - **`GuardianViewSet` no longer accepts `cv_guardian_accept_global_perms`.** The key never changed access: the
   global-permission fallback has always been read from each view class. Passing it now, as `True` or `False`, raises
   a Pydantic `ValidationError` that names the per-view replacement, and nothing is registered. Set
-  `cv_guardian_accept_global_perms = True` on each Guardian view class that should accept global model permissions.
+  `cv_guardian_accept_global_perms = True` on each Guardian view class whose own object or queryset gate should
+  accept global model permissions; a Guardian ancestor uses `AncestorPolicy(accept_global_perms=True)` instead.
   `GuardianViewSet.get_objects_for_user()` stays strict and has no global-permission option. See
   [Migrating to 1.0.0](docs/migrating-1.0.md#the-guardianviewset-global-permission-key).
 - **Delete previews and protected objects.** With `cv_show_related_objects`, `protected_objects` now holds filtered
@@ -460,13 +509,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   UUID that the POST rebuilt differently, so added nested rows did not bind. Saved rows are unchanged.
 - **`formset.js` with integer keys of 10 and more:** the key parser read `12-0` as key `2`, so a row added under a
   parent with a multi-digit key got a prefix the POST never read, and its data was lost. It now reads the whole key.
-- **Guardian parent `None` policy:** `cv_guardian_parent_permission = None` (or
-  `cv_guardian_parent_create_permission = None`) used to skip the whole parent check. A child page then answered for
-  a missing parent, and a create ran under a parent whose `cv_action_enabled` state was disabled. Now `None` skips
-  only the permission check. The URL parent is still resolved (404 when missing), and a create view still runs its
-  state check with that parent (403 when disabled). The create access helpers no longer crash with
-  `AttributeError` under this policy, and they resolve the permission key exactly as dispatch does (`None`, not any
-  falsy value, means "no check"). No child `add_<model>` permission is required. See
+- **Guardian parent without a permission check:** a parent whose permission check is switched off (formerly
+  `cv_guardian_parent_permission = None`; since the ancestor-authorization change above,
+  `AncestorPolicy(provider="none")` on the parent ViewSet) used to skip the whole parent check. A child page then
+  answered for a missing parent, and a create ran under a parent whose `cv_action_enabled` state was disabled. Only
+  the permission check is skipped now. The URL parent is still resolved (404 when missing), and a create view still
+  runs its state check with that parent (403 when disabled). The create access helpers no longer crash under this
+  policy. No child `add_<model>` permission is required. See
   [Parent Viewsets](docs/reference/guardian.md#parent-viewsets).
 - **Inactive users under Guardian:** a logged-in user whose account is inactive (possible with
   `AllowAllUsersModelBackend`) got rows from Guardian list and card views (all of them for an inactive superuser), the
@@ -523,6 +572,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- **Ancestor authorization configuration** for nested ViewSets: `AncestorPolicy` and `AncestorPermissions`
+  (`crud_views.lib.viewset`), the `ancestor_policy` ViewSet field, three `CRUD_VIEWS_ANCESTOR_*` settings, system
+  checks `crud_views.E320`–`E322`, and an ancestor policy table on core and Guardian manage pages. See
+  [Ancestor authorization](docs/reference/ancestor_authorization.md).
 
 - **Workflow business validation, standalone execution and native buttons**
   ([#322](https://github.com/jacob-consulting/django-crud-views/issues/322)): the model-data-only

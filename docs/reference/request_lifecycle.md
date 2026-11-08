@@ -24,9 +24,12 @@ cannot be guaranteed. POST requests are handled by these methods:
 | `DeleteView.post` | `DeleteView`, polymorphic delete |
 | `ActionView.post` | `ActionView`, `OrderedUpView`, `OrderedDownView` |
 
-Each handler has three phases:
+Each handler has three phases. On a nested ViewSet, [ancestor authorization](ancestor_authorization.md) runs
+before all of them, at the start of `dispatch()`: no object is loaded and no hook below runs for a request denied
+there.
 
-1. **Outside the transaction:** load the object, build the context, validate.
+1. **Outside the transaction:** load the object, build the context, validate, and select the write database
+   (`cv_get_db_alias()`).
 2. **In the transaction (the write phase):** your write code and its follow-up hook. If anything
    raises, writes on that database roll back when the atomic boundary is enabled. External effects and writes on
    another database cannot be rolled back by it.
@@ -155,7 +158,7 @@ An expected workflow business/comment refusal occurs before the success hook and
 | Name | Kind | Default | Meaning |
 |---|---|---|---|
 | `cv_atomic` | attribute | `True` (`False` on `ResourceViewMixin`) | wrap the write phase in `transaction.atomic()` |
-| `cv_get_db_alias()` | method | `router.db_for_write(viewset.model)` | database of the transaction and of `cv_on_commit` |
+| `cv_get_db_alias()` | method | `router.db_for_write(viewset.model)` | database of the transaction and of `cv_on_commit`; selected before the write phase |
 | `cv_get_atomic()` | method | `atomic(using=cv_get_db_alias())`, or `nullcontext()` when `cv_atomic` is `False` | the context manager around the write phase |
 
 These generic defaults continue to apply to create/update/action/resource views. **Delete views** override them:
@@ -362,6 +365,21 @@ automatic split-storage diagnosis is provided.
 Django has no transactions across
 databases: writes to a second database inside
 `cv_form_valid` are not rolled back with the first.
+
+Form and action views select the write alias **before** the write phase: `cv_form_valid_process()` and
+`cv_action_process()` call `cv_get_db_alias()` before the transaction opens and before `cv_form_valid()` /
+`action()` run, and `cv_on_commit` is registered on that alias. This also holds with `cv_atomic = False` and for
+top-level views. An override that reads `self.object` therefore sees `None` on a create view, because the instance
+is saved later, and the loaded object before the write on an update view; select the alias from the model, the
+request or the URL instead. Before, a non-atomic view and the `cv_on_commit` registration called the selector after
+the write. Delete and workflow views pin their instance-hinted selection after loading the saved object, as
+described above.
+
+On a **nested** ViewSet, the write alias and the model's write route must be `default`: a nondefault selection,
+including one from an overridden `cv_get_db_alias()`, raises `ImproperlyConfigured` before anything is written. The
+same holds for the ancestors, the child queryset and the authorization records read by the checks; see
+[Ancestor authorization: databases](ancestor_authorization.md#databases). Top-level views keep the routing described
+here.
 
 ## Limitations
 

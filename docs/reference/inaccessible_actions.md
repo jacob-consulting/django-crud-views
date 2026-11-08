@@ -66,9 +66,10 @@ replace request authorization. A previously empty default permission lookup retr
 discover permissions created by migrations. Already populated mappings retain their existing cache policy;
 this is not general cache invalidation. Resource permission declarations retain the `viewset.E260` check.
 
-Guardian overrides have their own behavior. In particular, a missing parent permission declaration can fail
-host-page rendering for the scoped [Guardian collection links](guardian.md#limits-and-configuration-failures);
-this core guard does not catch that failure.
+Guardian overrides have their own behavior. In particular, a requirement key missing from the parent's permission
+map, or a nested custom target without its ancestor `actions` entry, can fail host-page rendering for the scoped
+[Guardian collection links](guardian.md#limits-and-configuration-failures); this core guard does not catch that
+failure.
 
 ## Template variables
 

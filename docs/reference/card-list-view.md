@@ -287,14 +287,16 @@ class PublisherCardListView(CardListViewPermissionRequired):
 ```
 
 Child actions use the child view's `cv_has_access` and independent `cv_action_enabled`, passing the card's
-object to each. For shipped Guardian list/card destinations, rendering also checks the existing parent
-permission rule on that same object used for the URL, like `ChildContextButton`. For example, a user may see
-Publisher A's card through `view` permission, but its Books action requires `change` when that is the child
-ViewSet's parent policy. Without it the action is hidden or disabled and the destination returns 403; granting
-it restores a usable action and a 200 response, even for an empty authorized Books collection.
+object to each. For shipped Guardian list/card destinations, rendering also checks the target's
+immediate-parent gate on that same object used for the URL, like `ChildContextButton`. For example, a user may see
+Publisher A's card through `view` permission, but its Books action requires `change` when the Books ViewSet's
+`ancestor_policy` requires it for Read. Without it the action is hidden or disabled and the destination returns 403;
+granting it restores a usable action and a 200 response, even for an empty authorized Books collection.
 
-The target view's global fallback is respected. Anonymous/inactive actors deny; `None` skips only the parent
-permission check. Custom access denials and independent state still apply, and child create actions retain
+The parent ViewSet's provider and ancestor fallback decide, not the target view's global fallback. Anonymous/inactive
+actors deny; a parent with `provider="none"` skips only that permission check. Higher ancestors are checked by the
+destination request only (see [Ancestor authorization](ancestor_authorization.md#links-and-buttons)). Custom access
+denials and independent state still apply, and child create actions retain
 their existing policy. Custom access overrides receive the original card object. Queryset-only Guardian
 compositions without the parent helper retain delegated access after the actor check and gain no parent
 authorization. `LinkChildColumn` in tables still renders without this permission check.

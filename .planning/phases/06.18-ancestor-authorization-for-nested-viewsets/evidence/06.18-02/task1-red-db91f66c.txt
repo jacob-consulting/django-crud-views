@@ -1,0 +1,1106 @@
+bringing up nodes...
+bringing up nodes...
+
+FFFFFFFFFFFFFFFFFFFF.FF.FFFFF.FFFFFFF.F                                  [100%]
+=================================== FAILURES ===================================
+________ test_helper_walks_fail_bounded[self_cycle-get_parent_url_args] ________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'self_cycle', helper = 'get_parent_url_args', sfx = '0b089e32'
+bounded = {'left': -1}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:188: in <lambda>
+    "get_parent_url_args": lambda vs: vs.get_parent_url_args(),
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:288: in get_parent_url_args
+    parent = parent.viewset.parent
+             ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_self_0b089e32', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_self_0b089e32')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+______ test_urlpatterns_fails_bounded_and_names_the_chain[missing_parent] ______
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'missing_parent', sfx = '36c405dd', bounded = {'left': 199}
+no_db = None
+
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_urlpatterns_fails_bounded_and_names_the_chain(shape, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        for vs in case.viewsets:
+            with pytest.raises(ImproperlyConfigured) as excinfo:
+>               _ = vs.urlpatterns
+                    ^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/functools.py:995: in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:453: in urlpatterns
+    path_parent = self.get_path_parent()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:408: in get_path_parent
+    path_prefix = parent.viewset.get_path_prefix()
+                  ^^^^^^^^^^^^^^
+tests/test1/test_ancestor_structure.py:72: in guarded
+    return original.fget(self)
+           ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/parentviewset.py:54: in viewset
+    return ViewSet.get_viewset(self.name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'st_nowhere_36c405dd'
+
+    @staticmethod
+    def get_viewset(name: str) -> Self:
+        if name not in _REGISTRY:
+>           raise ViewSetNotFoundError(name)
+E           crud_views.lib.exceptions.ViewSetNotFoundError: st_nowhere_36c405dd
+
+src/crud_views/lib/viewset/__init__.py:201: ViewSetNotFoundError
+_______ test_helper_walks_fail_bounded[self_cycle-get_parent_attributes] _______
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'self_cycle', helper = 'get_parent_attributes', sfx = '109ed6d1'
+bounded = {'left': -1}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:189: in <lambda>
+    "get_parent_attributes": lambda vs: vs.get_parent_attributes(),
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:315: in get_parent_attributes
+    parent = parent.viewset.parent
+             ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_self_109ed6d1', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_self_109ed6d1')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+__________ test_helper_walks_fail_bounded[self_cycle-get_path_parent] __________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'self_cycle', helper = 'get_path_parent', sfx = '86e7e4be'
+bounded = {'left': -1}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:190: in <lambda>
+    "get_path_parent": lambda vs: vs.get_path_parent(),
+                                  ^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:408: in get_path_parent
+    path_prefix = parent.viewset.get_path_prefix()
+                  ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_self_86e7e4be', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_self_86e7e4be')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+________ test_urlpatterns_fails_bounded_and_names_the_chain[self_cycle] ________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'self_cycle', sfx = 'acb3b902', bounded = {'left': -1}, no_db = None
+
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_urlpatterns_fails_bounded_and_names_the_chain(shape, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        for vs in case.viewsets:
+            with pytest.raises(ImproperlyConfigured) as excinfo:
+>               _ = vs.urlpatterns
+                    ^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/functools.py:995: in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:453: in urlpatterns
+    path_parent = self.get_path_parent()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:408: in get_path_parent
+    path_prefix = parent.viewset.get_path_prefix()
+                  ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_self_acb3b902', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_self_acb3b902')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+___________ test_actual_urlconf_import_fails_bounded[two_node_cycle] ___________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'two_node_cycle', sfx = 'd192d5bd', bounded = {'left': -1}, no_db = None
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-2317/popen-gw2/test_actual_urlconf_import_fai0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c4ed9d39460>
+
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_actual_urlconf_import_fails_bounded(shape, sfx, bounded, no_db, tmp_path, monkeypatch):
+        case = SHAPES[shape](sfx)
+        modname = f"st_urls_{shape}_{sfx}"
+        (tmp_path / f"{modname}.py").write_text(
+            "from crud_views.lib.viewset import ViewSet\n"
+            f"urlpatterns = ViewSet.get_viewset({case.target.name!r}).urlpatterns\n"
+        )
+        monkeypatch.syspath_prepend(str(tmp_path))
+        try:
+            with override_settings(ROOT_URLCONF=modname):
+                clear_url_caches()
+                with pytest.raises(ImproperlyConfigured, match=case.chain):
+>                   _ = get_resolver().url_patterns
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/functional.py:47: in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/urls/resolvers.py:718: in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+                       ^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/functional.py:47: in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/urls/resolvers.py:711: in urlconf_module
+    return import_module(self.urlconf_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+/tmp/pytest-of-alex/pytest-2317/popen-gw2/test_actual_urlconf_import_fai0/st_urls_two_node_cycle_d192d5bd.py:2: in <module>
+    urlpatterns = ViewSet.get_viewset('st_a_d192d5bd').urlpatterns
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/functools.py:995: in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:453: in urlpatterns
+    path_parent = self.get_path_parent()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:408: in get_path_parent
+    path_prefix = parent.viewset.get_path_prefix()
+                  ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_b_d192d5bd', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_b_d192d5bd')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+___________ test_helper_walks_fail_bounded[self_cycle-get_queryset] ____________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'self_cycle', helper = 'get_queryset', sfx = '65840082'
+bounded = {'left': 199}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:191: in <lambda>
+    "get_queryset": lambda vs: vs.get_queryset(view=SimpleNamespace(kwargs={})),
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ViewSet(st_self_65840082), view = namespace(kwargs={})
+
+    def get_queryset(self, view: CrudView) -> QuerySet:
+        """
+        Queryset with respect to parent
+        """
+        cv_raise(
+            not self.is_resource,
+            f"ViewSet.get_queryset() called for Resource-based ViewSet {self!r} — "
+            f"add ResourceViewMixin as the FIRST base class of the view",
+        )
+    
+        q_kwargs = {}
+        if self.parent:
+            parent = self.parent
+            attribute = None
+            while parent is not None:
+                # parent args
+                pk_name = parent.get_pk_name()
+                attribute = parent.get_attribute() if attribute is None else f"{attribute}__{parent.get_attribute()}"
+    
+                # generate q-args
+>               q_kwargs.update({f"{attribute}__pk": view.kwargs[pk_name]})
+                                                     ^^^^^^^^^^^^^^^^^^^^
+E               KeyError: 'st_self_65840082_pk'
+
+src/crud_views/lib/viewset/__init__.py:339: KeyError
+________ test_helper_walks_fail_bounded[two_node_cycle-get_path_parent] ________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'two_node_cycle', helper = 'get_path_parent', sfx = '2b668acc'
+bounded = {'left': -1}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:190: in <lambda>
+    "get_path_parent": lambda vs: vs.get_path_parent(),
+                                  ^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:408: in get_path_parent
+    path_prefix = parent.viewset.get_path_prefix()
+                  ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_b_2b668acc', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_b_2b668acc')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+_____________ test_actual_urlconf_import_fails_bounded[self_cycle] _____________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'self_cycle', sfx = '8c1acaad', bounded = {'left': -1}, no_db = None
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-2317/popen-gw1/test_actual_urlconf_import_fai0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70d80fffacc0>
+
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_actual_urlconf_import_fails_bounded(shape, sfx, bounded, no_db, tmp_path, monkeypatch):
+        case = SHAPES[shape](sfx)
+        modname = f"st_urls_{shape}_{sfx}"
+        (tmp_path / f"{modname}.py").write_text(
+            "from crud_views.lib.viewset import ViewSet\n"
+            f"urlpatterns = ViewSet.get_viewset({case.target.name!r}).urlpatterns\n"
+        )
+        monkeypatch.syspath_prepend(str(tmp_path))
+        try:
+            with override_settings(ROOT_URLCONF=modname):
+                clear_url_caches()
+                with pytest.raises(ImproperlyConfigured, match=case.chain):
+>                   _ = get_resolver().url_patterns
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/functional.py:47: in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/urls/resolvers.py:718: in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+                       ^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/functional.py:47: in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/urls/resolvers.py:711: in urlconf_module
+    return import_module(self.urlconf_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+/tmp/pytest-of-alex/pytest-2317/popen-gw1/test_actual_urlconf_import_fai0/st_urls_self_cycle_8c1acaad.py:2: in <module>
+    urlpatterns = ViewSet.get_viewset('st_self_8c1acaad').urlpatterns
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/functools.py:995: in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:453: in urlpatterns
+    path_parent = self.get_path_parent()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:408: in get_path_parent
+    path_prefix = parent.viewset.get_path_prefix()
+                  ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_self_8c1acaad', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_self_8c1acaad')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+______ test_urlpatterns_fails_bounded_and_names_the_chain[two_node_cycle] ______
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'two_node_cycle', sfx = '4a253b8a', bounded = {'left': -1}, no_db = None
+
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_urlpatterns_fails_bounded_and_names_the_chain(shape, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        for vs in case.viewsets:
+            with pytest.raises(ImproperlyConfigured) as excinfo:
+>               _ = vs.urlpatterns
+                    ^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/functools.py:995: in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:453: in urlpatterns
+    path_parent = self.get_path_parent()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:408: in get_path_parent
+    path_prefix = parent.viewset.get_path_prefix()
+                  ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_b_4a253b8a', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_b_4a253b8a')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+______ test_helper_walks_fail_bounded[two_node_cycle-get_parent_url_args] ______
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'two_node_cycle', helper = 'get_parent_url_args', sfx = '67ed9daf'
+bounded = {'left': -1}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:188: in <lambda>
+    "get_parent_url_args": lambda vs: vs.get_parent_url_args(),
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:288: in get_parent_url_args
+    parent = parent.viewset.parent
+             ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_b_67ed9daf', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_b_67ed9daf')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+_________ test_helper_walks_fail_bounded[two_node_cycle-get_queryset] __________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'two_node_cycle', helper = 'get_queryset', sfx = 'e2cd5413'
+bounded = {'left': 199}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:191: in <lambda>
+    "get_queryset": lambda vs: vs.get_queryset(view=SimpleNamespace(kwargs={})),
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ViewSet(st_a_e2cd5413), view = namespace(kwargs={})
+
+    def get_queryset(self, view: CrudView) -> QuerySet:
+        """
+        Queryset with respect to parent
+        """
+        cv_raise(
+            not self.is_resource,
+            f"ViewSet.get_queryset() called for Resource-based ViewSet {self!r} — "
+            f"add ResourceViewMixin as the FIRST base class of the view",
+        )
+    
+        q_kwargs = {}
+        if self.parent:
+            parent = self.parent
+            attribute = None
+            while parent is not None:
+                # parent args
+                pk_name = parent.get_pk_name()
+                attribute = parent.get_attribute() if attribute is None else f"{attribute}__{parent.get_attribute()}"
+    
+                # generate q-args
+>               q_kwargs.update({f"{attribute}__pk": view.kwargs[pk_name]})
+                                                     ^^^^^^^^^^^^^^^^^^^^
+E               KeyError: 'st_b_e2cd5413_pk'
+
+src/crud_views/lib/viewset/__init__.py:339: KeyError
+______ test_helper_walks_fail_bounded[missing_parent-get_parent_url_args] ______
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'missing_parent', helper = 'get_parent_url_args', sfx = '4bf1004e'
+bounded = {'left': 199}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:188: in <lambda>
+    "get_parent_url_args": lambda vs: vs.get_parent_url_args(),
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:284: in get_parent_url_args
+    arg = parent.get_pk_name()
+          ^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/parentviewset.py:60: in get_pk_name
+    return self.pk_name if self.pk_name else f"{self.viewset.name}_pk"
+                                                ^^^^^^^^^^^^
+tests/test1/test_ancestor_structure.py:72: in guarded
+    return original.fget(self)
+           ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/parentviewset.py:54: in viewset
+    return ViewSet.get_viewset(self.name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'st_nowhere_4bf1004e'
+
+    @staticmethod
+    def get_viewset(name: str) -> Self:
+        if name not in _REGISTRY:
+>           raise ViewSetNotFoundError(name)
+E           crud_views.lib.exceptions.ViewSetNotFoundError: st_nowhere_4bf1004e
+
+src/crud_views/lib/viewset/__init__.py:201: ViewSetNotFoundError
+___________ test_actual_urlconf_import_fails_bounded[missing_parent] ___________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'missing_parent', sfx = '50616393', bounded = {'left': 199}
+no_db = None
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-2317/popen-gw2/test_actual_urlconf_import_fai1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c4ed9d38ef0>
+
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_actual_urlconf_import_fails_bounded(shape, sfx, bounded, no_db, tmp_path, monkeypatch):
+        case = SHAPES[shape](sfx)
+        modname = f"st_urls_{shape}_{sfx}"
+        (tmp_path / f"{modname}.py").write_text(
+            "from crud_views.lib.viewset import ViewSet\n"
+            f"urlpatterns = ViewSet.get_viewset({case.target.name!r}).urlpatterns\n"
+        )
+        monkeypatch.syspath_prepend(str(tmp_path))
+        try:
+            with override_settings(ROOT_URLCONF=modname):
+                clear_url_caches()
+                with pytest.raises(ImproperlyConfigured, match=case.chain):
+>                   _ = get_resolver().url_patterns
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/functional.py:47: in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/urls/resolvers.py:718: in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+                       ^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/functional.py:47: in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/urls/resolvers.py:711: in urlconf_module
+    return import_module(self.urlconf_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+/tmp/pytest-of-alex/pytest-2317/popen-gw2/test_actual_urlconf_import_fai1/st_urls_missing_parent_50616393.py:2: in <module>
+    urlpatterns = ViewSet.get_viewset('st_orphan_50616393').urlpatterns
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/functools.py:995: in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:453: in urlpatterns
+    path_parent = self.get_path_parent()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:408: in get_path_parent
+    path_prefix = parent.viewset.get_path_prefix()
+                  ^^^^^^^^^^^^^^
+tests/test1/test_ancestor_structure.py:72: in guarded
+    return original.fget(self)
+           ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/parentviewset.py:54: in viewset
+    return ViewSet.get_viewset(self.name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'st_nowhere_50616393'
+
+    @staticmethod
+    def get_viewset(name: str) -> Self:
+        if name not in _REGISTRY:
+>           raise ViewSetNotFoundError(name)
+E           crud_views.lib.exceptions.ViewSetNotFoundError: st_nowhere_50616393
+
+src/crud_views/lib/viewset/__init__.py:201: ViewSetNotFoundError
+_____ test_helper_walks_fail_bounded[two_node_cycle-get_parent_attributes] _____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'two_node_cycle', helper = 'get_parent_attributes', sfx = '937378a9'
+bounded = {'left': -1}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:189: in <lambda>
+    "get_parent_attributes": lambda vs: vs.get_parent_attributes(),
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:315: in get_parent_attributes
+    parent = parent.viewset.parent
+             ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ParentViewSet(name='st_b_937378a9', attribute='publisher', pk_name=None, many_to_many_through_attribute=None)
+
+    def guarded(self):
+        budget["left"] -= 1
+        if budget["left"] < 0:
+>           raise _UnboundedWalk(f"unbounded ancestry walk through ParentViewSet({self.name!r})")
+E           tests.test1.test_ancestor_structure._UnboundedWalk: unbounded ancestry walk through ParentViewSet('st_b_937378a9')
+
+tests/test1/test_ancestor_structure.py:71: _UnboundedWalk
+_________ test_helper_walks_fail_bounded[missing_parent-get_queryset] __________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'missing_parent', helper = 'get_queryset', sfx = '5f82c572'
+bounded = {'left': 199}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:191: in <lambda>
+    "get_queryset": lambda vs: vs.get_queryset(view=SimpleNamespace(kwargs={})),
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:335: in get_queryset
+    pk_name = parent.get_pk_name()
+              ^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/parentviewset.py:60: in get_pk_name
+    return self.pk_name if self.pk_name else f"{self.viewset.name}_pk"
+                                                ^^^^^^^^^^^^
+tests/test1/test_ancestor_structure.py:72: in guarded
+    return original.fget(self)
+           ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/parentviewset.py:54: in viewset
+    return ViewSet.get_viewset(self.name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'st_nowhere_5f82c572'
+
+    @staticmethod
+    def get_viewset(name: str) -> Self:
+        if name not in _REGISTRY:
+>           raise ViewSetNotFoundError(name)
+E           crud_views.lib.exceptions.ViewSetNotFoundError: st_nowhere_5f82c572
+
+src/crud_views/lib/viewset/__init__.py:201: ViewSetNotFoundError
+_________ test_first_only_helpers_stay_bounded[get_parent_attributes] __________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+helper = 'get_parent_attributes', sfx = '6074fa67', bounded = {'left': 200}
+no_db = None
+
+    @pytest.mark.parametrize("helper", ["get_parent_url_args", "get_parent_attributes"])
+    def test_first_only_helpers_stay_bounded(helper, sfx, bounded, no_db):
+        # the immediate edge of a two-node cycle is resolvable: first_only answers without walking the chain
+        case = _two_cycle(sfx)
+        a, b = case.viewsets
+        value = getattr(a, helper)(first_only=True)
+        assert value == {"get_parent_url_args": f"{b.name}_pk", "get_parent_attributes": "publisher"}[helper]
+        # a self-cycle and a missing immediate parent fail at the first edge, still bounded and actionable
+        self_case = _self_cycle(sfx + "x")
+>       with pytest.raises(ImproperlyConfigured, match=self_case.chain):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_ancestor_structure.py:212: Failed
+_____ test_helper_walks_fail_bounded[missing_parent-get_parent_attributes] _____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'missing_parent', helper = 'get_parent_attributes', sfx = '33ace85c'
+bounded = {'left': 199}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:189: in <lambda>
+    "get_parent_attributes": lambda vs: vs.get_parent_attributes(),
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:315: in get_parent_attributes
+    parent = parent.viewset.parent
+             ^^^^^^^^^^^^^^
+tests/test1/test_ancestor_structure.py:72: in guarded
+    return original.fget(self)
+           ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/parentviewset.py:54: in viewset
+    return ViewSet.get_viewset(self.name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'st_nowhere_33ace85c'
+
+    @staticmethod
+    def get_viewset(name: str) -> Self:
+        if name not in _REGISTRY:
+>           raise ViewSetNotFoundError(name)
+E           crud_views.lib.exceptions.ViewSetNotFoundError: st_nowhere_33ace85c
+
+src/crud_views/lib/viewset/__init__.py:201: ViewSetNotFoundError
+________ test_helper_walks_fail_bounded[missing_parent-get_path_parent] ________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'missing_parent', helper = 'get_path_parent', sfx = '425c071a'
+bounded = {'left': 199}, no_db = None
+
+    @pytest.mark.parametrize("helper", HELPERS)
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_helper_walks_fail_bounded(shape, helper, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+        with pytest.raises(ImproperlyConfigured, match=case.chain):
+>           HELPERS[helper](case.target)
+
+tests/test1/test_ancestor_structure.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_structure.py:190: in <lambda>
+    "get_path_parent": lambda vs: vs.get_path_parent(),
+                                  ^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/__init__.py:408: in get_path_parent
+    path_prefix = parent.viewset.get_path_prefix()
+                  ^^^^^^^^^^^^^^
+tests/test1/test_ancestor_structure.py:72: in guarded
+    return original.fget(self)
+           ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/parentviewset.py:54: in viewset
+    return ViewSet.get_viewset(self.name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'st_nowhere_425c071a'
+
+    @staticmethod
+    def get_viewset(name: str) -> Self:
+        if name not in _REGISTRY:
+>           raise ViewSetNotFoundError(name)
+E           crud_views.lib.exceptions.ViewSetNotFoundError: st_nowhere_425c071a
+
+src/crud_views/lib/viewset/__init__.py:201: ViewSetNotFoundError
+__________ test_first_only_helpers_stay_bounded[get_parent_url_args] ___________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+helper = 'get_parent_url_args', sfx = '9fd2ddf1', bounded = {'left': 198}
+no_db = None
+
+    @pytest.mark.parametrize("helper", ["get_parent_url_args", "get_parent_attributes"])
+    def test_first_only_helpers_stay_bounded(helper, sfx, bounded, no_db):
+        # the immediate edge of a two-node cycle is resolvable: first_only answers without walking the chain
+        case = _two_cycle(sfx)
+        a, b = case.viewsets
+        value = getattr(a, helper)(first_only=True)
+        assert value == {"get_parent_url_args": f"{b.name}_pk", "get_parent_attributes": "publisher"}[helper]
+        # a self-cycle and a missing immediate parent fail at the first edge, still bounded and actionable
+        self_case = _self_cycle(sfx + "x")
+>       with pytest.raises(ImproperlyConfigured, match=self_case.chain):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_ancestor_structure.py:212: Failed
+_ test_invalid_relationship_fails_url_construction_and_check[default_attribute_is_not_a_field] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+case = 'default_attribute_is_not_a_field', sfx = 'ba718119'
+bounded = {'left': 200}, no_db = None
+
+    @pytest.mark.parametrize("case", INVALID_RELATIONS)
+    def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:340: ImportError
+___ test_request_fails_before_any_query_or_lookup[non_relational_attribute] ____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+breakage = 'non_relational_attribute'
+routed_chain = namespace(pub_vs=ViewSet(st_rpub_605c4343), book_vs=ViewSet(st_rbook_605c4343), url='/st_rpub_605c4343/1/st_rbook_605c4343/')
+bounded = {'left': 199}, no_db = None
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70c803e11b20>
+
+    @pytest.mark.parametrize("breakage", BREAKS)
+    def test_request_fails_before_any_query_or_lookup(breakage, routed_chain, bounded, no_db, monkeypatch):
+        lookups = []
+        original = ViewSet.get_queryset
+    
+        def spy(self, view):
+            lookups.append(self.name)
+            return original(self, view)
+    
+        monkeypatch.setattr(ViewSet, "get_queryset", spy)
+        expected = BREAKS[breakage](routed_chain)  # broken after URL construction, so the route still exists
+        # no database access at all: this test has none (pytest-django blocks it) and ``no_db`` fails any SQL
+>       with pytest.raises(ImproperlyConfigured, match=expected):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_ancestor_structure.py:302: Failed
+_ test_invalid_relationship_fails_url_construction_and_check[wrong_target_model] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+case = 'wrong_target_model', sfx = 'e814d1f7', bounded = {'left': 200}
+no_db = None
+
+    @pytest.mark.parametrize("case", INVALID_RELATIONS)
+    def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:340: ImportError
+__ test_invalid_relationship_fails_url_construction_and_check[missing_field] ___
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+case = 'missing_field', sfx = 'e5c5012e', bounded = {'left': 200}, no_db = None
+
+    @pytest.mark.parametrize("case", INVALID_RELATIONS)
+    def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:340: ImportError
+_ test_invalid_relationship_fails_url_construction_and_check[through_on_foreign_key] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+case = 'through_on_foreign_key', sfx = '17e3d8b3', bounded = {'left': 200}
+no_db = None
+
+    @pytest.mark.parametrize("case", INVALID_RELATIONS)
+    def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:340: ImportError
+_ test_invalid_relationship_fails_url_construction_and_check[through_missing] __
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+case = 'through_missing', sfx = '4fdf2bef', bounded = {'left': 200}
+no_db = None
+
+    @pytest.mark.parametrize("case", INVALID_RELATIONS)
+    def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:340: ImportError
+_ test_invalid_relationship_fails_url_construction_and_check[non_relational_field] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+case = 'non_relational_field', sfx = '9ebc4636', bounded = {'left': 200}
+no_db = None
+
+    @pytest.mark.parametrize("case", INVALID_RELATIONS)
+    def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:340: ImportError
+____________________ test_supported_relationships_validate _____________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+sfx = '74e3c930', bounded = {'left': 200}, no_db = None
+
+    def test_supported_relationships_validate(sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:355: ImportError
+_____________ test_resource_parent_keeps_single_e261_and_fails_use _____________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+sfx = 'e2843620', bounded = {'left': 200}, no_db = None
+
+    def test_resource_parent_keeps_single_e261_and_fails_use(sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:376: ImportError
+_ test_invalid_relationship_fails_url_construction_and_check[through_wrong_target] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+case = 'through_wrong_target', sfx = '51ecfb60', bounded = {'left': 200}
+no_db = None
+
+    @pytest.mark.parametrize("case", INVALID_RELATIONS)
+    def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:340: ImportError
+________ test_cycle_and_missing_parent_are_check_errors[two_node_cycle] ________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'two_node_cycle', sfx = '01221406', bounded = {'left': 200}
+no_db = None
+
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_cycle_and_missing_parent_are_check_errors(shape, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+>       messages = _structure_messages(*case.viewsets)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:397: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+viewsets = (ViewSet(st_a_01221406), ViewSet(st_b_01221406))
+
+    def _structure_messages(*viewsets):
+        """The ancestor-structure system-check messages that concern ``viewsets``."""
+>       from crud_views.checks import check_ancestor_declarations
+E       ImportError: cannot import name 'check_ancestor_declarations' from 'crud_views.checks' (/home/alex/projects/alex/django-crud-views/src/crud_views/checks.py)
+
+tests/test1/test_ancestor_structure.py:125: ImportError
+__ test_invalid_relationship_fails_url_construction_and_check[relation_path] ___
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+case = 'relation_path', sfx = '8e5e660e', bounded = {'left': 200}, no_db = None
+
+    @pytest.mark.parametrize("case", INVALID_RELATIONS)
+    def test_invalid_relationship_fails_url_construction_and_check(case, sfx, bounded, no_db):
+>       from crud_views.lib.ancestors import _validate_ancestor_structure
+E       ImportError: cannot import name '_validate_ancestor_structure' from 'crud_views.lib.ancestors' (/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py)
+
+tests/test1/test_ancestor_structure.py:340: ImportError
+________ test_cycle_and_missing_parent_are_check_errors[missing_parent] ________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'missing_parent', sfx = 'e8b60cfe', bounded = {'left': 200}
+no_db = None
+
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_cycle_and_missing_parent_are_check_errors(shape, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+>       messages = _structure_messages(*case.viewsets)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:397: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+viewsets = (ViewSet(st_orphan_e8b60cfe),)
+
+    def _structure_messages(*viewsets):
+        """The ancestor-structure system-check messages that concern ``viewsets``."""
+>       from crud_views.checks import check_ancestor_declarations
+E       ImportError: cannot import name 'check_ancestor_declarations' from 'crud_views.checks' (/home/alex/projects/alex/django-crud-views/src/crud_views/checks.py)
+
+tests/test1/test_ancestor_structure.py:125: ImportError
+__________ test_cycle_and_missing_parent_are_check_errors[self_cycle] __________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+shape = 'self_cycle', sfx = '35c72f42', bounded = {'left': 200}, no_db = None
+
+    @pytest.mark.parametrize("shape", SHAPES)
+    def test_cycle_and_missing_parent_are_check_errors(shape, sfx, bounded, no_db):
+        case = SHAPES[shape](sfx)
+>       messages = _structure_messages(*case.viewsets)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:397: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+viewsets = (ViewSet(st_self_35c72f42),)
+
+    def _structure_messages(*viewsets):
+        """The ancestor-structure system-check messages that concern ``viewsets``."""
+>       from crud_views.checks import check_ancestor_declarations
+E       ImportError: cannot import name 'check_ancestor_declarations' from 'crud_views.checks' (/home/alex/projects/alex/django-crud-views/src/crud_views/checks.py)
+
+tests/test1/test_ancestor_structure.py:125: ImportError
+___________________ test_e261_check_survives_missing_parent ____________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+sfx = 'ad6664b3', bounded = {'left': 199}, no_db = None
+
+    def test_e261_check_survives_missing_parent(sfx, bounded, no_db):
+        case = _missing(sfx)
+>       ids = [m.id for c in case.target.checks() for m in c.messages()]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_structure.py:405: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/crud_views/lib/viewset/__init__.py:258: in checks
+    expression=not self.parent.viewset.is_resource,
+                   ^^^^^^^^^^^^^^^^^^^
+tests/test1/test_ancestor_structure.py:72: in guarded
+    return original.fget(self)
+           ^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/viewset/parentviewset.py:54: in viewset
+    return ViewSet.get_viewset(self.name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'st_nowhere_ad6664b3'
+
+    @staticmethod
+    def get_viewset(name: str) -> Self:
+        if name not in _REGISTRY:
+>           raise ViewSetNotFoundError(name)
+E           crud_views.lib.exceptions.ViewSetNotFoundError: st_nowhere_ad6664b3
+
+src/crud_views/lib/viewset/__init__.py:201: ViewSetNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[self_cycle-get_parent_url_args]
+FAILED tests/test1/test_ancestor_structure.py::test_urlpatterns_fails_bounded_and_names_the_chain[missing_parent]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[self_cycle-get_parent_attributes]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[self_cycle-get_path_parent]
+FAILED tests/test1/test_ancestor_structure.py::test_urlpatterns_fails_bounded_and_names_the_chain[self_cycle]
+FAILED tests/test1/test_ancestor_structure.py::test_actual_urlconf_import_fails_bounded[two_node_cycle]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[self_cycle-get_queryset]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[two_node_cycle-get_path_parent]
+FAILED tests/test1/test_ancestor_structure.py::test_actual_urlconf_import_fails_bounded[self_cycle]
+FAILED tests/test1/test_ancestor_structure.py::test_urlpatterns_fails_bounded_and_names_the_chain[two_node_cycle]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[two_node_cycle-get_parent_url_args]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[two_node_cycle-get_queryset]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[missing_parent-get_parent_url_args]
+FAILED tests/test1/test_ancestor_structure.py::test_actual_urlconf_import_fails_bounded[missing_parent]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[two_node_cycle-get_parent_attributes]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[missing_parent-get_queryset]
+FAILED tests/test1/test_ancestor_structure.py::test_first_only_helpers_stay_bounded[get_parent_attributes]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[missing_parent-get_parent_attributes]
+FAILED tests/test1/test_ancestor_structure.py::test_helper_walks_fail_bounded[missing_parent-get_path_parent]
+FAILED tests/test1/test_ancestor_structure.py::test_first_only_helpers_stay_bounded[get_parent_url_args]
+FAILED tests/test1/test_ancestor_structure.py::test_invalid_relationship_fails_url_construction_and_check[default_attribute_is_not_a_field]
+FAILED tests/test1/test_ancestor_structure.py::test_request_fails_before_any_query_or_lookup[non_relational_attribute]
+FAILED tests/test1/test_ancestor_structure.py::test_invalid_relationship_fails_url_construction_and_check[wrong_target_model]
+FAILED tests/test1/test_ancestor_structure.py::test_invalid_relationship_fails_url_construction_and_check[missing_field]
+FAILED tests/test1/test_ancestor_structure.py::test_invalid_relationship_fails_url_construction_and_check[through_on_foreign_key]
+FAILED tests/test1/test_ancestor_structure.py::test_invalid_relationship_fails_url_construction_and_check[through_missing]
+FAILED tests/test1/test_ancestor_structure.py::test_invalid_relationship_fails_url_construction_and_check[non_relational_field]
+FAILED tests/test1/test_ancestor_structure.py::test_supported_relationships_validate
+FAILED tests/test1/test_ancestor_structure.py::test_resource_parent_keeps_single_e261_and_fails_use
+FAILED tests/test1/test_ancestor_structure.py::test_invalid_relationship_fails_url_construction_and_check[through_wrong_target]
+FAILED tests/test1/test_ancestor_structure.py::test_cycle_and_missing_parent_are_check_errors[two_node_cycle]
+FAILED tests/test1/test_ancestor_structure.py::test_invalid_relationship_fails_url_construction_and_check[relation_path]
+FAILED tests/test1/test_ancestor_structure.py::test_cycle_and_missing_parent_are_check_errors[missing_parent]
+FAILED tests/test1/test_ancestor_structure.py::test_cycle_and_missing_parent_are_check_errors[self_cycle]
+FAILED tests/test1/test_ancestor_structure.py::test_e261_check_survives_missing_parent
+35 failed, 4 passed in 1.44s

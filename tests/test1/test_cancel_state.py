@@ -474,11 +474,15 @@ def test_open_forms_bind_distinct_current_parents(
     from tests.lib.helper.user import user_viewset_permission
     from tests.test1.app.models import Book
     from tests.test1.app.urls import urlpatterns
-    from tests.test1.app.views import BookListView
+    from tests.test1.app.views import BookListView, cv_publisher
     from tests.test1.test_cancel_navigation import emitted_link, rendered_cancel
 
     for permission in ("view", "change"):
         user_viewset_permission(user_author_origin, cv_book, permission)
+        # nested Book requests also authorize their Publisher ancestor: list (Read) needs view, update (Write) change
+        user_viewset_permission(user_author_origin, cv_publisher, permission)
+    # the Publisher grant makes the list's icon-only "parent" action visible; strict mode requires it to have an icon
+    monkeypatch.setattr(cv_publisher, "icon_header", "fa-regular fa-building")
     client.force_login(user_author_origin)
 
     class BookFilter(FilterSet):

@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: executing
-stopped_at: Completed 06.18-06-PLAN.md
-last_updated: "2026-11-08T20:23:36.505Z"
+stopped_at: Completed 06.18-07-PLAN.md
+last_updated: "2026-11-08T21:00:14.305Z"
 last_activity: 2026-11-08
 last_activity_desc: Phase 06.18 plan 02 complete
-state_head: ae45bdd19d3c8b1ce558af93b42a151707ccb4d0
+state_head: 42768506c3f76be659e97d73e50d625d5b5e3663
 progress:
   total_phases: 24
   completed_phases: 21
   total_plans: 149
-  completed_plans: 143
+  completed_plans: 144
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 ## Current Position
 
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
-Plan: 7 of 12
+Plan: 8 of 12
 Status: Ready to execute
 Last activity: 2026-11-08 — Phase 06.18 plan 02 complete
 
@@ -781,6 +781,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P04 | 33 min | 2 tasks | 7 files |
 | Phase 06.18 P05 | 25min | 2 tasks | 7 files |
 | Phase 06.18 P06 | 25min | 3 tasks | 10 files |
+| Phase 06.18 P07 | 33 min | 3 tasks | 10 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1000,6 +1001,9 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-04: H1-fragment closed with Publisher change grants; test_resource_views.py::test_nested_detail_scoped_to_parent_404 newly exposed (403 before the Resource loader) and handed to 05.2 with the three H1-resource rows (WINDOWS entry 39)
 - [Phase 06.18]: 06.18-06: nested ORM requests refuse a nondefault database where it is reached (ancestor/child querysets, consumed collections, delete alias, write alias/instance route/FK-M2M attachment) via crud_views.lib.ancestor_db; inspect-and-refuse only, never reroute; top-level unchanged
 - [Phase 06.18]: 06.18-06: write boundary runs in each POST before the first hook and again at the write wrapper (form mixin, delete, action incl. ordered, workflow), atomic on/off; nested CrudView.cv_get_db_alias passes the resolved object as instance hint (top-level model-only)
+- [Phase 06.18]: 06.18-07: nested permission checks validate their own auth records where reached (actor db, object db, Django auth tables + through tables, Guardian generic/direct grant tables via managers and actor/object-hinted routes) with ancestor_db._check_nested_auth, before vocabulary or superuser/fallback shortcuts; no rerouting
+- [Phase 06.18]: 06.18-07: the ancestor-gate auth check sits at the gate call site in ancestors.py before the permission map, so a warm vocabulary cannot bypass it; ViewSet.permissions stays side-effect-free and unselected nearest-only levels are never touched
+- [Phase 06.18]: 06.18-07: filtered nested lists scope the keyword object_list too (directed Rule 1 fix of the 06.18-06 finding)
 
 ### Pending Todos
 
@@ -1065,6 +1069,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T20:23:33.514Z
-Stopped at: Completed 06.18-06-PLAN.md
+Last session: 2026-11-08T21:00:11.122Z
+Stopped at: Completed 06.18-07-PLAN.md
 Resume file: None

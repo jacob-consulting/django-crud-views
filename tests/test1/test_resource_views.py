@@ -159,8 +159,35 @@ def nested_bucket():
     resources.NESTED_BUCKET[:] = original
 
 
+@pytest.fixture
+def client_user_publisher_file_view(client: Client, user_s3file_view, cv_publisher) -> Client:
+    """The nested PublisherFile reader: the Resource view grant plus Publisher view, which its ancestor gate
+    requires (phase 06.18). The shared Resource-only actor stays unchanged for top-level and denial cases."""
+    from tests.lib.helper.user import user_viewset_permission
+
+    user_viewset_permission(user_s3file_view, cv_publisher, "view")
+    client.force_login(user_s3file_view)
+    return client
+
+
+@pytest.fixture
+def poisoned_publisher_file_loader(monkeypatch):
+    """Fail any PublisherFile load: a denied request must not reach the application-owned loader."""
+    from tests.test1.app.resources import PublisherFile
+
+    calls = []
+
+    def poison(cls, *args, **kwargs):
+        calls.append((args, kwargs))
+        raise AssertionError("PublisherFile loader reached")
+
+    monkeypatch.setattr(PublisherFile, "cv_get_items", classmethod(poison))
+    monkeypatch.setattr(PublisherFile, "cv_get_item", classmethod(poison))
+    return calls
+
+
 @pytest.mark.django_db
-def test_nested_list_scoped_to_parent(client_user_s3file_view: Client, nested_bucket):
+def test_nested_list_scoped_to_parent(client_user_publisher_file_view: Client, nested_bucket):
     from tests.test1.app.models import Publisher
 
     p1 = Publisher.objects.create(name="Penguin")
@@ -172,7 +199,7 @@ def test_nested_list_scoped_to_parent(client_user_s3file_view: Client, nested_bu
         ]
     )
 
-    response = client_user_s3file_view.get(f"/publisher/{p1.pk}/publisherfile/")
+    response = client_user_publisher_file_view.get(f"/publisher/{p1.pk}/publisherfile/")
     assert response.status_code == 200
     content = response.content.decode()
     # scoped: p1's file is present, p2's is not
@@ -181,29 +208,29 @@ def test_nested_list_scoped_to_parent(client_user_s3file_view: Client, nested_bu
 
 
 @pytest.mark.django_db
-def test_nested_detail_url_contains_parent_pk(client_user_s3file_view: Client, nested_bucket):
+def test_nested_detail_url_contains_parent_pk(client_user_publisher_file_view: Client, nested_bucket):
     from tests.test1.app.models import Publisher
 
     p1 = Publisher.objects.create(name="Penguin")
     key = f"publisher-{p1.pk}/contract.pdf"
     nested_bucket.append({"key": key, "size": 10})
 
-    response = client_user_s3file_view.get(f"/publisher/{p1.pk}/publisherfile/{md5(key)}/detail/")
+    response = client_user_publisher_file_view.get(f"/publisher/{p1.pk}/publisherfile/{md5(key)}/detail/")
     assert response.status_code == 200
     assert key in response.content.decode()
 
 
 @pytest.mark.django_db
-def test_nested_list_empty_for_parent_without_files(client_user_s3file_view: Client, nested_bucket):
+def test_nested_list_empty_for_parent_without_files(client_user_publisher_file_view: Client, nested_bucket):
     from tests.test1.app.models import Publisher
 
     p = Publisher.objects.create(name="NoFiles")
-    response = client_user_s3file_view.get(f"/publisher/{p.pk}/publisherfile/")
+    response = client_user_publisher_file_view.get(f"/publisher/{p.pk}/publisherfile/")
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_nested_detail_scoped_to_parent_404(client_user_s3file_view: Client, nested_bucket):
+def test_nested_detail_scoped_to_parent_404(client_user_publisher_file_view: Client, nested_bucket):
     """A file belonging to parent A must 404 when requested via parent B's URL."""
     from tests.test1.app.models import Publisher
 
@@ -212,8 +239,50 @@ def test_nested_detail_scoped_to_parent_404(client_user_s3file_view: Client, nes
     key = f"publisher-{p1.pk}/contract.pdf"
     nested_bucket.append({"key": key, "size": 10})
 
-    response = client_user_s3file_view.get(f"/publisher/{p2.pk}/publisherfile/{md5(key)}/detail/")
+    response = client_user_publisher_file_view.get(f"/publisher/{p2.pk}/publisherfile/{md5(key)}/detail/")
     assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_nested_resource_only_reader_is_denied_by_the_publisher_gate_before_loading(
+    client_user_s3file_view: Client, nested_bucket, poisoned_publisher_file_loader
+):
+    """The shared Resource-only actor has no Publisher view: the ancestor gate denies list and detail before
+    the application's loader runs."""
+    from tests.test1.app.models import Publisher
+
+    p1 = Publisher.objects.create(name="Penguin")
+    key = f"publisher-{p1.pk}/contract.pdf"
+    nested_bucket.append({"key": key, "size": 10})
+
+    assert client_user_s3file_view.get(f"/publisher/{p1.pk}/publisherfile/").status_code == 403
+    assert client_user_s3file_view.get(f"/publisher/{p1.pk}/publisherfile/{md5(key)}/detail/").status_code == 403
+    assert poisoned_publisher_file_loader == []
+
+
+@pytest.mark.django_db
+def test_nested_parent_only_reader_is_denied_by_the_local_resource_permission(
+    cv_publisher, nested_bucket, poisoned_publisher_file_loader
+):
+    """A fresh actor with Publisher view only: ancestry passes (a missing Publisher is still a 404), then the
+    Resource view's own permission denies, still before any loading."""
+    from django.contrib.auth.models import User
+
+    from tests.lib.helper.user import user_viewset_permission
+    from tests.test1.app.models import Publisher
+
+    user = User.objects.create_user(username="publisher_view_only", password="password")
+    user_viewset_permission(user, cv_publisher, "view")
+    client = Client()
+    client.force_login(user)
+    p1 = Publisher.objects.create(name="Penguin")
+    key = f"publisher-{p1.pk}/contract.pdf"
+    nested_bucket.append({"key": key, "size": 10})
+
+    assert client.get(f"/publisher/{p1.pk + 1000}/publisherfile/").status_code == 404  # ancestry reached first
+    assert client.get(f"/publisher/{p1.pk}/publisherfile/").status_code == 403
+    assert client.get(f"/publisher/{p1.pk}/publisherfile/{md5(key)}/detail/").status_code == 403
+    assert poisoned_publisher_file_loader == []
 
 
 @pytest.mark.django_db

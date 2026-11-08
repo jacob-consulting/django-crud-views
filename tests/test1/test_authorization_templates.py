@@ -123,7 +123,15 @@ def tp(monkeypatch):
         DetailViewPermissionRequired,
         ListViewPermissionRequired,
     )
-    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet, ViewSet, context_buttons_default
+    from crud_views.lib.viewset import (
+        _REGISTRY,
+        _REGISTRY_LOCK,
+        AncestorPermissions,
+        AncestorPolicy,
+        ParentViewSet,
+        ViewSet,
+        context_buttons_default,
+    )
     from crud_views_guardian.lib.views import (
         GuardianCardListViewPermissionRequired,
         GuardianCreateViewPermissionRequired,
@@ -201,8 +209,17 @@ def tp(monkeypatch):
             name=names[2],
             parent=ParentViewSet(name=names[0], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
-            cv_guardian_parent_permission="view",
-            cv_guardian_parent_create_permission="change",
+            # Phase 06.18 (D-13/D-28): the removed cv_guardian_parent_permission="view" /
+            # cv_guardian_parent_create_permission="change". Create keeps the default Write pair (Publisher change);
+            # the child pages must stay reachable on Publisher view alone so their create control is independent of
+            # page access: an explicit, complete override of exactly update/delete (the default Write pair and its
+            # denial with view only are pinned in test_ancestor_migration.py).
+            ancestor_policy=AncestorPolicy(
+                actions={
+                    "update": AncestorPermissions(nearest="view", higher="view"),
+                    "delete": AncestorPermissions(nearest="view", higher="view"),
+                }
+            ),
             context_buttons=[
                 *context_buttons_default(),
                 ContextButton(key="create_alias", key_target="create", label_template_code="Another book"),

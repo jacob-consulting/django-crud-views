@@ -31,13 +31,15 @@ def pol():
     """Fresh Guardian routes covering every global-fallback applicability category.
 
     Publisher ViewSet: strict list, global-accepting detail, plain (non-Guardian) update, top-level create with
-    fallback=True. Book child (parent permission "view"): global-accepting list and parent-only create. Free child
-    (both parent permissions None): strict list and a parent-only create with fallback=True.
+    fallback=True. Book child (default ancestor policy on the strict Guardian Publisher): global-accepting list and
+    parent-only create. Free child — phase 06.18 (D-07/D-28): under its own unprotected Publisher parent ViewSet
+    (``AncestorPolicy(provider="none")``) instead of the removed child-side None policies: strict list and a
+    parent-only create with fallback=True.
     """
     from crud_views.lib import check as check_module
     from crud_views.lib.crispy import CrispyViewMixin
     from crud_views.lib.views import CreateViewParentMixin, UpdateViewPermissionRequired
-    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, AncestorPolicy, ParentViewSet
     from crud_views_guardian.lib.views import (
         GuardianCreateViewPermissionRequired,
         GuardianDetailViewPermissionRequired,
@@ -48,7 +50,7 @@ def pol():
     from tests.test1.app.views import BookForm, PublisherForm
 
     sfx = uuid.uuid4().hex[:8]
-    names = [f"polpub{sfx}", f"polbook{sfx}", f"polfree{sfx}"]
+    names = [f"polpub{sfx}", f"polbook{sfx}", f"polfree{sfx}", f"polfreepub{sfx}"]
     vocab_snapshot = dict(check_module._VOCAB_CACHE)
     modname = f"tests.test1._pol_urls_{sfx}"
 
@@ -84,15 +86,20 @@ def pol():
 
         class PolBookCreateView(CrispyViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
             form_class = BookForm
-            cv_viewset = book_vs  # parent-only view, resolved parent permission "view": strict
+            cv_viewset = book_vs  # parent-only view: the ancestor policy gates the parent, no local fallback
+
+        freepub_vs = GuardianViewSet(
+            model=Publisher,
+            name=names[3],
+            icon_header="fa-regular fa-building",
+            ancestor_policy=AncestorPolicy(provider="none"),
+        )
 
         free_vs = GuardianViewSet(
             model=Book,
             name=names[2],
-            parent=ParentViewSet(name=names[0], attribute="publisher"),
+            parent=ParentViewSet(name=names[3], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
-            cv_guardian_parent_permission=None,
-            cv_guardian_parent_create_permission=None,
         )
 
         class PolFreeListView(GuardianListViewPermissionRequired):
@@ -101,12 +108,13 @@ def pol():
         class PolFreeCreateView(CrispyViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
             form_class = BookForm
             cv_viewset = free_vs
-            cv_guardian_accept_global_perms = True  # parent permission None: fallback never consulted
+            cv_guardian_accept_global_perms = True  # unprotected parent, no local gate: fallback never consulted
 
         module = types.ModuleType(modname)
         module.urlpatterns = [
             *pub_vs.urlpatterns,
             *book_vs.urlpatterns,
+            *freepub_vs.urlpatterns,
             *free_vs.urlpatterns,
             path("", include("tests.test1.project.urls")),
         ]
@@ -120,6 +128,7 @@ def pol():
                     pub_vs=pub_vs,
                     book_vs=book_vs,
                     free_vs=free_vs,
+                    freepub_vs=freepub_vs,
                     PublisherList=PolPublisherListView,
                     PublisherDetail=PolPublisherDetailView,
                     PublisherUpdate=PolPublisherUpdateView,
@@ -499,16 +508,25 @@ def test_manage_context_reports_mixed_policies_on_one_viewset(pol, client):
 
 @pytest.mark.django_db
 def test_manage_context_reports_parent_only_applicability(pol, client, publishers):
-    a, _b = publishers
-    client.force_login(_user("manager"))
+    from tests.lib.helper.guardian import user_guardian_object_perm
 
-    # parent permission "view": the parent-only create consults its (default, strict) fallback
+    a, _b = publishers
+    manager = _user("manager")
+    client.force_login(manager)
+
+    # phase 06.18: the nested manage page keeps its own gate and additionally needs the strict Publisher ancestor
+    # (manage is a Read endpoint: Publisher view) ...
+    assert client.get(_url(pol.book_vs, "manage", parent_pk=a.pk)).status_code == 403
+    user_guardian_object_perm(manager, pol.pub_vs, "view", a)
+
+    # ... and reports only remaining local applicability (D-22/D-41): the parent-only create has no local gate
+    # left to relax (its parent is gated by the ancestor policy), the queryset list still consults its own flag
     book = _views_policy(_manage(client, pol.book_vs, parent_pk=a.pk))
     assert book["list"] == _policy(applicable=True, accept=True)
-    assert book["create"] == _policy(applicable=True, accept=False)
+    assert book["create"] == _policy(applicable=False)
     assert book["manage"] == _policy(applicable=False)
 
-    # both parent permissions None: the parent-only create never consults fallback=True; the queryset view still does
+    # unprotected parent: the parent-only create never consults fallback=True; the queryset view still does
     free = _views_policy(_manage(client, pol.free_vs, parent_pk=a.pk))
     assert free["list"] == _policy(applicable=True, accept=False)
     assert free["create"] == _policy(applicable=False)
@@ -570,18 +588,35 @@ def test_parent_none_create_with_fallback_succeeds_without_grants(pol, client, p
 
 
 @pytest.mark.django_db
-def test_reported_child_policies_match_access_for_a_global_only_user(pol, client, publishers):
-    """Reported "global fallback" list admits a model permission; reported "strict" create does not."""
+def test_reported_child_policies_match_access_for_a_global_only_user(pol, client, publishers, monkeypatch):
+    """Reported "global fallback" list admits a model Book permission; the reported "not applicable" create has no
+    local fallback, so a model-only Publisher change is decided by the Publisher's ancestor policy alone.
+
+    Phase 06.18 (D-41): the list's own flag no longer relaxes the strict Publisher ancestor either, so the actor
+    holds a Publisher object view grant for the list; Publisher change stays model-only."""
+    from crud_views.lib.viewset import AncestorPolicy
+    from tests.lib.helper.guardian import user_guardian_object_perm
     from tests.test1.app.models import Book
 
     a, _b = publishers
     book = Book.objects.create(title="Shared Book", publisher=a)
-    client.force_login(_grant_global(_user("global_only"), "view_publisher", "view_book"))
+    user = _grant_global(_user("global_only"), "view_publisher", "view_book", "change_publisher")
+    client.force_login(user)
+    list_url = _url(pol.book_vs, "list", parent_pk=a.pk)
+    create_url = _url(pol.book_vs, "create", parent_pk=a.pk)
 
-    response = client.get(_url(pol.book_vs, "list", parent_pk=a.pk))
+    # control: global-only Publisher view does not pass the strict ancestor, whatever the list's local flag
+    assert client.get(list_url).status_code == 403
+
+    user_guardian_object_perm(user, pol.pub_vs, "view", a)
+    response = client.get(list_url)
     assert response.status_code == 200
-    assert _pks(response.context["object_list"]) == [book.pk]
-    assert client.get(_url(pol.book_vs, "create", parent_pk=a.pk)).status_code == 403
+    assert _pks(response.context["object_list"]) == [book.pk]  # the list's local fallback admits view_book
+    assert client.get(create_url).status_code == 403  # model-only Publisher change, strict ancestor
+
+    # the Publisher's own ancestor fallback (not any child flag) admits the model-only change grant
+    monkeypatch.setattr(pol.pub_vs, "ancestor_policy", AncestorPolicy(accept_global_perms=True))
+    assert client.get(create_url).status_code == 200
 
 
 # ── manage gate preserved (A20): patched singleton modes/groups, live DEBUG ───

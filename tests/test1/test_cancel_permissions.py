@@ -1,4 +1,11 @@
-"""Destination-owned cancel authorization and actionable fallback configuration."""
+"""Destination-owned cancel authorization and actionable fallback configuration.
+
+The Guardian cases reuse ``test_guardian_parent_none.pn``. Phase 06.18 migration (D-07/D-28/D-41): its Book
+scenario sits under its own unprotected Publisher parent; the removed child-side ``cv_guardian_parent_permission``
+"view" / create "change" strict scenario is ``parent_none._strict_policy()`` (that parent becomes a strict Guardian
+ancestor; Book declares its update/delete pages at Publisher view, create keeps the default Write pair), and a
+model-only parent grant needs that parent's own ``AncestorPolicy(accept_global_perms=True)``.
+"""
 
 import ast
 from pathlib import Path
@@ -361,8 +368,7 @@ def test_guardian_form_parent_grant_does_not_authorize_list(pn, publisher_a, cli
 
     user = _user("cancel_create_only")
     assign_perm("change_publisher", user, publisher_a)
-    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", "view")
-    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_create_permission", "change")
+    parent_none._strict_policy(pn, monkeypatch)
     calls = []
     monkeypatch.setattr(pn.BookList, "cv_action_enabled", classmethod(lambda cls, user, obj: calls.append(obj) or True))
     client.force_login(user)
@@ -437,9 +443,10 @@ def test_guardian_denies_anonymous_and_inactive_destinations(pn, publisher_a, mo
 
 
 @pytest.fixture
-def guardian_targets(pn):
+def guardian_targets(pn, monkeypatch):
     """Custom parent-only and create targets in the same isolated child ViewSet."""
     from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired
+    from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy
     from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
 
     events = []
@@ -487,6 +494,12 @@ def guardian_targets(pn):
         def get(self, request, *args, **kwargs):
             return HttpResponse("Nested create destination")
 
+    # phase 06.18 (D-17/D-31): the nested custom "inspect" endpoint declares its exact ancestor pair (a Read-like
+    # parent-only view); "special_create" is classified as a create (default Write pair)
+    actions = dict(pn.book_vs.ancestor_policy.actions)
+    actions["inspect"] = AncestorPermissions(nearest="view", higher="view")
+    monkeypatch.setattr(pn.book_vs, "ancestor_policy", AncestorPolicy(actions=actions))
+
     urls = ModuleType("cancel_guardian_custom_urls")
     pn.book_vs.__dict__.pop("urlpatterns", None)  # pn built its URL table before these custom registrations
     urls.urlpatterns = [*pn.pub_vs.urlpatterns, *pn.book_vs.urlpatterns, path("", include("tests.test1.project.urls"))]
@@ -500,17 +513,22 @@ def guardian_targets(pn):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("key,prefix", [("inspect", "parent"), ("special_create", "create")])
-@pytest.mark.parametrize("permission", ["view", None])
+@pytest.mark.parametrize("parent", ["strict", "none"])
 def test_guardian_parent_only_and_create_targets(
-    pn, guardian_targets, publisher_a, publisher_b, client, monkeypatch, key, prefix, permission
+    pn, guardian_targets, publisher_a, publisher_b, client, monkeypatch, key, prefix, parent
 ):
+    """Phase 06.18: the removed child-side parent permission "view" (create falling back to it) is the strict
+    parent with inspect at Publisher view and the creates at the default Write pair, so the strict actor holds
+    Publisher view + change on A only; the old None policy is the unprotected parent."""
     from guardian.shortcuts import assign_perm
 
     user = _user("cancel_parent_only")
     assign_perm("view_publisher", user, publisher_a)
+    if parent == "strict":
+        assign_perm("change_publisher", user, publisher_a)
+        parent_none._strict_policy(pn, monkeypatch)
     assert not user.has_perm("app.view_book")
     assert not user.has_perm("app.add_book")
-    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", permission)
     monkeypatch.setattr(pn.BookCreate, "cv_cancel_keys", [key])
     monkeypatch.setattr(pn.BookCreate, "cv_cancel_key", key)
     client.force_login(user)
@@ -529,7 +547,7 @@ def test_guardian_parent_only_and_create_targets(
     guardian_targets.events.clear()
 
     view = bound(pn.BookCreate, user, **{pn.book_vs.parent.get_pk_name(): publisher_b.pk})
-    if permission is not None:
+    if parent == "strict":  # no grant on B
         assert view.cv_get_cancel_url() is None
         assert guardian_targets.events == []
         assert client.get(_url(pn.book_vs, key, publisher_b.pk)).status_code == 403
@@ -567,15 +585,17 @@ def test_guardian_custom_parent_failures_propagate(pn, publisher_a, monkeypatch,
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("list_flag", [False, True])
 @pytest.mark.parametrize("global_opt_in", [False, True])
-def test_guardian_parent_global_policy(pn, publisher_a, client, monkeypatch, global_opt_in):
+def test_guardian_parent_global_policy(pn, publisher_a, client, monkeypatch, global_opt_in, list_flag):
+    """A model-only Publisher view reaches the list destination only through the Publisher's own ancestor
+    fallback (D-41); the destination list's cv_guardian_accept_global_perms (formerly the switch) is irrelevant."""
     from guardian.shortcuts import assign_perm
 
     user = _grant_global(_user("cancel_global_parent"), "view_publisher")
     assign_perm("change_publisher", user, publisher_a)
-    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", "view")
-    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_create_permission", "change")
-    monkeypatch.setattr(pn.BookList, "cv_guardian_accept_global_perms", global_opt_in)
+    parent_none._strict_policy(pn, monkeypatch, accept_global_perms=global_opt_in)
+    monkeypatch.setattr(pn.BookList, "cv_guardian_accept_global_perms", list_flag)
     client.force_login(user)
     response = client.get(_url(pn.book_vs, "create", publisher_a.pk))
     assert response.status_code == 200
@@ -596,7 +616,7 @@ def test_guardian_child_object_state_once_after_parent_and_object_policy(pn, pub
     book = Book.objects.create(title="Object state", publisher=publisher_a)
     user = _user("cancel_object_state")
     assign_perm("view_publisher", user, publisher_a)
-    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", "view")
+    parent_none._strict_policy(pn, monkeypatch)
     events = []
     monkeypatch.setattr(
         pn.BookDetail, "cv_action_enabled", classmethod(lambda cls, user, obj: events.append(obj) or False)

@@ -151,8 +151,12 @@ def test_touch_unknown_pk_404(client_user_s3file_delete: Client, s3_bucket):
 
 
 @pytest.fixture
-def nested_bucket():
+def nested_bucket(user_s3file_view, cv_publisher):
+    from tests.lib.helper.user import user_viewset_permission
     from tests.test1.app import resources
+
+    # ancestor authorization: reading the Resource leaf under a Publisher requires Publisher view
+    user_viewset_permission(user_s3file_view, cv_publisher, "view")
 
     original = [dict(row) for row in resources.NESTED_BUCKET]
     yield resources.NESTED_BUCKET

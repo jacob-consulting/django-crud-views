@@ -17,7 +17,7 @@ from crud_views.lib.crispy import CrispyViewMixin
 from crud_views.lib.view import CardAction, ChildContextButton
 from crud_views.lib.view.visibility import cv_resolve_action
 from crud_views.lib.views import CreateViewParentMixin, ListViewPermissionRequired
-from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet
+from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, AncestorPermissions, AncestorPolicy, ParentViewSet
 from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin, GuardianQuerysetMixin
 from crud_views_guardian.lib.views import (
     GuardianCardListViewPermissionRequired,
@@ -53,6 +53,8 @@ def links():
             name=names[1],
             parent=ParentViewSet(name=parent.name, attribute="publisher"),
             cv_guardian_parent_permission="change",
+            # the same parent requirement through ancestor authorization: change for every child operation
+            ancestor_policy=AncestorPolicy(read=AncestorPermissions(nearest="change", higher="view")),
             icon_header="fa-solid fa-book",
         )
 
@@ -320,6 +322,8 @@ def test_preservation_queryset_only_composition(links, client, django_user_model
     client.force_login(actor)
     data = rendered_data(links, renderer, actor, parent)
     assert data["cv_url"] == child_url(links, "list", parent)
+    # the destination request still passes ancestor authorization, which no composition opts out of
+    links.parent.assign_perm("change", actor, parent)
     response = client.get(data["cv_url"])
     assert response.status_code == 200
     assert list(response.context["object_list"]) == []
@@ -471,6 +475,7 @@ def alternate_child(links, request):
     child = viewset_cls(model=model, name=name, parent=ParentViewSet(**parent_args))
     if kind != "core":
         child.cv_guardian_parent_permission = "change"
+        child.ancestor_policy = AncestorPolicy(read=AncestorPermissions(nearest="change", higher="view"))
     base = ListViewPermissionRequired if kind == "core" else GuardianListViewPermissionRequired
 
     class AlternateList(base):

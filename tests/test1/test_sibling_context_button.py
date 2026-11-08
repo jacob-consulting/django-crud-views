@@ -21,6 +21,7 @@ def client_book_and_contract_view(client, cv_book, cv_contract):
     user = User.objects.create_user(username="user_book_contract_view", password="password")
     user_viewset_permission(user, cv_book, "view")
     user_viewset_permission(user, cv_contract, "view")
+    user_viewset_permission(user, cv_book.parent.viewset, "view")  # ancestor authorization: Publisher view
     client.force_login(user)
     return client
 

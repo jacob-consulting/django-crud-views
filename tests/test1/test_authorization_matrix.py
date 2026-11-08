@@ -206,7 +206,14 @@ def mx(monkeypatch):
     from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
     from crud_views.lib.formsets import FormSets
     from crud_views.lib.views import CreateViewParentMixin
-    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet, ViewSet
+    from crud_views.lib.viewset import (
+        _REGISTRY,
+        _REGISTRY_LOCK,
+        AncestorPermissions,
+        AncestorPolicy,
+        ParentViewSet,
+        ViewSet,
+    )
     from crud_views_guardian.lib.views import (
         GuardianCreateViewPermissionRequired,
         GuardianDeleteViewPermissionRequired,
@@ -249,6 +256,11 @@ def mx(monkeypatch):
             icon_header="fa-regular fa-address-book",
             cv_guardian_parent_permission="view",
             cv_guardian_parent_create_permission="change",
+            # the same parent requirements through ancestor authorization: view for every page, change to create
+            ancestor_policy=AncestorPolicy(
+                write=AncestorPermissions(nearest="view", higher="view"),
+                actions={"create": AncestorPermissions(nearest="change", higher="view")},
+            ),
         )
         child_page_actions = ["create"]
 
@@ -919,12 +931,22 @@ def _record_contexts(monkeypatch, view_cls):
     return records
 
 
+def _free_parent_actor(mx, world):
+    """No child grant; only the ancestor grants (Guardian Publisher view and change) ancestor authorization needs."""
+    from guardian.shortcuts import assign_perm
+
+    user = _make_actor("none", name="free_parent_actor")
+    for perm in ("view", "change"):
+        assign_perm(mx.g.vs.permissions[perm], user, world.a)
+    return _refetch(user)
+
+
 @pytest.mark.django_db
 def test_parent_none_create_enabled_binds_url_parent_even_with_forged_fk(mx, client, monkeypatch, world):
     from tests.test1.app.models import Book, Publisher
 
     records = _record_contexts(monkeypatch, mx.free.List)
-    client.force_login(_make_actor("none"))
+    client.force_login(_free_parent_actor(mx, world))
     url = _u(mx.free.vs, "create", parent_pk=world.a.pk)
 
     assert client.get(url).status_code == 200
@@ -944,7 +966,7 @@ def test_parent_none_create_enabled_binds_url_parent_even_with_forged_fk(mx, cli
 def test_parent_none_create_disabled_is_403_and_controls_keep_separate_values(mx, client, monkeypatch, world):
     mx.state["free"] = False
     records = _record_contexts(monkeypatch, mx.free.List)
-    client.force_login(_make_actor("none"))
+    client.force_login(_free_parent_actor(mx, world))
     url = _u(mx.free.vs, "create", parent_pk=world.a.pk)
     before = _snapshot()
 
@@ -995,6 +1017,10 @@ def test_child_page_create_control_matches_direct_route(mx, client, monkeypatch,
     from tests.test1.app.models import Book, Publisher
 
     monkeypatch.setattr(mx.book.Create, "cv_guardian_accept_global_perms", policy == "global", raising=False)
+    # ancestor authorization takes its global-permission fallback from the Publisher ancestor, not the child view
+    from crud_views.lib.viewset import AncestorPolicy
+
+    monkeypatch.setattr(mx.g.vs, "ancestor_policy", AncestorPolicy(accept_global_perms=policy == "global"))
     user = _book_page_actor(mx, world, child)  # page access is independent of the create-parent permission
     change = mx.g.vs.permissions["change"]
     if condition in ("permitted", "revoked", "disabled"):

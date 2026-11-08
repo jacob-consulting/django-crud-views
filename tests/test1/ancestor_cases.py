@@ -22,6 +22,7 @@ from django.template import Context, Template
 from django.test import override_settings
 from django.urls import clear_url_caches, include, path, reverse
 
+from crud_views.lib.viewset import ParentViewSet, ViewSet
 from tests.test1.app.models import AncestorAttachment, Book, BookNote, Publisher
 
 # (model, ParentViewSet attribute linking it to the previous level, fields of its create form)
@@ -263,3 +264,46 @@ def grant_all(user, routes: AncestorRoutes, ancestors: list, rows: list) -> None
     for obj in rows:
         for action in ("view", "change"):
             routes.endpoint.assign_perm(action, user, obj)
+
+
+# ── traced chains for the request-order suites ────────────────────────────────
+
+# named request events in call order; cleared by the ``events`` fixture of the request suites
+EVENTS: list[str] = []
+# (trace, fully qualified permission) of every ancestor gate evaluation, in call order
+CHECKED: list[tuple[str, str]] = []
+
+
+class TracedViewSet(ViewSet):
+    """A ViewSet recording its queryset calls (``<trace>_queryset``; the endpoint's as ``child``) and its ancestor
+    gate evaluations (``<trace>_gate``) in ``EVENTS``; the evaluated permission also goes to ``CHECKED``."""
+
+    trace: str = ""
+
+    def get_queryset(self, view):
+        EVENTS.append("child" if self.trace == "child" else f"{self.trace}_queryset")
+        return super().get_queryset(view)
+
+    def _ancestor_has_permission(self, user, obj, permission):
+        EVENTS.append(f"{self.trace}_gate")
+        CHECKED.append((self.trace, permission))
+        return super()._ancestor_has_permission(user, obj, permission)
+
+
+def traced_chain(
+    scope: "AncestorScope", spec, policies: dict | None = None, viewset_classes: dict | None = None, prefix: str = ""
+):
+    """Register one traced ViewSet per ``(model, parent attribute, trace)`` of ``spec`` (outermost first, endpoint
+    last); ``policies`` / ``viewset_classes`` map a level index to its ``AncestorPolicy`` / ViewSet class and
+    ``prefix`` keeps the names of several chains in one scope apart."""
+    policies = policies or {}
+    viewset_classes = viewset_classes or {}
+    viewsets = []
+    for index, (model, attribute, trace) in enumerate(spec):
+        kwargs = {"model": model, "name": scope.name(f"tr{prefix}{trace}"), "trace": trace}
+        if viewsets:
+            kwargs["parent"] = ParentViewSet(name=viewsets[-1].name, attribute=attribute)
+        if index in policies:
+            kwargs["ancestor_policy"] = policies[index]
+        viewsets.append(scope.viewset(viewset_classes.get(index, TracedViewSet), **kwargs))
+    return AncestorRoutes(family="core", depth=len(spec) - 1, viewsets=viewsets)

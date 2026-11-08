@@ -17,7 +17,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.db import router, transaction
 from django.db.models import Model
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template import Context as TemplateContext
 from django.template import Template
@@ -40,6 +40,7 @@ from crud_views.lib.check import (
 )
 from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
 
+from ..ancestor_databases import require_default_database
 from ..settings import crud_views_settings
 from .action_menu import (
     ActionGroup,
@@ -247,7 +248,10 @@ class CrudView(metaclass=CrudViewMetaClass):
         return url
 
     def get_queryset(self):
-        return self.cv_viewset.get_queryset(view=self)
+        queryset = self.cv_viewset.get_queryset(view=self)
+        if self.cv_viewset.has_parent:
+            require_default_database(queryset.db, context=f"view {self.cv_key!r} of ViewSet {self.cv_viewset.name!r}")
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -260,11 +264,38 @@ class CrudView(metaclass=CrudViewMetaClass):
         return super().get_template_names()
 
     def dispatch(self, request, *args, **kwargs):
+        response = self._cv_authorize_ancestors()
+        if response is not None:
+            return response
         self._cv_consume_cancel_restore(request)
         response = super().dispatch(request, *args, **kwargs)
         if self.cv_modal:
             patch_vary_headers(response, ["X-CV-Modal"])
         return response
+
+    def _cv_authorize_ancestors(self) -> HttpResponse | None:
+        """Ancestor authorization of a nested request, run first by every dispatch bridge; a denial response or None.
+
+        The bridges (here, ``CrudViewPermissionRequiredMixin``, ``ManageView`` and Guardian's parent mixin) call it
+        before their own dispatch work, so it precedes local permissions, child lookups, state and forms. It runs once
+        per view instance: only a completed traversal is marked, a denial ends the request. Top-level: no work.
+        """
+        if not self.cv_viewset.has_parent or getattr(self, "_cv_ancestors_authorized", False):
+            return None
+        from .ancestors import authorize_ancestors
+
+        response = authorize_ancestors(self)
+        if response is None:
+            self._cv_ancestors_authorized = True
+        return response
+
+    def _cv_ancestor_actor_response(self) -> HttpResponse | None:
+        """The endpoint's existing early actor rule, before any ancestor lookup; None admits the actor.
+
+        Called by ancestor authorization for anonymous and inactive actors. It must not load the child or evaluate
+        action state. A plain view has no actor rule; permission-required and manage views override it.
+        """
+        return None
 
     def _cv_consume_cancel_restore(self, request):
         if request.method != "GET" or not is_cancel_list_destination(type(self)):
@@ -277,7 +308,12 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def cv_get_db_alias(self) -> str:
         """Database alias of the POST write phase; follows DATABASE_ROUTERS for the ViewSet's model."""
-        return router.db_for_write(self.cv_viewset.model)
+        alias = router.db_for_write(self.cv_viewset.model)
+        if self.cv_viewset.has_parent:
+            require_default_database(
+                alias, context=f"writes of view {self.cv_key!r} of ViewSet {self.cv_viewset.name!r}"
+            )
+        return alias
 
     def cv_get_atomic(self):
         """
@@ -1027,17 +1063,28 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def cv_get_parent_object(self) -> Model:
         """
-        Get parent object based on the view's kwargs
+        Get parent object based on the view's kwargs.
+
+        During an authorized nested request this is the immediate parent ancestor authorization resolved (same
+        object, no second query); outside one (e.g. a direct helper call) it is looked up by the URL kwarg.
         """
         self.cv_assert_parent()
 
         assert self.cv_viewset.has_parent, "this ViewSet has no parent"
+
+        resolved = self._cv_resolved_ancestor(self.cv_viewset.parent.name)
+        if resolved is not None:
+            return resolved
 
         # get the parent object
         parent_model = self.cv_viewset.get_parent_model()
         arg = self.cv_viewset.get_parent_url_args(first_only=True)
         pk = self.kwargs[arg]
         return get_object_or_404(parent_model, pk=pk)
+
+    def _cv_resolved_ancestor(self, name: str) -> Model | None:
+        """The ancestor object of ViewSet ``name`` resolved by this request's ancestor authorization, else None."""
+        return getattr(self, "_cv_ancestor_objects", {}).get(name)
 
     def cv_get_parent_object_attribute(self) -> str:
         """
@@ -1054,6 +1101,22 @@ ViewContext.model_rebuild()
 
 class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
     cv_permission: str | None = None  # permission required for the view
+
+    def dispatch(self, request, *args, **kwargs):
+        # bridge: ancestors before PermissionRequiredMixin's local permission and action-state gate
+        response = self._cv_authorize_ancestors()
+        if response is not None:
+            return response
+        return super().dispatch(request, *args, **kwargs)
+
+    def _cv_ancestor_actor_response(self):
+        """Anonymous/inactive actors: the existing permission-only admission (no action object, no state)."""
+        user = self.request.user
+        if user.is_authenticated and user.is_active:
+            return None  # the local permission gate runs after ancestry
+        if PermissionRequiredMixin.has_permission(self):
+            return None
+        return self.handle_no_permission()
 
     @classmethod
     def checks(cls) -> Iterable[Check]:

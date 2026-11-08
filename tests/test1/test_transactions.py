@@ -103,6 +103,7 @@ def client_user_genre_add(client, db):
 
     user = User.objects.create_user(username="user_genre_add", password="password")
     user_viewset_permission(user, cv_genre, "add")
+    user_viewset_permission(user, cv_genre.parent.viewset, "change")  # ancestor authorization: Publisher change
     client.force_login(user)
     return client
 

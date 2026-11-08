@@ -437,7 +437,7 @@ def test_guardian_denies_anonymous_and_inactive_destinations(pn, publisher_a, mo
 
 
 @pytest.fixture
-def guardian_targets(pn):
+def guardian_targets(pn, monkeypatch):
     """Custom parent-only and create targets in the same isolated child ViewSet."""
     from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired
     from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
@@ -487,6 +487,14 @@ def guardian_targets(pn):
         def get(self, request, *args, **kwargs):
             return HttpResponse("Nested create destination")
 
+    # a nested custom form endpoint declares its ancestor operation by its exact registered key
+    from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy
+
+    monkeypatch.setattr(
+        pn.book_vs,
+        "ancestor_policy",
+        AncestorPolicy(actions={"inspect": AncestorPermissions(nearest="view", higher="view")}),
+    )
     urls = ModuleType("cancel_guardian_custom_urls")
     pn.book_vs.__dict__.pop("urlpatterns", None)  # pn built its URL table before these custom registrations
     urls.urlpatterns = [*pn.pub_vs.urlpatterns, *pn.book_vs.urlpatterns, path("", include("tests.test1.project.urls"))]

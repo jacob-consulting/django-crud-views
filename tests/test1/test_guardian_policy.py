@@ -37,7 +37,7 @@ def pol():
     from crud_views.lib import check as check_module
     from crud_views.lib.crispy import CrispyViewMixin
     from crud_views.lib.views import CreateViewParentMixin, UpdateViewPermissionRequired
-    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, AncestorPolicy, ParentViewSet
     from crud_views_guardian.lib.views import (
         GuardianCreateViewPermissionRequired,
         GuardianDetailViewPermissionRequired,
@@ -53,7 +53,14 @@ def pol():
     modname = f"tests.test1._pol_urls_{sfx}"
 
     try:
-        pub_vs = GuardianViewSet(model=Publisher, name=names[0], icon_header="fa-regular fa-building")
+        # Until the legacy parent fields are removed, the child policies here are those of the legacy parent gate
+        # alone: the Publisher ancestor declares provider "none" for ancestor authorization.
+        pub_vs = GuardianViewSet(
+            model=Publisher,
+            name=names[0],
+            icon_header="fa-regular fa-building",
+            ancestor_policy=AncestorPolicy(provider="none"),
+        )
 
         class PolPublisherListView(GuardianListViewPermissionRequired):
             cv_viewset = pub_vs  # strict (default)

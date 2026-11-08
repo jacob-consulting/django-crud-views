@@ -911,6 +911,14 @@ def test_child_list_with_accept_global_denies_without_any_parent_perm(client_gua
 # ── #121: accept_global also applies to the parent permission check ──────────
 
 
+def _accept_global_ancestor(monkeypatch):
+    """Ancestor authorization takes its global-permission fallback from the Publisher ancestor ViewSet."""
+    from crud_views.lib.viewset import AncestorPolicy
+    from tests.test1.app.views import cv_guardian_publisher
+
+    monkeypatch.setattr(cv_guardian_publisher, "ancestor_policy", AncestorPolicy(accept_global_perms=True))
+
+
 def _grant_global(user, codename):
     from django.contrib.auth.models import Permission, User
 
@@ -923,6 +931,7 @@ def test_accept_global_parent_global_perm_grants_child_list(client, user_guardia
     from tests.test1.app.views import GuardianBookListView
 
     monkeypatch.setattr(GuardianBookListView, "cv_guardian_accept_global_perms", True)
+    _accept_global_ancestor(monkeypatch)
     client.force_login(_grant_global(user_guardian, "view_publisher"))
     response = client.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/")
     assert response.status_code == 200
@@ -936,6 +945,7 @@ def test_accept_global_parent_global_perm_grants_child_detail(
     from tests.test1.app.views import GuardianBookDetailView
 
     monkeypatch.setattr(GuardianBookDetailView, "cv_guardian_accept_global_perms", True)
+    _accept_global_ancestor(monkeypatch)
     user_guardian_object_perm(user_guardian, cv_guardian_book, "view", book_under_publisher_a)
     client.force_login(_grant_global(user_guardian, "view_publisher"))
     response = client.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/{book_under_publisher_a.pk}/detail/")
@@ -948,6 +958,7 @@ def test_accept_global_parent_global_perm_grants_child_create(client, user_guard
     from tests.test1.app.views import GuardianBookCreateView
 
     monkeypatch.setattr(GuardianBookCreateView, "cv_guardian_accept_global_perms", True, raising=False)
+    _accept_global_ancestor(monkeypatch)
     client.force_login(_grant_global(user_guardian, "change_publisher"))
     response = client.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/create/")
     assert response.status_code == 200

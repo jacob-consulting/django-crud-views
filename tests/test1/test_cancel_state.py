@@ -479,6 +479,7 @@ def test_open_forms_bind_distinct_current_parents(
 
     for permission in ("view", "change"):
         user_viewset_permission(user_author_origin, cv_book, permission)
+        user_viewset_permission(user_author_origin, cv_book.parent.viewset, permission)  # ancestor authorization
     client.force_login(user_author_origin)
 
     class BookFilter(FilterSet):

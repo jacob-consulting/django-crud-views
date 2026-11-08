@@ -134,6 +134,15 @@ class ViewSet(BaseModel):
         """The provider gating this ViewSet when it is an ancestor; ``None`` selects the class default."""
         return self.ancestor_policy.provider or "model"
 
+    def _ancestor_has_permission(self, user, obj: Model, permission: str) -> bool:
+        """Whether ``user`` passes this ViewSet's gate as a selected ancestor holding ``obj``.
+
+        ``permission`` is already resolved through this ViewSet's permission map. The core ``"model"`` provider
+        checks the model permission (Django backends, including superuser and inactive-user rules); ``obj`` is used by
+        object-permission providers only. Never called for provider ``"none"``.
+        """
+        return user.has_perm(permission)
+
     def _validate_ancestor_policy(self) -> None:
         """Owning-ViewSet checks of ``ancestor_policy``; ``register()`` runs them before any side effect.
 

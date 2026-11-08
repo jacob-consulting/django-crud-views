@@ -222,7 +222,7 @@ def fr(monkeypatch):
     from crud_views_guardian.lib.viewset import GuardianViewSet
 
     sfx = uuid.uuid4().hex[:8]
-    names = [f"frgpub{sfx}", f"frgbook{sfx}", f"frcpub{sfx}", f"frg2pub{sfx}", f"frdeep{sfx}"]
+    names = [f"frgpub{sfx}", f"frgbook{sfx}", f"frcpub{sfx}", f"frg2pub{sfx}", f"frdeep{sfx}", f"frcbook{sfx}"]
     modname = f"tests.test1._fragment_urls_{sfx}"
     vocab_snapshot = dict(check_module._VOCAB_CACHE)
     calls = {"render": 0}
@@ -298,6 +298,22 @@ def fr(monkeypatch):
             cv_viewset = cpub_vs
             cv_formsets = publisher_formsets()
 
+        # core nested editor: ancestor authorization (Write: Publisher change) precedes its fragments
+        cbook_vs = ViewSet(
+            model=Book,
+            name=names[5],
+            parent=ParentViewSet(name=names[2], attribute="publisher"),
+            icon_header="fa-regular fa-address-book",
+        )
+
+        class FrCBookListView(ListViewPermissionRequired):
+            cv_viewset = cbook_vs
+
+        class FrCBookUpdateView(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
+            form_class = BookMainForm
+            cv_viewset = cbook_vs
+            cv_formsets = book_formsets()
+
         g2pub_vs = GuardianViewSet(model=Publisher, name=names[3], icon_header="fa-regular fa-building")
 
         class FrG2PublisherListView(GuardianListViewPermissionRequired):
@@ -331,6 +347,7 @@ def fr(monkeypatch):
             *gpub_vs.urlpatterns,
             *gbook_vs.urlpatterns,
             *cpub_vs.urlpatterns,
+            *cbook_vs.urlpatterns,
             *g2pub_vs.urlpatterns,
             *deep_vs.urlpatterns,
             path("", include("tests.test1.project.urls")),
@@ -345,6 +362,7 @@ def fr(monkeypatch):
                     gpub_vs=gpub_vs,
                     gbook_vs=gbook_vs,
                     cpub_vs=cpub_vs,
+                    cbook_vs=cbook_vs,
                     g2pub_vs=g2pub_vs,
                     deep_vs=deep_vs,
                     GPublisherCreate=FrGPublisherCreateView,
@@ -585,7 +603,7 @@ def test_wrong_url_parent_guardian_child_fragment_is_404(fr, world):
     """The actor passes the URL-parent gate (publisher A) and holds a grant on book B, but book B is not a child
     of publisher A: the target lookup under the URL parent fails before any rendering."""
     actor = _user("wrong_parent")
-    _grant(actor, fr.gpub_vs, world.publisher_a, "view")
+    _grant(actor, fr.gpub_vs, world.publisher_a, "view", "change")  # ancestor authorization: Write needs change
     _grant(actor, fr.gbook_vs, world.book_b, "view", "change")
     kwargs = {fr.gbook_vs.parent.get_pk_name(): world.publisher_a.pk, "pk": world.book_b.pk}
     response = _get(
@@ -693,6 +711,33 @@ def test_guardian_child_create_fragment_state_disabled_and_missing_parent(fr, wo
 
 
 @pytest.mark.django_db
+def test_core_nested_fragment_requires_ancestor_authorization_first(fr, world):
+    """A local child grant cannot open a nested fragment: the Write ancestor gate (Publisher change) runs first."""
+    actor = _user("core_child_editor")
+    _model_perms(actor, "view_book", "change_book", "view_publisher")
+    client = _client(actor)
+    kwargs = {fr.cbook_vs.parent.get_pk_name(): world.publisher_a.pk, "pk": world.book_a.pk}
+    params = {"template": "notes", "pk": str(world.book_a.pk), "num": "1", "formset_parent_prefix_key": ""}
+
+    denied = _get(client, _url(fr.cbook_vs, "update", **kwargs), params)
+    assert denied.status_code == 403
+    _assert_not_rendered(fr, denied)
+
+    missing = _get(client, _url(fr.cbook_vs, "update", **{**kwargs, "pk": world.book_b.pk}), params)
+    assert missing.status_code == 403  # the ancestor gate is reached before the child lookup
+    _assert_not_rendered(fr, missing)
+
+    _model_perms(actor, "change_publisher")
+    client = _client(actor)
+    wrong_parent = _get(client, _url(fr.cbook_vs, "update", **{**kwargs, "pk": world.book_b.pk}), params)
+    assert wrong_parent.status_code == 404
+    _assert_not_rendered(fr, wrong_parent)
+    _assert_fragment(
+        _get(client, _url(fr.cbook_vs, "update", **kwargs), params), [f"notes-{world.book_a.pk}-0-1"], ["note"]
+    )
+
+
+@pytest.mark.django_db
 def test_core_update_fragment_denied_without_change_or_when_disabled(fr, world, monkeypatch):
     viewer = _user("core_viewer")
     _model_perms(viewer, "view_publisher")
@@ -791,7 +836,7 @@ def test_authorized_guardian_create_fragments_follow_browser_payloads(fr, world)
 def test_authorized_guardian_child_update_and_create_fragments(fr, world):
     pa, ba = world.publisher_a, world.book_a
     actor = _user("child_editor")
-    _grant(actor, fr.gpub_vs, pa, "view")
+    _grant(actor, fr.gpub_vs, pa, "view", "change")  # ancestor authorization: a Write needs Publisher change
     _grant(actor, fr.gbook_vs, ba, "view", "change")
     client = _client(actor)
     pk_name = fr.gbook_vs.parent.get_pk_name()

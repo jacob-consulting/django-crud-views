@@ -56,6 +56,22 @@ class GuardianViewSet(ViewSet):
         """As an ancestor, a GuardianViewSet defaults to strict object permissions."""
         return self.ancestor_policy.provider or "guardian"
 
+    def _ancestor_has_permission(self, user, obj, permission: str) -> bool:
+        """The ``"guardian"`` provider: the object permission on ``obj`` (direct or group grant, Guardian's
+        content-type semantics); ``ancestor_policy.accept_global_perms`` also accepts the model permission.
+        Inactive actors are denied. An explicit ``"model"`` provider uses the core model check."""
+        if self._ancestor_provider() != "guardian":
+            return super()._ancestor_has_permission(user, obj, permission)
+        from guardian.core import ObjectPermissionChecker
+
+        from crud_views_guardian.lib.mixins import _guardian_inactive_actor
+
+        if _guardian_inactive_actor(user):
+            return False
+        if self.ancestor_policy.accept_global_perms and user.has_perm(permission):
+            return True
+        return ObjectPermissionChecker(user).has_perm(permission.split(".")[1], obj)
+
     def get_manage_view_class(self):
         from django.utils.module_loading import import_string
 

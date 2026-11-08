@@ -407,6 +407,8 @@ def user_book_view(cv_book):
 
     user = User.objects.create_user(username="user_book_view", password="password")
     user_viewset_permission(user, cv_book, "view")
+    # ancestor authorization: Read on a Book requires Publisher view
+    user_viewset_permission(user, cv_book.parent.viewset, "view")
     return user
 
 
@@ -422,6 +424,8 @@ def user_book_add(cv_book):
 
     user = User.objects.create_user(username="user_book_add", password="password")
     user_viewset_permission(user, cv_book, "add")
+    # ancestor authorization: Write on a Book requires Publisher change
+    user_viewset_permission(user, cv_book.parent.viewset, "change")
     return user
 
 
@@ -437,6 +441,8 @@ def user_book_change(cv_book):
 
     user = User.objects.create_user(username="user_book_change", password="password")
     user_viewset_permission(user, cv_book, "change")
+    # ancestor authorization: Write on a Book requires Publisher change
+    user_viewset_permission(user, cv_book.parent.viewset, "change")
     return user
 
 
@@ -452,6 +458,8 @@ def user_book_delete(cv_book):
 
     user = User.objects.create_user(username="user_book_delete", password="password")
     user_viewset_permission(user, cv_book, "delete")
+    # ancestor authorization: Write on a Book requires Publisher change
+    user_viewset_permission(user, cv_book.parent.viewset, "change")
     return user
 
 

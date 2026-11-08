@@ -27,7 +27,7 @@ from crud_views.lib.views import (
 from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired, CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.views.manage import ManageView
-from crud_views.lib.viewset import ParentViewSet, ViewSet, context_buttons_default
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet, context_buttons_default
 from crud_views_guardian.lib.views import (
     GuardianCardListViewPermissionRequired,
     GuardianCreateViewPermissionRequired,
@@ -276,6 +276,7 @@ class AuthorDetailOnlyView(ObjectDetailViewPermissionRequired):
 cv_publisher = ViewSet(
     model=Publisher,
     name="publisher",
+    icon_header="fa-regular fa-building",  # the icon-only "parent" button of nested Book/Contract pages
 )
 
 
@@ -741,6 +742,11 @@ cv_guardian_book = GuardianViewSet(
     icon_header="fa-regular fa-address-book",
     cv_guardian_parent_permission="view",
     cv_guardian_parent_create_permission="change",
+    # the same parent requirements through ancestor authorization: view for every page, change to create
+    ancestor_policy=AncestorPolicy(
+        write=AncestorPermissions(nearest="view", higher="view"),
+        actions={"create": AncestorPermissions(nearest="change", higher="view")},
+    ),
     context_buttons=[
         *context_buttons_default(),
         ContextButton(key="create_button", key_target="create"),  # key != key_target

@@ -27,6 +27,22 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     cv_icon_action = "manage"
     cv_icon_header = "manage"
 
+    def dispatch(self, request, *args, **kwargs):
+        # bridge: ancestors before PermissionRequiredMixin's manage gate
+        response = self._cv_authorize_ancestors()
+        if response is not None:
+            return response
+        return super().dispatch(request, *args, **kwargs)
+
+    def _cv_ancestor_actor_response(self):
+        """Anonymous/inactive actors: the manage admission itself (public, debug-only or manage group)."""
+        user = self.request.user
+        if user.is_authenticated and user.is_active:
+            return None  # the manage gate runs after ancestry
+        if self.has_permission():
+            return None
+        return self.handle_no_permission()
+
     def has_permission(self):
         if crud_views_settings.manage_views_enabled == "yes":
             return True

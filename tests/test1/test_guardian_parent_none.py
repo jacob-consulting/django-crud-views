@@ -31,7 +31,13 @@ def pn():
     from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
     from crud_views.lib.view import CardAction, ContextButton
     from crud_views.lib.views import CreateViewParentMixin, DetailViewPermissionRequired, ListViewPermissionRequired
-    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet, context_buttons_default
+    from crud_views.lib.viewset import (
+        _REGISTRY,
+        _REGISTRY_LOCK,
+        AncestorPolicy,
+        ParentViewSet,
+        context_buttons_default,
+    )
     from crud_views_guardian.lib.mixins import (
         GuardianObjectPermissionMixin,
         GuardianParentPermissionMixin,
@@ -57,7 +63,14 @@ def pn():
     hook_calls: list = []
 
     try:
-        pub_vs = GuardianViewSet(model=Publisher, name=names[0], icon_header="fa-regular fa-building")
+        # Until the legacy parent fields are removed, these scenarios exercise the legacy parent gate alone: the
+        # Publisher ancestor declares provider "none", the ancestor-authorization form of "no parent permission".
+        pub_vs = GuardianViewSet(
+            model=Publisher,
+            name=names[0],
+            icon_header="fa-regular fa-building",
+            ancestor_policy=AncestorPolicy(provider="none"),
+        )
 
         class PnPublisherListView(GuardianListViewPermissionRequired):
             cv_viewset = pub_vs

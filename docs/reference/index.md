@@ -9,6 +9,7 @@
 - [DeleteView](delete_view.md) — delete model instances with confirmation
 - [CustomFormView](custom_form_view.md) — a custom form attached to (or independent of) an existing object
 - [Nested ViewSets](nested.md) — parent/child ViewSets with nested URLs and auto-filtered querysets
+- [Ancestor authorization](nested.md#ancestor-authorization) — the ancestor permissions every nested request checks: `AncestorPolicy`, `AncestorPermissions` and the `CRUD_VIEWS_ANCESTOR_*` settings
 
 ## Object detail
 
@@ -37,7 +38,7 @@
 
 - [WorkflowView](workflow_view.md) — execute FSM state-machine transitions with audit history
 - [PolymorphicView](polymorphic_view.md) — CRUD views for django-polymorphic models
-- [Per-Object Permissions (django-guardian)](guardian.md) — object-level permission checking via django-guardian
+- [Per-Object Permissions (django-guardian)](guardian.md) — object-level permission checking via django-guardian, including [Guardian parents and ancestor fallback](guardian.md#parent-viewsets)
 - [Resources](resources.md) — list/detail/action views over non-ORM, table-shaped data
 
 ## Theming & Configuration

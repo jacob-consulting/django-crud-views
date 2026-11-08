@@ -49,6 +49,13 @@ Add `ordered_model` to `INSTALLED_APPS` and create the migration as usual.
 cv_book = ViewSet(model=Book, name="book", icon_header="fa-solid fa-book")
 ```
 
+!!! note "Top-level here, nested elsewhere"
+    This `cv_book` is a top-level ViewSet, so only the Book permissions apply. Nested under a parent instead — a
+    Book ViewSet with `parent=ParentViewSet(name="publisher")` — Book reads would also need Publisher `view` and
+    Book editors Publisher `change`, checked before the Book's own permission. See the
+    [executed nested example](../reference/nested.md#example-permissions-for-a-nested-book-viewset) and
+    [Ancestor authorization](../reference/nested.md#ancestor-authorization).
+
 `BookForm` follows the same crispy pattern as `AuthorForm`:
 
 <!-- cv-sync: library/views.py -->

@@ -24,7 +24,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from django.contrib.auth.models import Permission, User
+from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db import router
@@ -36,7 +36,7 @@ import tests.test1.project.urls  # noqa: F401 - registers the shared app ViewSet
 from crud_views.lib import check as check_module
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, AncestorPermissions, AncestorPolicy, ViewSet
 from tests.test1.app.models import Book, BookNote, Publisher
-from tests.test1.test_label_mode_docs import DOCS, FENCE, _section
+from tests.test1.test_label_mode_docs import DOCS, FENCE, _anchors, _section
 
 NESTED_MD = DOCS / "reference" / "nested.md"
 SETTINGS_MD = DOCS / "reference" / "settings.md"
@@ -48,9 +48,12 @@ CANONICAL = (NESTED_MD, "### Example: permissions for a nested Book ViewSet")
 SETTINGS_EXAMPLE = (SETTINGS_MD, "## Ancestor authorization")
 RESOURCE_SCOPING = (RESOURCES_MD, "### Ancestor authorization of a Resource leaf")
 DATABASE_REFUSAL = (LIFECYCLE_MD, "#### Nested ViewSets: instance-hinted write routing")
+PROVIDER_MIGRATION = (GUARDIAN_MD, "### Core or Guardian parent")
+FALLBACK = (GUARDIAN_MD, "### Ancestor fallback and view fallback")
+TUTORIALS = [DOCS / "getting_started" / name for name in ("tutorial-5-filters-permissions.md", "tutorial-6-books.md")]
 
 # every executable subsection: (page, exact heading); each heading and its single fence occur once
-INVENTORY = [CANONICAL, SETTINGS_EXAMPLE, RESOURCE_SCOPING, DATABASE_REFUSAL]
+INVENTORY = [CANONICAL, SETTINGS_EXAMPLE, RESOURCE_SCOPING, DATABASE_REFUSAL, PROVIDER_MIGRATION, FALLBACK]
 
 REFUSED = r"nested ViewSets support only the 'default' database"
 
@@ -534,3 +537,185 @@ def test_published_router_leaves_top_level_routing_unchanged(sharded, rf):
     assert response.status_code == 302
     assert (71, "top edited") in _titles("shard") and (71, "default title") in _titles("default")
     assert rows["default"].book.title == "default title"
+
+
+# ── Task 2: Guardian provider migration, fallback independence, manage ─────
+
+
+def _grant(viewset, key: str, holder, obj) -> None:
+    viewset.assign_perm(key, holder, obj)
+
+
+@pytest.fixture
+def guardian_parent(published, books):
+    ns = SimpleNamespace(**published.run(*PROVIDER_MIGRATION))
+    book_vs = ns.cv_book
+    ns.list = lambda p: _url(book_vs, "list", publisher_pk=p.pk)
+    ns.detail = lambda p, b: _url(book_vs, "detail", publisher_pk=p.pk, pk=b.pk)
+    ns.update = lambda p, b: _url(book_vs, "update", publisher_pk=p.pk, pk=b.pk)
+    ns.create = lambda p: _url(book_vs, "create", publisher_pk=p.pk)
+    return ns
+
+
+def test_guardian_parent_needs_an_object_grant_and_ignores_model_grants(guardian_parent, books):
+    g = guardian_parent
+    assert g.cv_publisher.ancestor_policy == AncestorPolicy()  # class default: provider "guardian", strict
+    # model grant only on Publisher: the Guardian parent denies (a core parent would satisfy, see the core test)
+    model_only = _user("g_model_only", (Publisher, "view"))
+    _grant(g.cv_book, "view", model_only, books.book)
+    assert _client(model_only).get(g.detail(books.penguin, books.book)).status_code == 403
+    # object grant only on Publisher, direct
+    direct = _user("g_direct")
+    _grant(g.cv_publisher, "view", direct, books.penguin)
+    _grant(g.cv_book, "view", direct, books.book)
+    assert _client(direct).get(g.detail(books.penguin, books.book)).status_code == 200
+    assert _client(direct).get(g.list(books.penguin)).status_code == 200
+    # ... and through a group
+    group = Group.objects.create(name="g_publisher_readers")
+    _grant(g.cv_publisher, "view", group, books.penguin)
+    member = _user("g_member")
+    member.groups.add(group)
+    _grant(g.cv_book, "view", member, books.book)
+    assert _client(member).get(g.detail(books.penguin, books.book)).status_code == 200
+    # the grant is on this Publisher object only
+    assert _client(member).get(g.list(books.other)).status_code == 403
+    # independent child-denial control: the Publisher grant never replaces the Book object grant
+    parent_only = _user("g_parent_only")
+    _grant(g.cv_publisher, "view", parent_only, books.penguin)
+    assert _client(parent_only).get(g.detail(books.penguin, books.book)).status_code == 403
+
+
+def test_guardian_parent_write_and_nested_create_without_model_add(guardian_parent, books):
+    g = guardian_parent
+    viewer = _user("g_viewer")
+    _grant(g.cv_publisher, "view", viewer, books.penguin)
+    _grant(g.cv_book, "change", viewer, books.book)
+    assert _client(viewer).get(g.update(books.penguin, books.book)).status_code == 403  # Write: Publisher change
+    assert _client(viewer).get(g.create(books.penguin)).status_code == 403
+    editor = _user("g_editor")
+    _grant(g.cv_publisher, "change", editor, books.penguin)
+    _grant(g.cv_book, "change", editor, books.book)
+    assert _client(editor).get(g.update(books.penguin, books.book)).status_code == 200
+    # nested create: Publisher change on this object, no add_book model permission required or added
+    assert not editor.has_perm("app.add_book")
+    assert _client(editor).get(g.create(books.penguin)).status_code == 200
+    response = _client(editor).post(g.create(books.penguin), {"title": "Created"})
+    assert response.status_code == 302
+    assert Book.objects.get(title="Created").publisher_id == books.penguin.pk
+    # local denial control: Publisher change without the Book object grant
+    no_book = _user("g_no_book")
+    _grant(g.cv_publisher, "change", no_book, books.penguin)
+    assert _client(no_book).get(g.update(books.penguin, books.book)).status_code == 403
+    # the ViewSet helper stays strict: a model grant returns nothing
+    model_viewer = _user("g_helper", (Book, "view"))
+    assert list(g.cv_book.get_objects_for_user(model_viewer, "view")) == []
+
+
+def test_removed_guardian_parent_fields_are_rejected(published):
+    from crud_views.lib.viewset import ParentViewSet
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+
+    GuardianViewSet(model=Publisher, name="publisher")
+    for field, value in (("cv_guardian_parent_permission", None), ("cv_guardian_parent_create_permission", "view")):
+        with pytest.raises(ValidationError, match="ancestor policy"):
+            GuardianViewSet(model=Book, name="book", parent=ParentViewSet(name="publisher"), **{field: value})
+        assert "book" not in _REGISTRY
+
+
+@pytest.fixture
+def fallback(published, books):
+    ns = SimpleNamespace(**published.run(*FALLBACK))
+    books.note = BookNote.objects.create(book=books.book, note="first")
+    ns.book_detail = lambda: _url(ns.cv_book, "detail", publisher_pk=books.penguin.pk, pk=books.book.pk)
+    ns.note_list = lambda: _url(ns.cv_note, "list", publisher_pk=books.penguin.pk, book_pk=books.book.pk)
+    ns.note_manage = lambda: _url(ns.cv_note, "manage", publisher_pk=books.penguin.pk, book_pk=books.book.pk)
+    return ns
+
+
+def test_publisher_ancestor_fallback_does_not_relax_the_strict_book_gate(fallback, books):
+    f = fallback
+    assert f.cv_publisher.ancestor_policy.accept_global_perms is True
+    assert f.BookDetailView.cv_guardian_accept_global_perms is False
+    # a Publisher model grant opens the Publisher gate ...
+    reader = _user("f_reader", (Publisher, "view"))
+    _grant(f.cv_book, "view", reader, books.book)
+    assert _client(reader).get(f.book_detail()).status_code == 200
+    # ... and the strict Book detail still needs a Book object grant: a Book model grant is not enough
+    model_book = _user("f_model_book", (Publisher, "view"), (Book, "view"))
+    assert _client(model_book).get(f.book_detail()).status_code == 403
+    # control: with neither a Publisher model nor object grant the ancestor denies
+    no_parent = _user("f_no_parent")
+    _grant(f.cv_book, "view", no_parent, books.book)
+    assert _client(no_parent).get(f.book_detail()).status_code == 403
+
+
+def test_note_view_fallback_does_not_relax_the_strict_book_ancestor(fallback, books):
+    f = fallback
+    assert f.NoteListView.cv_guardian_accept_global_perms is True
+    assert f.cv_book.ancestor_policy.accept_global_perms is False
+    # Publisher by model grant (its fallback), Book by model grant only: the strict Book ancestor denies
+    model_book = _user("f_note_model_book", (Publisher, "view"), (Book, "view"), (BookNote, "view"))
+    assert _client(model_book).get(f.note_list()).status_code == 403
+    # a Book object grant opens the Book ancestor; the list's own fallback accepts the Note model permission
+    object_book = _user("f_note_object_book", (Publisher, "view"), (BookNote, "view"))
+    _grant(f.cv_book, "view", object_book, books.book)
+    response = _client(object_book).get(f.note_list())
+    assert response.status_code == 200
+    assert list(response.context["object_list"]) == [books.note]
+    # Publisher's fallback reaches the deeper descendant too: an object grant on Publisher works as well
+    group = Group.objects.create(name="f_publisher_group")
+    _grant(f.cv_publisher, "view", group, books.penguin)
+    member = _user("f_member", (BookNote, "view"))
+    member.groups.add(group)
+    _grant(f.cv_book, "view", member, books.book)
+    assert _client(member).get(f.note_list()).status_code == 200
+
+
+def test_nested_manage_needs_ancestry_and_its_unchanged_local_gate(fallback, books, monkeypatch):
+    from crud_views.lib.settings import crud_views_settings
+
+    f = fallback
+    nobody = _user("m_nobody")
+    assert _client(nobody).get(f.note_manage()).status_code == 403  # public manage does not bypass ancestry
+    reader = _user("m_reader", (Publisher, "view"))
+    _grant(f.cv_book, "view", reader, books.book)
+    response = _client(reader).get(f.note_manage())
+    assert response.status_code == 200
+    policy = response.context["ancestor_policy"]
+    assert policy["as_ancestor"] == {"provider": None, "effective_provider": "guardian", "accept_global_perms": False}
+    assert policy["requests"]["cascade"] == {"declared": None, "effective": True}
+    assert policy["requests"]["read"] == {"declared": None, "effective": {"nearest": "view", "higher": "view"}}
+    config = response.context["guardian_config"]
+    assert config["parent_viewset"] == "book (ancestor provider: guardian)"
+    views = response.context["views"]
+    assert views["list"]["guardian_policy"]["effective_policy"] == "global fallback"
+    # the local manage gate is unchanged: not public and not in the manage group → 403 despite the grants
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "no")
+    assert _client(reader).get(f.note_manage()).status_code == 403
+    reader.groups.add(Group.objects.create(name=crud_views_settings.manage_group))
+    assert _client(reader).get(f.note_manage()).status_code == 200
+    # and the group never bypasses ancestry
+    nobody.groups.add(Group.objects.get(name=crud_views_settings.manage_group))
+    assert _client(nobody).get(f.note_manage()).status_code == 403
+
+
+def test_publisher_manage_reports_its_ancestor_fallback(fallback, books):
+    superuser = User.objects.create_superuser(username="m_super", password="pw")
+    response = _client(superuser).get(_url(fallback.cv_book, "manage", publisher_pk=books.penguin.pk))
+    assert response.status_code == 200
+    assert response.context["guardian_config"]["parent_viewset"] == (
+        "publisher (ancestor provider: guardian + model fallback)"
+    )
+
+
+def test_tutorials_link_the_executed_nested_example():
+    anchor = "example-permissions-for-a-nested-book-viewset"
+    assert anchor in _anchors(NESTED_MD)
+    for tutorial in TUTORIALS:
+        text = tutorial.read_text()
+        assert f"../reference/nested.md#{anchor}" in text, tutorial.name
+        flat = " ".join(text.split())
+        assert "Book reads" in flat and "Publisher `view`" in flat and "Publisher `change`" in flat, tutorial.name
+    # the canonical example demonstrates exactly those grants (executed above with local-denial controls)
+    canonical = _fence(*CANONICAL)
+    assert "# Read: Publisher view" in canonical and "# Write: Publisher change" in canonical

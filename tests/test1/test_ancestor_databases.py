@@ -26,6 +26,7 @@ from types import SimpleNamespace
 
 import django_filters
 import pytest
+from django import forms
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
@@ -35,14 +36,15 @@ from django.test.utils import CaptureQueriesContext
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
-from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
-from tests.test1.app.models import Book, BookNote, Publisher
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
+from tests.test1.app.models import Book, BookNote, Genre, Publisher
 from tests.test1.test_ancestor_authorization import _client, _url, _user, isolated_routes
 from tests.test1.test_ancestor_resolution import _register_project_viewsets
 
 pytestmark = pytest.mark.django_db(transaction=True, databases=["default", "shard"])
 ALIASES = ("default", "shard")
 REFUSED = r"nested ViewSets support only the 'default' database"
+WRITE = AncestorPermissions(nearest="change", higher="view")
 
 
 # ── routing, rows and captures ──────────────────────────────────────────────
@@ -112,6 +114,19 @@ class BookFilter(django_filters.FilterSet):
         fields = ["title"]
 
 
+class EmptyForm(forms.Form):
+    """A custom form without fields: always valid."""
+
+
+def _rename(self, context):
+    self.object.title = "renamed"
+    self.object.save()
+
+
+def _bulk(self, context):
+    Book.objects.create(title="bulk", publisher=self.cv_get_parent_object())
+
+
 class DefaultUsingViewSet(ViewSet):
     """An ancestor ViewSet whose queryset carries an explicit ``.using("default")`` selection."""
 
@@ -145,13 +160,29 @@ SELECTION_STYLES = ["override", "queryset-attribute"]
 
 @pytest.fixture
 def dbv():
-    from crud_views.lib.views import DeleteView, DetailView, ListView, ListViewTableFilterMixin, UpdateView
+    from crud_views.lib.views import (
+        CreateView,
+        CreateViewParentMixin,
+        DeleteView,
+        DetailView,
+        ListView,
+        ListViewTableFilterMixin,
+        UpdateView,
+    )
+    from crud_views.lib.views.form import CustomFormNoObjectView, CustomFormView
 
     def view(base, vs, **attrs):
         return type(base.__name__, (base,), {"cv_viewset": vs, "cv_context_actions": [], **attrs})
 
     def lst(vs, **attrs):
         return view(ListView, vs, cv_list_actions=[], **attrs)
+
+    def create(vs, fields, **attrs):
+        return type(
+            "Create",
+            (CreateViewParentMixin, CreateView),
+            {"cv_viewset": vs, "cv_context_actions": [], "fields": fields, **attrs},
+        )
 
     def build(sfx):
         ns = SimpleNamespace()
@@ -215,10 +246,46 @@ def dbv():
                 Delete=view(DeleteView, vs, cv_show_related_objects=True, cv_get_db_alias=lambda self, a=alias: a),
             )
 
+        # ── writes (Task 2) ──
+        ns.PubCreate, ns.PubUpdate = (
+            view(CreateView, ns.pub, fields=["name"]),
+            view(UpdateView, ns.pub, fields=["name"]),
+        )
+        ns.BookCreate = create(ns.book, ["title"])
+        m2m = ParentViewSet(name=ns.pub.name, attribute="publishers", many_to_many_through_attribute="genres")
+        ns.genre = ViewSet(model=Genre, name=f"adgenre{sfx}", parent=m2m)
+        ns.GenreList, ns.GenreCreate = lst(ns.genre), create(ns.genre, ["name"])
+        # custom forms are outside the built-in families: exact actions entries
+        ns.cbook = ViewSet(
+            model=Book,
+            name=f"adcbook{sfx}",
+            parent=ParentViewSet(name=ns.pub.name, **edge),
+            ancestor_policy=AncestorPolicy(actions={"rename": WRITE, "bulk": WRITE}),
+        )
+        ns.CBookList = lst(ns.cbook)
+        ns.Rename = view(
+            CustomFormView, ns.cbook, cv_key="rename", cv_path="rename", form_class=EmptyForm, cv_form_valid=_rename
+        )
+        ns.Bulk = view(
+            CustomFormNoObjectView, ns.cbook, cv_key="bulk", cv_path="bulk", form_class=EmptyForm, cv_form_valid=_bulk
+        )
+        # create/update views with a custom transaction alias
+        ns.aform = {}
+        for alias in ALIASES:
+            vs = ViewSet(model=Book, name=f"adform{alias}{sfx}", parent=ParentViewSet(name=ns.pub.name, **edge))
+            lst(vs)
+            pinned = {"cv_get_db_alias": lambda self, a=alias: a}
+            ns.aform[alias] = SimpleNamespace(
+                vs=vs, Create=create(vs, ["title"], **pinned), Update=view(UpdateView, vs, fields=["title"], **pinned)
+            )
+
         routed = [
             ns.pub,
             ns.book,
             ns.fbook,
+            ns.genre,
+            ns.cbook,
+            *(entry.vs for entry in ns.aform.values()),
             ns.note,
             *(entry.vs for entry in ns.sel.values()),
             ns.dpub,
@@ -495,3 +562,222 @@ def test_top_level_shard_delete_preview_is_unchanged(dbv, worlds, routes):
     assert response.status_code == 200
     assert response.context["object"].name == "shard publisher"
     assert response.context["related_summary"]
+
+
+# ── Task 2: form and delete write routes and attachments ────────────────────
+
+WRITE_SQL = ("INSERT", "UPDATE", "DELETE")
+HOOKS = ("cv_post_hook", "cv_form_valid", "cv_form_valid_hook", "cv_on_commit")
+
+
+@pytest.fixture
+def effects(monkeypatch):
+    """Write-side events of the test data on any alias: saves/deletes, M2M changes and scheduled commit callbacks."""
+    from django.db import transaction
+    from django.db.models.signals import m2m_changed, pre_delete, pre_save
+
+    recorded = []
+
+    def receiver(name):
+        def record(sender, **kwargs):
+            if sender._meta.app_label == "app":  # the test data; logins and sessions are not under test here
+                recorded.append((name, sender, kwargs.get("using")))
+
+        return record
+
+    connected = [(signal, receiver(name)) for signal, name in ((pre_save, "save"), (pre_delete, "delete"))]
+    connected.append((m2m_changed, receiver("m2m")))
+    for signal, handler in connected:
+        signal.connect(handler, weak=False)
+    original = transaction.on_commit
+
+    def on_commit(func, using=None, robust=False):
+        recorded.append(("on_commit", None, using))
+        return original(func, using=using, robust=robust)
+
+    monkeypatch.setattr(transaction, "on_commit", on_commit)
+    yield recorded
+    for signal, handler in connected:
+        signal.disconnect(handler)
+
+
+def _poison(monkeypatch, cls, *names):
+    for name in names:
+        monkeypatch.setattr(cls, name, lambda self, *a, _n=name, **kw: pytest.fail(f"{_n} reached"))
+
+
+def _write_sql(sql) -> list[str]:
+    """Data writes on either alias (test-data tables only; logins and sessions are not under test here)."""
+    statements = [q for capture in (sql.default, sql.shard) for q in _sql(capture)]
+    return [q for q in statements if q.lstrip().upper().startswith(WRITE_SQL) and '"app_' in q]
+
+
+ATOMIC = pytest.mark.parametrize("atomic", [True, False], ids=["atomic", "autocommit"])
+
+# (view attribute, URL key, ViewSet attribute, kwargs builder, POST data)
+FORM_WRITES = {
+    "create": ("BookCreate", "create", "book", lambda ns: {f"{ns.pub.name}_pk": 41}, {"title": "new"}),
+    "update": ("BookUpdate", "update", "book", lambda ns: {f"{ns.pub.name}_pk": 41, "pk": 71}, {"title": "changed"}),
+    "delete": ("BookDelete", "delete", "book", lambda ns: {f"{ns.pub.name}_pk": 41, "pk": 71}, {}),
+    "m2m-create": ("GenreCreate", "create", "genre", lambda ns: {f"{ns.pub.name}_pk": 41}, {"name": "Essays"}),
+    "custom-object": ("Rename", "rename", "cbook", lambda ns: {f"{ns.pub.name}_pk": 41, "pk": 71}, {}),
+    "custom-no-object": ("Bulk", "bulk", "cbook", lambda ns: {f"{ns.pub.name}_pk": 41}, {}),
+}
+
+
+def _post(ns, client, kind):
+    _attr, key, vs_attr, kwargs, data = FORM_WRITES[kind]
+    return client.post(_url(getattr(ns, vs_attr), key, **kwargs(ns)), data)
+
+
+def _default_state():
+    return (
+        sorted(Book.objects.using("default").values_list("pk", "title")),
+        sorted(Genre.objects.using("default").values_list("name", flat=True)),
+    )
+
+
+def _shard_state():
+    return (
+        sorted(Book.objects.using("shard").values_list("pk", "title")),
+        sorted(Genre.objects.using("shard").values_list("name", flat=True)),
+    )
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", list(FORM_WRITES))
+def test_nested_form_writes_on_default_succeed_and_commit_once(dbv, worlds, routes, effects, monkeypatch, kind, atomic):
+    view_class = getattr(dbv, FORM_WRITES[kind][0])
+    monkeypatch.setattr(view_class, "cv_atomic", atomic)
+    committed = []
+    monkeypatch.setattr(view_class, "cv_on_commit", lambda self, context: committed.append(type(self)))
+    shard_before = _shard_state()
+    with captured() as sql:
+        response = _post(dbv, _superclient(), kind)
+    assert response.status_code == 302
+    assert committed == [view_class]
+    assert [using for name, _, using in effects if name == "on_commit"] == ["default"]
+    assert {using for name, _, using in effects if name != "on_commit"} <= {"default"}
+    assert _sql(sql.shard) == [] and _shard_state() == shard_before
+    books, _genres = _default_state()
+    expected = {
+        "create": lambda: Book.objects.using("default").get(title="new").publisher_id == 41,
+        "update": lambda: (71, "changed") in books,
+        "delete": lambda: 71 not in [pk for pk, _ in books],
+        "m2m-create": lambda: Genre.objects.get(name="Essays").publishers.get().pk == 41,
+        "custom-object": lambda: (71, "renamed") in books,
+        "custom-no-object": lambda: "bulk" in [title for _, title in books],
+    }
+    assert expected[kind]()
+
+
+def _refused(dbv, kind, monkeypatch, effects, client=None):
+    view_class = getattr(dbv, FORM_WRITES[kind][0])
+    _poison(monkeypatch, view_class, *HOOKS)
+    before = (_default_state(), _shard_state())
+    client = client or _superclient()
+    with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED) as caught:
+        _post(dbv, client, kind)
+    assert effects == []
+    assert _write_sql(sql) == []
+    assert (_default_state(), _shard_state()) == before
+    return caught.value
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", list(FORM_WRITES))
+def test_router_only_shard_write_is_refused_before_hooks(dbv, worlds, routes, effects, monkeypatch, kind, atomic):
+    """Reads stay on default; the router sends every Book/Genre write (with or without hints) to shard."""
+    monkeypatch.setattr(getattr(dbv, FORM_WRITES[kind][0]), "cv_atomic", atomic)
+    routes.write[Book] = routes.write[Genre] = "shard"
+    _refused(dbv, kind, monkeypatch, effects)
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", list(FORM_WRITES))
+def test_instance_hinted_shard_write_is_refused_before_hooks(dbv, worlds, routes, effects, monkeypatch, kind, atomic):
+    """Only an instance hint selects shard: the colliding default row is not written on either alias."""
+    monkeypatch.setattr(getattr(dbv, FORM_WRITES[kind][0]), "cv_atomic", atomic)
+    routes.write[Book] = routes.write[Genre] = _hinted("shard")
+    if kind == "custom-no-object":
+        pytest.skip("no written instance: covered by the router-only and custom-alias cases")
+    _refused(dbv, kind, monkeypatch, effects)
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", ["create", "m2m-create"])
+def test_parent_attachment_route_is_refused_before_save(dbv, worlds, routes, effects, monkeypatch, kind, atomic):
+    """Only the attachment selects shard: the FK assignment (hinted by the parent) or the M2M through write."""
+    monkeypatch.setattr(getattr(dbv, FORM_WRITES[kind][0]), "cv_atomic", atomic)
+    if kind == "create":
+        routes.write[Book] = lambda hints: "shard" if isinstance(hints.get("instance"), Publisher) else None
+    else:
+        routes.write[Genre.publishers.through] = _hinted("shard")
+    message = str(_refused(dbv, kind, monkeypatch, effects))
+    assert ("Book" if kind == "create" else "Genre_publishers") in message
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", ["Create", "Update"])
+def test_custom_transaction_alias_is_validated_not_replaced(dbv, worlds, routes, effects, monkeypatch, kind, atomic):
+    shard, default = dbv.aform["shard"], dbv.aform["default"]
+    kwargs = {f"{dbv.pub.name}_pk": 41, **({"pk": 71} if kind == "Update" else {})}
+    key = kind.lower()
+    client = _superclient()
+    for cls in (shard, default):
+        monkeypatch.setattr(getattr(cls, kind), "cv_atomic", atomic)
+    _poison(monkeypatch, getattr(shard, kind), *HOOKS)
+    with (
+        captured() as sql,
+        pytest.raises(ImproperlyConfigured, match="write transaction alias selected database 'shard'"),
+    ):
+        client.post(_url(shard.vs, key, **kwargs), {"title": "via shard"})
+    assert effects == [] and _write_sql(sql) == []
+    response = client.post(_url(default.vs, key, **kwargs), {"title": "via default"})
+    assert response.status_code == 302
+    assert Book.objects.using("default").filter(title="via default").exists()
+    assert not Book.objects.using("shard").filter(title__startswith="via").exists()
+
+
+def test_direct_write_wrapper_callers_are_guarded(dbv, worlds, routes, effects, monkeypatch, rf):
+    """A subclass driving ``cv_form_valid_process`` itself still meets the boundary before any write."""
+    routes.write[Book] = _hinted("shard")
+    _poison(monkeypatch, dbv.BookUpdate, "cv_form_valid", "cv_form_valid_hook", "cv_on_commit")
+    view = dbv.BookUpdate()
+    request = rf.post("/", {"title": "direct"})
+    request.user = User.objects.create_superuser(username="ad_direct", password="pw")
+    view.setup(request, **{f"{dbv.pub.name}_pk": 41, "pk": 71})
+    view.object = Book.objects.get(pk=71)
+    form = view.get_form()
+    assert form.is_valid()
+    for atomic in (True, False):
+        view.cv_atomic = atomic
+        with pytest.raises(ImproperlyConfigured, match=REFUSED):
+            view.cv_form_valid_process({"form": form})
+    assert effects == []
+
+
+def test_write_after_an_ancestor_denial_selects_no_write_route(dbv, worlds, routes, effects, monkeypatch):
+    routes.write[Book] = "shard"
+    client = _client(_user("ad_writer", (Publisher, "view"), (Book, "add"), (Book, "change")))
+    for kind in ("create", "update", "delete"):
+        _poison(monkeypatch, getattr(dbv, FORM_WRITES[kind][0]), *HOOKS)
+        assert _post(dbv, client, kind).status_code == 403  # nested writes need Publisher change
+    assert ("write", Book) not in routes.calls
+    assert effects == []
+
+
+@ATOMIC
+@pytest.mark.parametrize("kind", ["create", "update", "delete"])
+def test_top_level_routed_writes_are_unchanged(dbv, worlds, routes, effects, monkeypatch, kind, atomic):
+    routes.read[Publisher] = routes.write[Publisher] = "shard"
+    routes.read[Book] = routes.write[Book] = "shard"
+    view_class = {"create": dbv.PubCreate, "update": dbv.PubUpdate, "delete": dbv.PubDelete}[kind]
+    monkeypatch.setattr(view_class, "cv_atomic", atomic)
+    url = _url(dbv.pub, kind) if kind == "create" else _url(dbv.pub, kind, pk=41)
+    response = _superclient().post(url, {"name": "shard edit"})
+    assert response.status_code == 302
+    names = sorted(Publisher.objects.using("shard").values_list("name", flat=True))
+    assert names == {"create": ["shard edit", "shard publisher"], "update": ["shard edit"], "delete": []}[kind]
+    assert list(Publisher.objects.using("default").values_list("name", flat=True)) == ["default publisher"]
+    assert [using for name, _, using in effects if name == "on_commit"] == ["shard"]

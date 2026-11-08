@@ -1,6 +1,10 @@
 """
 Phase 06.18 plans 11/12 — the published ancestor-authorization guidance, executed.
 
+Plan 12 adds the release surfaces: the migration guide's custom-endpoint fence is executed like the reference
+fences, and the ``### Breaking`` changelog entry is paired with its anchored migration section, including the
+nested write-selector change, whose behavior is proven once by the published router example below.
+
 Each executable subsection listed in ``INVENTORY`` has a unique exact heading and exactly one complete Python
 fence. The tests extract that fence with the existing ``_section`` / ``FENCE`` convention and ``exec`` the whole
 published source (imports, ViewSet construction and view registration included) against ``myapp.*`` modules
@@ -36,7 +40,7 @@ import tests.test1.project.urls  # noqa: F401 - registers the shared app ViewSet
 from crud_views.lib import check as check_module
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, AncestorPermissions, AncestorPolicy, ViewSet
 from tests.test1.app.models import Book, BookNote, Publisher
-from tests.test1.test_label_mode_docs import DOCS, FENCE, _anchors, _section
+from tests.test1.test_label_mode_docs import CHANGELOG_MD, DOCS, FENCE, MIGRATING_MD, _anchors, _flat, _section
 
 NESTED_MD = DOCS / "reference" / "nested.md"
 SETTINGS_MD = DOCS / "reference" / "settings.md"
@@ -50,10 +54,19 @@ RESOURCE_SCOPING = (RESOURCES_MD, "### Ancestor authorization of a Resource leaf
 DATABASE_REFUSAL = (LIFECYCLE_MD, "#### Nested ViewSets: instance-hinted write routing")
 PROVIDER_MIGRATION = (GUARDIAN_MD, "### Core or Guardian parent")
 FALLBACK = (GUARDIAN_MD, "### Ancestor fallback and view fallback")
+MIGRATED_ACTION = (MIGRATING_MD, "#### Custom endpoints need an exact entry")
 TUTORIALS = [DOCS / "getting_started" / name for name in ("tutorial-5-filters-permissions.md", "tutorial-6-books.md")]
 
 # every executable subsection: (page, exact heading); each heading and its single fence occur once
-INVENTORY = [CANONICAL, SETTINGS_EXAMPLE, RESOURCE_SCOPING, DATABASE_REFUSAL, PROVIDER_MIGRATION, FALLBACK]
+INVENTORY = [
+    CANONICAL,
+    SETTINGS_EXAMPLE,
+    RESOURCE_SCOPING,
+    DATABASE_REFUSAL,
+    PROVIDER_MIGRATION,
+    FALLBACK,
+    MIGRATED_ACTION,
+]
 
 REFUSED = r"nested ViewSets support only the 'default' database"
 
@@ -719,3 +732,178 @@ def test_tutorials_link_the_executed_nested_example():
     # the canonical example demonstrates exactly those grants (executed above with local-denial controls)
     canonical = _fence(*CANONICAL)
     assert "# Read: Publisher view" in canonical and "# Write: Publisher change" in canonical
+
+
+# ── Plan 12: the release surfaces (migration fence, paired Breaking entry) ──
+
+
+@pytest.fixture
+def migrated(published, books):
+    ns = SimpleNamespace(**published.run(*MIGRATED_ACTION))
+    book_vs = ns.cv_book
+    ns.list = lambda p: _url(book_vs, "list", publisher_pk=p.pk)
+    ns.update = lambda p, b: _url(book_vs, "update", publisher_pk=p.pk, pk=b.pk)
+    ns.approve = lambda p, b: _url(book_vs, "approve", publisher_pk=p.pk, pk=b.pk)
+    return ns
+
+
+def test_migrated_guardian_declarations_are_the_published_real_api(migrated):
+    assert migrated.cv_publisher.ancestor_policy == AncestorPolicy()
+    assert migrated.cv_book.ancestor_policy == AncestorPolicy(
+        write=AncestorPermissions(nearest="view", higher="view"),
+        actions={"approve": AncestorPermissions(nearest="change", higher="view")},
+    )
+    assert migrated.cv_book.get_view_class("approve") is migrated.BookApproveView
+    assert "cv_guardian_parent_permission" not in type(migrated.cv_book).model_fields
+
+
+def test_migrated_write_pair_and_approve_pair_are_independent(migrated, books, monkeypatch):
+    m = migrated
+    calls = []
+    original = m.BookApproveView.action
+    monkeypatch.setattr(m.BookApproveView, "action", lambda self, ctx: calls.append(self.object) or original(self, ctx))
+    # Publisher view object grant: the declared write pair keeps update open, the approve pair needs change
+    viewer = _user("mig_viewer")
+    _grant(m.cv_publisher, "view", viewer, books.penguin)
+    _grant(m.cv_book, "change", viewer, books.book)
+    response = _client(viewer).get(m.list(books.penguin))  # Read: the Publisher view grant opens the list ...
+    assert response.status_code == 200
+    assert list(response.context["object_list"]) == []  # ... and its own filter hides Books without a view grant
+    assert _client(viewer).get(m.update(books.penguin, books.book)).status_code == 200
+    assert _client(viewer).post(m.approve(books.penguin, books.book)).status_code == 403
+    assert calls == []
+    approver = _user("mig_approver")
+    _grant(m.cv_publisher, "change", approver, books.penguin)
+    _grant(m.cv_book, "change", approver, books.book)
+    assert _client(approver).post(m.approve(books.penguin, books.book)).status_code == 302
+    assert calls == [books.book]
+    # the grant is on this Publisher object only: the foreign Book's Publisher denies
+    _grant(m.cv_book, "change", approver, books.foreign)
+    assert _client(approver).post(m.approve(books.other, books.foreign)).status_code == 403
+    # local denial control: the Publisher grant never replaces the Book object grant
+    no_book = _user("mig_no_book")
+    _grant(m.cv_publisher, "change", no_book, books.penguin)
+    assert _client(no_book).post(m.approve(books.penguin, books.book)).status_code == 403
+    # strict Guardian parent: model grants on Publisher do not satisfy it
+    model_only = _user("mig_model_only", (Publisher, "view"), (Publisher, "change"))
+    _grant(m.cv_book, "change", model_only, books.book)
+    assert _client(model_only).get(m.update(books.penguin, books.book)).status_code == 403
+    assert _client(model_only).post(m.approve(books.penguin, books.book)).status_code == 403
+    assert calls == [books.book]
+
+
+def test_migrated_action_without_its_entry_fails_check_and_request(migrated, books):
+    from crud_views.checks import check_ancestor_declarations
+
+    def errors():
+        return sorted((m.id, m.obj.name) for m in check_ancestor_declarations() if m.id == "viewset.E268")
+
+    assert errors() == []
+    approver = _user("mig_unlisted")
+    _grant(migrated.cv_publisher, "change", approver, books.penguin)
+    _grant(migrated.cv_book, "change", approver, books.book)
+    policy = migrated.cv_book.ancestor_policy
+    entry = policy.actions.pop("approve")
+    try:
+        assert errors() == [("viewset.E268", "book")]
+        with pytest.raises(ImproperlyConfigured, match=r"declare ancestor_policy.actions\['approve'\]"):
+            _client(approver).post(migrated.approve(books.penguin, books.book))
+    finally:
+        policy.actions["approve"] = entry
+    assert errors() == []
+
+
+def _ancestor_breaking_entry() -> str:
+    breaking = _section(_section(CHANGELOG_MD.read_text(), "## Unreleased"), "### Breaking")
+    heading = "- **Ancestor authorization for nested ViewSets.**"
+    assert breaking.count(heading) == 1
+    entry = breaking[breaking.index(heading) :]
+    return entry[: entry.index("\n- **", 1)] if "\n- **" in entry[1:] else entry
+
+
+ANCESTOR_MIGRATION = "### Ancestor authorization for nested ViewSets"
+
+
+def test_ancestor_breaking_entry_links_its_matching_migration_anchor():
+    entry = _ancestor_breaking_entry()
+    anchors = _anchors(MIGRATING_MD)
+    for anchor in ("ancestor-authorization-for-nested-viewsets", "nested-write-database-selection"):
+        assert anchor in anchors
+    assert "docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets" in entry
+    assert "docs/reference/nested.md#ancestor-authorization" in entry
+    assert "ancestor-authorization" in _anchors(NESTED_MD)
+    # the reference page's database section links the anchored selector migration
+    databases = _section(NESTED_MD.read_text(), "### Databases")
+    assert "../migrating-1.0.md#nested-write-database-selection" in databases
+
+
+def _surface(text: str) -> str:
+    """Wrap-, backtick- and case-independent release prose for term checks."""
+    return _flat(text).replace('all-"none"', "all-none").lower()
+
+
+def test_both_release_surfaces_state_the_same_migration_contract():
+    entry = _surface(_ancestor_breaking_entry())
+    migration = _surface(_section(MIGRATING_MD.read_text(), ANCESTOR_MIGRATION))
+    for surface in (entry, migration):
+        for term in (
+            # removed fields, explicit None / old default rejection, no translation
+            "cv_guardian_parent_permission",
+            "cv_guardian_parent_create_permission",
+            "ValidationError",
+            "old default",
+            "nothing is translated",
+            'AncestorPolicy(provider="none")',
+            # Write defaults and the provider chosen by the parent's class
+            "need `change` on the nearest" if surface is entry else "parent `change`",
+            "cascade=False",
+            "GuardianViewSet",
+            "model permission",
+            "object grant",
+            # independent ancestor and view fallback
+            "cv_guardian_accept_global_perms",
+            "AncestorPolicy(accept_global_perms=True)",
+            # exact custom entries in both modes and all-none, classified built-in and top-level exceptions
+            '{"approve": AncestorPermissions(nearest="change", higher="view")}',
+            "viewset.E268",
+            "ImproperlyConfigured",
+            "all-none",
+            "classified built-in",
+            "top-level",
+            # nested manage
+            "manage setting",
+            "or group",
+            # boundaries
+            "get_queryset()",
+            "Resource",
+            "immediate parent",
+        ):
+            assert _surface(term) in surface, term
+
+
+def test_both_release_surfaces_explain_the_nested_selector_refusal():
+    lifecycle_anchor = "request_lifecycle.md#nested-viewsets-instance-hinted-write-routing"
+    assert "nested-viewsets-instance-hinted-write-routing" in _anchors(LIFECYCLE_MD)
+    entry = _ancestor_breaking_entry()
+    migration = _section(_section(MIGRATING_MD.read_text(), ANCESTOR_MIGRATION), "#### Nested write database selection")
+    assert f"docs/reference/{lifecycle_anchor}" in entry
+    assert f"reference/{lifecycle_anchor}" in migration
+    for surface in (_surface(entry), _surface(migration)):
+        for term in (
+            "cv_get_db_alias()",
+            "instance",
+            "ImproperlyConfigured",
+            "hook or write",
+            "cv_atomic = False",
+            "default",
+            "top-level",
+            "Delete",
+            "workflow",
+            "Resource",
+            ".using()",
+        ):
+            assert _surface(term) in surface, term
+        # the refusal is explained, never worked around
+        assert "do not" in surface and "forc" in surface and "hint" in surface
+    # the behavior is proven once, by the executed router example of the linked lifecycle section
+    assert "class BookShardRouter" in _fence(*DATABASE_REFUSAL)

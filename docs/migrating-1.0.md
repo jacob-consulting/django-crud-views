@@ -922,8 +922,175 @@ Integer/UUID-only prefixes, authorized ancestry and application-owned ModelChoic
 ## Request authorization and Guardian configuration
 
 1.0 closes several request paths that reached data or writes past the documented permission checks, and settles
-how django-guardian's global-permission fallback is configured. Most apps need no change. The steps below are for
-code that relied on the old behavior, and for copied templates and Python overrides.
+how django-guardian's global-permission fallback is configured. Apps with nested ViewSets start with the ancestor
+section below. Otherwise most apps need no change. The other steps are for code that relied on the old behavior,
+and for copied templates and Python overrides.
+
+### Ancestor authorization for nested ViewSets
+
+Every nested request now checks the ancestors named in its URL before the endpoint does any work of its own. This
+covers plain and `*PermissionRequired` views, Guardian views and manage pages, and one shared mechanism does it for
+all of them. Before, a plain nested view checked no ancestor, and a Guardian child checked its parent through
+fields on its own ViewSet. Top-level ViewSets are unchanged and do no ancestor work. The endpoint's own gates are
+unchanged and stay independent: its permission, Guardian object grant or list filter, actor rules, action state,
+forms and create attachment. An ancestor grant never replaces them, and they never replace an ancestor grant. The
+full contract is [Ancestor authorization](reference/nested.md#ancestor-authorization).
+
+Under the default settings a nested endpoint needs:
+
+| Endpoint | Nearest protected ancestor | Higher protected ancestors |
+|---|---|---|
+| Read: list, card list, detail, `ObjectDetailView`, polymorphic detail, `RedirectChildView`, manage | `view` | `view` |
+| Write: create, update and delete (also their GET form), polymorphic create, update, delete and type selection, ordered up/down | `change` | `view` |
+| formset fragment requests | the pair of their editor | the pair of their editor |
+| generic `ActionView`, custom form views, workflow views, other custom endpoints | an exact `actions` entry | an exact `actions` entry |
+
+The defaults come from `CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE` (`True`), `CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS`
+and `CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS`; see [Settings](reference/settings.md#ancestor-authorization). Users who
+create, edit or delete children therefore usually need `change` on the parent now. Deleting a Book needs Publisher
+`change`, not Publisher `delete`. `cascade=False` on the requested ViewSet checks only the nearest protected ancestor.
+It is not a switch back to the old behavior: every ancestor is still looked up, and the nearest protected one is
+still checked.
+
+#### Removed Guardian parent fields
+
+`cv_guardian_parent_permission` and `cv_guardian_parent_create_permission` are removed from `GuardianViewSet`. A
+declaration of either one fails with a Pydantic `ValidationError` naming the replacement when the ViewSet is
+constructed, and nothing is registered. That holds for a constructor keyword and a subclass attribute, also for
+`None` and the old default value. Nothing is translated automatically. Before, a typical Guardian child was:
+
+`GuardianViewSet(model=Book, name="book", parent=ParentViewSet(name="publisher"), cv_guardian_parent_permission="view")`
+
+Remove the keyword, then decide each of these deliberately:
+
+- **The parent key.** The old key applied to list, detail, update and delete alike, and create inherited it while
+  its own field was `None`. Now list and detail are Read (parent `view`), and create, update and delete are Write
+  (parent `change`). To keep another key, declare `read=`, `write=` or `actions` pairs on the **child** ViewSet's
+  `AncestorPolicy`.
+- **Skipping the parent check.** The old `cv_guardian_parent_permission=None` skipped the permission check. The new
+  equivalent is `AncestorPolicy(provider="none")` on the **parent** ViewSet. It skips that gate for every descendant,
+  while the parent is still resolved and its state checks still run. The old create field's `None` meant "inherit
+  the parent key", not provider `"none"`.
+- **The parent's class.** The parent's own ViewSet class now decides how it is checked. A core `ViewSet` parent needs
+  a model permission and a `GuardianViewSet` parent needs an object grant on the resolved parent (strict by default).
+  A Guardian child under a core parent used to check object grants on it. A user with only an object grant then
+  loses access, and a user with only a model grant gains it. To keep object-based parent protection, make the parent
+  a `GuardianViewSet`. `provider="guardian"` on a core `ViewSet` is rejected.
+
+Nested Guardian create gains no model-level `add_<model>` requirement. The full before/after table is
+[Migrating from the removed parent fields](reference/guardian.md#migrating-from-the-removed-parent-fields).
+
+#### Global-permission fallback for ancestors
+
+A Guardian child view's `cv_guardian_accept_global_perms` used to relax its parent check too. It now covers only
+that view's own object gate or list filter. If model permissions should satisfy a Guardian **ancestor**, declare
+`AncestorPolicy(accept_global_perms=True)` on that ancestor's ViewSet. That is a shared choice: it applies to every
+descendant request that checks the ancestor. Do not copy a child flag across automatically. The two settings never
+affect each other: ancestor fallback does not relax a strict child gate, and a child view's fallback does not relax
+a strict ancestor. See [Ancestor fallback and view fallback](reference/guardian.md#ancestor-fallback-and-view-fallback).
+
+#### Custom endpoints need an exact entry
+
+Only the classified built-in endpoints in the table above choose their pair automatically. A nested generic
+`ActionView`, custom form view, workflow view or other custom endpoint needs an exact `actions` entry on its
+ViewSet: its literally registered view key mapped to a complete `AncestorPermissions` pair. Without the entry,
+system check `viewset.E268` reports it, and the request raises `ImproperlyConfigured`. This also applies with
+`cascade=False` and with an all-`"none"` ancestry. A key that names no registered endpoint fails `viewset.E267`.
+Top-level custom endpoints need no entry, and a top-level ViewSet rejects a nonempty `actions`. A migrated Guardian
+Book ViewSet with an `approve` action:
+
+```python
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from crud_views_guardian.lib.views import (
+    GuardianActionViewPermissionRequired,
+    GuardianListViewPermissionRequired,
+    GuardianUpdateViewPermissionRequired,
+)
+
+from myapp.models import Book, Publisher
+
+cv_publisher = GuardianViewSet(model=Publisher, name="publisher")  # as an ancestor: object grants, strict
+
+cv_book = GuardianViewSet(
+    model=Book,
+    name="book",
+    parent=ParentViewSet(name="publisher"),  # cv_guardian_parent_permission="view" removed
+    ancestor_policy=AncestorPolicy(
+        # a deliberate choice: update and delete keep the old Publisher view instead of the default change
+        write=AncestorPermissions(nearest="view", higher="view"),
+        # the generic approve action: its exact registered key and a complete pair
+        actions={"approve": AncestorPermissions(nearest="change", higher="view")},
+    ),
+)
+
+
+class BookListView(GuardianListViewPermissionRequired):  # Read: view on this Publisher object
+    cv_viewset = cv_book
+
+
+class BookUpdateView(GuardianUpdateViewPermissionRequired):  # the write pair above: view on this Publisher object
+    cv_viewset = cv_book
+    fields = ["title"]
+
+
+class BookApproveView(GuardianActionViewPermissionRequired):  # actions["approve"]: change on this Publisher object
+    cv_viewset = cv_book
+    cv_key = "approve"
+    cv_path = "approve"
+    cv_permission = "change"
+    cv_icon_action = "fa-solid fa-check"
+    cv_action_label_template_code = "Approve"
+    cv_action_short_label_template_code = "Approve"
+
+    def action(self, context) -> bool:
+        # record the approval of self.object here
+        return True
+```
+
+Each view keeps its own Book object gate as well: `change` on the Book for both the update and the approve view.
+
+#### Nested manage pages
+
+A nested manage page is Read: it now needs normal ancestry, in addition to the manage setting
+(`CRUD_VIEWS_MANAGE_VIEWS_ENABLED`) or group that already opened it. A public manage page does not bypass the
+ancestors, and the manage group does not either. It shows the declared ancestor policy, not whether a user can pass
+it. See [GuardianManageView](reference/guardian.md#guardianmanageview).
+
+#### Nested write database selection
+
+The core `cv_get_db_alias()` of a nested ORM write now consults the router with the resolved object as the
+`instance` hint, `db_for_write(model, instance=obj)`, whenever one is available. Before, it asked with the model
+only. A router that answers `default` (or nothing) for the model-only lookup, but another alias for one instance,
+used to get a `default` transaction around that write. Now it selects the nondefault alias for that instance, and
+the nested ViewSet refuses it: `ImproperlyConfigured` is raised before the first hook or write. That includes
+`cv_atomic = False`, where no transaction selects an alias at all.
+
+Review the routers and `cv_get_db_alias()` overrides behind nested ViewSets against the supported boundary: nested
+ViewSets use only the `default` database. Do not silence the error by forcing `default` in a selector, discarding
+the hint or stripping a `.using()`. The row's routed home is then not `default`, and nested ViewSets do not support
+it. Keep nested data on `default`, or serve that data through top-level ViewSets. The executed router example is in
+[Nested ViewSets: instance-hinted write routing](reference/request_lifecycle.md#nested-viewsets-instance-hinted-write-routing).
+
+Unchanged: top-level ViewSets keep the model-only selection. Delete and workflow views keep their own
+instance-hinted, pinned selectors; on a nested ViewSet those selections must be `default` too. A Resource leaf's own
+data loading stays application-owned.
+
+#### Boundaries that remain the application's
+
+- **Ancestor querysets.** Each ancestor is loaded through its **ViewSet's** `get_queryset()`. A `get_queryset()`
+  override on one of the ancestor's views is not used. Move shared visibility rules there, such as soft deletion or
+  tenant scope. See [Ancestor querysets and the resolved parent](reference/nested.md#ancestor-querysets-and-the-resolved-parent).
+- **Databases.** Nested ancestor lookups, querysets, writes and authorization records use only `default`; see
+  [Databases](reference/nested.md#databases).
+- **Resource leaves.** Their ORM ancestors are authorized before `cv_get_items()` / `cv_get_item()`. Restricting the
+  rows to the URL parent stays the job of those loaders; see
+  [Ancestor authorization of a Resource leaf](reference/resources.md#ancestor-authorization-of-a-resource-leaf).
+- **Mutations.** Ancestor checks authorize the URL path, not every effect: shared rows, an editable parent field and
+  other objects an action changes are not checked. See
+  [What URL-path authorization does not cover](reference/nested.md#what-url-path-authorization-does-not-cover).
+- **Visible links.** Buttons and links check at most the immediate parent, so a visible link can lead to a 403 from
+  a higher ancestor. See [Visible links and buttons](reference/nested.md#visible-links-and-buttons).
 
 ### HTTP DELETE on delete views
 
@@ -1443,10 +1610,12 @@ page object (the Book). So `cv_context_has_permission` can be `True` while the c
 [FAQ](faq.md#gate-surrounding-markup-by-permission) show what to use where. On a child **list** page the URL-bound
 control is unchanged, and the filter stays `False` there because the page has no object.
 
-The parent `None` policy changed with it. `cv_guardian_parent_permission = None` (or the create key) skips only the
-permission check now. A missing URL parent is a 404, a create under a parent whose `cv_action_enabled` is `False` is a
-403, and the helpers return `True` for the parent and a `ForeignKey` own child without any grant. Top-level create
-still needs the model-level `add_<model>` permission. See
+Skipping the parent check changed with it. The old `cv_guardian_parent_permission = None` (or the create key) is
+removed; see [Removed Guardian parent fields](#removed-guardian-parent-fields). Its replacement,
+`AncestorPolicy(provider="none")` on the parent ViewSet, skips only the permission check. A missing URL parent is a
+404, a create under a parent whose `cv_action_enabled` is `False` is a 403, and the helpers return `True` for the
+parent and a `ForeignKey` own child without any grant. Top-level create still needs the model-level `add_<model>`
+permission. See
 [What the create access helpers accept](reference/guardian.md#what-the-create-access-helpers-accept).
 
 ### Inactive users and formset row requests

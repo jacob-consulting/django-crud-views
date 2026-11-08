@@ -447,7 +447,8 @@ a Resource leaf's own loading stays application-owned.
 Nested writes select their database with the resolved object as the router's instance hint, so a router that
 answers differently for one instance is refused before any hook or write. See
 [Nested ViewSets: instance-hinted write routing](request_lifecycle.md#nested-viewsets-instance-hinted-write-routing)
-for the executed router example, and the [migration guide](../migrating-1.0.md) for upgrading.
+for the executed router example, and
+[Nested write database selection](../migrating-1.0.md#nested-write-database-selection) for upgrading.
 
 ### Resource leaves
 

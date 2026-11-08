@@ -1188,11 +1188,20 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         user = self.request.user
         if user.is_authenticated and user.is_active:
             return None
+        # the early model-permission check reads auth records: default only, before the permission map
+        from crud_views.lib.ancestor_db import _check_nested_auth
+
+        _check_nested_auth(self, actor=user, model=self.cv_viewset.model)
         if PermissionRequiredMixin.has_permission(self):
             return None
         return self.handle_no_permission()
 
     def has_permission(self):
+        # nested: the model-permission check's auth records must be on default, before ``permission_required``
+        # resolves the permission map and before any backend shortcut (phase 06.18)
+        from crud_views.lib.ancestor_db import _check_nested_auth
+
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
         if not super().has_permission():
             return False
         # Secondary state gate — a disabled action is denied even with permission.
@@ -1206,6 +1215,9 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
+        from crud_views.lib.ancestor_db import _check_nested_auth
+
+        _check_nested_auth(cls, actor=user, model=cls.cv_viewset.model)
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
         if not perm:
             return False

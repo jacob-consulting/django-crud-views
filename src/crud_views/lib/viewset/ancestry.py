@@ -68,8 +68,8 @@ def parent_relationship_problem(viewset: "ViewSet") -> str | None:
     - a Resource child (a leaf): no ORM relation is needed, the application scopes the Resource by URL kwargs;
     - a forward ``ForeignKey``/``OneToOneField`` ``attribute`` to the parent model, without
       ``many_to_many_through_attribute``;
-    - a many-to-many ``attribute`` (either end) whose ``many_to_many_through_attribute`` is the opposite end of the
-      same relation on the parent model.
+    - a many-to-many ``attribute`` (either end) to the parent model; a declared ``many_to_many_through_attribute``
+      must be the opposite end of the same relation on the parent model.
 
     A Resource parent is never supported (Resources are leaves); ``ViewSet.checks()`` reports it as E261.
     """
@@ -101,10 +101,7 @@ def parent_relationship_problem(viewset: "ViewSet") -> str | None:
 
     if field.many_to_many:
         if through is None:
-            return (
-                f"{where} attribute {attribute!r} is a many-to-many relation: set many_to_many_through_attribute to "
-                f"the {parent_model.__name__} attribute of the same relation"
-            )
+            return None  # the child-side field alone determines the relation to the parent model
         try:
             parent_field = parent_model._meta.get_field(through)
         except FieldDoesNotExist:
@@ -198,9 +195,9 @@ def operation_permissions(view_class: type["CrudView"]) -> AncestorPermissions |
         return policy.actions[key]
     family = _operation_family(view_class)
     if family == "read":
-        return policy.read or crud_views_settings.ancestor_read_permissions
+        return policy.read if policy.read is not None else crud_views_settings.ancestor_read_permissions
     if family == "write":
-        return policy.write or crud_views_settings.ancestor_write_permissions
+        return policy.write if policy.write is not None else crud_views_settings.ancestor_write_permissions
     raise ImproperlyConfigured(_missing_action_message(viewset, key, view_class))
 
 

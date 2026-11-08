@@ -231,7 +231,13 @@ def _relationship(scope, case: str):
     elif case == "reverse fk":
         parent_model = Book
         child_model, child_kwargs = Publisher, {"attribute": "books"}
-    elif case == "m2m without through attribute":
+    elif case == "m2m reverse attribute only":
+        parent_model, parent_name = Genre, genre_name
+        child_model, child_kwargs = Publisher, {"attribute": "genres"}
+    elif case == "m2m wrong target model":
+        parent_model = Book
+        child_model, child_kwargs = Genre, {"attribute": "publishers"}
+    elif case == "m2m attribute only":
         child_model, child_kwargs = Genre, {"attribute": "publishers"}
     elif case == "m2m wrong through attribute":
         child_model, child_kwargs = Genre, {"attribute": "publishers", "many_to_many_through_attribute": "books"}
@@ -256,13 +262,21 @@ def _relationship(scope, case: str):
     return child
 
 
-VALID_RELATIONSHIPS = ["fk", "fk explicit url name", "m2m forward", "m2m reverse", "resource leaf"]
+VALID_RELATIONSHIPS = [
+    "fk",
+    "fk explicit url name",
+    "m2m forward",
+    "m2m reverse",
+    "m2m attribute only",
+    "m2m reverse attribute only",
+    "resource leaf",
+]
 INVALID_RELATIONSHIPS = [
     "wrong target model",
+    "m2m wrong target model",
     "missing field",
     "plain field",
     "reverse fk",
-    "m2m without through attribute",
     "m2m wrong through attribute",
     "m2m unknown through attribute",
     "fk with through attribute",

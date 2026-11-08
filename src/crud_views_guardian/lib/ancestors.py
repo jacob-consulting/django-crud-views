@@ -13,6 +13,11 @@ ancestor's own permission map (Guardian's configured content-type semantics), th
 * Otherwise a direct or group object grant on the resolved ancestor (Guardian's ``ObjectPermissionChecker``;
   active superusers keep Guardian's superuser semantics).
 
+Before this provider runs, the engine has validated the gate's authorization records — the actor, Django's auth
+tables and the grant tables of ``_guardian_grant_tables`` — on the default database
+(``ancestor_db._check_nested_auth``), so neither a cached vocabulary nor a superuser or fallback shortcut can
+answer from another database.
+
 The checker is reused only within the requested (or rendering) view instance of one request; helpers called
 without a view use a fresh checker. Nothing outlives the request, so a revoked grant takes effect on the next
 request.
@@ -27,6 +32,26 @@ if TYPE_CHECKING:
 
     from crud_views.lib.view import CrudView
     from crud_views_guardian.lib.viewset import GuardianViewSet
+
+
+def _guardian_grant_tables(model: type[Model]) -> list[type[Model]]:
+    """Guardian's object-grant tables for ``model`` (used by ``ancestor_db._check_nested_auth``): the configured
+    generic user/group grant models and every enabled direct grant model of ``model``. Read from metadata, like
+    ``GuardianDeleteRelatedObjectsMixin``'s route check: no content type is resolved."""
+    from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
+    from guardian.utils import get_group_obj_perms_model, get_user_obj_perms_model
+
+    tables = [get_user_obj_perms_model(), get_group_obj_perms_model()]
+    for field in model._meta.get_fields():
+        table = field.related_model if field.auto_created and (field.one_to_many or field.one_to_one) else None
+        if (
+            table is not None
+            and issubclass(table, (UserObjectPermissionBase, GroupObjectPermissionBase))
+            and getattr(table, "enabled", True)
+            and not table.objects.is_generic()
+        ):
+            tables.append(table)
+    return tables
 
 
 def _request_checker(view: CrudView | None, user):

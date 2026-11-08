@@ -18,7 +18,9 @@ One request engine, ``_authorize_ancestors(view)``, runs before an endpoint's ow
 4. Outermost inward, each ancestor is resolved through its own ViewSet queryset (called with the real child
    view), constrained to the URL PK and to the already resolved outer ancestor; a queryset selecting another
    database than ``default`` is refused before it is read (``ancestor_db``); missing → 404. A selected level's
-   gate is checked immediately, before the next deeper lookup; denial → 403.
+   gate is checked immediately, before the next deeper lookup: its authorization records must be on
+   ``default`` (``ancestor_db._check_nested_auth``, before the gate's permission map or any provider shortcut),
+   then its provider decides; denial → 403.
 5. On success the resolved chain is stored on the view instance (request-local) and the request continues
    through its existing path; ``cv_get_parent_object()`` reuses the resolved immediate parent.
 6. The ORM child itself is checked against that immediate structural parent where it is consumed, so a child
@@ -48,7 +50,7 @@ from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured, Perm
 from django.db.models import QuerySet
 from django.http import Http404
 
-from crud_views.lib.ancestor_db import _require_default_alias
+from crud_views.lib.ancestor_db import _check_nested_auth, _require_default_alias
 from crud_views.lib.ancestor_policy import AncestorPermissions
 from crud_views.lib.exceptions import ViewSetNotFoundError
 from crud_views.lib.settings import crud_views_settings
@@ -416,6 +418,8 @@ def _authorize_ancestors(view: CrudView):
         edge, ancestor = chain[index]
         obj = _resolve_ancestor(view, edge, ancestor, outer)
         if index in selected:
+            # the gate's auth records must be on default, before its vocabulary and any provider shortcut
+            _check_nested_auth(view, actor=user, model=ancestor.model, obj=obj, provider=_effective_provider(ancestor))
             key = pair.nearest if selected[index] == "nearest" else pair.higher
             permission = _permission_name(viewset, ancestor, key, view.cv_key)
             if not ancestor._ancestor_has_permission(user, permission, obj, view=view):
@@ -513,8 +517,8 @@ def _immediate_parent_access(
       and custom checks.
     * The rendering view's request-resolved parent replaces an equal ``parent_obj`` (same row), so helpers
       reuse the request identity.
-    * A key missing from the parent's permission map, or a nested endpoint without operation requirements,
-      raises ``ImproperlyConfigured``.
+    * A key missing from the parent's permission map, a nested endpoint without operation requirements, or
+      authorization records on another database than ``default`` raise ``ImproperlyConfigured``.
     """
     if parent_obj is None:
         return False
@@ -524,8 +528,10 @@ def _immediate_parent_access(
         resolved = _resolved_parent(rendering_view)
         if resolved is not None and resolved is not parent_obj and _same_row(resolved, parent_obj):
             parent_obj = resolved
-    if _effective_provider(parent_vs) == "none":
+    provider = _effective_provider(parent_vs)
+    if provider == "none":
         return True
+    _check_nested_auth(view_class, actor=user, model=parent_vs.model, obj=parent_obj, provider=provider)
     key = _operation_requirements(view_class).nearest
     permission = _permission_name(viewset, parent_vs, key, _registered_key(view_class))
     return parent_vs._ancestor_has_permission(user, permission, parent_obj, view=rendering_view)

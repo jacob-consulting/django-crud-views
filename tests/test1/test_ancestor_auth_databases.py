@@ -348,21 +348,22 @@ def _local_url(adb, vs, key, pk=True):
 
 @pytest.fixture
 def events(monkeypatch):
-    """Ordered framework events: auth-route checks (by model and provider), permission-map reads (by ViewSet),
+    """Ordered framework events: auth-route checks (``("auth", model, provider)``, recorded where the boundary
+    enumerates the checked tables), permission-map reads (by ViewSet),
     ancestor provider calls, child object lookups, action-state checks and manage holder queries."""
     from crud_views.lib.views.manage import ManageView
 
     recorded: list[tuple] = []
-    original_check = getattr(ancestor_db, "_check_nested_auth", None)
+    original_tables = getattr(ancestor_db, "_auth_tables", None)
     original_permissions = ViewSet.permissions
     original_provider = ViewSet._ancestor_has_permission
     original_get_object = CrudView.get_object
     original_enabled = CrudView.cv_action_enabled.__func__
     original_holders = ManageView.get_permission_holders
 
-    def check(view, **kwargs):
-        recorded.append(("auth", kwargs["model"].__name__, kwargs.get("provider", "model")))
-        return original_check(view, **kwargs)
+    def tables(model, provider):
+        recorded.append(("auth", model.__name__, provider))
+        return original_tables(model, provider)
 
     def permissions(self):
         recorded.append(("vocabulary", self.name))
@@ -384,8 +385,8 @@ def events(monkeypatch):
         recorded.append(("holders", self.cv_viewset.name))
         return original_holders(self)
 
-    if original_check is not None:
-        monkeypatch.setattr(ancestor_db, "_check_nested_auth", check)
+    if original_tables is not None:
+        monkeypatch.setattr(ancestor_db, "_auth_tables", tables)
     monkeypatch.setattr(ViewSet, "permissions", property(permissions))
     monkeypatch.setattr(ViewSet, "_ancestor_has_permission", provider)
     monkeypatch.setattr(CrudView, "get_object", get_object)
@@ -462,7 +463,7 @@ def test_colliding_shard_grants_are_never_consulted(adb, world, routes, monkeypa
     else:
         _shard_object_grant(user, Publisher, 41)
     if boundary == "disabled":
-        monkeypatch.setattr(ancestor_db, "_check_nested_auth", lambda *args, **kwargs: None, raising=False)
+        monkeypatch.setattr(ancestor_db, "_auth_tables", lambda model, provider: [], raising=False)
     client = _client(user)
     url = _child_url(adb, kind, "detail", world)
     assert client.get(url).status_code == 403  # default routing: no grant on default

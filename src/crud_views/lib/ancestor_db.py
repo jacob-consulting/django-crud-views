@@ -19,19 +19,42 @@ The reached consumers that call them:
   parent attachments: in each POST after the object (or form instance) is resolved and before the first hook,
   and again at the write wrapper (``cv_form_valid_process``) for callers that drive it directly. A guard only in
   ``cv_get_atomic()`` would not do: hooks run before it, and ``cv_atomic = False`` selects no alias there.
+
+Authorization records (``_check_nested_auth``) follow the same rule: before a nested request's permission check
+reads its vocabulary (cached or not) or takes a backend shortcut (active superuser, model fallback), the actor and
+the tables the check queries must be on ``default`` — Django's auth tables (user, group, permission, content type
+and their through tables) and, for Guardian checks, the generic and the model's direct object-grant tables. The
+checks that call it, each where it is reached:
+
+* the selected ancestor gates of ``ancestors._authorize_ancestors`` and the bounded helper
+  ``ancestors._immediate_parent_access`` (a level nearest-only mode does not select is never touched);
+* the endpoint's own gates after ancestry: Guardian object gates and list filters
+  (``GuardianObjectPermissionMixin`` / ``GuardianQuerysetMixin``), core permission-required checks
+  (``CrudViewPermissionRequiredMixin``, including the all-none early actor admission) and nested manage pages
+  (group gate, permission rows and holder diagnostics).
+
+Plain endpoints without a permission check do no auth work. Guardian's delete-preview label projection keeps its
+own route checks (a mismatch hides labels there).
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterable
+from contextlib import suppress
 from typing import TYPE_CHECKING
 
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db import DEFAULT_DB_ALIAS, router
 from django.db.models import Model, QuerySet
 
 if TYPE_CHECKING:
     from crud_views.lib.view import CrudView
+
+
+def _is_nested(view) -> bool:
+    """A nested ViewSet request or view class (ORM or Resource leaf)."""
+    viewset = getattr(view, "cv_viewset", None)
+    return viewset is not None and viewset.parent is not None
 
 
 def _is_nested_orm(view: CrudView) -> bool:
@@ -93,3 +116,55 @@ def _check_nested_write(view: CrudView, *, instance: Model | None = None, relate
             _require_default_alias(hint._state.db, view=view, operation=f"{type(hint).__name__} attachment database")
         route = router.db_for_write(model, instance=hint)
         _require_default_alias(route, view=view, operation=f"{model.__name__} attachment route")
+
+
+def _auth_tables(model, provider: str) -> list[type[Model]]:
+    """The tables a permission check of ``provider`` queries: Django's auth tables (ModelBackend: user, group,
+    permission, content type and the three through tables) and, for ``"guardian"``, Guardian's generic and
+    ``model``'s direct object-grant tables. From metadata only: nothing is queried."""
+    from django.contrib.auth import get_user_model
+    from django.contrib.auth.models import Group, Permission
+    from django.contrib.contenttypes.models import ContentType
+
+    user_model = get_user_model()
+    tables = [user_model, Group, Permission, ContentType, Group.permissions.through]
+    for name in ("groups", "user_permissions"):
+        with suppress(FieldDoesNotExist):  # a custom user model without PermissionsMixin
+            tables.append(user_model._meta.get_field(name).remote_field.through)
+    if provider == "guardian":
+        from crud_views_guardian.lib.ancestors import _guardian_grant_tables
+
+        tables.extend(_guardian_grant_tables(model))
+    return tables
+
+
+def _check_nested_auth(view, *, actor, model, obj: Model | None = None, provider: str = "model") -> None:
+    """Default-database boundary of a reached nested permission check, before its vocabulary or any shortcut.
+
+    ``view`` is the nested view (or view class, for access helpers) doing the check, ``actor`` the user it asks
+    about, ``model`` the model whose permission is checked and ``obj`` the object of an object check. Validated:
+
+    * the actor's own database (a saved user loaded from another database never authorizes);
+    * ``obj``'s database;
+    * every table of ``_auth_tables(model, provider)``: its managers' selection (an explicit manager alias, else
+      the router) and the router with the actor (and, for Guardian, the object) as instance hint, as Django's
+      related managers route it.
+
+    Recomputed on each call; nothing is rerouted. Top-level views return immediately.
+    """
+    if not _is_nested(view):
+        return
+    hints = []
+    if isinstance(actor, Model) and actor._state.db is not None:
+        _require_default_alias(actor._state.db, view=view, operation="actor database")
+        hints.append(actor)
+    if obj is not None and obj._state.db is not None:
+        _require_default_alias(obj._state.db, view=view, operation=f"{type(obj).__name__} object database")
+        if provider == "guardian":
+            hints.append(obj)
+    for table in _auth_tables(model, provider):
+        operation = f"{table.__name__} authorization records"
+        for manager in {table._default_manager, getattr(table, "objects", table._default_manager)}:
+            _require_default_alias(manager.all().db, view=view, operation=operation)
+        for hint in hints:
+            _require_default_alias(router.db_for_read(table, instance=hint), view=view, operation=operation)

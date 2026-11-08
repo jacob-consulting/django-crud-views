@@ -3,6 +3,7 @@ from collections import OrderedDict
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views import generic
 
+from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 
@@ -63,12 +64,15 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             return True
         if not self.request.user.is_authenticated:
             return False
+        # nested: the membership query's auth records must be on default (phase 06.18)
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
         return self.request.user.groups.filter(name=crud_views_settings.manage_group).exists()
 
     def get_permission_holders(self):
         from django.contrib.auth import get_user_model
         from django.contrib.auth.models import Group
 
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
         user_model = get_user_model()
         rows = []
         for key, perm in self.cv_viewset.permissions.items():
@@ -99,6 +103,8 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         return rows
 
     def get_context_data(self, **kwargs):
+        # nested: the permission rows and holder diagnostics read auth records, which must be on default (06.18)
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
         context = super().get_context_data(**kwargs)
         permissions = self.cv_viewset.permissions
         rows = []

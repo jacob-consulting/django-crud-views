@@ -5,6 +5,7 @@ from django.http import Http404
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
+from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.ancestors import _immediate_parent_access
 from crud_views.lib.view import CrudView
 
@@ -94,6 +95,8 @@ class GuardianObjectPermissionMixin:
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset=queryset)
+        # nested: the gate's auth records must be on default, before the vocabulary and any shortcut (06.18)
+        _check_nested_auth(self, actor=self.request.user, model=type(obj), obj=obj, provider="guardian")
         perm = self.cv_viewset.permissions.get(self.cv_permission)
         if not self._check_object_perm(self.request.user, perm, obj):
             raise PermissionDenied
@@ -106,6 +109,7 @@ class GuardianObjectPermissionMixin:
     def cv_has_access(cls, user, obj=None):
         if _guardian_inactive_actor(user):
             return False
+        _check_nested_auth(cls, actor=user, model=cls.cv_viewset.model, obj=obj, provider="guardian")
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
         if obj is not None:
             # Model-level perm must be checked without obj (ModelBackend ignores
@@ -241,6 +245,8 @@ class GuardianQuerysetMixin:
         qs = super().get_queryset()
         if _guardian_inactive_actor(self.request.user):
             return qs.none()
+        # nested: the filter's auth records must be on default, before the vocabulary and any shortcut (06.18)
+        _check_nested_auth(self, actor=self.request.user, model=qs.model, provider="guardian")
         perm = self.cv_viewset.permissions.get(self.cv_permission)
         return get_objects_for_user(
             self.request.user,

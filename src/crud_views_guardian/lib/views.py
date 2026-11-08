@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DEFAULT_DB_ALIAS, connections, router
 
+from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.ancestors import _immediate_parent_access
 from crud_views.lib.views import (
     ActionViewPermissionRequired,
@@ -413,6 +414,8 @@ class GuardianManageView(ManageView):
         from django.db.models import Count
         from guardian.models import GroupObjectPermission
 
+        # nested: the grant tables (and Django's auth tables) must be on default before the first query (06.18)
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model, provider="guardian")
         holders = {(r["group"], r["permission"]): r for r in super().get_permission_holders()}
 
         ct = ContentType.objects.get_for_model(self.cv_viewset.model)

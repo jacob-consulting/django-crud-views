@@ -695,8 +695,12 @@ def test_guardian_manage_holders_refuse_a_shard_grant_route(adb, world, routes, 
     events.clear()
     with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
         client.get(_manage_url(adb, adb.gloc))
-    _assert_refused_without_auth_reads(sql)
-    assert ("holders", adb.gloc.name) in events
+    # the page's own permission rows read (default-routed) Django auth records first; no grant table is read
+    grants = ('"guardian_groupobjectpermission"', '"guardian_userobjectpermission"')
+    assert [q for q in _sql(sql.default) + _sql(sql.shard) if any(table in q for table in grants)] == []
+    assert _foreign_sql(sql.shard) == []
+    # refused in the Guardian holder query, before the core holders it extends
+    assert _auth_events(events)[-1] == ("auth", "Book", "guardian") and ("holders", adb.gloc.name) not in events
     view = adb.gloc.get_view_class("manage")()
     view.setup(RequestFactory().get(_manage_url(adb, adb.gloc)), **{f"{adb.none.name}_pk": 41})
     view.request.user = User.objects.get(username="aa_gm")

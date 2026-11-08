@@ -399,6 +399,9 @@ cv_book = ViewSet(
     model=Book,
     name="book",
     parent=ParentViewSet(name="publisher"),
+    # the shared Publisher ViewSet has no icon: readers who hold the Publisher ancestor grant see the parent
+    # action, so it renders with its label (strict mode rejects an icon-only button without an icon)
+    context_actions_label_mode={"parent": "label"},
 )
 
 
@@ -487,6 +490,7 @@ cv_contract = ViewSet(
     name="contract",
     parent=ParentViewSet(name="publisher"),
     icon_header="fa-solid fa-file-contract",
+    context_actions_label_mode={"parent": "label"},  # see cv_book: the shared Publisher ViewSet has no icon
 )
 
 

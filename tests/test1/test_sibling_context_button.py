@@ -15,12 +15,14 @@ def cv_contract():
 
 
 @pytest.fixture
-def client_book_and_contract_view(client, cv_book, cv_contract):
+def client_book_and_contract_view(client, cv_book, cv_contract, cv_publisher):
     from django.contrib.auth.models import User
 
     user = User.objects.create_user(username="user_book_contract_view", password="password")
     user_viewset_permission(user, cv_book, "view")
     user_viewset_permission(user, cv_contract, "view")
+    # the nested Book list is a Read request: the core Publisher ancestor needs model "view" (phase 06.18)
+    user_viewset_permission(user, cv_publisher, "view")
     client.force_login(user)
     return client
 
@@ -75,3 +77,20 @@ def test_unknown_sibling_raises(client_user_book_view, cv_book, publisher_pengui
     context = view.cv_get_view_context()
     with pytest.raises(ViewSetNotFoundError):
         btn.get_context(context)
+
+
+@pytest.mark.django_db
+def test_book_and_contract_reader_without_publisher_view_is_denied(
+    client, cv_book, cv_contract, publisher_penguin, book_hitchhiker
+):
+    # independent ancestor gate: the local Book/Contract grants do not substitute for Publisher view
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_book_contract_no_parent", password="password")
+    user_viewset_permission(user, cv_book, "view")
+    user_viewset_permission(user, cv_contract, "view")
+    client.force_login(user)
+    url = reverse(cv_book.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
+    assert client.get(url).status_code == 403
+    contracts = reverse(cv_contract.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
+    assert client.get(contracts).status_code == 403

@@ -18,11 +18,13 @@ def cv_contract():
 
 
 @pytest.fixture
-def client_user_contract_view(client, cv_contract):
+def client_user_contract_view(client, cv_contract, cv_publisher):
     from django.contrib.auth.models import User
 
     user = User.objects.create_user(username="user_contract_view", password="password")
     user_viewset_permission(user, cv_contract, "view")
+    # nested Contract pages are Read requests: the core Publisher ancestor needs model "view" (phase 06.18)
+    user_viewset_permission(user, cv_publisher, "view")
     client.force_login(user)
     return client
 
@@ -78,3 +80,15 @@ def test_inaccessible_actions_are_hidden(client_user_author_view, cv_author, aut
     assert b'cv-key="create"' not in resp.content
     assert b'cv-key="update"' not in resp.content
     assert b'cv-key="delete"' not in resp.content
+
+
+@pytest.mark.django_db
+def test_contract_reader_without_publisher_view_is_denied(client, cv_contract, publisher_penguin):
+    # independent ancestor gate: Contract view alone does not reach the nested Contract pages
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_contract_only", password="password")
+    user_viewset_permission(user, cv_contract, "view")
+    client.force_login(user)
+    list_url = reverse(cv_contract.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
+    assert client.get(list_url).status_code == 403

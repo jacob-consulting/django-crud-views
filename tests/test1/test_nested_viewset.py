@@ -138,3 +138,62 @@ def test_child_permissions_no_perm(client_user_a: Client, cv_book, publisher_pen
     url = f"/publisher/{publisher_penguin.pk}/book/"
     response = client_user_a.get(url)
     assert response.status_code == 403
+
+
+# --- independent gates (phase 06.18): the shared Book fixtures above carry the exact Publisher ancestor grant;
+# these dedicated actors keep the child-only / parent-only / no-permission evidence independent of that grant
+
+
+def _actor(username, *grants):
+    from django.contrib.auth.models import User
+
+    from tests.lib.helper.user import user_viewset_permission
+
+    user = User.objects.create_user(username=username, password="password")
+    for viewset, perm in grants:
+        user_viewset_permission(user, viewset, perm)
+    client = Client()
+    client.force_login(user)
+    return client
+
+
+@pytest.mark.django_db
+def test_child_only_reader_is_denied_by_the_publisher_gate(cv_book, cv_publisher, publisher_penguin, book_hitchhiker):
+    client = _actor("child_only_reader", (cv_book, "view"))
+    assert client.get(f"/publisher/{publisher_penguin.pk}/book/").status_code == 403
+    detail = f"/publisher/{publisher_penguin.pk}/book/{book_hitchhiker.pk}/detail/"
+    assert client.get(detail).status_code == 403
+
+
+@pytest.mark.django_db
+def test_parent_only_reader_is_denied_by_the_local_book_gate(cv_book, cv_publisher, publisher_penguin, book_hitchhiker):
+    client = _actor("parent_only_reader", (cv_publisher, "view"))
+    assert client.get(f"/publisher/{publisher_penguin.pk}/book/").status_code == 403
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("perm", ["add", "change", "delete"])
+def test_child_editor_with_parent_view_only_is_denied(perm, cv_book, cv_publisher, publisher_penguin, book_hitchhiker):
+    # Write (including the form GET) needs Publisher change; Publisher view does not substitute
+    client = _actor(f"editor_{perm}_parent_view", (cv_book, perm), (cv_publisher, "view"))
+    urls = {
+        "add": f"/publisher/{publisher_penguin.pk}/book/create/",
+        "change": f"/publisher/{publisher_penguin.pk}/book/{book_hitchhiker.pk}/update/",
+        "delete": f"/publisher/{publisher_penguin.pk}/book/{book_hitchhiker.pk}/delete/",
+    }
+    assert client.get(urls[perm]).status_code == 403
+    assert Book.objects.filter(pk=book_hitchhiker.pk, title=book_hitchhiker.title).exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("perm", ["add", "change", "delete"])
+def test_parent_change_without_the_child_permission_is_denied(
+    perm, cv_book, cv_publisher, publisher_penguin, book_hitchhiker
+):
+    client = _actor(f"parent_change_no_{perm}", (cv_publisher, "change"), (cv_publisher, "view"))
+    urls = {
+        "add": f"/publisher/{publisher_penguin.pk}/book/create/",
+        "change": f"/publisher/{publisher_penguin.pk}/book/{book_hitchhiker.pk}/update/",
+        "delete": f"/publisher/{publisher_penguin.pk}/book/{book_hitchhiker.pk}/delete/",
+    }
+    assert client.get(urls[perm]).status_code == 403

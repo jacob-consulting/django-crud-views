@@ -402,11 +402,13 @@ def book_other_publisher(publisher_harpercollins):
 
 
 @pytest.fixture
-def user_book_view(cv_book):
+def user_book_view(cv_book, cv_publisher):
     from django.contrib.auth.models import User
 
     user = User.objects.create_user(username="user_book_view", password="password")
     user_viewset_permission(user, cv_book, "view")
+    # nested Book Read requests also need the core Publisher ancestor's model "view" (phase 06.18)
+    user_viewset_permission(user, cv_publisher, "view")
     return user
 
 
@@ -417,11 +419,13 @@ def client_user_book_view(client, user_book_view) -> Client:
 
 
 @pytest.fixture
-def user_book_add(cv_book):
+def user_book_add(cv_book, cv_publisher):
     from django.contrib.auth.models import User
 
     user = User.objects.create_user(username="user_book_add", password="password")
     user_viewset_permission(user, cv_book, "add")
+    # nested Book Write requests also need the core Publisher ancestor's model "change" (phase 06.18)
+    user_viewset_permission(user, cv_publisher, "change")
     return user
 
 
@@ -432,11 +436,13 @@ def client_user_book_add(client, user_book_add) -> Client:
 
 
 @pytest.fixture
-def user_book_change(cv_book):
+def user_book_change(cv_book, cv_publisher):
     from django.contrib.auth.models import User
 
     user = User.objects.create_user(username="user_book_change", password="password")
     user_viewset_permission(user, cv_book, "change")
+    # nested Book Write requests also need the core Publisher ancestor's model "change" (phase 06.18)
+    user_viewset_permission(user, cv_publisher, "change")
     return user
 
 
@@ -447,11 +453,13 @@ def client_user_book_change(client, user_book_change) -> Client:
 
 
 @pytest.fixture
-def user_book_delete(cv_book):
+def user_book_delete(cv_book, cv_publisher):
     from django.contrib.auth.models import User
 
     user = User.objects.create_user(username="user_book_delete", password="password")
     user_viewset_permission(user, cv_book, "delete")
+    # nested Book Write requests also need the core Publisher ancestor's model "change" (phase 06.18)
+    user_viewset_permission(user, cv_publisher, "change")
     return user
 
 

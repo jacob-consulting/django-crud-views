@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
-status: executing
-stopped_at: Completed 06.18-11-PLAN.md
-last_updated: "2026-11-08T22:34:22.842Z"
+status: verifying
+stopped_at: Completed 06.18-12-PLAN.md
+last_updated: "2026-11-08T23:05:45.529Z"
 last_activity: 2026-11-08
-last_activity_desc: Phase 06.18 plan 08 complete
-state_head: e6adfd24411746886e74dc8c09754ae87ac1de27
+last_activity_desc: Phase 06.18 plan 12 complete
+state_head: ae578ea6ed314383955b5739e4cc923a80f0913b
 progress:
   total_phases: 24
   completed_phases: 21
   total_plans: 149
-  completed_plans: 148
+  completed_plans: 149
 milestone_name: milestone
 ---
 
@@ -28,12 +28,17 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 
 ## Current Position
 
-Phase: 06.18 (Ancestor authorization for nested ViewSets) — EXECUTING
+Phase: 06.18 (Ancestor authorization for nested ViewSets) — READY FOR VERIFICATION
 Plan: 12 of 12
-Status: Ready to execute
-Last activity: 2026-11-08 — Phase 06.18 plan 11 complete
+Status: Phase complete — ready for verification
+Last activity: 2026-11-08 — Phase 06.18 plan 12 complete
 
-Next: $gsd-execute-phase 06.18
+Next: phase verification for 06.18 ($gsd-verify-work 06.18), then code/security review
+
+### Phase 06.18 plan 12 — 2026-11-08
+
+- Paired the CHANGELOG `### Breaking` entry "Ancestor authorization for nested ViewSets" with the new docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets section. It covers removed fields, defaults, provider/fallback, exact actions, nested manage, the nested-write-database-selection anchor for the instance-hinted selector refusal, and boundaries. An executed Guardian approve-pair migration fence and six new test_ancestor_docs.py functions pair both surfaces. nested.md#databases links the anchor.
+- Final source 5829cae7 (src identical to e85ed2b4): focused selection 2607 passed on each of Django 4.2.30 / 5.2.19 / 6.0.9 crispy floor (Python 3.12.3); full 5.2 suite 12163 passed, 1 existing skip; scoped Ruff (55 files) and strict MkDocs pass; cost replay identical to plan 10 (5.2 only). The first replay found two test-fixture portability failures (crispy < 2.7 filter helper; Django 4.2 AdminEmailHandler report). They were fixed in tests and logged in deferred-items. All 26 acceptance rows are bound to existing selectors; ANCE-01–08 are marked complete. Not a phase seal. Existing config/state.json/CLAUDE edits preserved; no push or merge.
 
 ### Phase 06.18 plan 11 — 2026-11-08
 
@@ -803,6 +808,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P09 | 14min | 2 tasks | 5 files |
 | Phase 06.18 P10 | 20min | 2 tasks | 3 files |
 | Phase 06.18 P11 | 20 min | 2 tasks | 9 files |
+| Phase 06.18 P12 | 28 min | 2 tasks | 10 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1036,6 +1042,8 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-10: one Guardian object-permission pair per ancestor gate is permitted, distinct work. Prefetching all ancestors' permissions would conflict with gating each level before the next lookup (D-32).
 - [Phase 06.18]: Published fences use natural registry names; the docs fixture empties and restores the ViewSet registry
 - [Phase 06.18]: Nested DB docs link the migration guide page without an anchor until plan 12 creates the ancestor migration section
+- [Phase 06.18]: 06.18-12: the ancestor Breaking entry is paired with docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets (h4 subsection nested-write-database-selection for the instance-hinted selector) and an executed Guardian approve-pair migration fence
+- [Phase 06.18]: 06.18-12: cross-series failures in two prior-plan test modules (crispy < 2.7 filter helper, Django 4.2 AdminEmailHandler report) were fixed in fixtures, not the package, and the whole replay rerun at 5829cae7
 
 ### Pending Todos
 
@@ -1101,6 +1109,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T22:34:19.342Z
-Stopped at: Completed 06.18-11-PLAN.md
+Last session: 2026-11-08T23:05:41.977Z
+Stopped at: Completed 06.18-12-PLAN.md
 Resume file: None

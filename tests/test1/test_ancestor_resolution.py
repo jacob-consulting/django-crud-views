@@ -25,6 +25,7 @@ from __future__ import annotations
 import re
 from types import SimpleNamespace
 
+import django_filters
 import pytest
 from django.contrib.auth.models import User
 from django.db import connection, models
@@ -34,6 +35,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
 from crud_views.lib import ancestors
+from crud_views.lib.table import Table
 from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
 from tests.test1.app.models import Author, Book, BookNote, Genre, Publisher, UUIDFragmentRow
 from tests.test1.test_ancestor_authorization import _client, _url, _user, isolated_routes
@@ -45,6 +47,18 @@ class TenantViewSet(ViewSet):
 
     def get_queryset(self, view):
         return super().get_queryset(view).exclude(name__startswith="hidden")
+
+
+class BookTitleFilter(django_filters.FilterSet):
+    class Meta:
+        model = Book
+        fields = ["title"]
+
+
+class BookTitleTable(Table):
+    class Meta:
+        model = Book
+        fields = ["title"]
 
 
 def _all_books(self):
@@ -93,6 +107,8 @@ def res():
         DetailView,
         DetailViewPermissionRequired,
         ListView,
+        ListViewTableFilterMixin,
+        ListViewTableMixin,
         UpdateViewPermissionRequired,
     )
     from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired
@@ -157,6 +173,25 @@ def res():
                     {"cv_viewset": vs, "cv_context_actions": [], **_detail_attrs(style, Book, _all_books)},
                 ),
             )
+
+        # filtered lists (django-filter hands its collection to get_context_data as ``object_list``) whose child
+        # querysets omit the parent filter: a plain filtered list and a table + filter list
+        ns.fbook = {}
+        for style in OVERRIDE_STYLES:
+            for kind, bases, extra in (
+                ("filter", (ListViewTableFilterMixin, ListView), {}),
+                ("table", (ListViewTableMixin, ListViewTableFilterMixin, ListView), {"table_class": BookTitleTable}),
+            ):
+                vs = ViewSet(
+                    model=Book,
+                    name=f"arf{kind}{style.replace('-', '')}{sfx}",
+                    parent=ParentViewSet(name=ns.pub.name, attribute="publisher"),
+                )
+                attrs = {"filterset_class": BookTitleFilter, **extra, **_list_attrs(style, Book, _all_books)}
+                listing = type(
+                    "FilterList", bases, {"cv_viewset": vs, "cv_list_actions": [], "cv_context_actions": [], **attrs}
+                )
+                ns.fbook[style, kind] = SimpleNamespace(vs=vs, List=listing)
 
         # explicit URL argument name and FK attribute
         ns.house = ViewSet(
@@ -224,6 +259,7 @@ def res():
             ns.book,
             ns.note,
             *(c.vs for c in ns.cbook.values()),
+            *(f.vs for f in ns.fbook.values()),
             ns.house,
             ns.genre,
             ns.cgenre,
@@ -504,6 +540,22 @@ def test_filter_omitting_child_collection_is_scoped_to_the_resolved_parent(res, 
     response = _superclient(f"ar_cl_{style}").get(_url(family.vs, "list", **_kw(res.pub, world.penguin)))
     assert response.status_code == 200
     assert list(response.context["object_list"]) == [world.book]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("kind", ["filter", "table"])
+@pytest.mark.parametrize("style", OVERRIDE_STYLES)
+@pytest.mark.parametrize("query", ["", "?title=", "?title=Foreign"])
+def test_filtered_child_collection_is_scoped_to_the_resolved_parent(res, world, style, kind, query):
+    """django-filter passes its collection as the ``object_list`` keyword; it is scoped like the plain list, and
+    the table (which reads ``self.object_list``) renders the same rows."""
+    family = res.fbook[style, kind]
+    response = _superclient(f"ar_fl_{style}_{kind}").get(_url(family.vs, "list", **_kw(res.pub, world.penguin)) + query)
+    assert response.status_code == 200
+    expected = [] if query == "?title=Foreign" else [world.book]
+    assert list(response.context["object_list"]) == expected
+    if kind == "table":
+        assert [row.record for row in response.context["table"].rows] == expected
 
 
 @pytest.mark.django_db

@@ -65,9 +65,9 @@ class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
                         else:
                             # A parent button can target a nested create higher in the ancestor chain; reuse the
                             # ancestor this request already resolved, else look it up.
-                            obj = rendering_view._cv_resolved_ancestor(parent.name) or get_object_or_404(
-                                parent.viewset.model, pk=kwargs[arg]
-                            )
+                            obj = rendering_view._cv_resolved_ancestor(parent.name)
+                            if obj is None:
+                                obj = get_object_or_404(parent.viewset.model, pk=kwargs[arg])
                     except (Http404, KeyError):
                         return False
         return cls._cv_action_enabled_for_context(user, obj)

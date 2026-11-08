@@ -337,3 +337,43 @@ def test_local_permission_still_follows_scoped_ancestry(scope, events):
 
     assert client.get(routes.url("detail", [publisher, book], obj=note)).status_code == 404
     assert events == ["outer_queryset", "outer_gate", "inner_queryset"]
+
+
+class AllGroupsViewSet(TracedViewSet):
+    """Drops the reverse many-to-many membership filter of the default Group queryset."""
+
+    def get_queryset(self, view):
+        from django.contrib.auth.models import Group
+
+        super().get_queryset(view)
+        return Group.objects.all()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("inner_class", [TracedViewSet, AllGroupsViewSet], ids=["default", "unfiltered"])
+def test_reverse_m2m_edge_uses_its_accessor_not_its_query_name(scope, events, inner_class):
+    """User → Group through the reverse end of ``User.groups``: query name ``user``, accessor ``user_set``."""
+    from django.contrib.auth.models import Group, Permission, User
+    from guardian.models import GroupObjectPermission
+
+    from crud_views.lib.views import DetailView
+
+    spec = ((User, None, "outer"), (Group, "user", "inner"), (GroupObjectPermission, "group", "child"))
+    routes = traced_chain(scope, spec, viewset_classes={1: inner_class})
+    define(scope, routes.endpoint, DetailView)
+    scope.mount([routes.endpoint])
+    publisher, *_ = data()
+    actor = User.objects.create_user(username="member", password="password")
+    for codename in ("view_user", "view_group"):
+        actor.user_permissions.add(Permission.objects.get(codename=codename, content_type__app_label="auth"))
+    member, stranger = Group.objects.create(name="member"), Group.objects.create(name="stranger")
+    actor.groups.add(member)
+
+    def grant(group):
+        return GroupObjectPermission.objects.assign_perm("view_publisher", group, publisher)
+
+    client = client_for(actor)
+    assert client.get(routes.url("detail", [actor, member], obj=grant(member))).status_code == 200
+    events.clear()
+    assert client.get(routes.url("detail", [actor, stranger], obj=grant(stranger))).status_code == 404
+    assert events == ["outer_queryset", "outer_gate", "inner_queryset"]

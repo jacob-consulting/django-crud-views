@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING
 
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from django.db.models import ForeignObjectRel
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 
@@ -115,11 +116,16 @@ def _resolve(view: CrudView, parent: ParentViewSet, ancestor: ViewSet) -> Model:
 
 
 def _related(obj: Model, parent: ParentViewSet, parent_obj: Model) -> bool:
-    """Whether ``obj`` belongs to ``parent_obj`` through the declared relationship (FK/one-to-one or M2M)."""
-    attribute = parent.get_attribute()
-    field = type(obj)._meta.get_field(attribute)
+    """Whether ``obj`` belongs to ``parent_obj`` through the declared relationship (FK/one-to-one or M2M).
+
+    ``ParentViewSet.attribute`` is a field / query name (what ``_meta.get_field()`` takes). A reverse many-to-many
+    end is reached on the instance through its accessor, which differs from the query name without ``related_name``
+    (``user`` / ``user_set``) or with a separate ``related_query_name``. FK/one-to-one compares values, no query.
+    """
+    field = type(obj)._meta.get_field(parent.get_attribute())
     if field.many_to_many:
-        return getattr(obj, attribute).filter(pk=parent_obj.pk).exists()
+        accessor = field.get_accessor_name() if isinstance(field, ForeignObjectRel) else field.name
+        return getattr(obj, accessor).filter(pk=parent_obj.pk).exists()
     return getattr(obj, field.attname) == getattr(parent_obj, field.target_field.attname)
 
 

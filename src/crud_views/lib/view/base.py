@@ -276,9 +276,10 @@ class CrudView(metaclass=CrudViewMetaClass):
     def _cv_authorize_ancestors(self) -> HttpResponse | None:
         """Ancestor authorization of a nested request, run first by every dispatch bridge; a denial response or None.
 
-        The bridges (here, ``CrudViewPermissionRequiredMixin``, ``ManageView`` and Guardian's parent mixin) call it
-        before their own dispatch work, so it precedes local permissions, child lookups, state and forms. It runs once
-        per view instance: only a completed traversal is marked, a denial ends the request. Top-level: no work.
+        The bridges (here, ``CrudViewPermissionRequiredMixin`` and ``ManageView``; a bridge in Guardian's parent
+        mixin is pending) call it before their own dispatch work, so it precedes local permissions, child lookups,
+        state and forms. It runs once per view instance: only a completed traversal is marked, a denial ends the
+        request. Top-level: no work.
         """
         if not self.cv_viewset.has_parent or getattr(self, "_cv_ancestors_authorized", False):
             return None

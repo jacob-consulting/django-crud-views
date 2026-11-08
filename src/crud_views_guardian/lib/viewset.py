@@ -70,7 +70,9 @@ class GuardianViewSet(ViewSet):
             return False
         if self.ancestor_policy.accept_global_perms and user.has_perm(permission):
             return True
-        return ObjectPermissionChecker(user).has_perm(permission.split(".")[1], obj)
+        # the full "app_label.codename": Guardian drops the label itself and resolves the content type of ``obj``
+        # through its configured resolver
+        return ObjectPermissionChecker(user).has_perm(permission, obj)
 
     def get_manage_view_class(self):
         from django.utils.module_loading import import_string

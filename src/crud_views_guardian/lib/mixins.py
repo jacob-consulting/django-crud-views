@@ -6,7 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
 from crud_views.lib.ancestor_db import _check_nested_auth
-from crud_views.lib.ancestors import _immediate_parent_access
+from crud_views.lib.ancestors import _immediate_parent_access, _resolved_parent
 from crud_views.lib.view import CrudView
 
 logger = logging.getLogger(__name__)
@@ -363,10 +363,11 @@ class GuardianParentPermissionMixin:
             if response is not None:
                 return response
             # Secondary state gate — only for no-object child views (e.g. create), whose action object IS the
-            # resolved immediate parent. Object child views (detail/update/delete) carry a row and are gated in
-            # get_object() with that row, so they must NOT also be gated here with the parent (that would invoke
-            # cv_action_enabled with the wrong object type).
-            if not self.cv_object and not self.cv_action_enabled(request.user, self.cv_get_parent_object()):
+            # immediate parent the guard just resolved (read directly, not through the overridable
+            # cv_get_parent_object() hook, as the pre-06.18 dispatch did with its own lookup). Object child views
+            # (detail/update/delete) carry a row and are gated in get_object() with that row, so they must NOT also
+            # be gated here with the parent (that would invoke cv_action_enabled with the wrong object type).
+            if not self.cv_object and not self.cv_action_enabled(request.user, _resolved_parent(self)):
                 raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 

@@ -307,3 +307,11 @@ def traced_chain(
             kwargs["ancestor_policy"] = policies[index]
         viewsets.append(scope.viewset(viewset_classes.get(index, TracedViewSet), **kwargs))
     return AncestorRoutes(family="core", depth=len(spec) - 1, viewsets=viewsets)
+
+
+def book_child_chain(model, depth: int = 2, trace: str = "child"):
+    """A traced spec ending in a Book child ``model`` (FK ``book``): Book (``outer``) → model at depth 1, Publisher
+    (``outer``) → Book (``inner``) → model at depth 2."""
+    if depth == 1:
+        return ((Book, None, "outer"), (model, "book", trace))
+    return ((Publisher, None, "outer"), (Book, "publisher", "inner"), (model, "book", trace))

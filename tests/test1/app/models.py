@@ -314,3 +314,84 @@ class AncestorAttachment(models.Model):
 
     def __str__(self):
         return self.text
+
+
+# ── test-only nested endpoints for the shipped-extension ancestry suite (tests/test1/test_ancestor_extensions.py) ──
+
+
+class AncestorGarage(models.Model):
+    """Parent of the polymorphic AncestorVehicle (Publisher → garage → vehicle).
+
+    django-polymorphic guards every FK of a polymorphic model with its own on_delete wrapper, which the package's
+    delete preview reports as an unknown boundary. The garage keeps that edge away from Publisher/Book deletes used by
+    other suites: it is no cascade target (DO_NOTHING, no database constraint) and nothing else deletes it.
+    """
+
+    publisher = models.ForeignKey(
+        Publisher, on_delete=models.DO_NOTHING, db_constraint=False, related_name="ancestor_garages"
+    )
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class AncestorVehicle(PolymorphicModel):
+    """Polymorphic child of AncestorGarage: polymorphic detail/create/update/delete and type selection below
+    ancestors."""
+
+    garage = models.ForeignKey(AncestorGarage, on_delete=models.CASCADE, related_name="vehicles")
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class AncestorCar(AncestorVehicle):
+    doors = models.IntegerField(default=4)
+
+
+class AncestorTruck(AncestorVehicle):
+    payload_tons = models.IntegerField(default=10)
+
+
+class AncestorStep(OrderedModel):
+    """Ordered child of Book: the built-in up/down actions below an ancestor."""
+
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="ancestor_steps")
+    name = models.CharField(max_length=100)
+    order_with_respect_to = "book"
+
+    class Meta(OrderedModel.Meta):
+        pass
+
+    def __str__(self):
+        return self.name
+
+
+class AncestorTaskState(models.TextChoices):
+    NEW = "new", _("New")
+    DONE = "done", _("Done")
+
+
+class AncestorTask(WorkflowModelMixin, models.Model):
+    """Workflow child of Book: a nested WorkflowView needs an exact ancestor action declaration."""
+
+    STATE_CHOICES = AncestorTaskState
+    STATE_BADGES = {AncestorTaskState.NEW: BadgeEnum.LIGHT, AncestorTaskState.DONE: BadgeEnum.PRIMARY}
+
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="ancestor_tasks")
+    name = models.CharField(max_length=100)
+    state = FSMField(default=AncestorTaskState.NEW, choices=AncestorTaskState.choices)
+
+    def __str__(self):
+        return self.name
+
+    @transition(
+        field=state,
+        source=AncestorTaskState.NEW,
+        target=AncestorTaskState.DONE,
+        custom={"label": "Done", "comment": WorkflowComment.NONE},
+    )
+    def wf_done(self, request=None, by=None, comment=None):
+        pass

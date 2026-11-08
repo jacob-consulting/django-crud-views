@@ -1186,3 +1186,70 @@ def test_manage_gate_modes(mx, client, manage_mode, world, family, mode, debug, 
     if status == 200:
         assert "views" in response.context
     _assert_no_write(mx, before)
+
+
+# ── nested Guardian manage: ancestry and the local manage gate are independent ──
+
+
+def _manage_client(*, parent_grant=None, group=False, name):
+    from django.contrib.auth.models import Group
+    from guardian.shortcuts import assign_perm
+
+    user = _make_actor("none", name=name)
+    if parent_grant is not None:
+        vs, obj = parent_grant
+        assign_perm(vs.permissions["view"], user, obj)
+    if group:
+        user.groups.add(Group.objects.get_or_create(name=MANAGE_GROUP)[0])
+    client = Client()
+    client.force_login(_refetch(user))
+    return client
+
+
+@pytest.mark.parametrize("mode", ["yes", "no"])
+@pytest.mark.django_db
+def test_nested_guardian_manage_requires_ancestry_and_local_gate(mx, manage_mode, world, mode):
+    """Public or group manage cannot bypass the Guardian ancestor gate (Read: Publisher view on the URL object);
+    satisfying ancestry does not waive the manage group."""
+    manage_mode(mode)
+    url = _u(mx.book.vs, "manage", parent_pk=world.a.pk)
+    group = mode == "no"
+
+    response = Client().get(url)  # protected ancestry: login before any lookup
+    assert (response.status_code, response["Location"].startswith(LOGIN)) == (302, True)
+    assert _manage_client(group=True, name="manage_member").get(url).status_code == 403
+    other_grant = _manage_client(parent_grant=(mx.g.vs, world.b), group=True, name="manage_other")
+    assert other_grant.get(url).status_code == 403  # a grant on another publisher is not this ancestor
+    reader = _manage_client(parent_grant=(mx.g.vs, world.a), group=group, name="manage_reader")
+    assert reader.get(url).status_code == 200
+    assert reader.get(_u(mx.book.vs, "manage", parent_pk=987654)).status_code == 404
+    if group:
+        # ancestry passes, the local manage gate still denies
+        outsider = _manage_client(parent_grant=(mx.g.vs, world.a), name="manage_nongroup")
+        assert outsider.get(url).status_code == 403
+
+
+@pytest.mark.parametrize(
+    ("mode", "anonymous_status"),
+    [("yes", 200), ("no", 302)],
+)
+@pytest.mark.django_db
+def test_nested_guardian_manage_all_none_keeps_the_local_gate(mx, manage_mode, world, mode, anonymous_status):
+    """All-none ancestry adds no actor restriction: public manage stays public, group manage keeps its login/403
+    rules, and a reached missing parent is 404."""
+    manage_mode(mode)
+    url = _u(mx.free.vs, "manage", parent_pk=world.a.pk)
+    missing = _u(mx.free.vs, "manage", parent_pk=987654)
+
+    response = Client().get(url)
+    assert response.status_code == anonymous_status
+    if anonymous_status == 302:
+        assert response["Location"].startswith(LOGIN)
+        assert Client().get(missing).status_code == 302  # the early actor denial precedes the parent lookup
+    else:
+        assert Client().get(missing).status_code == 404
+    nongroup = _manage_client(name="free_nongroup")
+    assert nongroup.get(url).status_code == (200 if mode == "yes" else 403)
+    member = _manage_client(group=True, name="free_member")
+    assert member.get(url).status_code == 200
+    assert member.get(missing).status_code == 404

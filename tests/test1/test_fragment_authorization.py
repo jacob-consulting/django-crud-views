@@ -370,6 +370,7 @@ def fr(monkeypatch):
                     GBookCreate=FrGBookCreateView,
                     GBookUpdate=FrGBookUpdateView,
                     CPublisherUpdate=FrCPublisherUpdateView,
+                    CBookUpdate=FrCBookUpdateView,
                     DeepUpdate=FrDeepPublisherUpdateView,
                     calls=calls,
                 )
@@ -751,6 +752,67 @@ def test_core_update_fragment_denied_without_change_or_when_disabled(fr, world, 
     response = _get(_client(editor), url, params)
     assert response.status_code == 403
     _assert_not_rendered(fr, response)
+
+
+@pytest.mark.parametrize("family", ["core", "guardian"])
+@pytest.mark.django_db
+def test_fragments_authorize_the_owning_editor(fr, world, monkeypatch, family):
+    """A fragment request is an operation of its owning editor (Write: Publisher change): a Read ancestor grant cannot
+    open it, even with full local grants; allowed ancestry still applies the local object, state and coordinate rules.
+    """
+    pa, ba = world.publisher_a, world.book_a
+    book_vs, pub_vs = (fr.cbook_vs, fr.cpub_vs) if family == "core" else (fr.gbook_vs, fr.gpub_vs)
+    editor_class = fr.CBookUpdate if family == "core" else fr.GBookUpdate
+    pk_name = book_vs.parent.get_pk_name()
+    update_url = _url(book_vs, "update", **{pk_name: pa.pk, "pk": ba.pk})
+    params = {"template": "notes", "pk": str(ba.pk), "num": "1", "formset_parent_prefix_key": ""}
+
+    def actor(name, parent_perms, child=True):
+        user = _user(f"{family}_{name}")
+        if family == "core":
+            _model_perms(user, *[f"{perm}_publisher" for perm in parent_perms])
+            if child:
+                _model_perms(user, "view_book", "change_book", "add_book")
+        else:
+            _grant(user, pub_vs, pa, *parent_perms)
+            if child:
+                _grant(user, book_vs, ba, "view", "change")
+                _model_perms(user, "add_book")
+        return _client(user)
+
+    before = _counts()
+    reader = actor("reader", ["view"])
+    denied = _get(reader, update_url, params)
+    assert denied.status_code == 403
+    _assert_not_rendered(fr, denied)
+    if family == "guardian":
+        create_url = _url(book_vs, "create", **{pk_name: pa.pk})
+        create_params = {**params, "pk": "None"}
+        denied = _get(reader, create_url, create_params)
+        assert denied.status_code == 403
+        _assert_not_rendered(fr, denied)
+
+    # allowed ancestry: the local object gate still applies (Guardian: no grant on this book)
+    if family == "guardian":
+        no_object = _get(actor("no_object", ["view", "change"], child=False), update_url, params)
+        assert no_object.status_code == 403
+        _assert_not_rendered(fr, no_object)
+
+    editor = actor("editor", ["view", "change"])
+    # forged coordinates: a different book as the fragment root
+    forged = _get(editor, update_url, {**params, "pk": str(world.book_b.pk)})
+    _assert_bad_request(fr, forged, before)
+
+    _assert_fragment(_get(editor, update_url, params), [f"notes-{ba.pk}-0-1"], ["note"])
+    assert _counts() == before
+
+    # the editor's action state still applies after allowed ancestry
+    fr.calls["render"] = 0
+    CHOICES["evaluated"] = 0
+    monkeypatch.setattr(editor_class, "cv_action_enabled", classmethod(lambda cls, user, obj=None: False))
+    disabled = _get(editor, update_url, params)
+    assert disabled.status_code == 403
+    _assert_not_rendered(fr, disabled)
 
 
 # ── authorized browser payload positives (A06), Guardian and core ─────────────

@@ -260,3 +260,142 @@ def test_list_action_icons(client: Client, cv_s3file):
     assert "fa-trash-can" in content
     assert 'class="None"' not in content
     assert "Touch" in content  # icon-less action button still renders its label
+
+
+# ── ancestor authorization: a Resource leaf below ORM ancestors ───────────────
+
+ANCESTOR_LOADS: list = []
+
+
+def _ancestor_resource():
+    """A Resource scoped by the application to the URL's Book (``*_pk`` kwargs); every loader call is recorded."""
+    from crud_views.lib.resource import Resource
+    from crud_views.lib.viewset.path_regs import PrimaryKeys
+
+    class LeafFile(Resource):
+        key: str
+        book: int
+
+        class Meta:
+            verbose_name = "leaf file"
+            verbose_name_plural = "leaf files"
+            app_label = "app"
+            pk_field = "key"
+            pk_type = PrimaryKeys.STR
+
+        @classmethod
+        def cv_get_items(cls, request, **url_kwargs):
+            ANCESTOR_LOADS.append(("items", dict(url_kwargs)))
+            book_pk = next(value for name, value in url_kwargs.items() if name.startswith("ancrbook"))
+            return [cls(key=f"file-{pk}", book=pk) for pk in LEAF_BOOKS if pk == int(book_pk)]
+
+        @classmethod
+        def cv_get_item(cls, request, pk, **url_kwargs):
+            ANCESTOR_LOADS.append(("item", pk, dict(url_kwargs)))
+            return super().cv_get_item(request, pk, **url_kwargs)
+
+    return LeafFile
+
+
+LEAF_BOOKS: list[int] = []
+
+
+@pytest.mark.parametrize("variant", ["plain", "permission"])
+@pytest.mark.parametrize("depth", [1, 2])
+@pytest.mark.django_db
+def test_resource_leaf_authorizes_before_application_loading(depth, variant):
+    """Depth 1: Book → files; depth 2: Publisher → Book → files. Denied ancestry never calls the Resource loaders;
+    allowed ancestry passes the unchanged URL kwargs to them, and the application's own scoping still applies."""
+    from django.contrib.auth.models import Permission, User
+    from django.urls import reverse
+
+    from crud_views.lib.resource import ResourceViewMixin
+    from crud_views.lib.views import DetailView, DetailViewPermissionRequired, ListView, ListViewPermissionRequired
+    from crud_views.lib.viewset import ParentViewSet
+    from tests.test1.ancestor_cases import FixedTemplateMixin, ancestor_scope
+    from tests.test1.app.models import Book, Publisher
+
+    publisher = Publisher.objects.create(name="Resource Publisher")
+    book = Book.objects.create(title="Resource Book", publisher=publisher)
+    other = Book.objects.create(title="Other Book", publisher=publisher)
+    LEAF_BOOKS[:] = [book.pk, other.pk]
+    ANCESTOR_LOADS.clear()
+    leaf = _ancestor_resource()
+
+    with ancestor_scope() as scope:
+        parent = None
+        if depth == 2:
+            pub_vs = scope.viewset(model=Publisher, name=scope.name("ancrpub"))
+            parent = ParentViewSet(name=pub_vs.name, attribute="publisher")
+        book_vs = scope.viewset(model=Book, name=scope.name("ancrbook"), parent=parent)
+        file_vs = scope.viewset(
+            model=leaf,
+            name=scope.name("ancrfile"),
+            parent=ParentViewSet(name=book_vs.name),
+            resource_permissions={"view": "app.view_s3file"},
+        )
+        list_base, detail_base = (
+            (ListView, DetailView) if variant == "plain" else (ListViewPermissionRequired, DetailViewPermissionRequired)
+        )
+        attrs = {"cv_viewset": file_vs, "__module__": __name__}
+        type(f"LeafList{scope.sfx}", (ResourceViewMixin, FixedTemplateMixin, list_base), dict(attrs))
+        type(f"LeafDetail{scope.sfx}", (ResourceViewMixin, FixedTemplateMixin, detail_base), dict(attrs))
+        scope.mount([file_vs])
+
+        kwargs = {file_vs.parent.get_pk_name(): book.pk}
+        if depth == 2:
+            kwargs[book_vs.parent.get_pk_name()] = publisher.pk
+        list_url = reverse(file_vs.get_router_name("list"), kwargs=kwargs)
+        resolved = {name: str(value) for name, value in kwargs.items()}  # URL kwargs exactly as resolved
+        detail_url = reverse(file_vs.get_router_name("detail"), kwargs={**kwargs, "pk": f"file-{book.pk}"})
+        foreign_url = reverse(file_vs.get_router_name("detail"), kwargs={**kwargs, "pk": f"file-{other.pk}"})
+
+        def client_with(*codenames):
+            user = User.objects.create_user(username=f"leaf-{'-'.join(codenames) or 'none'}", password="password")
+            for codename in codenames:
+                user.user_permissions.add(Permission.objects.get(codename=codename, content_type__app_label="app"))
+            client = Client()
+            client.force_login(user)
+            return client
+
+        # the local Resource permission alone never reaches the loaders
+        local_only = client_with("view_s3file")
+        for url in (list_url, detail_url):
+            assert local_only.get(url).status_code == 403
+        assert ANCESTOR_LOADS == []
+        # anonymous: login redirect before any lookup or load
+        response = Client().get(list_url)
+        assert response.status_code == 302 and response["Location"].startswith("/accounts/login/")
+        assert ANCESTOR_LOADS == []
+
+        ancestors = ["view_book"] if depth == 1 else ["view_publisher", "view_book"]
+        reader = client_with(*ancestors, "view_s3file")
+        response = reader.get(list_url)
+        assert response.status_code == 200
+        assert response.content.decode().startswith(f"file-{book.pk};|")  # the application's scoping
+        assert [("items", resolved)] == ANCESTOR_LOADS  # the original URL kwargs, unchanged
+
+        ANCESTOR_LOADS.clear()
+        assert reader.get(detail_url).status_code == 200
+        item_loads = [("item", f"file-{book.pk}", resolved), ("items", resolved)]
+        # the permission variant also loads the action object for its local gate (existing Resource contract)
+        assert item_loads * (1 if variant == "plain" else 2) == ANCESTOR_LOADS
+        assert reader.get(foreign_url).status_code == 404  # Resource membership stays the application's concern
+
+        if variant == "permission":
+            # allowed ancestry does not waive the local Resource permission
+            ANCESTOR_LOADS.clear()
+            assert client_with(*ancestors).get(list_url).status_code == 403
+            assert ANCESTOR_LOADS == []
+
+
+@pytest.mark.django_db
+def test_top_level_resource_does_no_ancestor_work(client_user_s3file_view: Client, monkeypatch):
+    from crud_views.lib.view import ancestors
+
+    def fail(*args, **kwargs):
+        raise AssertionError("ancestor work on a top-level Resource request")
+
+    monkeypatch.setattr(ancestors, "authorize_ancestors", fail)
+    assert client_user_s3file_view.get("/s3file/").status_code == 200
+    assert client_user_s3file_view.get(f"/s3file/{md5('reports/2026/q1.pdf')}/detail/").status_code == 200

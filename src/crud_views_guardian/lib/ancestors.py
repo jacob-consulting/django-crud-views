@@ -13,8 +13,9 @@ ancestor's own permission map (Guardian's configured content-type semantics), th
 * Otherwise a direct or group object grant on the resolved ancestor (Guardian's ``ObjectPermissionChecker``;
   active superusers keep Guardian's superuser semantics).
 
-The checker is reused only within the requested view instance (one request); nothing outlives the request, so a
-revoked grant takes effect on the next request.
+The checker is reused only within the requested (or rendering) view instance of one request; helpers called
+without a view use a fresh checker. Nothing outlives the request, so a revoked grant takes effect on the next
+request.
 """
 
 from __future__ import annotations
@@ -28,10 +29,13 @@ if TYPE_CHECKING:
     from crud_views_guardian.lib.viewset import GuardianViewSet
 
 
-def _request_checker(view: CrudView, user):
-    """The view-local ``ObjectPermissionChecker`` for ``user`` (created on first use)."""
+def _request_checker(view: CrudView | None, user):
+    """The view-local ``ObjectPermissionChecker`` for ``user`` (created on first use); a fresh one when a helper
+    runs without a view."""
     from guardian.core import ObjectPermissionChecker
 
+    if view is None:
+        return ObjectPermissionChecker(user)
     cached = getattr(view, "_cv_guardian_ancestor_checker", None)
     if cached is None or cached[0] is not user:
         cached = (user, ObjectPermissionChecker(user))
@@ -40,7 +44,7 @@ def _request_checker(view: CrudView, user):
 
 
 def _guardian_ancestor_has_permission(
-    viewset: GuardianViewSet, user, permission: str, obj: Model, *, view: CrudView
+    viewset: GuardianViewSet, user, permission: str, obj: Model, *, view: CrudView | None
 ) -> bool:
     """Whether ``user`` satisfies the Guardian ancestor gate ``permission`` on the resolved ancestor ``obj``."""
     from crud_views_guardian.lib.mixins import _guardian_inactive_actor

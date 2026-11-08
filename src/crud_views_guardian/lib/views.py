@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DEFAULT_DB_ALIAS, connections, router
 
+from crud_views.lib.ancestors import _immediate_parent_access
 from crud_views.lib.views import (
     ActionViewPermissionRequired,
     CardListViewPermissionRequired,
@@ -259,16 +260,16 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
     For top-level creates: GuardianParentPermissionMixin is a no-op (no parent).
     Django's PermissionRequiredMixin checks model-level add_<model> permission.
 
-    For child creates: GuardianParentPermissionMixin checks per-object permission
-    on the parent instance using cv_guardian_parent_create_permission (falls back
-    to cv_guardian_parent_permission). No model-level add_<child> check is made.
-    When the resolved key is None only that permission check is skipped; the
-    parent is still resolved and cv_action_enabled still runs with it.
+    For child creates: the shared ancestor guard authorizes the ancestors (by default the immediate parent
+    needs change; its own ViewSet provider decides how — object grants for a GuardianViewSet parent, model
+    permissions for a core parent). No model-level add_<child> check is made. The parent is resolved and
+    cv_action_enabled still runs with it, also when the parent is unprotected (provider "none").
 
-    The access helpers (cv_has_access, cv_create_has_access) are permission-only
-    and share the dispatch permission rule. They accept the configured parent
-    model instance, or an own-child instance of a single-FK nesting whose parent
-    is resolved through ParentViewSet.attribute. Anything else denies.
+    The access helpers (cv_has_access, cv_create_has_access) are permission-only and use the bounded
+    immediate-parent rule (crud_views.lib.ancestors._immediate_parent_access): the immediate parent's provider
+    with this create's nearest Write key, never a farther ancestor. They accept the configured parent model
+    instance, or an own-child instance of a single-FK nesting whose parent is resolved through
+    ParentViewSet.attribute. Anything else denies.
     """
 
     @classmethod
@@ -315,11 +316,10 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         context action from a list view where obj=None. The list view resolves the
         parent object from its URL kwargs and passes it here.
 
-        Default implementation checks cv_guardian_parent_create_permission (falling
-        back to cv_guardian_parent_permission) on the parent object — the same rule
-        dispatch applies, including the accept-global fallback and a None key
-        (no permission check). Permission only: the action state is resolved
-        separately. Override in subclasses for custom logic.
+        Default implementation applies the immediate-parent rule on the parent object — the immediate parent's
+        provider and fallback with this create's nearest Write key; a parent with provider "none" skips only
+        that permission. During a request the rendering view's resolved parent identity is reused. Permission
+        only: the action state is resolved separately. Override in subclasses for custom logic.
 
         Args:
             user: the requesting user
@@ -336,9 +336,7 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         if _guardian_inactive_actor(user):
             return False
         resolved = cls._cv_guardian_create_parent(parent_obj)
-        if resolved is None:
-            return False
-        return cls._guardian_user_has_parent_perm(user, resolved)
+        return _immediate_parent_access(cls, user, resolved, rendering_view=rendering_view)
 
     @classmethod
     def cv_has_access(cls, user, obj=None):
@@ -357,12 +355,10 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             that bypasses the list view override.
 
         Case 3 — Child create, parent object available (e.g. publisher detail page):
-            When obj is an instance of the parent model, checks
-            cv_guardian_parent_create_permission (falling back to
-            cv_guardian_parent_permission) on that specific parent object, with the
-            same rule as dispatch (accept-global fallback; a None key skips the
-            permission check). "add book" only appears for parent objects the user
-            is actually allowed to create children under.
+            When obj is an instance of the parent model, applies the immediate-parent rule (the
+            parent's provider/fallback with this create's nearest Write key) on that specific
+            parent object. "add book" only appears for parent objects the user is actually
+            allowed to create children under (farther ancestors are checked by the request).
 
         Case 4 — Child create, own-child object (e.g. a book detail page):
             For single-FK nesting the book's configured parent attribute is
@@ -381,10 +377,7 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         if obj is None or _guardian_inactive_actor(user):
             return False  # safe fallback — GuardianQuerysetMixin.cv_get_context handles the real check
 
-        parent_obj = cls._cv_guardian_create_parent(obj)
-        if parent_obj is None:
-            return False
-        return cls._guardian_user_has_parent_perm(user, parent_obj)
+        return _immediate_parent_access(cls, user, cls._cv_guardian_create_parent(obj))
 
 
 class GuardianManageView(ManageView):

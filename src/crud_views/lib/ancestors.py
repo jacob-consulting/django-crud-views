@@ -398,3 +398,41 @@ def _resolved_parent(view: CrudView) -> Model | None:
     """The immediate parent resolved by a successful guard on this request, or None."""
     state = getattr(view, "_cv_ancestor_state", None)
     return state.parent if state is not None else None
+
+
+def _same_row(a: Model, b: Model) -> bool:
+    """The same database row: concrete model, primary key and database alias."""
+    return type(a)._meta.concrete_model is type(b)._meta.concrete_model and a.pk == b.pk and a._state.db == b._state.db
+
+
+def _immediate_parent_access(
+    view_class: type[CrudView], user, parent_obj: Model | None, *, rendering_view=None
+) -> bool:
+    """Bounded parent gate for rendering and access helpers of a nested ``view_class``.
+
+    Only the immediate structural parent is consulted: its own provider (and Guardian fallback) with the
+    *nearest* key of ``view_class``'s operation pair. A farther ancestor is never evaluated and nothing is
+    looked up — the request itself still runs the full ancestor guard, so a visible control can lead to a
+    request denied higher up (first-wave UI limitation).
+
+    * ``parent_obj`` None (context unavailable) → False.
+    * Immediate parent provider ``"none"`` → True: only this gate is skipped; callers keep their actor, state
+      and custom checks.
+    * The rendering view's request-resolved parent replaces an equal ``parent_obj`` (same row), so helpers
+      reuse the request identity.
+    * A key missing from the parent's permission map, or a nested endpoint without operation requirements,
+      raises ``ImproperlyConfigured``.
+    """
+    if parent_obj is None:
+        return False
+    viewset = view_class.cv_viewset
+    ((_, parent_vs),) = _walk_ancestors(viewset, first_only=True)
+    if rendering_view is not None:
+        resolved = _resolved_parent(rendering_view)
+        if resolved is not None and resolved is not parent_obj and _same_row(resolved, parent_obj):
+            parent_obj = resolved
+    if _effective_provider(parent_vs) == "none":
+        return True
+    key = _operation_requirements(view_class).nearest
+    permission = _permission_name(viewset, parent_vs, key, _registered_key(view_class))
+    return parent_vs._ancestor_has_permission(user, permission, parent_obj, view=rendering_view)

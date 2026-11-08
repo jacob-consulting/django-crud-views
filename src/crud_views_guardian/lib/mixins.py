@@ -5,6 +5,7 @@ from django.http import Http404
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
+from crud_views.lib.ancestors import _immediate_parent_access
 from crud_views.lib.view import CrudView
 
 logger = logging.getLogger(__name__)
@@ -151,10 +152,10 @@ class GuardianQuerysetMixin:
         access = super()._cv_child_link_has_access(user, parent_obj)
         if not access:
             return access
-        # Standalone queryset compositions have no parent request gate to mirror.
-        if not hasattr(cls, "_guardian_user_has_parent_perm"):
+        # Standalone queryset compositions never checked the parent for their links (bounded migration).
+        if not issubclass(cls, GuardianParentPermissionMixin):
             return access
-        return cls._guardian_user_has_parent_perm(user, parent_obj)
+        return _immediate_parent_access(cls, user, parent_obj)
 
     def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
         """
@@ -263,7 +264,7 @@ class GuardianParentPermissionMixin:
             return super()._cv_cancel_target_available(user, obj, rendering_view)
 
         parent_obj = rendering_view._cv_cancel_parent_object()
-        if parent_obj is None or not cls._guardian_user_has_parent_perm(user, parent_obj):
+        if not _immediate_parent_access(cls, user, parent_obj, rendering_view=rendering_view):
             return False
         if cls.cv_object:
             if not cls.cv_has_access(user, obj):
@@ -357,29 +358,3 @@ class GuardianParentPermissionMixin:
         if perm_key is None:
             perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_permission", "view")
         return perm_key
-
-    def _guardian_parent_perm_key(self) -> str | None:
-        return self._guardian_resolve_parent_perm_key()
-
-    @classmethod
-    def _guardian_user_has_parent_perm(cls, user, parent_obj) -> bool:
-        """Whether ``user`` holds this view's parent permission on the resolved ``parent_obj``.
-
-        Shared by dispatch and the create access helpers. A None permission key skips only this
-        permission evaluation (True); parent resolution and action state are the callers' concern.
-        Inactive actors are always denied.
-        """
-        if _guardian_inactive_actor(user):
-            return False
-        perm_key = cls._guardian_resolve_parent_perm_key()
-        if perm_key is None:
-            return True
-        parent_perm = cls.cv_viewset.parent.viewset.permissions.get(perm_key)
-        # accept_global: the model-level permission is a fallback. Note that
-        # user.has_perm(perm, obj) would NOT do this — Django's ModelBackend returns
-        # nothing once an object is passed, and guardian checks object perms only.
-        if getattr(cls, "cv_guardian_accept_global_perms", False) and user.has_perm(parent_perm):
-            return True
-        from guardian.core import ObjectPermissionChecker
-
-        return ObjectPermissionChecker(user).has_perm(parent_perm.split(".")[1], parent_obj)

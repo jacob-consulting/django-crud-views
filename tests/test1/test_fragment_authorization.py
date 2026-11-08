@@ -580,12 +580,29 @@ def test_missing_guardian_update_target_is_404_before_rendering(fr, world):
     _assert_not_rendered(fr, response)
 
 
+@pytest.fixture
+def child_lookups(monkeypatch):
+    """Names of the ViewSets whose queryset a request entered (ancestor lookups and the child lookup)."""
+    from crud_views.lib.viewset import ViewSet
+
+    calls = []
+    original = ViewSet.get_queryset
+
+    def spy(self, view):
+        calls.append(self.name)
+        return original(self, view)
+
+    monkeypatch.setattr(ViewSet, "get_queryset", spy)
+    return calls
+
+
 @pytest.mark.django_db
-def test_wrong_url_parent_guardian_child_fragment_is_404(fr, world):
-    """The actor passes the URL-parent gate (publisher A) and holds a grant on book B, but book B is not a child
-    of publisher A: the target lookup under the URL parent fails before any rendering."""
+def test_wrong_url_parent_guardian_child_fragment_is_404(fr, world, child_lookups):
+    """The actor passes the URL-parent gate (publisher A; an editor fragment is Write, so change) and holds a
+    grant on book B, but book B is not a child of publisher A: the child lookup under the URL parent is reached
+    and fails before any rendering."""
     actor = _user("wrong_parent")
-    _grant(actor, fr.gpub_vs, world.publisher_a, "view")
+    _grant(actor, fr.gpub_vs, world.publisher_a, "view", "change")
     _grant(actor, fr.gbook_vs, world.book_b, "view", "change")
     kwargs = {fr.gbook_vs.parent.get_pk_name(): world.publisher_a.pk, "pk": world.book_b.pk}
     response = _get(
@@ -594,14 +611,15 @@ def test_wrong_url_parent_guardian_child_fragment_is_404(fr, world):
         {"template": "notes", "pk": str(world.book_b.pk), "num": "1", "formset_parent_prefix_key": ""},
     )
     assert response.status_code == 404
+    assert child_lookups == [fr.gpub_vs.name, fr.gbook_vs.name]  # ancestry passed, the child lookup missed
     _assert_not_rendered(fr, response)
 
 
 @pytest.mark.django_db
-def test_ungranted_guardian_child_update_fragment_denied(fr, world):
-    """Parent gate satisfied, no grant on the child row itself."""
+def test_ungranted_guardian_child_update_fragment_denied(fr, world, child_lookups):
+    """Parent gate satisfied (change), no grant on the child row itself: the local object gate denies."""
     actor = _user("child_ungranted")
-    _grant(actor, fr.gpub_vs, world.publisher_a, "view")
+    _grant(actor, fr.gpub_vs, world.publisher_a, "view", "change")
     kwargs = {fr.gbook_vs.parent.get_pk_name(): world.publisher_a.pk, "pk": world.book_a.pk}
     response = _get(
         _client(actor),
@@ -609,7 +627,38 @@ def test_ungranted_guardian_child_update_fragment_denied(fr, world):
         {"template": "notes", "pk": str(world.book_a.pk), "num": "1", "formset_parent_prefix_key": ""},
     )
     assert response.status_code == 403
+    assert child_lookups == [fr.gpub_vs.name, fr.gbook_vs.name]  # denied at the child, after ancestry succeeded
     _assert_not_rendered(fr, response)
+
+
+@pytest.mark.django_db
+def test_parent_view_only_guardian_child_fragments_denied_before_child_work(fr, world, child_lookups, monkeypatch):
+    """Independent control: parent view (not change) with every child grant. The owning editor is Write, so the
+    ancestor gate denies before the child lookup, the create state hook and any fragment rendering."""
+    actor = _user("parent_view_only")
+    _grant(actor, fr.gpub_vs, world.publisher_a, "view")
+    _grant(actor, fr.gbook_vs, world.book_a, "view", "change")
+    seen = []
+    monkeypatch.setattr(
+        fr.GBookCreate, "cv_action_enabled", classmethod(lambda cls, user, obj=None: seen.append(obj) or True)
+    )
+    client = _client(actor)
+    pk_name = fr.gbook_vs.parent.get_pk_name()
+    update = _get(
+        client,
+        _url(fr.gbook_vs, "update", **{pk_name: world.publisher_a.pk, "pk": world.book_a.pk}),
+        {"template": "notes", "pk": str(world.book_a.pk), "num": "1", "formset_parent_prefix_key": ""},
+    )
+    create = _get(
+        client,
+        _url(fr.gbook_vs, "create", **{pk_name: world.publisher_a.pk}),
+        {"template": "notes", "pk": "None", "num": "1", "formset_parent_prefix_key": ""},
+    )
+    assert (update.status_code, create.status_code) == (403, 403)
+    assert child_lookups == [fr.gpub_vs.name, fr.gpub_vs.name]  # only the ancestor lookups, never the child
+    assert seen == []
+    _assert_not_rendered(fr, update)
+    _assert_not_rendered(fr, create)
 
 
 # ── preservation: gates that already ran before the fragment ──────────────────
@@ -678,7 +727,7 @@ def test_guardian_child_create_fragment_requires_parent_grant(fr, world):
 @pytest.mark.django_db
 def test_guardian_child_create_fragment_state_disabled_and_missing_parent(fr, world, monkeypatch):
     actor = _user("parent_grant")
-    _grant(actor, fr.gpub_vs, world.publisher_a, "view")
+    _grant(actor, fr.gpub_vs, world.publisher_a, "view", "change")  # nested create is Write: parent change
     client = _client(actor)
     params = {"template": "notes", "pk": "None", "num": "1", "formset_parent_prefix_key": ""}
     pk_name = fr.gbook_vs.parent.get_pk_name()
@@ -686,9 +735,13 @@ def test_guardian_child_create_fragment_state_disabled_and_missing_parent(fr, wo
     missing = _get(client, _url(fr.gbook_vs, "create", **{pk_name: 987654}), params)
     assert missing.status_code == 404
 
-    monkeypatch.setattr(fr.GBookCreate, "cv_action_enabled", classmethod(lambda cls, user, obj=None: False))
+    seen = []
+    monkeypatch.setattr(
+        fr.GBookCreate, "cv_action_enabled", classmethod(lambda cls, user, obj=None: seen.append(obj) or False)
+    )
     disabled = _get(client, _url(fr.gbook_vs, "create", **{pk_name: world.publisher_a.pk}), params)
     assert disabled.status_code == 403
+    assert seen == [world.publisher_a]  # the parent-state hook ran with the resolved Publisher
     _assert_not_rendered(fr, disabled)
 
 
@@ -791,7 +844,7 @@ def test_authorized_guardian_create_fragments_follow_browser_payloads(fr, world)
 def test_authorized_guardian_child_update_and_create_fragments(fr, world):
     pa, ba = world.publisher_a, world.book_a
     actor = _user("child_editor")
-    _grant(actor, fr.gpub_vs, pa, "view")
+    _grant(actor, fr.gpub_vs, pa, "view", "change")  # child editors are Write: parent change
     _grant(actor, fr.gbook_vs, ba, "view", "change")
     client = _client(actor)
     pk_name = fr.gbook_vs.parent.get_pk_name()

@@ -201,12 +201,20 @@ def _family(vs, kind, hooks):
 
 @pytest.fixture
 def mx(monkeypatch):
-    """Fresh routes: core Publisher, Guardian Publisher, its strict Book child and a None-policy Book child."""
+    """Fresh routes: core Publisher, Guardian Publisher, its strict Book child, and a Book child under its own
+    unprotected (provider "none") Guardian Publisher ViewSet."""
     from crud_views.lib import check as check_module
     from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
     from crud_views.lib.formsets import FormSets
     from crud_views.lib.views import CreateViewParentMixin
-    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet, ViewSet
+    from crud_views.lib.viewset import (
+        _REGISTRY,
+        _REGISTRY_LOCK,
+        AncestorPermissions,
+        AncestorPolicy,
+        ParentViewSet,
+        ViewSet,
+    )
     from crud_views_guardian.lib.views import (
         GuardianCreateViewPermissionRequired,
         GuardianDeleteViewPermissionRequired,
@@ -218,8 +226,9 @@ def mx(monkeypatch):
     from tests.test1.app.models import Book, Publisher
     from tests.test1.app.views import BookForm
 
+    PAGE_PAIR = AncestorPermissions(nearest="view", higher="view")
     sfx = uuid.uuid4().hex[:8]
-    names = [f"mxcore{sfx}", f"mxg{sfx}", f"mxbook{sfx}", f"mxfree{sfx}"]
+    names = [f"mxcore{sfx}", f"mxg{sfx}", f"mxbook{sfx}", f"mxfree{sfx}", f"mxfreep{sfx}"]
     modname = f"tests.test1._mx_urls_{sfx}"
     vocab_snapshot = dict(check_module._VOCAB_CACHE)
     hooks: Counter = Counter()
@@ -241,14 +250,19 @@ def mx(monkeypatch):
             GuardianViewSet(model=Publisher, name=names[1], icon_header="fa-regular fa-building"), "guardian", hooks
         )
 
-        # strict FK child: the configured attribute ("publisher") differs from the parent ViewSet name
+        # strict FK child: the configured attribute ("publisher") differs from the parent ViewSet name.
+        # Phase 06.18 (D-13/D-28): the removed cv_guardian_parent_permission="view" /
+        # cv_guardian_parent_create_permission="change" become the shared ancestor policy. Create keeps the default
+        # Write pair (Publisher change). The H03 scenario needs child update/delete pages reachable on Publisher
+        # view alone, so that the create control is independent of page access: an explicit, complete override of
+        # exactly those two keys (the default Write pair, and its denial with view only, is pinned in
+        # test_ancestor_migration.py).
         book_vs = GuardianViewSet(
             model=Book,
             name=names[2],
             parent=ParentViewSet(name=names[1], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
-            cv_guardian_parent_permission="view",
-            cv_guardian_parent_create_permission="change",
+            ancestor_policy=AncestorPolicy(actions={"update": PAGE_PAIR, "delete": PAGE_PAIR}),
         )
         child_page_actions = ["create"]
 
@@ -282,13 +296,19 @@ def mx(monkeypatch):
                 super().cv_form_valid_hook(context)
                 hooks["book_create"] += 1
 
+        # Phase 06.18 (D-07/D-28/D-41): the old child-specific parent-None scenario gets its own unprotected parent
+        # ViewSet (same model and relationship) instead of switching off the parent shared with the strict child.
+        free_parent_vs = GuardianViewSet(
+            model=Publisher,
+            name=names[4],
+            icon_header="fa-regular fa-building",
+            ancestor_policy=AncestorPolicy(provider="none"),
+        )
         free_vs = GuardianViewSet(
             model=Book,
             name=names[3],
-            parent=ParentViewSet(name=names[1], attribute="publisher"),
+            parent=ParentViewSet(name=names[4], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
-            cv_guardian_parent_permission=None,
-            cv_guardian_parent_create_permission=None,
         )
 
         class MxFreeListView(GuardianListViewPermissionRequired):
@@ -313,6 +333,7 @@ def mx(monkeypatch):
             *core.vs.urlpatterns,
             *guardian.vs.urlpatterns,
             *book_vs.urlpatterns,
+            *free_parent_vs.urlpatterns,
             *free_vs.urlpatterns,
             path("", include("tests.test1.project.urls")),
         ]
@@ -333,7 +354,9 @@ def mx(monkeypatch):
                         Delete=MxBookDeleteView,
                         Create=MxBookCreateView,
                     ),
-                    free=SimpleNamespace(vs=free_vs, List=MxFreeListView, Create=MxFreeCreateView),
+                    free=SimpleNamespace(
+                        vs=free_vs, parent_vs=free_parent_vs, List=MxFreeListView, Create=MxFreeCreateView
+                    ),
                     hooks=hooks,
                     state=state,
                     state_calls=state_calls,
@@ -939,6 +962,14 @@ def test_parent_none_create_enabled_binds_url_parent_even_with_forged_fk(mx, cli
     (ctx,) = [c for key, c in records if key == "create"]
     assert (ctx["cv_access"], ctx["cv_action_enabled"]) == (True, True)
 
+    # control: the unprotected parent is its own ViewSet; the strict sibling's Publisher stays protected
+    before = _snapshot()
+    assert client.get(_u(mx.book.vs, "create", parent_pk=world.a.pk)).status_code == 403
+    assert client.post(_u(mx.book.vs, "create", parent_pk=world.a.pk), {"title": "Strict Child"}).status_code == 403
+    assert client.get(_u(mx.book.vs, "list", parent_pk=world.a.pk)).status_code == 403
+    assert _snapshot() == before
+    assert mx.hooks["book_create"] == 0
+
 
 @pytest.mark.django_db
 def test_parent_none_create_disabled_is_403_and_controls_keep_separate_values(mx, client, monkeypatch, world):
@@ -1012,7 +1043,11 @@ def test_child_page_create_control_matches_direct_route(mx, client, monkeypatch,
         assert f'href="{create_url}"' in client.get(page_url).content.decode()
         mx.g.vs.remove_perm("change", user, world.a)
 
-    permitted = condition in ("permitted", "disabled") or (condition == "global_change" and policy == "global")
+    # Phase 06.18 (D-41): the create view's local cv_guardian_accept_global_perms no longer relaxes the strict
+    # Guardian Publisher ancestor (nested Guardian create has no local model gate it could apply to), so a model-only
+    # Publisher change grant is denied under both local policies. Ancestor fallback belongs to the Publisher
+    # ViewSet's own AncestorPolicy (pinned in test_ancestor_migration.py).
+    permitted = condition in ("permitted", "disabled")
     enabled = condition != "disabled"
     records = _record_contexts(
         monkeypatch, {"detail": mx.book.Detail, "update": mx.book.Update}.get(page, mx.book.Delete)

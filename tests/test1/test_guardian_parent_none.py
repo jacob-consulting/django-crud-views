@@ -1,8 +1,12 @@
 """Phase 6.2 B4/B6 (AUTH-04): parent-permission-free creation with real parent/state enforcement.
 
-``cv_guardian_parent_permission = None`` (and a create permission falling back to it) disables only the parent
-*permission* evaluation. The URL parent is still resolved (missing parents 404) and the independent no-object action
-state is still evaluated with that parent. Create helpers and direct GET/POST agree, without a child-add grant.
+Phase 06.18 migration (D-07/D-28/D-41): the removed child-side ``cv_guardian_parent_permission = None`` became an
+ancestor-side choice. The Book scenario therefore gets its *own* Publisher parent ViewSet declared
+``AncestorPolicy(provider="none")``; the strict siblings (Genre M2M, the composition child) keep a separate,
+protected Publisher parent, and a None Genre scenario has its own child of the unprotected parent. Provider
+``none`` disables only the parent *permission* evaluation. The URL parent is still resolved (missing parents 404)
+and the independent no-object action state is still evaluated with that parent. Create helpers and direct GET/POST
+agree, without a child-add grant.
 
 Every route here is built by a yielding fixture on fresh, uniquely named ViewSets with a temporary ROOT_URLCONF;
 the registry, vocabulary cache, URL caches and module registration are restored in ``finally`` (A08).
@@ -25,13 +29,21 @@ from tests.lib.helper.guardian import user_guardian_object_perm
 
 @pytest.fixture
 def pn():
-    """Fresh nested Guardian routes: Publisher parent, None-policy Book child (FK), Genre child (M2M) and a
-    composition child whose views inherit custom global/anonymous policies through the parent mixin."""
+    """Fresh nested Guardian routes: an unprotected (provider "none") Publisher parent with its Book child (FK) and a
+    None Genre child (M2M); a separate strict Publisher parent with the protected Genre child (M2M) and a composition
+    child whose views inherit custom global/anonymous policies through the parent mixin."""
     from crud_views.lib import check as check_module
     from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
     from crud_views.lib.view import CardAction, ContextButton
     from crud_views.lib.views import CreateViewParentMixin, DetailViewPermissionRequired, ListViewPermissionRequired
-    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet, context_buttons_default
+    from crud_views.lib.viewset import (
+        _REGISTRY,
+        _REGISTRY_LOCK,
+        AncestorPermissions,
+        AncestorPolicy,
+        ParentViewSet,
+        context_buttons_default,
+    )
     from crud_views_guardian.lib.mixins import (
         GuardianObjectPermissionMixin,
         GuardianParentPermissionMixin,
@@ -50,14 +62,23 @@ def pn():
     from tests.test1.app.views import BookForm, GenreForm
 
     sfx = uuid.uuid4().hex[:8]
-    names = [f"pnpub{sfx}", f"pnbook{sfx}", f"pngenre{sfx}", f"pncomp{sfx}"]
+    names = [f"pnpub{sfx}", f"pnbook{sfx}", f"pngenre{sfx}", f"pncomp{sfx}", f"pnsib{sfx}", f"pnfreegenre{sfx}"]
     vocab_snapshot = dict(check_module._VOCAB_CACHE)
     modname = f"tests.test1._pn_urls_{sfx}"
     state = {"enabled": True}
     hook_calls: list = []
 
     try:
-        pub_vs = GuardianViewSet(model=Publisher, name=names[0], icon_header="fa-regular fa-building")
+        # the Book scenario's own parent: unprotected as an ancestor (the old child-side None); _strict_policy()
+        # switches this ViewSet - and only it - back to the strict Guardian default
+        pub_vs = GuardianViewSet(
+            model=Publisher,
+            name=names[0],
+            icon_header="fa-regular fa-building",
+            ancestor_policy=AncestorPolicy(provider="none"),
+        )
+        # the protected siblings' parent: same model, strict Guardian ancestor (default policy)
+        sib_pub_vs = GuardianViewSet(model=Publisher, name=names[4], icon_header="fa-regular fa-building")
 
         class PnPublisherListView(GuardianListViewPermissionRequired):
             cv_viewset = pub_vs
@@ -75,8 +96,16 @@ def pn():
             name=names[1],
             parent=ParentViewSet(name=names[0], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
-            cv_guardian_parent_permission=None,
-            cv_guardian_parent_create_permission=None,
+            # inert while the parent is unprotected. Under _strict_policy() the H03 scenario needs the child pages
+            # reachable on parent view alone (the removed cv_guardian_parent_permission="view"), independently of
+            # the create pair: an explicit, complete override of exactly update/delete; create keeps the default
+            # Write pair (parent change, the removed cv_guardian_parent_create_permission="change").
+            ancestor_policy=AncestorPolicy(
+                actions={
+                    "update": AncestorPermissions(nearest="view", higher="view"),
+                    "delete": AncestorPermissions(nearest="view", higher="view"),
+                }
+            ),
             context_buttons=[
                 *context_buttons_default(),
                 ContextButton(key="create_alias", key_target="create", label_template_code="Another book"),
@@ -117,13 +146,12 @@ def pn():
                 hook_calls.append(obj)
                 return state["enabled"]
 
+        # strict sibling: the removed "view"/"change" pair is the default Read/Write policy of a Guardian parent
         genre_vs = GuardianViewSet(
             model=Genre,
             name=names[2],
-            parent=ParentViewSet(name=names[0], attribute="publishers", many_to_many_through_attribute="genres"),
+            parent=ParentViewSet(name=names[4], attribute="publishers", many_to_many_through_attribute="genres"),
             icon_header="fa-solid fa-tag",
-            cv_guardian_parent_permission="view",
-            cv_guardian_parent_create_permission="change",
         )
 
         class PnGenreListView(GuardianListViewPermissionRequired):
@@ -133,6 +161,27 @@ def pn():
         class PnGenreCreateView(CrispyViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
             form_class = GenreForm
             cv_viewset = genre_vs
+
+            @classmethod
+            def cv_action_enabled(cls, user, obj=None):
+                hook_calls.append(obj)
+                return state["enabled"]
+
+        # the old Genre None scenario: its own child of the unprotected parent, same model and relationship
+        free_genre_vs = GuardianViewSet(
+            model=Genre,
+            name=names[5],
+            parent=ParentViewSet(name=names[0], attribute="publishers", many_to_many_through_attribute="genres"),
+            icon_header="fa-solid fa-tag",
+        )
+
+        class PnFreeGenreListView(GuardianListViewPermissionRequired):
+            cv_viewset = free_genre_vs
+            cv_context_actions = ["create"]
+
+        class PnFreeGenreCreateView(CrispyViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
+            form_class = GenreForm
+            cv_viewset = free_genre_vs
 
             @classmethod
             def cv_action_enabled(cls, user, obj=None):
@@ -151,7 +200,7 @@ def pn():
         comp_vs = GuardianViewSet(
             model=Book,
             name=names[3],
-            parent=ParentViewSet(name=names[0], attribute="publisher"),
+            parent=ParentViewSet(name=names[4], attribute="publisher"),
             icon_header="fa-regular fa-address-book",
         )
 
@@ -164,8 +213,10 @@ def pn():
         module = types.ModuleType(modname)
         module.urlpatterns = [
             *pub_vs.urlpatterns,
+            *sib_pub_vs.urlpatterns,
             *book_vs.urlpatterns,
             *genre_vs.urlpatterns,
+            *free_genre_vs.urlpatterns,
             *comp_vs.urlpatterns,
             path("", include("tests.test1.project.urls")),
         ]
@@ -177,8 +228,11 @@ def pn():
             try:
                 yield SimpleNamespace(
                     pub_vs=pub_vs,
+                    sib_pub_vs=sib_pub_vs,
                     book_vs=book_vs,
                     genre_vs=genre_vs,
+                    free_genre_vs=free_genre_vs,
+                    FreeGenreCreate=PnFreeGenreCreateView,
                     comp_vs=comp_vs,
                     PublisherDetail=PnPublisherDetailView,
                     PublisherCard=PnPublisherCardView,
@@ -511,13 +565,30 @@ def test_composed_custom_policies_stay_inherited_through_parent_mixin(pn, client
     assert client.get(list_url).status_code == 404
     assert client.get(detail_url).status_code == 404
 
-    # global-only permissions satisfy parent, queryset and object checks via the inherited fallback
+    # Phase 06.18 (D-41): the inherited view fallback no longer relaxes the strict Guardian Publisher ancestor, so
+    # global-only permissions are denied at the parent ...
     user = _grant_global(_user("global_only"), "view_publisher", "view_book")
     client.force_login(user)
+    assert client.get(list_url).status_code == 403
+    assert client.get(detail_url).status_code == 403
+
+    # ... while the inherited fallback still satisfies the views' own queryset and object checks: a Publisher
+    # object grant plus a global-only Book permission (no Book object grant) reaches both pages
+    user_guardian_object_perm(user, pn.sib_pub_vs, "view", publisher_a)
+    client.force_login(_grant_global(user))
     response = client.get(list_url)
     assert response.status_code == 200
     assert "Global Only" in response.content.decode()
     assert client.get(detail_url).status_code == 200
+
+    # control: the Publisher object grant alone does not satisfy the views' own checks
+    parent_only = _user("parent_only")
+    user_guardian_object_perm(parent_only, pn.sib_pub_vs, "view", publisher_a)
+    client.force_login(parent_only)
+    response = client.get(list_url)
+    assert response.status_code == 200
+    assert "Global Only" not in response.content.decode()
+    assert client.get(detail_url).status_code == 403
 
     # without any permission the inherited fallback still denies
     client.force_login(_user("nobody"))
@@ -539,34 +610,34 @@ def genre_two_parents(publisher_a, publisher_b):
 
 @pytest.mark.parametrize("none_policy", [False, True])
 @pytest.mark.django_db
-def test_m2m_own_child_inputs_deny_without_state_hook(pn, monkeypatch, genre_two_parents, publisher_a, none_policy):
-    if none_policy:
-        monkeypatch.setattr(pn.genre_vs, "cv_guardian_parent_permission", None)
-        monkeypatch.setattr(pn.genre_vs, "cv_guardian_parent_create_permission", None)
+def test_m2m_own_child_inputs_deny_without_state_hook(pn, genre_two_parents, publisher_a, none_policy):
+    # the None scenario is the Genre child of the unprotected parent; ambiguous M2M input still names no parent
+    create = pn.FreeGenreCreate if none_policy else pn.GenreCreate
     user = _user("granted")
-    user_guardian_object_perm(user, pn.pub_vs, "change", publisher_a)
+    user_guardian_object_perm(user, pn.sib_pub_vs, "change", publisher_a)
 
     for actor in (user, _user("root", superuser=True)):
-        assert pn.GenreCreate.cv_has_access(actor, genre_two_parents) is False
-        assert pn.GenreCreate.cv_create_has_access(actor, None, genre_two_parents) is False
-        assert pn.GenreCreate._cv_action_enabled_for_context(actor, genre_two_parents) is False
+        assert create.cv_has_access(actor, genre_two_parents) is False
+        assert create.cv_create_has_access(actor, None, genre_two_parents) is False
+        assert create._cv_action_enabled_for_context(actor, genre_two_parents) is False
     assert pn.hook_calls == []
 
 
 @pytest.mark.django_db
-def test_m2m_explicit_parent_helpers_keep_permission_results(pn, monkeypatch, publisher_a, publisher_b):
+def test_m2m_explicit_parent_helpers_keep_permission_results(pn, publisher_a, publisher_b):
     user = _user("granted")
-    user_guardian_object_perm(user, pn.pub_vs, "change", publisher_a)
+    user_guardian_object_perm(user, pn.sib_pub_vs, "change", publisher_a)
 
     assert pn.GenreCreate.cv_has_access(user, publisher_a) is True
     assert pn.GenreCreate.cv_create_has_access(user, None, publisher_a) is True
     assert pn.GenreCreate.cv_has_access(user, publisher_b) is False
     assert pn.GenreCreate.cv_create_has_access(user, None, publisher_b) is False
 
-    monkeypatch.setattr(pn.genre_vs, "cv_guardian_parent_permission", None)
-    monkeypatch.setattr(pn.genre_vs, "cv_guardian_parent_create_permission", None)
-    assert pn.GenreCreate.cv_has_access(user, publisher_b) is True
-    assert pn.GenreCreate.cv_create_has_access(user, None, publisher_b) is True
+    # the None scenario (its own unprotected parent) accepts the explicit parent without a grant ...
+    assert pn.FreeGenreCreate.cv_has_access(user, publisher_b) is True
+    assert pn.FreeGenreCreate.cv_create_has_access(user, None, publisher_b) is True
+    # ... and the strict sibling still denies it
+    assert pn.GenreCreate.cv_has_access(user, publisher_b) is False
 
 
 @pytest.mark.django_db
@@ -574,8 +645,8 @@ def test_m2m_url_bound_list_and_create_link_only_url_parent(pn, client, monkeypa
     from tests.test1.app.models import Genre, Publisher
 
     user = _user("granted")
-    user_guardian_object_perm(user, pn.pub_vs, "view", publisher_a)
-    user_guardian_object_perm(user, pn.pub_vs, "change", publisher_a)
+    user_guardian_object_perm(user, pn.sib_pub_vs, "view", publisher_a)
+    user_guardian_object_perm(user, pn.sib_pub_vs, "change", publisher_a)
     client.force_login(user)
 
     records = _record_contexts(monkeypatch, pn.GenreList)
@@ -597,14 +668,18 @@ def test_m2m_url_bound_list_and_create_link_only_url_parent(pn, client, monkeypa
 
 
 @pytest.mark.django_db
-def test_m2m_none_policy_create_without_grants(pn, client, monkeypatch, publisher_a, publisher_b):
+def test_m2m_none_policy_create_without_grants(pn, client, publisher_a, publisher_b):
     from tests.test1.app.models import Genre
 
-    monkeypatch.setattr(pn.genre_vs, "cv_guardian_parent_permission", None)
-    monkeypatch.setattr(pn.genre_vs, "cv_guardian_parent_create_permission", None)
     client.force_login(_user("no_grants"))
 
-    url = _url(pn.genre_vs, "create", publisher_b.pk)
+    # control: the strict sibling denies the same actor
+    strict_url = _url(pn.genre_vs, "create", publisher_b.pk)
+    assert client.get(strict_url).status_code == 403
+    assert client.post(strict_url, {"name": "Strict"}).status_code == 403
+    assert not Genre.objects.filter(name="Strict").exists()
+
+    url = _url(pn.free_genre_vs, "create", publisher_b.pk)
     assert client.get(url).status_code == 200
     assert client.post(url, {"name": "Free"}).status_code == 302
     assert list(Genre.objects.get(name="Free").publishers.values_list("pk", flat=True)) == [publisher_b.pk]
@@ -644,10 +719,12 @@ def test_none_policy_inactive_actor_denied_create_and_list(pn, client, publisher
 # ── child-page and card create controls use the real parent (H03, D-10/D-12) ──
 
 
-def _strict_policy(pn, monkeypatch):
-    """Book child pages need parent 'view'; creating a Book needs parent 'change'."""
-    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", "view")
-    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_create_permission", "change")
+def _strict_policy(pn, monkeypatch, *, accept_global_perms=False):
+    """The Book scenario's own parent becomes a strict Guardian ancestor: with the Book ViewSet's declared overrides
+    its detail/update/delete pages need parent 'view' and creating a Book needs parent 'change' (default Write)."""
+    from crud_views.lib.viewset import AncestorPolicy
+
+    monkeypatch.setattr(pn.pub_vs, "ancestor_policy", AncestorPolicy(accept_global_perms=accept_global_perms))
 
 
 def _child_page_actor(pn, publisher, book, *, create_grant, name="child_page"):
@@ -789,21 +866,30 @@ def test_child_page_create_revocation_applies_next_request(pn, client, monkeypat
     assert not Book.objects.filter(title="Revoked").exists()
 
 
-@pytest.mark.parametrize("accept_global", [True, False])
+@pytest.mark.parametrize("child_flag", [True, False])
+@pytest.mark.parametrize("parent_fallback", [True, False])
 @pytest.mark.django_db
-def test_child_page_create_global_fallback_follows_create_view_policy(
-    pn, client, monkeypatch, publisher_a, child, accept_global
+def test_child_page_create_global_fallback_follows_parent_ancestor_policy(
+    pn, client, monkeypatch, publisher_a, child, parent_fallback, child_flag
 ):
-    _strict_policy(pn, monkeypatch)
-    monkeypatch.setattr(pn.BookCreate, "cv_guardian_accept_global_perms", accept_global, raising=False)
+    """Phase 06.18 (D-41): a model-only parent change grant is accepted only by the parent ViewSet's own
+    ``AncestorPolicy(accept_global_perms=True)``; the create view's ``cv_guardian_accept_global_perms`` (formerly
+    the switch here) neither grants nor removes it."""
+    from tests.test1.app.models import Book
+
+    _strict_policy(pn, monkeypatch, accept_global_perms=parent_fallback)
+    monkeypatch.setattr(pn.BookCreate, "cv_guardian_accept_global_perms", child_flag, raising=False)
     user = _grant_global(_child_page_actor(pn, publisher_a, child, create_grant=False), "change_publisher")
     client.force_login(user)
     create_url = _url(pn.book_vs, "create", publisher_a.pk)
 
     response = client.get(_url(pn.book_vs, "detail", publisher_a.pk, child.pk))
-    assert (f'href="{create_url}"' in response.content.decode()) is accept_global
-    assert client.get(create_url).status_code == (200 if accept_global else 403)
-    assert pn.BookCreate.cv_has_access(user, child) is accept_global
+    assert response.status_code == 200
+    assert (f'href="{create_url}"' in response.content.decode()) is parent_fallback
+    assert client.get(create_url).status_code == (200 if parent_fallback else 403)
+    assert client.post(create_url, {"title": "Global Parent"}).status_code == (302 if parent_fallback else 403)
+    assert Book.objects.filter(title="Global Parent").exists() is parent_fallback
+    assert pn.BookCreate.cv_has_access(user, child) is parent_fallback
 
 
 @pytest.mark.django_db

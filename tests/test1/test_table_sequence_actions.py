@@ -4,6 +4,7 @@
 from types import SimpleNamespace
 
 import django_tables2 as tables
+import pytest
 
 from crud_views.lib.table import Table
 
@@ -72,3 +73,70 @@ def test_cv_default_sequence_values():
     assert PlainTable.cv_default_sequence() == ("...", "actions")
     assert SequencedTable.cv_default_sequence() == ("last_name", "...", "actions")
     assert ActionsFirstTable.cv_default_sequence() == ("actions", "...")
+
+
+class ExcludingTable(PlainTable):
+    pseudonym = tables.Column()
+
+    class Meta:
+        exclude = ("pseudonym",)
+
+
+def test_none_list_actions_drops_actions_column():
+    table = PlainTable(ROWS, view=_view(None))
+    assert _names(table) == ["id", "first_name", "last_name"]
+
+
+def test_empty_list_actions_keeps_actions_column():
+    # [] is what a view, or ListView via CRUD_VIEWS_LIST_ACTIONS = [], carries today: the (empty) column stays
+    table = PlainTable(ROWS, view=_view([]))
+    assert _names(table)[-1] == "actions"
+
+
+def test_empty_tuple_list_actions_keeps_actions_column():
+    table = PlainTable(ROWS, view=_view(()))
+    assert _names(table)[-1] == "actions"
+
+
+def test_none_list_actions_with_actions_in_meta_sequence_drops_column_without_error():
+    table = ActionsFirstTable(ROWS, view=_view(None))
+    assert _names(table) == ["id", "first_name", "last_name"]
+
+
+def test_meta_exclude_is_merged_not_replaced():
+    table = ExcludingTable(ROWS, view=_view(None))
+    assert _names(table) == ["id", "first_name", "last_name"]
+
+
+def test_exclude_kwarg_is_merged_with_actions_exclusion():
+    table = PlainTable(ROWS, view=_view(None), exclude=("first_name",))
+    assert _names(table) == ["id", "last_name"]
+
+
+def test_meta_exclude_actions_still_works_as_manual_opt_out():
+    class ManualTable(PlainTable):
+        class Meta:
+            exclude = ("actions",)
+
+    table = ManualTable(ROWS, view=_view(["detail"]))
+    assert "actions" not in _names(table)
+
+
+def test_view_without_cv_list_actions_attribute_keeps_actions_column():
+    table = PlainTable(ROWS, view=SimpleNamespace())
+    assert _names(table)[-1] == "actions"
+
+
+@pytest.mark.django_db
+def test_author_list_renders_no_actions_header_when_list_actions_is_none(
+    client_user_author_view, cv_author, author_douglas_adams, monkeypatch
+):
+    from tests.lib.helper.boostrap5 import Table as RenderedTable
+    from tests.test1.app.views import AuthorListView
+
+    monkeypatch.setattr(AuthorListView, "cv_list_actions", None)
+    response = client_user_author_view.get("/author/")
+    assert response.status_code == 200
+    rendered = RenderedTable(response)
+    assert rendered.action_index is None
+    assert "Actions" not in [header.text for header in rendered.headers]

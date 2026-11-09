@@ -28,8 +28,8 @@ class Table(TableWithViewContext):
     actions = ActionColumn(verbose_name=_("Actions"))
 
     def __init__(self, *args, **kwargs):
-        if "sequence" not in kwargs:
-            # as default make sure actions are at the end
+        if "sequence" not in kwargs and not self._meta.sequence:
+            # default: actions at the end; a declared Meta.sequence is used as written
             kwargs["sequence"] = ("...", "actions")
         super().__init__(*args, **kwargs)
 

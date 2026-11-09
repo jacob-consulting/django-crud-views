@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.19"
+current_phase_name: Table honours Meta.sequence and drops the empty actions column
 status: planning
-stopped_at: Phase 06.18 complete, ready to plan Phase 7
-last_updated: "2026-11-09T11:46:45.788Z"
+stopped_at: Phase 06.19 context gathered
+last_updated: "2026-11-09T14:12:14.158Z"
 last_activity: 2026-11-09
 last_activity_desc: "Phase 06.18 shipped as PR #336"
-state_head: 11d1a0ba1cf10d93a425c8bf6849dfed8ca7c068
+state_head: 3ef8a04586e4fb9b82b55395e476870ce55ae20e
 progress:
-  total_phases: 24
+  total_phases: 25
   completed_phases: 21
   total_plans: 150
   completed_plans: 150
-  percent: 88
 milestone_name: milestone
 ---
 
@@ -25,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.19 — Table honours Meta.sequence and drops the empty actions column
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.19 — Table honours Meta.sequence and drops the empty actions column
 Plan: Not started
 Status: Ready to plan
 Last activity: 2026-11-09 -- Phase 06.18 shipped as PR #336
 
-Next: Phase 7 ($gsd-discuss-phase 7); 06.18 is ready for $gsd-ship
+Next: Phase 06.19 ($gsd-plan-phase 06.19); then Phase 7 ($gsd-discuss-phase 7)
 
 ### Phase 06.18 completion — 2026-11-09
 
@@ -1114,6 +1113,7 @@ None yet.
 - Phase 06.16 inserted after Phase 06.15: Issue #327: object-detail choice labels, help-text policy, empty values, and composition guidance; settled issue decisions are the planning handoff. (URGENT)
 - Phase 06.17 inserted after Phase 06.16: Issue #328: open the first accordion group and initialize/dispose tabs through theme adapters; settled issue decisions are the planning handoff. (URGENT)
 - Phase 06.18 inserted after Phase 06.17: Ancestor authorization for nested ViewSets; canonical approved specification: superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md. Policy decisions remain locked; planning and implementation pending. (URGENT)
+- Phase 06.19 inserted after Phase 06.18: Table honours Meta.sequence and drops the empty actions column (tabler-test finding 26); canonical approved specification: superpowers/plans/2026-11-09-table-sequence-and-actions-column.md. Behaviour decisions are locked in its GSD handoff section; planning and implementation pending. (URGENT)
 
 ## Deferred Items
 
@@ -1123,6 +1123,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T10:15:00Z
-Stopped at: Phase 06.18 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-09T14:12:11.253Z
+Stopped at: Phase 06.19 context gathered
+Resume file: .planning/phases/06.19-table-honours-meta-sequence-and-drops-the-empty-actions-colu/06.19-CONTEXT.md

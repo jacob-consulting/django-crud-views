@@ -417,6 +417,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **`Table` honours `Meta.sequence`.** A `Table` subclass's `Meta.sequence` was silently replaced by the
+  default `("...", "actions")`; it is now used as written. Tables without a `Meta.sequence` keep `actions` last.
+  Name `"actions"` in a declared sequence; remove the column with `Meta.exclude = ("actions",)`. (#337)
 - **Guardian missing permission declarations.** Guardian object and list gates
   (`GuardianObjectPermissionMixin.get_object`, `GuardianQuerysetMixin.get_queryset`) now raise
   `ImproperlyConfigured` naming the ViewSet, the view and the permission key, with a migrate/restart hint, when the

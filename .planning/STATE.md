@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.20"
-current_phase_name: ViewSet verbose_name override
-status: verifying
-stopped_at: Completed 06.20-02-PLAN.md; all plans executed, phase verification remains
-last_updated: "2026-11-09T21:26:26.959Z"
+current_phase: "06.21"
+current_phase_name: "Snippet context exposes `view` and `parent_object` (#339)"
+status: planning
+stopped_at: Phase 06.20 complete, ready to plan Phase 06.21
+last_updated: "2026-11-09T21:46:24.576Z"
 last_activity: 2026-11-09
-last_activity_desc: Phase 06.20 execution started
-state_head: 93371e22de8e9dc25be28ceec854e6d48f465129
+last_activity_desc: Phase 06.20 complete, transitioned to Phase 06.21
+state_head: e364e57d5430709b9219abe507e1b6416d6a9eef
 progress:
   total_phases: 27
-  completed_phases: 22
+  completed_phases: 23
   total_plans: 155
   completed_plans: 155
+  percent: 92
 milestone_name: milestone
 ---
 
@@ -24,16 +25,23 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.20 — ViewSet verbose_name override
+**Current focus:** Phase 06.21 — Snippet context exposes `view` and `parent_object` (#339)
 
 ## Current Position
 
-Phase: 06.20 (ViewSet verbose_name override) — AWAITING VERIFICATION
-Plan: 3 of 3
-Status: All plans executed — ready for phase verification
-Last activity: 2026-11-09 — Plan 06.20-02 completed; 12066 tests passed, Ruff and strict MkDocs clean
+Phase: 06.21 — Snippet context exposes `view` and `parent_object` (#339)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-09 — Phase 06.20 complete, transitioned to Phase 06.21
 
-Next: Verify Phase 06.20; Phase 06.21 follows after phase completion.
+Next: Phase 06.21; Phase 06.20 is verified and complete.
+
+### Phase 06.20 completion — 2026-11-09
+
+- All three plans complete; optional independent ViewSet display names resolve centrally, preserving lazy construction, defaults and explicit labels. Canonical verification passed 15/15, no required human checks.
+- Full suite: 12,066 passed with eight workers; Ruff and strict MkDocs clean. Test-only follow-up closed message-delivery/breadcrumb HTML coverage with 83 focused regressions and 21 label cases; production source unchanged.
+- Deep review clean; security 9/9 closed; validation complete with full-suite timing exception. UI audit source-scoped; browser/support-matrix limits explicit. No findings requiring a disposition ledger, matching todos, learnings or stale handoffs.
+- Existing config/state.json edits and untracked prompt preserved. No push or PR merge; phase branch contains the completed work.
 
 ### Phase 06.19 completion — 2026-11-09
 
@@ -670,7 +678,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 148
+- Total plans completed: 151
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -701,6 +709,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.17 | 3 | - | - |
 | 06.18 | 13 | - | - |
 | 06.19 | 2 | - | - |
+| 06.20 | 3 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1144,5 +1153,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-09T21:26:24.250Z
-Stopped at: Completed 06.20-02-PLAN.md; all plans executed, phase verification remains
+Stopped at: Phase 06.20 complete, ready to plan Phase 06.21
 Resume file: None

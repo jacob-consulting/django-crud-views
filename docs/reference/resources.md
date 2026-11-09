@@ -456,6 +456,9 @@ class PublisherFile(Resource):
 class PublisherFileTable(Table):
     key = tables.Column()
 
+    class Meta:
+        exclude = ("actions",)  # read-only list: no Actions column
+
 
 cv_publisher_file = ViewSet(
     model=PublisherFile,
@@ -467,7 +470,7 @@ cv_publisher_file = ViewSet(
 class PublisherFileListView(ResourceViewMixin, ListViewTableMixin, ListView):  # Read: Publisher view
     cv_viewset = cv_publisher_file
     table_class = PublisherFileTable
-    cv_list_actions = []
+    cv_list_actions = []  # no row actions
 ```
 
 ## A note on pydantic warnings

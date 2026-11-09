@@ -38,9 +38,19 @@ class Table(TableWithViewContext):
             return declared
         return (*declared, "actions")
 
+    @staticmethod
+    def cv_exclude_actions(view) -> bool:
+        """True when the owning view declares ``cv_list_actions = None`` (no row actions). An empty list keeps the
+        column, as does a view without the attribute. Static: the current user's access is not consulted."""
+        return hasattr(view, "cv_list_actions") and view.cv_list_actions is None
+
     def __init__(self, *args, **kwargs):
         if "sequence" not in kwargs:
             kwargs["sequence"] = self.cv_default_sequence()
+        if self.cv_exclude_actions(kwargs.get("view")):
+            # django-tables2 uses `exclude or Meta.exclude`, so merge both sources instead of replacing them
+            merged = (*self._meta.exclude, *kwargs.get("exclude", ()), "actions")
+            kwargs["exclude"] = tuple(dict.fromkeys(merged))
         super().__init__(*args, **kwargs)
 
     @staticmethod

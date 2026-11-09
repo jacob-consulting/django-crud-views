@@ -42,6 +42,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.16: Object-detail values and composition guidance (INSERTED)** - #327: readable choices, explicit help-text policy, meaningful empty values, and correct mixin composition (completed 2026-11-06)
 - [x] **Phase 06.17: Object-detail accordion initial state and tab adapters (INSERTED)** - #328: open the first accordion group and initialize tabs through theme adapters (completed 2026-11-07)
 - [x] **Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)** - Shared ancestor enforcement under the approved design v2; planning pending. (completed 2026-11-09)
+- [ ] **Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (INSERTED)** - #337 (tabler-test finding 26): honour `Meta.sequence`, append `actions` last, omit the column for `cv_list_actions = None`; context gathered, planning pending.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1359,6 +1360,51 @@ Plans:
 
 - [x] 06.18-13-PLAN.md — Fail clearly and closed on a missing Guardian permission key (G-06.18-2)
 
+### Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (#337) (INSERTED)
+
+**Goal:** `crud_views.lib.table.Table` respects a subclass's `Meta.sequence` (appending `actions` last unless the
+sequence names it) and omits the `actions` column when the owning view declares `cv_list_actions = None`, with no
+change for tables without a `Meta.sequence`, an empty list keeping today's column, and no per-user permission work
+during table construction. Issue [#337](https://github.com/jacob-consulting/django-crud-views/issues/337).
+**Canonical specification:** [Table sequence and actions column plan](../superpowers/plans/2026-11-09-table-sequence-and-actions-column.md).
+The embedded spec, review focus and "GSD handoff: decisions and context" section are authoritative, as amended on
+2026-11-09 to the `None` opt-out; `06.19-CONTEXT.md` D-10 to D-14 win over any residual `[]` wording.
+**Requirements**: TBD
+**Depends on:** Phase 06.18
+**Scope:** Two helpers on `Table` (`cv_default_sequence()` classmethod, `cv_exclude_actions(view)` staticmethod)
+used by `Table.__init__`: a declared non-empty `Meta.sequence` is honoured with `actions` appended unless already
+named; no `Meta.sequence` keeps the historical `("...", "actions")` default; a caller `sequence` kwarg still wins.
+`cv_list_actions = None` on the owning view excludes `actions`, merged with `Meta.exclude` and any caller `exclude`
+kwarg; an empty list (from a view or from `CRUD_VIEWS_LIST_ACTIONS = []`) keeps the column as today.
+`Meta.exclude = ("actions",)` stays the table-side opt-out. One `### Changed` changelog entry, a docs subsection in
+`docs/reference/list_view.md`, and the Resource docs example switched to `None`.
+**Success criteria:**
+
+1. Unit tests constructing `Table` subclasses with a view stub prove: no `Meta.sequence` keeps `actions` last and
+   the previous order; `Meta.sequence` is honoured with `actions` appended, including a middle `"..."`; a sequence
+   naming `actions` is used as written without duplication; a caller `sequence` kwarg wins unchanged.
+
+2. Tests prove `cv_list_actions = None` drops the column, `[]` and `()` keep it, `Meta.exclude` and a caller
+   `exclude` kwarg are merged rather than replaced, a sequence naming `actions` under `None` raises no error,
+   and a view stub without `cv_list_actions` constructs without `AttributeError`.
+
+3. An end-to-end test on `/author/` with `cv_list_actions = None` renders no "Actions" header; no new ViewSets or
+   views are registered (avoids the registry-leak pattern that broke PR #336's CI).
+
+4. `CHANGELOG.md` gains a `### Changed` entry (not Breaking; `docs/migrating-1.0.md` untouched) and
+   `docs/reference/list_view.md` documents column order, the empty actions column and the static-decision limit;
+   `pytest tests/test1 -n auto` and ruff are clean.
+**Planning handoff:** Carry the plan's behaviour and implementation decisions into context without reopening
+approved choices. Findings 27, 28 and 29 of the tabler-test roastery findings are explicitly out of scope; finding 27
+is additionally bound by the 2026-11-04 opt-in URL helper decision. Hiding the column when every configured action is
+inaccessible to the current user is out of scope by the project's maintainability rule. Downstream tabler-test
+cleanup (`OrderTableBase` sequence workaround, `AllOrdersTable.Meta.exclude`) is follow-up, not part of this phase.
+This insertion assigns the phase; detailed planning and implementation remain pending.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 06.19 to break down)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1457,4 +1503,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.14. Card template insertion blocks and cards-first ViewSets | 2/2 | Complete | 2026-11-06 |
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
 | 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
+| 06.19. Table honours Meta.sequence and omits the Actions column for None | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

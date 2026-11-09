@@ -1400,10 +1400,11 @@ is additionally bound by the 2026-11-04 opt-in URL helper decision. Hiding the c
 inaccessible to the current user is out of scope by the project's maintainability rule. Downstream tabler-test
 cleanup (`OrderTableBase` sequence workaround, `AllOrdersTable.Meta.exclude`) is follow-up, not part of this phase.
 This insertion assigns the phase; detailed planning and implementation remain pending.
-**Plans:** 1/1 plans executed
+**Plans:** 1/2 plans executed
 
 Plans:
 - [x] 06.19-01-PLAN.md — `Table.cv_default_sequence()` / `cv_exclude_actions(view)` with 15 tests, `### Changed` entry, list_view.md subsection and the Resource docs example switched to `None` (#337)
+- [ ] 06.19-02-PLAN.md — Gap closure: `"..."` inserted before `actions` for a `Meta.sequence` without an ellipsis (WR-01); caller `exclude` kwarg normalised (`None` -> `()`, `str` -> one-tuple) before the actions merge (WR-02/WR-03); 17 tests, docs clause, T-06.19-02 re-closed
 
 ### Phase 7: Theme-surface stability policy
 

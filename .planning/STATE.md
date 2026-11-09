@@ -25,7 +25,7 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.19 — Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337) (INSERTED)
+**Current focus:** Phase 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
 
 ## Current Position
 
@@ -34,7 +34,13 @@ Plan: Not started
 Status: Ready to plan
 Last activity: 2026-11-09 — Phase 06.19 complete, transitioned to Phase 06.20
 
-Next: Phase 06.19 ($gsd-plan-phase 06.19); then Phase 7 ($gsd-discuss-phase 7)
+Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21
+
+### Phase 06.19 completion — 2026-11-09
+
+- Re-scoped: plans 06.19-01/02 (cv_default_sequence / cv_exclude_actions / cv_list_actions = None) reverted in e35a6b66 under the maintainability rule; replaced by the one-line Meta.sequence check (6bf4cc35), tests/test1/test_table_meta.py (e95730d0) and docs (560bd2a6).
+- Verification passed 9/9 (re-scoped goal); full suite 12197 passed multicore; ruff and mkdocs --strict clean. Deep review of the current code: 0 critical, 3 warnings, 3 info — all open in 06.19-REVIEW-DISPOSITION.md.
+- Documentation drift: ROADMAP Scope/Success criteria and phase name, CONTEXT D-01..D-16, SECURITY threat register and the superpowers plan still describe the reverted design.
 
 ### Phase 06.18 completion — 2026-11-09
 
@@ -1132,6 +1138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T15:50:01.077Z
-Stopped at: Phase 06.19 complete, ready to plan Phase 06.20
+Last session: 2026-11-09
+Stopped at: Phase 06.19 complete, ready to discuss/plan Phase 06.20
 Resume file: None

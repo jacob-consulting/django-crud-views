@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: verifying
-stopped_at: Completed 06.18-12-PLAN.md
-last_updated: "2026-11-09T08:49:21.765Z"
+stopped_at: Completed 06.18-13-PLAN.md
+last_updated: "2026-11-09T09:46:12.126Z"
 last_activity: 2026-11-09
 last_activity_desc: Phase 06.18 plan 12 complete
-state_head: a39efcc7d4c352f6d557852ed75970eb559c33aa
+state_head: 0435a4fde3336b914397e2c93fc4c97906328199
 progress:
   total_phases: 24
   completed_phases: 21
-  total_plans: 149
-  completed_plans: 149
+  total_plans: 150
+  completed_plans: 150
 milestone_name: milestone
 ---
 
@@ -809,6 +809,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P10 | 20min | 2 tasks | 3 files |
 | Phase 06.18 P11 | 20 min | 2 tasks | 9 files |
 | Phase 06.18 P12 | 28 min | 2 tasks | 10 files |
+| Phase 06.18 P13 | 10min | 2 tasks | 5 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1044,6 +1045,7 @@ Recent decisions affecting current work:
 - [Phase 06.18]: Nested DB docs link the migration guide page without an anchor until plan 12 creates the ancestor migration section
 - [Phase 06.18]: 06.18-12: the ancestor Breaking entry is paired with docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets (h4 subsection nested-write-database-selection for the instance-hinted selector) and an executed Guardian approve-pair migration fence
 - [Phase 06.18]: 06.18-12: cross-series failures in two prior-plan test modules (crispy < 2.7 filter helper, Django 4.2 AdminEmailHandler report) were fixed in fixtures, not the package, and the whole replay rerun at 5829cae7
+- [Phase 06.18]: Guardian request gates raise ImproperlyConfigured on a missing own cv_permission key (named ViewSet/view/key + migrate/restart hint); GuardianObjectPermissionMixin.cv_has_access denies every actor, mirroring core #318 (G-06.18-2)
 
 ### Pending Todos
 
@@ -1112,6 +1114,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-08T23:05:41.977Z
-Stopped at: Completed 06.18-12-PLAN.md
+Last session: 2026-11-09T09:46:08.025Z
+Stopped at: Completed 06.18-13-PLAN.md
 Resume file: None

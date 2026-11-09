@@ -593,6 +593,60 @@ def test_guardian_child_object_from_a_filter_omitting_queryset_is_404(res, world
     assert client.get(url).status_code == 200
 
 
+# ── a leaf seam reached inside a request before the guard fails closed ───────
+
+
+@pytest.fixture
+def pre_bridge(db):
+    """Publisher → Book whose detail and list views put Django's UserPassesTestMixin *before* the bridge: its
+    ``test_func`` consumes the child object / child collection in ``dispatch`` before the ancestor guard ran."""
+    from django.contrib.auth.mixins import UserPassesTestMixin
+
+    from crud_views.lib.views import DetailView, ListView
+
+    seen = []
+
+    class LoadsObjectFirst(UserPassesTestMixin):
+        def test_func(self):
+            seen.append(self.get_object())
+            return True
+
+    class LoadsCollectionFirst(UserPassesTestMixin):
+        def test_func(self):
+            self.object_list = self.get_queryset()
+            seen.append(self.get_context_data()["object_list"])
+            return True
+
+    def build(sfx):
+        pub = ViewSet(model=Publisher, name=f"arppub{sfx}")
+        book = ViewSet(model=Book, name=f"arpbook{sfx}", parent=ParentViewSet(name=pub.name, attribute="publisher"))
+        common = {"cv_viewset": book, "cv_context_actions": []}
+        detail = type("PreBridgeDetail", (LoadsObjectFirst, DetailView), dict(common))
+        type("PreBridgeList", (LoadsCollectionFirst, ListView), {**common, "cv_list_actions": []})
+        return SimpleNamespace(pub=pub, book=book, Detail=detail, seen=seen), [pub, book]
+
+    with isolated_routes(build) as ns:
+        yield ns
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["detail", "list"])
+def test_leaf_seam_before_the_guard_fails_closed(pre_bridge, world, queryset_calls, key):
+    from django.core.exceptions import ImproperlyConfigured
+
+    kwargs = _kw(pre_bridge.pub, world.penguin) | ({"pk": world.book.pk} if key == "detail" else {})
+    with pytest.raises(ImproperlyConfigured, match="the ancestor guard has not run"):
+        _superclient(f"ar_prebridge_{key}").get(_url(pre_bridge.book, key, **kwargs))
+    assert pre_bridge.seen == []  # the pre-bridge code never received an unvalidated object or collection
+    assert [call.name for call in queryset_calls if call.name == pre_bridge.pub.name] == []  # no ancestor query
+
+
+@pytest.mark.django_db
+def test_leaf_seam_outside_a_request_keeps_its_unscoped_behavior(pre_bridge, world):
+    view = pre_bridge.Detail()  # no request bound: a class-level / outside-request use
+    assert ancestors._validate_child_parent(view, world.foreign) is world.foreign
+
+
 # ── the structural parent: identity reuse for create, state and helpers ──────
 
 

@@ -435,6 +435,13 @@ The child is checked against that parent where it is consumed. A child object re
 override that forgot the parent filter is 404 unless it belongs to the URL parent, and a nested list renders
 only that parent's children.
 
+Both checks need the resolved parent, so they only work once the guard has run. A mixin placed before the
+view's crud-views base that loads the child object or list in `dispatch()` before calling `super().dispatch()`
+gets `ImproperlyConfigured` instead of an unscoped object or list. For example, `UserPassesTestMixin` with a
+`test_func` that calls `get_object()`. Calling `cv_get_parent_object()` that early does not authorize
+ancestry: it looks the parent up by its URL primary key, without the ancestor ViewSet's `get_queryset` and
+without a gate. Do this kind of work after `super().dispatch()`, or in the view's own methods.
+
 ### Databases
 
 Nested ViewSets support only the `default` database for their ancestor lookups, their own ORM querysets and

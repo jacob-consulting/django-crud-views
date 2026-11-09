@@ -450,10 +450,22 @@ def _resolved_ancestor(view: CrudView, name: str) -> Model | None:
 
 def _child_edge(view: CrudView) -> tuple[str, Model] | None:
     """``(relation attribute, resolved immediate parent)`` of a guarded nested ORM request, else None (top-level,
-    Resource leaf, or no successful guard on this view, e.g. outside a request)."""
+    Resource leaf, or a view without a bound request, i.e. outside a request).
+
+    A nested ORM view that has a request but no guard state fails closed: code placed before the bridges (for
+    example a ``UserPassesTestMixin.test_func``) consumed the child object or collection before ancestry was
+    authorized, and must not receive it unscoped."""
     viewset = view.cv_viewset
+    if viewset is None or viewset.parent is None or viewset.is_resource:
+        return None
     state = getattr(view, "_cv_ancestor_state", None)
-    if state is None or viewset is None or viewset.parent is None or viewset.is_resource:
+    if state is None:
+        if getattr(view, "request", None) is not None:
+            raise ImproperlyConfigured(
+                f"ViewSet {viewset.name!r} view {view.cv_key!r}: the ancestor guard has not run for this request; "
+                "a mixin placed before the CrudView bridge must not load the child object or collection in "
+                "dispatch() before calling super().dispatch()"
+            )
         return None
     return viewset.parent.get_attribute(), state.parent
 

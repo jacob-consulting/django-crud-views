@@ -5,10 +5,10 @@ current_phase: "06.20"
 current_phase_name: "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)"
 status: planning
 stopped_at: Phase 06.19 complete, ready to plan Phase 06.20
-last_updated: "2026-11-09T16:53:06.508Z"
+last_updated: "2026-11-09T17:09:18.574Z"
 last_activity: 2026-11-09
-last_activity_desc: Phase 06.19 complete, transitioned to Phase 06.20
-state_head: 52c159c18b25003f2ae7d6b11d5e720a66a2f431
+last_activity_desc: "Phase 06.19 shipped as PR #340"
+state_head: 45de1ad263f65e8e69672ed7b7ee15f1f8f7d71a
 progress:
   total_phases: 27
   completed_phases: 22
@@ -32,7 +32,7 @@ See: .planning/PROJECT.md (updated 2026-11-09)
 Phase: 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-09 — Phase 06.19 complete, transitioned to Phase 06.20
+Last activity: 2026-11-09 -- Phase 06.19 shipped as PR #340
 
 Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21
 

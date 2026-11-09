@@ -418,3 +418,28 @@ each contribute their own exemptions.
 **Global silencing (coarse):** add `SILENCED_SYSTEM_CHECKS = ["viewset.W280"]` to your
 Django settings to suppress the warning everywhere; prefer the per-class allowlist above for
 targeted exemption.
+
+## How do I reorder table columns or remove the Actions column?
+
+Use the table's django-tables2 `Meta`. `Table` keeps `actions` last only when you declare no `Meta.sequence`;
+a declared sequence is used as written, so name `"actions"` where you want it:
+
+```python
+class AuthorTable(Table):
+    first_name = tables.Column()
+    last_name = tables.Column()
+
+    class Meta:
+        sequence = ("last_name", "...", "actions")
+```
+
+To drop the Actions column, for example on a read-only list, exclude it in the same `Meta`:
+
+```python
+    class Meta:
+        exclude = ("actions",)
+```
+
+`cv_list_actions = []` on the view only empties the column, and `actions = None` on the table is not supported (it
+fails at render time with `KeyError: 'actions'`). See
+[Column order and the actions column](reference/list_view.md#column-order-and-the-actions-column).

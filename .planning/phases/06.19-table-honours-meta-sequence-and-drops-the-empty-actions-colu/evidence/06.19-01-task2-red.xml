@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="15" time="0.828" timestamp="2026-11-09T14:40:10.701254+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_table_sequence_actions" name="test_author_list_renders_no_actions_header_when_list_actions_is_none" time="0.640"><failure message="assert 4 is None&#10; +  where 4 = &lt;tests.lib.helper.boostrap5.Table object at 0x797ed6d59040&gt;.action_index">client_user_author_view = &lt;django.test.client.Client object at 0x797ed6da8c80&gt;
+cv_author = ViewSet(author), author_douglas_adams = &lt;Author: Douglas Adams&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x797ed6ed34a0&gt;
+
+    @pytest.mark.django_db
+    def test_author_list_renders_no_actions_header_when_list_actions_is_none(
+        client_user_author_view, cv_author, author_douglas_adams, monkeypatch
+    ):
+        from tests.lib.helper.boostrap5 import Table as RenderedTable
+        from tests.test1.app.views import AuthorListView
+    
+        monkeypatch.setattr(AuthorListView, "cv_list_actions", None)
+        response = client_user_author_view.get("/author/")
+        assert response.status_code == 200
+        rendered = RenderedTable(response)
+&gt;       assert rendered.action_index is None
+E       assert 4 is None
+E        +  where 4 = &lt;tests.lib.helper.boostrap5.Table object at 0x797ed6d59040&gt;.action_index
+
+tests/test1/test_table_sequence_actions.py:141: AssertionError</failure></testcase><testcase classname="tests.test1.test_table_sequence_actions" name="test_no_meta_sequence_keeps_actions_last" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_meta_sequence_is_honoured_and_actions_appended" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_meta_sequence_with_middle_ellipsis_keeps_actions_last" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_meta_sequence_naming_actions_is_used_as_written" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_sequence_kwarg_wins_over_meta_sequence" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_cv_default_sequence_values" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_none_list_actions_drops_actions_column" time="0.001"><failure message="AssertionError: assert ['id', 'first...e', 'actions'] == ['id', 'first..., 'last_name']&#10;  &#10;  Left contains one more item: 'actions'&#10;  Use -v to get more diff">def test_none_list_actions_drops_actions_column():
+        table = PlainTable(ROWS, view=_view(None))
+&gt;       assert _names(table) == ["id", "first_name", "last_name"]
+E       AssertionError: assert ['id', 'first...e', 'actions'] == ['id', 'first..., 'last_name']
+E         
+E         Left contains one more item: 'actions'
+E         Use -v to get more diff
+
+tests/test1/test_table_sequence_actions.py:87: AssertionError</failure></testcase><testcase classname="tests.test1.test_table_sequence_actions" name="test_empty_list_actions_keeps_actions_column" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_empty_tuple_list_actions_keeps_actions_column" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_none_list_actions_with_actions_in_meta_sequence_drops_column_without_error" time="0.001"><failure message="AssertionError: assert ['actions', '..., 'last_name'] == ['id', 'first..., 'last_name']&#10;  &#10;  At index 0 diff: 'actions' != 'id'&#10;  Left contains one more item: 'last_name'&#10;  Use -v to get more diff">def test_none_list_actions_with_actions_in_meta_sequence_drops_column_without_error():
+        table = ActionsFirstTable(ROWS, view=_view(None))
+&gt;       assert _names(table) == ["id", "first_name", "last_name"]
+E       AssertionError: assert ['actions', '..., 'last_name'] == ['id', 'first..., 'last_name']
+E         
+E         At index 0 diff: 'actions' != 'id'
+E         Left contains one more item: 'last_name'
+E         Use -v to get more diff
+
+tests/test1/test_table_sequence_actions.py:103: AssertionError</failure></testcase><testcase classname="tests.test1.test_table_sequence_actions" name="test_meta_exclude_is_merged_not_replaced" time="0.001"><failure message="AssertionError: assert ['id', 'first...e', 'actions'] == ['id', 'first..., 'last_name']&#10;  &#10;  Left contains one more item: 'actions'&#10;  Use -v to get more diff">def test_meta_exclude_is_merged_not_replaced():
+        table = ExcludingTable(ROWS, view=_view(None))
+&gt;       assert _names(table) == ["id", "first_name", "last_name"]
+E       AssertionError: assert ['id', 'first...e', 'actions'] == ['id', 'first..., 'last_name']
+E         
+E         Left contains one more item: 'actions'
+E         Use -v to get more diff
+
+tests/test1/test_table_sequence_actions.py:108: AssertionError</failure></testcase><testcase classname="tests.test1.test_table_sequence_actions" name="test_exclude_kwarg_is_merged_with_actions_exclusion" time="0.001"><failure message="AssertionError: assert ['id', 'last_name', 'actions'] == ['id', 'last_name']&#10;  &#10;  Left contains one more item: 'actions'&#10;  Use -v to get more diff">def test_exclude_kwarg_is_merged_with_actions_exclusion():
+        table = PlainTable(ROWS, view=_view(None), exclude=("first_name",))
+&gt;       assert _names(table) == ["id", "last_name"]
+E       AssertionError: assert ['id', 'last_name', 'actions'] == ['id', 'last_name']
+E         
+E         Left contains one more item: 'actions'
+E         Use -v to get more diff
+
+tests/test1/test_table_sequence_actions.py:113: AssertionError</failure></testcase><testcase classname="tests.test1.test_table_sequence_actions" name="test_meta_exclude_actions_still_works_as_manual_opt_out" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_view_without_cv_list_actions_attribute_keeps_actions_column" time="0.001" /></testsuite></testsuites>

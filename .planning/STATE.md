@@ -1,20 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.20"
+current_phase_name: "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)"
 status: planning
-stopped_at: Phase 06.18 complete, ready to plan Phase 7
-last_updated: "2026-11-09T11:46:45.788Z"
+stopped_at: Phase 06.19 complete, ready to plan Phase 06.20
+last_updated: "2026-11-09T17:09:18.574Z"
 last_activity: 2026-11-09
-last_activity_desc: "Phase 06.18 shipped as PR #336"
-state_head: 11d1a0ba1cf10d93a425c8bf6849dfed8ca7c068
+last_activity_desc: "Phase 06.19 shipped as PR #340"
+state_head: 45de1ad263f65e8e69672ed7b7ee15f1f8f7d71a
 progress:
-  total_phases: 24
-  completed_phases: 21
-  total_plans: 150
-  completed_plans: 150
-  percent: 88
+  total_phases: 27
+  completed_phases: 22
+  total_plans: 152
+  completed_plans: 152
+  percent: 81
 milestone_name: milestone
 ---
 
@@ -25,16 +25,22 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-09 -- Phase 06.18 shipped as PR #336
+Last activity: 2026-11-09 -- Phase 06.19 shipped as PR #340
 
-Next: Phase 7 ($gsd-discuss-phase 7); 06.18 is ready for $gsd-ship
+Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21
+
+### Phase 06.19 completion — 2026-11-09
+
+- Re-scoped: plans 06.19-01/02 (cv_default_sequence / cv_exclude_actions / cv_list_actions = None) reverted in e35a6b66 under the maintainability rule; replaced by the one-line Meta.sequence check (6bf4cc35), tests/test1/test_table_meta.py (e95730d0) and docs (560bd2a6).
+- Verification passed 9/9 (re-scoped goal); full suite 12197 passed multicore; ruff and mkdocs --strict clean. Deep review of the current code: 0 critical, 3 warnings, 3 info — all open in 06.19-REVIEW-DISPOSITION.md.
+- Documentation drift: ROADMAP Scope/Success criteria and phase name, CONTEXT D-01..D-16, SECURITY threat register and the superpowers plan still describe the reverted design.
 
 ### Phase 06.18 completion — 2026-11-09
 
@@ -665,7 +671,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 146
+- Total plans completed: 148
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -695,6 +701,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.16 | 3 | - | - |
 | 06.17 | 3 | - | - |
 | 06.18 | 13 | - | - |
+| 06.19 | 2 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -818,6 +825,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P11 | 20 min | 2 tasks | 9 files |
 | Phase 06.18 P12 | 28 min | 2 tasks | 10 files |
 | Phase 06.18 P13 | 10min | 2 tasks | 5 files |
+| Phase 06.19 P01 | 6 min | 3 tasks | 5 files |
+| Phase 06.19 P02 | 6min | 3 tasks | 4 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1054,6 +1063,11 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-12: the ancestor Breaking entry is paired with docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets (h4 subsection nested-write-database-selection for the instance-hinted selector) and an executed Guardian approve-pair migration fence
 - [Phase 06.18]: 06.18-12: cross-series failures in two prior-plan test modules (crispy < 2.7 filter helper, Django 4.2 AdminEmailHandler report) were fixed in fixtures, not the package, and the whole replay rerun at 5829cae7
 - [Phase 06.18]: Guardian request gates raise ImproperlyConfigured on a missing own cv_permission key (named ViewSet/view/key + migrate/restart hint); GuardianObjectPermissionMixin.cv_has_access denies every actor, mirroring core #318 (G-06.18-2)
+- [Phase 06.19]: Table honours Meta.sequence and appends actions last unless the sequence names it; no Meta.sequence keeps ('...', 'actions') (#337)
+- [Phase 06.19]: cv_list_actions = None is the only view-side opt-out for the actions column; [] and () keep the empty column, decision is static (#337)
+- [Phase 06.19]: Table exclude merge combines Meta.exclude, caller exclude and actions with an order-preserving dict.fromkeys dedupe (#337)
+- [Phase 06.19]: Table.cv_default_sequence inserts "..." before actions when a declared Meta.sequence has none, so django-tables2 never appends its ellipsis after actions (06.19-02, WR-01)
+- [Phase 06.19]: Table.__init__ normalises the caller exclude kwarg (falsy -> (), str -> one-tuple) only inside the cv_list_actions = None branch before the order-preserving merge (06.19-02, WR-02/WR-03)
 
 ### Pending Todos
 
@@ -1114,6 +1128,7 @@ None yet.
 - Phase 06.16 inserted after Phase 06.15: Issue #327: object-detail choice labels, help-text policy, empty values, and composition guidance; settled issue decisions are the planning handoff. (URGENT)
 - Phase 06.17 inserted after Phase 06.16: Issue #328: open the first accordion group and initialize/dispose tabs through theme adapters; settled issue decisions are the planning handoff. (URGENT)
 - Phase 06.18 inserted after Phase 06.17: Ancestor authorization for nested ViewSets; canonical approved specification: superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md. Policy decisions remain locked; planning and implementation pending. (URGENT)
+- Phase 06.19 inserted after Phase 06.18: Table honours Meta.sequence and drops the empty actions column (tabler-test finding 26); canonical approved specification: superpowers/plans/2026-11-09-table-sequence-and-actions-column.md. Behaviour decisions are locked in its GSD handoff section; planning and implementation pending. (URGENT)
 
 ## Deferred Items
 
@@ -1123,6 +1138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T10:15:00Z
-Stopped at: Phase 06.18 complete, ready to plan Phase 7
+Last session: 2026-11-09
+Stopped at: Phase 06.19 complete, ready to discuss/plan Phase 06.20
 Resume file: None

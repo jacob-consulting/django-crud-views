@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="6" time="0.146" timestamp="2026-11-09T14:39:11.837977+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_table_sequence_actions" name="test_no_meta_sequence_keeps_actions_last" time="0.002" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_meta_sequence_is_honoured_and_actions_appended" time="0.001"><failure message="AssertionError: assert ['id', 'first...e', 'actions'] == ['last_name',...e', 'actions']&#10;  &#10;  At index 0 diff: 'id' != 'last_name'&#10;  Use -v to get more diff">def test_meta_sequence_is_honoured_and_actions_appended():
+        table = SequencedTable(ROWS, view=_view(["detail"]))
+&gt;       assert _names(table) == ["last_name", "id", "first_name", "actions"]
+E       AssertionError: assert ['id', 'first...e', 'actions'] == ['last_name',...e', 'actions']
+E         
+E         At index 0 diff: 'id' != 'last_name'
+E         Use -v to get more diff
+
+tests/test1/test_table_sequence_actions.py:50: AssertionError</failure></testcase><testcase classname="tests.test1.test_table_sequence_actions" name="test_meta_sequence_with_middle_ellipsis_keeps_actions_last" time="0.001"><failure message="AssertionError: assert ['id', 'first...e', 'actions'] == ['last_name',...d', 'actions']&#10;  &#10;  At index 0 diff: 'id' != 'last_name'&#10;  Use -v to get more diff">def test_meta_sequence_with_middle_ellipsis_keeps_actions_last():
+        table = MiddleEllipsisTable(ROWS, view=_view(["detail"]))
+&gt;       assert _names(table) == ["last_name", "first_name", "id", "actions"]
+E       AssertionError: assert ['id', 'first...e', 'actions'] == ['last_name',...d', 'actions']
+E         
+E         At index 0 diff: 'id' != 'last_name'
+E         Use -v to get more diff
+
+tests/test1/test_table_sequence_actions.py:55: AssertionError</failure></testcase><testcase classname="tests.test1.test_table_sequence_actions" name="test_meta_sequence_naming_actions_is_used_as_written" time="0.001"><failure message="AssertionError: assert ['id', 'first...e', 'actions'] == ['actions', '..., 'last_name']&#10;  &#10;  At index 0 diff: 'id' != 'actions'&#10;  Use -v to get more diff">def test_meta_sequence_naming_actions_is_used_as_written():
+        table = ActionsFirstTable(ROWS, view=_view(["detail"]))
+&gt;       assert _names(table) == ["actions", "id", "first_name", "last_name"]
+E       AssertionError: assert ['id', 'first...e', 'actions'] == ['actions', '..., 'last_name']
+E         
+E         At index 0 diff: 'id' != 'actions'
+E         Use -v to get more diff
+
+tests/test1/test_table_sequence_actions.py:60: AssertionError</failure></testcase><testcase classname="tests.test1.test_table_sequence_actions" name="test_sequence_kwarg_wins_over_meta_sequence" time="0.001" /><testcase classname="tests.test1.test_table_sequence_actions" name="test_cv_default_sequence_values" time="0.001"><failure message="AttributeError: type object 'PlainTable' has no attribute 'cv_default_sequence'">def test_cv_default_sequence_values():
+&gt;       assert PlainTable.cv_default_sequence() == ("...", "actions")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: type object 'PlainTable' has no attribute 'cv_default_sequence'
+
+tests/test1/test_table_sequence_actions.py:72: AttributeError</failure></testcase></testsuite></testsuites>

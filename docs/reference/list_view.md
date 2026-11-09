@@ -99,6 +99,30 @@ class AuthorTable(Table):
 | `NaturalDayColumn` | Date rendered as natural day (e.g. "today", "yesterday") |
 | `NaturalTimeColumn` | DateTime rendered as natural time (e.g. "2 hours ago") |
 
+### Column order and the actions column
+
+`Table` adds an `actions` column (the per-row buttons from `cv_list_actions`). Configure both with the table's
+django-tables2 `Meta`:
+
+```python
+class AuthorTable(Table):
+    id = UUIDLinkDetailColumn(attrs=Table.ca.ID)
+    first_name = tables.Column()
+    last_name = tables.Column()
+
+    class Meta:
+        sequence = ("last_name", "...", "actions")  # used as written
+```
+
+- **No `Meta.sequence`:** columns render in declaration order with `actions` last.
+- **`Meta.sequence`:** used exactly as written. Name `"actions"` in it, usually last after `"..."`; a sequence
+  that leaves `actions` out lets django-tables2 put it first among the columns you did not list.
+- **No actions column:** set `exclude = ("actions",)` in `Meta`. Setting `cv_list_actions = []` on the view
+  empties the column but keeps it; removing it is a table setting.
+
+Remove the column only with `Meta.exclude`: setting `actions = None` on the subclass is not supported and fails at
+render time with `KeyError: 'actions'`, because the default sequence still names the column.
+
 ### Pagination
 
 The table (`crud_views/table/bootstrap5.html`) and the [card list](card-list-view.md)

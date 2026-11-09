@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — READY FOR VERIFICATION
 Plan: 12 of 12
 Status: Phase complete — ready for verification
-Last activity: 2026-11-09 - Completed quick task 261109-bf5: Fix core ViewSet.default_permissions vocabulary N+1 (one ContentType read per permission row)
+Last activity: 2026-11-09 - Completed quick task 261109-bvq: Refresh 06.18-COSTS.md from post-fix evidence (plain cold vocabulary + Guardian guard/rest split after WR-01)
 
 Next: phase verification for 06.18 ($gsd-verify-work 06.18), then code/security review
 

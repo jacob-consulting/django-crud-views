@@ -14,9 +14,11 @@ from django.core.exceptions import ImproperlyConfigured
 from django.test import Client
 from guardian.ctypes import get_content_type
 
+from crud_views.lib.viewset import _REGISTRY
 from tests.lib.helper.guardian import user_guardian_object_perm
 from tests.test1.app.views import (
     GuardianAuthorDetailView,
+    cv_author,
     cv_guardian_author,
     cv_guardian_book,
     cv_guardian_publisher,
@@ -25,14 +27,15 @@ from tests.test1.app.views import (
 
 @contextmanager
 def without_permission_key(viewset, key):
-    """Remove one vocabulary key the way an unapplied migration does, then restore the ViewSet cache.
+    """Remove one vocabulary key the way an unapplied migration does, then restore the ViewSet caches.
 
     Nonempty vocabularies are cached per process (``GuardianViewSet.default_permissions``), so the cache is
     primed and saved first, the ``Permission`` row is deleted (the test transaction restores it), and the cache
-    is cleared so the next read rediscovers the reduced vocabulary from the database.
+    is cleared so the next read rediscovers the reduced vocabulary from the database. The row backs every
+    registered ViewSet on the same model, so all of their caches are saved and restored, not only ``viewset``'s.
     """
     assert key in viewset.permissions  # primes the per-process cache before it is saved
-    saved = viewset._default_permissions
+    saved = [(vs, vs._default_permissions) for vs in list(_REGISTRY.values()) if vs.model is viewset.model]
     content_type = get_content_type(viewset.model)
     deleted, _ = Permission.objects.filter(content_type=content_type, codename=f"{key}_{content_type.model}").delete()
     assert deleted
@@ -41,7 +44,8 @@ def without_permission_key(viewset, key):
         assert key not in viewset.permissions
         yield
     finally:
-        viewset._default_permissions = saved
+        for vs, cache in saved:
+            vs._default_permissions = cache
 
 
 def _actor(kind):
@@ -139,3 +143,16 @@ def test_vocabulary_cache_restored_after_helper(client_guardian, author_douglas_
     assert "view" in cv_guardian_author.permissions
     response = client_guardian.get(f"/guardian_author/{author_douglas_adams.pk}/detail/")
     assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_helper_restores_sibling_viewsets_on_the_same_model():
+    """The deleted row backs every ViewSet on ``Author``; a cold sibling read inside the block must not keep it."""
+    saved = cv_author._default_permissions
+    cv_author._default_permissions = None  # a sibling no earlier test has warmed
+    try:
+        with without_permission_key(cv_guardian_author, "view"):
+            assert "view" not in cv_author.permissions  # caches the reduced vocabulary for the process
+        assert cv_author._default_permissions is None  # back to cold; rediscovers once the row is restored
+    finally:
+        cv_author._default_permissions = saved

@@ -5,10 +5,10 @@ current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: verifying
 stopped_at: Completed 06.18-12-PLAN.md
-last_updated: "2026-11-08T23:05:45.529Z"
+last_updated: "2026-11-09T07:23:55.871Z"
 last_activity: 2026-11-08
 last_activity_desc: Phase 06.18 plan 12 complete
-state_head: ae578ea6ed314383955b5739e4cc923a80f0913b
+state_head: 0cb0cb471be942090389edf04fa91f74007e6dc5
 progress:
   total_phases: 24
   completed_phases: 21
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 Phase: 06.18 (Ancestor authorization for nested ViewSets) — READY FOR VERIFICATION
 Plan: 12 of 12
 Status: Phase complete — ready for verification
-Last activity: 2026-11-08 — Phase 06.18 plan 12 complete
+Last activity: 2026-11-09 - Completed quick task 261109-9rw: Update examples app for 06.18 ancestor authorization (nested Guardian example + core nested grants)
 
 Next: phase verification for 06.18 ($gsd-verify-work 06.18), then code/security review
 
@@ -1076,6 +1076,7 @@ None yet.
 | 261103-sag | Fix SonarQube and Codecov failures on PR 303 (local gates passed; remote confirmation pending) | 2026-11-03 | 82fe188 | [261103-sag-fix-sonarqube-and-codecov-failures-on-pr](./quick/261103-sag-fix-sonarqube-and-codecov-failures-on-pr/) |
 | 261104-8v8 | Exclude disposable browser harness from Sonar and split six documentation assertions | 2026-11-04 | 7d4cf1d | [261104-8v8-fix-pr-305-sonar-findings-and-exclude-di](./quick/261104-8v8-fix-pr-305-sonar-findings-and-exclude-di/) |
 | 261104-h24 | Add protected delete-preview links to the Library example | 2026-11-04 | e8f5a0e | [261104-h24-add-a-protected-delete-preview-links-exa](./quick/261104-h24-add-a-protected-delete-preview-links-exa/) |
+| 261109-9rw | Update examples app for 06.18 ancestor authorization (nested Guardian example + core nested grants) | 2026-11-09 | 0cb0cb47 | [261109-9rw-update-examples-app-for-06-18-ancestor-a](./quick/261109-9rw-update-examples-app-for-06-18-ancestor-a/) |
 
 ### Roadmap Evolution
 

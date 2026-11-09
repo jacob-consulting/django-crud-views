@@ -5,10 +5,10 @@ current_phase: "06.21"
 current_phase_name: "Snippet context exposes `view` and `parent_object` (#339) (INSERTED)"
 status: executing
 stopped_at: Phase 06.21 context gathered
-last_updated: "2026-11-09T20:50:56.758Z"
+last_updated: "2026-11-09T21:19:02.852Z"
 last_activity: 2026-11-09
 last_activity_desc: "Phase 06.19 shipped as PR #340"
-state_head: cf66a0f09efde8470a32e084cfcd9b0eb643c52a
+state_head: 04ba455895ddf31fd5dceccdc679807c3cb0a158
 progress:
   total_phases: 27
   completed_phases: 22

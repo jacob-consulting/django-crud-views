@@ -1400,10 +1400,10 @@ is additionally bound by the 2026-11-04 opt-in URL helper decision. Hiding the c
 inaccessible to the current user is out of scope by the project's maintainability rule. Downstream tabler-test
 cleanup (`OrderTableBase` sequence workaround, `AllOrdersTable.Meta.exclude`) is follow-up, not part of this phase.
 This insertion assigns the phase; detailed planning and implementation remain pending.
-**Plans:** 1 plan
+**Plans:** 1/1 plans executed
 
 Plans:
-- [ ] 06.19-01-PLAN.md — `Table.cv_default_sequence()` / `cv_exclude_actions(view)` with 15 tests, `### Changed` entry, list_view.md subsection and the Resource docs example switched to `None` (#337)
+- [x] 06.19-01-PLAN.md — `Table.cv_default_sequence()` / `cv_exclude_actions(view)` with 15 tests, `### Changed` entry, list_view.md subsection and the Resource docs example switched to `None` (#337)
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1503,5 +1503,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.14. Card template insertion blocks and cards-first ViewSets | 2/2 | Complete | 2026-11-06 |
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
 | 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
-| 06.19. Table honours Meta.sequence and omits the Actions column for None | 0/TBD | Not started | - |
+| 06.19. Table honours Meta.sequence and omits the Actions column for None | 1/1 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

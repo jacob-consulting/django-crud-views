@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.19"
 current_phase_name: "Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337)"
-status: executing
-stopped_at: Phase 06.19 context gathered
-last_updated: "2026-11-09T14:35:36.332Z"
+status: verifying
+stopped_at: Completed 06.19-01-PLAN.md
+last_updated: "2026-11-09T14:46:11.867Z"
 last_activity: 2026-11-09
-last_activity_desc: "Phase 06.18 shipped as PR #336"
-state_head: ac66af10e9f14f67fb24b7435218e4c48939f9e8
+last_activity_desc: Phase 06.19 execution started
+state_head: 4a70b5f742b0827459b17ac3048e5004163acd6a
 progress:
   total_phases: 25
   completed_phases: 21
   total_plans: 151
-  completed_plans: 150
+  completed_plans: 151
 milestone_name: milestone
 ---
 
@@ -24,14 +24,14 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.19 — Table honours Meta.sequence and drops the empty actions column
+**Current focus:** Phase 06.19 — Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337)
 
 ## Current Position
 
-Phase: 06.19 (Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337)) — READY TO EXECUTE
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-11-09 -- Phase 06.18 shipped as PR #336
+Phase: 06.19 (Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337)) — EXECUTING
+Plan: 1 of 1
+Status: Phase complete — ready for verification
+Last activity: 2026-11-09 — Phase 06.19 execution started
 
 Next: Phase 06.19 ($gsd-plan-phase 06.19); then Phase 7 ($gsd-discuss-phase 7)
 
@@ -817,6 +817,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P11 | 20 min | 2 tasks | 9 files |
 | Phase 06.18 P12 | 28 min | 2 tasks | 10 files |
 | Phase 06.18 P13 | 10min | 2 tasks | 5 files |
+| Phase 06.19 P01 | 6 min | 3 tasks | 5 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1053,6 +1054,9 @@ Recent decisions affecting current work:
 - [Phase 06.18]: 06.18-12: the ancestor Breaking entry is paired with docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets (h4 subsection nested-write-database-selection for the instance-hinted selector) and an executed Guardian approve-pair migration fence
 - [Phase 06.18]: 06.18-12: cross-series failures in two prior-plan test modules (crispy < 2.7 filter helper, Django 4.2 AdminEmailHandler report) were fixed in fixtures, not the package, and the whole replay rerun at 5829cae7
 - [Phase 06.18]: Guardian request gates raise ImproperlyConfigured on a missing own cv_permission key (named ViewSet/view/key + migrate/restart hint); GuardianObjectPermissionMixin.cv_has_access denies every actor, mirroring core #318 (G-06.18-2)
+- [Phase 06.19]: Table honours Meta.sequence and appends actions last unless the sequence names it; no Meta.sequence keeps ('...', 'actions') (#337)
+- [Phase 06.19]: cv_list_actions = None is the only view-side opt-out for the actions column; [] and () keep the empty column, decision is static (#337)
+- [Phase 06.19]: Table exclude merge combines Meta.exclude, caller exclude and actions with an order-preserving dict.fromkeys dedupe (#337)
 
 ### Pending Todos
 
@@ -1123,6 +1127,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T14:12:11.253Z
-Stopped at: Phase 06.19 context gathered
-Resume file: .planning/phases/06.19-table-honours-meta-sequence-and-drops-the-empty-actions-colu/06.19-CONTEXT.md
+Last session: 2026-11-09T14:46:09.119Z
+Stopped at: Completed 06.19-01-PLAN.md
+Resume file: None

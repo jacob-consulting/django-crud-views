@@ -5,10 +5,10 @@ current_phase: "06.18"
 current_phase_name: Ancestor authorization for nested ViewSets
 status: verifying
 stopped_at: Completed 06.18-12-PLAN.md
-last_updated: "2026-11-09T08:32:45.693Z"
+last_updated: "2026-11-09T08:49:21.765Z"
 last_activity: 2026-11-09
 last_activity_desc: Phase 06.18 plan 12 complete
-state_head: 741830cf9f1b658a9535fced7ee1ad55366f3e92
+state_head: a39efcc7d4c352f6d557852ed75970eb559c33aa
 progress:
   total_phases: 24
   completed_phases: 21
@@ -1078,6 +1078,7 @@ None yet.
 | 261104-h24 | Add protected delete-preview links to the Library example | 2026-11-04 | e8f5a0e | [261104-h24-add-a-protected-delete-preview-links-exa](./quick/261104-h24-add-a-protected-delete-preview-links-exa/) |
 | 261109-9rw | Update examples app for 06.18 ancestor authorization (nested Guardian example + core nested grants) | 2026-11-09 | 0cb0cb47 | [261109-9rw-update-examples-app-for-06-18-ancestor-a](./quick/261109-9rw-update-examples-app-for-06-18-ancestor-a/) |
 | 261109-bf5 | Fix core ViewSet.default_permissions vocabulary N+1 (one ContentType read per permission row) | 2026-11-09 | 741830cf | [261109-bf5-fix-core-viewset-default-permissions-voc](./quick/261109-bf5-fix-core-viewset-default-permissions-voc/) |
+| 261109-bvq | Refresh 06.18-COSTS.md from post-fix evidence (plain cold vocabulary + Guardian guard/rest split after WR-01) | 2026-11-09 | a39efcc7 | [261109-bvq-refresh-06-18-costs-md-from-post-fix-evi](./quick/261109-bvq-refresh-06-18-costs-md-from-post-fix-evi/) |
 
 ### Roadmap Evolution
 

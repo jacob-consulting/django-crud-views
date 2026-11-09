@@ -99,6 +99,26 @@ class AuthorTable(Table):
 | `NaturalDayColumn` | Date rendered as natural day (e.g. "today", "yesterday") |
 | `NaturalTimeColumn` | DateTime rendered as natural time (e.g. "2 hours ago") |
 
+### Column order and the actions column
+
+`Table` adds an `actions` column for the row actions (`cv_list_actions`). Without a `Meta.sequence` the declared
+columns come first and `actions` last. Declare `Meta.sequence` to order columns yourself; `actions` is appended
+after it unless you place it explicitly:
+
+```python
+class AuthorTable(Table):
+    last_name = tables.Column()
+    first_name = tables.Column()
+
+    class Meta:
+        sequence = ("last_name", "...")  # last_name, first_name, actions
+```
+
+A list view with `cv_list_actions = None` renders no actions column. An empty list keeps the column. This follows
+the view's configuration, not the current user's permissions: a user who can reach none of the configured actions
+still sees the (empty) column. To drop the column for other reasons, exclude it on the table:
+`Meta.exclude = ("actions",)`.
+
 ### Pagination
 
 The table (`crud_views/table/bootstrap5.html`) and the [card list](card-list-view.md)

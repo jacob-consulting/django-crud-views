@@ -467,7 +467,7 @@ cv_publisher_file = ViewSet(
 class PublisherFileListView(ResourceViewMixin, ListViewTableMixin, ListView):  # Read: Publisher view
     cv_viewset = cv_publisher_file
     table_class = PublisherFileTable
-    cv_list_actions = []
+    cv_list_actions = None  # no row actions: the Actions column is omitted
 ```
 
 ## A note on pydantic warnings

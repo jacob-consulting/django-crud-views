@@ -378,6 +378,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Changed
 
+- `Table` now honours a subclass's `Meta.sequence` and appends the `actions` column after it unless the sequence
+  names `actions` itself; tables without a `Meta.sequence` keep the previous order (declared columns, then
+  `actions`). A list view with `cv_list_actions = None` no longer renders an empty "Actions" column: `actions` is
+  excluded, merged with `Meta.exclude`. An empty list keeps the column as before. The decision is static; the
+  current user's access is not consulted. `Meta.exclude = ("actions",)` remains a table-side opt-out. A
+  `Meta.sequence` that was silently ignored before now takes effect (#337).
+
 - Full-page workflow actions now participate in the shared form frame, including the no-transitions message.
   History remains first and outside that frame; a table-only responsive wrapper keeps wide history scrolling
   local. Copied action templates need the frame inheritance to participate; see the

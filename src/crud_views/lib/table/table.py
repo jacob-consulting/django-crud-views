@@ -30,12 +30,15 @@ class Table(TableWithViewContext):
     @classmethod
     def cv_default_sequence(cls) -> tuple[str, ...]:
         """The ``sequence`` used when the caller passes none: a declared ``Meta.sequence`` with ``actions`` appended
-        unless it names it already, else the historical ``("...", "actions")`` (actions last)."""
+        unless it names it already, else the historical ``("...", "actions")`` (actions last). A declared sequence
+        without ``"..."`` gets one inserted before ``actions`` so unlisted columns stay ahead of it."""
         declared = tuple(cls._meta.sequence or ())
         if not declared:
             return ("...", "actions")
         if "actions" in declared:
             return declared
+        if "..." not in declared:
+            declared = (*declared, "...")  # django-tables2 would otherwise append its own "..." after actions
         return (*declared, "actions")
 
     @staticmethod

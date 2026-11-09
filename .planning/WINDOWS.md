@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 1
+open_count: 0
 waived_count: 9
-fixed_count: 33
+fixed_count: 34
 total_count: 43
-last_updated: 2026-11-09T08:31:39.895Z
+last_updated: 2026-11-09T08:48:22.336Z
 ---
 
 # Broken Windows Ledger
@@ -57,7 +57,7 @@ last_updated: 2026-11-09T08:31:39.895Z
 | 40 | 06.18 | unmet-truth | src/crud_views/lib/view/base.py |  | Found during 06.18-06: CrudView.get_context_data applies _scope_child_queryset only when object_list is not a keyword; django-filter's BaseFilterView.get passes object_list=..., so a nested ListViewTableFilterMixin list whose get_queryset omits the parent filter lists other parents' rows (ANCE-05, 06.18-05 seam; see deferred-items.md). Default ViewSet querysets already filter. | fixed |  | 2026-11-08T20:21:21.236Z | 2026-11-08T20:57:48.948Z |
 | 41 | 06.18 | deviation | tests/test1/test_ancestor_resolution.py |  | 06.18-12: filtered fixtures gained the documented formhelper_class; crispy-forms < 2.7 (Django 4.2 env, 6.0 crispy floor) cannot render a filter form without one (5829cae7) | fixed |  | 2026-11-08T23:03:55.290Z | 2026-11-08T23:04:01.046Z |
 | 42 | 06.18 | deviation | tests/test1/test_ancestor_databases.py |  | 06.18-12: Django 4.2 AdminEmailHandler error report read the refused queryset after the refusal; module no-ops the handler so no-shard-SQL captures measure package work (5829cae7) | fixed |  | 2026-11-08T23:03:55.439Z | 2026-11-08T23:04:01.260Z |
-| 43 | 06.18 | deviation | .planning/phases/06.18-ancestor-authorization-for-nested-viewsets/06.18-COSTS.md |  | COSTS.md not refreshed by quick 261109-bf5: plain cold totals pre-fix and Guardian guard/rest split predates WR-01 76fdc7ff; refresh from evidence/261109-bf5/cost-observations (deferred-items.md) | open |  | 2026-11-09T08:31:39.895Z |  |
+| 43 | 06.18 | deviation | .planning/phases/06.18-ancestor-authorization-for-nested-viewsets/06.18-COSTS.md |  | COSTS.md not refreshed by quick 261109-bf5: plain cold totals pre-fix and Guardian guard/rest split predates WR-01 76fdc7ff; refresh from evidence/261109-bf5/cost-observations (deferred-items.md) | fixed |  | 2026-11-09T08:31:39.895Z | 2026-11-09T08:48:22.336Z |
 
 ````json
 [
@@ -575,10 +575,10 @@ last_updated: 2026-11-09T08:31:39.895Z
     "file": ".planning/phases/06.18-ancestor-authorization-for-nested-viewsets/06.18-COSTS.md",
     "line": null,
     "description": "COSTS.md not refreshed by quick 261109-bf5: plain cold totals pre-fix and Guardian guard/rest split predates WR-01 76fdc7ff; refresh from evidence/261109-bf5/cost-observations (deferred-items.md)",
-    "status": "open",
+    "status": "fixed",
     "reason": "",
     "recorded_at": "2026-11-09T08:31:39.895Z",
-    "resolved_at": null,
+    "resolved_at": "2026-11-09T08:48:22.336Z",
     "milestone": "v1.0"
   }
 ]

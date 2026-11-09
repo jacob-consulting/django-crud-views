@@ -67,6 +67,25 @@ Pre-commit hook: `ruff-format` runs on commit.
 
 After each `$gsd-ship` run, run `$gsd-map-codebase` to refresh the codebase maps before starting subsequent work.
 
+### Creating a phase worktree
+
+When asked to "create a worktree for phase 0x.yy", use `$gsd-workspace --new` with the convention below.
+Keep the phase number in the branch name; replace dots with hyphens in the workspace name and path.
+
+For phase `06.14`, the command used was:
+
+```text
+$gsd-workspace --new --name cv-phase-06-14 --repos . --strategy worktree --path /home/alex/projects/workspaces/cv-phase-06-14 --branch gsd/phase-06.14 --auto
+```
+
+Run from `/home/alex/projects/alex/django-crud-views`. Substitute the requested phase number throughout.
+The worktree starts from the source checkout's current HEAD; uncommitted changes are not copied.
+Check existing worktrees before creating one so an existing phase workspace can be reused.
+
+Open the repository subfolder as the IDE project and working directory:
+`/home/alex/projects/workspaces/cv-phase-06-14/django-crud-views`.
+The parent `cv-phase-06-14` directory is the GSD workspace container.
+
 ## Architecture
 
 ### Core Abstraction: ViewSet → CrudView

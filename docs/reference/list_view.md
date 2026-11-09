@@ -120,7 +120,8 @@ class AuthorTable(Table):
 - **No actions column:** set `exclude = ("actions",)` in `Meta`. Setting `cv_list_actions = []` on the view
   empties the column but keeps it; removing it is a table setting.
 
-Remove the column only with `Meta.exclude`: setting `actions = None` on the subclass is not supported.
+Remove the column only with `Meta.exclude`: setting `actions = None` on the subclass is not supported and fails at
+render time with `KeyError: 'actions'`, because the default sequence still names the column.
 
 ### Pagination
 

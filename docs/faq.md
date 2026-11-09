@@ -440,5 +440,6 @@ To drop the Actions column, for example on a read-only list, exclude it in the s
         exclude = ("actions",)
 ```
 
-`cv_list_actions = []` on the view only empties the column. See
+`cv_list_actions = []` on the view only empties the column, and `actions = None` on the table is not supported (it
+fails at render time with `KeyError: 'actions'`). See
 [Column order and the actions column](reference/list_view.md#column-order-and-the-actions-column).

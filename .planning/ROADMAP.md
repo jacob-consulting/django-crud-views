@@ -1457,9 +1457,12 @@ numbering. This insertion assigns the phase; detailed planning and implementatio
 **Plans:** 3 plans
 
 Plans:
+**Wave 1**
 - [ ] 06.20-01-PLAN.md — Tracer: `verbose_name` / `verbose_name_plural` fields, blank validator and `get_meta()` resolution; SC-1 unit tests and the SC-3 Guardian constructor test (wave 1)
-- [ ] 06.20-02-PLAN.md — End-to-end render surfaces (list/create header and paragraph, template_code precedence, success message, breadcrumb via `cv_book_bc`, `LinkChildColumn`, `ChildContextButton`) and the phase gates (wave 2)
 - [ ] 06.20-03-PLAN.md — Docs: `## Labels` in nested.md, breadcrumb.md variables sentence, `### Added` changelog entry, strict mkdocs (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.20-02-PLAN.md — End-to-end render surfaces (list/create header and paragraph, template_code precedence, success message, breadcrumb via `cv_book_bc`, `LinkChildColumn`, `ChildContextButton`) and the phase gates (wave 2)
 
 ### Phase 06.21: Snippet context exposes `view` and `parent_object` (#339) (INSERTED)
 

@@ -41,7 +41,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test (completed 2026-11-06)
 - [x] **Phase 06.16: Object-detail values and composition guidance (INSERTED)** - #327: readable choices, explicit help-text policy, meaningful empty values, and correct mixin composition (completed 2026-11-06)
 - [x] **Phase 06.17: Object-detail accordion initial state and tab adapters (INSERTED)** - #328: open the first accordion group and initialize tabs through theme adapters (completed 2026-11-07)
-- [ ] **Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)** - Shared ancestor enforcement under the approved design v2; planning pending.
+- [x] **Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)** - Shared ancestor enforcement under the approved design v2; planning pending. (completed 2026-11-09)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1307,7 +1307,7 @@ about genuine conflicts supported by new code evidence. Developer maintainabilit
 Full ancestor-aware navigation, Resource ancestors, nondefault nested ORM/auth support, destination-parent or
 all-membership authorization, generic mutation engines and persistent authorization caches remain out of scope.
 This insertion assigns the phase; detailed planning and implementation remain pending.
-**Plans:** 13/13 plans executed
+**Plans:** 13/13 plans complete
 
 Plans:
 **Wave 1**
@@ -1456,5 +1456,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.13.1. Workflow validation and execution | 5/5 | Complete    | 2026-11-06 |
 | 6.14. Card template insertion blocks and cards-first ViewSets | 2/2 | Complete | 2026-11-06 |
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
-| 06.18. Ancestor authorization for nested ViewSets | 13/13 | In Progress | - |
+| 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

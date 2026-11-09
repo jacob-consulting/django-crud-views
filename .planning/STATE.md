@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.18"
-current_phase_name: Ancestor authorization for nested ViewSets
-status: verifying
-stopped_at: Completed 06.18-13-PLAN.md
-last_updated: "2026-11-09T09:46:12.126Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.18 complete, ready to plan Phase 7
+last_updated: "2026-11-09T10:06:12.077Z"
 last_activity: 2026-11-09
-last_activity_desc: Phase 06.18 plan 12 complete
-state_head: 0435a4fde3336b914397e2c93fc4c97906328199
+last_activity_desc: Phase 06.18 complete, transitioned to Phase 7
+state_head: 908904c68907011344d0bc4706647f60c2ed66d9
 progress:
   total_phases: 24
   completed_phases: 21
   total_plans: 150
   completed_plans: 150
+  percent: 88
 milestone_name: milestone
 ---
 
@@ -28,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 
 ## Current Position
 
-Phase: 06.18 (Ancestor authorization for nested ViewSets) — READY FOR VERIFICATION
-Plan: 12 of 12
-Status: Phase complete — ready for verification
-Last activity: 2026-11-09 - Completed quick task 261109-bvq: Refresh 06.18-COSTS.md from post-fix evidence (plain cold vocabulary + Guardian guard/rest split after WR-01)
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-09 — Phase 06.18 complete, transitioned to Phase 7
 
 Next: phase verification for 06.18 ($gsd-verify-work 06.18), then code/security review
 
@@ -658,7 +659,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 133
+- Total plans completed: 146
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -687,6 +688,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.14 | 2 | - | - |
 | 06.16 | 3 | - | - |
 | 06.17 | 3 | - | - |
+| 06.18 | 13 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1115,5 +1117,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-09T09:46:08.025Z
-Stopped at: Completed 06.18-13-PLAN.md
+Stopped at: Phase 06.18 complete, ready to plan Phase 7
 Resume file: None

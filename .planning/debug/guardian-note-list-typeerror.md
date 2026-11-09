@@ -1,5 +1,5 @@
 ---
-status: diagnosed
+status: resolved
 trigger: "guardian-note-list-typeerror: The nested Guardian Note example (/guardian/document/<pk>/note/) renders, and its manage page shows the declared ancestor policy (Guardian provider, fallback) without the removed cv_guardian_parent_* fields. User reported: TypeError at /guardian/document/1/note/ 'NoneType' object is not iterable"
 created: 2026-11-09T09:15:00Z
 updated: 2026-11-09T09:42:00Z

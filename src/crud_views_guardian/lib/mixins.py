@@ -160,10 +160,12 @@ class GuardianQuerysetMixin:
     Overrides has_permission() to always return True — queryset filtering is
     the sole access control mechanism for list views.
 
-    Overrides cv_has_access() to return True for every active actor without a
-    model permission — the list page is always accessible; queryset filtering is
-    the sole gate. This ensures "list" and "parent" context action buttons are
-    visible regardless of whether an object is provided.
+    Overrides cv_has_access() to return True, without a model permission, for every
+    actor that is not an inactive authenticated user (anonymous actors included;
+    their configured anonymous behavior applies at request time) when the
+    permission key is present — the list page is always accessible; queryset
+    filtering is the sole gate. This ensures "list" and "parent" context action
+    buttons are visible regardless of whether an object is provided.
 
     A cv_permission key missing from the ViewSet's permission map (e.g. an unapplied migration) makes
     get_queryset() raise ImproperlyConfigured instead of returning any rows, and cv_has_access() return False

@@ -28,7 +28,7 @@ checks that call it, each where it is reached:
 
 * the selected ancestor gates of ``ancestors._authorize_ancestors`` and the bounded helper
   ``ancestors._immediate_parent_access`` (a level nearest-only mode does not select is never touched);
-* the endpoint's own gates after ancestry: Guardian object gates and list filters
+* the endpoint's own gates after ancestry: Guardian object gates, list filters and the list access helper
   (``GuardianObjectPermissionMixin`` / ``GuardianQuerysetMixin``), core permission-required checks
   (``CrudViewPermissionRequiredMixin``, including the all-none early actor admission) and nested manage pages
   (group gate, permission rows and holder diagnostics).

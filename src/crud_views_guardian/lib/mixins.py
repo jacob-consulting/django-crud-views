@@ -199,6 +199,8 @@ class GuardianQuerysetMixin:
     def cv_has_access(cls, user, obj=None):
         if _guardian_inactive_actor(user):
             return False
+        # nested: the vocabulary read must be on default, as the core and object helpers require (06.18)
+        _check_nested_auth(cls, actor=user, model=cls.cv_viewset.model)
         # a missing key hides the link, as the core helper does; the request itself raises in get_queryset()
         return bool(cls.cv_viewset.permissions.get(cls.cv_permission))
 

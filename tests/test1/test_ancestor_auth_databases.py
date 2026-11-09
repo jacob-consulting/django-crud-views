@@ -629,6 +629,20 @@ def test_guardian_object_access_helper_refuses_nested_shard_auth_records(adb, wo
     adb.GTDetail.cv_has_access(user, world.book)  # top-level: routed as before, no boundary
 
 
+def test_guardian_list_access_helper_refuses_nested_shard_auth_records(adb, world, routes):
+    """The list helper reads the permission vocabulary, so it applies the same boundary as its siblings."""
+    user = _actor("aa_lg_list_helper")
+    assert adb.GList.cv_has_access(user, None) is True
+    assert adb.GTList.cv_has_access(user, None) is True
+    routes.read[Permission] = "shard"
+    with pytest.raises(ImproperlyConfigured, match=REFUSED):
+        adb.GList.cv_has_access(user, None)  # warm vocabulary cache
+    adb.gloc._default_permissions = None
+    with pytest.raises(ImproperlyConfigured, match=REFUSED):
+        adb.GList.cv_has_access(user, None)  # cold vocabulary cache: refused before the read
+    adb.GTList.cv_has_access(user, None)  # top-level: routed as before, no boundary
+
+
 def _manage_url(adb, vs):
     return _local_url(adb, vs, "manage", pk=False)
 

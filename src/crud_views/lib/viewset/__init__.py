@@ -479,8 +479,8 @@ class ViewSet(BaseModel):
             # as a suffix (not split on the first match) so a custom permission whose codename
             # contains "_<model>" before its end parses fully, e.g. "change_book_status" stays
             # "change_book_status" instead of being truncated to "change" for model "book".
-            action = permission.codename.removesuffix(f"_{permission.content_type.model}")
-            permissions[action] = f"{permission.content_type.app_label}.{permission.codename}"
+            action = permission.codename.removesuffix(f"_{content_type.model}")
+            permissions[action] = f"{content_type.app_label}.{permission.codename}"
         if permissions:
             self._default_permissions = permissions
         return permissions

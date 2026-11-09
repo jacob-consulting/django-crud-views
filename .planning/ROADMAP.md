@@ -1364,10 +1364,12 @@ Plans:
 
 ### Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (#337) (INSERTED)
 
-**Goal:** `crud_views.lib.table.Table` respects a subclass's `Meta.sequence` (appending `actions` last unless the
-sequence names it) and omits the `actions` column when the owning view declares `cv_list_actions = None`, with no
-change for tables without a `Meta.sequence`, an empty list keeping today's column, and no per-user permission work
-during table construction. Issue [#337](https://github.com/jacob-consulting/django-crud-views/issues/337).
+**Goal (re-scoped 2026-11-09):** `crud_views.lib.table.Table` uses a subclass's declared `Meta.sequence` as written
+instead of overriding it; tables without one keep `actions` last. The actions column is configured through the
+table's django-tables2 `Meta` (`sequence`, `exclude = ("actions",)`), documented in the list view reference and FAQ.
+The original convenience logic (automatic `actions` append, `cv_list_actions = None` column removal) was built in
+06.19-01/02 and reverted (e35a6b66) under the CLAUDE.md maintainability rule: it added hidden rules and edge cases for
+what one `Meta` line expresses. Issue [#337](https://github.com/jacob-consulting/django-crud-views/issues/337).
 **Canonical specification:** [Table sequence and actions column plan](../superpowers/plans/2026-11-09-table-sequence-and-actions-column.md).
 The embedded spec, review focus and "GSD handoff: decisions and context" section are authoritative, as amended on
 2026-11-09 to the `None` opt-out; `06.19-CONTEXT.md` D-10 to D-14 win over any residual `[]` wording.
@@ -1405,8 +1407,8 @@ This insertion assigns the phase; detailed planning and implementation remain pe
 **Plans:** 2/2 plans executed
 
 Plans:
-- [x] 06.19-01-PLAN.md — `Table.cv_default_sequence()` / `cv_exclude_actions(view)` with 15 tests, `### Changed` entry, list_view.md subsection and the Resource docs example switched to `None` (#337)
-- [x] 06.19-02-PLAN.md — Gap closure: `"..."` inserted before `actions` for a `Meta.sequence` without an ellipsis (WR-01); caller `exclude` kwarg normalised (`None` -> `()`, `str` -> one-tuple) before the actions merge (WR-02/WR-03); 17 tests, docs clause, T-06.19-02 re-closed
+- [x] 06.19-01-PLAN.md — (superseded, reverted in e35a6b66) `Table.cv_default_sequence()` / `cv_exclude_actions(view)` with 15 tests, `### Changed` entry, list_view.md subsection and the Resource docs example switched to `None` (#337)
+- [x] 06.19-02-PLAN.md — (superseded, reverted in e35a6b66) Gap closure: `"..."` inserted before `actions` for a `Meta.sequence` without an ellipsis (WR-01); caller `exclude` kwarg normalised (`None` -> `()`, `str` -> one-tuple) before the actions merge (WR-02/WR-03); 17 tests, docs clause, T-06.19-02 re-closed
 
 ### Phase 06.20: ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338) (INSERTED)
 

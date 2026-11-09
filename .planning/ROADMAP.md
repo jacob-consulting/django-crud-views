@@ -1507,7 +1507,10 @@ pending.
 **Plans:** 2 plans
 
 Plans:
+**Wave 1**
 - [ ] 06.21-01-PLAN.md — `cv_get_meta()` adds `view` and lazy `parent_object`; E2E tracer (nested create header, action message) plus unit, laziness/cost, class-label scope and Http404 tests in `tests/test1/test_snippet_context.py`
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.21-02-PLAN.md — canonical `## Snippet variables` table in `docs/reference/templates.md`, links from `messages.md`/`nested.md`/`breadcrumb.md`, `### Added` changelog entry, docs guard `tests/test1/test_snippet_docs.py`
 
 ### Phase 7: Theme-surface stability policy

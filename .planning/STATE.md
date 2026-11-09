@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.20"
-current_phase_name: "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)"
-status: planning
+current_phase: "06.21"
+current_phase_name: "Snippet context exposes `view` and `parent_object` (#339) (INSERTED)"
+status: executing
 stopped_at: Phase 06.21 context gathered
-last_updated: "2026-11-09T17:56:19.708Z"
+last_updated: "2026-11-09T18:44:53.511Z"
 last_activity: 2026-11-09
 last_activity_desc: "Phase 06.19 shipped as PR #340"
-state_head: 391943c27b85b0ae2b124ad6a68e515c4f269c86
+state_head: 5f4b62f0beb2bbd94af2035c0a64c63c54d9a235
 progress:
   total_phases: 27
   completed_phases: 22
-  total_plans: 152
+  total_plans: 154
   completed_plans: 152
 milestone_name: milestone
 ---
@@ -28,9 +28,9 @@ See: .planning/PROJECT.md (updated 2026-11-09)
 
 ## Current Position
 
-Phase: 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
+Phase: 06.21 (Snippet context exposes `view` and `parent_object` (#339) (INSERTED)) — READY TO EXECUTE
 Plan: Not started
-Status: Ready to plan
+Status: Ready to execute
 Last activity: 2026-11-09 -- Phase 06.19 shipped as PR #340
 
 Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21

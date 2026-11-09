@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.19"
-current_phase_name: Table honours Meta.sequence and drops the empty actions column
-status: planning
+current_phase_name: "Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337)"
+status: executing
 stopped_at: Phase 06.19 context gathered
-last_updated: "2026-11-09T14:12:14.158Z"
+last_updated: "2026-11-09T14:35:36.332Z"
 last_activity: 2026-11-09
 last_activity_desc: "Phase 06.18 shipped as PR #336"
-state_head: 3ef8a04586e4fb9b82b55395e476870ce55ae20e
+state_head: ac66af10e9f14f67fb24b7435218e4c48939f9e8
 progress:
   total_phases: 25
   completed_phases: 21
-  total_plans: 150
+  total_plans: 151
   completed_plans: 150
 milestone_name: milestone
 ---
@@ -28,9 +28,9 @@ See: .planning/PROJECT.md (updated 2026-11-09)
 
 ## Current Position
 
-Phase: 06.19 — Table honours Meta.sequence and drops the empty actions column
+Phase: 06.19 (Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337)) — READY TO EXECUTE
 Plan: Not started
-Status: Ready to plan
+Status: Ready to execute
 Last activity: 2026-11-09 -- Phase 06.18 shipped as PR #336
 
 Next: Phase 06.19 ($gsd-plan-phase 06.19); then Phase 7 ($gsd-discuss-phase 7)

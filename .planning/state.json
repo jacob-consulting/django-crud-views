@@ -109,6 +109,11 @@
       "status": "complete"
     },
     {
+      "number": "06.19",
+      "name": "Table honours Meta.sequence and omits the Actions column for None",
+      "status": "pending"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
@@ -116,8 +121,8 @@
   ],
   "next": {
     "command": "/gsd-progress --next",
-    "label": "Advance to the next step (plan phase 7)",
-    "reason": "Phase 34 of 34 — needs a plan"
+    "label": "Advance to the next step",
+    "reason": "Phase 33 of 34 · executing"
   },
-  "updated_at": "2026-11-09T13:48:14.060Z"
+  "updated_at": "2026-11-09T14:35:36.367Z"
 }

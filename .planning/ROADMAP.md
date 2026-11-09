@@ -42,7 +42,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.16: Object-detail values and composition guidance (INSERTED)** - #327: readable choices, explicit help-text policy, meaningful empty values, and correct mixin composition (completed 2026-11-06)
 - [x] **Phase 06.17: Object-detail accordion initial state and tab adapters (INSERTED)** - #328: open the first accordion group and initialize tabs through theme adapters (completed 2026-11-07)
 - [x] **Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)** - Shared ancestor enforcement under the approved design v2; planning pending. (completed 2026-11-09)
-- [ ] **Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (INSERTED)** - #337 (tabler-test finding 26): honour `Meta.sequence`, append `actions` last, omit the column for `cv_list_actions = None`; context gathered, planning pending.
+- [x] **Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (INSERTED)** - #337 (tabler-test finding 26): honour `Meta.sequence`, append `actions` last, omit the column for `cv_list_actions = None`; context gathered, planning pending. (completed 2026-11-09)
 - [ ] **Phase 06.20: ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (INSERTED)** - #338 (tabler-test finding 28): two optional `LazyStr` fields resolved in `get_meta()`, independently for singular and plural; planning pending.
 - [ ] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
@@ -1404,7 +1404,7 @@ is additionally bound by the 2026-11-04 opt-in URL helper decision. Hiding the c
 inaccessible to the current user is out of scope by the project's maintainability rule. Downstream tabler-test
 cleanup (`OrderTableBase` sequence workaround, `AllOrdersTable.Meta.exclude`) is follow-up, not part of this phase.
 This insertion assigns the phase; detailed planning and implementation remain pending.
-**Plans:** 2/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 06.19-01-PLAN.md — (superseded, reverted in e35a6b66) `Table.cv_default_sequence()` / `cv_exclude_actions(view)` with 15 tests, `### Changed` entry, list_view.md subsection and the Resource docs example switched to `None` (#337)
@@ -1609,7 +1609,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.14. Card template insertion blocks and cards-first ViewSets | 2/2 | Complete | 2026-11-06 |
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
 | 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
-| 06.19. Table honours Meta.sequence and omits the Actions column for None | 2/2 | In Progress | - |
+| 06.19. Table honours Meta.sequence and omits the Actions column for None | 2/2 | Complete    | 2026-11-09 |
 | 06.20. ViewSet verbose_name override that every default label follows | 0/TBD | Not started | - |
 | 06.21. Snippet context exposes view and parent_object | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

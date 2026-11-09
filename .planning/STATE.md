@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.19"
-current_phase_name: "Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337) (INSERTED)"
-status: verifying
-stopped_at: Completed 06.19-02-PLAN.md
-last_updated: "2026-11-09T15:50:04.072Z"
+current_phase: "06.20"
+current_phase_name: "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)"
+status: planning
+stopped_at: Phase 06.19 complete, ready to plan Phase 06.20
+last_updated: "2026-11-09T16:53:06.508Z"
 last_activity: 2026-11-09
-last_activity_desc: Phase 06.19 execution started
-state_head: 9b5044325a16e7eb8c0e107fae4180d15d20890f
+last_activity_desc: Phase 06.19 complete, transitioned to Phase 06.20
+state_head: 52c159c18b25003f2ae7d6b11d5e720a66a2f431
 progress:
-  total_phases: 25
-  completed_phases: 21
+  total_phases: 27
+  completed_phases: 22
   total_plans: 152
   completed_plans: 152
+  percent: 81
 milestone_name: milestone
 ---
 
@@ -28,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-11-09)
 
 ## Current Position
 
-Phase: 06.19 (Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337) (INSERTED)) — EXECUTING
-Plan: 2 of 2
-Status: Phase complete — ready for verification
-Last activity: 2026-11-09 — Phase 06.19 execution started
+Phase: 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-09 — Phase 06.19 complete, transitioned to Phase 06.20
 
 Next: Phase 06.19 ($gsd-plan-phase 06.19); then Phase 7 ($gsd-discuss-phase 7)
 
@@ -664,7 +665,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 146
+- Total plans completed: 148
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -694,6 +695,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.16 | 3 | - | - |
 | 06.17 | 3 | - | - |
 | 06.18 | 13 | - | - |
+| 06.19 | 2 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1131,5 +1133,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-09T15:50:01.077Z
-Stopped at: Completed 06.19-02-PLAN.md
+Stopped at: Phase 06.19 complete, ready to plan Phase 06.20
 Resume file: None

@@ -1495,10 +1495,11 @@ view. One level only (no `ancestors` list); no `request` or `user` keys. `### Ad
 4. Class-level labels unchanged: a `cv_action_label_template_code` referencing `{{ view }}` still renders empty,
    pinning the scope decision.
 
-5. `CHANGELOG.md` gains a `### Added` entry (not Breaking; `docs/migrating-1.0.md` untouched); the three docs pages
-   list the snippet variables (`object`, `view`, `parent_object`, `verbose_name*`, `viewset`) and state that
-   action, short-action and breadcrumb labels do not get `view` or `parent_object`; `pytest tests/test1 -n auto` and
-   ruff are clean.
+5. `CHANGELOG.md` gains a `### Added` entry (not Breaking; `docs/migrating-1.0.md` untouched);
+   `docs/reference/templates.md` carries the one canonical table of snippet variables (`object`, `view`,
+   `parent_object`, `verbose_name*`, `viewset`) and states that action, short-action and breadcrumb labels do not get
+   `view` or `parent_object`, with `docs/reference/messages.md` and `docs/reference/nested.md` linking to it (D-08);
+   `pytest tests/test1 -n auto` and ruff are clean.
 **Planning handoff:** Carry the issue's decisions into context without reopening them: instance-rendered snippets
 only, `ViewContext.to_dict()` untouched, `parent_object` as a separate lazy key absent on top-level ViewSets, one
 level only. tabler-test findings 27 (#314) and 28 (Phase 06.20) are out of scope, as is restoring the richer demo

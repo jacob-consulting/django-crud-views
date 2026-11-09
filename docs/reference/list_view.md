@@ -114,6 +114,9 @@ class AuthorTable(Table):
         sequence = ("last_name", "...")  # last_name, first_name, actions
 ```
 
+A sequence without `"..."` behaves the same way: the columns it does not name follow in declaration order, then
+`actions`.
+
 A list view with `cv_list_actions = None` renders no actions column. An empty list keeps the column. This follows
 the view's configuration, not the current user's permissions: a user who can reach none of the configured actions
 still sees the (empty) column. To drop the column for other reasons, exclude it on the table:

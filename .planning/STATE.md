@@ -4,13 +4,13 @@ milestone: v1.0
 current_phase: "06.20"
 current_phase_name: "ViewSet verbose_name / verbose_name_plural override (#338)"
 status: executing
-stopped_at: Phase 06.20 context gathered
-last_updated: "2026-11-09T18:55:27.018Z"
+stopped_at: Phase 06.22 context gathered
+last_updated: "2026-11-09T20:10:55.831Z"
 last_activity: 2026-11-09
 last_activity_desc: "Phase 06.19 shipped as PR #340"
-state_head: 6dd95275e6b9676641aca683715efaf1ffbca232
+state_head: 19eab4076404ef3363817dfcce2239582da7a2ea
 progress:
-  total_phases: 27
+  total_phases: 28
   completed_phases: 22
   total_plans: 155
   completed_plans: 152
@@ -33,7 +33,7 @@ Plan: Not started
 Status: Ready to execute
 Last activity: 2026-11-09 -- Phase 06.19 shipped as PR #340
 
-Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21
+Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21, then Phase 06.22 (#341)
 
 ### Phase 06.19 completion — 2026-11-09
 
@@ -1128,6 +1128,7 @@ None yet.
 - Phase 06.17 inserted after Phase 06.16: Issue #328: open the first accordion group and initialize/dispose tabs through theme adapters; settled issue decisions are the planning handoff. (URGENT)
 - Phase 06.18 inserted after Phase 06.17: Ancestor authorization for nested ViewSets; canonical approved specification: superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md. Policy decisions remain locked; planning and implementation pending. (URGENT)
 - Phase 06.19 inserted after Phase 06.18: Table honours Meta.sequence and drops the empty actions column (tabler-test finding 26); canonical approved specification: superpowers/plans/2026-11-09-table-sequence-and-actions-column.md. Behaviour decisions are locked in its GSD handoff section; planning and implementation pending. (URGENT)
+- Phase 06.22 inserted after Phase 06.21: Custom permissions: Meta.permissions recipe and startup check for cv_permission and ancestor pair keys (#341, tabler-test finding 24) (URGENT)
 
 ## Deferred Items
 
@@ -1137,6 +1138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T17:56:10.069Z
-Stopped at: Phase 06.20 context gathered
-Resume file: .planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-CONTEXT.md
+Last session: 2026-11-09T20:10:52.310Z
+Stopped at: Phase 06.22 context gathered
+Resume file: .planning/phases/06.22-custom-permissions-meta-permissions-recipe-and-startup-check/06.22-CONTEXT.md

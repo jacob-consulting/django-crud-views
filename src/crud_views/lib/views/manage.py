@@ -138,7 +138,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         Each inheritable value shows the declared value (None = inherited) next to the effective one. Guardian's
         per-view ``cv_guardian_accept_global_perms`` is a separate, endpoint-local option (see GuardianManageView).
         """
-        from crud_views.lib.ancestors import _effective_provider
+        from crud_views.lib.ancestors import _READ, _WRITE, _effective_cascade, _effective_pair, _effective_provider
 
         viewset = self.cv_viewset
         policy = viewset.ancestor_policy
@@ -148,20 +148,10 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
 
         requests = None
         if viewset.parent is not None:
-            cascade = policy.cascade
             requests = {
-                "cascade": {
-                    "declared": cascade,
-                    "effective": crud_views_settings.ancestor_permission_cascade if cascade is None else cascade,
-                },
-                "read": {
-                    "declared": pair(policy.read),
-                    "effective": pair(policy.read or crud_views_settings.ancestor_read_permissions),
-                },
-                "write": {
-                    "declared": pair(policy.write),
-                    "effective": pair(policy.write or crud_views_settings.ancestor_write_permissions),
-                },
+                "cascade": {"declared": policy.cascade, "effective": _effective_cascade(viewset)},
+                "read": {"declared": pair(policy.read), "effective": pair(_effective_pair(viewset, _READ))},
+                "write": {"declared": pair(policy.write), "effective": pair(_effective_pair(viewset, _WRITE))},
                 "actions": {key: pair(value) for key, value in policy.actions.items()},
             }
         return {

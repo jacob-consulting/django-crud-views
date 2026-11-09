@@ -320,11 +320,24 @@ def _operation_requirements(view_class: type[CrudView]) -> AncestorPermissions:
     if key in policy.actions:
         return policy.actions[key]
     family = _operation_family(view_class)
+    if family in (_READ, _WRITE):
+        return _effective_pair(viewset, family)
+    raise ImproperlyConfigured(_missing_action_message(viewset, key, view_class))
+
+
+def _effective_pair(viewset: ViewSet, family: str) -> AncestorPermissions:
+    """The pair of ``family`` (``_READ`` or ``_WRITE``): the ViewSet's override, else the global default.
+    Shared with the manage page so it reports the pair the engine applies."""
+    policy = viewset.ancestor_policy
     if family == _READ:
         return policy.read or crud_views_settings.ancestor_read_permissions
-    if family == _WRITE:
-        return policy.write or crud_views_settings.ancestor_write_permissions
-    raise ImproperlyConfigured(_missing_action_message(viewset, key, view_class))
+    return policy.write or crud_views_settings.ancestor_write_permissions
+
+
+def _effective_cascade(viewset: ViewSet) -> bool:
+    """The ViewSet's declared cascade, else the global default. Shared with the manage page."""
+    cascade = viewset.ancestor_policy.cascade
+    return crud_views_settings.ancestor_permission_cascade if cascade is None else cascade
 
 
 def _effective_provider(viewset: ViewSet) -> str:
@@ -337,11 +350,8 @@ def _selected_gates(viewset: ViewSet, chain: list[tuple[ParentViewSet, ViewSet]]
     protected = [index for index, (_, ancestor) in enumerate(chain) if _effective_provider(ancestor) != "none"]
     if not protected:
         return {}
-    cascade = viewset.ancestor_policy.cascade
-    if cascade is None:
-        cascade = crud_views_settings.ancestor_permission_cascade
     selected = {protected[0]: "nearest"}
-    if cascade:
+    if _effective_cascade(viewset):
         selected.update(dict.fromkeys(protected[1:], "higher"))
     return selected
 

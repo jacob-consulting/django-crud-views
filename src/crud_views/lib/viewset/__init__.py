@@ -16,6 +16,7 @@ from crud_views.lib.ancestor_policy import AncestorPermissions as AncestorPermis
 from crud_views.lib.ancestor_policy import AncestorPolicy
 from crud_views.lib.ancestors import _validate_ancestor_structure, _walk_ancestors
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ViewSetNotFoundError, cv_raise
+from crud_views.lib.lazy import LazyStr
 from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
 
@@ -80,6 +81,9 @@ class ViewSet(BaseModel):
     parent: ParentViewSet | None = None
     ordering: str | None = None
     icon_header: str | None = None
+    # label override (#338): replaces model/Resource _meta names in get_meta(); None: model names
+    verbose_name: LazyStr | None = None
+    verbose_name_plural: LazyStr | None = None
     manage_view_class: str | None = None
     extends: str | None = None  # base template all views in this viewset extend
     inaccessible_actions: Literal["hide", "disable"] | None = None  # None: CRUD_VIEWS_INACCESSIBLE_ACTIONS
@@ -498,13 +502,18 @@ class ViewSet(BaseModel):
     def get_meta(self, context: ViewContext) -> dict:
         """
         Meta data plus X for template context.
+        ViewSet verbose_name* overrides win when set; resolve per call so lazy values follow the active language.
         """
         meta = self.model._meta
+        verbose_name = str(self.verbose_name) if self.verbose_name is not None else meta.verbose_name
+        verbose_name_plural = (
+            str(self.verbose_name_plural) if self.verbose_name_plural is not None else meta.verbose_name_plural
+        )
         data = {
             "viewset": self,
             "cv": self,
-            "verbose_name": capfirst(meta.verbose_name),
-            "verbose_name_plural": capfirst(meta.verbose_name_plural),
+            "verbose_name": capfirst(verbose_name),
+            "verbose_name_plural": capfirst(verbose_name_plural),
         }
         data.update(
             {

@@ -34,7 +34,7 @@ Plan: Not started
 Status: Ready to plan
 Last activity: 2026-11-09 — Phase 06.18 complete, transitioned to Phase 7
 
-Next: Phase 7 ($gsd-discuss-phase 7); before shipping 06.18 run $gsd-secure-phase 06.18 (plan 13 threats T-06.18-26..28 not yet in SECURITY.md)
+Next: Phase 7 ($gsd-discuss-phase 7); 06.18 is ready for $gsd-ship
 
 ### Phase 06.18 completion — 2026-11-09
 
@@ -1073,7 +1073,7 @@ None yet.
 
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
-- [Phase 06.18] Before shipping: run $gsd-secure-phase 06.18 — plan 13 threats T-06.18-26..28 are not yet recorded in 06.18-SECURITY.md (threats_open 0 predates them). Five review findings stay open (06.18-REVIEW-DISPOSITION.md; incremental WR-01 test-helper cache restore). Codebase maps are stale (drift gate advisory): run $gsd-map-codebase after $gsd-ship per CLAUDE.md.
+- [Phase 06.18] Security re-verified 2026-11-09 (29/29 closed, 8768f222). Five review findings stay open (06.18-REVIEW-DISPOSITION.md; incremental WR-01 test-helper cache restore). Codebase maps are stale (drift gate advisory): run $gsd-map-codebase after $gsd-ship per CLAUDE.md.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
 - Phase 06.2 retained scope complete: CR-02–CR-04 transferred to Phase 6.3 / issue #282 and closed by its 2026-11-01 verification; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transfer completed within 6.3 GUA-01 scope; broader Guardian identity compatibility remains in #286; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
 - Phase 06.7 complete: canonical verification and UAT passed; carry the dynamic Cancel helper/defaults/omission contract into Phase 7. Low query-visibility acceptance-record obligation remains open below the configured security threshold.

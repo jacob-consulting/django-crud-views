@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
-last_mapped_at: 2026-11-07
+last_mapped_commit: fe9d5d2e357159bf7ec6dd932a4767a0660c4810
+last_mapped_at: 2026-11-09
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-07
+**Analysis Date:** 2026-11-09
 
 ## Maintainability Constraint
 
@@ -57,6 +57,9 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 - Keep workflow business validation in the model's `workflow_check_transition(name, *, user)` hook (`src/crud_views_workflow/lib/mixins.py`); it should be inexpensive, side-effect-free, and raise single/list `ValidationError` messages. It supplements django-fsm availability/permission/condition gates and is not an authorization mechanism (`src/crud_views_workflow/lib/execution.py`, `tests/test1/test_workflow_execution.py`).
 - The workflow engine converts expected business/comment refusals into field errors; unrelated `ValidationError` from transition/callback code propagates as a defect. Sanitize user-visible blocker messages into plain text before adding them to forms so a `SafeString` cannot inject markup (`src/crud_views_workflow/lib/execution.py`).
 - Browser event listener errors are collected from `window` error events through `tests/js/helpers/errors.js`; DOM dispatch does not reliably rethrow them synchronously.
+- Ancestor authorization configuration uses strict Pydantic values: `AncestorPermissions` and `AncestorPolicy` set `ConfigDict(strict=True, extra="forbid")`, require complete `nearest`/`higher` pairs and reject whitespace-padded keys (`src/crud_views/lib/ancestor_policy.py`). Keep policy values free of request/user/grant state; the evaluation engine lives in `src/crud_views/lib/ancestors.py`, DB-alias handling in `src/crud_views/lib/ancestor_db.py`, Guardian adapters in `src/crud_views_guardian/lib/ancestors.py`.
+- Invalid ancestor/permission-map configuration raises `ImproperlyConfigured` at request/registration time and is surfaced by system checks in `src/crud_views/checks.py`; unavailable context (no parent, ambiguous M2M) stays unavailable rather than raising (`tests/test1/test_ancestor_helpers.py`).
+- Ancestor authorization order is a tested contract: anonymous/inactive actor and missing parent are decided before any child queryset call (`tests/test1/test_ancestor_authorization.py`).
 
 ## Logging
 
@@ -97,4 +100,4 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 
 ---
 
-*Convention analysis: 2026-11-07*
+*Convention analysis: 2026-11-09*

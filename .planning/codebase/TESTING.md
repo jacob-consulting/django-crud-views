@@ -1,15 +1,15 @@
 ---
-last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
-last_mapped_at: 2026-11-07
+last_mapped_commit: fe9d5d2e357159bf7ec6dd932a4767a0660c4810
+last_mapped_at: 2026-11-09
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-07
+**Analysis Date:** 2026-11-09
 
 ## Test Framework
 
 **Runner:**
-- Python: pytest with pytest-django, pytest-cov, pytest-xdist, pytest-random-order, and pytest-mock (`pyproject.toml`). Nox runs a Python 3.12–3.15 and Django 4.2/5.2/6.0 matrix, skipping Django 4.2 on Python 3.14+ (`noxfile.py`).
+- Python: pytest (`--strict-markers`) with pytest-django, pytest-cov, pytest-xdist, pytest-random-order, and pytest-mock (`pyproject.toml`). Nox runs a Python 3.12–3.15 and Django 4.2/5.2/6.0 matrix, skipping Django 4.2 on Python 3.14+ (`noxfile.py`).
 - JavaScript: Vitest with jsdom; Node-based browser scenarios live under `tests/browser/` (`package.json`, `vitest.config.js`).
 - Django test setup and shared fixtures live in `tests/test1/conftest.py`; root `tests/conftest.py` supplies broader test support.
 
@@ -90,6 +90,17 @@ This request-level pattern is represented in `tests/test1/test_crud.py`: exercis
 - Phase 06.16 retained final-source evidence records 10,837 passed/one existing skip on the full Django 5.2 suite and 665 focused cases each on Django 4.2/5.2/6.0. These are historical phase results, not a new full matrix run (`.planning/phases/06.16-object-detail-choice-labels-help-text-policy-empty-values-an/06.16-VERIFICATION.md`).
 - CI lint formats Markdown Python fences too. Run `ruff format --check .` and `ruff check .` before shipping documentation changes (`.github/workflows/lint.yml`).
 
+## Ancestor Authorization Coverage (Phase 06.18)
+
+- 19 modules `tests/test1/test_ancestor_*.py` (resolution, authorization, policy, boundaries, operations, ordering, redirect, manage, resources, Guardian, actors, costs, helpers, structure, databases, auth_databases, migration, docs) cover nested-ViewSet authorization through real URLs with database-backed model grants.
+- Isolation pattern: build fresh, uniquely named ViewSets inside `isolated_routes(build)` (`tests/test1/test_ancestor_authorization.py`). It installs a temporary `ROOT_URLCONF` module, then restores `_REGISTRY`, `check_module._VOCAB_CACHE`, URL caches and the ContentType cache in `finally`. Other ancestor modules import `_client`, `_url`, `_user`, `isolated_routes` from it.
+- Ordered-event spy: the `events` fixture monkeypatches `ViewSet.get_queryset` and `PermissionsMixin.has_perm` to record call order; assert authorization decisions happen before child queryset calls.
+- Query cost: `CaptureQueriesContext(connection)` pins query counts for cold/warm permission vocabulary. Set `CV_ANCESTOR_OBSERVATIONS_DIR` to write JSON observations; unset, the test only asserts normal responses.
+- Multi-database cases use the `shard` alias and routers (`tests/test1/test_ancestor_databases.py`, `tests/test1/test_ancestor_auth_databases.py`).
+- `tests/test1/test_ancestor_docs.py` executes documentation recipes; `tests/test1/test_ancestor_migration.py` covers migration/opt-out behavior.
+- Module docstrings state phase/plan scope and the contract proved; keep that header on new modules. Use `from __future__ import annotations`.
+- Test ViewSet families are composed with `type("List", (GuardianListViewPermissionRequired,), {...})` (`tests/test1/test_ancestor_helpers.py`).
+
 ## Mocking
 
 **Framework:** pytest `monkeypatch`/pytest-mock for Python; Vitest `vi` for JavaScript.
@@ -167,4 +178,4 @@ For view failures, assert response status, form errors, redirect, and unchanged 
 
 ---
 
-*Testing analysis: 2026-11-07*
+*Testing analysis: 2026-11-09*

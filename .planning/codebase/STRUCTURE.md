@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
-last_mapped_at: 2026-11-07
+last_mapped_commit: fe9d5d2e357159bf7ec6dd932a4767a0660c4810
+last_mapped_at: 2026-11-09
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-07
+**Analysis Date:** 2026-11-09
 
 ## Directory Layout
 
@@ -50,6 +50,12 @@ django-crud-views/
 - Contains: Base mixin, metaclass, context, action/menu grouping, buttons, card configuration, label modes, variants and visibility resolution.
 - Key files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/action_menu.py`, `src/crud_views/lib/view/buttons.py`.
 - Form Cancel URL resolution lives in `src/crud_views/lib/view/base.py`; the template-tag API is in `src/crud_views/templatetags/crud_views.py`, and button data/rendering is in `src/crud_views/lib/view/button_data.py` plus `src/crud_views/templates/crud_views/tags/button/form.html`.
+
+**`src/crud_views/lib/ancestors.py`, `ancestor_policy.py`, `ancestor_db.py`:**
+- Purpose: Ancestor authorization for nested ViewSets (engine, policy values, default-database boundary).
+- Contains: `_authorize_ancestors`, `_walk_ancestors`, `_validate_child_parent`, `_scope_child_queryset`; `AncestorPolicy`/`AncestorPermissions`; `_check_nested_*` database guards.
+- Key files: `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/ancestor_db.py`, `src/crud_views_guardian/lib/ancestors.py` (Guardian provider).
+- Tests: `tests/test1/test_ancestor_*.py`, `tests/test1/test_guardian_*.py`, `tests/test1/test_nested_viewset.py`; docs in `docs/reference/nested.md`.
 
 **`src/crud_views/lib/deletion.py` and `src/crud_views/templates/crud_views/snippets/delete/`:**
 - Purpose: Build bounded related-object delete previews and render blocked relationships.
@@ -111,6 +117,12 @@ django-crud-views/
 **`.planning/`:**
 - Purpose: GSD planning lifecycle, phase artifacts, research, codebase analyses and project-level state.
 - Contains: `.planning/codebase/`, `.planning/phases/`, `.planning/research/`, `.planning/quick/` and other workflow artifacts.
+
+## Test Layout Notes
+
+- `tests/test1/` holds ~280 flat `test_<feature>.py` modules (ancestor, button, cancel, card, formsets, guardian, workflow, resource, pipeline, docs-sync checks); sub-packages `tests/test1/od/` (object detail) with fixtures in `tests/test1/od_app/`, test models in `tests/test1/app/models.py`, project settings in `tests/test1/project/`.
+- `tests/browser/` holds Node `*.test.cjs` browser tests with Python fixture servers (`*_server.py`); `tests/js/` vitest units; `tests/js-integration/` integration.
+- Docs tests (`test_*_docs.py`) execute marked snippets from `docs/reference/*.md`. `examples/bootstrap5/` has its own `pytest.ini`, `test_docs_sync.py`, `test_i18n.py`.
 
 ## Detail and Composition Navigation
 
@@ -184,6 +196,7 @@ django-crud-views/
 - Tests: Add Python behavior tests in the nearest `tests/test1/` feature module; extend browser tests under `tests/js/` or `tests/js-integration/` when client behavior changes.
 - User-facing theme: Add/update the corresponding template in `src/crud_views/templates/crud_views/`, Python template-tag/context support in `src/crud_views/templatetags/` or `src/crud_views/lib/view/`, and static behavior in `src/crud_views/static/crud_views/`.
 - Interactive object-detail layouts: Put markup in `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/<layout>/`. For tabs, use the existing scoped lifecycle bridge in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and `cv.adapters.tab`; for accordion markup, preserve Bootstrap Collapse data attributes and render initial selected state from `presentation.selected` in the template.
+- Nested/ancestor authorization changes: edit `src/crud_views/lib/ancestors.py` (engine), `src/crud_views/lib/ancestor_policy.py` (config values), `src/crud_views/lib/ancestor_db.py` (database boundary); add tests as `tests/test1/test_ancestor_<aspect>.py` and update `docs/reference/nested.md`.
 - Demonstration: Add or update an example app under `examples/bootstrap5/<feature>/` and connect it through `examples/bootstrap5/project/`.
 - For form cancellation behavior, extend the request-aware resolver in `src/crud_views/lib/view/base.py` and its focused tests; preserve template access through `{% cv_cancel_url %}`.
 - For deletion relationship previews, change the collector/summary behavior in `src/crud_views/lib/deletion.py` and the corresponding partials in `src/crud_views/templates/crud_views/snippets/delete/`; keep protected references as plain labels and preserve the display budget.
@@ -229,4 +242,4 @@ django-crud-views/
 
 ---
 
-*Structure analysis: 2026-11-07*
+*Structure analysis: 2026-11-09*

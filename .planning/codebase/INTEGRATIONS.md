@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
-last_mapped_at: 2026-11-07
+last_mapped_at: 2026-11-09
+last_mapped_commit: fe9d5d2e357159bf7ec6dd932a4767a0660c4810
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-07
+**Analysis Date:** 2026-11-09
 
 ## APIs & External Services
 
@@ -33,6 +33,7 @@ last_mapped_at: 2026-11-07
   - SDK/Client: `guardian`
   - Auth: Host user model, auth backends, and Guardian permissions
 - django-ordered-model enables ordered actions when host models use it (`pyproject.toml`).
+- django-pipeline optionally bundles registered assets; with `CRUD_VIEWS_ASSETS_BUNDLED` tags emit only external entries (`src/crud_views/lib/pipeline.py`, `src/crud_views/lib/assets.py`, `src/crud_views/management/commands/cv_assets.py`). CSP nonce attribute via `CRUD_VIEWS_CSP_NONCE_ATTR`; SRI hashes supported on registered assets.
 
 **Caller-provided resource sources:**
 - `Resource` and `ResourceViewMixin` expose caller-defined data, including external API or filesystem sources (`src/crud_views/lib/resource.py`). The package supplies no provider SDK or adapter; callers implement `cv_get_items()` and optionally `cv_get_item()`.
@@ -81,6 +82,9 @@ last_mapped_at: 2026-11-07
 - Documentation uses Read the Docs and MkDocs (`.readthedocs.yaml`, `mkdocs.yml`).
 
 **CI Pipeline:**
+- GitHub Actions (`tests.yml`, `lint.yml`, `docs.yml`, `js.yml`, `publish.yml`, `demo.yml`, `readme-examples.yml`) run test matrices; actions are SHA-pinned and Dependabot-managed (`.github/dependabot.yml`)
+- `demo.yml` deploys release tags to Render via the Render API (secrets `RENDER_API_KEY`, `RENDER_SERVICE_ID`, var `DEMO_URL`) and resets demo data daily by cron
+- Local dev: Cloudflare tunnel via `cloudflare/cloudflared` container, token `TUNNEL_TOKEN` in `dev/.env` (`dev/docker-compose.yaml`, `task cf`)
 - GitHub Actions under `.github/workflows/` run test matrices, lint, docs, JS checks, and release publication.
 - Ruff formats Markdown Python fences as well as Python modules; CI runs `ruff format --check .` and `ruff check .` (`.github/workflows/lint.yml`).
 - Release uses PyPI trusted publishing (`.github/workflows/publish.yml`); coverage uploads to Codecov (`.github/workflows/tests.yml`).
@@ -103,4 +107,4 @@ last_mapped_at: 2026-11-07
 
 ---
 
-*Integration audit: 2026-11-07*
+*Integration audit: 2026-11-09*

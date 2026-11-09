@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: 8e1298538ef8e45fcc5c6eede15e3c6c3c067271
-last_mapped_at: 2026-11-07
+last_mapped_commit: fe9d5d2e357159bf7ec6dd932a4767a0660c4810
+last_mapped_at: 2026-11-09
 ---
-<!-- refreshed: 2026-11-07 -->
+<!-- refreshed: 2026-11-09 -->
 
 # Architecture
 
-**Analysis Date:** 2026-11-07
+**Analysis Date:** 2026-11-09
 
 ## System Overview
 
@@ -52,6 +52,10 @@ last_mapped_at: 2026-11-07
 | Guardian extension | Object permission-aware ViewSet, view mixins, permission management screens | `src/crud_views_guardian/lib/` |
 | Resource abstraction | Pydantic-backed, non-ORM row contract for read-oriented views | `src/crud_views/lib/resource.py` |
 | Startup validation | Django checks over registered ViewSets, views, templates, asset declarations and extension configuration | `src/crud_views/checks.py`, `src/crud_views_workflow/checks.py`, `src/crud_views_guardian/checks.py` |
+| Ancestor authorization engine | Request-local guard for nested ViewSets: static ancestry validation, actor admission, outermost-inward ancestor resolution and permission gates, child/parent membership checks | `src/crud_views/lib/ancestors.py` |
+| Ancestor policy values | Strict Pydantic `AncestorPolicy` / `AncestorPermissions` (provider, cascade, read/write/action permission pairs) | `src/crud_views/lib/ancestor_policy.py` |
+| Nested default-database boundary | Refuses non-`default` aliases for nested ORM data, writes and authorization records | `src/crud_views/lib/ancestor_db.py` |
+| Guardian ancestor provider | Object-permission gate for a `GuardianViewSet` used as an ancestor | `src/crud_views_guardian/lib/ancestors.py` |
 | Delete preview and protection | Bounded related-object preview, protected-row labels, and deletion lifecycle integration | `src/crud_views/lib/deletion.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/templates/crud_views/snippets/delete/` |
 
 ## Pattern Overview
@@ -63,6 +67,7 @@ last_mapped_at: 2026-11-07
 - Form Cancel navigation is resolved per request through `cv_get_cancel_url()` and exposed to the form-button renderer; resolution accounts for access, nested objects, and request origin/query state (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/button_data.py`).
 - Protected-delete previews have a bounded display budget and render protected-object references as plain labels (`src/crud_views/lib/deletion.py`, `src/crud_views/templates/crud_views/snippets/delete/protected_objects.html`).
 - Workflow transitions use the shared form-frame and themeable presentation contracts; the documented opt-in page gate uses explicit transition rules and is covered by request tests (`src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/templates/crud_views_workflow/`, `tests/test1/`).
+- Nested requests pass through one ancestor-authorization guard (`_authorize_ancestors`) before any endpoint work: it resolves each ancestor through its own ViewSet queryset, applies per-ancestor permission gates (provider `model`, `guardian` or `none`; full cascade or nearest-only) and stores the resolved chain on the view instance (`src/crud_views/lib/ancestors.py`). Top-level requests do no ancestor work.
 - `CrudViewMetaClass` performs registration during class creation; consumers include the ViewSet's `urlpatterns` from their Django URL configuration.
 - Concrete request handlers combine the package's `CrudView` mixin with Django generic CBVs; permission-required classes add `CrudViewPermissionRequiredMixin`.
 - The core theme is implemented in Django templates and template tags. App-contributed behavior can add static assets through `register_assets()` from an app's `AppConfig.ready()`.
@@ -123,6 +128,17 @@ last_mapped_at: 2026-11-07
 4. Object querysets are obtained from the ViewSet and filtered by parent attributes for nested ViewSets; Resource-based views instead use resource-specific mixins and row-provider methods (`src/crud_views/lib/resource.py`).
 5. The CBV renders a full page or configured content partial; template tags resolve the view context and render theme components (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/`).
 
+### Nested Request Path (ancestor authorization)
+
+1. `CrudView.dispatch()` calls `_cv_ancestor_guard()`; permission-required views reach the engine through `CrudViewPermissionRequiredMixin.dispatch`, Guardian views through `GuardianParentPermissionMixin.dispatch`, manage views through `ManageView.dispatch` (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/`, `src/crud_views_guardian/lib/mixins.py`).
+2. `_authorize_ancestors(view)` validates declared ancestry via `_walk_ancestors` (bounded, no DB), selects the operation's permission pair from `_operation_family` (finite table; custom actions need an exact `ancestor_policy.actions` entry) and the gated levels (`src/crud_views/lib/ancestors.py`).
+3. Actor admission runs before any lookup via `_cv_ancestor_actor_response(protected=...)`: anonymous gets login redirect (Guardian: configured 403/404), inactive 403.
+4. Ancestors resolve outermost inward through each ViewSet's queryset (404 when missing); each selected gate checks `ancestor_db._check_nested_auth` (default database only) then the provider (403 on denial).
+5. The resolved `_AncestorState` is cached on the view; `cv_get_parent_object()` reuses it. `CrudView.get_object` calls `_validate_child_parent` and list views `_scope_child_queryset`, so a child queryset override cannot leak another parent's rows; Resource leaves are skipped.
+6. Nested ORM data, writes and delete aliases are restricted to the `default` database by `src/crud_views/lib/ancestor_db.py`.
+
+Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus global `CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE`, `CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS`, `CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS` in `src/crud_views/lib/settings.py`. Structure/action declaration problems surface as system checks in `src/crud_views/checks.py`. Docs: `docs/reference/nested.md`, `docs/reference/guardian.md`.
+
 ### Asset and Theme Flow
 
 1. Core assets are selected from `CrudViewsSettings`; extensions may register bundles during `AppConfig.ready()` (`src/crud_views/lib/assets.py`).
@@ -169,6 +185,11 @@ last_mapped_at: 2026-11-07
 - Examples: `src/crud_views/lib/viewset/parentviewset.py`, `examples/bootstrap5/nested/views.py`
 - Pattern: Declare a child ViewSet with a parent reference and a FK/relationship attribute; use parent-aware create behavior for new children.
 
+**AncestorPolicy:**
+- Purpose: Typed, stateless per-ViewSet configuration of ancestor authorization (strict: no coercion, no extra fields).
+- Examples: `src/crud_views/lib/ancestor_policy.py`, `ViewSet.ancestor_policy` in `src/crud_views/lib/viewset/__init__.py`
+- Pattern: `provider` / `accept_global_perms` apply when the ViewSet is an ancestor; `cascade` / `read` / `write` / `actions` apply to requests targeting it. Construction-time constraints are validated in `ViewSet._validate_ancestor_policy()`.
+
 **Resource:**
 - Purpose: Supply read-oriented table/list data without requiring a Django model.
 - Examples: `src/crud_views/lib/resource.py`, Resource view support in `src/crud_views/lib/views/`
@@ -206,6 +227,7 @@ last_mapped_at: 2026-11-07
 - **Threading:** Django request handling follows the host server's model; module registries use `threading.Lock` for registration/snapshot operations in `src/crud_views/lib/viewset/__init__.py` and `src/crud_views/lib/assets.py`.
 - **Global state:** `_REGISTRY` stores named ViewSets in `src/crud_views/lib/viewset/__init__.py`; `_REGISTRY` stores asset bundles in `src/crud_views/lib/assets.py`; settings are loaded as `crud_views_settings` in `src/crud_views/lib/settings.py`.
 - **Circular imports:** `src/crud_views/lib/resource.py` is intentionally kept as a leaf and documents that importing any `viewset` module from it triggers a cycle through `viewset/__init__.py`.
+- **Ancestor guard ordering:** The guard must run before an endpoint's own `has_permission()` or state loading; new view compositions must reach `_authorize_ancestors` via one of the existing dispatch bridges. Wave one supports only the `default` database for nested requests (`src/crud_views/lib/ancestor_db.py`).
 - **Import-time registration:** View class declarations require their ViewSet to exist first and can fail on duplicate keys/names; keep declaration/import order explicit (`src/crud_views/lib/view/meta.py`, `src/crud_views/lib/viewset/__init__.py`).
 - **Theme coupling:** The bundled presentation targets Bootstrap 5 and Django templates; theme-facing changes should update the matching template, Python context/tag contract, and browser behavior where relevant (`src/crud_views/templates/crud_views/`, `src/crud_views/lib/view/`, `src/crud_views/static/crud_views/`).
 - **Adapter boundary:** Package-owned browser modules should use semantic methods on `cv.adapters` when they implement behavior through a UI library. Object-detail tabs are explicitly marked and disposed on modal unload; accordion markup relies on Bootstrap's declarative Collapse data API instead (`src/crud_views/static/crud_views/js/adapters.js`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
@@ -239,8 +261,8 @@ last_mapped_at: 2026-11-07
 
 **Logging:** No package-wide application logging layer is present; Django and host application logging remain in control.
 **Validation:** Pydantic validates ViewSet, Resource and object-detail configuration; Django forms and startup system checks validate request data and package configuration (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/resource.py`, `src/crud_views_object_detail/lib/config.py`, `src/crud_views/checks.py`).
-**Authentication:** Core permission-required CBVs integrate Django's permission mixins; Guardian adds object-level permission checks in `src/crud_views_guardian/lib/`.
+**Authentication:** Nested requests additionally authorize every protected ancestor (`src/crud_views/lib/ancestors.py`). Core permission-required CBVs integrate Django's permission mixins; Guardian adds object-level permission checks in `src/crud_views_guardian/lib/`.
 
 ---
 
-*Architecture analysis: 2026-11-07*
+*Architecture analysis: 2026-11-09*

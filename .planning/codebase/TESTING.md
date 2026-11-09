@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: fe9d5d2e357159bf7ec6dd932a4767a0660c4810
+last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
 last_mapped_at: 2026-11-09
 ---
 # Testing Patterns
@@ -100,6 +100,11 @@ This request-level pattern is represented in `tests/test1/test_crud.py`: exercis
 - `tests/test1/test_ancestor_docs.py` executes documentation recipes; `tests/test1/test_ancestor_migration.py` covers migration/opt-out behavior.
 - Module docstrings state phase/plan scope and the contract proved; keep that header on new modules. Use `from __future__ import annotations`.
 - Test ViewSet families are composed with `type("List", (GuardianListViewPermissionRequired,), {...})` (`tests/test1/test_ancestor_helpers.py`).
+
+## Table Meta Coverage (Phase 06.19)
+
+- `tests/test1/test_table_meta.py` builds `Table` subclasses over plain dict rows with a dummy `view=object()` (no DB, no request) and asserts column order via `[c.name for c in table.columns]`.
+- Covers: default `actions` last, `Meta.sequence` used as written, `sequence` kwarg precedence over `Meta.sequence`, `Meta.exclude = ("actions",)` removing the column.
 
 ## Mocking
 

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: fe9d5d2e357159bf7ec6dd932a4767a0660c4810
+last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
 last_mapped_at: 2026-11-09
 ---
 # Codebase Structure
@@ -160,6 +160,7 @@ django-crud-views/
 - `src/crud_views/lib/assets.py`: Static asset bundles and rendering registry.
 - `src/crud_views/lib/resource.py`: Non-ORM row interface.
 - `src/crud_views/lib/deletion.py`: Bounded delete preview and protection collection.
+- `src/crud_views/lib/table/table.py`: `Table` base (view context, `actions` column, `Meta.sequence`-aware default ordering).
 
 **Presentation and Browser Behavior:**
 - `src/crud_views/templates/crud_views/`: Core theme templates and reusable partials.
@@ -171,6 +172,7 @@ django-crud-views/
 **Testing:**
 - `tests/test1/`: Python/Django tests and test app.
 - `tests/test1/test_workflow_execution.py`: public transition helper and view execution, validation/refusal, transaction, callback, and multi-database routing contracts.
+- `tests/test1/test_table_meta.py`: `Table` honours `Meta.sequence`, `sequence` kwarg precedence and `Meta.exclude` of `actions` (Phase 06.19).
 - `tests/js/`: JavaScript unit tests.
 - `tests/js-integration/`: JavaScript integration tests.
 - `tests/browser/`: Browser test harness assets.

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: fe9d5d2e357159bf7ec6dd932a4767a0660c4810
+last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
 last_mapped_at: 2026-11-09
 ---
 <!-- refreshed: 2026-11-09 -->
@@ -194,6 +194,11 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - Purpose: Supply read-oriented table/list data without requiring a Django model.
 - Examples: `src/crud_views/lib/resource.py`, Resource view support in `src/crud_views/lib/views/`
 - Pattern: Define typed Pydantic rows and implement `cv_get_items()`; do not use model write views because Resource ViewSets are explicitly read-only.
+
+**Table:**
+- Purpose: django-tables2 base table that carries the view context and an `actions` (`ActionColumn`) column.
+- Examples: `src/crud_views/lib/table/table.py`, `tests/test1/test_table_meta.py`
+- Pattern: Without a `sequence` kwarg or `Meta.sequence`, `Table.__init__` defaults to `("...", "actions")` so actions render last. A declared `Meta.sequence` is used as written (it should name `"actions"` to place it; otherwise django-tables2 places it first among unlisted columns). A caller `sequence` kwarg wins over both. Remove the column with `Meta.exclude = ("actions",)` (Phase 06.19, #337).
 
 **Presentation contract:**
 - Purpose: Pass normalized semantic action/button/context data from Python to templates.

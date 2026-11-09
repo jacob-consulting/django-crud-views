@@ -17,7 +17,9 @@ from guardian.ctypes import get_content_type
 from crud_views.lib.viewset import _REGISTRY
 from tests.lib.helper.guardian import user_guardian_object_perm
 from tests.test1.app.views import (
+    GuardianAuthorCardListView,
     GuardianAuthorDetailView,
+    GuardianAuthorListView,
     cv_author,
     cv_guardian_author,
     cv_guardian_book,
@@ -102,6 +104,18 @@ def test_missing_key_cv_has_access_denies(kind, author_douglas_adams):
     with without_permission_key(cv_guardian_author, "view"):
         assert GuardianAuthorDetailView.cv_has_access(user, author_douglas_adams) is False
         assert GuardianAuthorDetailView.cv_has_access(user, None) is False
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("view_class", [GuardianAuthorListView, GuardianAuthorCardListView])
+@pytest.mark.parametrize("kind", ["user", "superuser"])
+def test_missing_key_list_cv_has_access_denies(kind, view_class, author_douglas_adams):
+    """List and card links are hidden too, as core list views hide them; opening the list raises (Case 1)."""
+    user = _actor(kind)
+    assert view_class.cv_has_access(user, None) is True  # paired control: key present
+    with without_permission_key(cv_guardian_author, "view"):
+        assert view_class.cv_has_access(user, None) is False
+        assert view_class.cv_has_access(user, author_douglas_adams) is False
 
 
 # ── Case 4: nested list (mirrors UAT test 2) ─────────────────────────────────

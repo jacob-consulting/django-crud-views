@@ -160,9 +160,9 @@ in `viewset.permissions` — typically because a new model's migration has not b
 started with `task run`, which migrates and seeds) — a Guardian list or card request and an object request
 (detail, update, delete, action) raise `ImproperlyConfigured` naming the ViewSet, the view key and the permission
 key, and telling you to run `manage.py migrate` and restart a server started before the migration. No Guardian
-shortcut or checker ever receives the missing name, and no row or object is returned. `cv_has_access` on object
-views returns `False` for every actor, superusers included, so the hosting page renders without the control,
-matching the core behavior for
+shortcut or checker ever receives the missing name, and no row or object is returned. `cv_has_access` on object,
+list and card views returns `False` for every actor, superusers included, so the hosting page renders without the
+control, matching the core behavior for
 [missing core permission declarations](inaccessible_actions.md#missing-core-permission-declarations); opening the
 target then raises the named error. The strict `ViewSet` helpers keep their `ValueError` for invalid caller keys.
 

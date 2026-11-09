@@ -160,13 +160,14 @@ class GuardianQuerysetMixin:
     Overrides has_permission() to always return True — queryset filtering is
     the sole access control mechanism for list views.
 
-    Overrides cv_has_access() to always return True — the list page is always
-    accessible; queryset filtering is the sole gate. This ensures "list" and
-    "parent" context action buttons are always visible regardless of whether
-    an object is provided.
+    Overrides cv_has_access() to return True for every active actor without a
+    model permission — the list page is always accessible; queryset filtering is
+    the sole gate. This ensures "list" and "parent" context action buttons are
+    visible regardless of whether an object is provided.
 
     A cv_permission key missing from the ViewSet's permission map (e.g. an unapplied migration) makes
-    get_queryset() raise ImproperlyConfigured instead of returning any rows.
+    get_queryset() raise ImproperlyConfigured instead of returning any rows, and cv_has_access() return False
+    for every actor.
     """
 
     cv_guardian_accept_global_perms: bool = False
@@ -196,7 +197,10 @@ class GuardianQuerysetMixin:
 
     @classmethod
     def cv_has_access(cls, user, obj=None):
-        return not _guardian_inactive_actor(user)
+        if _guardian_inactive_actor(user):
+            return False
+        # a missing key hides the link, as the core helper does; the request itself raises in get_queryset()
+        return bool(cls.cv_viewset.permissions.get(cls.cv_permission))
 
     @classmethod
     def _cv_child_link_has_access(cls, user, parent_obj):

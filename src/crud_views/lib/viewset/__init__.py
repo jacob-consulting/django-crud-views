@@ -134,6 +134,15 @@ class ViewSet(BaseModel):
             raise ValueError(f"must map form kinds {sorted(FORM_KINDS)} to one of {sorted(LABEL_MODES)}, got {value!r}")
         return value
 
+    @field_validator("verbose_name", "verbose_name_plural")
+    @classmethod
+    def check_verbose_name(cls, value):
+        """A plain str must not be blank (#338). Lazy values are not evaluated: str() of a gettext_lazy raises
+        AppRegistryNotReady while apps load, and ViewSets are built at import time."""
+        if isinstance(value, str) and not value.strip():
+            raise ValueError(f"must not be blank, got {value!r}")
+        return value
+
     def _validate_ancestor_policy(self) -> None:
         """Owning-ViewSet constraints of ``ancestor_policy``, decidable at construction (no database, no other
         ViewSet). Called by ``register()`` before any registry or manage-view side effect."""

@@ -123,6 +123,14 @@ def test_meta_exclude_is_merged_not_replaced():
 def test_exclude_kwarg_is_merged_with_actions_exclusion():
     table = PlainTable(ROWS, view=_view(None), exclude=("first_name",))
     assert _names(table) == ["id", "last_name"]
+    bare = PlainTable(ROWS, view=_view(None), exclude=None)  # django-tables2's own default
+    assert _names(bare) == ["id", "first_name", "last_name"]
+
+
+def test_exclude_kwarg_as_string_still_hides_the_column():
+    # django-tables2 accepts `iterable or str`: a bare name must not be iterated character-wise
+    table = PlainTable(ROWS, view=_view(None), exclude="first_name")
+    assert _names(table) == ["id", "last_name"]
 
 
 def test_meta_exclude_actions_still_works_as_manual_opt_out():

@@ -43,6 +43,8 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.17: Object-detail accordion initial state and tab adapters (INSERTED)** - #328: open the first accordion group and initialize tabs through theme adapters (completed 2026-11-07)
 - [x] **Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)** - Shared ancestor enforcement under the approved design v2; planning pending. (completed 2026-11-09)
 - [ ] **Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (INSERTED)** - #337 (tabler-test finding 26): honour `Meta.sequence`, append `actions` last, omit the column for `cv_list_actions = None`; context gathered, planning pending.
+- [ ] **Phase 06.20: ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (INSERTED)** - #338 (tabler-test finding 28): two optional `LazyStr` fields resolved in `get_meta()`, independently for singular and plural; planning pending.
+- [ ] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1406,6 +1408,105 @@ Plans:
 - [x] 06.19-01-PLAN.md — `Table.cv_default_sequence()` / `cv_exclude_actions(view)` with 15 tests, `### Changed` entry, list_view.md subsection and the Resource docs example switched to `None` (#337)
 - [x] 06.19-02-PLAN.md — Gap closure: `"..."` inserted before `actions` for a `Meta.sequence` without an ellipsis (WR-01); caller `exclude` kwarg normalised (`None` -> `()`, `str` -> one-tuple) before the actions merge (WR-02/WR-03); 17 tests, docs clause, T-06.19-02 re-closed
 
+### Phase 06.20: ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338) (INSERTED)
+
+**Goal:** A ViewSet can name its objects differently from the model's `Meta`: two optional fields,
+`ViewSet(verbose_name=..., verbose_name_plural=...)`, that `ViewSet.get_meta()` resolves instead of `model._meta`, so
+every default label built from `get_meta()` (snippets, breadcrumb container item, `LinkChildColumn`,
+`ChildContextButton`) follows with no further code. Unset fields reproduce today's dict exactly.
+Issue [#338](https://github.com/jacob-consulting/django-crud-views/issues/338).
+**Canonical specification:** issue #338. Its "Proposed behaviour", "Decisions (do not reopen in planning)" and
+"Acceptance criteria" sections are authoritative; the tabler-test demo (`example/sales/views/subscriptions.py`,
+finding 28) is the motivating downstream case.
+**Requirements**: TBD
+**Depends on:** Phase 06.19
+**Scope:** `verbose_name: LazyStr | None` and `verbose_name_plural: LazyStr | None` on `ViewSet`
+(`crud_views.lib.lazy.LazyStr`, as `CardAction.label` uses); blank or whitespace-only values are a `ValidationError`
+at construction. `get_meta()` takes each override when set and the model's (or Resource's) `_meta` otherwise,
+independently for singular and plural, with no automatic pluralisation; `capfirst` and the `*_translate` keys are
+built from the resolved value as today, and a lazy value is stringified inside `get_meta()` at request time. Dict keys
+and shapes do not change. Per-view `cv_*_template_code`, `cv_breadcrumb_container_label` and
+`cv_breadcrumb_label_template_code` still win. `GuardianViewSet`, polymorphic and Resource ViewSets inherit the fields.
+`deletion.py`, `ancestors.py` and `resource.py` 404 texts keep reading `_meta`. `### Added` changelog entry, a
+"Labels" subsection in `docs/reference/nested.md`, and the variables sentence in `docs/reference/breadcrumb.md`.
+**Success criteria:**
+
+1. Unit tests on `ViewSet.get_meta()`: unset reproduces the current values for a model ViewSet and a Resource
+   ViewSet; singular-only and plural-only overrides change only their key and its `_translate` twin with `capfirst`
+   applied; a `gettext_lazy` override is translated at call time under `translation.override()`; `""` and `"  "`
+   raise `ValidationError`.
+
+2. End-to-end tests on the test project (`Book` under `Publisher`, no new ViewSets registered; see the registry-leak
+   note in PR #336's CI): with an override on `cv_book` the list header, list paragraph, create header, the
+   breadcrumb container item on a book page, the `LinkChildColumn` / `ChildContextButton` text on the publisher pages
+   and a success message all show the override; a view-level `cv_header_template_code` still beats it.
+
+3. `GuardianViewSet` accepts the fields (constructor test, no behaviour change).
+
+4. `CHANGELOG.md` gains a `### Added` entry (not Breaking; `docs/migrating-1.0.md` untouched); `docs/reference/nested.md`
+   gains the "Labels" subsection and `docs/reference/breadcrumb.md` notes that `verbose_name*` are the ViewSet's names;
+   `pytest tests/test1 -n auto` and ruff are clean.
+**Planning handoff:** Carry the issue's decisions into context without reopening them: the override lives on the
+ViewSet (not a per-view attribute, not a setting), is final (no concatenation with the model name, no fallback through
+the parent ViewSet), and model-centric texts stay on the model. tabler-test findings 27 (#314, bound by the 2026-11-04
+opt-in URL helper decision) and 29 (Phase 06.21) are out of scope, as is removing the downstream
+`cv_header_template_code` workarounds (follow-up in tabler-test). No code dependency on Phase 06.19 beyond serial
+numbering. This insertion assigns the phase; detailed planning and implementation remain pending.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 06.20 to break down)
+
+### Phase 06.21: Snippet context exposes `view` and `parent_object` (#339) (INSERTED)
+
+**Goal:** The snippets a view renders for its own page (header, paragraph, filter header, success and error message)
+can reference the view and, on a child ViewSet, the parent object: `CrudView.cv_get_meta()` adds `view` (the
+instance) and a lazy `parent_object`, so texts such as `"New order for {{ parent_object }}"` and
+`"Created {{ view.duplicate }} from {{ object }}"` render instead of coming out empty. Default snippets render
+byte for byte as today. Issue [#339](https://github.com/jacob-consulting/django-crud-views/issues/339).
+**Canonical specification:** issue #339. Its "Proposed behaviour", "Decisions (do not reopen in planning)" and
+"Acceptance criteria" sections are authoritative; the tabler-test demo (`example/sales/views/order_actions.py`,
+`orders.py`, finding 29) is the motivating downstream case.
+**Requirements**: TBD
+**Depends on:** Phase 06.20 (serial numbering; no code dependency, so a parallel worktree is acceptable)
+**Scope:** `cv_get_meta()` adds `view = self` and, when the ViewSet has a parent, `parent_object` as a
+`SimpleLazyObject` over `cv_get_parent_object()` (which reuses the parent the ancestor guard resolved for the request,
+so the common case costs no query); on a top-level ViewSet the key is absent so `{{ parent_object }}` renders empty.
+`ViewContext.to_dict()` stays `{"object": ...}`; the class-level label snippets (`cv_action_label_template[_code]`,
+`cv_action_short_label_template[_code]`, `cv_breadcrumb_label_template[_code]`, card, context and row buttons,
+`LinkChildColumn`) keep their context unchanged, because there `context.view` is the hosting page, not the labelled
+view. One level only (no `ancestors` list); no `request` or `user` keys. `### Added` changelog entry and docs in
+`docs/reference/messages.md`, `docs/reference/templates.md` and `docs/reference/nested.md`.
+**Success criteria:**
+
+1. Unit tests on `cv_get_meta()`: `data["view"] is view`; `parent_object` present on a `Book` view and equal to the
+   URL's publisher, absent on an `Author` view; `object` behaviour unchanged.
+
+2. Laziness and cost: with the ancestor guard's resolved parent present, rendering header, paragraph and message that
+   all reference `{{ parent_object }}` performs no additional parent query; a snippet that does not reference it never
+   calls `cv_get_parent_object()`.
+
+3. End-to-end on the test project without registering new ViewSets: a book create view with
+   `cv_header_template_code = "New book for {{ parent_object }}"` shows the publisher; an action view's success
+   message rendering `{{ view.<attr> }}` set during the action shows the value.
+
+4. Class-level labels unchanged: a `cv_action_label_template_code` referencing `{{ view }}` still renders empty,
+   pinning the scope decision.
+
+5. `CHANGELOG.md` gains a `### Added` entry (not Breaking; `docs/migrating-1.0.md` untouched); the three docs pages
+   list the snippet variables (`object`, `view`, `parent_object`, `verbose_name*`, `viewset`) and state that
+   action, short-action and breadcrumb labels do not get `view` or `parent_object`; `pytest tests/test1 -n auto` and
+   ruff are clean.
+**Planning handoff:** Carry the issue's decisions into context without reopening them: instance-rendered snippets
+only, `ViewContext.to_dict()` untouched, `parent_object` as a separate lazy key absent on top-level ViewSets, one
+level only. tabler-test findings 27 (#314) and 28 (Phase 06.20) are out of scope, as is restoring the richer demo
+texts (follow-up in tabler-test). This insertion assigns the phase; detailed planning and implementation remain
+pending.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 06.21 to break down)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1424,6 +1525,8 @@ Include the final protected-preview text, shared display-limit configuration and
 by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
 Phase 06.18 must also settle before this freeze; include its public ancestor-policy configuration, settings,
 diagnostics and migration contracts in the stability review.
+Phases 06.19 to 06.21 must also settle before this freeze; include the `Table` sequence/actions behaviour (#337), the
+`ViewSet` label fields (#338) and the snippet context keys `view` / `parent_object` (#339) in the stability review.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -1505,4 +1608,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
 | 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
 | 06.19. Table honours Meta.sequence and omits the Actions column for None | 2/2 | In Progress | - |
+| 06.20. ViewSet verbose_name override that every default label follows | 0/TBD | Not started | - |
+| 06.21. Snippet context exposes view and parent_object | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

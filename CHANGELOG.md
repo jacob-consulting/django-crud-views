@@ -417,6 +417,15 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Guardian missing permission declarations.** Guardian object and list gates
+  (`GuardianObjectPermissionMixin.get_object`, `GuardianQuerysetMixin.get_queryset`) now raise
+  `ImproperlyConfigured` naming the ViewSet, the view and the permission key, with a migrate/restart hint, when the
+  view's `cv_permission` key has no entry in the ViewSet's permission map (for example a model whose migration has
+  not run), instead of guardian's `TypeError`/`AttributeError`. `GuardianObjectPermissionMixin.cv_has_access`
+  denies every actor, superusers included, in that case, as the core helper does. Access is never granted on a
+  missing key; configured applications are unchanged. See
+  [permission key diagnostics](docs/reference/guardian.md#permission-key-diagnostics).
+
 - **Core `ViewSet.default_permissions` vocabulary lookup.** Permission discovery on a cold core `ViewSet` now reads
   the resolved `ContentType` once instead of once per `Permission` row (a four-permission model went from five
   `django_content_type` queries to one; `GuardianViewSet` already did this). The mapping, codename suffix stripping

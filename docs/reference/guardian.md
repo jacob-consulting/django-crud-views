@@ -155,6 +155,17 @@ keys, not a fixed CRUD list. Case, whitespace and Unicode normalization are not 
 `zebra`, `réviser`, `alpha` reports `Invalid permission key 'view'. Valid keys: 'alpha', 'réviser', 'zebra'.`
 See the executable [Guardian permission-key migration](../migrating-1.0.md#guardian-permission-keys).
 
+A view's own `cv_permission` key is checked differently from a helper's caller-supplied key. When it has no entry
+in `viewset.permissions` — typically because a new model's migration has not been applied (the example app is
+started with `task run`, which migrates and seeds) — a Guardian list or card request and an object request
+(detail, update, delete, action) raise `ImproperlyConfigured` naming the ViewSet, the view key and the permission
+key, and telling you to run `manage.py migrate` and restart a server started before the migration. No Guardian
+shortcut or checker ever receives the missing name, and no row or object is returned. `cv_has_access` on object
+views returns `False` for every actor, superusers included, so the hosting page renders without the control,
+matching the core behavior for
+[missing core permission declarations](inaccessible_actions.md#missing-core-permission-declarations); opening the
+target then raises the named error. The strict `ViewSet` helpers keep their `ValueError` for invalid caller keys.
+
 ### Inactive users
 
 A user who is logged in but whose account is inactive (`is_active = False`, possible with a backend such as

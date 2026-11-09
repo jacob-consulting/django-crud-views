@@ -60,6 +60,72 @@
         </tr>
     </table>
 
+    {% block ancestor_policy %}
+    <h4>{% translate "Ancestor policy" %}</h4>
+    <table class="table table-striped" id="cv-ancestor-policy">
+        <tr>
+            <th scope="col">{% translate "Setting" %}</th>
+            <th scope="col">{% translate "Declared" %}</th>
+            <th scope="col">{% translate "Effective" %}</th>
+        </tr>
+        {% with policy=ancestor_policy.as_ancestor %}
+        <tr>
+            <th scope="col" colspan="3">{% translate "As an ancestor of nested requests" %}</th>
+        </tr>
+        <tr>
+            <td>provider</td>
+            <td>{% if policy.provider is None %}{% translate "None (ViewSet class default)" %}{% else %}{{ policy.provider }}{% endif %}</td>
+            <td>{{ policy.effective_provider }}</td>
+        </tr>
+        <tr>
+            <td>accept_global_perms</td>
+            <td>{{ policy.accept_global_perms }}</td>
+            <td>{{ policy.accept_global_perms }}</td>
+        </tr>
+        {% endwith %}
+        <tr>
+            <th scope="col" colspan="3">{% translate "Requests to this ViewSet" %}</th>
+        </tr>
+        {% with requests=ancestor_policy.requests %}
+        {% if requests %}
+        <tr>
+            <td>cascade</td>
+            <td>{% if requests.cascade.declared is None %}{% translate "None (global setting)" %}{% else %}{{ requests.cascade.declared }}{% endif %}</td>
+            <td>{{ requests.cascade.effective }}</td>
+        </tr>
+        <tr>
+            <td>read</td>
+            <td>{% if requests.read.declared is None %}{% translate "None (global setting)" %}{% else %}nearest: {{ requests.read.declared.nearest }}, higher: {{ requests.read.declared.higher }}{% endif %}</td>
+            <td>nearest: {{ requests.read.effective.nearest }}, higher: {{ requests.read.effective.higher }}</td>
+        </tr>
+        <tr>
+            <td>write</td>
+            <td>{% if requests.write.declared is None %}{% translate "None (global setting)" %}{% else %}nearest: {{ requests.write.declared.nearest }}, higher: {{ requests.write.declared.higher }}{% endif %}</td>
+            <td>nearest: {{ requests.write.effective.nearest }}, higher: {{ requests.write.effective.higher }}</td>
+        </tr>
+        {% for key, pair in requests.actions.items %}
+        <tr>
+            <td>actions[{{ key }}]</td>
+            <td>nearest: {{ pair.nearest }}, higher: {{ pair.higher }}</td>
+            <td>nearest: {{ pair.nearest }}, higher: {{ pair.higher }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td>actions</td>
+            <td>{% translate "none declared" %}</td>
+            <td>—</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="3">{% translate "cascade, read, write, actions — not applicable: top-level ViewSet (no ancestors)" %}</td>
+        </tr>
+        {% endif %}
+        {% endwith %}
+    </table>
+    <p>{% translate "Configuration only, not an access result for the current user. Provider and accept_global_perms apply when this ViewSet is the ancestor of a nested request; cascade, read, write and actions apply to nested requests to this ViewSet. Endpoint-local permission options are separate." %}</p>
+    {% endblock ancestor_policy %}
+
     {% block guardian_config %}{% endblock guardian_config %}
 
     <h4>{% translate "Permissions" %}</h4>

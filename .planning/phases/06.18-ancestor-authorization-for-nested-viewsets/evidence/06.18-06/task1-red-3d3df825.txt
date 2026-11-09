@@ -1,0 +1,28 @@
+# Task 1 RED, source 3d3df825 (tests uncommitted), 2026-11-08T19:59:55Z
+$ PYTHONPATH="$PWD/src" .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_ancestor_databases.py tests/test1/test_ancestor_resolution.py -n 4 -q -rf
+FAILED tests/test1/test_ancestor_databases.py::test_router_selected_shard_ancestor_is_refused_before_it_is_read[list]
+FAILED tests/test1/test_ancestor_databases.py::test_explicit_shard_ancestor_queryset_is_refused
+FAILED tests/test1/test_ancestor_databases.py::test_router_selected_shard_ancestor_is_refused_before_it_is_read[detail]
+FAILED tests/test1/test_ancestor_databases.py::test_router_selected_shard_child_is_refused[detail]
+FAILED tests/test1/test_ancestor_databases.py::test_router_selected_shard_child_is_refused[list]
+FAILED tests/test1/test_ancestor_databases.py::test_router_selected_shard_child_is_refused[delete]
+FAILED tests/test1/test_ancestor_databases.py::test_router_selected_shard_child_is_refused[update]
+FAILED tests/test1/test_ancestor_databases.py::test_explicit_child_selections[Detail-override]
+FAILED tests/test1/test_ancestor_databases.py::test_colliding_rows_expose_a_wrong_copy_without_the_boundary
+FAILED tests/test1/test_ancestor_databases.py::test_explicit_child_selections[List-override]
+FAILED tests/test1/test_ancestor_databases.py::test_all_none_ancestry_still_validates_data_aliases
+FAILED tests/test1/test_ancestor_databases.py::test_explicit_child_selections[Detail-queryset-attribute]
+FAILED tests/test1/test_ancestor_databases.py::test_explicit_child_selections[List-queryset-attribute]
+FAILED tests/test1/test_ancestor_databases.py::test_nested_delete_preview_refuses_a_shard_delete_alias_before_collection
+FAILED tests/test1/test_ancestor_databases.py::test_pinned_delete_alias_is_refused_when_consumed
+FAILED tests/test1/test_ancestor_databases.py::test_outer_denial_hides_a_deeper_invalid_route
+FAILED tests/test1/test_ancestor_databases.py::test_nested_delete_preview_custom_alias
+17 failed, 38 passed in 6.53s
+exit=1
+
+# failure assertions
+      1 E                   ImportError: import error in crud_views.lib.ancestor_db: No module named 'crud_views.lib.ancestor_db'
+      1 E           Failed: DID NOT RAISE ImproperlyConfigured
+      2 E       AssertionError: delete preview collection reached
+     13 E       Failed: DID NOT RAISE ImproperlyConfigured
+      1 E       ModuleNotFoundError: No module named 'crud_views.lib.ancestor_db'

@@ -1,0 +1,62 @@
+source_sha=e3b7e4319e1b7875a7fb95a79f388f12ed8be6e6
+src_clean=0
+== .nox/tests-3-12-django-4-2/bin/python
+python 3.12.3
+Django 4.2.30
+pydantic 2.14.3
+django-guardian 3.5.2
+django-crispy-forms 2.5
+crispy-bootstrap5 2026.3
+django-tables2 3.0.1
+django-filter 25.1
+django-polymorphic 4.11.7
+django-fsm-2 4.2.4
+pytest 9.2.0
+pytest-django 4.14.0
+pytest-xdist 3.8.0
+crud_views 0.30.0 /home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py
+== .nox/tests-3-12-django-5-2/bin/python
+python 3.12.3
+Django 5.2.19
+pydantic 2.14.3
+django-guardian 3.5.2
+django-crispy-forms 2.7
+crispy-bootstrap5 2026.9
+django-tables2 3.0.1
+django-filter 26.2
+django-polymorphic 4.11.7
+django-fsm-2 4.3.0
+pytest 9.2.0
+pytest-django 4.14.0
+pytest-xdist 3.8.0
+crud_views 0.30.0 /home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py
+== .nox/crispy_floor-3-12-django-6-0/bin/python
+python 3.12.3
+Django 6.0.9
+pydantic 2.14.1
+django-guardian 3.5.2
+django-crispy-forms 2.0
+crispy-bootstrap5 2023.10
+django-tables2 3.0.1
+django-filter 26.2
+django-polymorphic 4.11.7
+django-fsm-2 4.3.0
+pytest 9.2.0
+pytest-django 4.14.0
+pytest-xdist 3.8.0
+crud_views 0.30.0 /home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py
+== .venv/bin/python
+python 3.12.3
+Django 6.1.2
+pydantic 2.14.1
+django-guardian 3.5.2
+django-crispy-forms 2.7
+crispy-bootstrap5 2026.9
+django-tables2 3.0.1
+django-filter 26.2
+django-polymorphic 4.11.7
+django-fsm-2 4.2.4
+pytest 9.2.0
+pytest-django 4.14.0
+pytest-xdist 3.8.0
+crud_views 0.30.0 /home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py

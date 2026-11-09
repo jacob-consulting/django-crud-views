@@ -15,6 +15,8 @@ class ActionView(CrudView, SingleObjectMixin, generic.View):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        # nested ViewSets: refuse a nondefault write route before any context or action work (phase 06.18)
+        self._cv_check_nested_write()
         context = self.get_context_data(object=self.object)
         self.cv_action_process(context)
         url = self.get_success_url()
@@ -25,7 +27,10 @@ class ActionView(CrudView, SingleObjectMixin, generic.View):
         Write phase of the action: action() and the success/error message + hook run inside
         cv_get_atomic(); on success cv_on_commit is scheduled to run after the commit.
         A falsy result does NOT roll back; call transaction.set_rollback(True) in action() for that.
+        A nested write route is checked here as well, before the transaction (direct callers included).
+        Ordered up/down inherit this wrapper.
         """
+        self._cv_check_nested_write()
         with self.cv_get_atomic():
             result = self.action(context)
             if result:

@@ -6,6 +6,38 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Ancestor authorization for nested ViewSets.** Every nested request, on plain and `*PermissionRequired`, Guardian
+  and manage views, now checks the ancestors named in its URL before the endpoint's own work. One shared
+  `AncestorPolicy` mechanism does it. Top-level ViewSets are unchanged, and the endpoint's own gates stay
+  independent. Defaults: Read endpoints (list, card, detail, redirect, manage) need `view` on every protected
+  ancestor. Write endpoints (create, update and delete, also their GET form, ordered up/down, polymorphic
+  create/update/delete/type selection) need `change` on the nearest and `view` above. Deleting a child needs parent
+  `change`, not `delete`. `cascade=False` checks only the nearest protected ancestor and still looks every ancestor up.
+  - The Guardian `cv_guardian_parent_permission` and `cv_guardian_parent_create_permission` fields are removed. A
+    constructor keyword or subclass declaration fails with `ValidationError`, also for `None` or an old default, and
+    nothing is translated. Their `None` (skip the check) becomes `AncestorPolicy(provider="none")` on the parent.
+  - The parent's class decides its check: a core `ViewSet` parent needs a model permission, a `GuardianViewSet`
+    parent an object grant (strict). A Guardian child under a core parent can therefore lose and gain access.
+  - A child view's `cv_guardian_accept_global_perms` no longer relaxes its ancestors. Ancestor fallback is
+    `AncestorPolicy(accept_global_perms=True)` on the ancestor `GuardianViewSet`, and the two never affect each other.
+  - Nested generic actions, custom forms and workflow views need an exact `actions` entry with a complete pair,
+    e.g. `AncestorPolicy(actions={"approve": AncestorPermissions(nearest="change", higher="view")})`. Without one,
+    `viewset.E268` fails, and the request raises `ImproperlyConfigured` in both cascade modes and with
+    all-`"none"` ancestry. Classified built-in endpoints and top-level endpoints need no entry. A top-level
+    nonempty `actions` is rejected.
+  - Nested manage pages need normal ancestry as well as their manage setting or group.
+  - Nested core `cv_get_db_alias()` now consults the router with the resolved object as `instance` hint. A router
+    that answers `default` for the model alone but another alias for that instance now causes
+    `ImproperlyConfigured` before any hook or write, including with `cv_atomic = False`. Review nested routers and
+    selectors against the default-only boundary; do not force `default`, drop the hint or strip `.using()`.
+    Top-level selection, the Delete/workflow selectors and Resource leaf loading are unchanged. See the
+    [executed router example](docs/reference/request_lifecycle.md#nested-viewsets-instance-hinted-write-routing).
+  - Unchanged boundaries: ancestors load through their ViewSet `get_queryset()` and the default database only. A
+    Resource leaf's loaders still scope their rows. URL-path authorization does not cover shared rows, parent
+    moves or other mutated objects. Links check at most the immediate parent.
+  Follow the executable [migration](docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets) and the
+  [published contract](docs/reference/nested.md#ancestor-authorization).
+
 - **Object-detail accordion defaults and tab adapters.** The first accordion group now starts open on pages
   and fresh modal loads. Copied group templates must use `presentation.selected` for button collapsed styling,
   expanded ARIA and panel visibility. Complete custom adapter maps must include both `tab.init(el)` and
@@ -384,6 +416,21 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `collapse.toggle` returns `false` while the panel is animating and the filter toggle then leaves its state alone.
 
 ### Fixed
+
+- **Guardian missing permission declarations.** Guardian object and list gates
+  (`GuardianObjectPermissionMixin.get_object`, `GuardianQuerysetMixin.get_queryset`) now raise
+  `ImproperlyConfigured` naming the ViewSet, the view and the permission key, with a migrate/restart hint, when the
+  view's `cv_permission` key has no entry in the ViewSet's permission map (for example a model whose migration has
+  not run), instead of guardian's `TypeError`/`AttributeError`. `GuardianObjectPermissionMixin.cv_has_access`
+  denies every actor, superusers included, in that case, as the core helper does.
+  `GuardianQuerysetMixin.cv_has_access` denies too, so list and card links are hidden instead of leading to the
+  error. Access is never granted on a missing key; configured applications are unchanged. See
+  [permission key diagnostics](docs/reference/guardian.md#permission-key-diagnostics).
+
+- **Core `ViewSet.default_permissions` vocabulary lookup.** Permission discovery on a cold core `ViewSet` now reads
+  the resolved `ContentType` once instead of once per `Permission` row (a four-permission model went from five
+  `django_content_type` queries to one; `GuardianViewSet` already did this). The mapping, codename suffix stripping
+  (#33), the retry of an empty result (#151) and the Resource guard are unchanged.
 
 - Default polymorphic type-selector labels capitalize the first character while preserving remaining casing,
   acronyms and lazy translations (#326). Choice IDs/order, filtering, custom forms, permissions, typed-create

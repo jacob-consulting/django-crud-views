@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import pytest
 
 from tests.test1.app.views import AuthorDeleteView
@@ -94,15 +96,19 @@ def test_disabled_guardian_child_create_request_denied(
     from tests.test1.app.views import GuardianBookCreateView
 
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
-    monkeypatch.setattr(
-        GuardianBookCreateView,
-        "cv_action_enabled",
-        classmethod(lambda cls, user, obj=None: False),
-    )
+    seen = []
+
+    def _disabled(cls, user, obj=None):
+        seen.append(obj)
+        return False
+
+    monkeypatch.setattr(GuardianBookCreateView, "cv_action_enabled", classmethod(_disabled))
     # Child-create URL is /guardian_publisher/<pk>/guardian_book/create/ (resolved via reverse).
     url = reverse("guardian_book-create", kwargs={"guardian_publisher_pk": publisher_a.pk})
     assert client_guardian.get(url).status_code == 403
     assert client_guardian.post(url, data={}).status_code == 403
+    # the parent-change ancestor gate passed, so the state hook ran — with the resolved URL parent
+    assert seen and all(obj == publisher_a and type(obj).__name__ == "Publisher" for obj in seen)
 
 
 @pytest.mark.django_db
@@ -118,12 +124,13 @@ def test_guardian_child_object_action_receives_row_not_parent(
     # A guardian CHILD object view (delete) must invoke cv_action_enabled with the ROW,
     # never the parent. GuardianParentPermissionMixin.dispatch runs for every child view,
     # so it must NOT gate object views with the parent (get_object gates them with the row).
+    # Deleting a child is a Write: the Publisher ancestor needs change (phase 06.18 default pair).
     from django.urls import reverse
 
     from tests.lib.helper.guardian import user_guardian_object_perm
     from tests.test1.app.views import GuardianBookDeleteView
 
-    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
     user_guardian_object_perm(user_guardian, cv_guardian_book, "delete", book_under_publisher_a)
 
     seen = []
@@ -141,3 +148,89 @@ def test_guardian_child_object_action_receives_row_not_parent(
     # The hook only ever saw the Book row — the parent Publisher was never passed.
     assert "Book" in seen
     assert "Publisher" not in seen
+
+
+@pytest.fixture
+def guardian_child_delete(cv_guardian_publisher, cv_guardian_book, publisher_a, book_under_publisher_a, monkeypatch):
+    """The nested Guardian Book delete URL and an ordered record of its row-state hook calls."""
+    from django.urls import reverse
+
+    from tests.test1.app.views import GuardianBookDeleteView
+
+    seen = []
+
+    def _record(cls, user, obj=None):
+        seen.append(obj)
+        return True
+
+    monkeypatch.setattr(GuardianBookDeleteView, "cv_action_enabled", classmethod(_record))
+    url = reverse(
+        "guardian_book-delete",
+        kwargs={"guardian_publisher_pk": publisher_a.pk, "pk": book_under_publisher_a.pk},
+    )
+    return SimpleNamespace(url=url, seen=seen)
+
+
+def _fresh_client(django_user_model, username, grants):
+    from django.test import Client
+
+    from tests.lib.helper.guardian import user_guardian_object_perm
+
+    user = django_user_model.objects.create_user(username=username, password="password")
+    for viewset, perm, obj in grants:
+        user_guardian_object_perm(user, viewset, perm, obj)
+    client = Client()
+    client.force_login(user)
+    return client
+
+
+@pytest.mark.django_db
+def test_guardian_child_delete_parent_view_only_is_denied_before_the_row_hook(
+    django_user_model,
+    cv_guardian_publisher,
+    cv_guardian_book,
+    publisher_a,
+    book_under_publisher_a,
+    guardian_child_delete,
+):
+    # parent view + child delete: the Write ancestor gate (parent change) denies before any child lookup/state hook
+    client = _fresh_client(
+        django_user_model,
+        "parent_view_child_delete",
+        [(cv_guardian_publisher, "view", publisher_a), (cv_guardian_book, "delete", book_under_publisher_a)],
+    )
+    assert client.get(guardian_child_delete.url).status_code == 403
+    assert client.post(guardian_child_delete.url, {"confirm": "on"}).status_code == 403
+    assert guardian_child_delete.seen == []
+    assert book_under_publisher_a.__class__.objects.filter(pk=book_under_publisher_a.pk).exists()
+
+
+@pytest.mark.django_db
+def test_guardian_child_delete_parent_change_without_child_delete_is_denied(
+    django_user_model, cv_guardian_publisher, publisher_a, book_under_publisher_a, guardian_child_delete
+):
+    # ancestry passes (parent change), the independent local object gate still denies (no child delete)
+    client = _fresh_client(django_user_model, "parent_change_only", [(cv_guardian_publisher, "change", publisher_a)])
+    assert client.get(guardian_child_delete.url).status_code == 403
+    assert client.post(guardian_child_delete.url, {"confirm": "on"}).status_code == 403
+    assert guardian_child_delete.seen == []  # the local object gate precedes the row-state hook
+    assert book_under_publisher_a.__class__.objects.filter(pk=book_under_publisher_a.pk).exists()
+
+
+@pytest.mark.django_db
+def test_guardian_child_delete_with_parent_change_and_child_delete_reaches_the_row(
+    django_user_model,
+    cv_guardian_publisher,
+    cv_guardian_book,
+    publisher_a,
+    book_under_publisher_a,
+    guardian_child_delete,
+):
+    client = _fresh_client(
+        django_user_model,
+        "parent_change_child_delete",
+        [(cv_guardian_publisher, "change", publisher_a), (cv_guardian_book, "delete", book_under_publisher_a)],
+    )
+    assert client.get(guardian_child_delete.url).status_code == 200
+    assert guardian_child_delete.seen and all(obj == book_under_publisher_a for obj in guardian_child_delete.seen)
+    assert {type(obj).__name__ for obj in guardian_child_delete.seen} == {"Book"}

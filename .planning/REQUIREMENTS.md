@@ -271,6 +271,22 @@ criteria from context/research without inventing fallback predicates or downstre
 - [x] **ODT-04**: Prove real page/modal accordion switching and close-all behavior plus stock and tabler namespace tab initialization with no bootstrap global in the alternate scenario; inspect inactive instances, keyboard wrapping/Home/End, ARIA/tab stops, insertion focus, repeat safety and disposal while attached before actual HTTP replacement (D-13–D-16).
 - [x] **ODT-05**: Publish executable factory/custom-map and copied accordion examples, preserve custom insertion guidance, pair changed-default/template/adapter migration in Breaking and migrating-1.0, and record focused/full JS, rendering, browser and docs verification with multicore broad Python and honest limits; preserve bounded scope and prior group/value behavior (D-17–D-20).
 
+### Ancestor authorization (Phase 06.18)
+
+Source: approved `superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md` effective topic sections and
+all 26 acceptance rows, carried through Phase 06.18 CONTEXT.md. Historical AUTH-04/06 parent-policy wording is
+deliberately migrated; its independent actor/state/local permission controls remain preservation requirements.
+The initial no-ID spec-less probe skip is superseded by a probe of these concrete requirements at planning.
+
+- [x] **ANCE-01**: Validate fresh typed AncestorPolicy/AncestorPermissions and exact global defaults strictly; reject malformed pairs, ineffective top-level fields, invalid provider/fallback combinations and removed constructor/subclass fields before registry/manage mutation, allowing corrected-name retry without database queries.
+- [x] **ANCE-02**: Validate declared ORM relationships and Resource-leaf structure with one bounded metadata walk shared by URL construction, checks, requests and supported helpers; self/two-node cycles and unresolved parents fail usefully when needed while valid forward declarations remain supported.
+- [x] **ANCE-03**: Select full or nearest-protected traversal from requested/global precedence and complete Read/Write or exact action pairs; cover every finite shipped family, subclasses, renamed keys, card/list literal registration and nested custom declarations in both modes including all-none ancestry.
+- [x] **ANCE-04**: Enforce one request-local engine across plain/core/Guardian/manage/Resource/extension compositions: static checks, actual early actor admission, interleaved outer lookup and selected model/object gates, then independent local work. Preserve supported denial responses, inactive/superuser/group semantics and separate ancestor fallback; denial prevents deeper lookup, state, forms and writes.
+- [x] **ANCE-05**: Resolve every ancestor through its ViewSet queryset with the actual child view/request/kwargs, validate int/UUID FK/M2M path membership and Resource-leaf scope in both modes, and reuse the immediate structural parent's model/PK/database identity for create, state and supported helpers without unfiltered retry.
+- [x] **ANCE-06**: Permit default and explicit default selections on nested ORM/auth paths; reject reached nondefault queryset/router/read/write/auth selections without rerouting, including colliding PKs, cached vocabulary, local Guardian gates, all-none ancestry and instance hints. Preserve earlier failure order and top-level routing.
+- [x] **ANCE-07**: Replace legacy Guardian parent handling and all consumers with the shared policy; preserve local object/list/create/state/composition behavior, bound rendering helpers to immediate-parent context, and enforce nested manage/redirect with independent local gates and separate diagnostics.
+- [x] **ANCE-08**: Prove URL-path mutation boundaries in both modes, fresh-request revocation, measured one-/three-ancestor costs and no top-level ancestor work; publish executable generic configuration/migration guidance with paired Breaking/migrating-1.0 updates and report actual supported-series/full-suite evidence limits.
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -442,6 +458,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ODT-04 | Phase 06.17 | Complete |
 | ODT-05 | Phase 06.17 | Complete |
 | STAB-01 | Phase 7 (plan 4) | Pending |
+| ANCE-01 | Phase 06.18 | Complete |
+| ANCE-02 | Phase 06.18 | Complete |
+| ANCE-03 | Phase 06.18 | Complete |
+| ANCE-04 | Phase 06.18 | Complete |
+| ANCE-05 | Phase 06.18 | Complete |
+| ANCE-06 | Phase 06.18 | Complete |
+| ANCE-07 | Phase 06.18 | Complete |
+| ANCE-08 | Phase 06.18 | Complete |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |
 | STAB-04 | Phase 7 (plan 4) | Pending |
@@ -450,10 +474,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 126 total
-- Mapped to phases: 126
+- v1 requirements: 134 total
+- Mapped to phases: 134
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-25*
-*Last updated: 2026-11-07 — added ODT-01–ODT-05 for the settled Phase 06.17 acceptance groups; 126 active v1 requirements mapped*
+*Last updated: 2026-11-07 — added ANCE-01–ANCE-08 for the approved Phase 06.18 contract; 134 active v1 requirements mapped*

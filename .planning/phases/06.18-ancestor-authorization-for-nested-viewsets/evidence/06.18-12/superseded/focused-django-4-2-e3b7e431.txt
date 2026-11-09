@@ -1,0 +1,20 @@
+command: PYTHONPATH=$PWD/src .nox/tests-3-12-django-4-2/bin/python -m pytest <focused selection> -n 4 -q
+source_sha=e3b7e4319e1b7875a7fb95a79f388f12ed8be6e6
+started=2026-11-08T22:43:46Z
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/views/generic/base.py", line 144, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/views/generic/list.py", line 174, in get
+    context = self.get_context_data()
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 278, in get_context_data
+    _check_nested_queryset(self, kwargs.get("object_list", getattr(self, "object_list", None)))
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestor_db.py", line 81, in _check_nested_queryset
+    _require_default_alias(queryset.db, view=view, operation=f"{queryset.model.__name__} queryset")
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestor_db.py", line 70, in _require_default_alias
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: ViewSet 'adbook69512617' view 'list': Book queryset selected database 'shard'; nested ViewSets support only the 'default' database (the selection is not rerouted)
+20 failed, 2587 passed in 104.21s (0:01:44)
+exit=1
+finished=2026-11-08T22:45:31Z

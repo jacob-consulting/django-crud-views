@@ -1,0 +1,158 @@
+{
+  "cell": "depth1-guardian",
+  "meta": {
+    "crud_views_path": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "django": "5.2.19",
+    "python": "3.12.3",
+    "source_sha": "f717e58d4b4317df58b161a2bb3acc5fafef3579",
+    "src_dirty": false
+  },
+  "observations": {
+    "full/create": {
+      "cold": {
+        "by_table": {
+          "app_publisher": 2,
+          "auth_permission": 5,
+          "auth_user": 1,
+          "django_content_type": 1,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 10
+      },
+      "warm": {
+        "by_table": {
+          "app_publisher": 2,
+          "auth_permission": 4,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 8
+      }
+    },
+    "full/list": {
+      "cold": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 2,
+          "auth_permission": 6,
+          "auth_user": 1,
+          "django_content_type": 3,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 14
+      },
+      "warm": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 2,
+          "auth_permission": 4,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 9
+      }
+    },
+    "full/object": {
+      "cold": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 2,
+          "auth_permission": 8,
+          "auth_user": 1,
+          "django_content_type": 2,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 15
+      },
+      "warm": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 2,
+          "auth_permission": 6,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 11
+      }
+    },
+    "nearest/create": {
+      "cold": {
+        "by_table": {
+          "app_publisher": 2,
+          "auth_permission": 5,
+          "auth_user": 1,
+          "django_content_type": 1,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 10
+      },
+      "warm": {
+        "by_table": {
+          "app_publisher": 2,
+          "auth_permission": 4,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 8
+      }
+    },
+    "nearest/list": {
+      "cold": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 2,
+          "auth_permission": 6,
+          "auth_user": 1,
+          "django_content_type": 2,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 13
+      },
+      "warm": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 2,
+          "auth_permission": 4,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 9
+      }
+    },
+    "nearest/object": {
+      "cold": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 2,
+          "auth_permission": 8,
+          "auth_user": 1,
+          "django_content_type": 2,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 15
+      },
+      "warm": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 2,
+          "auth_permission": 6,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "status": 200,
+        "total": 11
+      }
+    }
+  }
+}

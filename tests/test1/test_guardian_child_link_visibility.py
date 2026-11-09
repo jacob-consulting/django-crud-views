@@ -1,4 +1,12 @@
-"""Explicit-parent collection links: request parity, preserved policy and measured SQL."""
+"""Explicit-parent collection links: request parity, preserved policy and measured SQL.
+
+Phase 06.18 migration (D-19/D-28/D-34/D-41): the child's removed ``cv_guardian_parent_permission="change"`` is
+the child ViewSet's explicit Read override ``AncestorPolicy(read=CHANGE)``; the removed create override is an
+exact ``actions["create"]`` entry; the old None policy is the parent's ``AncestorPolicy(provider="none")``; a
+model-only parent grant needs the parent's own ancestor fallback. Rendering helpers consult only the immediate
+parent (``_immediate_parent_access``), which the spy below observes in place of the removed
+``_guardian_user_has_parent_perm``.
+"""
 
 import json
 import sys
@@ -17,7 +25,7 @@ from crud_views.lib.crispy import CrispyViewMixin
 from crud_views.lib.view import CardAction, ChildContextButton
 from crud_views.lib.view.visibility import cv_resolve_action
 from crud_views.lib.views import CreateViewParentMixin, ListViewPermissionRequired
-from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet
+from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, AncestorPermissions, AncestorPolicy, ParentViewSet
 from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin, GuardianQuerysetMixin
 from crud_views_guardian.lib.views import (
     GuardianCardListViewPermissionRequired,
@@ -29,6 +37,11 @@ from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.lib.helper.guardian import user_guardian_object_perm
 from tests.test1.app.models import Book, Publisher
 from tests.test1.app.views import BookForm
+
+VIEW = AncestorPermissions(nearest="view", higher="view")
+CHANGE = AncestorPermissions(nearest="change", higher="view")
+# the removed child-side cv_guardian_parent_permission="change": every Read endpoint needs parent change
+CHANGE_READ = AncestorPolicy(read=CHANGE)
 
 
 @pytest.fixture
@@ -52,7 +65,7 @@ def links():
             model=Book,
             name=names[1],
             parent=ParentViewSet(name=parent.name, attribute="publisher"),
-            cv_guardian_parent_permission="change",
+            ancestor_policy=CHANGE_READ,
             icon_header="fa-solid fa-book",
         )
 
@@ -179,9 +192,25 @@ def test_parity_child_collection(links, client, django_user_model, monkeypatch, 
 
 
 def parent_spy(monkeypatch, target):
-    spy = Mock(wraps=target._guardian_user_has_parent_perm)
-    monkeypatch.setattr(target, "_guardian_user_has_parent_perm", spy)
+    """Record ``(user, parent)`` for every bounded immediate-parent gate evaluated on behalf of ``target`` (the
+    Guardian link and create helpers call ``_immediate_parent_access`` through these two modules)."""
+    from crud_views_guardian.lib import mixins, views
+
+    spy = Mock()
+    for module in (mixins, views):
+
+        def gate(view_class, user, parent_obj, *, rendering_view=None, _original=module._immediate_parent_access):
+            if view_class is target:
+                spy(user, parent_obj)
+            return _original(view_class, user, parent_obj, rendering_view=rendering_view)
+
+        monkeypatch.setattr(module, "_immediate_parent_access", gate)
     return spy
+
+
+def unprotected_parent(links, monkeypatch):
+    """The removed child-side None policy: the (single-scenario) parent ViewSet is unprotected as an ancestor."""
+    monkeypatch.setattr(links.parent, "ancestor_policy", AncestorPolicy(provider="none"))
 
 
 @pytest.fixture
@@ -220,8 +249,11 @@ def test_preservation_identity_interleaving_and_repetition(links, world, monkeyp
 @pytest.mark.django_db
 @pytest.mark.parametrize("renderer", ["context", "card"])
 @pytest.mark.parametrize("grant", ["object", "group", "global", "superuser", "none"])
-@pytest.mark.parametrize("accept_global", [False, True])
-def test_preservation_permission_channels(links, django_user_model, monkeypatch, renderer, grant, accept_global):
+@pytest.mark.parametrize("local_flag", [False, True])
+@pytest.mark.parametrize("parent_fallback", [False, True])
+def test_preservation_permission_channels(
+    links, django_user_model, monkeypatch, renderer, grant, local_flag, parent_fallback
+):
     from django.contrib.auth.models import Group, Permission
     from guardian.shortcuts import assign_perm
 
@@ -235,8 +267,11 @@ def test_preservation_permission_channels(links, django_user_model, monkeypatch,
         assign_perm(links.parent.permissions["change"], group, parent)
     elif grant == "global":
         actor.user_permissions.add(Permission.objects.get(codename="change_publisher"))
-    monkeypatch.setattr(links.list, "cv_guardian_accept_global_perms", accept_global)
-    allowed = grant in {"object", "group", "superuser"} or (grant == "global" and accept_global)
+    # D-41: a model-only parent grant counts only through the parent's own ancestor fallback; the target list's
+    # local cv_guardian_accept_global_perms (formerly the switch here) neither grants nor removes it
+    monkeypatch.setattr(links.list, "cv_guardian_accept_global_perms", local_flag)
+    monkeypatch.setattr(links.parent, "ancestor_policy", AncestorPolicy(accept_global_perms=parent_fallback))
+    allowed = grant in {"object", "group", "superuser"} or (grant == "global" and parent_fallback)
     assert (rendered_data(links, renderer, actor, parent) is not None) is allowed
 
 
@@ -255,7 +290,7 @@ def test_preservation_none_policy_actor_state(links, django_user_model, monkeypa
             username="none_actor", is_active=actor_kind == "active", is_superuser=actor_kind == "inactive_superuser"
         )
     )
-    monkeypatch.setattr(links.child, "cv_guardian_parent_permission", None)
+    unprotected_parent(links, monkeypatch)
     monkeypatch.setattr(links.list, "cv_inaccessible_actions", "disable")
     state = Mock(return_value=enabled)
     monkeypatch.setattr(links.list, "cv_action_enabled", state)
@@ -314,12 +349,17 @@ def test_preservation_queryset_only_composition(links, client, django_user_model
         cv_context_actions = []
 
     replace_list(links, QuerysetOnly, monkeypatch)
-    assert not hasattr(QuerysetOnly, "_guardian_user_has_parent_perm")
+    assert not issubclass(QuerysetOnly, GuardianParentPermissionMixin)
     parent = Publisher.objects.create(name="No parent grant")
     actor = django_user_model.objects.create_user(username="queryset_only")
     client.force_login(actor)
     data = rendered_data(links, renderer, actor, parent)
     assert data["cv_url"] == child_url(links, "list", parent)
+    # D-03/D-19: the request now runs the shared ancestor guard (parent change, the child's Read pair) although
+    # the bounded link helper of a queryset-only composition does not consult the parent: a visible link can be
+    # denied (first-wave limitation)
+    assert client.get(data["cv_url"]).status_code == 403
+    user_guardian_object_perm(actor, links.parent, "change", parent)
     response = client.get(data["cv_url"])
     assert response.status_code == 200
     assert list(response.context["object_list"]) == []
@@ -346,9 +386,14 @@ def test_preservation_inherited_custom_policy(links, django_user_model, monkeypa
         pass
 
     replace_list(links, Composed, monkeypatch)
+    assert Composed.cv_guardian_accept_global_perms is True  # the custom local policy stays inherited
     actor = django_user_model.objects.create_user(username="inherited")
     actor.user_permissions.add(Permission.objects.get(codename="change_publisher"))
     parent = Publisher.objects.create(name="Inherited policy")
+    # D-41: the inherited local fallback no longer relaxes the strict Guardian parent ...
+    assert rendered_data(links, "context", actor, parent) is None
+    # ... the parent's own ancestor fallback does
+    monkeypatch.setattr(links.parent, "ancestor_policy", AncestorPolicy(accept_global_perms=True))
     assert rendered_data(links, "context", actor, parent)["cv_access"] is True
 
 
@@ -376,14 +421,16 @@ def test_preservation_create_policy_once(links, world, monkeypatch, renderer, po
 
     actors, parents = world
     actor, parent = actors[0], parents[0]
-    monkeypatch.setattr(links.child, "cv_guardian_parent_permission", None if policy == "none" else "change")
-    monkeypatch.setattr(links.child, "cv_guardian_parent_create_permission", "view" if policy == "explicit" else None)
-    if policy == "explicit":
+    if policy == "explicit":  # the removed create override "view": an exact create entry
+        monkeypatch.setattr(links.child, "ancestor_policy", AncestorPolicy(read=CHANGE, actions={"create": VIEW}))
         user_guardian_object_perm(actor, links.parent, "view", parent)
+    if policy == "none":
+        unprotected_parent(links, monkeypatch)
     if policy == "global":
         actor = actors[1]  # no object grant on this parent
         actor.user_permissions.add(Permission.objects.get(codename="change_publisher"))
-        monkeypatch.setattr(links.create, "cv_guardian_accept_global_perms", True, raising=False)
+        # D-41: the parent's own ancestor fallback, not the create view's cv_guardian_accept_global_perms
+        monkeypatch.setattr(links.parent, "ancestor_policy", AncestorPolicy(accept_global_perms=True))
     monkeypatch.setattr(links.create, "cv_inaccessible_actions", "disable")
     state = Mock(return_value=enabled)
     monkeypatch.setattr(links.create, "cv_action_enabled", state)
@@ -411,7 +458,7 @@ def test_preservation_create_policy_once(links, world, monkeypatch, renderer, po
 def test_preservation_interleaved_create_custom_and_collection(links, world, monkeypatch, renderer):
     actors, parents = world
     actor, parent = actors[0], parents[0]
-    monkeypatch.setattr(links.child, "cv_guardian_parent_create_permission", "view")
+    monkeypatch.setattr(links.child, "ancestor_policy", AncestorPolicy(read=CHANGE, actions={"create": VIEW}))
     custom = Mock(return_value=False)
     monkeypatch.setattr(links.target_card, "cv_has_access", custom)
     for key in ["list", "create", "card", "list", "card", "create"]:
@@ -470,7 +517,7 @@ def alternate_child(links, request):
         parent_args.update(attribute="publishers", many_to_many_through_attribute="genres")
     child = viewset_cls(model=model, name=name, parent=ParentViewSet(**parent_args))
     if kind != "core":
-        child.cv_guardian_parent_permission = "change"
+        child.ancestor_policy = CHANGE_READ
     base = ListViewPermissionRequired if kind == "core" else GuardianListViewPermissionRequired
 
     class AlternateList(base):
@@ -544,8 +591,13 @@ def test_preservation_ordinary_row_and_sibling_actions(links, world, monkeypatch
 @pytest.mark.parametrize("renderer", ["context", "card"])
 def test_preservation_existing_parent_declaration_error_propagates(links, world, monkeypatch, renderer):
     actors, parents = world
-    monkeypatch.setattr(links.child, "cv_guardian_parent_permission", "undeclared")
-    with pytest.raises(AttributeError, match="split"):
+    from django.core.exceptions import ImproperlyConfigured
+
+    # an undeclared key in the requested ViewSet's pair surfaces as a configuration error (never hidden or granted)
+    monkeypatch.setattr(
+        links.child, "ancestor_policy", AncestorPolicy(read=AncestorPermissions(nearest="undeclared", higher="view"))
+    )
+    with pytest.raises(ImproperlyConfigured, match="'undeclared'"):
         rendered_data(links, renderer, actors[0], parents[0])
 
 

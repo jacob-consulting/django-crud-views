@@ -249,7 +249,33 @@ class CrudView(metaclass=CrudViewMetaClass):
     def get_queryset(self):
         return self.cv_viewset.get_queryset(view=self)
 
+    def get_object(self, queryset=None):
+        """Django's object lookup; for a nested ORM request the queryset must read the default database and the
+        reached object must belong to the resolved immediate parent (404 otherwise), even when ``get_queryset``
+        omits the parent filter or selects a database itself (phase 06.18)."""
+        from crud_views.lib.ancestor_db import _check_nested_queryset
+        from crud_views.lib.ancestors import _validate_child_parent
+
+        if queryset is None:
+            queryset = self.get_queryset()
+        obj = super().get_object(_check_nested_queryset(self, queryset))
+        return _validate_child_parent(self, obj)
+
     def get_context_data(self, **kwargs):
+        from crud_views.lib.ancestor_db import _check_nested_queryset
+        from crud_views.lib.ancestors import _scope_child_queryset
+
+        # where list views consume their collection: a nested one stays scoped to the resolved parent. django-filter
+        # passes it as the ``object_list`` keyword and tables read ``self.object_list``, so both are scoped (the
+        # same scoped queryset when the keyword is ``self.object_list``).
+        original = getattr(self, "object_list", None)
+        if original is not None:
+            self.object_list = _scope_child_queryset(self, original)
+        supplied = kwargs.get("object_list")
+        if supplied is not None:
+            kwargs["object_list"] = self.object_list if supplied is original else _scope_child_queryset(self, supplied)
+        # the collection Django's list context will paginate must read the default database (nested only)
+        _check_nested_queryset(self, kwargs.get("object_list", getattr(self, "object_list", None)))
         context = super().get_context_data(**kwargs)
         context["cv_extends"] = self.cv_get_extends_template()
         return context
@@ -261,10 +287,33 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def dispatch(self, request, *args, **kwargs):
         self._cv_consume_cancel_restore(request)
-        response = super().dispatch(request, *args, **kwargs)
+        response = self._cv_ancestor_guard()
+        if response is None:
+            response = super().dispatch(request, *args, **kwargs)
         if self.cv_modal:
             patch_vary_headers(response, ["X-CV-Modal"])
         return response
+
+    def _cv_ancestor_guard(self):
+        """Authorize this nested request's ancestors once (crud_views.lib.ancestors); None to continue,
+        else the response to return. Top-level requests do no ancestor work."""
+        if getattr(self, "_cv_ancestor_state", None) is not None:
+            return None
+        from crud_views.lib.ancestors import _authorize_ancestors
+
+        return _authorize_ancestors(self)
+
+    def _cv_ancestor_actor_response(self, *, protected: bool):
+        """Private actor-admission adapter of the ancestor guard, called before any ancestor lookup.
+
+        ``protected``: at least one ancestor gate is selected — anonymous actors get the login redirect,
+        authenticated inactive actors 403. All-none ancestry: a plain endpoint has no actor rule of its own and
+        admits everybody. Returns None to continue, a response, or raises."""
+        if protected:
+            from crud_views.lib.ancestors import _protected_actor_response
+
+            return _protected_actor_response(self)
+        return None
 
     def _cv_consume_cancel_restore(self, request):
         if request.method != "GET" or not is_cancel_list_destination(type(self)):
@@ -276,8 +325,16 @@ class CrudView(metaclass=CrudViewMetaClass):
         request.META["QUERY_STRING"] = request.GET.urlencode()
 
     def cv_get_db_alias(self) -> str:
-        """Database alias of the POST write phase; follows DATABASE_ROUTERS for the ViewSet's model."""
-        return router.db_for_write(self.cv_viewset.model)
+        """Database alias of the POST write phase; follows DATABASE_ROUTERS for the ViewSet's model.
+
+        A nested ORM request with a resolved ``self.object`` passes it as the router's instance hint, so the
+        alias is the one the object's own ``save()`` routes to (and the nested default-database boundary checks
+        that one, phase 06.18). Top-level selection is unchanged: model only, no hint."""
+        viewset = self.cv_viewset
+        obj = getattr(self, "object", None)
+        if viewset.parent is not None and not viewset.is_resource and isinstance(obj, Model):
+            return router.db_for_write(type(obj), instance=obj)
+        return router.db_for_write(viewset.model)
 
     def cv_get_atomic(self):
         """
@@ -296,6 +353,33 @@ class CrudView(metaclass=CrudViewMetaClass):
         Put side effects here: mail, Celery tasks, webhooks, cache invalidation.
         """
         pass
+
+    def _cv_write_alias(self) -> str:
+        """The alias this view's write phase uses (transaction and commit callback); views with their own pinned
+        selector (delete, workflow) return that one."""
+        return self.cv_get_db_alias()
+
+    def _cv_attachment_routes(self) -> tuple:
+        """``(model, hint)`` routes of the parent attachment a write performs (``CreateViewParentMixin``)."""
+        return ()
+
+    def _cv_check_nested_write(self, context: dict | None = None) -> None:
+        """Default-database boundary of a nested ORM write (phase 06.18, ``ancestor_db._check_nested_write``):
+        the write alias, the written instance (the form's model instance, else ``self.object``) and parent
+        attachments must be ``default``. Call it after the object is resolved and before any hook or write.
+        Top-level views return immediately."""
+        from crud_views.lib.ancestor_db import _check_nested_write, _is_nested_orm
+
+        if not _is_nested_orm(self):
+            return
+        instance = getattr((context or {}).get("form"), "instance", None)
+        if not isinstance(instance, Model):
+            instance = getattr(self, "object", None)
+        _check_nested_write(
+            self,
+            instance=instance if isinstance(instance, Model) else None,
+            related=self._cv_attachment_routes(),
+        )
 
     def cv_get_extends_template(self) -> str:
         if self.cv_extends_template:
@@ -1033,6 +1117,13 @@ class CrudView(metaclass=CrudViewMetaClass):
 
         assert self.cv_viewset.has_parent, "this ViewSet has no parent"
 
+        # reuse the parent the ancestor guard resolved on this request (same model/PK/database identity)
+        from crud_views.lib.ancestors import _resolved_parent
+
+        resolved = _resolved_parent(self)
+        if resolved is not None:
+            return resolved
+
         # get the parent object
         parent_model = self.cv_viewset.get_parent_model()
         arg = self.cv_viewset.get_parent_url_args(first_only=True)
@@ -1074,7 +1165,43 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         )
         return perm
 
+    def dispatch(self, request, *args, **kwargs):
+        # Nested requests authorize their ancestors first: Django's PermissionRequiredMixin.dispatch calls
+        # has_permission(), which loads the child object / parent and checks action state (phase 06.18).
+        response = self._cv_ancestor_guard()
+        if response is not None:
+            return response
+        return super().dispatch(request, *args, **kwargs)
+
+    def _cv_ancestor_actor_response(self, *, protected: bool):
+        """Actor admission of a nested permission-required request, before any ancestor lookup.
+
+        Protected ancestry: the shared actor rule (anonymous → ``handle_no_permission()``, inactive → 403).
+        All-none ancestry: the endpoint's actual early admission for anonymous and inactive actors — its model
+        permission (``PermissionRequiredMixin.has_permission``), so a backend that grants such actors still
+        admits them. Never the state-loading ``has_permission()`` override: for active actors the model
+        permission and action state are local gates that run after ancestry."""
+        if protected:
+            from crud_views.lib.ancestors import _protected_actor_response
+
+            return _protected_actor_response(self)
+        user = self.request.user
+        if user.is_authenticated and user.is_active:
+            return None
+        # the early model-permission check reads auth records: default only, before the permission map
+        from crud_views.lib.ancestor_db import _check_nested_auth
+
+        _check_nested_auth(self, actor=user, model=self.cv_viewset.model)
+        if PermissionRequiredMixin.has_permission(self):
+            return None
+        return self.handle_no_permission()
+
     def has_permission(self):
+        # nested: the model-permission check's auth records must be on default, before ``permission_required``
+        # resolves the permission map and before any backend shortcut (phase 06.18)
+        from crud_views.lib.ancestor_db import _check_nested_auth
+
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
         if not super().has_permission():
             return False
         # Secondary state gate — a disabled action is denied even with permission.
@@ -1088,6 +1215,9 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
+        from crud_views.lib.ancestor_db import _check_nested_auth
+
+        _check_nested_auth(cls, actor=user, model=cls.cv_viewset.model)
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
         if not perm:
             return False

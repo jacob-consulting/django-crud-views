@@ -1,0 +1,38 @@
+# command: PYTHONPATH=$PWD/src .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_ancestor_ordering.py tests/test1/test_ancestor_actors.py tests/test1/test_fragment_authorization.py -n 4 -q -rfE
+# source: d51ff75a5bb8b58083a694f5c830657191f1f1e9 (Task 2 test edits uncommitted at run time)
+E       AssertionError: assert 'PermissionRe...ixin.dispatch' == 'ManageView.dispatch'
+E       AssertionError: assert 'PermissionRe...ixin.dispatch' == 'ManageView.dispatch'
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('model_perm', 'app.view_book'), ('model_perm', 'app.view_publisher'), ('queryset', 'aobooke99ea047'), ('queryset', 'aopube99ea047')]
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('model_perm', 'app.view_book'), ('model_perm', 'app.view_publisher'), ('queryset', 'aobooka2a28202'), ('queryset', 'aopuba2a28202')]
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('model_perm', 'app.view_publisher'), ('queryset', 'aopub8e19d467')]
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('model_perm', 'app.view_publisher'), ('queryset', 'aopub0b723c10')]
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('model_perm', 'app.view_publisher'), ('queryset', 'aobookd63c0d1f'), ('queryset', 'aopubd63c0d1f')]
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('model_perm', 'app.view_publisher'), ('queryset', 'aobook92155d1f'), ('queryset', 'aopub92155d1f')]
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('queryset', 'aobook8865de9f'), ('queryset', 'aopub8865de9f')]
+E       AssertionError: assert [('manage_gate',)] == [('queryset',...p.view_book')]
+E       AssertionError: assert [('manage_gate',)] == [('queryset',...p.view_book')]
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('queryset', 'aobookacc51072'), ('queryset', 'aopubacc51072')]
+E       AssertionError: assert [('manage_gat...ted7e4b3c46')] == []
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('model_perm', 'app.view_publisher'), ('queryset', 'aopub2560fe10')]
+E       AssertionError: assert [('manage_gat...tedade79480')] == []
+E           tests.test1.test_ancestor_ordering.Poisoned: reached ('manage_gate',) after the expected guard sequence [('model_perm', 'app.view_publisher'), ('queryset', 'aopuba798673e')]
+E       assert 403 == 404
+FAILED tests/test1/test_ancestor_ordering.py::test_inventory_names_the_guard_entry_of_each_mro[manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_inventory_names_the_guard_entry_of_each_mro[guardian-manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_nearest_denial_prevents_all_leaf_work[manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_nearest_denial_prevents_all_leaf_work[guardian-manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_outer_denial_never_enters_the_deeper_queryset[manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_outer_denial_never_enters_the_deeper_queryset[guardian-manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_mismatched_deeper_ancestor_is_404_before_leaf_work[manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_mismatched_deeper_ancestor_is_404_before_leaf_work[guardian-manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_nearest_only_resolves_higher_ancestors_without_their_gate[manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_successful_ancestry_reaches_the_local_stage[manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_successful_ancestry_reaches_the_local_stage[guardian-manage]
+FAILED tests/test1/test_ancestor_ordering.py::test_all_none_chain_validates_relationships_then_reaches_local_work[manage]
+FAILED tests/test1/test_ancestor_actors.py::test_protected_manage_group_membership_does_not_bypass_ancestry[plain]
+FAILED tests/test1/test_ancestor_ordering.py::test_nested_manage_needs_ancestry_and_group[manage]
+FAILED tests/test1/test_ancestor_actors.py::test_protected_manage_group_membership_does_not_bypass_ancestry[guardian]
+FAILED tests/test1/test_ancestor_ordering.py::test_nested_manage_needs_ancestry_and_group[guardian-manage]
+FAILED tests/test1/test_ancestor_actors.py::test_all_none_group_manage_gate_runs_after_relationships
+17 failed, 377 passed in 25.45s
+# exit: 1

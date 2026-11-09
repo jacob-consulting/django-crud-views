@@ -100,3 +100,80 @@ def test_permissions_not_cached_while_empty():
         assert viewset.permissions["view"] == f"{ct.app_label}.view_book"
     finally:
         _REGISTRY.pop(name, None)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "model_name, extra_codenames, expected",
+    [
+        (
+            "Publisher",
+            [],
+            [
+                ("add", "app.add_publisher"),
+                ("change", "app.change_publisher"),
+                ("delete", "app.delete_publisher"),
+                ("view", "app.view_publisher"),
+            ],
+        ),
+        (
+            "Book",
+            ["change_book_status"],
+            [
+                ("add", "app.add_book"),
+                ("change", "app.change_book"),
+                ("change_book_status", "app.change_book_status"),
+                ("delete", "app.delete_book"),
+                ("view", "app.view_book"),
+            ],
+        ),
+    ],
+    ids=["publisher", "book-custom-permission"],
+)
+def test_default_permissions_cold_lookup_is_one_content_type_and_one_permission_query(
+    django_assert_num_queries, model_name, extra_codenames, expected
+):
+    """A cold vocabulary lookup is one ContentType lookup plus one Permission query, with the exact mapping.
+
+    Pins the lookup shape the ``default_permissions`` docstring promises and the exact ordered mapping. Regression
+    test for the 06.18 cost finding (deferred item "Core ViewSet.default_permissions reads one ContentType per
+    permission row"): the loop read the content type through each Permission row, so a four-permission model cost
+    five ``django_content_type`` queries instead of one.
+    """
+    import re
+    from collections import Counter
+
+    from django.apps import apps
+    from django.contrib.auth.models import Permission
+    from django.contrib.contenttypes.models import ContentType
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    from crud_views.lib.viewset import _REGISTRY, ViewSet
+
+    table = re.compile(r'(?:FROM|INTO|UPDATE)\s+"(\w+)"')
+    model = apps.get_model("app", model_name)
+    ct = ContentType.objects.get_for_model(model)
+    for codename in extra_codenames:
+        Permission.objects.create(content_type=ct, codename=codename, name=codename.replace("_", " "))
+
+    name = f"{model_name.lower()}_perm_query_shape_probe"
+    try:
+        viewset = ViewSet(model=model, name=name)
+        viewset._default_permissions = None
+        ContentType.objects.clear_cache()
+
+        with CaptureQueriesContext(connection) as captured:
+            result = viewset.default_permissions
+        tables = Counter()
+        for query in captured.captured_queries:
+            match = table.search(query["sql"])
+            tables[match.group(1) if match else "other"] += 1
+
+        assert dict(tables) == {"django_content_type": 1, "auth_permission": 1}
+        assert list(result.items()) == expected
+
+        with django_assert_num_queries(0):
+            assert viewset.default_permissions is result
+    finally:
+        _REGISTRY.pop(name, None)

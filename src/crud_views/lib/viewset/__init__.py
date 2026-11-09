@@ -12,6 +12,9 @@ from django.utils.text import capfirst
 from django.utils.translation import gettext as _
 from pydantic import BaseModel, Field, PrivateAttr, field_validator, model_validator
 
+from crud_views.lib.ancestor_policy import AncestorPermissions as AncestorPermissions
+from crud_views.lib.ancestor_policy import AncestorPolicy
+from crud_views.lib.ancestors import _validate_ancestor_structure, _walk_ancestors
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ViewSetNotFoundError, cv_raise
 from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
@@ -64,6 +67,8 @@ class ViewSet(BaseModel):
     """
 
     PK: ClassVar[type[PrimaryKeys]] = PrimaryKeys
+    # ancestor permission provider when ``ancestor_policy.provider`` is None (core: model permissions)
+    _ancestor_provider: ClassVar[str] = "model"
 
     model: type[Model] | type[Resource]
     name: str
@@ -92,6 +97,9 @@ class ViewSet(BaseModel):
     # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
     # None means: no permissions declared (only non-PermissionRequired views).
     resource_permissions: dict[str, str] | None = None
+    # ancestor authorization (phase 06.18): provider/fallback apply when this ViewSet is an ancestor,
+    # cascade/read/write/actions to requests targeting it; see crud_views.lib.ancestors
+    ancestor_policy: AncestorPolicy = Field(default_factory=AncestorPolicy)
 
     _views: dict[str, type[CrudView]] = PrivateAttr(default_factory=empty_dict)
     _default_permissions: OrderedDict[str, str] | None = PrivateAttr(default=None)
@@ -122,10 +130,41 @@ class ViewSet(BaseModel):
             raise ValueError(f"must map form kinds {sorted(FORM_KINDS)} to one of {sorted(LABEL_MODES)}, got {value!r}")
         return value
 
+    def _validate_ancestor_policy(self) -> None:
+        """Owning-ViewSet constraints of ``ancestor_policy``, decidable at construction (no database, no other
+        ViewSet). Called by ``register()`` before any registry or manage-view side effect."""
+        policy = self.ancestor_policy
+        if not isinstance(policy, AncestorPolicy):  # e.g. a subclass default given as a mapping
+            policy = self.ancestor_policy = AncestorPolicy.model_validate(policy)
+        class_provider = type(self)._ancestor_provider
+        if policy.provider == "guardian" and class_provider != "guardian":
+            raise ValueError(
+                f"ancestor_policy.provider='guardian' is not supported by {type(self).__name__} {self.name!r}: "
+                f"use GuardianViewSet for object-permission ancestors"
+            )
+        provider = policy.provider if policy.provider is not None else class_provider
+        if policy.accept_global_perms and provider != "guardian":
+            raise ValueError(
+                f"ancestor_policy.accept_global_perms=True has no effect on ViewSet {self.name!r}: its ancestor "
+                f"provider is {provider!r}, the flag applies only to a Guardian provider"
+            )
+        if self.parent is None:
+            ineffective = [field for field in ("cascade", "read", "write") if getattr(policy, field) is not None] + (
+                ["actions"] if policy.actions else []
+            )
+            if ineffective:
+                raise ValueError(
+                    f"ancestor_policy fields {', '.join(ineffective)} of top-level ViewSet {self.name!r} have no "
+                    f"effect: they describe requests to a nested ViewSet (leave them None/empty)"
+                )
+
     @model_validator(mode="after")
     def register(self) -> Self:
         if not self.is_resource and self.resource_permissions is not None:
             raise ValueError(f"resource_permissions is only allowed for Resource-based ViewSets, got it at {self!r}")
+
+        # every construction-decidable ancestor policy constraint precedes registration (no rollback needed)
+        self._validate_ancestor_policy()
 
         if self.pk is None:
             if self.is_resource:
@@ -213,7 +252,8 @@ class ViewSet(BaseModel):
                     ),
                 )
 
-        if self.parent is not None:
+        # a missing parent is reported by the ancestor structure check (crud_views.checks), not as a crash here
+        if self.parent is not None and self.parent.name in _REGISTRY:
             yield CheckExpression(
                 context=self,
                 id="E261",
@@ -237,18 +277,10 @@ class ViewSet(BaseModel):
         """
         Get url args for all parents
         """
-        args = []
-
-        # iterate over parents
-        if self.parent:
-            parent = self.parent
-            while parent is not None:
-                arg = parent.get_pk_name()
-                if first_only:
-                    return arg
-                args.append(parent.get_pk_name())
-                parent = parent.viewset.parent
-
+        # bounded walk (crud_views.lib.ancestors): a cycle or missing parent raises ImproperlyConfigured
+        args = [edge.get_pk_name() for edge, _ in _walk_ancestors(self, first_only=first_only)]
+        if first_only and args:
+            return args[0]
         return args
 
     @property
@@ -264,18 +296,9 @@ class ViewSet(BaseModel):
         """
         Get url args for all parents
         """
-        attrs = []
-
-        # iterate over parents
-        if self.parent:
-            parent = self.parent
-            while parent is not None:
-                attr = parent.get_attribute()
-                if first_only:
-                    return attr
-                attrs.append(parent.get_attribute())
-                parent = parent.viewset.parent
-
+        attrs = [edge.get_attribute() for edge, _ in _walk_ancestors(self, first_only=first_only)]
+        if first_only and attrs:
+            return attrs[0]
         return attrs
 
     def get_queryset(self, view: CrudView) -> QuerySet:
@@ -290,18 +313,10 @@ class ViewSet(BaseModel):
 
         q_kwargs = {}
         if self.parent:
-            parent = self.parent
             attribute = None
-            while parent is not None:
-                # parent args
-                pk_name = parent.get_pk_name()
-                attribute = parent.get_attribute() if attribute is None else f"{attribute}__{parent.get_attribute()}"
-
-                # generate q-args
-                q_kwargs.update({f"{attribute}__pk": view.kwargs[pk_name]})
-
-                # proceed to next parent
-                parent = parent.viewset.parent
+            for edge, _ancestor in _walk_ancestors(self):  # bounded: a cycle or missing parent raises
+                attribute = edge.get_attribute() if attribute is None else f"{attribute}__{edge.get_attribute()}"
+                q_kwargs[f"{attribute}__pk"] = view.kwargs[edge.get_pk_name()]
 
             queryset = self.model.objects.filter(Q(**q_kwargs))
 
@@ -364,14 +379,9 @@ class ViewSet(BaseModel):
         Return path_parent of URL pattern [path_parent/]path_prefix/[path_pk/]path_view/
         """
         paths = []
-
-        parent = self.parent
-        while parent:
-            path_prefix = parent.viewset.get_path_prefix()
-            path_pk = path_regs.get_path_pk(parent.get_pk_name(), parent.viewset.pk) + "/"
-            path = f"{path_prefix}{path_pk}"
-            paths.insert(0, path)
-            parent = parent.viewset.parent
+        for edge, ancestor in _walk_ancestors(self):  # bounded: a cycle or missing parent raises
+            path_pk = path_regs.get_path_pk(edge.get_pk_name(), ancestor.pk) + "/"
+            paths.insert(0, f"{ancestor.get_path_prefix()}{path_pk}")
 
         path_parent = "".join(paths)
         return path_parent
@@ -408,6 +418,12 @@ class ViewSet(BaseModel):
 
         # check if any views are registered
         cv_raise(len(self._views.keys()) > 0, f"no views registered at {self}")
+
+        # URLconf import may precede system checks: the declared ancestry must be finite, resolved and free of
+        # Resource ancestors before any parent path is built (ImproperlyConfigured otherwise). Relationships are
+        # enforced by the ancestor system check and by the request guard before any lookup.
+        if self.parent is not None:
+            _validate_ancestor_structure(self, relations=False)
 
         urlpatterns = []
 
@@ -463,11 +479,15 @@ class ViewSet(BaseModel):
             # as a suffix (not split on the first match) so a custom permission whose codename
             # contains "_<model>" before its end parses fully, e.g. "change_book_status" stays
             # "change_book_status" instead of being truncated to "change" for model "book".
-            action = permission.codename.removesuffix(f"_{permission.content_type.model}")
-            permissions[action] = f"{permission.content_type.app_label}.{permission.codename}"
+            action = permission.codename.removesuffix(f"_{content_type.model}")
+            permissions[action] = f"{content_type.app_label}.{permission.codename}"
         if permissions:
             self._default_permissions = permissions
         return permissions
+
+    def _ancestor_has_permission(self, user, permission: str, obj, *, view: CrudView) -> bool:
+        """Ancestor gate of the model provider: the actor holds ``permission`` as a model permission."""
+        return user.has_perm(permission)
 
     @property
     def permissions(self) -> OrderedDict[str, str]:

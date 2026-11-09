@@ -40,6 +40,8 @@ class CrudViewProcessFormMixin:
         self.object = self.get_object() if self.cv_object else None
 
         context = self.get_context_data(**kwargs)
+        # nested ViewSets: refuse a nondefault write route before any hook (phase 06.18)
+        self._cv_check_nested_write(context)
         self.cv_post_hook(context)
         if self.cv_form_is_valid(context):
             self.cv_form_valid_process(context)
@@ -53,7 +55,9 @@ class CrudViewProcessFormMixin:
         Write phase of a valid POST: cv_form_valid and cv_form_valid_hook run inside
         cv_get_atomic(); cv_on_commit is scheduled to run after the commit (never after a
         rollback). A subclass overriding post() should call this to keep the transaction.
+        A nested write route is checked again here, before the transaction (direct callers included).
         """
+        self._cv_check_nested_write(context)
         with self.cv_get_atomic():
             self.cv_form_valid(context)
             self.cv_form_valid_hook(context)

@@ -3,17 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
-status: "Phase 06.17 shipped — PR #335"
-stopped_at: Phase 06.17 complete, ready to plan Phase 7
-last_updated: "2026-11-07T12:31:37.595Z"
-last_activity: 2026-11-07
-state_head: 5f70a2f69ae4622551e94b4b8e4ad58c540315b4
+status: planning
+stopped_at: Phase 06.18 complete, ready to plan Phase 7
+last_updated: "2026-11-09T11:46:45.788Z"
+last_activity: 2026-11-09
+last_activity_desc: "Phase 06.18 shipped as PR #336"
+state_head: 11d1a0ba1cf10d93a425c8bf6849dfed8ca7c068
 progress:
-  total_phases: 23
-  completed_phases: 22
-  total_plans: 137
-  completed_plans: 137
-  percent: 95
+  total_phases: 24
+  completed_phases: 21
+  total_plans: 150
+  completed_plans: 150
+  percent: 88
 milestone_name: milestone
 ---
 
@@ -21,7 +22,7 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-07)
+See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -30,10 +31,50 @@ See: .planning/PROJECT.md (updated 2026-11-07)
 
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Phase 06.17 shipped — PR #335
-Last activity: 2026-11-07
+Status: Ready to plan
+Last activity: 2026-11-09 -- Phase 06.18 shipped as PR #336
 
-Next: $gsd-discuss-phase 7
+Next: Phase 7 ($gsd-discuss-phase 7); 06.18 is ready for $gsd-ship
+
+### Phase 06.18 completion — 2026-11-09
+
+- UAT 06.18: 71 rows (5 human, 66 automated). Test 2 failed on an unmigrated example DB (TypeError on the nested Guardian Note list); diagnosed and closed by gap-closure plan 13 (Guardian views fail closed with ImproperlyConfigured on a missing permission key; cv_has_access False). Gap G-06.18-2 resolved by 06.18-13-PLAN.md.
+- Quick tasks during UAT: 261109-9rw (examples: nested Guardian Note + core nested ancestor tests), 261109-bf5 (core default_permissions vocabulary N+1 fix), 261109-bvq (06.18-COSTS.md refreshed and number-checked).
+- Re-verification passed 52/52 (81188a4b); full suite 12185 passed, 1 skipped on Django 5.2 multicore; incremental review of plan 13: 0 critical, 1 warning (test helper cache restore scope), 2 info — open in 06.18-REVIEW-DISPOSITION.md.
+
+### Phase 06.18 plan 12 — 2026-11-08
+
+- Paired the CHANGELOG `### Breaking` entry "Ancestor authorization for nested ViewSets" with the new docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets section. It covers removed fields, defaults, provider/fallback, exact actions, nested manage, the nested-write-database-selection anchor for the instance-hinted selector refusal, and boundaries. An executed Guardian approve-pair migration fence and six new test_ancestor_docs.py functions pair both surfaces. nested.md#databases links the anchor.
+- Final source 5829cae7 (src identical to e85ed2b4): focused selection 2607 passed on each of Django 4.2.30 / 5.2.19 / 6.0.9 crispy floor (Python 3.12.3); full 5.2 suite 12163 passed, 1 existing skip; scoped Ruff (55 files) and strict MkDocs pass; cost replay identical to plan 10 (5.2 only). The first replay found two test-fixture portability failures (crispy < 2.7 filter helper; Django 4.2 AdminEmailHandler report). They were fixed in tests and logged in deferred-items. All 26 acceptance rows are bound to existing selectors; ANCE-01–08 are marked complete. Not a phase seal. Existing config/state.json/CLAUDE edits preserved; no push or merge.
+
+### Phase 06.18 plan 11 — 2026-11-08
+
+- Published the ancestor-authorization guidance in nested/settings/resources/request_lifecycle/guardian docs, tutorials 5/6 and the reference index. Six published fences are executed by the new test_ancestor_docs.py (31 cases): the canonical Publisher -> Book example with an exact approve pair, settings, Resource leaf scoping, the hint-sensitive router refusal (atomic on/off, top-level control), and the Guardian parent and fallback examples with direct/group grants, child-denial controls and nested manage.
+- Full Django 5.2 suite: 12156 passed, 1 existing skip. Strict MkDocs passes. ANCE IDs stay open for plan 12, which owns the Breaking/migration entry, its anchor link from nested.md#databases, and the final gates. Existing config/state.json/CLAUDE edits preserved; no push or merge.
+
+### Phase 06.18 plan 09 — 2026-11-08
+
+- Manage pages report the declared ancestor policy: new ManageView context entry ancestor_policy with as_ancestor (provider, effective provider, ancestor fallback) and requests (cascade/read/write declared vs effective, exact actions; None at top level), rendered as a configuration-only table. Guardian alert rows read the same entry; local per-view fallback and strict helper rows unchanged.
+- New test_ancestor_manage.py (34) pins nested manage as ancestry AND the local settings/group gate across core/Guardian, public/group, both cascade modes, all-none and top-level. New test_ancestor_redirect.py (28) pins the built-in redirect as Read before lookup with an independently authorized destination; no child.py change needed (mutation checks 24/16 failed).
+- Full Django 5.2 suite: 12068 passed, 1 existing skip. ANCE-03/07 stay open for sibling plans. Existing config/state.json/CLAUDE edits preserved; no push or merge.
+
+### Phase 06.18 plan 08 — 2026-11-08
+
+- Eight legacy Guardian authorization modules migrated to explicit AncestorPolicy declarations. Old None scenarios use their own provider "none" parents, and strict siblings stay protected. Update/delete page overrides are used only where the create control must stay independent of page access. Parent-owned fallback replaces child flags. Every new grant has a paired deny control.
+- New test_ancestor_migration.py (21 cases) covers core/Guardian opposite outcomes, the default Write pair, fallback independence across descendants, nested create state without child add, and legacy rejection. Rule 1 fix: the Guardian nested no-object state gate now reads the guard-resolved parent.
+- Plan 01 observation command: exit 0, 1522 passed. Full Django 5.2 suite: 12004 passed, 1 existing skip. No H1/H2 transition row remains, and WINDOWS 38 is fixed. ANCE-01/04/07 stay open for sibling plans. Existing config/state.json/CLAUDE edits preserved; no push or merge.
+
+### Phase 06.18 plan 02 — 2026-11-08
+
+- One bounded ancestry walk for URL construction, parent helpers, scoped queryset and the request guard; cycles/missing parents raise a named-chain ImproperlyConfigured with no DB access. Relationships validated from model metadata (E266 + request guard); Resource parents keep the single E261.
+- Finite class-based families plus the polymorphic selector marker; exact literal-key actions (E267), nested custom endpoints need an entry (E268 + runtime, all-none too). Checks import root/included URLconfs first and defer completion-dependent messages otherwise. Task gates 40/128/90 passed at 8e7d9d09; scoped Ruff passes.
+- Transition: 18 H1-core rows closed with exact Publisher grants and independent controls; 110 open (H1-guardian 91 + 13 newly reached by Card/manage classification → 03.1, action 1 → 03.2, fragment 2 → 04.2, resource 3 → 05.2), zero H2-custom; full 5.2 suite fails only on that set. ANCE-02/03/04 stay open for sibling plans. Existing config/state.json/CLAUDE edits preserved; no push or merge.
+
+### Phase 06.18 plan 01 — 2026-11-08
+
+- Shared request-local ancestor guard in CrudView.dispatch with strict AncestorPolicy/AncestorPermissions, validated CRUD_VIEWS_ANCESTOR_* settings and pre-registration ViewSet policy validation. Behavioral proof is limited to the plain nested list/create composition.
+- Pre-edit baseline at d5567ba2 (transition 1475 passed; query observations one/three ancestors, plain/Guardian, list/object/create, cold/warm) retained under evidence/06.18-01. Task gates: 13 and 97 passed at f717e58d; scoped Ruff passes.
+- After plan 01 the transition observation has 115 eligible failures (H1-core 18 → 02.3, H1-guardian 91 → 03.1, H1-action 1 → 03.2, H1-fragment 2 → 04.2, H1-resource 3 → 05.2), no collection loss; full 5.2 suite has no failure outside that set. Interim: unclassified nested families do no ancestor work until 02.2 (WINDOWS). ANCE-01/04/08 stay open for sibling plans. Existing config/state.json/CLAUDE edits preserved; no push or merge.
 
 ### Phase 06.17 completion — 2026-11-07
 
@@ -405,13 +446,16 @@ Next: $gsd-discuss-phase 7
 - Canonical10/10 passed with248-file fingerprint; UAT2/2, security44/44, validation compliant.
 - Independent31-item assessment verifies authored scoped contracts; original flags/history
   and broader unsupported guarantees remain explicitly preserved.
+
 - Current aggregate20gates passed; final handoff structurally_valid:true,ready:true;
   installed verification and shared UAT-plus-verification completion predicates passed.
+
 - Required regression347tests/9files passed; independent verifier3named tests passed.
 - Actual final binding/output/timestamps in post-uat-evidence/final-rebind.json.
 - Completion CLI emitted13 advisory summary-reference warnings (relative diagnostic paths
   and command strings interpreted as paths). They do not invalidate verified source-bound
   records; original summaries retained to preserve history and fingerprint stability.
+
 - Shared pre-existing tracking/config edits preserved; no merge, release or deployment.
 
 ### Phase06.4 independent security reassessment — 2026-11-02
@@ -419,11 +463,14 @@ Next: $gsd-discuss-phase 7
 - Auditor /root/security_uat_reconcile verified all 44 authored mitigations at ASVS1/high.
 - T35/T36 close from actual attributed UAT and independent re-review; T40/T43 close their
   demonstrated mitigation-presence/actual-sequence obligations, not current readiness.
+
 - Aggregate20gates, structurally-valid/not-ready handoff, and immutable14observations pass
   at the pre-persistence audit snapshot. Canonical report check fails stale fingerprint.
+
 - SECURITY.md now reflects44/44closed and preserves all historical snapshots verbatim.
 - Updating SECURITY intentionally invalidates old helper stable-report binding; preserve
   immutable outcomes and account explicitly for report-only successor changes.
+
 - No product changes, installations, suite replay, risk waiver, phase completion or advancement.
 
 ### Phase06.4 Orca acceptance — 2026-11-02
@@ -439,10 +486,13 @@ Next: $gsd-discuss-phase 7
 
 - User reported `pass` for the browser checklist, then `chrome, I do not have a screen reader`.
   Browser checks pass in Chrome; version/OS unspecified; screen-reader coverage untested.
+
 - User replied `accept` to the exact bounded H2 storage contract and stated exclusions.
   H2 passes as human acceptance, not a newly implemented enforcement route or risk waiver.
+
 - UAT persisted/committed as partial: one passed, one blocked, zero issues, zero pending.
   The completion predicate refuses phase closure because H1 remains blocked.
+
 - Updated UAT changes covered input. Canonical fingerprint/rebind and independently attributed
   security obligations must be reconciled when acceptance work resumes; no old report was
   silently promoted. Shared pre-existing tracking edits remain unstaged.
@@ -453,18 +503,24 @@ Next: $gsd-discuss-phase 7
 - Predicate-local overflow repair has actual RED/GREEN through both CLIs. Full checker67passed, Ruff pass,
   35genuine corruption refusals plus clean positive;17original gate objects unchanged.824source paths,
   822unchanged and exactly runner/tests changed. Prior product totals remain historical.
+
 - Plan24's process survived a user interruption; continuation recovered the actual successful process/output
   without restarting capture. Resumed harness PATH was not substituted into its original attribution.
+
 - Distinct code/security reviewers each recorded14real CLI observations. WR-05/G6closed within scope.
   Independent validation remains partial. Security40/44closed;T35/T36/T40/T43fourhighopen,noacceptedrisk.
+
 - Same independent canonical verifier recorded14actual pre-replacement outcomes and immutable snapshots,
   then human_needed9/10. Final post-summary fingerprint covers221files including all26summaries and UAT.
   Actual live aggregate/handoff check after report binding passes structurally_valid:true,ready:false;
   latest post-summary binding is26-evidence/final-rebind.json,priorobservationpreservedseparately.
+
 - H1pending,H2flagged-unverified,all31flags and19decisions retained. Two actual human tests persisted in UAT.
   Existing UI24/24 is retained within original scope; no new visual/AT/person approval is inferred.
+
 - Final required npm regression347tests/9files passed. Schema/UI gates clear; map drift advisory;
   parent06UATalreadycomplete. No phase.complete,Phase7advancement,releaseormerge.
+
 - Pre-existing shared STATE/ROADMAP/state.json/config and unrelated workspace changes preserved;
   shared tracking remains unstaged. Exact final verification and rebind hashes are in their owned artifacts.
 
@@ -584,10 +640,13 @@ The following dated checkpoints and accumulated decisions preserve execution his
 - All9SUMMARY artifacts and atomic task commits recorded on introduce-gsd; unrelated workspace edits preserved.
 - Full tests:4.2 7260passed/1CSPskip/1prescribed golden deselected;5.2 7261passed/1CSPskip;
   6.0 7261passed/1prescribed golden deselected. Focused1767 each; JS234, strictdocs and scoped Ruff passed.
+
 - Final review and independent verifier reproduce CR01 cross-alias unrelated child deletion,
   CR02 collapsed custom boundary completeness, CR03 null alternate-key false blockers on all3series.
+
 - Retained CT01 configured polymorphic Guardian helper/list access failure remains unresolved;
   human/spec/prohibition/visual items remain explicit. SECURITY reopened3obligations; no risk accepted.
+
 - Canonical VERIFICATION status gaps_found,41/51. No phase.complete or next-phase advancement.
 - Named6.2 AUTH06 checkbox remains retained per explicit acceptance split;6.3 residual GUA01 stays open.
 
@@ -606,7 +665,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 133
+- Total plans completed: 146
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -635,6 +694,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.14 | 2 | - | - |
 | 06.16 | 3 | - | - |
 | 06.17 | 3 | - | - |
+| 06.18 | 13 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -745,6 +805,19 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.17 P01 | 6min | 2 tasks | 10 files |
 | Phase 06.17 P02 | 8min | 2 tasks | 12 files |
 | Phase 06.17 P03 | 10min | 3 tasks | 12 files |
+| Phase 06.18 P01 | 30 min | 2 tasks | 8 files |
+| Phase 06.18 P02 | 37min | 3 tasks | 12 files |
+| Phase 06.18 P03 | 19min | 3 tasks | 12 files |
+| Phase 06.18 P04 | 33 min | 2 tasks | 7 files |
+| Phase 06.18 P05 | 25min | 2 tasks | 7 files |
+| Phase 06.18 P06 | 25min | 3 tasks | 10 files |
+| Phase 06.18 P07 | 33 min | 3 tasks | 10 files |
+| Phase 06.18 P08 | 25 min | 2 tasks | 10 files |
+| Phase 06.18 P09 | 14min | 2 tasks | 5 files |
+| Phase 06.18 P10 | 20min | 2 tasks | 3 files |
+| Phase 06.18 P11 | 20 min | 2 tasks | 9 files |
+| Phase 06.18 P12 | 28 min | 2 tasks | 10 files |
+| Phase 06.18 P13 | 10min | 2 tasks | 5 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -949,6 +1022,38 @@ Recent decisions affecting current work:
 - [Phase 06.17]: Accordion initial state consumes presentation.selected; existing Collapse owns switching and close-all.
 - [Phase 06.17]: Tab adapter absence is a no-op; present entries require callable init/dispose, resolved on every owned lifecycle dispatch.
 - [Phase 06.17]: Document selected-theme wiring before initialization, including ready documents; late providers require the existing initializer.
+- [Phase 06.18]: 06.18-01: interim family table covers only core list/detail (Read) and create/update/delete (Write); other nested endpoints without an exact actions entry do no ancestor work until 06.18-02 Task 2
+- [Phase 06.18]: 06.18-01: provider='guardian' is valid only on ViewSet classes whose _ancestor_provider is 'guardian'; GuardianViewSet inherits 'model' until 06.18-03.1
+- [Phase 06.18]: 06.18-01: CRUD_VIEWS_ANCESTOR_* defaults are validate_default settings fields; invalid values raise ValidationError when the singleton is built
+- [Phase 06.18]: 06.18-02: check IDs viewset.E266 (ancestry structure), E267 (unregistered actions key), E268 (nested custom endpoint without its entry); Resource parents keep the single viewset.E261
+- [Phase 06.18]: 06.18-02: urlpatterns validates only a finite, resolved, Resource-free chain; relationships are E266 plus the request guard
+- [Phase 06.18]: 06.18-02: completion-dependent checks run after a bounded root/included URLconf import and are deferred without ROOT_URLCONF or on failed/reentrant import
+- [Phase 06.18]: 06.18-03: GuardianViewSet ancestors default to a strict object gate (direct/group grants, guardian.ctypes content types); model fallback only from the ancestor's own ancestor_policy.accept_global_perms, never from a child view's cv_guardian_accept_global_perms
+- [Phase 06.18]: 06.18-03: Guardian dispatch bridge order is composition error, configured anonymous response, inactive 403, shared ancestor guard, then the no-object state gate on the guard's resolved parent; no second parent lookup
+- [Phase 06.18]: 06.18-03: Rendering/access helpers use _immediate_parent_access (immediate parent provider + target nearest key, provider none skips only that gate, no farther ancestor or lookup)
+- [Phase 06.18]: 06.18-03: cv_guardian_parent_permission / cv_guardian_parent_create_permission removed; constructor and subclass declarations raise ValidationError before registration
+- [Phase 06.18]: 06.18-04: CrudViewPermissionRequiredMixin.dispatch and ManageView.dispatch run the idempotent ancestor guard before PermissionRequiredMixin's state-/group-loading has_permission(); every shipped composition reaches the guard at its first dispatch
+- [Phase 06.18]: 06.18-04: actor admission via private _cv_ancestor_actor_response(protected=...) adapters — protected ancestry denies anonymous (endpoint response) and inactive (403); all-none keeps only the endpoint's own early rule (core: model permission for anonymous/inactive only, plain: public, Guardian: configured rules, manage: actual yes/debug_only, anonymous denied)
+- [Phase 06.18]: 06.18-04: H1-fragment closed with Publisher change grants; test_resource_views.py::test_nested_detail_scoped_to_parent_404 newly exposed (403 before the Resource loader) and handed to 05.2 with the three H1-resource rows (WINDOWS entry 39)
+- [Phase 06.18]: 06.18-06: nested ORM requests refuse a nondefault database where it is reached (ancestor/child querysets, consumed collections, delete alias, write alias/instance route/FK-M2M attachment) via crud_views.lib.ancestor_db; inspect-and-refuse only, never reroute; top-level unchanged
+- [Phase 06.18]: 06.18-06: write boundary runs in each POST before the first hook and again at the write wrapper (form mixin, delete, action incl. ordered, workflow), atomic on/off; nested CrudView.cv_get_db_alias passes the resolved object as instance hint (top-level model-only)
+- [Phase 06.18]: 06.18-07: nested permission checks validate their own auth records where reached (actor db, object db, Django auth tables + through tables, Guardian generic/direct grant tables via managers and actor/object-hinted routes) with ancestor_db._check_nested_auth, before vocabulary or superuser/fallback shortcuts; no rerouting
+- [Phase 06.18]: 06.18-07: the ancestor-gate auth check sits at the gate call site in ancestors.py before the permission map, so a warm vocabulary cannot bypass it; ViewSet.permissions stays side-effect-free and unselected nearest-only levels are never touched
+- [Phase 06.18]: 06.18-07: filtered nested lists scope the keyword object_list too (directed Rule 1 fix of the 06.18-06 finding)
+- [Phase 06.18]: 06.18-08: child-specific old None scenarios get their own provider='none' Publisher parent ViewSet; the strict parent shared with protected siblings is never set to none
+- [Phase 06.18]: 06.18-08: where child page access must stay independent of the create-parent permission, the child ViewSet declares an explicit update/delete=view/view override; the default Write pair and its view-only denial are pinned in test_ancestor_migration.py
+- [Phase 06.18]: 06.18-08: every former child-flag parent relaxation uses the parent's ancestor_policy.accept_global_perms, parametrized against the child flag
+- [Phase 06.18]: 06.18-08: GuardianParentPermissionMixin.dispatch gates no-object child state with the guard-resolved parent instead of the overridable cv_get_parent_object() hook
+- [Phase 06.18]: Core ManageView owns declared ancestor-policy diagnostics (as_ancestor / requests with declared vs effective); Guardian alert rows read the same entry
+- [Phase 06.18]: Built-in child redirect needed no production change; Task 2 pins it with tests plus two mutation checks
+- [Phase 06.18]: 06.18-10: plan 10 adds pins only, with no production change. The URL-path mutation boundary, fresh-request revocation and the cost matrix were already implemented by plans 01-09; nine reverted mutations show the pins are meaningful.
+- [Phase 06.18]: 06.18-10: the cost tests assert attribution and prohibited repeated work (each ancestor resolved once, nearest-only gate event list, plain rest equals the pre-edit baseline, warm guards still query permissions), never a query budget. The baseline totals are embedded with SHA d5567ba2.
+- [Phase 06.18]: 06.18-10: one Guardian object-permission pair per ancestor gate is permitted, distinct work. Prefetching all ancestors' permissions would conflict with gating each level before the next lookup (D-32).
+- [Phase 06.18]: Published fences use natural registry names; the docs fixture empties and restores the ViewSet registry
+- [Phase 06.18]: Nested DB docs link the migration guide page without an anchor until plan 12 creates the ancestor migration section
+- [Phase 06.18]: 06.18-12: the ancestor Breaking entry is paired with docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets (h4 subsection nested-write-database-selection for the instance-hinted selector) and an executed Guardian approve-pair migration fence
+- [Phase 06.18]: 06.18-12: cross-series failures in two prior-plan test modules (crispy < 2.7 filter helper, Django 4.2 AdminEmailHandler report) were fixed in fixtures, not the package, and the whole replay rerun at 5829cae7
+- [Phase 06.18]: Guardian request gates raise ImproperlyConfigured on a missing own cv_permission key (named ViewSet/view/key + migrate/restart hint); GuardianObjectPermissionMixin.cv_has_access denies every actor, mirroring core #318 (G-06.18-2)
 
 ### Pending Todos
 
@@ -968,6 +1073,7 @@ None yet.
 
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
+- [Phase 06.18] Security re-verified 2026-11-09 (29/29 closed, 8768f222). All review findings dispositioned (06.18-REVIEW-DISPOSITION.md: 6 fixed, R1-IN-01 skipped with reason; open 0). Codebase maps are stale (drift gate advisory): run $gsd-map-codebase after $gsd-ship per CLAUDE.md.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
 - Phase 06.2 retained scope complete: CR-02–CR-04 transferred to Phase 6.3 / issue #282 and closed by its 2026-11-01 verification; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transfer completed within 6.3 GUA-01 scope; broader Guardian identity compatibility remains in #286; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
 - Phase 06.7 complete: canonical verification and UAT passed; carry the dynamic Cancel helper/defaults/omission contract into Phase 7. Low query-visibility acceptance-record obligation remains open below the configured security threshold.
@@ -981,6 +1087,9 @@ None yet.
 | 261103-sag | Fix SonarQube and Codecov failures on PR 303 (local gates passed; remote confirmation pending) | 2026-11-03 | 82fe188 | [261103-sag-fix-sonarqube-and-codecov-failures-on-pr](./quick/261103-sag-fix-sonarqube-and-codecov-failures-on-pr/) |
 | 261104-8v8 | Exclude disposable browser harness from Sonar and split six documentation assertions | 2026-11-04 | 7d4cf1d | [261104-8v8-fix-pr-305-sonar-findings-and-exclude-di](./quick/261104-8v8-fix-pr-305-sonar-findings-and-exclude-di/) |
 | 261104-h24 | Add protected delete-preview links to the Library example | 2026-11-04 | e8f5a0e | [261104-h24-add-a-protected-delete-preview-links-exa](./quick/261104-h24-add-a-protected-delete-preview-links-exa/) |
+| 261109-9rw | Update examples app for 06.18 ancestor authorization (nested Guardian example + core nested grants) | 2026-11-09 | 0cb0cb47 | [261109-9rw-update-examples-app-for-06-18-ancestor-a](./quick/261109-9rw-update-examples-app-for-06-18-ancestor-a/) |
+| 261109-bf5 | Fix core ViewSet.default_permissions vocabulary N+1 (one ContentType read per permission row) | 2026-11-09 | 741830cf | [261109-bf5-fix-core-viewset-default-permissions-voc](./quick/261109-bf5-fix-core-viewset-default-permissions-voc/) |
+| 261109-bvq | Refresh 06.18-COSTS.md from post-fix evidence (plain cold vocabulary + Guardian guard/rest split after WR-01) | 2026-11-09 | a39efcc7 | [261109-bvq-refresh-06-18-costs-md-from-post-fix-evi](./quick/261109-bvq-refresh-06-18-costs-md-from-post-fix-evi/) |
 
 ### Roadmap Evolution
 
@@ -1004,6 +1113,7 @@ None yet.
 - Phase 06.15 inserted after Phase 06.14: Issue #326: polymorphic selector labels and per-model detail groups, including required tabler-test adoption and verification. Phase 06.14 completed in another worktree per user; no card implementation dependency. (URGENT)
 - Phase 06.16 inserted after Phase 06.15: Issue #327: object-detail choice labels, help-text policy, empty values, and composition guidance; settled issue decisions are the planning handoff. (URGENT)
 - Phase 06.17 inserted after Phase 06.16: Issue #328: open the first accordion group and initialize/dispose tabs through theme adapters; settled issue decisions are the planning handoff. (URGENT)
+- Phase 06.18 inserted after Phase 06.17: Ancestor authorization for nested ViewSets; canonical approved specification: superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md. Policy decisions remain locked; planning and implementation pending. (URGENT)
 
 ## Deferred Items
 
@@ -1013,6 +1123,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-07T10:18:53.533Z
-Stopped at: Phase 06.17 complete, ready to plan Phase 7
+Last session: 2026-11-09T10:15:00Z
+Stopped at: Phase 06.18 complete, ready to plan Phase 7
 Resume file: None

@@ -107,8 +107,12 @@ def _actor(world, kind, active=False):
 
 @pytest.fixture
 def accept_global(monkeypatch):
-    """Global-only actors are evaluated with each view's per-view global fallback enabled."""
+    """Global-only actors are evaluated with each view's per-view global fallback enabled and (phase 06.18, D-41)
+    with the Guardian Publisher's own ancestor fallback, which a child view's flag no longer implies."""
+    from crud_views.lib.viewset import AncestorPolicy
     from tests.test1.app import views
+
+    monkeypatch.setattr(views.cv_guardian_publisher, "ancestor_policy", AncestorPolicy(accept_global_perms=True))
 
     classes = [
         views.GuardianAuthorListView,
@@ -166,6 +170,20 @@ def test_inactive_child_list_denied_without_rows(allow_inactive, accept_global, 
     response = _login(client, _actor(world, kind)).get(f"/guardian_publisher/{world.publisher.pk}/guardian_book/")
     assert response.status_code == 403
     assert "Hitchhiker" not in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_active_global_actor_reaches_child_list_under_the_fallback_fixture(
+    allow_inactive, accept_global, client, world
+):
+    """Control for the fixture above: the same global-only grants admit an *active* actor through the Publisher
+    ancestor fallback (the child list itself accepts global view_book), so the inactive denials are the actor
+    rule, not a missing fallback."""
+    response = _login(client, _actor(world, "global", active=True)).get(
+        f"/guardian_publisher/{world.publisher.pk}/guardian_book/"
+    )
+    assert response.status_code == 200
+    assert "Hitchhiker" in response.content.decode()
 
 
 # ── object views, create and DELETE: 403, storage unchanged ───────────────────
@@ -418,16 +436,20 @@ def test_inactive_permitted_pks_cache_is_empty(world, kind, accept_global):
 @pytest.mark.parametrize("kind", ACTORS)
 @pytest.mark.django_db
 def test_inactive_access_helpers_deny(world, monkeypatch, kind):
+    from crud_views.lib.viewset import AncestorPolicy
     from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin
     from tests.test1.app.views import (
         GuardianAuthorDetailView,
         GuardianAuthorListView,
         GuardianBookCreateView,
-        cv_guardian_book,
+        cv_guardian_publisher,
     )
 
     monkeypatch.setattr(GuardianObjectPermissionMixin, "cv_guardian_accept_global_perms", kind == "global")
     monkeypatch.setattr(GuardianBookCreateView, "cv_guardian_accept_global_perms", kind == "global", raising=False)
+    # phase 06.18 (D-41): the parent's model fallback is the Publisher's own ancestor policy; enable it for the
+    # global actor so the denial below is the inactive rule, not a missing fallback
+    monkeypatch.setattr(cv_guardian_publisher, "ancestor_policy", AncestorPolicy(accept_global_perms=kind == "global"))
     user = _actor(world, kind)
 
     assert GuardianAuthorDetailView.cv_has_access(user, world.author) is False
@@ -437,9 +459,9 @@ def test_inactive_access_helpers_deny(world, monkeypatch, kind):
     assert GuardianBookCreateView.cv_has_access(user, world.book) is False
     assert GuardianBookCreateView.cv_create_has_access(user, None, world.publisher) is False
 
-    # a None parent policy skips only the permission evaluation — never the inactive denial
-    monkeypatch.setattr(cv_guardian_book, "cv_guardian_parent_permission", None)
-    monkeypatch.setattr(cv_guardian_book, "cv_guardian_parent_create_permission", None)
+    # an unprotected parent (provider "none", the removed child-side None policy, D-28) skips only the parent
+    # permission evaluation — never the inactive denial
+    monkeypatch.setattr(cv_guardian_publisher, "ancestor_policy", AncestorPolicy(provider="none"))
     assert GuardianBookCreateView.cv_has_access(user, world.publisher) is False
     assert GuardianBookCreateView.cv_create_has_access(user, None, world.publisher) is False
 

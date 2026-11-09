@@ -1,0 +1,20 @@
+command: PYTHONPATH=$PWD/src .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest <focused selection> -n 4 -q
+source_sha=e3b7e4319e1b7875a7fb95a79f388f12ed8be6e6
+started=2026-11-08T22:43:46Z
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_tags.py", line 199, in render
+    c = self.get_render(context).flatten()
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_tags.py", line 91, in get_render
+    helper = helper.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 928, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 989, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [helper] in <BookTitleFilterForm bound=True, valid=True, fields=(title)>
+6 failed, 2601 passed in 175.45s (0:02:55)
+exit=1
+finished=2026-11-08T22:46:42Z

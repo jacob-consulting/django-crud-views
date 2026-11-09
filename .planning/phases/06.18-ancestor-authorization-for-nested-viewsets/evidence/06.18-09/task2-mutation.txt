@@ -1,0 +1,8 @@
+source: a38c7faf + uncommitted tests/test1/test_ancestor_redirect.py
+mutation 1: drop (RedirectChildView, _READ) from crud_views.lib.ancestors._family_table (reverted)
+1
+24 failed, 4 passed in 3.97s
+mutation 2: RedirectChildView.dispatch skips the ancestor guard (CrudView.dispatch bypassed via generic.RedirectView.dispatch) (reverted)
+16 failed, 12 passed in 3.84s
+after revert:
+28 passed in 3.95s

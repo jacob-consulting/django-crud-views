@@ -1,0 +1,6 @@
+# Task 2 GREEN, source 83e5294e + uncommitted GREEN diff, 2026-11-08T20:11:00Z
+$ PYTHONPATH="$PWD/src" .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_ancestor_databases.py -n 4 -q
+77 passed in 7.69s
+
+$ ... pytest tests/test1/test_ancestor_*.py test_delete*.py test_nested_viewset.py test_fragment_authorization.py test_action_enabled.py test_resource*.py test_guardian_delete*.py test_core_nested_create_state.py test_transactions.py test_crud.py test_custom_form_view.py test_formsets*.py test_conditional*.py test_polymorphic*.py test_workflow*.py test_action_ordered.py -n 8 -q
+3066 passed in 76.66s

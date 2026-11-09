@@ -1,0 +1,11 @@
+# testcases=1493 failing=1054
+tests.test1.test_guardian::test_accept_global_parent_global_perm_grants_child_create	failure	assert 403 == 200  +  where 403 = <HttpResponseForbidden status_code=403, "text/html; charset=utf-8">.status_code
+tests.test1.test_guardian::test_accept_global_parent_global_perm_grants_child_detail	failure	assert 403 == 200  +  where 403 = <HttpResponseForbidden status_code=403, "text/html; charset=utf-8">.status_code
+tests.test1.test_guardian::test_accept_global_parent_global_perm_grants_child_list	failure	assert 403 == 200  +  where 403 = <HttpResponseForbidden status_code=403, "text/html; charset=utf-8">.status_code
+tests.test1.test_guardian::test_create_cv_has_access_parent_none_policy_resolves_without_permission	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian::test_guardian_manage_config_renders_in_an_alert	failure	assert 'cv_guardian_parent_permission' in ' <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"/> <meta http-e
+tests.test1.test_guardian::test_guardian_manage_context_has_guardian_config	failure	AssertionError: assert 'cv_guardian_parent_permission' in {'parent_viewset': None, 'ancestor_policy': {'provider': 'guar
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[global]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[group]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[ordinary]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[superuser]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'

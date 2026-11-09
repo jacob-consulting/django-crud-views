@@ -3,6 +3,7 @@ from collections import OrderedDict
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views import generic
 
+from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 
@@ -27,21 +28,51 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     cv_icon_action = "manage"
     cv_icon_header = "manage"
 
-    def has_permission(self):
+    def dispatch(self, request, *args, **kwargs):
+        # Nested manage: ancestry first (phase 06.18), then the unchanged local settings/group gate that
+        # PermissionRequiredMixin.dispatch runs through has_permission().
+        response = self._cv_ancestor_guard()
+        if response is not None:
+            return response
+        return super().dispatch(request, *args, **kwargs)
+
+    @staticmethod
+    def _cv_manage_public() -> bool:
+        """The settings make manage pages public ("yes", or "debug_only" with DEBUG on)."""
         if crud_views_settings.manage_views_enabled == "yes":
             return True
         from django.conf import settings as django_settings
 
-        if crud_views_settings.manage_views_enabled == "debug_only" and django_settings.DEBUG:
+        return crud_views_settings.manage_views_enabled == "debug_only" and django_settings.DEBUG
+
+    def _cv_ancestor_actor_response(self, *, protected: bool):
+        """Actor admission of a nested manage request, before any ancestor lookup.
+
+        Protected ancestry: the shared actor rule (anonymous → login, inactive → 403), even when the settings
+        make manage public. All-none ancestry: the manage gate's actual early rule — public settings admit
+        everybody, otherwise an anonymous actor is denied; group membership stays a local gate after ancestry."""
+        if protected:
+            from crud_views.lib.ancestors import _protected_actor_response
+
+            return _protected_actor_response(self)
+        if self._cv_manage_public() or self.request.user.is_authenticated:
+            return None
+        return self.handle_no_permission()
+
+    def has_permission(self):
+        if self._cv_manage_public():
             return True
         if not self.request.user.is_authenticated:
             return False
+        # nested: the membership query's auth records must be on default (phase 06.18)
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
         return self.request.user.groups.filter(name=crud_views_settings.manage_group).exists()
 
     def get_permission_holders(self):
         from django.contrib.auth import get_user_model
         from django.contrib.auth.models import Group
 
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
         user_model = get_user_model()
         rows = []
         for key, perm in self.cv_viewset.permissions.items():
@@ -72,6 +103,8 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         return rows
 
     def get_context_data(self, **kwargs):
+        # nested: the permission rows and holder diagnostics read auth records, which must be on default (06.18)
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
         context = super().get_context_data(**kwargs)
         permissions = self.cv_viewset.permissions
         rows = []
@@ -86,9 +119,49 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "views": views,
                 "permission_holders": permission_holders,
                 "show_users": crud_views_settings.manage_show_users,
+                "ancestor_policy": self.get_ancestor_policy_data(),
             }
         )
         return context
+
+    def get_ancestor_policy_data(self) -> dict:
+        """The ViewSet's declared ancestor policy, for display (phase 06.18).
+
+        Configuration only, not an authorization result: nothing is evaluated for the actor and no ancestor is
+        loaded. The two scopes stay apart:
+
+        * ``as_ancestor``: provider and ancestor fallback, used when this ViewSet is the ancestor of a nested
+          request;
+        * ``requests``: cascade, Read/Write pairs and exact action entries for nested requests that target this
+          ViewSet. None at top level, where no ancestry applies.
+
+        Each inheritable value shows the declared value (None = inherited) next to the effective one. Guardian's
+        per-view ``cv_guardian_accept_global_perms`` is a separate, endpoint-local option (see GuardianManageView).
+        """
+        from crud_views.lib.ancestors import _READ, _WRITE, _effective_cascade, _effective_pair, _effective_provider
+
+        viewset = self.cv_viewset
+        policy = viewset.ancestor_policy
+
+        def pair(value):
+            return value.model_dump() if value is not None else None
+
+        requests = None
+        if viewset.parent is not None:
+            requests = {
+                "cascade": {"declared": policy.cascade, "effective": _effective_cascade(viewset)},
+                "read": {"declared": pair(policy.read), "effective": pair(_effective_pair(viewset, _READ))},
+                "write": {"declared": pair(policy.write), "effective": pair(_effective_pair(viewset, _WRITE))},
+                "actions": {key: pair(value) for key, value in policy.actions.items()},
+            }
+        return {
+            "as_ancestor": {
+                "provider": policy.provider,
+                "effective_provider": _effective_provider(viewset),
+                "accept_global_perms": policy.accept_global_perms,
+            },
+            "requests": requests,
+        }
 
     def get_view_data(self):
         data = OrderedDict()

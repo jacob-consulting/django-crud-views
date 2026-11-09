@@ -1,0 +1,28 @@
+# 06.18-08 start-of-plan RED (source 2062776d, Python 3.12.3, Django 5.2, PYTHONPATH=$PWD/src)
+# plan 01 observation command, --junitxml to scratchpad; exit 1
+totals {'passed': 439, 'error': 1044, 'failure': 10} testcases 1493
+test_authorization_matrix	error	550
+test_authorization_templates	error	135
+test_cancel_permissions	error	29
+test_guardian	failure	6
+test_guardian_child_link_visibility	error	107
+test_guardian_inactive	failure	4
+test_guardian_parent_none	error	37
+test_guardian_policy	error	186
+--- non-setup rows
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[ordinary]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[group]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[global]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[superuser]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian::test_create_cv_has_access_parent_none_policy_resolves_without_permission	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian::test_guardian_manage_context_has_guardian_config	failure	AssertionError: assert 'cv_guardian_parent_permission' in {'parent_viewset': None, 'ancestor_policy': {'provider': 'guardian', 'accept_global_perms': False}, 'g
+tests.test1.test_guardian::test_guardian_manage_config_renders_in_an_alert	failure	assert 'cv_guardian_parent_permission' in ' <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"/> <meta http-equiv="x-ua-compatible" content="ie=edge"
+tests.test1.test_guardian::test_accept_global_parent_global_perm_grants_child_list	failure	assert 403 == 200
+tests.test1.test_guardian::test_accept_global_parent_global_perm_grants_child_detail	failure	assert 403 == 200
+tests.test1.test_guardian::test_accept_global_parent_global_perm_grants_child_create	failure	assert 403 == 200
+
+# Semantic assessment
+Setup errors: ValidationError naming the removed parent fields at each module fixture (H2-removed). Call stage: AttributeError monkeypatching removed attributes. Assertion stage: manage context/HTML still expect removed names; three model-only Publisher grants expect the child view flag to relax the strict Guardian Publisher (403 == 200, D-41). These are the owned H2 rows; no H1 row is open. New test_ancestor_migration.py pins behavior already implemented by 03-07 and passes at this source (regression pins, not RED).
+
+# Masked-row diagnosis exposed once setup was repaired
+test_guardian_parent_none.py::test_list_create_control_late_parent_failure_skips_state_hook[Http404|KeyError]: 404/500 — GuardianParentPermissionMixin.dispatch (03.1) read the state-gate parent through the overridable cv_get_parent_object() hook; fixed to read the guard-resolved parent (Rule 1).

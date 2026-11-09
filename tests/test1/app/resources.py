@@ -169,6 +169,9 @@ cv_publisher_file = ViewSet(
     name="publisherfile",
     parent=ParentViewSet(name="publisher"),
     resource_permissions={"view": "app.view_s3file"},
+    # see cv_book: nested readers hold the Publisher ancestor grant, so the parent action is visible, and the
+    # shared Publisher ViewSet has no icon (strict mode rejects an icon-only button without an icon)
+    context_actions_label_mode={"parent": "label"},
 )
 
 

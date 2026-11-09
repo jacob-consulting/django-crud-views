@@ -1,0 +1,7 @@
+# source e85ed2b4ad237cb73e6b4bf4ee6a8f97d5dae7ae (src clean) + new tests/test1/test_ancestor_costs.py
+$ CV_ANCESTOR_COSTS_DIR=<evidence>/cost-observations PYTHONPATH="$PWD/src" .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_ancestor_costs.py -n 4 -q
+9 passed in 2.46s
+exit=0
+# serial replay (isolation reason: one worker, fixed order, to confirm the -n 4 numbers are worker-independent)
+9 passed in 3.64s
+serial vs -n 4: identical except depth1-guardian-list-with-create-button full/list cold (rest 6 vs 5: one extra django_content_type read outside the guard in the first Guardian list request of a worker process; guard counts identical)

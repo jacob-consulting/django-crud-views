@@ -1,0 +1,1 @@
+PASS: checks=820 mismatches=0 (current cells 24, history cells 24, category observations 48, top-level rows 4, render-helper sentences 2, sources files 9) file=06.18-COSTS.md

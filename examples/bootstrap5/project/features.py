@@ -144,18 +144,25 @@ FEATURES: list[Feature] = [
             "ViewSets that nest inside a parent. A Company owns Departments, a Department owns Employees, and "
             "a Company also owns Offices. Each child list is automatically scoped to its parent, and creating "
             "a child fills in the parent link for you — notice how the URLs stack the parent keys "
-            "(company → department → employee)."
+            "(company → department → employee). Because every nested URL names its ancestors, each request is "
+            "also authorized against them: listing departments needs view on the Company, adding or editing them "
+            "needs change on it (alice and bob hold all of these). The ViewSets keep the default ancestor "
+            "policy, so nothing is declared."
         ),
         look_at=(
             "parent=ParentViewSet(...) on the cv_department / cv_employee / cv_office ViewSets, and "
             "CreateViewParentMixin in the create views (it sets the parent foreign key); the stacked "
-            "company_pk / department_pk URL kwargs."
+            "company_pk / department_pk URL kwargs; the default ancestor_policy (nothing declared) and the "
+            "'Ancestor policy' table on /nested/company/<pk>/department/manage/."
         ),
         url_name="company-list",
         icon="fa-solid fa-sitemap",
         docs=(
             DocRef(page="reference/nested.md", label="Nested ViewSets (parent/child)"),
             DocRef(page="reference/nested.md", label="Nested ViewSets — creating children", anchor="creating-children"),
+            DocRef(
+                page="reference/nested.md", label="Nested — ancestor authorization", anchor="ancestor-authorization"
+            ),
         ),
     ),
     Feature(
@@ -236,17 +243,28 @@ FEATURES: list[Feature] = [
         app="guardian_demo",
         group="extensions",
         title="Guardian",
-        description="Per-object permissions: alice and bob each see their own documents, plus shared ones.",
+        description=(
+            "Per-object permissions: alice and bob each see their own documents plus shared ones; notes nest "
+            "under a document and follow its grants."
+        ),
         about=(
             "Per-object permissions with django-guardian. Documents are owned by individual users: sign in as "
             "alice or bob (password same as the username) and each sees only their own documents, plus two that "
             "are shared — alice's Team Handbook with bob, view-only, and bob's Release Checklist with alice, "
-            "editable but not deletable. Creating a document grants its creator full object-level rights."
+            "editable but not deletable. Creating a document grants its creator full object-level rights. "
+            "Notes are a nested GuardianViewSet child of the Document GuardianViewSet: listing a document's notes "
+            "needs view on that document, adding or editing them needs change on it — bob can read the Team "
+            "Handbook's notes but cannot add one, while alice may add notes to bob's Release Checklist. Each note "
+            "keeps its own object grants, so only its author and the document owner may edit it."
         ),
         look_at=(
             "the GuardianViewSet and the Guardian*ViewPermissionRequired views, and "
             "DocumentCreateView.cv_form_valid, which assigns object permissions to the creator via "
-            "cv_document.assign_perm."
+            'cv_document.assign_perm; cv_note = GuardianViewSet(..., parent=ParentViewSet(name="document")) '
+            'and the explicit ancestor_policy=AncestorPolicy(provider="guardian", accept_global_perms=False) on '
+            "cv_document; NoteCreateView.cv_form_valid, which grants the author and the document owner; and the "
+            "'Ancestor policy' table on the manage pages (/guardian/document/manage/ and "
+            "/guardian/document/<pk>/note/manage/, available locally because DEBUG enables manage views)."
         ),
         url_name="document-list",
         icon="fa-solid fa-user-lock",
@@ -256,6 +274,11 @@ FEATURES: list[Feature] = [
                 page="reference/guardian.md",
                 label="Guardian — working example and seeded permissions",
                 anchor="working-example",
+            ),
+            DocRef(
+                page="reference/guardian.md",
+                label="Guardian — parent viewsets and ancestor authorization",
+                anchor="parent-viewsets",
             ),
         ),
     ),

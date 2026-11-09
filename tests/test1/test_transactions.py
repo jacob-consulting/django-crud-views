@@ -99,10 +99,12 @@ def client_user_genre_add(client, db):
     from django.contrib.auth.models import User
 
     from tests.lib.helper.user import user_viewset_permission
-    from tests.test1.app.views import cv_genre
+    from tests.test1.app.views import cv_genre, cv_publisher
 
     user = User.objects.create_user(username="user_genre_add", password="password")
     user_viewset_permission(user, cv_genre, "add")
+    # nested Genre create is a Write request: the core Publisher ancestor needs model "change" (phase 06.18)
+    user_viewset_permission(user, cv_publisher, "change")
     client.force_login(user)
     return client
 
@@ -275,6 +277,51 @@ def test_m2m_parent_create_links_parent(client_user_genre_add, publisher_penguin
     assert response.status_code == 302
     assert list(publisher_penguin.genres.values_list("name", flat=True)) == ["Sci-Fi"]
     assert Genre.objects.count() == 1
+
+
+def _genre_write_events(monkeypatch):
+    """Record every write-phase step of the nested Genre create: form save, M2M attachment, hook, on_commit."""
+    from tests.test1.app.views import GenreCreateView
+
+    events = []
+    for name in ("form_valid", "cv_parent_many_to_many_through_defaults", "cv_form_valid_hook", "cv_on_commit"):
+        original = getattr(GenreCreateView, name)
+
+        def spy(self, *args, _name=name, _original=original, **kwargs):
+            events.append(_name)
+            return _original(self, *args, **kwargs)
+
+        monkeypatch.setattr(GenreCreateView, name, spy)
+    return events
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("grants", [("genre_add",), ("publisher_change",)], ids=["genre-add-only", "publisher-only"])
+def test_m2m_parent_create_denials_stop_before_any_write(
+    grants, client, publisher_penguin, monkeypatch, django_capture_on_commit_callbacks
+):
+    """Independent gates: Genre add without Publisher change (ancestor) and Publisher change without Genre add
+    (local) are both denied before the save, the M2M attachment, the hook and any on_commit callback."""
+    from django.contrib.auth.models import User
+
+    from tests.lib.helper.user import user_viewset_permission
+    from tests.test1.app.models import Genre
+    from tests.test1.app.views import cv_genre, cv_publisher
+
+    user = User.objects.create_user(username=f"user_{'_'.join(grants)}", password="password")
+    if "genre_add" in grants:
+        user_viewset_permission(user, cv_genre, "add")
+    if "publisher_change" in grants:
+        user_viewset_permission(user, cv_publisher, "change")
+    client.force_login(user)
+    events = _genre_write_events(monkeypatch)
+    with django_capture_on_commit_callbacks(execute=True) as callbacks:
+        response = client.post(f"/publisher/{publisher_penguin.pk}/genre/create/", {"name": "Denied"})
+    assert response.status_code == 403
+    assert events == []
+    assert callbacks == []
+    assert not Genre.objects.filter(name="Denied").exists()
+    assert list(publisher_penguin.genres.all()) == []
 
 
 @pytest.mark.django_db

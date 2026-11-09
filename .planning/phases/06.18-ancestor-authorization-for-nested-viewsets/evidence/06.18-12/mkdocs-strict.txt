@@ -1,0 +1,6 @@
+source_sha=5829cae73a1ae23665e3cc77108e931f741bb7e1
+command: PYTHONPATH=$PWD/src .venv/bin/mkdocs build --strict --site-dir /tmp/phase0618-docs (Django 6.1.2 docs/tool env, not supported-series proof)
+INFO    -  Cleaning site directory
+INFO    -  Building documentation to directory: /tmp/phase0618-docs
+INFO    -  Documentation built in 1.26 seconds
+exit=0

@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from collections.abc import Mapping
 from types import MappingProxyType
-from typing import Any, Self
+from typing import Any, ClassVar, Self
 
 from pydantic import model_validator
 
@@ -19,36 +19,76 @@ _REMOVED_GLOBAL_PERMS_MESSAGE = (
     "model permissions. GuardianViewSet.get_objects_for_user() stays strict and has no global-permission option."
 )
 
+# Removed in phase 06.18 (D-28): ancestor authorization is the shared ancestor policy, not a Guardian field.
+_REMOVED_PARENT_FIELDS = ("cv_guardian_parent_permission", "cv_guardian_parent_create_permission")
+_REMOVED_PARENT_MESSAGE = (
+    "{owner} declares {fields}, which were removed before 1.0: nested requests are authorized by the shared "
+    "ancestor policy. The requested ViewSet's ancestor_policy selects the permission keys (read/write/actions, "
+    "default Read view/view and Write change/view, e.g. ancestor_policy=AncestorPolicy(write="
+    "AncestorPermissions(nearest='change', higher='view'))); each ancestor ViewSet's own provider decides how it "
+    "is checked (GuardianViewSet: object permissions; ViewSet: model permissions; AncestorPolicy(provider='none') "
+    "on the ancestor: unprotected), and its ancestor_policy.accept_global_perms=True adds the model permission "
+    "as a fallback. Remove these fields; see docs/migrating-1.0.md."
+)
+
+
+def _removed_parent_declarations(cls: type, data: Any) -> list[str]:
+    """The removed parent-permission names declared by the user: a constructor key, or any declaration on
+    ``cls`` or a base class (Pydantic field, ClassVar or plain attribute — the framework declares none)."""
+    keys = data.keys() if isinstance(data, Mapping) else ()
+    return [
+        name
+        for name in _REMOVED_PARENT_FIELDS
+        if name in keys or name in cls.model_fields or name in cls.__class_vars__ or hasattr(cls, name)
+    ]
+
 
 class GuardianViewSet(ViewSet):
     """
     ViewSet subclass with per-object permission support via django-guardian.
 
-    Attributes:
-        cv_guardian_parent_permission: permission key checked on parent object
-            for child list/detail/update/delete views. None = skip check.
-        cv_guardian_parent_create_permission: permission key checked on parent
-            object for child create views. None = falls back to
-            cv_guardian_parent_permission.
+    As an *ancestor* of a nested request (phase 06.18) a GuardianViewSet is a strict object-permission gate by
+    default (``_ancestor_provider = "guardian"``): the required permission of its own permission map must be
+    granted on the resolved object, directly or through a group. ``ancestor_policy.accept_global_perms=True``
+    also accepts the model permission for that ancestor. The removed ``cv_guardian_parent_permission`` /
+    ``cv_guardian_parent_create_permission`` fields are rejected (constructor and subclass declarations).
 
-    Global model-permission fallback is configured per view class (``cv_guardian_accept_global_perms``), never on
-    the ViewSet; passing the removed ViewSet key raises a validation error naming that replacement.
+    Global model-permission fallback of an endpoint's *own* gate is configured per view class
+    (``cv_guardian_accept_global_perms``), never on the ViewSet; passing the removed ViewSet key raises a
+    validation error naming that replacement.
     """
 
-    cv_guardian_parent_permission: str | None = "view"
-    cv_guardian_parent_create_permission: str | None = None
+    # ancestor provider when ``ancestor_policy.provider`` is None: strict object permissions (phase 06.18)
+    _ancestor_provider: ClassVar[str] = "guardian"
 
     @model_validator(mode="before")
     @classmethod
     def reject_removed_global_perms_flag(cls, data: Any) -> Any:
-        """Reject the removed ViewSet flag before Pydantic would silently ignore it as an extra (D-04).
+        """Reject removed declarations before Pydantic would silently ignore them as extras (D-04, D-28).
 
-        Only mapping input is inspected; anything else (an existing instance, invalid input) passes through to
-        Pydantic's established validation. Raising here precedes the after-validator, so nothing is registered.
+        The removed ViewSet flag is detected in mapping input; the removed parent-permission fields also in
+        user subclasses (annotated, inherited, ClassVar or plain attributes). Anything else passes through to
+        Pydantic's established validation. Raising here precedes the after-validator, so nothing is registered
+        and no database is touched.
         """
         if isinstance(data, Mapping) and _REMOVED_GLOBAL_PERMS_KEY in data:
             raise ValueError(_REMOVED_GLOBAL_PERMS_MESSAGE)
+        declared = _removed_parent_declarations(cls, data)
+        if declared:
+            name = data.get("name") if isinstance(data, Mapping) else None
+            owner = f"{cls.__name__} {name!r}" if name is not None else cls.__name__
+            raise ValueError(_REMOVED_PARENT_MESSAGE.format(owner=owner, fields=", ".join(declared)))
         return data
+
+    def _ancestor_has_permission(self, user, permission: str, obj, *, view) -> bool:
+        """Ancestor gate of this ViewSet: Guardian's strict object gate (with this ViewSet's own
+        ``ancestor_policy.accept_global_perms`` fallback); an explicit ``provider="model"`` uses the model gate."""
+        from crud_views.lib.ancestors import _effective_provider
+        from crud_views_guardian.lib.ancestors import _guardian_ancestor_has_permission
+
+        if _effective_provider(self) != "guardian":
+            return super()._ancestor_has_permission(user, permission, obj, view=view)
+        return _guardian_ancestor_has_permission(self, user, permission, obj, view=view)
 
     def get_manage_view_class(self):
         from django.utils.module_loading import import_string

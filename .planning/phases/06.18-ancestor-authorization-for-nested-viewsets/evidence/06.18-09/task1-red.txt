@@ -1,0 +1,16 @@
+source: f19718aa (+ uncommitted new tests/test1/test_ancestor_manage.py)
+command: PYTHONPATH="$PWD/src" .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_ancestor_manage.py -n 4 -q -p no:randomly -rf
+E           KeyError: 'ancestor_policy'
+E           KeyError: 'ancestor_policy'
+E           KeyError: 'ancestor_policy'
+E           KeyError: 'ancestor_policy'
+E           KeyError: 'ancestor_policy'
+E           KeyError: 'ancestor_policy'
+FAILED tests/test1/test_ancestor_manage.py::test_manage_reports_declared_none_next_to_effective_defaults
+FAILED tests/test1/test_ancestor_manage.py::test_manage_effective_defaults_follow_the_global_settings_while_declared_stays_none
+FAILED tests/test1/test_ancestor_manage.py::test_top_level_manage_reports_request_scope_not_applicable[guardian]
+FAILED tests/test1/test_ancestor_manage.py::test_manage_reports_explicit_request_declarations
+FAILED tests/test1/test_ancestor_manage.py::test_guardian_manage_separates_ancestor_fallback_from_local_view_fallback
+FAILED tests/test1/test_ancestor_manage.py::test_top_level_manage_reports_request_scope_not_applicable[core]
+6 failed, 28 passed in 5.32s
+exit: 1

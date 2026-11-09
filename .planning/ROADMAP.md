@@ -41,6 +41,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.15: Polymorphic labels and per-model detail groups (INSERTED)** - #326: capitalize selector labels, validate model-specific groups, and adopt in tabler-test (completed 2026-11-06)
 - [x] **Phase 06.16: Object-detail values and composition guidance (INSERTED)** - #327: readable choices, explicit help-text policy, meaningful empty values, and correct mixin composition (completed 2026-11-06)
 - [x] **Phase 06.17: Object-detail accordion initial state and tab adapters (INSERTED)** - #328: open the first accordion group and initialize tabs through theme adapters (completed 2026-11-07)
+- [x] **Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)** - Shared ancestor enforcement under the approved design v2; planning pending. (completed 2026-11-09)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -340,9 +341,11 @@ FORM-11, FORM-12, FORM-13
 
 Plans:
 **Wave 1**
+
 - [x] 06.14-01-PLAN.md — Add and verify empty card insertion blocks and the five-block inheritance contract (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.14-02-PLAN.md — Publish executable cards-first/table-secondary configuration, prove navigation and preserve compatibility (wave 2)
 
 ### Phase 6.1: Cancel form button as a link (INSERTED)
@@ -357,22 +360,28 @@ leaf, while unconfigured forms retain today's button markup and behavior.
 
   1. `form:cancel-tag` accepts `button` (default) or `a`, is registrable through `register_button_classes()` and
      overridable through `CRUD_VIEWS_BUTTON_CLASSES`, and participates in the existing W362 key validation.
+
   2. An explicit `Button(tag=...)` overrides the class-table choice. A cancel control with a URL and resolved tag `a`
      renders a native `<a href>`; without a cancel URL it remains a button regardless of the configured tag.
+
   3. The link retains the button's id, classes, label mode, icon and applicable extra attributes, omits `name`,
      `value`, `type` and `data-cv-cancel-url`, and navigates without JavaScript, including opening in a new tab.
+
   4. `cv_tag` is included in `FORM_LEAF_KEYS` and documented with the new key and per-button override. Default button
      markup and behavior remain unchanged, `viewset.js` stays unchanged, and existing custom templates remain usable.
 **Plans**: 3/3 plans complete
 
 Plans:
 **Wave 1**
+
 - [x] 06.1-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.1-02-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.1-03-PLAN.md
 
 **UI hint**: no (tag choice in the existing form leaf; no new screens)
@@ -395,18 +404,24 @@ recommendations are proposals, not locked decisions.
   1. B1: Every allowed deletion method preserves permission, action-state, confirmation/form validation,
      deletion-protection, hooks and transaction/rollback boundaries. HTTP DELETE is explicitly rejected or follows
      the complete validated lifecycle; it cannot inherit a direct-delete bypass.
+
   2. B2: Formset fragments authorize the target and validate URL-parent/fragment coordinates before rendering.
      Ungranted, revoked, inactive, state-disabled, wrong-parent and missing-object requests disclose no form data
      or choices; authorized fragments retain the documented request and `{html, rows}` protocol.
+
   3. B3: Protected related objects are filtered before entering template context. No/partial/full related-view
      grants reveal only permitted labels, while deletion remains visibly blocked even if all labels are hidden.
+
   4. B4/B6: Parent permission `None` retains parent resolution and independent action-state checks. Create
      visibility/access helpers and direct GET/POST agree without crashes or requiring a new child-add grant.
+
   5. B5: Inactive users, including inactive superusers and group/object grant holders, receive no unauthorized
      rows or object access even when an authentication backend permits inactive sessions.
+
   6. B7: Guardian has a documented effective global-permission policy. View behavior, the ViewSet helper and
      manage diagnostics are truthful; removal/clarification or inheritance of the inert ViewSet flag is
      explicitly decided and covered by regressions.
+
   7. Direct-request actor-matrix regressions and native list/card/action/manage/alert/formset overrides prove
      server enforcement independently of presentation. Preserve intentional aggregate purge authority and
      existing parent/global safeguards. Document changed access/config/context behavior; every Breaking entry
@@ -439,22 +454,28 @@ inserted here. Phase 7 remains last and cannot freeze the affected promises befo
 
 Plans:
 **Wave 1**
+
 - [x] 06.2-01-PLAN.md — Reject DELETE and secure protected preview context; retain POST integrity
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.2-02-PLAN.md — Enforce parent-None state and inactive actor denial
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.2-03-PLAN.md — Authorize fragments and validate saved/unsaved ancestry
 - [x] 06.2-04-PLAN.md — Remove inert configuration and report per-view manage policy
 
 **Wave 4** *(blocked on Wave 3 completion)*
+
 - [x] 06.2-05-PLAN.md — Replay direct actor and native template matrices
 
 **Wave 5** *(blocked on Wave 4 completion)*
+
 - [x] 06.2-06-PLAN.md — Document migrations and record supported-version evidence
 
 **Gap closure** *(UAT 2026-10-29, gaps G-06.2-1 and G-06.2-3; sequential waves 1-3)*
+
 - [x] 06.2-07-PLAN.md — Guardian delete preview fails closed per model: _PermittedPks resolves against guardian's content type (G-06.2-1 / CR-01)
 - [x] 06.2-08-PLAN.md — Blocked deletions: notice without a form, blocked POST 200/422 with exception backstop, flag on every delete page, copy and German catalog (G-06.2-3 / WR-02)
 - [x] 06.2-09-PLAN.md — Document both closures, pair CHANGELOG with migrating-1.0.md, update ACCEPTANCE/disposition and re-measure both cached environments
@@ -486,12 +507,16 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 
   1. Real-preview GET, invalid confirmation and custom-protected POST execute no deletion callbacks (including
      SET/default factories); failed valid POST preserves the write boundary. Rollback alone cannot undo external effects.
+
   2. Established native PROTECT/RESTRICT remains friendly; unknown handlers/converters/model methods/hooks/commit
      callback failures propagate. Nested cascades and stale previews have real commit/rollback evidence in both atomic modes.
+
   3. Two-database colliding-PK tests, protection on only one alias and instance-aware routing prove alignment of
      protection inspection, deletion, transactions and commit hooks. CR-04's demonstrated impact is false blocking.
+
   4. Core/Guardian/polymorphic authorization, filtered labels, independent notices and full-page/modal blocked
      responses remain coherent. Real-preview safety tests do not replace the real collector with an empty preview.
+
   5. Reproduce fixes on Django 4.2/6.0, add supported 5.2 evidence, replay deletion/transaction/authorization suites,
      update deletion/override docs and changelog (Breaking paired with migrating-1.0.md), re-review and reconcile
      affected 6.2 acceptance before closure. Existing green suites are not proof of these uncovered cases.
@@ -511,59 +536,77 @@ WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed wi
 
 Plans:
 **Wave 1**
+
 - [x] 06.3-01-PLAN.md — Blocking maintainer review of the integrated design
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.3-02-PLAN.md — Callback-safe confirmation and native deletion tracer
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.3-03-PLAN.md — Graph inspection, safe provider and partial notices
 - [x] 06.3-06-PLAN.md — Strict-helper diagnostics and bounded Guardian review
 
 **Wave 4** *(blocked on Wave 3 completion)*
+
 - [x] 06.3-04-PLAN.md — Native provenance and real write-boundary evidence
 
 **Wave 5** *(blocked on Wave 4 completion)*
+
 - [x] 06.3-05-PLAN.md — Pinned alias, two databases and Guardian label projection
 
 **Wave 6** *(blocked on Wave 5 completion)*
+
 - [x] 06.3-07-PLAN.md — Authorization, templates and actual polymorphic deletion
 
 **Wave 7** *(blocked on Wave 6 completion)*
+
 - [x] 06.3-08-PLAN.md — Executable migration examples and paired release guidance
 
 **Wave 8** *(blocked on Wave 7 completion)*
+
 - [x] 06.3-09-PLAN.md — Three-series matrix and affected acceptance reconciliation
 
 **Wave 9** *(blocked on Wave 8 completion)*
+
 - [x] 06.3-10-PLAN.md — Reviewable repair contract and maintainer approval
 
 **Wave 10** *(plans 11 and 12 complete)*
+
 - [x] 06.3-11-PLAN.md — CR-01 selected-database native target and parent identity
 - [x] 06.3-12-PLAN.md — CT-01 configured Guardian content-type access
 
 **Wave 11** *(plan 13 complete)*
+
 - [x] 06.3-13-PLAN.md — CR-02 independent relationship boundaries and provider migration
 
 **Wave 12** *(ready after Wave 11 completion)*
+
 - [x] 06.3-14-PLAN.md — CR-03 native null-join semantics and truthful previews
 
 **Wave 13** *(blocked on Wave 12 completion)*
+
 - [x] 06.3-15-PLAN.md — Executable migration and reference guidance
 
 **Wave 14** *(plan 16 complete; source-bound focused/full and quality evidence ready)*
+
 - [x] 06.3-16-PLAN.md — Fresh three-series automated evidence
 
 **Wave 15** *(executed; human dispositions, UI-F01 and independent acceptance review remain pending)*
+
 - [x] 06.3-17-PLAN.md — Human review and acceptance reconciliation
 
 **Wave 16** *(complete; actual bound focus-contract approval recorded)*
+
 - [x] 06.3-18-PLAN.md — Bound focus lifecycle contract and maintainer decision
 
 **Wave 17** *(complete; focus repair and current verification independently reviewed)*
+
 - [x] 06.3-19-PLAN.md — Modal focus repair, actual browser regressions and adapter migration
 
 **Wave 18** *(task 20-01 complete; task 20-02 awaits twelve individual owner dispositions)*
+
 - [x] 06.3-20-PLAN.md — Current review packet and twelve individual human dispositions
 
 ### Phase 06.4: Conditional and formset correctness/lifecycle (INSERTED)
@@ -583,22 +626,28 @@ the freeze. That seam must not own disabled-state or authorization decisions. Re
 
   1. A1: Each conditional group binds to its own intended toggle across sibling/nested rows, shared suffixes,
      prefixes, multiple forms, modal content and dynamically added rows; compatibility for old markup is explicit.
+
   2. A2/A3: Baseline disabled reasons and all enclosing groups compose correctly in both nesting orders. Native
      reset recomputes state after a non-cancelled reset, remains scoped to its form and preserves management inputs.
+
   3. A4: Inactive supported fields clear with correct persistence semantics, including existing FileField references
      (without promising storage-file deletion), explicit empty values, Boolean and M2M cases. Unsupported shapes
      have an explicit guard. Documentation accurately describes inherited clean/model validation and suppressed errors.
+
   4. A5: Active `edit_only` formsets cannot create rows through forged extras, including custom control templates;
      stock Add controls agree with server policy and ordinary edits still work. Assess forged initial-row IDs and
      document reject/ignore behavior without claiming an unproven cross-parent mutation.
+
   5. A6/A7: Formsets and toggles initialize automatically and idempotently on initial load, modal load/422 replacement
      and nested added rows. Initialization can retry after a missing toggle appears, includes supported root elements
      and handles scripts loaded after DOMContentLoaded. Add/delete/order/submit and widget lifecycle work without
      duplicate bindings or reliance on undocumented controller constructors/private flags.
+
   6. Stock and minimal non-Bootstrap crispy/group/formset templates pass lifecycle and keyboard/focus acceptance,
      including two forms, disabled widgets, reset, hidden-content focus, management POST/re-render and JS-off/tampered
      POST. Preserve fragment authorization, parent denial, restricted querysets, atomic rollback and documented
      skip/opt-in aggregate purge semantics. Keep jQuery in this slice; the #210 port remains deferred.
+
   7. Document the usable formset template projection and any changed identity/root/visibility hooks for Phase 7.
      Preserve event detail `{prefix, rows}`, one event per outer inserted row, request coordinates and `{html, rows}`.
      Pair any Breaking changelog entry with `docs/migrating-1.0.md`. A8 `commit=False` public/internal classification
@@ -608,69 +657,89 @@ the freeze. That seam must not own disabled-state or authorization decisions. Re
 
 Plans:
 **Wave 1**
+
 - [x] 06.4-01-PLAN.md — Exact conditional identity from rendered form to submitted values (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.4-02-PLAN.md — Field-aware conditional persistence (wave 2)
 - [x] 06.4-05-PLAN.md — Composed conditional state, native reset and focus (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.4-03-PLAN.md — Static and runtime clearing configuration contract (wave 3)
 - [x] 06.4-04-PLAN.md — Mandatory active formset row-policy validation (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
+
 - [x] 06.4-06-PLAN.md — Form-scoped formset initialization and modal submit ordering (wave 4)
 
 **Wave 5** *(blocked on Wave 4 completion)*
+
 - [x] 06.4-07-PLAN.md — Successful non-first sibling fragment round trips (wave 5)
 
 **Wave 6** *(blocked on Wave 5 completion)*
+
 - [x] 06.4-08-PLAN.md — Real HTTP and browser conditional/formset acceptance (wave 6)
 
 **Wave 7** *(blocked on Wave 6 completion)*
+
 - [x] 06.4-09-PLAN.md — Tested migration and Phase 7 public contract handoff (wave 7)
 
 **Wave 8** *(blocked on Wave 7 completion)*
+
 - [x] 06.4-10-PLAN.md — Supported-series regression evidence and acceptance handoff (wave 8)
 
 **Wave 9** *(gap closure; dependencies in PLAN frontmatter)*
+
 - [x] 06.4-11-PLAN.md — Reapply mandatory row policy after native recleaning (wave 9)
 - [x] 06.4-12-PLAN.md — Separate the mandatory Django bridge from ordinary Node tests (wave 9)
 - [x] 06.4-14-PLAN.md — Preserve conditional ownership while a binding is unresolved (wave 9)
 
 **Wave 10** *(gap closure; dependencies in PLAN frontmatter)*
+
 - [x] 06.4-13-PLAN.md — Keep row deletion eligibility stable through insertion and reordering (wave 10)
 - [x] 06.4-15-PLAN.md — Enforce evidence selection and current runtime requests (wave 10)
 
 **Wave 11** *(gap closure; dependencies in PLAN frontmatter)*
+
 - [x] 06.4-16-PLAN.md — Exercise repaired lifecycle in a representative browser host (wave 11)
 - [x] 06.4-17-PLAN.md — Reconcile repaired contracts and required test commands in documentation (wave 11)
 
 **Wave 12** *(gap closure; dependencies in PLAN frontmatter)*
+
 - [x] 06.4-18-PLAN.md — Capture and validate current-source gap repair evidence (wave 12)
 
 **Wave 13** *(gap closure; dependencies in PLAN frontmatter)*
+
 - [x] 06.4-19-PLAN.md — Reconcile independent reviews and gather the outstanding human dispositions (wave 13)
 
 **Wave 14** *(blocked on Wave 13 completion)*
+
 - [x] 06.4-20-PLAN.md — Reject missing control records and stale conditional captures
 
 **Wave 15** *(blocked on Wave 14 completion)*
+
 - [x] 06.4-21-PLAN.md — Refresh affected evidence with verified source applicability and original provenance
 
 **Wave 16** *(blocked on Wave 15 completion)*
+
 - [x] 06.4-22-PLAN.md — Independent reassessment and end-of-phase acceptance handoff
 
 **Wave 17** *(blocked on Wave 16 completion)*
+
 - [x] 06.4-23-PLAN.md — Reject oversized capture dimensions with exact diagnostics through both CLIs
 
 **Wave 18** *(blocked on Wave 17 completion)*
+
 - [x] 06.4-24-PLAN.md — Refresh checker evidence with immutable source and gate provenance
 
 **Wave 19** *(blocked on Wave 18 completion)*
+
 - [x] 06.4-25-PLAN.md — Obtain independent code/security reviews and reconcile validation
 
 **Wave 20** *(blocked on Wave 19 completion)*
+
 - [x] 06.4-26-PLAN.md — Replay canonical controls, reassess and rebind the final handoff
 
 **WR-05 execution result (2026-11-01):** Plans23–26/nine tasks complete. Checker67/Ruff/35controls/clean positive pass,17original gates retained; two independent14-probe reviews and14canonical observations close G6/WR-05. Canonical human_needed9/10, final handoff structurally valid/not-ready; H1/H2 and31flags remain. Security40/44closed with4highopen at independent snapshot. Two UAT checks pending; no Phase7 advancement. Next: `$gsd-verify-work 06.4`.
@@ -703,17 +772,22 @@ precedence. CONTEXT.md D-01–D-17 locks configurable headings, immediate migrat
   1. #259: Stock page, modal and icon-bearing object-detail group headings support element and host icons with
      accessible headings and no duplicate icon. Cover mixed libraries, empty/disabled icons, escaped classes and
      heading-level changes; define the public heading contract and its sizing-class constraints.
+
   2. C1: One- and two-group vertical tabs have matching selected triggers and visible initial panels, and switch
      correctly in a real browser. Keep trigger/panel state together through the documented template projection.
+
   3. C2: Accordion and tab controls target unique panels for colliding, repeated, empty and translated titles,
      repeated detail components and page/modal coexistence. Document the shared per-render/group ID contract.
+
   4. A minimal native layout override retains escaped titles/values and the supported resolved-property context.
      Record actual browser/keyboard acceptance for corrected tabs; identify any untested non-Bootstrap visual or
      assistive-technology behavior explicitly. Expose resolved semantic badge color/pill context alongside existing
      classes, preserving custom color names, ordinary-value fallback and badge-template precedence.
+
   5. Remove Python `CardAction.no_label` and the obsolete template `cv_no_label` rejection guard as already decided;
      migrate fixtures/docs/tests to `label_mode="icon"` and `cv_label_mode`, with clear old-keyword behavior.
      Preserve both accepted singular/plural label-mode APIs and existing form-leaf contracts.
+
   6. Document intentional stock markup and copied-template changes, pairing every Breaking changelog entry with
      `docs/migrating-1.0.md`. Hand the settled heading, ID/context and alias contracts to Phase 7's inventory.
 
@@ -764,13 +838,17 @@ against Phase 6.3. Must complete before Phase 7.
 
   1. Create/update/custom/delete/workflow pages render one `<form>` and one CSRF input with POST behavior
      unchanged (#277). Document the user-supplied crispy-helper policy; page templates own the form.
+
   2. `register_label_mode_defaults()` supplies package → theme → project-setting precedence per key;
      explicit view modes retain precedence (#278). Validate consistently with E108 and include the theme layer
      in W292 diagnostics.
+
   3. `form:actions` and `form:filter-actions` independently style action groups, with empty-string defaults;
      update W362 and the documented key inventory (#279).
+
   4. Add `alert:dismissible` / `alert:close` utility keys with byte-identical defaults and preserved accessible
      names/dismissal behavior, as selected by D-08/D-17.
+
   5. Re-run the reference Tabler theme; required overrides shrink or stay unchanged. Preserve stock defaults
      except removal of the nested form, record that DOM fix, and hand every new name to Phase 7.
      Pair any Breaking changelog entry with `docs/migrating-1.0.md`.
@@ -784,23 +862,28 @@ full jQuery removal, and final stability-policy inventory.
 
 Plans:
 **Wave 1**
+
 - [x] 06.6-01-PLAN.md — Single-form/CSRF tracer and helper diagnostics (wave 1)
 - [x] 06.6-04-PLAN.md — Alert utility classes and preserved dismissal (wave 1)
 - [x] 06.6-06-PLAN.md — Real companion acquisition and exact-source baseline (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.6-02-PLAN.md — Atomic theme label defaults and effective checks (wave 2)
 - [x] 06.6-03-PLAN.md — Supported-pack action-group styling (wave 2)
 - [x] 06.6-05-PLAN.md — Full stock/workflow request and DOM preservation (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.6-07-PLAN.md — Real Tabler/browser acceptance and replayable patch (wave 3)
 - [x] 06.6-08-PLAN.md — Executable adoption and paired migrations (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
+
 - [x] 06.6-10-PLAN.md — Verified companion source delivery and local commit (wave 4)
 
 **Wave 5** *(blocked on Wave 4 completion)*
+
 - [x] 06.6-09-PLAN.md — Final regression evidence and Phase 7 handoff (wave 5)
 
 **UI hint**: yes (forms, action groups and alerts across stock and reference themes).
@@ -823,14 +906,18 @@ ViewSet; detail destinations use the form's existing object.
 
   1. List → update/create/delete → Cancel restores the originating list query; detail → update/delete → Cancel
      returns to the same object's detail without changing or deleting it. Equivalent custom form flows work.
+
   2. List/card origins preserve repeated query values, filters, sorting and page. Explicitly unfiltered origins
      remain unfiltered despite stored session filters, another tab cannot overwrite the captured destination,
      and nested ViewSets retain the correct parent context. Internal navigation parameters do not accumulate.
+
   3. Origin information survives invalid submissions for all supported form types and polymorphic type selection.
      Crispy buttons, native cancel links, supported modals and the documented custom-template URL helper resolve
      the same destination.
+
   4. Missing, malformed, disallowed or unusable origin information falls back safely. Explicit static cancellation
      remains supported; Save and successful deletion redirects retain their existing behavior.
+
   5. Tests cover issue #302's acceptance checklist. Documentation covers defaults, overrides, query state and the
      URL-level API; the default change has a `### Breaking` changelog entry and paired `docs/migrating-1.0.md` guidance.
 
@@ -841,16 +928,20 @@ deletion pages that currently hide the form.
 
 Plans:
 **Wave 1**
+
 - [x] 06.7-01-PLAN.md — Capture and restore independent cancel destinations with automatic form defaults
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.7-02-PLAN.md — Resolve permission-aware destinations and actionable fallback diagnostics
 - [x] 06.7-03-PLAN.md — Preserve origin across selectors and unify custom-template/modal rendering
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.7-04-PLAN.md — Publish executable immediate migrations and updated examples
 
 **Wave 4** *(blocked on Wave 3 completion)*
+
 - [x] 06.7-05-PLAN.md — Prove browser cancellation and record supported-runtime preservation
 
 **UI hint**: yes (cancel navigation across existing form surfaces; no layout redesign).
@@ -874,12 +965,15 @@ Plans:
 
 Plans:
 **Wave 1**
+
 - [x] 06.8-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.8-02-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.8-03-PLAN.md
 
 ### Phase 06.9: Protected delete-preview object links (INSERTED)
@@ -899,15 +993,19 @@ Plans:
 
 Plans:
 **Wave 1**
+
 - [x] 06.9-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.9-02-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.9-03-PLAN.md
 
 **Wave 4** *(blocked on Wave 3 completion)*
+
 - [x] 06.9-04-PLAN.md
 
 ### Phase 06.10: Simplify protected-object previews and cap total displayed objects (INSERTED)
@@ -944,6 +1042,7 @@ entries with `url=None`, existing summary policy, and one shared truncation noti
 **Plans:** 5/5 plans complete — automated gates and independent verification passed; all seven human UAT checks accepted on 2026-11-05. Phase complete.
 
 Plans:
+
 - [x] 06.10-01-PLAN.md — Plain protected-blocker tracer, adapter removal and component measurements (wave 1)
 - [x] 06.10-02-PLAN.md — Strict finite/None configuration, visible selection and enforcement regressions (wave 2)
 - [x] 06.10-03-PLAN.md — Executable copied recipes, public guidance and Phase 7 handoff (wave 3)
@@ -970,15 +1069,19 @@ recipe separately from the optional `cv_action_enabled` request gate with disabl
 
   1. Default workflow views still require change permission. A view-only user with a dedicated step permission
      can GET and POST that permitted transition, changing state and recording history.
+
   2. A different role's transition available from the same source state is omitted; forged POSTs are rejected
      without state/history changes. A user lacking page permission cannot GET or POST even if a transition permits them.
+
   3. Without the optional hook, a page viewer with no permitted steps receives GET 200 and the existing empty message.
      With the hook, the action renders disabled on an accessible sibling page and direct authenticated GET/POST
      return 403; a user with a permitted step still succeeds. Rejected attempts preserve state and history.
+
   4. Execution-time `workflow_has_transition` authorization is rechecked independently of display and form choices.
   5. Docs distinguish page access, optional action-enabled request enforcement, state/user transition filtering,
      submitted-choice validation, execution rechecks, and object/parent checks. Disabled rendering alone is not
      authorization; the server also enforces the hook. Lowering the page gate alone adds no transition restrictions.
+
   6. Focused tests, appropriate broader multicore regression checks, and documentation validation pass.
 
 **Exclusions**: No automatic any-transition page gate, new permission framework, Guardian integration mode,
@@ -988,9 +1091,11 @@ execution helper, refusal-message API, default-permission change, or finding 7 e
 
 Plans:
 **Wave 1**
+
 - [x] 06.13-01-PLAN.md — Isolated opt-in permission requests, no-step variants, and execution recheck regressions.
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.13-02-PLAN.md — Complete workflow recipe, documentation changelog, and bounded compatibility validation.
 
 ### Phase 06.13.1: Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322) (INSERTED)
@@ -1010,13 +1115,16 @@ contracts before Phase 7's stability freeze. Plans preserve the locked public co
 
 Plans:
 **Wave 1**
+
 - [x] 06.13.1-01-PLAN.md — Shared business validation/execution and origin-aware bound refusal recovery (wave 1).
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.13.1-02-PLAN.md — Real routed state/history identity and atomic failure guarantees (wave 2).
 - [x] 06.13.1-03-PLAN.md — Opt-in accessible transition buttons and custom page/modal forms (wave 2).
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.13.1-04-PLAN.md — Owned browser fixture, no-JS page flow and complete UI state acceptance (wave 3).
 - [x] 06.13.1-05-PLAN.md — Public contracts, release guidance and bounded regression evidence (wave 3).
 
@@ -1044,13 +1152,16 @@ selection. Routine implementation mechanics are delegated to the planner. Settle
 
 Plans:
 **Wave 1**
+
 - [x] 06.15-01-PLAN.md — Exact-model detail groups and complete structural checks
 - [x] 06.15-02-PLAN.md — Capitalized selector labels with selection/access compatibility
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.15-03-PLAN.md — Public contract, release guidance and supported-series validation
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.15-04-PLAN.md — Required downstream adoption, catalog validation and findings resolution
 
 ### Phase 06.16: Object detail: choice labels, help-text policy, empty values, and composition guidance (#327) (INSERTED)
@@ -1064,18 +1175,22 @@ decisions, implementation defaults, exclusions, and acceptance criteria.
 numerically and preserves its list/mapping/dynamic group configurations; no hard dependency on #328 or #329.
 Complete before Phase 7 freezes the affected public surface.
 **Settled scope:**
+
 - D12: Add per-property `choices_display=True` with a raw-value opt-out. Use model display-method semantics for
   scalar choice fields and terminal fields on single-object FK/O2O paths; preserve collection behavior, including
   one-member collections. Preserve raw resolved/custom-template values and inputs to badges and links; explicit
   badge labels win. Preserve translation, escaping, unknown-code fallback, and missing-relation behavior.
+
 - D13: Hide automatic model help text by default. Apply explicit property `detail` → view
   `cv_object_detail_show_help_text` → project `CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT` → `False` precedence.
   Support boolean instructions, empty-string suppression, explicit/lazy text, and terminal-field metadata without
   intermediate help-text leakage. Apply consistently through the shared resolver and raw template tags;
   already-resolved properties retain their resolved detail text. No additional database queries.
+
 - D14: Stock char/text/default templates show the existing muted em dash for `None` and `""`, keeping rows,
   labels, and explicit details. Preserve `0`, `False`, whitespace, escaping, newline formatting, and custom-template
   ownership. A declared non-empty label for a blank choice remains meaningful text.
+
 - D16: Document that complete object-detail views already include `ObjectDetailMixin`; demonstrate valid core,
   Guardian, and polymorphic composition without hierarchy changes or a new MRO detector/system check.
 **Exclusions:** No collection choice transformation, hide-empty feature, general display pipeline/resolver rewrite,
@@ -1092,12 +1207,15 @@ conflict, naming the affected decision. Internal mechanics and focused test orga
 
 Plans:
 **Wave 1**
+
 - [x] 06.16-01-PLAN.md — Choice display tracer, relation boundaries and raw/custom ownership
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.16-02-PLAN.md — Shared help-text policy and exact stock empty-text behavior
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.16-03-PLAN.md — Executable public contracts, composition, migration and final gates
 
 ### Phase 06.17: Object detail: open the first accordion group and initialize tabs through theme adapters (#328) (INSERTED)
@@ -1110,14 +1228,17 @@ decisions, exclusions, implementation pointers, and acceptance criteria.
 **Depends on:** Existing object-detail presentation/lifecycle and `cv.bootstrapAdapters` factory. Follows Phase
 06.16 for scheduling only; no hard dependency on #327 or #329. Complete before Phase 7 freezes the affected surface.
 **Settled scope:**
+
 - D15: Reuse `presentation.selected` to server-render the first accordion group open on pages and newly loaded
   modal content, with matching styling and ARIA. Preserve scoped identity, references, and shared-parent behavior:
   opening another group closes the previous one, and users can close all groups. Standalone `render_group` retains
   its selected one-group projection. No JavaScript solely to establish initial visibility.
+
 - D17: Add `cv.adapters.tab.init(element)` and `.dispose(element)` through `cv.bootstrapAdapters(namespaceOrProvider)`.
   Resolve the namespace on each call; initialize with `Tab.getOrCreateInstance(element)` and dispose with
   `Tab.getInstance(element)?.dispose()`. Missing Tab is a no-op; cleanup never constructs instances, initialization
   never calls `show()` or takes focus, and present-adapter/component errors remain visible.
+
 - Preserve repeat-safe `cv.initObjectDetailTabs(root=document)`, DOM-ready and `cv:modal:loaded` initialization,
   and `cv:modal:unload` disposal before replacement. Only operate on owned triggers in marked `data-cv-od-tabs`
   tablists, preserving root handling and nested boundaries. The UI library owns keyboard activation and switching;
@@ -1142,13 +1263,101 @@ test organization are delegated; follow existing adapter override and asset-load
 
 Plans:
 **Wave 1**
+
 - [x] 06.17-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06.17-02-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06.17-03-PLAN.md
+
+### Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)
+
+**Goal:** Nested endpoints validate their declared ancestry and enforce its selected permissions through one
+shared mechanism, while preserving independent endpoint-local gates and unchanged top-level behavior.
+**Canonical specification:** [Ancestor authorization design v2](../superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md).
+The effective topic sections and acceptance matrix are authoritative; original D-01–D-53 IDs provide provenance.
+**Requirements**: ANCE-01, ANCE-02, ANCE-03, ANCE-04, ANCE-05, ANCE-06, ANCE-07, ANCE-08
+**Depends on:** Phase 06.17
+**Scope:** Typed `AncestorPolicy` / `AncestorPermissions` configuration; model and Guardian providers; full and
+nearest-protected cascade modes; finite built-in Read/Write classification and exact custom action pairs;
+supported FK/M2M ancestry and Resource leaves; strict validation and bounded ancestry walks; early actor denial
+and interleaved ancestor lookup/permission checks before remaining endpoint work. Preserve ancestor ViewSet
+queryset scope and reuse resolved parent identity. Apply the default-database boundary and bounded migration
+of existing immediate-parent helpers and manage diagnostics.
+**Success criteria:**
+
+1. The specification's acceptance matrix proves selection, independent gates, request ordering, relationships,
+   queryset/identity/database boundaries, construction safety, and supported core/Guardian/extension compositions.
+
+2. Removed Guardian parent-policy declarations fail explicitly; existing local object/list/create/state behavior
+   remains intact, and ancestor fallback stays independent of endpoint-local fallback.
+
+3. One- and three-level query costs are measured in both modes; top-level requests do no ancestor work and
+   permission revocation takes effect on the next request.
+
+4. Feature/configuration/Guardian/manage guidance, generic examples, a Breaking changelog entry and
+   `docs/migrating-1.0.md` explain the new contract and its migration, Resource, mutation and visibility limits.
+**Planning handoff:** Carry the effective locked decisions into context without reopening approved choices.
+Separate builder discretion and deferred work; consult the historical ledger only for provenance. Ask only
+about genuine conflicts supported by new code evidence. Developer maintainability remains a hard constraint.
+Full ancestor-aware navigation, Resource ancestors, nondefault nested ORM/auth support, destination-parent or
+all-membership authorization, generic mutation engines and persistent authorization caches remain out of scope.
+This insertion assigns the phase; detailed planning and implementation remain pending.
+**Plans:** 13/13 plans complete
+
+Plans:
+**Wave 1**
+
+- [x] 06.18-01-PLAN.md — Prove one nested request and strict policy ownership
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] 06.18-02-PLAN.md — Bound ancestry walks and classify exact endpoint operations
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [x] 06.18-03-PLAN.md — Integrate Guardian ancestry and retire legacy parent policy
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [x] 06.18-04-PLAN.md — Preserve early admission and enforce ordering across shipped MROs
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [x] 06.18-05-PLAN.md — Preserve scoped ancestry and structural-parent identity
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
+- [x] 06.18-06-PLAN.md — Reject reached nondefault nested data and write routes
+
+**Wave 7** *(blocked on Wave 6 completion)*
+
+- [x] 06.18-07-PLAN.md — Apply the default-database boundary to reached authorization consumers
+
+**Wave 8** *(blocked on Wave 7 completion)*
+
+- [x] 06.18-08-PLAN.md — Migrate repository authorization fixtures while preserving local regressions
+
+**Wave 9** *(blocked on Wave 8 completion)*
+
+- [x] 06.18-09-PLAN.md — Expose policy diagnostics and preserve nested redirect behavior
+
+**Wave 10** *(blocked on Wave 9 completion)*
+
+- [x] 06.18-10-PLAN.md — Prove mutation boundaries, fresh authorization and measured cost
+- [x] 06.18-11-PLAN.md — Publish executable configuration, Resource and Guardian guidance
+
+**Wave 11** *(blocked on Wave 10 completion)*
+
+- [x] 06.18-12-PLAN.md — Publish paired breaking guidance and capture final-source evidence
+
+**Wave 12** *(gap closure, blocked on Wave 11 completion)*
+
+- [x] 06.18-13-PLAN.md — Fail clearly and closed on a missing Guardian permission key (G-06.18-2)
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1166,6 +1375,8 @@ Include the dynamic cancel defaults, origin query preservation and custom-templa
 Include the tooltip caption and visible-label rendering contracts settled by Phase 6.8.
 Include the final protected-preview text, shared display-limit configuration and context/template contracts settled
 by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
+Phase 06.18 must also settle before this freeze; include its public ancestor-policy configuration, settings,
+diagnostics and migration contracts in the stability review.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -1197,7 +1408,7 @@ by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 6.14 → 6.15 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 6.14 → 6.15 → 6.16 → 6.17 → 6.18 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -1218,7 +1429,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 15 | 6.13.1 (#322) | Workflow validation/helper and opt-in buttons; settle new theme contracts before the freeze |
 | 16 | 6.14 (#325) | Empty card blocks and tested cards-first navigation |
 | 17 | 6.15 (#326) | Polymorphic labels and per-model groups, including tabler-test adoption and verification |
-| 18 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15 contracts settled; last change before the 1.0.0 bump |
+| 18 | 6.18 (ancestor authorization) | Follows completed 6.17; approved design v2 governs scope and acceptance |
+| 19 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15/6.18 contracts settled; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -1244,4 +1456,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.13.1. Workflow validation and execution | 5/5 | Complete    | 2026-11-06 |
 | 6.14. Card template insertion blocks and cards-first ViewSets | 2/2 | Complete | 2026-11-06 |
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
+| 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

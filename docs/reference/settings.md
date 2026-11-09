@@ -344,6 +344,35 @@ in-tree as the optional `crud_views_object_detail` app. These are prefixed with
 `CRUD_VIEWS_OBJECT_DETAIL_` — see [ObjectDetailView settings](object_detail_settings.md) for
 the full reference.
 
+## Ancestor authorization
+
+Defaults for the ancestor checks of nested ViewSets; see
+[Ancestor authorization](nested.md#ancestor-authorization).
+
+| Key | Description | Type | Default |
+|---|---|---|---|
+| CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE | `True`: a nested request checks every protected ancestor. `False`: only the nearest protected one | `bool` | `True` |
+| CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS | Pair for Read endpoints (list, card, detail, child redirect, manage) | `dict` with `nearest`, `higher` | `{"nearest": "view", "higher": "view"}` |
+| CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS | Pair for Write endpoints (create, update, delete, ordered up/down, polymorphic create and type selection) | `dict` with `nearest`, `higher` | `{"nearest": "change", "higher": "view"}` |
+
+The values are permission-map keys, looked up in the map of each ancestor being checked. A mapping must name
+both `nearest` and `higher`, as non-empty strings without surrounding whitespace, and nothing else. The cascade
+value must be a real boolean. An invalid value fails with a Pydantic `ValidationError` at startup; there is no
+partial merge with the defaults. Like the other settings, they are read once at startup.
+
+A requested ViewSet's own `AncestorPolicy(cascade=..., read=..., write=...)` replaces these values for requests
+to that ViewSet, and its `actions` entries replace them per endpoint. There is no global provider, ancestor
+fallback or action map.
+
+For example, to require `change` on every checked ancestor for writes:
+
+```python
+# settings.py
+CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE = True
+CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS = {"nearest": "view", "higher": "view"}
+CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS = {"nearest": "change", "higher": "change"}
+```
+
 ## Permission caching
 
 `ViewSet` derives its permission map (`view`, `add`, `change`, `delete`, plus custom model permissions) from the `Permission` table via the `default_permissions` property. This property is a `cached_property`: the database is queried once per `ViewSet` and the result is **cached for the lifetime of the process**.

@@ -18,3 +18,20 @@ class Document(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Note(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name="notes", verbose_name=_("document"))
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="document_notes", verbose_name=_("author")
+    )
+    text = models.CharField(_("text"), max_length=200)
+    created_dt = models.DateTimeField(_("created"), auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_dt", "id"]
+        verbose_name = _("note")
+        verbose_name_plural = _("notes")
+
+    def __str__(self):
+        return self.text

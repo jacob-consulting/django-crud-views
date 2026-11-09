@@ -1,0 +1,150 @@
+bringing up nodes...
+bringing up nodes...
+
+.FFFFFF.F....                                                            [100%]
+=================================== FAILURES ===================================
+_______________ test_plain_nested_list_allows_parent_model_view ________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+ancestor_chain = namespace(pub_vs=ViewSet(ancpubf0026674), book_vs=ViewSet(ancbookf0026674), PublisherList=<class 'tests.test1.test_anc...als>.<lambda> at 0x73ddac64e2a0>, top_url=<function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x73ddac64cf40>)
+world = namespace(penguin=<Publisher: Penguin>, other=<Publisher: Other>, book=<Book: Hitchhiker>)
+events = [('queryset', 'ancbookf0026674')]
+
+    @pytest.mark.django_db
+    def test_plain_nested_list_allows_parent_model_view(ancestor_chain, world, events):
+        user = _user("anc_reader", (Publisher, "view"))
+        response = _client(user).get(ancestor_chain.list_url(world.penguin.pk))
+        assert response.status_code == 200
+        assert list(response.context["object_list"]) == [world.book]
+        # ancestor resolved through its ViewSet queryset, then its gate, then the child queryset
+        pub_lookup = ("queryset", ancestor_chain.pub_vs.name)
+        gate = ("has_perm", "app.view_publisher")
+        child = ("queryset", ancestor_chain.book_vs.name)
+>       assert pub_lookup in events and gate in events and child in events
+E       AssertionError: assert (('queryset', 'ancpubf0026674') in [('queryset', 'ancbookf0026674')])
+
+tests/test1/test_ancestor_authorization.py:187: AssertionError
+______ test_plain_nested_list_missing_parent_is_404_before_child_queryset ______
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+ancestor_chain = namespace(pub_vs=ViewSet(ancpub34052b6a), book_vs=ViewSet(ancbook34052b6a), PublisherList=<class 'tests.test1.test_anc...als>.<lambda> at 0x7bd947d25440>, top_url=<function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x7bd947d26160>)
+world = namespace(penguin=<Publisher: Penguin>, other=<Publisher: Other>, book=<Book: Hitchhiker>)
+events = [('queryset', 'ancbook34052b6a')]
+
+    @pytest.mark.django_db
+    def test_plain_nested_list_missing_parent_is_404_before_child_queryset(ancestor_chain, world, events):
+        user = _user("anc_reader_missing", (Publisher, "view"))
+        response = _client(user).get(ancestor_chain.list_url(world.penguin.pk + 1000))
+>       assert response.status_code == 404
+E       assert 200 == 404
+E        +  where 200 = <TemplateResponse status_code=200, "text/html; charset=utf-8">.status_code
+
+tests/test1/test_ancestor_authorization.py:205: AssertionError
+_____ test_plain_nested_list_inactive_actor_is_denied_before_parent_lookup _____
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+ancestor_chain = namespace(pub_vs=ViewSet(ancpub6a4d7dbd), book_vs=ViewSet(ancbook6a4d7dbd), PublisherList=<class 'tests.test1.test_anc...als>.<lambda> at 0x7e9456e96a20>, top_url=<function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x7e9456e95760>)
+world = namespace(penguin=<Publisher: Penguin>, other=<Publisher: Other>, book=<Book: Hitchhiker>)
+events = [('queryset', 'ancbook6a4d7dbd')]
+
+    @pytest.mark.django_db
+    def test_plain_nested_list_inactive_actor_is_denied_before_parent_lookup(ancestor_chain, world, events):
+        user = _user("anc_inactive", (Publisher, "view"))
+        user.is_active = False
+        user.save()
+        # ModelBackend would turn an inactive session into AnonymousUser; keep the actor authenticated-but-inactive
+        with override_settings(AUTHENTICATION_BACKENDS=["django.contrib.auth.backends.AllowAllUsersModelBackend"]):
+            client = Client()
+            client.force_login(user)
+            response = client.get(ancestor_chain.list_url(world.penguin.pk))
+>       assert response.status_code == 403
+E       assert 200 == 403
+E        +  where 200 = <TemplateResponse status_code=200, "text/html; charset=utf-8">.status_code
+
+tests/test1/test_ancestor_authorization.py:230: AssertionError
+___ test_plain_nested_list_anonymous_redirects_to_login_before_parent_lookup ___
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+ancestor_chain = namespace(pub_vs=ViewSet(ancpub5d08d967), book_vs=ViewSet(ancbook5d08d967), PublisherList=<class 'tests.test1.test_anc...als>.<lambda> at 0x7bd947c7c2c0>, top_url=<function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x7bd947c7dda0>)
+world = namespace(penguin=<Publisher: Penguin>, other=<Publisher: Other>, book=<Book: Hitchhiker>)
+events = [('queryset', 'ancbook5d08d967')]
+
+    @pytest.mark.django_db
+    def test_plain_nested_list_anonymous_redirects_to_login_before_parent_lookup(ancestor_chain, world, events):
+        response = Client().get(ancestor_chain.list_url(world.penguin.pk + 1000))
+>       assert response.status_code == 302
+E       assert 200 == 302
+E        +  where 200 = <TemplateResponse status_code=200, "text/html; charset=utf-8">.status_code
+
+tests/test1/test_ancestor_authorization.py:215: AssertionError
+_______________ test_plain_nested_create_requires_parent_change ________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+ancestor_chain = namespace(pub_vs=ViewSet(ancpube1eba8f6), book_vs=ViewSet(ancbooke1eba8f6), PublisherList=<class 'tests.test1.test_anc...als>.<lambda> at 0x74d911bb0360>, top_url=<function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x74d911bb20c0>)
+world = namespace(penguin=<Publisher: Penguin>, other=<Publisher: Other>, book=<Book: Hitchhiker>)
+
+    @pytest.mark.django_db
+    def test_plain_nested_create_requires_parent_change(ancestor_chain, world):
+        user = _user("anc_create_viewer", (Publisher, "view"))
+        response = _client(user).post(ancestor_chain.create_url(world.penguin.pk), {"title": "Denied"})
+>       assert response.status_code == 403
+E       assert 302 == 403
+E        +  where 302 = <HttpResponseRedirect status_code=302, "text/html; charset=utf-8", url="/ancpube1eba8f6/1/ancbooke1eba8f6/">.status_code
+
+tests/test1/test_ancestor_authorization.py:254: AssertionError
+___ test_plain_nested_list_denies_without_parent_grant_before_child_queryset ___
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+ancestor_chain = namespace(pub_vs=ViewSet(ancpubfa20e4bd), book_vs=ViewSet(ancbookfa20e4bd), PublisherList=<class 'tests.test1.test_anc...als>.<lambda> at 0x73ddac64fba0>, top_url=<function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x73ddac64db20>)
+world = namespace(penguin=<Publisher: Penguin>, other=<Publisher: Other>, book=<Book: Hitchhiker>)
+events = [('queryset', 'ancbookfa20e4bd')]
+
+    @pytest.mark.django_db
+    def test_plain_nested_list_denies_without_parent_grant_before_child_queryset(ancestor_chain, world, events):
+        # child grants do not substitute for the ancestor gate
+        user = _user("anc_child_only", (Book, "view"), (Book, "change"), (Publisher, "change"))
+        response = _client(user).get(ancestor_chain.list_url(world.penguin.pk))
+>       assert response.status_code == 403
+E       assert 200 == 403
+E        +  where 200 = <TemplateResponse status_code=200, "text/html; charset=utf-8">.status_code
+
+tests/test1/test_ancestor_authorization.py:196: AssertionError
+__________ test_plain_nested_list_revocation_applies_on_next_request ___________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+ancestor_chain = namespace(pub_vs=ViewSet(ancpubf0072bb3), book_vs=ViewSet(ancbookf0072bb3), PublisherList=<class 'tests.test1.test_anc...als>.<lambda> at 0x7e9456e965c0>, top_url=<function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x7e9456f002c0>)
+world = namespace(penguin=<Publisher: Penguin>, other=<Publisher: Other>, book=<Book: Hitchhiker>)
+
+    @pytest.mark.django_db
+    def test_plain_nested_list_revocation_applies_on_next_request(ancestor_chain, world):
+        user = _user("anc_revoked", (Publisher, "view"))
+        client = _client(user)
+        assert client.get(ancestor_chain.list_url(world.penguin.pk)).status_code == 200
+        user.user_permissions.clear()
+>       assert client.get(ancestor_chain.list_url(world.penguin.pk)).status_code == 403
+E       assert 200 == 403
+E        +  where 200 = <TemplateResponse status_code=200, "text/html; charset=utf-8">.status_code
+E        +    where <TemplateResponse status_code=200, "text/html; charset=utf-8"> = get('/ancpubf0072bb3/1/ancbookf0072bb3/')
+E        +      where get = <django.test.client.Client object at 0x7e945696fa70>.get
+E        +      and   '/ancpubf0072bb3/1/ancbookf0072bb3/' = <function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x7e9456e94540>(1)
+E        +        where <function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x7e9456e94540> = namespace(pub_vs=ViewSet(ancpubf0072bb3), book_vs=ViewSet(ancbookf0072bb3), PublisherList=<class 'tests.test1.test_anc...als>.<lambda> at 0x7e9456e965c0>, top_url=<function ancestor_chain.<locals>.build.<locals>.<lambda> at 0x7e9456f002c0>).list_url
+E        +        and   1 = <Publisher: Penguin>.pk
+E        +          where <Publisher: Penguin> = namespace(penguin=<Publisher: Penguin>, other=<Publisher: Other>, book=<Book: Hitchhiker>).penguin
+
+tests/test1/test_ancestor_authorization.py:240: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/test1/test_ancestor_authorization.py::test_top_level_list_does_no_ancestor_work
+PASSED tests/test1/test_ancestor_authorization.py::test_plain_nested_create_reuses_resolved_parent
+PASSED tests/test1/test_ancestor_authorization.py::test_query_observations_one_ancestor[guardian]
+PASSED tests/test1/test_ancestor_authorization.py::test_query_observations_one_ancestor[plain]
+PASSED tests/test1/test_ancestor_authorization.py::test_query_observations_three_ancestors[plain]
+PASSED tests/test1/test_ancestor_authorization.py::test_query_observations_three_ancestors[guardian]
+FAILED tests/test1/test_ancestor_authorization.py::test_plain_nested_list_allows_parent_model_view
+FAILED tests/test1/test_ancestor_authorization.py::test_plain_nested_list_missing_parent_is_404_before_child_queryset
+FAILED tests/test1/test_ancestor_authorization.py::test_plain_nested_list_inactive_actor_is_denied_before_parent_lookup
+FAILED tests/test1/test_ancestor_authorization.py::test_plain_nested_list_anonymous_redirects_to_login_before_parent_lookup
+FAILED tests/test1/test_ancestor_authorization.py::test_plain_nested_create_requires_parent_change
+FAILED tests/test1/test_ancestor_authorization.py::test_plain_nested_list_denies_without_parent_grant_before_child_queryset
+FAILED tests/test1/test_ancestor_authorization.py::test_plain_nested_list_revocation_applies_on_next_request
+7 failed, 6 passed in 3.27s

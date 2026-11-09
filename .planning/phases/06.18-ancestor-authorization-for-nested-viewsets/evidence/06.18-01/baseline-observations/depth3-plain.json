@@ -1,0 +1,56 @@
+{
+  "cell": "depth3-plain",
+  "meta": {
+    "crud_views_path": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "django": "5.2.19",
+    "python": "3.12.3",
+    "source_sha": "d5567ba2964b1375be2292ffa414bfb2f5cd6292",
+    "src_dirty": false
+  },
+  "observations": {
+    "legacy-no-mode/create": {
+      "cold": {
+        "by_table": {},
+        "status": 200,
+        "total": 0
+      },
+      "warm": {
+        "by_table": {},
+        "status": 200,
+        "total": 0
+      }
+    },
+    "legacy-no-mode/list": {
+      "cold": {
+        "by_table": {
+          "app_ancestorobservationleaf": 1
+        },
+        "status": 200,
+        "total": 1
+      },
+      "warm": {
+        "by_table": {
+          "app_ancestorobservationleaf": 1
+        },
+        "status": 200,
+        "total": 1
+      }
+    },
+    "legacy-no-mode/object": {
+      "cold": {
+        "by_table": {
+          "app_ancestorobservationleaf": 1
+        },
+        "status": 200,
+        "total": 1
+      },
+      "warm": {
+        "by_table": {
+          "app_ancestorobservationleaf": 1
+        },
+        "status": 200,
+        "total": 1
+      }
+    }
+  }
+}

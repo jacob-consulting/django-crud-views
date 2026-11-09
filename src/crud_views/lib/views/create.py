@@ -63,8 +63,13 @@ class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
                         if source.parent and source.parent.name == parent.name:
                             obj = rendering_view.cv_get_parent_object()
                         else:
-                            # A parent button can target a nested create higher in the ancestor chain.
-                            obj = get_object_or_404(parent.viewset.model, pk=kwargs[arg])
+                            # A parent button can target a nested create higher in the ancestor chain: reuse the
+                            # ancestor this request resolved; outside a guarded request, one bounded lookup.
+                            from crud_views.lib.ancestors import _resolved_ancestor
+
+                            obj = _resolved_ancestor(rendering_view, parent.name)
+                            if obj is None:
+                                obj = get_object_or_404(parent.viewset.model, pk=kwargs[arg])
                     except (Http404, KeyError):
                         return False
         return cls._cv_action_enabled_for_context(user, obj)
@@ -108,6 +113,15 @@ class CreateViewParentMixin:
 
             # now save the form
             super().cv_form_valid(context)
+
+    def _cv_attachment_routes(self) -> tuple:
+        """The parent attachment of this create as Django will route it: the M2M through write hinted by the
+        parent, else the FK assignment of the child hinted by the parent (checked by the nested write boundary)."""
+        parent_object = self.cv_get_parent_object()
+        through_attribute = self.cv_viewset.parent.many_to_many_through_attribute
+        if through_attribute:
+            return ((getattr(parent_object, through_attribute).through, parent_object),)
+        return ((self.cv_viewset.model, parent_object),)
 
     def cv_parent_many_to_many_through_defaults(self, instance, parent_instance, m2m) -> dict:  # NOSONAR S1172 hook
         return {}

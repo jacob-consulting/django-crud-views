@@ -155,10 +155,14 @@ An expected workflow business/comment refusal occurs before the success hook and
 | Name | Kind | Default | Meaning |
 |---|---|---|---|
 | `cv_atomic` | attribute | `True` (`False` on `ResourceViewMixin`) | wrap the write phase in `transaction.atomic()` |
-| `cv_get_db_alias()` | method | `router.db_for_write(viewset.model)` | database of the transaction and of `cv_on_commit` |
+| `cv_get_db_alias()` | method | `router.db_for_write(viewset.model)`; a nested ORM view with a resolved `self.object` passes it as the `instance` hint | database of the transaction and of `cv_on_commit` |
 | `cv_get_atomic()` | method | `atomic(using=cv_get_db_alias())`, or `nullcontext()` when `cv_atomic` is `False` | the context manager around the write phase |
 
-These generic defaults continue to apply to create/update/action/resource views. **Delete views** override them:
+These generic defaults continue to apply to create/update/action/resource views. **Nested ORM views** (a
+ViewSet with a parent, not a Resource) select their write database with the resolved object as the router's
+instance hint, the same alias the object's own `save()` routes to, and refuse any alias but `default` before the
+first hook or write; see [Nested ViewSets: instance-hinted write routing](#nested-viewsets-instance-hinted-write-routing).
+Top-level selection is unchanged: model only, no hint. **Delete views** override them:
 `cv_get_db_alias()` uses `router.db_for_write(type(self.object), instance=self.object)`;
 `cv_get_delete_db_alias()` validates and pins that selection after a saved target is resolved. Inspection,
 `delete(using=...)`, the default `cv_get_atomic()` and `on_commit` registration all use the pinned alias. The selector
@@ -362,6 +366,46 @@ automatic split-storage diagnosis is provided.
 Django has no transactions across
 databases: writes to a second database inside
 `cv_form_valid` are not rolled back with the first.
+
+#### Nested ViewSets: instance-hinted write routing
+
+Nested ViewSets support only the `default` database (see
+[Nested ViewSets — Databases](nested.md#databases)). For a nested ORM write the core `cv_get_db_alias()` asks the
+router with the resolved object (`self.object`) as the `instance` hint whenever one is available, so it sees the
+alias that object's own `save()` would use. Before the first hook runs — `cv_post_hook`, `cv_form_valid`, an
+action's `action()` — the write alias, the written instance (the form's instance, else `self.object`) and any
+parent attachment route are checked. Anything but `default` raises `ImproperlyConfigured` and nothing is written.
+That includes `cv_atomic = False`, where no transaction selects an alias at all. A custom `cv_get_db_alias()`
+override on a nested view is validated the same way; its answer is never replaced.
+
+This changes what a hint-sensitive router can cause. A router that answers `default` (or nothing) for a
+model-only lookup but another alias for one instance used to get a `default` transaction around the write. On a
+nested ViewSet that instance is now refused:
+
+```python
+from myapp.models import Book
+
+SHARDED_PUBLISHERS: set[int] = set()  # pks of publishers whose books live on "shard"
+
+
+class BookShardRouter:
+    def db_for_write(self, model, **hints):
+        instance = hints.get("instance")
+        if isinstance(instance, Book) and instance.publisher_id in SHARDED_PUBLISHERS:
+            return "shard"
+        return None  # no opinion: model-only lookups and other models use default
+```
+
+With this router, a nested Book update under a publisher in `SHARDED_PUBLISHERS` fails with
+`ImproperlyConfigured` before its hooks; under any other publisher it writes to `default` as before. Do not
+silence the error by forcing `default` in a selector or by dropping the hint: the row's routed home is not
+`default`, and nested ViewSets do not support it. Keep nested data on `default`, or serve that data through
+top-level ViewSets.
+
+Not affected: top-level ViewSets keep the model-only selection, so the same Book updated through a top-level
+ViewSet still gets a `default` transaction and its `save()` follows the router. Delete and workflow views keep
+their own instance-hinted, pinned selectors described above, and on a nested ViewSet those selections must be
+`default` too. A Resource view's own data loading is application-owned and not checked.
 
 ## Limitations
 

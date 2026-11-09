@@ -1,0 +1,34 @@
+# 06.18-10 Task 2 mutation checks (source e85ed2b4 + uncommitted tests/test1/test_ancestor_costs.py; each mutation reverted with git checkout -- <file>)
+## M1: nearest-only also evaluates higher ancestors (cascade forced on)
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth3-guardian]
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth3-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth3-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth3-guardian]
+4 failed, 5 passed in 2.59s
+## M2: repeated ancestor resolution (each ancestor queryset evaluated twice)
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth1-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth1-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth3-guardian]
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth1-guardian]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth1-guardian]
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth3-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth3-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth3-guardian]
+8 failed, 1 passed in 2.46s
+## M3: persistent access cache (model-provider decisions memoized on the ViewSet across requests)
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth1-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth1-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth3-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth3-plain]
+4 failed, 5 passed in 2.52s
+## M4: legacy-style second parent gate in the local path (Guardian parent re-read after the guard)
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth3-guardian]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth1-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth1-guardian]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth3-plain]
+FAILED tests/test1/test_ancestor_costs.py::test_cost_matrix_against_the_pre_edit_baseline[depth1-guardian]
+FAILED tests/test1/test_ancestor_costs.py::test_render_helper_work_is_separate_from_the_guard[depth3-guardian]
+6 failed, 3 passed in 2.60s
+## M5: top-level requests enter ancestor work (structure walk and the requested ViewSet's vocabulary before the parent check)
+FAILED tests/test1/test_ancestor_costs.py::test_top_level_requests_do_no_ancestor_work
+1 failed, 8 passed in 2.44s

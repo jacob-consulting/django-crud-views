@@ -783,6 +783,26 @@ msgstr "Dokument »{{ object }}« aktualisiert"
 msgid "Deleted document “{{ object }}”"
 msgstr "Dokument »{{ object }}« gelöscht"
 
+#: guardian_demo/models.py:34
+msgid "notes"
+msgstr "Notizen"
+
+#: guardian_demo/views.py:45
+msgid "Notes"
+msgstr "Notizen"
+
+#: guardian_demo/views.py:130
+msgid "Created note “{{ object }}”"
+msgstr "Notiz »{{ object }}« erstellt"
+
+#: guardian_demo/views.py:145
+msgid "Updated note “{{ object }}”"
+msgstr "Notiz »{{ object }}« aktualisiert"
+
+#: guardian_demo/views.py:151
+msgid "Deleted note “{{ object }}”"
+msgstr "Notiz »{{ object }}« gelöscht"
+
 #: label_modes/models.py:10
 msgid "gadget"
 msgstr "Werkzeug"

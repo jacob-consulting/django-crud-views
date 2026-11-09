@@ -1,0 +1,316 @@
+source: 1442363c (product without the auth boundary); command: PYTHONPATH=$PWD/src .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_ancestor_auth_databases.py tests/test1/test_ancestor_databases.py -n 6 -q
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       AssertionError: assert [] == [('auth', 'Pu...er', 'model')]
+E         
+E         Right contains one more item: ('auth', 'Publisher', 'model')
+E         Use -v to get more diff
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       Failed: DID NOT RAISE ImproperlyConfigured
+E       AssertionError: assert [] == [('auth', 'Book', 'model')]
+E         
+E         Right contains one more item: ('auth', 'Book', 'model')
+E         Use -v to get more diff
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group_permissions-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-permission-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user_permissions-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_groups-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_grant-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-contenttype-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user_permissions-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_groups-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_grant-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-contenttype-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-group_permissions-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_groups-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_grant-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-contenttype-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-group_permissions-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-permission-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_groups-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_grant-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-group-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-contenttype-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-group_permissions-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_permissions-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-permission-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group_grant-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-group-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user_groups-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-group_permissions-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_permissions-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-permission-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group_grant-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-group-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user_groups-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-permission-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_permissions-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group_grant-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-group-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user_groups-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user_permissions-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-contenttype-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group_grant-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-permission-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user_groups-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group_permissions-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-contenttype-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-permission-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-user-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user_permissions-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group_permissions-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-contenttype-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-permission-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[model-user_permissions-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-group_permissions-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_groups-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[guardian-contenttype-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-contenttype-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group_grant-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group_permissions-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_permissions-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-direct_user_grant-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-contenttype-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group_permissions-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_permissions-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-direct_user_grant-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-contenttype-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_permissions-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_grant-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-direct_group_grant-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_groups-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_permissions-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-direct_group_grant-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_grant-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_groups-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group_permissions-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-direct_group_grant-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_grant-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_groups-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-permission-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-direct_group_grant-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group_permissions-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_grant-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_groups-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-permission-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group_permissions-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_permissions-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group_grant-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-permission-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group_permissions-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_permissions-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group_grant-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-permission-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_grant-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_permissions-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-permission-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-contenttype-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_grant-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group_grant-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-user_permissions-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-permission-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_grant-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-contenttype-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group_grant-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group_permissions-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-permission-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_grant-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-contenttype-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-group_permissions-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-direct_user_grant-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-permission-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group_grant-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-contenttype-warm-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-direct_user_grant-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group_grant-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[direct-contenttype-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_groups-cold-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-group_grant-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_full_cascade_reaches_the_higher_gate_first
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_groups-cold-granted]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_ancestor_gate_refuses_shard_auth_records[fallback-user_groups-warm-superuser]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_outer_denial_hides_a_deeper_invalid_auth_route
+FAILED tests/test1/test_ancestor_auth_databases.py::test_immediate_parent_helper_refuses_shard_auth_records[model]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_immediate_parent_helper_refuses_shard_auth_records[guardian]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_immediate_parent_helper_refuses_shard_auth_records[direct]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_colliding_shard_grants_are_never_consulted[model-enabled]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_colliding_shard_grants_are_never_consulted[guardian-enabled]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_actor_bound_to_shard_is_refused_at_the_gate[model]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_actor_bound_to_shard_is_refused_at_the_gate[guardian]
+FAILED tests/test1/test_ancestor_auth_databases.py::test_nearest_only_never_touches_the_unselected_higher_gate
+154 failed, 133 passed in 17.48s

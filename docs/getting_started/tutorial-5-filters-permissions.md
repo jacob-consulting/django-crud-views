@@ -75,6 +75,13 @@ button is hidden, not just disabled, because crud_views checks the
 permission before rendering it. If that user navigates straight to the
 create URL anyway, Django's `PermissionRequiredMixin` returns a 403.
 
+!!! note "Nested ViewSets check their ancestors too"
+    The tutorial's ViewSets are all top-level. When a ViewSet is nested under a parent — say a Book ViewSet under
+    a Publisher ViewSet — every request also checks the Publisher first, in addition to the Book permission
+    above: Book reads (list, detail) need Publisher `view`, and Book editors (create, update, delete) need
+    Publisher `change`. The [executed nested example](../reference/nested.md#example-permissions-for-a-nested-book-viewset)
+    shows these grants and the denials when either one is missing.
+
 The bundled example grants permissions during seeding, in `library/seed.py`:
 
 <!-- cv-sync: library/seed.py -->

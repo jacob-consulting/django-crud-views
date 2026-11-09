@@ -1,0 +1,70 @@
+# Task 1 RED at source aa04038a (tests/test1/test_ancestor_guardian.py), Django 5.2.19 / Python 3.12.3
+## full module
+E         
+E         - guardian
+E         + model
+
+tests/test1/test_ancestor_guardian.py:460: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_ancestor_guardian.py::test_guardian_viewset_class_default_provider_is_guardian
+ERROR tests/test1/test_ancestor_guardian.py::test_local_object_grant_without_parent_grant_is_denied
+ERROR tests/test1/test_ancestor_guardian.py::test_plain_child_cannot_bypass_strict_guardian_parent
+ERROR tests/test1/test_ancestor_guardian.py::test_global_child_grant_and_local_flag_do_not_substitute_parent_grant
+ERROR tests/test1/test_ancestor_guardian.py::test_fallback_truth_table[no-object-no-model-fallback-on]
+ERROR tests/test1/test_ancestor_guardian.py::test_local_child_denial_remains_after_ancestor_success
+ERROR tests/test1/test_ancestor_guardian.py::test_object_grant_on_another_parent_does_not_satisfy_the_gate
+ERROR tests/test1/test_ancestor_guardian.py::test_fallback_truth_table[no-object-no-model-fallback-off]
+ERROR tests/test1/test_ancestor_guardian.py::test_fallback_truth_table[no-object-model-fallback-off]
+ERROR tests/test1/test_ancestor_guardian.py::test_fallback_truth_table[object-model-fallback-on]
+ERROR tests/test1/test_ancestor_guardian.py::test_fallback_truth_table[no-object-model-fallback-on]
+ERROR tests/test1/test_ancestor_guardian.py::test_fallback_truth_table[object-no-model-fallback-on]
+ERROR tests/test1/test_ancestor_guardian.py::test_group_object_grant_satisfies_the_gate
+ERROR tests/test1/test_ancestor_guardian.py::test_fallback_uses_the_required_permission_only
+ERROR tests/test1/test_ancestor_guardian.py::test_fallback_truth_table[object-no-model-fallback-off]
+ERROR tests/test1/test_ancestor_guardian.py::test_fallback_truth_table[object-model-fallback-off]
+ERROR tests/test1/test_ancestor_guardian.py::test_inactive_actor_is_denied_before_any_ancestor_work[plain-user]
+ERROR tests/test1/test_ancestor_guardian.py::test_active_superuser_satisfies_strict_guardian_ancestor
+ERROR tests/test1/test_ancestor_guardian.py::test_inactive_actor_is_denied_before_any_ancestor_work[plain-superuser]
+ERROR tests/test1/test_ancestor_guardian.py::test_inactive_actor_is_denied_before_any_ancestor_work[guardian-superuser]
+ERROR tests/test1/test_ancestor_guardian.py::test_inactive_actor_is_denied_before_any_ancestor_work[guardian-user]
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_child_anonymous_behavior_is_preserved_before_ancestor_lookup[redirect-302]
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_child_anonymous_behavior_is_preserved_before_ancestor_lookup[403-403]
+ERROR tests/test1/test_ancestor_guardian.py::test_configured_content_type_drives_the_ancestor_permission
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_child_anonymous_behavior_is_preserved_before_ancestor_lookup[404-404]
+ERROR tests/test1/test_ancestor_guardian.py::test_plain_child_anonymous_gets_login_redirect_before_lookup
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_child_parent_gate_follows_the_parent_provider[core-object-403]
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_child_parent_gate_follows_the_parent_provider[core-model-200]
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_child_parent_gate_follows_the_parent_provider[guardian-model-403]
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_child_parent_gate_follows_the_parent_provider[guardian-object-200]
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_child_resolves_the_parent_once[list]
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_child_resolves_the_parent_once[create]
+ERROR tests/test1/test_ancestor_guardian.py::test_nested_guardian_create_needs_parent_change_and_no_child_add
+ERROR tests/test1/test_ancestor_guardian.py::test_nested_guardian_create_state_receives_the_resolved_parent[True]
+ERROR tests/test1/test_ancestor_guardian.py::test_guardian_ancestor_is_checked_through_the_shared_engine_order
+ERROR tests/test1/test_ancestor_guardian.py::test_nested_guardian_create_state_receives_the_resolved_parent[False]
+ERROR tests/test1/test_ancestor_guardian.py::test_ancestor_checker_is_scoped_to_the_request
+ERROR tests/test1/test_ancestor_guardian.py::test_ancestor_fallback_does_not_widen_the_strict_helper
+1 failed, 1 passed, 37 errors in 2.34s
+
+## assertion probe (fallback parent built without accept_global_perms, which the current class default provider rejects at construction)
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_plain_child_cannot_bypass_strict_guardian_parent
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_global_child_grant_and_local_flag_do_not_substitute_parent_grant
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_fallback_truth_table[no-object-model-fallback-off]
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_local_child_denial_remains_after_ancestor_success
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_fallback_truth_table[object-no-model-fallback-on]
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_group_object_grant_satisfies_the_gate
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_fallback_truth_table[object-no-model-fallback-off]
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_fallback_uses_the_required_permission_only
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_guardian_child_parent_gate_follows_the_parent_provider[core-model-200]
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_configured_content_type_drives_the_ancestor_permission
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_guardian_child_resolves_the_parent_once[create]
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_guardian_child_parent_gate_follows_the_parent_provider[guardian-object-200]
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_guardian_child_resolves_the_parent_once[list]
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_guardian_ancestor_is_checked_through_the_shared_engine_order
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_nested_guardian_create_state_receives_the_resolved_parent[True]
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_ancestor_fallback_does_not_widen_the_strict_helper
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_guardian_viewset_class_default_provider_is_guardian
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_nested_guardian_create_needs_parent_change_and_no_child_add
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_nested_guardian_create_state_receives_the_resolved_parent[False]
+FAILED tests/test1/_red_probe_ancestor_guardian.py::test_ancestor_checker_is_scoped_to_the_request
+20 failed, 19 passed in 4.11s

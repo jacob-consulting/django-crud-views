@@ -1,0 +1,18 @@
+# 06.18-08 Task 2 RED (source 834b7482 before Task 2 edits; observed in the start-of-plan observation 2062776d, unchanged by Task 1 for these modules)
+test_authorization_templates	error	135
+test_cancel_permissions	error	29
+test_guardian_child_link_visibility	error	107
+test_guardian_inactive	failure	4
+test_guardian_policy	error	186
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[ordinary]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[group]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[global]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+tests.test1.test_guardian_inactive::test_inactive_access_helpers_deny[superuser]	failure	AttributeError: ViewSet(guardian_book) has no attribute 'cv_guardian_parent_permission'
+
+# Masked rows exposed once setup was repaired (assertion stage, before migration)
+test_guardian_child_link_visibility::test_preservation_permission_channels[True-global-*]: list-local flag expected to relax strict Guardian parent (D-41)
+test_guardian_child_link_visibility::test_preservation_queryset_only_composition[*]: queryset-only nested list now ancestor-gated (D-03) -> 403
+test_guardian_child_link_visibility::test_preservation_inherited_custom_policy: inherited local flag expected to relax parent (D-41)
+test_guardian_policy::test_manage_context_reports_parent_only_applicability: nested manage now needs the Publisher ancestor grant -> 403; parent-only create no longer locally applicable (D-22/D-41)
+test_guardian_policy::test_reported_child_policies_match_access_for_a_global_only_user: model-only Publisher -> 403 at strict ancestor (D-41)
+test_authorization_templates::test_child_page_toolbar_create_and_alias_through_action_leaf[update|delete-*], test_partial_delete_request_gates_precede_inspector[*]: default Write pair needs Publisher change (D-13) -> resolved with explicit update/delete page override

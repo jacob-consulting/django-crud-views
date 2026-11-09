@@ -1,0 +1,108 @@
+{
+  "cell": "top-level",
+  "meta": {
+    "crud_views_path": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "django": "5.2.19",
+    "python": "3.12.3",
+    "source_sha": "5829cae73a1ae23665e3cc77108e931f741bb7e1",
+    "src_dirty": false
+  },
+  "observations": {
+    "guardian/detail": {
+      "by_table": {
+        "app_publisher": 1,
+        "auth_permission": 2,
+        "auth_user": 1,
+        "django_session": 1
+      },
+      "gates": [],
+      "guard": 0,
+      "guard_by_table": {},
+      "guard_calls": 2,
+      "querysets": [
+        [
+          "rest",
+          "costgtopc09cefcc"
+        ]
+      ],
+      "rest": 5,
+      "rest_by_table": {
+        "app_publisher": 1,
+        "auth_permission": 2,
+        "auth_user": 1,
+        "django_session": 1
+      },
+      "status": 200,
+      "total": 5
+    },
+    "guardian/list": {
+      "by_table": {
+        "app_publisher": 1,
+        "auth_user": 1,
+        "django_content_type": 1,
+        "django_session": 1
+      },
+      "gates": [],
+      "guard": 0,
+      "guard_by_table": {},
+      "guard_calls": 2,
+      "querysets": [
+        [
+          "rest",
+          "costgtopc09cefcc"
+        ]
+      ],
+      "rest": 4,
+      "rest_by_table": {
+        "app_publisher": 1,
+        "auth_user": 1,
+        "django_content_type": 1,
+        "django_session": 1
+      },
+      "status": 200,
+      "total": 4
+    },
+    "plain/detail": {
+      "by_table": {
+        "app_publisher": 1
+      },
+      "gates": [],
+      "guard": 0,
+      "guard_by_table": {},
+      "guard_calls": 1,
+      "querysets": [
+        [
+          "rest",
+          "costtopc09cefcc"
+        ]
+      ],
+      "rest": 1,
+      "rest_by_table": {
+        "app_publisher": 1
+      },
+      "status": 200,
+      "total": 1
+    },
+    "plain/list": {
+      "by_table": {
+        "app_publisher": 1
+      },
+      "gates": [],
+      "guard": 0,
+      "guard_by_table": {},
+      "guard_calls": 1,
+      "querysets": [
+        [
+          "rest",
+          "costtopc09cefcc"
+        ]
+      ],
+      "rest": 1,
+      "rest_by_table": {
+        "app_publisher": 1
+      },
+      "status": 200,
+      "total": 1
+    }
+  }
+}

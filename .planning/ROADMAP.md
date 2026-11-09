@@ -45,6 +45,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (INSERTED)** - #337 (tabler-test finding 26): honour `Meta.sequence`, append `actions` last, omit the column for `cv_list_actions = None`; context gathered, planning pending. (completed 2026-11-09)
 - [ ] **Phase 06.20: ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (INSERTED)** - #338 (tabler-test finding 28): two optional `LazyStr` fields resolved in `get_meta()`, independently for singular and plural; planning pending.
 - [ ] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending.
+- [ ] **Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (INSERTED)** - #341 (tabler-test finding 24): document the custom-permission recipe for custom form and action views; new static check `viewset.E269` verifies `cv_permission` and nested ancestor pair keys against the model's declared permissions on core ViewSets; Guardian documented as unsupported; planning pending.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1514,6 +1515,60 @@ pending.
 Plans:
 - [ ] TBD (run /gsd-plan-phase 06.21 to break down)
 
+### Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (#341) (INSERTED)
+
+**Goal:** A view that is not a CRUD operation ("Run subscriptions", "Duplicate order") can be given a permission of
+its own by following a documented recipe (a `Meta.permissions` entry on the model plus the stripped key in
+`cv_permission`), and a misspelled or undeclared key fails at startup instead of with an `assert` or
+`ImproperlyConfigured` on the first request. Issue
+[#341](https://github.com/jacob-consulting/django-crud-views/issues/341).
+**Canonical specification:** issue #341. Its "Proposed behaviour", "Decisions (do not reopen in planning)" and
+"Acceptance criteria" sections are authoritative; the tabler-test demo (`example/sales/views/subscriptions.py`,
+finding 24) is the motivating downstream case.
+**Requirements**: TBD
+**Depends on:** Phase 06.21 (serial numbering; no code dependency, so a parallel worktree is acceptable). Builds on
+the ancestor policy of Phase 06.18 (`E266`–`E268`) without changing it.
+**Scope:** Docs: `docs/reference/custom_form_view.md` gains a section with the recipe and the keying rule
+(permission codenames with the `_<model>` suffix stripped, as `default_permissions` does); `action_view.md` points
+to it; `guardian.md` states that Guardian ViewSets are not covered by the new check and keep the request-time assert;
+`nested.md` lists the check in its configuration-errors table. Check: a new static, database-free system check
+`viewset.E269` on core `ViewSet`s verifies (1) that every `*PermissionRequired` view's `cv_permission` is a key of the
+model's declared permission set (`Meta.default_permissions` plus `Meta.permissions`) and (2) that the effective Read,
+Write and `actions` pair keys of a nested ViewSet exist on the ancestor they apply to (`nearest` against the nearest
+protected ancestor, `higher` against the farther ones). Skipped for `GuardianViewSet` (as checked ViewSet or
+ancestor), Resource ViewSets (`E260`) and ancestors with provider `"none"`. `E202` and the request-time backstops
+stay. No new API; `### Added` changelog entry; not breaking.
+**Success criteria:**
+
+1. Declared-set helper: default permissions map to their action; a custom codename with the `_<model>` suffix maps
+   to the stripped key; one without the suffix keeps its full codename; proxy and MTI children use their own `Meta`.
+
+2. `E269` fires for a `*PermissionRequired` view with an undeclared `cv_permission` on a core ViewSet, naming view,
+   key and model, and passes once `Meta.permissions` declares the codename, without touching the test-project models.
+
+3. `E269` fires for a nested ViewSet whose `actions`, Read or Write pair names a key the ancestor model does not
+   declare; passes with the default pairs for `Book` under `Publisher`; `nearest` and `higher` are checked against
+   the ancestors they apply to.
+
+4. Skips: Guardian ViewSets, Resource ViewSets and `"none"` ancestors raise nothing from `E269`; a Guardian view
+   with an undeclared key still fails at request time.
+
+5. `check_viewsets()` performs no database query; `pytest tests/test1 -n auto` passes unchanged (including
+   `Royalty`, which has no `view` permission and no permission-required views); docs, `CHANGELOG.md` `### Added`
+   and ruff are clean.
+**Planning handoff:** Carry the issue's decisions into context without reopening them: docs and check together;
+core `ViewSet` only with Guardian documented as unsupported; static derivation from `Meta`, not `Permission` rows;
+error, not warning; ancestor pair values covered; `E202` unchanged; no new API; not breaking. Out of scope: Guardian
+coverage of the check, verifying `Permission` rows exist, auto-deriving `cv_permission`, tabler-test findings 23
+(child tabs) and 25 (manage pages). This insertion assigns the phase; detailed planning and implementation remain
+pending.
+**Plans:** 3 plans
+
+Plans:
+- [ ] 06.22-01-PLAN.md — Declared-set helper (`_permission_key`, `_declared_permission_keys`, concrete `Meta`), `viewset.E269` cv_permission half in `check_ancestor_declarations`, `default_permissions` keyed through the shared expression; SC-1, SC-2, SC-4 (half 1) tests (wave 1, tracer)
+- [ ] 06.22-02-PLAN.md — `viewset.E269` ancestor pair half (`_requirement_source`, nearest/higher per selected ancestor, D-11/D-12 messages), Guardian/none/Resource skips, D-16 fixture test, zero-query assertion over both check functions (wave 2)
+- [ ] 06.22-03-PLAN.md — `Author.Meta.permissions`, executed recipe section in `custom_form_view.md`, `action_view.md` pointer, `guardian.md` note, `nested.md` row, `### Added` changelog entry, phase gates incl. the examples system-check test (wave 3)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1532,8 +1587,9 @@ Include the final protected-preview text, shared display-limit configuration and
 by Phase 6.10, which supersede the protected-link portion of Phase 6.9.
 Phase 06.18 must also settle before this freeze; include its public ancestor-policy configuration, settings,
 diagnostics and migration contracts in the stability review.
-Phases 06.19 to 06.21 must also settle before this freeze; include the `Table` sequence/actions behaviour (#337), the
-`ViewSet` label fields (#338) and the snippet context keys `view` / `parent_object` (#339) in the stability review.
+Phases 06.19 to 06.22 must also settle before this freeze; include the `Table` sequence/actions behaviour (#337), the
+`ViewSet` label fields (#338), the snippet context keys `view` / `parent_object` (#339) and the `viewset.E269` check id
+(#341) in the stability review.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 

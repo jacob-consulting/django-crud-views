@@ -1,0 +1,292 @@
+## A. Fix isolation: evidence/261109-bf5/cost-observations (8b11572a, fix) vs evidence/261109-bf5/prefix-c67c841d-cost-observations (c67c841d, parent of the test commit; src differs only by the two reads); meta.source_sha, meta.crud_views_path, random 8-hex ViewSet-name suffixes and gate tuple field [3] (object pk) normalized
+depth1-guardian-list-with-create-button.json full/list cold: total 11 -> 11, guard 7 -> 7, rest 4 -> 4
+depth1-guardian-list-with-create-button.json full/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-guardian-list-with-create-button.json nearest/list cold: total 10 -> 10, guard 7 -> 7, rest 3 -> 3
+depth1-guardian-list-with-create-button.json nearest/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-guardian.json full/create cold: total 7 -> 7, guard 7 -> 7, rest 0 -> 0
+depth1-guardian.json full/create warm: total 5 -> 5, guard 5 -> 5, rest 0 -> 0
+depth1-guardian.json full/list cold: total 11 -> 11, guard 7 -> 7, rest 4 -> 4
+depth1-guardian.json full/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-guardian.json full/object cold: total 12 -> 12, guard 7 -> 7, rest 5 -> 5
+depth1-guardian.json full/object warm: total 8 -> 8, guard 5 -> 5, rest 3 -> 3
+depth1-guardian.json nearest/create cold: total 7 -> 7, guard 7 -> 7, rest 0 -> 0
+depth1-guardian.json nearest/create warm: total 5 -> 5, guard 5 -> 5, rest 0 -> 0
+depth1-guardian.json nearest/list cold: total 10 -> 10, guard 7 -> 7, rest 3 -> 3
+depth1-guardian.json nearest/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-guardian.json nearest/object cold: total 12 -> 12, guard 7 -> 7, rest 5 -> 5
+depth1-guardian.json nearest/object warm: total 8 -> 8, guard 5 -> 5, rest 3 -> 3
+depth1-plain-list-with-create-button.json full/list cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain-list-with-create-button.json full/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain-list-with-create-button.json nearest/list cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain-list-with-create-button.json nearest/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain.json full/create cold: total 11 -> 7, guard 11 -> 7, rest 0 -> 0  DIFFERENT
+depth1-plain.json full/create warm: total 5 -> 5, guard 5 -> 5, rest 0 -> 0
+depth1-plain.json full/list cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain.json full/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain.json full/object cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain.json full/object warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain.json nearest/create cold: total 11 -> 7, guard 11 -> 7, rest 0 -> 0  DIFFERENT
+depth1-plain.json nearest/create warm: total 5 -> 5, guard 5 -> 5, rest 0 -> 0
+depth1-plain.json nearest/list cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain.json nearest/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain.json nearest/object cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain.json nearest/object warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth3-guardian-list-with-create-button.json full/list cold: total 21 -> 21, guard 17 -> 17, rest 4 -> 4
+depth3-guardian-list-with-create-button.json full/list warm: total 12 -> 12, guard 11 -> 11, rest 1 -> 1
+depth3-guardian-list-with-create-button.json nearest/list cold: total 12 -> 12, guard 9 -> 9, rest 3 -> 3
+depth3-guardian-list-with-create-button.json nearest/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-guardian.json full/create cold: total 17 -> 17, guard 17 -> 17, rest 0 -> 0
+depth3-guardian.json full/create warm: total 11 -> 11, guard 11 -> 11, rest 0 -> 0
+depth3-guardian.json full/list cold: total 21 -> 21, guard 17 -> 17, rest 4 -> 4
+depth3-guardian.json full/list warm: total 12 -> 12, guard 11 -> 11, rest 1 -> 1
+depth3-guardian.json full/object cold: total 22 -> 22, guard 17 -> 17, rest 5 -> 5
+depth3-guardian.json full/object warm: total 14 -> 14, guard 11 -> 11, rest 3 -> 3
+depth3-guardian.json nearest/create cold: total 9 -> 9, guard 9 -> 9, rest 0 -> 0
+depth3-guardian.json nearest/create warm: total 7 -> 7, guard 7 -> 7, rest 0 -> 0
+depth3-guardian.json nearest/list cold: total 12 -> 12, guard 9 -> 9, rest 3 -> 3
+depth3-guardian.json nearest/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-guardian.json nearest/object cold: total 14 -> 14, guard 9 -> 9, rest 5 -> 5
+depth3-guardian.json nearest/object warm: total 10 -> 10, guard 7 -> 7, rest 3 -> 3
+depth3-plain-list-with-create-button.json full/list cold: total 26 -> 14, guard 25 -> 13, rest 1 -> 1  DIFFERENT
+depth3-plain-list-with-create-button.json full/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain-list-with-create-button.json nearest/list cold: total 14 -> 10, guard 13 -> 9, rest 1 -> 1  DIFFERENT
+depth3-plain-list-with-create-button.json nearest/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain.json full/create cold: total 25 -> 13, guard 25 -> 13, rest 0 -> 0  DIFFERENT
+depth3-plain.json full/create warm: total 7 -> 7, guard 7 -> 7, rest 0 -> 0
+depth3-plain.json full/list cold: total 26 -> 14, guard 25 -> 13, rest 1 -> 1  DIFFERENT
+depth3-plain.json full/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain.json full/object cold: total 26 -> 14, guard 25 -> 13, rest 1 -> 1  DIFFERENT
+depth3-plain.json full/object warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain.json nearest/create cold: total 13 -> 9, guard 13 -> 9, rest 0 -> 0  DIFFERENT
+depth3-plain.json nearest/create warm: total 7 -> 7, guard 7 -> 7, rest 0 -> 0
+depth3-plain.json nearest/list cold: total 14 -> 10, guard 13 -> 9, rest 1 -> 1  DIFFERENT
+depth3-plain.json nearest/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain.json nearest/object cold: total 14 -> 10, guard 13 -> 9, rest 1 -> 1  DIFFERENT
+depth3-plain.json nearest/object warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+top-level.json guardian/detail: total 5 -> 5, guard 0 -> 0, rest 5 -> 5
+top-level.json guardian/list: total 4 -> 4, guard 0 -> 0, rest 4 -> 4
+top-level.json plain/detail: total 1 -> 1, guard 0 -> 0, rest 1 -> 1
+top-level.json plain/list: total 1 -> 1, guard 0 -> 0, rest 1 -> 1
+files=9 files_with_differences=4
+depth1-plain-list-with-create-button.json:
+  full/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  full/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+depth1-plain.json:
+  full/create cold by_table (before, after): {'django_content_type': (5, 1)}
+  full/create cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  full/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  full/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  full/object cold by_table (before, after): {'django_content_type': (5, 1)}
+  full/object cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/create cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/create cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/object cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/object cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+depth3-plain-list-with-create-button.json:
+  full/list cold by_table (before, after): {'django_content_type': (15, 3)}
+  full/list cold guard_by_table (before, after): {'django_content_type': (15, 3)}
+  nearest/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+depth3-plain.json:
+  full/create cold by_table (before, after): {'django_content_type': (15, 3)}
+  full/create cold guard_by_table (before, after): {'django_content_type': (15, 3)}
+  full/list cold by_table (before, after): {'django_content_type': (15, 3)}
+  full/list cold guard_by_table (before, after): {'django_content_type': (15, 3)}
+  full/object cold by_table (before, after): {'django_content_type': (15, 3)}
+  full/object cold guard_by_table (before, after): {'django_content_type': (15, 3)}
+  nearest/create cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/create cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/object cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/object cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+
+## B. Against the plan 12 record: evidence/261109-bf5/cost-observations (8b11572a) vs evidence/06.18-12/cost-observations (5829cae7); same normalization. git diff 5829cae7 8b11572a -- src also contains the 06.18 code-review fixes 76fdc7ff (WR-01, crud_views_guardian/lib/mixins.py) and a17823d9 (WR-02, crud_views/lib/ancestors.py)
+depth1-guardian-list-with-create-button.json full/list cold: total 11 -> 11, guard 5 -> 7, rest 6 -> 4  DIFFERENT
+depth1-guardian-list-with-create-button.json full/list warm: total 6 -> 6, guard 3 -> 5, rest 3 -> 1  DIFFERENT
+depth1-guardian-list-with-create-button.json nearest/list cold: total 10 -> 10, guard 5 -> 7, rest 5 -> 3  DIFFERENT
+depth1-guardian-list-with-create-button.json nearest/list warm: total 6 -> 6, guard 3 -> 5, rest 3 -> 1  DIFFERENT
+depth1-guardian.json full/create cold: total 7 -> 7, guard 5 -> 7, rest 2 -> 0  DIFFERENT
+depth1-guardian.json full/create warm: total 5 -> 5, guard 3 -> 5, rest 2 -> 0  DIFFERENT
+depth1-guardian.json full/list cold: total 11 -> 11, guard 5 -> 7, rest 6 -> 4  DIFFERENT
+depth1-guardian.json full/list warm: total 6 -> 6, guard 3 -> 5, rest 3 -> 1  DIFFERENT
+depth1-guardian.json full/object cold: total 12 -> 12, guard 5 -> 7, rest 7 -> 5  DIFFERENT
+depth1-guardian.json full/object warm: total 8 -> 8, guard 3 -> 5, rest 5 -> 3  DIFFERENT
+depth1-guardian.json nearest/create cold: total 7 -> 7, guard 5 -> 7, rest 2 -> 0  DIFFERENT
+depth1-guardian.json nearest/create warm: total 5 -> 5, guard 3 -> 5, rest 2 -> 0  DIFFERENT
+depth1-guardian.json nearest/list cold: total 10 -> 10, guard 5 -> 7, rest 5 -> 3  DIFFERENT
+depth1-guardian.json nearest/list warm: total 6 -> 6, guard 3 -> 5, rest 3 -> 1  DIFFERENT
+depth1-guardian.json nearest/object cold: total 12 -> 12, guard 5 -> 7, rest 7 -> 5  DIFFERENT
+depth1-guardian.json nearest/object warm: total 8 -> 8, guard 3 -> 5, rest 5 -> 3  DIFFERENT
+depth1-plain-list-with-create-button.json full/list cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain-list-with-create-button.json full/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain-list-with-create-button.json nearest/list cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain-list-with-create-button.json nearest/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain.json full/create cold: total 11 -> 7, guard 11 -> 7, rest 0 -> 0  DIFFERENT
+depth1-plain.json full/create warm: total 5 -> 5, guard 5 -> 5, rest 0 -> 0
+depth1-plain.json full/list cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain.json full/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain.json full/object cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain.json full/object warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain.json nearest/create cold: total 11 -> 7, guard 11 -> 7, rest 0 -> 0  DIFFERENT
+depth1-plain.json nearest/create warm: total 5 -> 5, guard 5 -> 5, rest 0 -> 0
+depth1-plain.json nearest/list cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain.json nearest/list warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth1-plain.json nearest/object cold: total 12 -> 8, guard 11 -> 7, rest 1 -> 1  DIFFERENT
+depth1-plain.json nearest/object warm: total 6 -> 6, guard 5 -> 5, rest 1 -> 1
+depth3-guardian-list-with-create-button.json full/list cold: total 21 -> 21, guard 15 -> 17, rest 6 -> 4  DIFFERENT
+depth3-guardian-list-with-create-button.json full/list warm: total 12 -> 12, guard 9 -> 11, rest 3 -> 1  DIFFERENT
+depth3-guardian-list-with-create-button.json nearest/list cold: total 12 -> 12, guard 7 -> 9, rest 5 -> 3  DIFFERENT
+depth3-guardian-list-with-create-button.json nearest/list warm: total 8 -> 8, guard 5 -> 7, rest 3 -> 1  DIFFERENT
+depth3-guardian.json full/create cold: total 17 -> 17, guard 15 -> 17, rest 2 -> 0  DIFFERENT
+depth3-guardian.json full/create warm: total 11 -> 11, guard 9 -> 11, rest 2 -> 0  DIFFERENT
+depth3-guardian.json full/list cold: total 21 -> 21, guard 15 -> 17, rest 6 -> 4  DIFFERENT
+depth3-guardian.json full/list warm: total 12 -> 12, guard 9 -> 11, rest 3 -> 1  DIFFERENT
+depth3-guardian.json full/object cold: total 22 -> 22, guard 15 -> 17, rest 7 -> 5  DIFFERENT
+depth3-guardian.json full/object warm: total 14 -> 14, guard 9 -> 11, rest 5 -> 3  DIFFERENT
+depth3-guardian.json nearest/create cold: total 9 -> 9, guard 7 -> 9, rest 2 -> 0  DIFFERENT
+depth3-guardian.json nearest/create warm: total 7 -> 7, guard 5 -> 7, rest 2 -> 0  DIFFERENT
+depth3-guardian.json nearest/list cold: total 12 -> 12, guard 7 -> 9, rest 5 -> 3  DIFFERENT
+depth3-guardian.json nearest/list warm: total 8 -> 8, guard 5 -> 7, rest 3 -> 1  DIFFERENT
+depth3-guardian.json nearest/object cold: total 14 -> 14, guard 7 -> 9, rest 7 -> 5  DIFFERENT
+depth3-guardian.json nearest/object warm: total 10 -> 10, guard 5 -> 7, rest 5 -> 3  DIFFERENT
+depth3-plain-list-with-create-button.json full/list cold: total 26 -> 14, guard 25 -> 13, rest 1 -> 1  DIFFERENT
+depth3-plain-list-with-create-button.json full/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain-list-with-create-button.json nearest/list cold: total 14 -> 10, guard 13 -> 9, rest 1 -> 1  DIFFERENT
+depth3-plain-list-with-create-button.json nearest/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain.json full/create cold: total 25 -> 13, guard 25 -> 13, rest 0 -> 0  DIFFERENT
+depth3-plain.json full/create warm: total 7 -> 7, guard 7 -> 7, rest 0 -> 0
+depth3-plain.json full/list cold: total 26 -> 14, guard 25 -> 13, rest 1 -> 1  DIFFERENT
+depth3-plain.json full/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain.json full/object cold: total 26 -> 14, guard 25 -> 13, rest 1 -> 1  DIFFERENT
+depth3-plain.json full/object warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain.json nearest/create cold: total 13 -> 9, guard 13 -> 9, rest 0 -> 0  DIFFERENT
+depth3-plain.json nearest/create warm: total 7 -> 7, guard 7 -> 7, rest 0 -> 0
+depth3-plain.json nearest/list cold: total 14 -> 10, guard 13 -> 9, rest 1 -> 1  DIFFERENT
+depth3-plain.json nearest/list warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+depth3-plain.json nearest/object cold: total 14 -> 10, guard 13 -> 9, rest 1 -> 1  DIFFERENT
+depth3-plain.json nearest/object warm: total 8 -> 8, guard 7 -> 7, rest 1 -> 1
+top-level.json guardian/detail: total 5 -> 5, guard 0 -> 0, rest 5 -> 5
+top-level.json guardian/list: total 4 -> 4, guard 0 -> 0, rest 4 -> 4
+top-level.json plain/detail: total 1 -> 1, guard 0 -> 0, rest 1 -> 1
+top-level.json plain/list: total 1 -> 1, guard 0 -> 0, rest 1 -> 1
+files=9 files_with_differences=8
+depth1-guardian-list-with-create-button.json:
+  full/list cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/list cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/list warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/list warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/list cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/list cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/list warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/list warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+depth1-guardian.json:
+  full/create cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/create cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/create warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/create warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/list cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/list cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/list warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/list warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/object cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/object cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/object warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/object warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/create cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/create cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/create warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/create warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/list cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/list cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/list warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/list warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/object cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/object cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/object warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/object warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+depth1-plain-list-with-create-button.json:
+  full/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  full/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+depth1-plain.json:
+  full/create cold by_table (before, after): {'django_content_type': (5, 1)}
+  full/create cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  full/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  full/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  full/object cold by_table (before, after): {'django_content_type': (5, 1)}
+  full/object cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/create cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/create cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/object cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/object cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+depth3-guardian-list-with-create-button.json:
+  full/list cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/list cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/list warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/list warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/list cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/list cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/list warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/list warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+depth3-guardian.json:
+  full/create cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/create cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/create warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/create warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/list cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/list cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/list warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/list warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/object cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/object cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  full/object warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  full/object warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/create cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/create cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/create warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/create warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/list cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/list cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/list warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/list warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/object cold guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/object cold rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+  nearest/object warm guard_by_table (before, after): {'auth_user': (0, 1), 'django_session': (0, 1)}
+  nearest/object warm rest_by_table (before, after): {'auth_user': (1, 0), 'django_session': (1, 0)}
+depth3-plain-list-with-create-button.json:
+  full/list cold by_table (before, after): {'django_content_type': (15, 3)}
+  full/list cold guard_by_table (before, after): {'django_content_type': (15, 3)}
+  nearest/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+depth3-plain.json:
+  full/create cold by_table (before, after): {'django_content_type': (15, 3)}
+  full/create cold guard_by_table (before, after): {'django_content_type': (15, 3)}
+  full/list cold by_table (before, after): {'django_content_type': (15, 3)}
+  full/list cold guard_by_table (before, after): {'django_content_type': (15, 3)}
+  full/object cold by_table (before, after): {'django_content_type': (15, 3)}
+  full/object cold guard_by_table (before, after): {'django_content_type': (15, 3)}
+  nearest/create cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/create cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/list cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/object cold by_table (before, after): {'django_content_type': (5, 1)}
+  nearest/object cold guard_by_table (before, after): {'django_content_type': (5, 1)}
+
+## Summary
+A (this fix in isolation): only the plain cold cells differ, and only in django_content_type inside the guard:
+  depth 1 (both modes) and depth 3 nearest: ct 5 -> 1 (one vocabulary resolved); depth 3 full cascade: ct 15 -> 3
+  (three vocabularies). Every warm cell, every Guardian cell and top-level.json are identical. Plain cold ct now
+  equals the number of gated ancestors.
+B (against the plan 12 record, 06.18-12): the same plain differences, plus a guard/rest re-attribution in every
+  Guardian cell (cold and warm): session 1 and user 1 move from rest into guard (guard +2, rest -2; totals and
+  by_table unchanged). A shows this shift is already present at c67c841d, before this fix; it comes from the
+  06.18 code-review fix 76fdc7ff (WR-01: static validation runs before Guardian actor admission, so the actor is
+  loaded inside the guard). It is not caused by quick task 261109-bf5.

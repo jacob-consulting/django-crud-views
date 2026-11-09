@@ -1,0 +1,185 @@
+{
+  "baseline_sha": "d5567ba2964b1375be2292ffa414bfb2f5cd6292",
+  "cell": "depth1-plain-list-with-create-button",
+  "meta": {
+    "crud_views_path": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "django": "5.2.19",
+    "python": "3.12.3",
+    "source_sha": "8b11572a3767e3942830c9d588d715975d0a3b96",
+    "src_dirty": false
+  },
+  "observations": {
+    "full/list": {
+      "cold": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 1,
+          "auth_permission": 3,
+          "auth_user": 1,
+          "django_content_type": 1,
+          "django_session": 1
+        },
+        "gates": [
+          [
+            "guard",
+            "obsp05ec6b64a",
+            "app.view_publisher",
+            1
+          ]
+        ],
+        "guard": 7,
+        "guard_by_table": {
+          "app_publisher": 1,
+          "auth_permission": 3,
+          "auth_user": 1,
+          "django_content_type": 1,
+          "django_session": 1
+        },
+        "guard_calls": 1,
+        "querysets": [
+          [
+            "guard",
+            "obsp05ec6b64a"
+          ],
+          [
+            "rest",
+            "obsp15ec6b64a"
+          ]
+        ],
+        "rest": 1,
+        "rest_by_table": {
+          "app_book": 1
+        },
+        "status": 200,
+        "total": 8
+      },
+      "warm": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 1,
+          "auth_permission": 2,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "gates": [
+          [
+            "guard",
+            "obsp05ec6b64a",
+            "app.view_publisher",
+            1
+          ]
+        ],
+        "guard": 5,
+        "guard_by_table": {
+          "app_publisher": 1,
+          "auth_permission": 2,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "guard_calls": 1,
+        "querysets": [
+          [
+            "guard",
+            "obsp05ec6b64a"
+          ],
+          [
+            "rest",
+            "obsp15ec6b64a"
+          ]
+        ],
+        "rest": 1,
+        "rest_by_table": {
+          "app_book": 1
+        },
+        "status": 200,
+        "total": 6
+      }
+    },
+    "nearest/list": {
+      "cold": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 1,
+          "auth_permission": 3,
+          "auth_user": 1,
+          "django_content_type": 1,
+          "django_session": 1
+        },
+        "gates": [
+          [
+            "guard",
+            "obsp05ec6b64a",
+            "app.view_publisher",
+            1
+          ]
+        ],
+        "guard": 7,
+        "guard_by_table": {
+          "app_publisher": 1,
+          "auth_permission": 3,
+          "auth_user": 1,
+          "django_content_type": 1,
+          "django_session": 1
+        },
+        "guard_calls": 1,
+        "querysets": [
+          [
+            "guard",
+            "obsp05ec6b64a"
+          ],
+          [
+            "rest",
+            "obsp15ec6b64a"
+          ]
+        ],
+        "rest": 1,
+        "rest_by_table": {
+          "app_book": 1
+        },
+        "status": 200,
+        "total": 8
+      },
+      "warm": {
+        "by_table": {
+          "app_book": 1,
+          "app_publisher": 1,
+          "auth_permission": 2,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "gates": [
+          [
+            "guard",
+            "obsp05ec6b64a",
+            "app.view_publisher",
+            1
+          ]
+        ],
+        "guard": 5,
+        "guard_by_table": {
+          "app_publisher": 1,
+          "auth_permission": 2,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "guard_calls": 1,
+        "querysets": [
+          [
+            "guard",
+            "obsp05ec6b64a"
+          ],
+          [
+            "rest",
+            "obsp15ec6b64a"
+          ]
+        ],
+        "rest": 1,
+        "rest_by_table": {
+          "app_book": 1
+        },
+        "status": 200,
+        "total": 6
+      }
+    }
+  }
+}

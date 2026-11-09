@@ -1541,7 +1541,9 @@ stay. No new API; `### Added` changelog entry; not breaking.
 **Success criteria:**
 
 1. Declared-set helper: default permissions map to their action; a custom codename with the `_<model>` suffix maps
-   to the stripped key; one without the suffix keeps its full codename; proxy and MTI children use their own `Meta`.
+   to the stripped key; one without the suffix keeps its full codename; a proxy resolves to its concrete model's `Meta`
+   (mirroring the runtime map's `get_for_model`; CONTEXT D-01, corrected #341 criterion 1) and an MTI child uses its
+   own `Meta`.
 
 2. `E269` fires for a `*PermissionRequired` view with an undeclared `cv_permission` on a core ViewSet, naming view,
    key and model, and passes once `Meta.permissions` declares the codename, without touching the test-project models.

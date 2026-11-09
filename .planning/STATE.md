@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.19"
-current_phase_name: "Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (#337) (INSERTED)"
-status: executing
-stopped_at: Completed 06.19-01-PLAN.md
-last_updated: "2026-11-09T15:33:05.705Z"
+current_phase_name: "Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337) (INSERTED)"
+status: verifying
+stopped_at: Completed 06.19-02-PLAN.md
+last_updated: "2026-11-09T15:50:04.072Z"
 last_activity: 2026-11-09
 last_activity_desc: Phase 06.19 execution started
-state_head: ab9782f6df2519a8feb109e35f0c2ad9060a0c4f
+state_head: 9b5044325a16e7eb8c0e107fae4180d15d20890f
 progress:
   total_phases: 25
   completed_phases: 21
   total_plans: 152
-  completed_plans: 151
+  completed_plans: 152
 milestone_name: milestone
 ---
 
@@ -24,13 +24,13 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.19 — Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337)
+**Current focus:** Phase 06.19 — Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337) (INSERTED)
 
 ## Current Position
 
-Phase: 06.19 (Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (#337) (INSERTED)) — READY TO EXECUTE
-Plan: 1 of 1
-Status: Ready to execute
+Phase: 06.19 (Table honours Meta.sequence and omits the Actions column for cv_list_actions = None (#337) (INSERTED)) — EXECUTING
+Plan: 2 of 2
+Status: Phase complete — ready for verification
 Last activity: 2026-11-09 — Phase 06.19 execution started
 
 Next: Phase 06.19 ($gsd-plan-phase 06.19); then Phase 7 ($gsd-discuss-phase 7)
@@ -818,6 +818,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P12 | 28 min | 2 tasks | 10 files |
 | Phase 06.18 P13 | 10min | 2 tasks | 5 files |
 | Phase 06.19 P01 | 6 min | 3 tasks | 5 files |
+| Phase 06.19 P02 | 6min | 3 tasks | 4 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1057,6 +1058,8 @@ Recent decisions affecting current work:
 - [Phase 06.19]: Table honours Meta.sequence and appends actions last unless the sequence names it; no Meta.sequence keeps ('...', 'actions') (#337)
 - [Phase 06.19]: cv_list_actions = None is the only view-side opt-out for the actions column; [] and () keep the empty column, decision is static (#337)
 - [Phase 06.19]: Table exclude merge combines Meta.exclude, caller exclude and actions with an order-preserving dict.fromkeys dedupe (#337)
+- [Phase 06.19]: Table.cv_default_sequence inserts "..." before actions when a declared Meta.sequence has none, so django-tables2 never appends its ellipsis after actions (06.19-02, WR-01)
+- [Phase 06.19]: Table.__init__ normalises the caller exclude kwarg (falsy -> (), str -> one-tuple) only inside the cv_list_actions = None branch before the order-preserving merge (06.19-02, WR-02/WR-03)
 
 ### Pending Todos
 
@@ -1127,6 +1130,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T14:46:09.119Z
-Stopped at: Completed 06.19-01-PLAN.md
+Last session: 2026-11-09T15:50:01.077Z
+Stopped at: Completed 06.19-02-PLAN.md
 Resume file: None

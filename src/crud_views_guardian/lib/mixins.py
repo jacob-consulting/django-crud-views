@@ -39,19 +39,19 @@ def _guardian_actor_response(view):
     return None
 
 
-def _local_permission_name(view_or_cls) -> str:
-    """The full permission name for a Guardian view's own ``cv_permission`` key (request gates only).
+def _local_permission_name(view) -> str:
+    """The full permission name for a Guardian view instance's own ``cv_permission`` key (request gates only).
 
     Raises ImproperlyConfigured when the key has no entry in the ViewSet's permission map — typically a model
     whose migration has not run — so no Guardian checker or shortcut ever receives ``None`` (G-06.18-2).
     """
-    viewset = view_or_cls.cv_viewset
-    key = view_or_cls.cv_permission
+    viewset = view.cv_viewset
+    key = view.cv_permission
     permission = viewset.permissions.get(key)
     if not permission:
         raise ImproperlyConfigured(
-            f"ViewSet {viewset.name!r} view {view_or_cls.cv_key!r}: permission key {key!r} is not in the "
-            f"permission map of ViewSet {viewset.name!r} — if the model is new, run `manage.py migrate`; "
+            f"ViewSet {viewset.name!r} view {view.cv_key!r}: permission key {key!r} is not in the ViewSet's "
+            f"permission map — if the model is new, run `manage.py migrate`; "
             f"a server started before the migration may need a restart"
         )
     return permission

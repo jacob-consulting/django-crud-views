@@ -70,7 +70,7 @@ def test_missing_key_list_raises_improperly_configured(kind):
     with without_permission_key(cv_guardian_author, "view"), pytest.raises(ImproperlyConfigured) as exc:
         client.get("/guardian_author/")
     message = str(exc.value)
-    assert "'guardian_author'" in message
+    assert message.count("'guardian_author'") == 1  # the ViewSet is named once
     assert "'view'" in message
     assert "'list'" in message
     assert "migrate" in message

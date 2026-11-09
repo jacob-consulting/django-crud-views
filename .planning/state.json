@@ -111,6 +111,16 @@
     {
       "number": "06.19",
       "name": "Table honours Meta.sequence and omits the Actions column for None",
+      "status": "complete"
+    },
+    {
+      "number": "06.20",
+      "name": "ViewSet verbose_name override that every default label follows",
+      "status": "pending"
+    },
+    {
+      "number": "06.21",
+      "name": "Snippet context exposes view and parent_object",
       "status": "pending"
     },
     {
@@ -121,8 +131,8 @@
   ],
   "next": {
     "command": "/gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 33 of 34 · executing"
+    "label": "Advance to the next step (plan phase 06.20)",
+    "reason": "Phase 34 of 36 — needs a plan"
   },
-  "updated_at": "2026-11-09T14:35:36.367Z"
+  "updated_at": "2026-11-09T16:53:06.540Z"
 }

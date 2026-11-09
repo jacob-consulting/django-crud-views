@@ -41,6 +41,11 @@ class ActionsFirstTable(PlainTable):
         sequence = ("actions", "...")
 
 
+class NoEllipsisTable(PlainTable):
+    class Meta:
+        sequence = ("last_name",)
+
+
 def test_no_meta_sequence_keeps_actions_last():
     table = PlainTable(ROWS, view=_view(["detail"]))
     assert _names(table) == ["id", "first_name", "last_name", "actions"]
@@ -54,6 +59,12 @@ def test_meta_sequence_is_honoured_and_actions_appended():
 def test_meta_sequence_with_middle_ellipsis_keeps_actions_last():
     table = MiddleEllipsisTable(ROWS, view=_view(["detail"]))
     assert _names(table) == ["last_name", "first_name", "id", "actions"]
+
+
+def test_meta_sequence_without_ellipsis_keeps_actions_last():
+    table = NoEllipsisTable(ROWS, view=_view(["detail"]))
+    assert _names(table) == ["last_name", "id", "first_name", "actions"]
+    assert NoEllipsisTable.cv_default_sequence() == ("last_name", "...", "actions")
 
 
 def test_meta_sequence_naming_actions_is_used_as_written():
@@ -73,6 +84,7 @@ def test_cv_default_sequence_values():
     assert PlainTable.cv_default_sequence() == ("...", "actions")
     assert SequencedTable.cv_default_sequence() == ("last_name", "...", "actions")
     assert ActionsFirstTable.cv_default_sequence() == ("actions", "...")
+    assert NoEllipsisTable.cv_default_sequence() == ("last_name", "...", "actions")
 
 
 class ExcludingTable(PlainTable):

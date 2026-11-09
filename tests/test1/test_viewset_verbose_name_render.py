@@ -8,9 +8,23 @@ import pytest
 from django.urls import reverse
 from lxml import html as lxml_html
 
+from crud_views.lib.table import LinkChildColumn
+from crud_views.lib.view import ChildContextButton
 from tests.test1.app.models import Book
-from tests.test1.app.views import BookCreateView, BookListView, cv_book
-from tests.test1.test_breadcrumb import make_view
+from tests.test1.app.views import (
+    BookBcListView,
+    BookCreateView,
+    BookListView,
+    PublisherDetailView,
+    PublisherListView,
+    PublisherTable,
+    cv_book,
+    cv_book_bc,
+    cv_publisher,
+)
+from tests.test1.test_action_label_mode_render import _client, _toolbar
+from tests.test1.test_breadcrumb import make_view, titles
+from tests.test1.test_core_nested_create_state import _view
 
 
 def _override(monkeypatch):
@@ -89,3 +103,61 @@ def test_success_message_follows_override(publisher_penguin, monkeypatch):
         publisher_pk=publisher_penguin.pk,
     )
     assert view.cv_get_message() == "Created Volume <strong>1984</strong>"
+
+
+@pytest.mark.django_db
+def test_breadcrumb_container_item_follows_override(publisher_penguin, monkeypatch):
+    """Assert producer-level breadcrumb titles on the existing cv_book_bc.
+
+    Only the *Bc* views carry CrudViewBreadcrumbMixin; they use the same Book model.
+    No mixin is added to cv_book views and nothing is registered.
+    """
+    monkeypatch.setattr(cv_book_bc, "verbose_name_plural", "volumes")
+    view = make_view(
+        BookBcListView,
+        f"/publisher_bc/{publisher_penguin.pk}/book_bc/",
+        publisher_bc_pk=publisher_penguin.pk,
+    )
+    assert titles(view.cv_breadcrumb()) == ["Publishers", "Penguin", "Volumes"]
+
+    monkeypatch.setattr(BookBcListView, "cv_breadcrumb_container_label", "Custom container")
+    view = make_view(
+        BookBcListView,
+        f"/publisher_bc/{publisher_penguin.pk}/book_bc/",
+        publisher_bc_pk=publisher_penguin.pk,
+    )
+    assert titles(view.cv_breadcrumb()) == ["Publishers", "Penguin", "Custom container"]
+
+
+@pytest.mark.django_db
+def test_link_child_column_follows_override(client_user_publisher_view, publisher_penguin, monkeypatch):
+    _override(monkeypatch)
+
+    class BooksTable(PublisherTable):
+        books = LinkChildColumn("book")
+
+    monkeypatch.setattr(PublisherListView, "table_class", BooksTable)
+    response = client_user_publisher_view.get(reverse(cv_publisher.get_router_name("list")))
+    assert response.status_code == 200
+    (link,) = lxml_html.fromstring(response.content).xpath("//td/a[contains(@href, '/book/')]")
+    assert link.text_content().strip() == "Volumes"
+    assert link.get("title") == "Go to Volumes"
+
+
+@pytest.mark.django_db
+def test_child_context_button_full_label_follows_override(publisher_penguin, monkeypatch):
+    _override(monkeypatch)
+    view = _view(PublisherDetailView)
+    button = ChildContextButton(key="books", child_name="book")
+    data = button.get_context(view.cv_get_view_context(object=publisher_penguin))
+    assert data["cv_action_label"] == "List of all Volumes"
+    assert data["cv_action_short_label"] == "List"
+
+    monkeypatch.setattr(cv_book, "icon_header", "fa-solid fa-book")
+    monkeypatch.setattr(PublisherDetailView, "cv_context_buttons", [ChildContextButton(key="books", child_name="book")])
+    monkeypatch.setattr(PublisherDetailView, "cv_context_actions", ["books"])
+    client = _client([(cv_publisher, ("view",)), (cv_book, ("view",))])
+    toolbar = _toolbar(client, reverse(cv_publisher.get_router_name("detail"), kwargs={"pk": publisher_penguin.pk}))
+    (el,) = toolbar.xpath("./*[@cv-key]")
+    (span,) = el.cssselect("span.visually-hidden")
+    assert span.text_content().strip() == "List of all Volumes"

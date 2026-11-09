@@ -1454,10 +1454,12 @@ the parent ViewSet), and model-centric texts stay on the model. tabler-test find
 opt-in URL helper decision) and 29 (Phase 06.21) are out of scope, as is removing the downstream
 `cv_header_template_code` workarounds (follow-up in tabler-test). No code dependency on Phase 06.19 beyond serial
 numbering. This insertion assigns the phase; detailed planning and implementation remain pending.
-**Plans:** 0 plans
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 06.20 to break down)
+- [ ] 06.20-01-PLAN.md — Tracer: `verbose_name` / `verbose_name_plural` fields, blank validator and `get_meta()` resolution; SC-1 unit tests and the SC-3 Guardian constructor test (wave 1)
+- [ ] 06.20-02-PLAN.md — End-to-end render surfaces (list/create header and paragraph, template_code precedence, success message, breadcrumb via `cv_book_bc`, `LinkChildColumn`, `ChildContextButton`) and the phase gates (wave 2)
+- [ ] 06.20-03-PLAN.md — Docs: `## Labels` in nested.md, breadcrumb.md variables sentence, `### Added` changelog entry, strict mkdocs (wave 1)
 
 ### Phase 06.21: Snippet context exposes `view` and `parent_object` (#339) (INSERTED)
 

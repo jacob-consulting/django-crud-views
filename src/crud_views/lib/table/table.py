@@ -27,10 +27,20 @@ class Table(TableWithViewContext):
 
     actions = ActionColumn(verbose_name=_("Actions"))
 
+    @classmethod
+    def cv_default_sequence(cls) -> tuple[str, ...]:
+        """The ``sequence`` used when the caller passes none: a declared ``Meta.sequence`` with ``actions`` appended
+        unless it names it already, else the historical ``("...", "actions")`` (actions last)."""
+        declared = tuple(cls._meta.sequence or ())
+        if not declared:
+            return ("...", "actions")
+        if "actions" in declared:
+            return declared
+        return (*declared, "actions")
+
     def __init__(self, *args, **kwargs):
         if "sequence" not in kwargs:
-            # as default make sure actions are at the end
-            kwargs["sequence"] = ("...", "actions")
+            kwargs["sequence"] = self.cv_default_sequence()
         super().__init__(*args, **kwargs)
 
     @staticmethod

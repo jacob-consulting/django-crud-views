@@ -22,10 +22,10 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-07)
+See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.18 — Ancestor authorization for nested ViewSets
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
@@ -34,7 +34,13 @@ Plan: Not started
 Status: Ready to plan
 Last activity: 2026-11-09 — Phase 06.18 complete, transitioned to Phase 7
 
-Next: phase verification for 06.18 ($gsd-verify-work 06.18), then code/security review
+Next: Phase 7 ($gsd-discuss-phase 7); before shipping 06.18 run $gsd-secure-phase 06.18 (plan 13 threats T-06.18-26..28 not yet in SECURITY.md)
+
+### Phase 06.18 completion — 2026-11-09
+
+- UAT 06.18: 71 rows (5 human, 66 automated). Test 2 failed on an unmigrated example DB (TypeError on the nested Guardian Note list); diagnosed and closed by gap-closure plan 13 (Guardian views fail closed with ImproperlyConfigured on a missing permission key; cv_has_access False). Gap G-06.18-2 resolved by 06.18-13-PLAN.md.
+- Quick tasks during UAT: 261109-9rw (examples: nested Guardian Note + core nested ancestor tests), 261109-bf5 (core default_permissions vocabulary N+1 fix), 261109-bvq (06.18-COSTS.md refreshed and number-checked).
+- Re-verification passed 52/52 (81188a4b); full suite 12185 passed, 1 skipped on Django 5.2 multicore; incremental review of plan 13: 0 critical, 1 warning (test helper cache restore scope), 2 info — open in 06.18-REVIEW-DISPOSITION.md.
 
 ### Phase 06.18 plan 12 — 2026-11-08
 
@@ -1067,6 +1073,7 @@ None yet.
 
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
+- [Phase 06.18] Before shipping: run $gsd-secure-phase 06.18 — plan 13 threats T-06.18-26..28 are not yet recorded in 06.18-SECURITY.md (threats_open 0 predates them). Five review findings stay open (06.18-REVIEW-DISPOSITION.md; incremental WR-01 test-helper cache restore). Codebase maps are stale (drift gate advisory): run $gsd-map-codebase after $gsd-ship per CLAUDE.md.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
 - Phase 06.2 retained scope complete: CR-02–CR-04 transferred to Phase 6.3 / issue #282 and closed by its 2026-11-01 verification; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transfer completed within 6.3 GUA-01 scope; broader Guardian identity compatibility remains in #286; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
 - Phase 06.7 complete: canonical verification and UAT passed; carry the dynamic Cancel helper/defaults/omission contract into Phase 7. Low query-visibility acceptance-record obligation remains open below the configured security threshold.
@@ -1116,6 +1123,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T09:46:08.025Z
+Last session: 2026-11-09T10:15:00Z
 Stopped at: Phase 06.18 complete, ready to plan Phase 7
 Resume file: None

@@ -77,6 +77,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.17** First-open projected accordion groups and lazy theme-owned tab initialization/disposal with exact-source migration recipes — Phase 06.17; canonical15/15, ODT-01–05 complete, clean deep review and security9/9.
 
+- ✓ **6.18** Ancestor authorization for nested ViewSets: one request-local engine validates declared ancestry and enforces typed AncestorPolicy/AncestorPermissions (Read/Write and exact action pairs, full or nearest-only cascade, core or Guardian provider with separate fallback) before independent endpoint-local gates; top-level views do no ancestor work. Legacy `cv_guardian_parent_*` fields removed with paired Breaking/migrating-1.0 guidance — Phase 06.18; ANCE-01–08 complete, re-verification 52/52, UAT 71 rows (gap G-06.18-2 closed by plan 13), measured costs in 06.18-COSTS.md.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -165,6 +167,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Follow successful form POST redirects in fixture regression tests | Persistence alone did not reveal an unregistered detail link on the destination list | Validated (Phase 06.6 UAT repair) |
 
 | Keep the workflow change default; document opt-in view access with explicit transition permissions | Existing page, action, choice and execution checks remain independent; optional hook denies direct requests as well as disabling controls | Validated (Phase 06.13) |
+| Authorize nested requests through one shared ancestor engine; endpoint-local gates stay independent and never waive or are waived by ancestry | One traceable mechanism across plain/core/Guardian/manage/Resource compositions; denial stops deeper lookup, state and writes | Validated (Phase 06.18) |
+| Fail closed with a named ImproperlyConfigured when a permission key has no vocabulary entry (core ancestry and Guardian local gates); render-time cv_has_access returns False | An unmigrated permission must never grant or crash with a raw TypeError | Validated (Phase 06.18 gap closure, plan 13) |
 
 ## Evolution
 
@@ -184,4 +188,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-07 after Phase 06.17 completion*
+*Last updated: 2026-11-09 after Phase 06.18 completion*

@@ -1454,11 +1454,11 @@ the parent ViewSet), and model-centric texts stay on the model. tabler-test find
 opt-in URL helper decision) and 29 (Phase 06.21) are out of scope, as is removing the downstream
 `cv_header_template_code` workarounds (follow-up in tabler-test). No code dependency on Phase 06.19 beyond serial
 numbering. This insertion assigns the phase; detailed planning and implementation remain pending.
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.20-01-PLAN.md — Tracer: `verbose_name` / `verbose_name_plural` fields, blank validator and `get_meta()` resolution; SC-1 unit tests and the SC-3 Guardian constructor test (wave 1)
+- [x] 06.20-01-PLAN.md — Tracer: `verbose_name` / `verbose_name_plural` fields, blank validator and `get_meta()` resolution; SC-1 unit tests and the SC-3 Guardian constructor test (wave 1)
 - [ ] 06.20-03-PLAN.md — Docs: `## Labels` in nested.md, breadcrumb.md variables sentence, `### Added` changelog entry, strict mkdocs (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
@@ -1615,6 +1615,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.15. Polymorphic labels and per-model detail groups | 4/4 | Complete    | 2026-11-06 |
 | 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
 | 06.19. Table honours Meta.sequence and omits the Actions column for None | 2/2 | Complete    | 2026-11-09 |
-| 06.20. ViewSet verbose_name override that every default label follows | 0/TBD | Not started | - |
+| 06.20. ViewSet verbose_name override that every default label follows | 1/3 | In Progress | - |
 | 06.21. Snippet context exposes view and parent_object | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.20"
-current_phase_name: "ViewSet verbose_name / verbose_name_plural override (#338)"
+current_phase_name: ViewSet verbose_name override
 status: executing
-stopped_at: Phase 06.20 context gathered
-last_updated: "2026-11-09T20:57:51.006Z"
+stopped_at: Completed 06.20-01-PLAN.md; phase execution continues
+last_updated: "2026-11-09T21:11:42.844Z"
 last_activity: 2026-11-09
-last_activity_desc: "Phase 06.19 shipped as PR #340"
-state_head: 995e4877fd36b713c858fe9e88efc98c99a2c24b
+last_activity_desc: Phase 06.20 execution started
+state_head: 772c6e0279dec6b78ef7bfe7d5d0e5d786922bf1
 progress:
   total_phases: 27
   completed_phases: 22
   total_plans: 155
-  completed_plans: 152
+  completed_plans: 153
 milestone_name: milestone
 ---
 
@@ -24,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
+**Current focus:** Phase 06.20 — ViewSet verbose_name override
 
 ## Current Position
 
-Phase: 06.20 (ViewSet verbose_name / verbose_name_plural override (#338)) — READY TO EXECUTE
-Plan: Not started
+Phase: 06.20 (ViewSet verbose_name override) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-11-09 -- Phase 06.19 shipped as PR #340
+Last activity: 2026-11-09 — Phase 06.20 execution started
 
-Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21
+Next: Complete Phase 06.20 plans 03 and 02, then phase verification; Phase 06.21 follows.
 
 ### Phase 06.19 completion — 2026-11-09
 
@@ -826,6 +826,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P13 | 10min | 2 tasks | 5 files |
 | Phase 06.19 P01 | 6 min | 3 tasks | 5 files |
 | Phase 06.19 P02 | 6min | 3 tasks | 4 files |
+| Phase 06.20 P01 | 5min | 2 tasks | 2 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1067,6 +1068,7 @@ Recent decisions affecting current work:
 - [Phase 06.19]: Table exclude merge combines Meta.exclude, caller exclude and actions with an order-preserving dict.fromkeys dedupe (#337)
 - [Phase 06.19]: Table.cv_default_sequence inserts "..." before actions when a declared Meta.sequence has none, so django-tables2 never appends its ellipsis after actions (06.19-02, WR-01)
 - [Phase 06.19]: Table.__init__ normalises the caller exclude kwarg (falsy -> (), str -> one-tuple) only inside the cv_list_actions = None branch before the order-preserving merge (06.19-02, WR-02/WR-03)
+- [Phase 06.20]: Plan 01: resolve explicit ViewSet verbose_name overrides per call; preserve lazy model defaults and construction-time lazy values, reject only blank plain strings.
 
 ### Pending Todos
 
@@ -1137,6 +1139,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T17:56:10.069Z
-Stopped at: Phase 06.20 context gathered
-Resume file: .planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-CONTEXT.md
+Last session: 2026-11-09T21:11:40.166Z
+Stopped at: Completed 06.20-01-PLAN.md; phase execution continues
+Resume file: None

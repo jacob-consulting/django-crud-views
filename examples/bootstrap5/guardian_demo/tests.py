@@ -200,3 +200,51 @@ class GuardianSeedEditShareTest(TestCase):
         self.client.force_login(self.bob)
         for key in ("document-detail", "document-update", "document-delete"):
             self.assertEqual(self.client.get(reverse(key, kwargs={"pk": self.doc.pk})).status_code, 200, key)
+
+
+class GuardianSeedNotesTest(TestCase):
+    """The seed adds notes under two documents; the document grants gate them, the note grants stay separate."""
+
+    def setUp(self):
+        from django.core.management import call_command
+
+        call_command("seed")
+        User = get_user_model()
+        self.alice = User.objects.get(username="alice")
+        self.bob = User.objects.get(username="bob")
+        self.handbook = Document.objects.get(title="Team Handbook")
+        self.checklist = Document.objects.get(title="Release Checklist")
+
+    def test_seed_twice_keeps_note_count(self):
+        from django.core.management import call_command
+
+        count = Note.objects.count()
+        self.assertGreater(count, 0)
+        call_command("seed")
+        self.assertEqual(Note.objects.count(), count)
+
+    def test_bob_reads_handbook_notes_but_cannot_add(self):
+        self.client.force_login(self.bob)
+        kwargs = {"document_pk": self.handbook.pk}
+        resp = self.client.get(reverse("note-list", kwargs=kwargs))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "onboarding")
+        self.assertContains(self.client.get(reverse("note-list", kwargs=kwargs), HTTP_ACCEPT_LANGUAGE="de"), "Notizen")
+        self.assertEqual(self.client.get(reverse("note-create", kwargs=kwargs)).status_code, 403)
+
+    def test_alice_may_add_notes_to_release_checklist(self):
+        self.client.force_login(self.alice)
+        resp = self.client.get(reverse("note-create", kwargs={"document_pk": self.checklist.pk}))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_note_gates_stay_independent(self):
+        bobs_note = Note.objects.get(document=self.checklist, text__startswith="Tag the release")
+        alices_note = Note.objects.get(document=self.checklist, text="Changelog reviewed.")
+        # alice may change the document but holds only view on bob's note
+        self.client.force_login(self.alice)
+        resp = self.client.get(reverse("note-update", kwargs={"document_pk": self.checklist.pk, "pk": bobs_note.pk}))
+        self.assertEqual(resp.status_code, 403)
+        # the document owner gets change on every note of his document
+        self.client.force_login(self.bob)
+        resp = self.client.get(reverse("note-update", kwargs={"document_pk": self.checklist.pk, "pk": alices_note.pk}))
+        self.assertEqual(resp.status_code, 200)

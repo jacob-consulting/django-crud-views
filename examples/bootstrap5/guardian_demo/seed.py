@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from project.seeding import grant_model_perms
 
-from guardian_demo.models import Document
-from guardian_demo.views import cv_document
+from guardian_demo.models import Document, Note
+from guardian_demo.views import cv_document, cv_note
 
 #: owner username → documents
 DOCUMENTS = {
@@ -13,6 +13,15 @@ DOCUMENTS = {
     "bob": [
         ("Meeting Notes", "Standup summaries."),
         ("Release Checklist", "Steps before every release."),
+    ],
+}
+
+#: document title → notes as (author username, text)
+NOTES = {
+    "Team Handbook": [("alice", "Added the onboarding checklist.")],
+    "Release Checklist": [
+        ("bob", "Tag the release before publishing."),
+        ("alice", "Changelog reviewed."),
     ],
 }
 
@@ -37,3 +46,17 @@ def seed():
     # bob shares the release checklist with alice: she may edit it, not delete it
     for action in ("view", "change"):
         cv_document.assign_perm(action, users["alice"], docs["Release Checklist"])
+
+    # notes: whoever may view a document may view its notes; only the author and the document owner edit them
+    for title, notes in NOTES.items():
+        doc = docs[title]
+        for username, text in notes:
+            note, _ = Note.objects.get_or_create(document=doc, author=users[username], text=text)
+            for user in {note.author, doc.owner}:
+                for action in ("view", "change", "delete"):
+                    cv_note.assign_perm(action, user, note)
+    # the two document shares extend to their notes, read-only
+    for note in docs["Team Handbook"].notes.all():
+        cv_note.assign_perm("view", users["bob"], note)
+    for note in docs["Release Checklist"].notes.all():
+        cv_note.assign_perm("view", users["alice"], note)

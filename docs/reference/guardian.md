@@ -601,6 +601,18 @@ seeded `Document` objects (see `guardian_demo/seed.py`):
 | Meeting Notes     | bob   | —                    | view, change, delete |
 | Release Checklist | bob   | view, change         | view, change, delete |
 
+The seed also creates notes under two documents. `Note` is a nested `GuardianViewSet` under `Document` (see
+[Parent Viewsets](#parent-viewsets) above), and each note carries its own object grants:
+
+| Document          | Note                                 | Author | alice                | bob                  |
+|-------------------|--------------------------------------|--------|----------------------|----------------------|
+| Team Handbook     | "Added the onboarding checklist."    | alice  | view, change, delete | view                 |
+| Release Checklist | "Tag the release before publishing." | bob    | view                 | view, change, delete |
+| Release Checklist | "Changelog reviewed."                | alice  | view, change, delete | view, change, delete |
+
+Listing a document's notes needs `view` on the document and adding one needs `change` on it, so bob reads the
+Team Handbook's notes but cannot add one.
+
 ## GuardianManageView
 
 When `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` is enabled (or a user is in the `CRUD_VIEWS_MANAGE` group), guardian-enabled viewsets show an enhanced manage page at `/<prefix>/manage/`.

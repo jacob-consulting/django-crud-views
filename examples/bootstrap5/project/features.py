@@ -236,17 +236,28 @@ FEATURES: list[Feature] = [
         app="guardian_demo",
         group="extensions",
         title="Guardian",
-        description="Per-object permissions: alice and bob each see their own documents, plus shared ones.",
+        description=(
+            "Per-object permissions: alice and bob each see their own documents plus shared ones; notes nest "
+            "under a document and follow its grants."
+        ),
         about=(
             "Per-object permissions with django-guardian. Documents are owned by individual users: sign in as "
             "alice or bob (password same as the username) and each sees only their own documents, plus two that "
             "are shared — alice's Team Handbook with bob, view-only, and bob's Release Checklist with alice, "
-            "editable but not deletable. Creating a document grants its creator full object-level rights."
+            "editable but not deletable. Creating a document grants its creator full object-level rights. "
+            "Notes are a nested GuardianViewSet child of the Document GuardianViewSet: listing a document's notes "
+            "needs view on that document, adding or editing them needs change on it — bob can read the Team "
+            "Handbook's notes but cannot add one, while alice may add notes to bob's Release Checklist. Each note "
+            "keeps its own object grants, so only its author and the document owner may edit it."
         ),
         look_at=(
             "the GuardianViewSet and the Guardian*ViewPermissionRequired views, and "
             "DocumentCreateView.cv_form_valid, which assigns object permissions to the creator via "
-            "cv_document.assign_perm."
+            'cv_document.assign_perm; cv_note = GuardianViewSet(..., parent=ParentViewSet(name="document")) '
+            'and the explicit ancestor_policy=AncestorPolicy(provider="guardian", accept_global_perms=False) on '
+            "cv_document; NoteCreateView.cv_form_valid, which grants the author and the document owner; and the "
+            "'Ancestor policy' table on the manage pages (/guardian/document/manage/ and "
+            "/guardian/document/<pk>/note/manage/, available locally because DEBUG enables manage views)."
         ),
         url_name="document-list",
         icon="fa-solid fa-user-lock",
@@ -256,6 +267,11 @@ FEATURES: list[Feature] = [
                 page="reference/guardian.md",
                 label="Guardian — working example and seeded permissions",
                 anchor="working-example",
+            ),
+            DocRef(
+                page="reference/guardian.md",
+                label="Guardian — parent viewsets and ancestor authorization",
+                anchor="parent-viewsets",
             ),
         ),
     ),

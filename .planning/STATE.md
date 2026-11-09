@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.20"
 current_phase_name: ViewSet verbose_name override
 status: executing
-stopped_at: Completed 06.20-01-PLAN.md; phase execution continues
-last_updated: "2026-11-09T21:11:42.844Z"
+stopped_at: Completed 06.20-03-PLAN.md; plan 02 and phase verification remain
+last_updated: "2026-11-09T21:16:07.932Z"
 last_activity: 2026-11-09
 last_activity_desc: Phase 06.20 execution started
-state_head: 772c6e0279dec6b78ef7bfe7d5d0e5d786922bf1
+state_head: 48a24c58303b77231d872511551f48c666de1609
 progress:
   total_phases: 27
   completed_phases: 22
   total_plans: 155
-  completed_plans: 153
+  completed_plans: 154
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-09)
 ## Current Position
 
 Phase: 06.20 (ViewSet verbose_name override) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-11-09 — Phase 06.20 execution started
 
@@ -827,6 +827,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.19 P01 | 6 min | 3 tasks | 5 files |
 | Phase 06.19 P02 | 6min | 3 tasks | 4 files |
 | Phase 06.20 P01 | 5min | 2 tasks | 2 files |
+| Phase 06.20 P03 | 5min | 2 tasks | 3 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1069,6 +1070,7 @@ Recent decisions affecting current work:
 - [Phase 06.19]: Table.cv_default_sequence inserts "..." before actions when a declared Meta.sequence has none, so django-tables2 never appends its ellipsis after actions (06.19-02, WR-01)
 - [Phase 06.19]: Table.__init__ normalises the caller exclude kwarg (falsy -> (), str -> one-tuple) only inside the cv_list_actions = None branch before the order-preserving merge (06.19-02, WR-02/WR-03)
 - [Phase 06.20]: Plan 01: resolve explicit ViewSet verbose_name overrides per call; preserve lazy model defaults and construction-time lazy values, reject only blank plain strings.
+- [Phase 06.20]: Plan 03: the label docs replace the Sideways declaration and preserve its context buttons; full label contract and non-breaking changelog published.
 
 ### Pending Todos
 
@@ -1139,6 +1141,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T21:11:40.166Z
-Stopped at: Completed 06.20-01-PLAN.md; phase execution continues
+Last session: 2026-11-09T21:16:05.269Z
+Stopped at: Completed 06.20-03-PLAN.md; plan 02 and phase verification remain
 Resume file: None

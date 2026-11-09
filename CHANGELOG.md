@@ -417,6 +417,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Core `ViewSet.default_permissions` vocabulary lookup.** Permission discovery on a cold core `ViewSet` now reads
+  the resolved `ContentType` once instead of once per `Permission` row (a four-permission model went from five
+  `django_content_type` queries to one; `GuardianViewSet` already did this). The mapping, codename suffix stripping
+  (#33), the retry of an empty result (#151) and the Resource guard are unchanged.
+
 - Default polymorphic type-selector labels capitalize the first character while preserving remaining casing,
   acronyms and lazy translations (#326). Choice IDs/order, filtering, custom forms, permissions, typed-create
   redirects and Cancel behavior remain unchanged; formatting adds no label queries.

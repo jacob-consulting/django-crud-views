@@ -71,9 +71,10 @@ class NoteCreateView(CrudViewBreadcrumbMixin, CreateView):
 ```
 
 The template gets the same variables as the short label: `verbose_name`, `verbose_name_plural` (and their
-`*_translate` variants), `viewset`, and `object` on object views (`"Edit {{ object }}"`). It labels the view's own
-item only, so it has no effect on the view `cv_breadcrumb_key_object` names (`detail` by default) or on the
-viewset's container view (list, or card without a list), which have none.
+`*_translate` variants), which are the ViewSet's names — the `verbose_name` / `verbose_name_plural` override when set,
+the model's otherwise (see [Labels](nested.md#labels)) — plus `viewset`, and `object` on object views
+(`"Edit {{ object }}"`). It labels the view's own item only, so it has no effect on the view `cv_breadcrumb_key_object`
+names (`detail` by default) or on the viewset's container view (list, or card without a list), which have none.
 
 ## Reference
 

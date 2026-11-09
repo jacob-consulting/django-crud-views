@@ -195,6 +195,55 @@ class BookListView(ListViewPermissionRequired):
 Use `ChildContextButton` on the parent view to go *down* to a child, and
 `SiblingContextButton` on a child view to go *sideways* to a sibling.
 
+## Labels
+
+The nested Book ViewSet under an author in the Sideways example and a top-level ViewSet on the same `Book` model
+both default to the model's `Meta.verbose_name` / `verbose_name_plural`. Every default label that includes the object
+name — header, paragraph, full action label, message, breadcrumb container item, `LinkChildColumn` cell and
+`ChildContextButton` label — therefore uses the same names. The optional ViewSet fields `verbose_name` and
+`verbose_name_plural` rename these defaults in one place. Short labels such as `List` or `Delete` carry no object name
+and are unchanged; an explicit `label_template_code` or `cv_*_template_code` still wins.
+
+Add the two arguments to the Sideways `cv_book` declaration above, replacing it with this version. A ViewSet `name`
+registers once: declaring a second ViewSet with `name="book"` would be rejected at registration.
+
+```python
+from django.utils.translation import gettext_lazy as _
+
+from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_default
+from crud_views.lib.view import SiblingContextButton
+
+cv_book = ViewSet(
+    model=Book,
+    name="book",
+    parent=ParentViewSet(name="author"),
+    context_buttons=context_buttons_default()
+    + [
+        SiblingContextButton(key="articles", sibling_name="article", label_template_code="Articles"),
+    ],
+    verbose_name=_("title"),
+    verbose_name_plural=_("titles"),
+)
+```
+
+- Each field is resolved independently: setting only `verbose_name_plural` leaves the singular at the model's name.
+  There is no automatic plural.
+- `None` (the default) means unset. A set value is stored as given, with no stripping or normalisation. `get_meta()`
+  applies `capfirst()` and builds the `*_translate` variants from the resolved value; a `gettext_lazy` override is
+  translated per request.
+- Per-view `cv_*_template_code` (header, paragraph, action label, message), `cv_breadcrumb_container_label` and
+  `cv_breadcrumb_label_template_code` still win over the ViewSet default.
+- In the Down example, `LinkChildColumn(verbose_name=...)` sets the table column header only. The cell's link text
+  and its `Go to …` title come from the child ViewSet's `verbose_name_plural`. A `ChildContextButton` or
+  `SiblingContextButton` with its own `label_template_code` still wins; without one, it uses the target ViewSet's
+  labels.
+- Model-centric text keeps the model's names: the deletion summary of protected and cascaded objects, and the 404
+  messages for a missing parent or Resource item. Permission codenames are untouched.
+- A plain string that is empty or whitespace-only raises `ValidationError` when the ViewSet is constructed. Lazy
+  values are accepted without a blank check because they cannot be evaluated while apps load.
+- For a Resource-based ViewSet, the override beats `Resource.Meta.verbose_name` / `verbose_name_plural` — see
+  [Resource Meta](resources.md#defining-a-resource). `GuardianViewSet` and polymorphic ViewSets inherit the fields too.
+
 ## Ancestor authorization
 
 A nested URL names every ancestor: `publisher/<publisher_pk>/book/<pk>/update/` is an update of a Book *under

@@ -1565,8 +1565,13 @@ pending.
 **Plans:** 3 plans
 
 Plans:
+**Wave 1**
 - [ ] 06.22-01-PLAN.md — Declared-set helper (`_permission_key`, `_declared_permission_keys`, concrete `Meta`), `viewset.E269` cv_permission half in `check_ancestor_declarations`, `default_permissions` keyed through the shared expression; SC-1, SC-2, SC-4 (half 1) tests (wave 1, tracer)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.22-02-PLAN.md — `viewset.E269` ancestor pair half (`_requirement_source`, nearest/higher per selected ancestor, D-11/D-12 messages), Guardian/none/Resource skips, D-16 fixture test, zero-query assertion over both check functions (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.22-03-PLAN.md — `Author.Meta.permissions`, executed recipe section in `custom_form_view.md`, `action_view.md` pointer, `guardian.md` note, `nested.md` row, `### Added` changelog entry, phase gates incl. the examples system-check test (wave 3)
 
 ### Phase 7: Theme-surface stability policy

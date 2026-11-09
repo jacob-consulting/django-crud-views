@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.20"
-current_phase_name: "ViewSet verbose_name / verbose_name_plural override (#338)"
+current_phase: "06.22"
+current_phase_name: "Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (#341) (INSERTED)"
 status: executing
 stopped_at: Phase 06.22 context gathered
-last_updated: "2026-11-09T20:10:55.831Z"
+last_updated: "2026-11-09T21:57:42.109Z"
 last_activity: 2026-11-09
 last_activity_desc: "Phase 06.19 shipped as PR #340"
-state_head: 19eab4076404ef3363817dfcce2239582da7a2ea
+state_head: 60c5a9a9dd5704633d8bff0934696196eca7e569
 progress:
   total_phases: 28
   completed_phases: 22
-  total_plans: 155
+  total_plans: 158
   completed_plans: 152
 milestone_name: milestone
 ---
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-11-09)
 
 ## Current Position
 
-Phase: 06.20 (ViewSet verbose_name / verbose_name_plural override (#338)) — READY TO EXECUTE
+Phase: 06.22 (Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (#341) (INSERTED)) — READY TO EXECUTE
 Plan: Not started
 Status: Ready to execute
 Last activity: 2026-11-09 -- Phase 06.19 shipped as PR #340

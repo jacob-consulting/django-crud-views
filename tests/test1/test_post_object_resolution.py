@@ -60,15 +60,21 @@ def test_custom_form_no_object_view_posts_without_object(user_publisher_formset)
     class ContactForm(forms.Form):
         message = forms.CharField()
 
-    class NoObjectContactView(CustomFormNoObjectView):
-        cv_viewset = cv_publisher_formset
-        cv_key = "contact"
-        cv_path = "contact"
-        cv_backend_only = True
-        form_class = ContactForm
+    try:
 
-    request = RequestFactory().post("/publisher-formset/contact/", {"message": "hi"})
-    request.user = user_publisher_formset
+        class NoObjectContactView(CustomFormNoObjectView):
+            cv_viewset = cv_publisher_formset
+            cv_key = "contact"
+            cv_path = "contact"
+            cv_backend_only = True
+            form_class = ContactForm
 
-    response = NoObjectContactView.as_view()(request)
-    assert response.status_code == 302
+        request = RequestFactory().post("/publisher-formset/contact/", {"message": "hi"})
+        request.user = user_publisher_formset
+
+        response = NoObjectContactView.as_view()(request)
+        assert response.status_code == 302
+    finally:
+        # defining the class registers it on the shared ViewSet; a leaked registration breaks
+        # the registry inventory in test_cancel_permissions.py when both run on one worker
+        cv_publisher_formset.get_all_views().pop("contact", None)

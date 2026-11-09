@@ -39,6 +39,24 @@ def _guardian_actor_response(view):
     return None
 
 
+def _local_permission_name(view_or_cls) -> str:
+    """The full permission name for a Guardian view's own ``cv_permission`` key (request gates only).
+
+    Raises ImproperlyConfigured when the key has no entry in the ViewSet's permission map — typically a model
+    whose migration has not run — so no Guardian checker or shortcut ever receives ``None`` (G-06.18-2).
+    """
+    viewset = view_or_cls.cv_viewset
+    key = view_or_cls.cv_permission
+    permission = viewset.permissions.get(key)
+    if not permission:
+        raise ImproperlyConfigured(
+            f"ViewSet {viewset.name!r} view {view_or_cls.cv_key!r}: permission key {key!r} is not in the "
+            f"permission map of ViewSet {viewset.name!r} — if the model is new, run `manage.py migrate`; "
+            f"a server started before the migration may need a restart"
+        )
+    return permission
+
+
 class GuardianObjectPermissionMixin:
     """
     For single-object views (Detail, Update, Delete, Action).
@@ -55,6 +73,9 @@ class GuardianObjectPermissionMixin:
 
     Overrides has_permission() to always return True — model-level permission is
     not required; all access control is delegated to get_object().
+
+    A cv_permission key missing from the ViewSet's permission map (e.g. an unapplied migration) makes
+    get_object() raise ImproperlyConfigured and cv_has_access() return False for every actor.
     """
 
     cv_guardian_accept_global_perms: bool = False
@@ -97,7 +118,7 @@ class GuardianObjectPermissionMixin:
         obj = super().get_object(queryset=queryset)
         # nested: the gate's auth records must be on default, before the vocabulary and any shortcut (06.18)
         _check_nested_auth(self, actor=self.request.user, model=type(obj), obj=obj, provider="guardian")
-        perm = self.cv_viewset.permissions.get(self.cv_permission)
+        perm = _local_permission_name(self)
         if not self._check_object_perm(self.request.user, perm, obj):
             raise PermissionDenied
         # Secondary state gate — deny a disabled action even with object perm.
@@ -111,6 +132,8 @@ class GuardianObjectPermissionMixin:
             return False
         _check_nested_auth(cls, actor=user, model=cls.cv_viewset.model, obj=obj, provider="guardian")
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
+        if not perm:
+            return False
         if obj is not None:
             # Model-level perm must be checked without obj (ModelBackend ignores
             # obj and returns empty set when obj is passed).
@@ -141,6 +164,9 @@ class GuardianQuerysetMixin:
     accessible; queryset filtering is the sole gate. This ensures "list" and
     "parent" context action buttons are always visible regardless of whether
     an object is provided.
+
+    A cv_permission key missing from the ViewSet's permission map (e.g. an unapplied migration) makes
+    get_queryset() raise ImproperlyConfigured instead of returning any rows.
     """
 
     cv_guardian_accept_global_perms: bool = False
@@ -247,7 +273,7 @@ class GuardianQuerysetMixin:
             return qs.none()
         # nested: the filter's auth records must be on default, before the vocabulary and any shortcut (06.18)
         _check_nested_auth(self, actor=self.request.user, model=qs.model, provider="guardian")
-        perm = self.cv_viewset.permissions.get(self.cv_permission)
+        perm = _local_permission_name(self)
         return get_objects_for_user(
             self.request.user,
             perm,

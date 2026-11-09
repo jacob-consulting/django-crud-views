@@ -352,13 +352,10 @@ class GuardianParentPermissionMixin:
 
     def dispatch(self, request, *args, **kwargs):
         self._guardian_validate_child_composition()
-        if not request.user.is_authenticated:
-            return self._guardian_deny_anonymous()
-        if _guardian_inactive_actor(request.user):
-            raise PermissionDenied  # before any ancestor, None-policy, method or fragment handling (D-11)
         if self.cv_viewset.parent is not None:
-            # the shared ancestor guard (crud_views.lib.ancestors) is the only ancestor traversal; it runs before
-            # any object/queryset/state work, and CrudView.dispatch() reuses its request-local result
+            # the shared ancestor guard (crud_views.lib.ancestors) is the only ancestor traversal: static validation
+            # first, then Guardian's actor rules (anonymous/inactive, via _cv_ancestor_actor_response), then the
+            # ancestors — all before any object/queryset/state work; CrudView.dispatch() reuses its result
             response = self._cv_ancestor_guard()
             if response is not None:
                 return response
@@ -369,10 +366,16 @@ class GuardianParentPermissionMixin:
             # be gated here with the parent (that would invoke cv_action_enabled with the wrong object type).
             if not self.cv_object and not self.cv_action_enabled(request.user, _resolved_parent(self)):
                 raise PermissionDenied
+            return super().dispatch(request, *args, **kwargs)
+        # top-level: the guard does nothing, so Guardian's actor rules apply here
+        if not request.user.is_authenticated:
+            return self._guardian_deny_anonymous()
+        if _guardian_inactive_actor(request.user):
+            raise PermissionDenied  # before any None-policy, method or fragment handling (D-11)
         return super().dispatch(request, *args, **kwargs)
 
     def _cv_ancestor_actor_response(self, *, protected: bool):
-        # dispatch() already applied these rules before the guard; kept so every bridge sees the same answer
+        # nested requests: the guard calls this after static validation (D-32), in both ancestry modes
         return _guardian_actor_response(self)
 
     def _guardian_deny_anonymous(self):

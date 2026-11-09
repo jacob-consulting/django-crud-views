@@ -548,27 +548,50 @@ def test_protected_manage_group_membership_does_not_bypass_ancestry(routes, worl
 
 @pytest.fixture
 def undeclared_custom():
-    """A nested custom ActionView without its exact ancestor_policy.actions entry, plain and permission-required."""
+    """A nested custom ActionView without its exact ancestor_policy.actions entry: plain, core permission-required,
+    the shipped Guardian composition (on a GuardianViewSet) and a standalone Guardian object composition."""
     from crud_views.lib.views import ActionView, ActionViewPermissionRequired
+    from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin
+    from crud_views_guardian.lib.views import GuardianActionViewPermissionRequired
+    from crud_views_guardian.lib.viewset import GuardianViewSet
 
     def build(sfx):
         pub = ViewSet(model=Publisher, name=f"aaspub{sfx}")
-        child = ViewSet(model=Book, name=f"aasbook{sfx}", parent=ParentViewSet(name=pub.name, attribute="publisher"))
-        for key, base in (("act", ActionView), ("pact", ActionViewPermissionRequired)):
-            type(f"Undeclared{key}", (base,), {"cv_viewset": child, "cv_key": key, "cv_path": key})
-        return SimpleNamespace(pub=pub, child=child), [pub, child]
+        parent = ParentViewSet(name=pub.name, attribute="publisher")
+        child = ViewSet(model=Book, name=f"aasbook{sfx}", parent=parent)
+        gchild = GuardianViewSet(model=Book, name=f"aasgbook{sfx}", parent=parent)
+        kinds = (
+            ("act", (ActionView,), child),
+            ("pact", (ActionViewPermissionRequired,), child),
+            ("gobj", (GuardianObjectPermissionMixin, ActionViewPermissionRequired), child),
+            ("gact", (GuardianActionViewPermissionRequired,), gchild),
+        )
+        views = {}
+        for key, bases, viewset in kinds:
+            type(f"Undeclared{key}", bases, {"cv_viewset": viewset, "cv_key": key, "cv_path": key})
+            views[key] = viewset
+        return SimpleNamespace(pub=pub, views=views), [pub, child, gchild]
 
     with isolated_routes(build) as ns:
         yield ns
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("key", ["act", "pact"])
-def test_static_configuration_error_precedes_actor_admission(undeclared_custom, world, events, key):
+@pytest.mark.parametrize("actor", ["anonymous", "inactive"])
+@pytest.mark.parametrize("key", ["act", "pact", "gobj", "gact"])
+def test_static_configuration_error_precedes_actor_admission(undeclared_custom, world, events, key, actor):
     from django.core.exceptions import ImproperlyConfigured
 
     ns = undeclared_custom
-    url = _url(ns.child, key, **{f"{ns.pub.name}_pk": 987654, "pk": world.book.pk})
-    with pytest.raises(ImproperlyConfigured, match=r"ancestor_policy\.actions\["):
-        _client(None).post(url)  # anonymous: no login redirect hides the configuration error
+    url = _url(ns.views[key], key, **{f"{ns.pub.name}_pk": 987654, "pk": world.book.pk})
+    with override_settings(AUTHENTICATION_BACKENDS=[ALLOW_INACTIVE, GUARDIAN_BACKEND]):
+        client = _client(None)
+        if actor == "inactive":
+            user = _user(f"aa_static_inactive_{key}", superuser=True)
+            user.is_active = False
+            user.save()
+            client.force_login(user, backend=ALLOW_INACTIVE)
+        # no login redirect / 403 hides the configuration error
+        with pytest.raises(ImproperlyConfigured, match=r"ancestor_policy\.actions\["):
+            client.post(url)
     assert events == []

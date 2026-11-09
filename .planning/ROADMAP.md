@@ -1504,10 +1504,11 @@ only, `ViewContext.to_dict()` untouched, `parent_object` as a separate lazy key 
 level only. tabler-test findings 27 (#314) and 28 (Phase 06.20) are out of scope, as is restoring the richer demo
 texts (follow-up in tabler-test). This insertion assigns the phase; detailed planning and implementation remain
 pending.
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 06.21 to break down)
+- [ ] 06.21-01-PLAN.md — `cv_get_meta()` adds `view` and lazy `parent_object`; E2E tracer (nested create header, action message) plus unit, laziness/cost, class-label scope and Http404 tests in `tests/test1/test_snippet_context.py`
+- [ ] 06.21-02-PLAN.md — canonical `## Snippet variables` table in `docs/reference/templates.md`, links from `messages.md`/`nested.md`/`breadcrumb.md`, `### Added` changelog entry, docs guard `tests/test1/test_snippet_docs.py`
 
 ### Phase 7: Theme-surface stability policy
 

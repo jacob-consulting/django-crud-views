@@ -51,8 +51,11 @@ class Table(TableWithViewContext):
         if "sequence" not in kwargs:
             kwargs["sequence"] = self.cv_default_sequence()
         if self.cv_exclude_actions(kwargs.get("view")):
+            caller = kwargs.get("exclude") or ()  # None (django-tables2's default) or any falsy value adds nothing
+            if isinstance(caller, str):
+                caller = (caller,)  # a bare column name, never iterated character-wise
             # django-tables2 uses `exclude or Meta.exclude`, so merge both sources instead of replacing them
-            merged = (*self._meta.exclude, *kwargs.get("exclude", ()), "actions")
+            merged = (*self._meta.exclude, *caller, "actions")
             kwargs["exclude"] = tuple(dict.fromkeys(merged))
         super().__init__(*args, **kwargs)
 

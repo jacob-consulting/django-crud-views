@@ -14,7 +14,10 @@ from crud_views.lib.ancestors import (
     _concrete_opts,
     _declared_permission_keys,
     _has_model_vocabulary,
+    _requirement_source,
+    _selected_gates,
     _validate_ancestor_structure,
+    _walk_ancestors,
 )
 from crud_views.lib.button_classes import button_class_check_messages
 from crud_views.lib.conditional.group import ConditionalGroupFormMixin, resolve_conditional_empty_value
@@ -114,6 +117,54 @@ def _permission_key_messages(viewsets) -> list:
     return messages
 
 
+def _ancestor_pair_messages(viewsets) -> list:
+    """viewset.E269 for undeclared ancestor Read, Write and ``actions`` pair keys.
+    Mirror the request engine's selection: ``nearest`` on the nearest protected ancestor,
+    ``higher`` on farther selected ancestors. Guardian and Resource checked ViewSets and
+    ancestors are skipped; ``none`` ancestors are never selected. No database access.
+    """
+    messages = []
+    for viewset in viewsets:
+        if viewset.parent is None or not _has_model_vocabulary(viewset):
+            continue
+        try:
+            chain = _walk_ancestors(viewset)
+        except _AncestryError:
+            continue  # E266 owns structural errors.
+        selected = _selected_gates(viewset, chain)
+        seen = set()
+        declared = {}
+        for view_class in viewset.get_all_views().values():
+            try:
+                source, pair = _requirement_source(view_class)
+            except ImproperlyConfigured:
+                continue  # E268 owns an unclassified endpoint without an actions entry.
+            for index, side in selected.items():
+                ancestor = chain[index][1]
+                if not _has_model_vocabulary(ancestor):
+                    continue
+                if ancestor.name not in declared:
+                    declared[ancestor.name] = _declared_permission_keys(ancestor.model)
+                key = getattr(pair, side)
+                if key in declared[ancestor.name] or (key, ancestor.name) in seen:
+                    continue
+                seen.add((key, ancestor.name))
+                opts = _concrete_opts(ancestor.model)
+                messages.append(
+                    Error(
+                        f"ancestor permission key {key!r} ({source}.{side}) of ViewSet {viewset.name!r} "
+                        f"is not declared on model {opts.label}",
+                        hint=(
+                            f'declare ("{key}_{opts.model_name}", "...") in {opts.object_name}.Meta.permissions, '
+                            f"or change the pair on ViewSet {viewset.name!r}"
+                        ),
+                        obj=viewset,
+                        id="viewset.E269",
+                    )
+                )
+    return messages
+
+
 def _url_configuration_loaded() -> bool:
     """The readiness barrier of the completion-dependent ancestor checks.
 
@@ -148,8 +199,8 @@ def check_ancestor_declarations(app_configs=None, **kwargs):
     and missing custom-endpoint entries depend on a completed registry: they are checked only after the
     configured URLconf (and everything it includes) has been imported; otherwise they are deferred. Runtime
     guards enforce all of them on the actual request regardless.
-    Undeclared ``cv_permission`` keys (viewset.E269) are checked against the model's declared
-    permissions in the same completed-registry pass.
+    Undeclared ``cv_permission`` and ancestor pair keys (viewset.E269) are checked against the
+    respective model's declared permissions in the same completed-registry pass.
     """
     completed = _url_configuration_loaded()
     with _REGISTRY_LOCK:
@@ -158,6 +209,7 @@ def check_ancestor_declarations(app_configs=None, **kwargs):
     if completed:
         messages += _ancestor_action_messages(viewsets)
         messages += _permission_key_messages(viewsets)
+        messages += _ancestor_pair_messages(viewsets)
     return messages
 
 

@@ -342,22 +342,35 @@ def _validate_action_declarations(viewset: ViewSet) -> None:
             raise ImproperlyConfigured(message)
 
 
+def _requirement_source(view_class: type[CrudView]) -> tuple[str, AncestorPermissions]:
+    """The D-11 source label and the pair applied by ``_operation_requirements``.
+    An exact entry is ``actions[<key>]``; family pairs come from ``ancestor_policy.read`` /
+    ``ancestor_policy.write`` or the inherited global CRUD_VIEWS_ANCESTOR_*_PERMISSIONS setting.
+    An unclassified endpoint without its entry raises ``ImproperlyConfigured``.
+    """
+    viewset = view_class.cv_viewset
+    policy = viewset.ancestor_policy
+    key = _registered_key(view_class)
+    if key in policy.actions:
+        return f"actions[{key!r}]", policy.actions[key]
+    family = _operation_family(view_class)
+    if family in (_READ, _WRITE):
+        explicit = getattr(policy, family)
+        if explicit is not None:
+            return f"ancestor_policy.{family}", explicit
+        return f"global CRUD_VIEWS_ANCESTOR_{family.upper()}_PERMISSIONS", _effective_pair(viewset, family)
+    raise ImproperlyConfigured(_missing_action_message(viewset, key, view_class))
+
+
 def _operation_requirements(view_class: type[CrudView]) -> AncestorPermissions:
     """The permission pair required of ancestors for a nested request to ``view_class``.
 
     The exact ``actions`` entry for its registered key wins; otherwise the family's pair (the ViewSet's
     ``read``/``write`` override, else the global default). An unclassified endpoint without an entry is a
     configuration error in every cascade mode, even with all-none ancestry.
+    The source label lives in ``_requirement_source``, shared with viewset.E269.
     """
-    viewset = view_class.cv_viewset
-    policy = viewset.ancestor_policy
-    key = _registered_key(view_class)
-    if key in policy.actions:
-        return policy.actions[key]
-    family = _operation_family(view_class)
-    if family in (_READ, _WRITE):
-        return _effective_pair(viewset, family)
-    raise ImproperlyConfigured(_missing_action_message(viewset, key, view_class))
+    return _requirement_source(view_class)[1]
 
 
 def _effective_pair(viewset: ViewSet, family: str) -> AncestorPermissions:

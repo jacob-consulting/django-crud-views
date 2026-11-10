@@ -129,15 +129,20 @@
       "status": "complete"
     },
     {
+      "number": "06.24",
+      "name": "Opt-in compact formsets",
+      "status": "pending"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step (plan phase 7)",
-    "reason": "Phase 38 of 38 — needs a plan"
+    "command": "$gsd-progress",
+    "label": "Show progress",
+    "reason": "Unsure of state — showing progress"
   },
-  "updated_at": "2026-11-10T12:22:20.898Z"
+  "updated_at": "2026-11-10T16:37:04.211Z"
 }

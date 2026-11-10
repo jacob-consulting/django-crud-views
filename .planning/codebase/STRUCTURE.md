@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
-last_mapped_at: 2026-11-09
+last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
+last_mapped_at: 2026-11-10
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## Directory Layout
 
@@ -50,6 +50,7 @@ django-crud-views/
 - Contains: Base mixin, metaclass, context, action/menu grouping, buttons, card configuration, label modes, variants and visibility resolution.
 - Key files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/action_menu.py`, `src/crud_views/lib/view/buttons.py`.
 - Form Cancel URL resolution lives in `src/crud_views/lib/view/base.py`; the template-tag API is in `src/crud_views/templatetags/crud_views.py`, and button data/rendering is in `src/crud_views/lib/view/button_data.py` plus `src/crud_views/templates/crud_views/tags/button/form.html`.
+- Snippet metadata is assembled by `CrudView.cv_get_meta()` in `src/crud_views/lib/view/base.py`; child views expose lazy immediate `parent_object`, reusing ancestor-guard state after dispatch and otherwise resolving through the parent URL kwarg. Action/breadcrumb labels, context-button labels, and `LinkChildColumn` templates use separate contexts; see `docs/reference/templates.md`.
 
 **`src/crud_views/lib/ancestors.py`, `ancestor_policy.py`, `ancestor_db.py`:**
 - Purpose: Ancestor authorization for nested ViewSets (engine, policy values, default-database boundary).
@@ -161,6 +162,7 @@ django-crud-views/
 - `src/crud_views/lib/resource.py`: Non-ORM row interface.
 - `src/crud_views/lib/deletion.py`: Bounded delete preview and protection collection.
 - `src/crud_views/lib/table/table.py`: `Table` base (view context, `actions` column, `Meta.sequence`-aware default ordering).
+- `src/crud_views/lib/view/base.py`: `cv_get_meta()` creates snippet metadata; `cv_get_parent_object()` returns the immediate parent using the request's resolved ancestor when available.
 
 **Presentation and Browser Behavior:**
 - `src/crud_views/templates/crud_views/`: Core theme templates and reusable partials.
@@ -244,4 +246,4 @@ django-crud-views/
 
 ---
 
-*Structure analysis: 2026-11-09*
+*Structure analysis: 2026-11-10*

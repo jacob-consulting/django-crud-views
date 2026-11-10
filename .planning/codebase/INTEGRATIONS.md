@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-09
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
+last_mapped_at: 2026-11-10
+last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## APIs & External Services
 
@@ -107,4 +107,4 @@ last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
 
 ---
 
-*Integration audit: 2026-11-09*
+*Integration audit: 2026-11-10*

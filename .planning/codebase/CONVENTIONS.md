@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
-last_mapped_at: 2026-11-09
+last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
+last_mapped_at: 2026-11-10
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## Maintainability Constraint
 
@@ -91,6 +91,10 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 - Keep rendered empty values exact: None/empty strings differ from zero, False, spaces and collections. Preserve escaping, newline behavior and custom-template ownership.
 - Published examples use unique HTML recipe markers beside fenced snippets, enabling tests to execute the actual documentation (`tests/test1/test_object_detail_value_docs.py`). Format Markdown Python fences with the repository-wide Ruff command.
 - Before 1.0, pair a `### Breaking` changelog entry with `docs/migrating-1.0.md`; document restoration/opt-out recipes for changed defaults (`CLAUDE.md`).
+- Instance snippets receive the `cv` object and a deliberately small, documented context (`view`, `object`, model labels, and `viewset`; child views additionally receive lazy `parent_object`). Keep the metadata key set exact; do not add request/user/ancestor state to this published context (`src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/base.py`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`).
+- When publishing snippet variables, keep `docs/reference/templates.md#snippet-variables` canonical and link other reference pages to it. Tests execute snippet behavior and pin the exact key sets as well as lazy parent resolution and absent-key behavior (`tests/test1/test_snippet_docs.py`, `tests/test1/test_snippet_context.py`).
+- Table behavior should preserve explicit django-tables2 customization: default `actions` placement is last only absent a declared sequence, explicit constructor sequence takes precedence, and `Meta.exclude` can remove it (`src/crud_views/lib/table/table.py`, `tests/test1/test_table_meta.py`).
+- Button data is normalized to an explicit location-specific contract; preserve exact key sets and each leaf's tag/URL/submit-target semantics. Use `tests/test1/test_button_data.py` and golden/render tests when changing button fields or markup.
 
 ## Module Design
 
@@ -100,4 +104,4 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 
 ---
 
-*Convention analysis: 2026-11-09*
+*Convention analysis: 2026-11-10*

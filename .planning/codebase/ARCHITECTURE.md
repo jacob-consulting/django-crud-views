@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
-last_mapped_at: 2026-11-09
+last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
+last_mapped_at: 2026-11-10
 ---
-<!-- refreshed: 2026-11-09 -->
+<!-- refreshed: 2026-11-10 -->
 
 # Architecture
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## System Overview
 
@@ -69,6 +69,7 @@ last_mapped_at: 2026-11-09
 - Workflow transitions use the shared form-frame and themeable presentation contracts; the documented opt-in page gate uses explicit transition rules and is covered by request tests (`src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/templates/crud_views_workflow/`, `tests/test1/`).
 - Nested requests pass through one ancestor-authorization guard (`_authorize_ancestors`) before any endpoint work: it resolves each ancestor through its own ViewSet queryset, applies per-ancestor permission gates (provider `model`, `guardian` or `none`; full cascade or nearest-only) and stores the resolved chain on the view instance (`src/crud_views/lib/ancestors.py`). Top-level requests do no ancestor work.
 - `CrudViewMetaClass` performs registration during class creation; consumers include the ViewSet's `urlpatterns` from their Django URL configuration.
+- `CrudView.cv_get_meta()` adds `view` and, only for child ViewSets, a `SimpleLazyObject` for immediate `parent_object`; resolving it delegates to `cv_get_parent_object()`, which reuses the ancestor guard's resolved parent when available and otherwise looks up the parent from the URL kwarg (`src/crud_views/lib/view/base.py`).
 - Concrete request handlers combine the package's `CrudView` mixin with Django generic CBVs; permission-required classes add `CrudViewPermissionRequiredMixin`.
 - The core theme is implemented in Django templates and template tags. App-contributed behavior can add static assets through `register_assets()` from an app's `AppConfig.ready()`.
 - Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
@@ -127,6 +128,12 @@ last_mapped_at: 2026-11-09
 3. The concrete CBV dispatches the request. `CrudView` supplies sibling URL/context behavior, model defaults and optional permission-aware action state (`src/crud_views/lib/view/base.py`).
 4. Object querysets are obtained from the ViewSet and filtered by parent attributes for nested ViewSets; Resource-based views instead use resource-specific mixins and row-provider methods (`src/crud_views/lib/resource.py`).
 5. The CBV renders a full page or configured content partial; template tags resolve the view context and render theme components (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/`).
+
+### Snippet Metadata and Parent Lookup
+
+1. View-owned header, paragraph, message and list/card filter-header snippets receive ViewSet metadata plus `object` when present and `view` (`src/crud_views/lib/view/base.py`, `docs/reference/templates.md`).
+2. Child snippets receive lazy immediate `parent_object`; unused values trigger no lookup. Dispatched requests reuse ancestor-guard state; calls without that state resolve using the parent URL kwarg and `get_object_or_404`.
+3. Action and breadcrumb labels omit `view` and `parent_object`; context-button labels use button data. `LinkChildColumn` templates add child ViewSet variables to the host list context and do not create `parent_object`, though they can inherit it (`docs/reference/templates.md`).
 
 ### Nested Request Path (ancestor authorization)
 
@@ -270,4 +277,4 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 
 ---
 
-*Architecture analysis: 2026-11-09*
+*Architecture analysis: 2026-11-10*

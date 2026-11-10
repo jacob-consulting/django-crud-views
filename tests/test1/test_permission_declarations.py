@@ -5,15 +5,19 @@ from __future__ import annotations
 import pytest
 from django.core.checks import run_checks
 from django.db import models
+from django.test import override_settings
 from django.test.utils import isolate_apps
 
 import tests.test1.project.urls  # noqa: F401 - registers shared ViewSets before any registry snapshot
 from crud_views.checks import check_ancestor_declarations
 from crud_views.lib.ancestors import _declared_permission_keys, _permission_key
 from crud_views.lib.viewset import ViewSet
+from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1 import test_ancestor_operations as _ops
 from tests.test1.app.models import Book, Car, Publisher, PublisherProxy, Royalty, WorkflowRequest
 from tests.test1.app.views import cv_book
+from tests.test1.test_resource_viewset import T5Item, check_error_ids
 
 # Reuse the registry-restoring and database-blocking fixtures without collecting the source module's tests.
 registry, sfx, no_db = _ops.registry, _ops.sfx, _ops.no_db
@@ -128,3 +132,74 @@ def test_declared_keys_follow_trimmed_and_custom_meta(no_db):
 def test_runtime_map_keys_equal_the_declared_keys():
     assert set(cv_book.permissions) == _declared_permission_keys(Book)
     assert cv_book.permissions["view"] == "app.view_book"
+
+
+def test_trimmed_default_permissions_report_the_standard_message(registry, sfx, no_db):
+    with isolate_apps("tests.test1.app"):
+
+        class Ledger(models.Model):
+            class Meta:
+                app_label = "app"
+                default_permissions = ("add", "change", "delete")
+
+        vs = ViewSet(model=Ledger, name=f"pd_ledger_{sfx}")
+        _view(_core("ListViewPermissionRequired"), vs)
+        messages = _e269(vs)
+        assert len(messages) == 1
+        assert messages[0].msg == "cv_permission 'view' of view 'list' is not declared on model app.Ledger"
+        assert messages[0].hint == (
+            'add ("view_ledger", "...") to Ledger.Meta.permissions, or use the non-PermissionRequired view variant'
+        )
+
+
+def test_proxy_viewset_hint_names_the_concrete_model(registry, sfx, no_db):
+    vs = ViewSet(model=PublisherProxy, name=f"pd_proxy_{sfx}")
+    _view(_core("ActionViewPermissionRequired"), vs, key="audit", cv_permission="audit")
+    messages = _e269(vs)
+    assert len(messages) == 1
+    assert messages[0].msg.endswith("is not declared on model app.Publisher")
+    assert 'add ("audit_publisher", "...") to Publisher.Meta.permissions' in messages[0].hint
+
+
+def test_unset_cv_permission_is_left_to_e202(registry, sfx, no_db):
+    vs = ViewSet(model=Publisher, name=f"pd_none_{sfx}")
+    _view(_core("ActionViewPermissionRequired"), vs, key="x", cv_permission=None)
+    assert _e269(vs) == []
+    assert "viewset.E202" in check_error_ids(vs)
+
+
+def test_resource_viewset_is_left_to_e260(registry, sfx, no_db):
+    vs = ViewSet(model=T5Item, name=f"pd_resource_{sfx}", resource_permissions=None)
+    _view(_core("ListViewPermissionRequired"), vs)
+    assert "viewset.E260" in check_error_ids(vs)
+    assert _e269(vs) == []
+
+
+@pytest.mark.django_db
+def test_guardian_viewset_is_skipped_and_still_fails_at_request_time(registry, sfx):
+    gvs = GuardianViewSet(model=Publisher, name=f"pd_guardian_{sfx}")
+    List = type(
+        "List",
+        (GuardianListViewPermissionRequired,),
+        {
+            "cv_viewset": gvs,
+            "cv_list_actions": [],
+            "cv_context_actions": [],
+            "cv_permission": "run",
+            "__module__": __name__,
+        },
+    )
+    assert _e269(gvs) == []
+    # Pins the core assert; Guardian request gates instead raise ImproperlyConfigured in _local_permission_name.
+    with pytest.raises(AssertionError, match="permission run not found"):
+        _ = List().permission_required
+
+
+def test_undeclared_cv_permission_is_deferred_until_the_urlconf_is_loaded(registry, sfx, no_db):
+    vs = ViewSet(model=Publisher, name=f"pd_deferred_{sfx}")
+    _view(_core("ActionViewPermissionRequired"), vs, key="run", cv_permission="run")
+    with override_settings(ROOT_URLCONF=None):
+        assert _e269(vs) == []
+    messages = _e269(vs)
+    assert len(messages) == 1
+    assert "'run'" in messages[0].msg

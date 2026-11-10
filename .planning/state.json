@@ -116,11 +116,16 @@
     {
       "number": "06.20",
       "name": "ViewSet verbose_name override that every default label follows",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "number": "06.21",
       "name": "Snippet context exposes view and parent_object",
+      "status": "complete"
+    },
+    {
+      "number": "06.22",
+      "name": "Custom permission recipe and startup checks",
       "status": "complete"
     },
     {
@@ -130,9 +135,9 @@
     }
   ],
   "next": {
-    "command": "/gsd-progress --next",
-    "label": "Advance to the next step (plan phase 06.20)",
-    "reason": "Phase 34 of 36 — needs a plan"
+    "command": "$gsd-progress --next",
+    "label": "Advance to Phase 7",
+    "reason": "Phases 06.20, 06.21 and 06.22 complete"
   },
-  "updated_at": "2026-11-10T09:38:54.597Z"
+  "updated_at": "2026-11-10T05:06:03.075Z"
 }

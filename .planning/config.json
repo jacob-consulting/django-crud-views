@@ -131,7 +131,7 @@
       }
     },
     "default_reviewers": [
-      "fable-review",
+      "astra-review",
       "grok-review",
       "gemini-review"
     ],

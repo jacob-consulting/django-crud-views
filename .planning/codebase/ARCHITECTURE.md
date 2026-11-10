@@ -275,6 +275,21 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 **Validation:** Pydantic validates ViewSet, Resource and object-detail configuration; Django forms and startup system checks validate request data and package configuration (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/resource.py`, `src/crud_views_object_detail/lib/config.py`, `src/crud_views/checks.py`).
 **Authentication:** Nested requests additionally authorize every protected ancestor (`src/crud_views/lib/ancestors.py`). Core permission-required CBVs integrate Django's permission mixins; Guardian adds object-level permission checks in `src/crud_views_guardian/lib/`.
 
+## ViewSet Label Metadata (Phase 06.20)
+
+- `ViewSet.verbose_name` and `verbose_name_plural` are independent optional `LazyStr` fields. `get_meta()` resolves explicit overrides per call under the active language; `None` preserves the model/Resource metadata path, including lazy values (`src/crud_views/lib/viewset/__init__.py`).
+- `check_verbose_name()` rejects blank plain strings without stripping stored values or evaluating lazy objects at construction. There is no automatic pluralization or ancestor fallback.
+- Existing `CrudView.cv_get_meta()`, snippets, breadcrumbs, child-column and button consumers receive the resolved names. Explicit labels keep precedence; model-centric deletion/404 text and permission identity are unchanged (`src/crud_views/lib/view/base.py`, `docs/reference/nested.md#labels`). No new queries or consumer state are added.
+
+
+## Permission declaration diagnostics (Phase 06.22)
+
+- `check_ancestor_declarations` first completes the configured URL resolver tree, snapshots the ViewSet registry, and runs completion-dependent checks only when that barrier succeeds (`src/crud_views/checks.py`).
+- `_permission_key_messages` checks only registered core permission-required views. `_ancestor_pair_messages` walks ancestry, selects protected gates, and checks only pairs consumed by registered endpoints. Both emit `viewset.E269` without querying the database.
+- `_concrete_opts`, `_declared_permission_keys`, and `_permission_key` mirror concrete-model runtime vocabulary, including proxy handling and exact terminal suffix removal (`src/crud_views/lib/ancestors.py`).
+- `_requirement_source` returns the pair and diagnostic source; `_operation_requirements` delegates to it. Action overrides, explicit family overrides and global defaults retain their established order. Pair diagnostics deduplicate by key and ancestor.
+- Guardian/Resource exclusions, E202/E260/E266/E268 ownership, and runtime authorization backstops remain separate. Startup validation establishes declared vocabulary, not persisted auth rows or user grants.
+
 ---
 
 *Architecture analysis: 2026-11-10*

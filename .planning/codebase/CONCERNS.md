@@ -21,7 +21,7 @@ last_mapped_at: 2026-11-10
 - Fix approach: implement ViewSet/URL inspection or remove it.
 
 **Large central modules concentrate unrelated behavior:**
-- Files: `src/crud_views/lib/view/base.py` (1224 lines), `src/crud_views/templatetags/crud_views.py` (667), `src/crud_views/lib/view/buttons.py` (599), `src/crud_views/lib/ancestors.py` (559), `src/crud_views/lib/formsets/formsets.py` (544), `src/crud_views/lib/viewset/__init__.py` (516)
+- Files: `src/crud_views/lib/view/base.py` (1224 lines), `src/crud_views/templatetags/crud_views.py` (667), `src/crud_views/lib/view/buttons.py` (599), `src/crud_views/lib/ancestors.py` (559), `src/crud_views/lib/formsets/formsets.py` (544), `src/crud_views/lib/viewset/__init__.py` (534)
 - Impact: shared changes have broad regression surfaces; `base.py` has grown since the previous map.
 - Fix approach: extract cohesive subsystems behind current public APIs only when a concrete maintenance need justifies it.
 
@@ -145,6 +145,20 @@ None independently confirmed.
 - Phase 06.18 ancestor authorization for nested ViewSets shipped with a dedicated `tests/test1/test_ancestor_*.py` suite (databases, guardian, costs, redirect, migration, docs).
 - Earlier resolved: object-detail accordion/tab lifecycle (Phase 06.17), protected delete labels not linked (`src/crud_views/lib/views/delete.py`), workflow opt-in permission request-level tests (`tests/test1/test_workflow_permissions.py`).
 - Phase 06.21 review warnings WR-01 and WR-02 are fixed: template-context documentation now reflects button/child-column contexts, and `tests/test1/test_snippet_docs.py` checks runtime metadata keys. The four Info findings IN-01 through IN-04 remain open and are recorded above.
+
+## ViewSet Label Boundaries (Phase 06.20)
+
+- Lazy overrides deliberately receive no construction-time blank check: evaluating them during app loading can raise `AppRegistryNotReady`. Plain blank strings fail validation; padded strings remain unchanged (`src/crud_views/lib/viewset/__init__.py`, `tests/test1/test_viewset_verbose_name.py`).
+- Model-centric deletion/404 text keeps model names; short action labels contain no object name. These are documented scope boundaries (`docs/reference/nested.md#labels`).
+- Canonical verification passes 15/15 truths; security reports nine closed threats. No required human check remains. Responsive long-label/browser checks are optional downstream work; the supported-version matrix remains a CI condition (`.planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-VERIFICATION.md`).
+
+
+## Permission declaration boundaries (Phase 06.22)
+
+- Undeclared core permission keys now fail startup with `viewset.E269`; this closes the previous delayed-discovery gap for `cv_permission` and effective ancestor pairs (`src/crud_views/checks.py`).
+- Checks deliberately validate metadata only. They cannot establish that migrations created auth rows or that users hold grants; applications must migrate and grant permissions as documented (`docs/reference/custom_form_view.md`).
+- Guardian/Resource paths are excluded, and checks defer when URLconf completion fails. Existing request-time diagnostics remain necessary; exclusions are tested rather than treated as complete startup coverage (`tests/test1/test_permission_declarations.py`).
+- Shared helpers add no startup database queries; runtime permission-map query behavior is preserved (`tests/test1/test_viewset.py`, `tests/test1/test_permission_declarations.py`). Existing concerns above remain outside this phase's scope.
 
 ---
 

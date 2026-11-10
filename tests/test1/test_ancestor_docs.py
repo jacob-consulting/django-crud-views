@@ -39,7 +39,7 @@ from pydantic import ValidationError
 import tests.test1.project.urls  # noqa: F401 - registers the shared app ViewSets before any registry snapshot
 from crud_views.lib import check as check_module
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, AncestorPermissions, AncestorPolicy, ViewSet
-from tests.test1.app.models import Book, BookNote, Publisher
+from tests.test1.app.models import Author, Book, BookNote, Publisher
 from tests.test1.test_label_mode_docs import CHANGELOG_MD, DOCS, FENCE, MIGRATING_MD, _anchors, _flat, _section
 
 NESTED_MD = DOCS / "reference" / "nested.md"
@@ -47,6 +47,8 @@ SETTINGS_MD = DOCS / "reference" / "settings.md"
 RESOURCES_MD = DOCS / "reference" / "resources.md"
 LIFECYCLE_MD = DOCS / "reference" / "request_lifecycle.md"
 GUARDIAN_MD = DOCS / "reference" / "guardian.md"
+CUSTOM_FORM_MD = DOCS / "reference" / "custom_form_view.md"
+ACTION_VIEW_MD = DOCS / "reference" / "action_view.md"
 
 CANONICAL = (NESTED_MD, "### Example: permissions for a nested Book ViewSet")
 SETTINGS_EXAMPLE = (SETTINGS_MD, "## Ancestor authorization")
@@ -55,6 +57,7 @@ DATABASE_REFUSAL = (LIFECYCLE_MD, "#### Nested ViewSets: instance-hinted write r
 PROVIDER_MIGRATION = (GUARDIAN_MD, "### Core or Guardian parent")
 FALLBACK = (GUARDIAN_MD, "### Ancestor fallback and view fallback")
 MIGRATED_ACTION = (MIGRATING_MD, "#### Custom endpoints need an exact entry")
+CUSTOM_PERMISSION = (CUSTOM_FORM_MD, "### Require it on the view")  # #341: execute the published permission recipe
 TUTORIALS = [DOCS / "getting_started" / name for name in ("tutorial-5-filters-permissions.md", "tutorial-6-books.md")]
 
 # every executable subsection: (page, exact heading); each heading and its single fence occur once
@@ -66,6 +69,7 @@ INVENTORY = [
     PROVIDER_MIGRATION,
     FALLBACK,
     MIGRATED_ACTION,
+    CUSTOM_PERMISSION,
 ]
 
 REFUSED = r"nested ViewSets support only the 'default' database"
@@ -124,7 +128,7 @@ def _published_registry(monkeypatch):
     package = _module("myapp", __path__=[])
     for module in (
         package,
-        _module("myapp.models", Book=Book, BookNote=BookNote, Publisher=Publisher),
+        _module("myapp.models", Author=Author, Book=Book, BookNote=BookNote, Publisher=Publisher),
         _module("myapp.storage", list_files=lambda: list(files)),
         urls,
     ):
@@ -907,3 +911,55 @@ def test_both_release_surfaces_explain_the_nested_selector_refusal():
         assert "do not" in surface and "forc" in surface and "hint" in surface
     # the behavior is proven once, by the executed router example of the linked lifecycle section
     assert "class BookShardRouter" in _fence(*DATABASE_REFUSAL)
+
+
+# ── custom permission recipe (phase 06.22, #341) ─────────────────────────────
+
+
+def test_published_permission_recipe_passes_the_startup_check(published):
+    from crud_views.checks import check_ancestor_declarations
+    from crud_views.lib.ancestors import _declared_permission_keys
+
+    ns = published.run(*CUSTOM_PERMISSION)
+    assert [m for m in check_ancestor_declarations() if m.id == "viewset.E269"] == []
+    assert ns["AuthorContactView"].cv_permission == "contact"
+    assert ns["cv_author"].name == "author"
+    assert "contact" in _declared_permission_keys(Author)
+    assert Author._meta.ordering == ("order",)
+    assert ("contact_author", "Can contact an author") in Author._meta.permissions
+    assert '("contact_author", "Can contact an author")' in _fence(
+        CUSTOM_FORM_MD, "### Declare the permission on the model"
+    )
+
+
+def test_misspelled_recipe_key_fails_the_startup_check(published, monkeypatch):
+    from crud_views.checks import check_ancestor_declarations
+
+    ns = published.run(*CUSTOM_PERMISSION)
+    monkeypatch.setattr(ns["AuthorContactView"], "cv_permission", "contct")
+    ours = [m for m in check_ancestor_declarations() if m.id == "viewset.E269"]
+    assert len(ours) == 1
+    assert ours[0].obj.name == "author"
+    assert ours[0].msg == "cv_permission 'contct' of view 'contact' is not declared on model app.Author"
+    assert 'add ("contct_author", "...") to Author.Meta.permissions' in ours[0].hint
+
+
+def test_custom_permission_recipe_is_cross_linked():
+    assert "a-permission-of-its-own" in _anchors(CUSTOM_FORM_MD)
+    assert "custom_form_view.md#a-permission-of-its-own" in _section(ACTION_VIEW_MD.read_text(), "## View Classes")
+    guardian = _flat(_section(GUARDIAN_MD.read_text(), "### Configured content-type defaults"))
+    for term in ("viewset.E269", "GuardianViewSet", "skips", "request time", "ImproperlyConfigured"):
+        assert term in guardian
+    assert "permission-key-diagnostics" in _anchors(GUARDIAN_MD)
+    nested = _section(NESTED_MD.read_text(), "### Configuration errors")
+    assert "viewset.E269" in _flat(nested)
+    assert "both core ViewSets" in _flat(nested)
+    assert "| a required key missing from the permission map of a checked ancestor |" in nested
+    assert "cv_permission" in _section(CUSTOM_FORM_MD.read_text(), "## Configuration")
+    assert "example-permissions-for-a-nested-book-viewset" in _anchors(NESTED_MD)
+    assert "configured-content-type-defaults" in _anchors(GUARDIAN_MD)
+    unreleased = _section(CHANGELOG_MD.read_text(), "## Unreleased")
+    added = _section(unreleased, "### Added")
+    assert "issues/341" in added
+    assert "docs/reference/custom_form_view.md#a-permission-of-its-own" in added
+    assert "issues/341" not in _section(unreleased, "### Breaking")

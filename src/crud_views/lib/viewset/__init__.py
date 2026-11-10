@@ -14,8 +14,9 @@ from pydantic import BaseModel, Field, PrivateAttr, field_validator, model_valid
 
 from crud_views.lib.ancestor_policy import AncestorPermissions as AncestorPermissions
 from crud_views.lib.ancestor_policy import AncestorPolicy
-from crud_views.lib.ancestors import _validate_ancestor_structure, _walk_ancestors
+from crud_views.lib.ancestors import _permission_key, _validate_ancestor_structure, _walk_ancestors
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ViewSetNotFoundError, cv_raise
+from crud_views.lib.lazy import LazyStr
 from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
 
@@ -80,6 +81,9 @@ class ViewSet(BaseModel):
     parent: ParentViewSet | None = None
     ordering: str | None = None
     icon_header: str | None = None
+    # label override (#338): replaces model/Resource _meta names in get_meta(); None: model names
+    verbose_name: LazyStr | None = None
+    verbose_name_plural: LazyStr | None = None
     manage_view_class: str | None = None
     extends: str | None = None  # base template all views in this viewset extend
     inaccessible_actions: Literal["hide", "disable"] | None = None  # None: CRUD_VIEWS_INACCESSIBLE_ACTIONS
@@ -128,6 +132,15 @@ class ViewSet(BaseModel):
         """Form kinds are finite (Phase 6): the keys must be FORM_KINDS, the values label modes."""
         if value is not None and not cv_is_form_label_mode_map(value):
             raise ValueError(f"must map form kinds {sorted(FORM_KINDS)} to one of {sorted(LABEL_MODES)}, got {value!r}")
+        return value
+
+    @field_validator("verbose_name", "verbose_name_plural")
+    @classmethod
+    def check_verbose_name(cls, value):
+        """A plain str must not be blank (#338). Lazy values are not evaluated: str() of a gettext_lazy raises
+        AppRegistryNotReady while apps load, and ViewSets are built at import time."""
+        if isinstance(value, str) and not value.strip():
+            raise ValueError(f"must not be blank, got {value!r}")
         return value
 
     def _validate_ancestor_policy(self) -> None:
@@ -475,11 +488,9 @@ class ViewSet(BaseModel):
         content_type = ContentType.objects.get_for_model(model)
         permissions = OrderedDict()
         for permission in Permission.objects.filter(content_type=content_type):
-            # Django codenames are "<action>_<model>"; the model name is the suffix. Strip it
-            # as a suffix (not split on the first match) so a custom permission whose codename
-            # contains "_<model>" before its end parses fully, e.g. "change_book_status" stays
-            # "change_book_status" instead of being truncated to "change" for model "book".
-            action = permission.codename.removesuffix(f"_{content_type.model}")
+            # Strip the exact terminal "_<model>" suffix through the same expression as
+            # viewset.E269's static declared set.
+            action = _permission_key(permission.codename, content_type.model)
             permissions[action] = f"{content_type.app_label}.{permission.codename}"
         if permissions:
             self._default_permissions = permissions
@@ -498,13 +509,18 @@ class ViewSet(BaseModel):
     def get_meta(self, context: ViewContext) -> dict:
         """
         Meta data plus X for template context.
+        ViewSet verbose_name* overrides win when set; resolve per call so lazy values follow the active language.
         """
         meta = self.model._meta
+        verbose_name = str(self.verbose_name) if self.verbose_name is not None else meta.verbose_name
+        verbose_name_plural = (
+            str(self.verbose_name_plural) if self.verbose_name_plural is not None else meta.verbose_name_plural
+        )
         data = {
             "viewset": self,
             "cv": self,
-            "verbose_name": capfirst(meta.verbose_name),
-            "verbose_name_plural": capfirst(meta.verbose_name_plural),
+            "verbose_name": capfirst(verbose_name),
+            "verbose_name_plural": capfirst(verbose_name_plural),
         }
         data.update(
             {

@@ -80,6 +80,17 @@ last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
 **Production:**
 - A host Django project; no database or host mandated. Demo runs on Render free plan with Gunicorn, WhiteNoise, ephemeral SQLite (`render.yaml`)
 
+## Label Configuration (Phase 06.20)
+
+- ViewSet display names reuse existing `LazyStr` and Pydantic field validation (`src/crud_views/lib/lazy.py`, `src/crud_views/lib/viewset/__init__.py`). No dependency, global setting, template or browser-runtime changes.
+- Runtime ranges and supported CI matrices are unchanged. Shipping checks used the existing Python 3.12 environment; supported-version coverage remains a CI check (`noxfile.py`).
+
+
+## Phase 06.22 refresh
+
+- Dependency/runtime/build configuration is unchanged since the preceding map (`pyproject.toml`, `package.json`, `noxfile.py`).
+- Permission declaration checks use existing Django model metadata and `get_permission_codename`; no new dependency, database service or setting is introduced (`src/crud_views/lib/ancestors.py`, `src/crud_views/checks.py`).
+
 ---
 
 *Stack analysis: 2026-11-10*

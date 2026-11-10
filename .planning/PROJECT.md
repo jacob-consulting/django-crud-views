@@ -82,6 +82,10 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ **6.19** `Table` honours a declared `Meta.sequence` instead of overriding it; tables without one keep `actions` last. The actions column is configured through django-tables2 `Meta` (`sequence`, `exclude = ("actions",)`), documented in the list view reference and FAQ (#337) — Phase 06.19; re-scoped to a one-line fix after the convenience design (automatic `actions` append, `cv_list_actions = None` removal) was reverted, verification 9/9, full suite 12197 passed.
 - ✓ **6.21** Snippets a view renders for its own page (header, paragraph, list/card filter header, success and error message) can use `{{ view }}` and, on a child ViewSet, a lazy `{{ parent_object }}` added by `CrudView.cv_get_meta()`; default snippets render unchanged. Documented once in `docs/reference/templates.md` § Snippet variables and linked from messages, nested and breadcrumb pages (#339) — Phase 06.21; verification 15/15, full suite 12216 passed.
 
+- ✓ **6.22** Database-free `viewset.E269` checks for core view and ancestor permission keys, with an executed `Meta.permissions` recipe; concrete-model vocabulary and request-time authorization preserved — Phase 06.22; verification 22/22, security 9/9, deep review clean.
+
+- ✓ **6.20** Independent optional ViewSet display names, lazy translation at metadata resolution, plain blank validation and default-label propagation — Phase 06.20; canonical 15/15, clean deep review, security 9/9, delivered-message and breadcrumb HTML checks.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -131,6 +135,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Resolve optional singular/plural display names only in get_meta; preserve unset metadata and explicit consumer overrides | One bounded opt-in seam reaches existing label consumers without new state, queries or permission changes | Validated (Phase 06.20; 15/15) |
 | Keep raw values separate from choice display metadata; resolve help text without mutating shared config | Preserve existing traversal/query costs and custom-template ownership; stock leaves render exact empty text and unlocalized choice fallbacks | Validated (Phase 06.16; canonical21/21) |
 | Empty card insertion blocks plus existing ViewSet configuration | Preserve default rendering and proven navigation; themes expose their own overridden blocks and applications translate recipe captions | Validated (Phase 06.14) |
 
@@ -173,7 +178,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Authorize nested requests through one shared ancestor engine; endpoint-local gates stay independent and never waive or are waived by ancestry | One traceable mechanism across plain/core/Guardian/manage/Resource compositions; denial stops deeper lookup, state and writes | Validated (Phase 06.18) |
 | Fail closed with a named ImproperlyConfigured when a permission key has no vocabulary entry (core ancestry and Guardian local gates); render-time cv_has_access returns False | An unmigrated permission must never grant or crash with a raw TypeError | Validated (Phase 06.18 gap closure, plan 13) |
 | Configure the list table's actions column through django-tables2 `Meta` (`sequence`, `exclude`), not crud_views convenience logic | One `Meta` line expresses what the reverted append/exclude-merge helpers did with hidden rules and edge cases (CLAUDE.md maintainability rule) | Validated (Phase 06.19 re-scope) |
-| Expose `view` and a lazy `parent_object` only through `cv_get_meta()` (page snippets), not to labels, buttons or `LinkChildColumn` | One code path, zero extra queries unless a template uses `parent_object`; no `request`/`user` key added | Validated (Phase 06.21) |
+| Expose `view` and a lazy `parent_object` through `cv_get_meta()` (page snippets), preserving label, button and column rendering paths | One code path, zero extra queries unless a template uses `parent_object`; no `request`/`user` key added | Validated (Phase 06.21) |
+
+| Validate core permission declarations from concrete-model metadata after URL registration; keep database-row and Guardian checks at request time | Catches configuration errors before requests without database access or changing authorization | Validated (Phase 06.22) |
 
 ## Evolution
 
@@ -193,4 +200,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-10 after Phase 06.21 completion*
+*Last updated: 2026-11-10 after Phases 06.20, 06.21 and 06.22 completion*

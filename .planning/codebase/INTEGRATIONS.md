@@ -105,6 +105,18 @@ last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
 **Outgoing:**
 - No package-managed webhooks. Django workflow callbacks use `transaction.on_commit()` for post-commit work (`src/crud_views_workflow/lib/views.py`).
 
+## ViewSet Display Names (Phase 06.20)
+
+- Optional singular/plural ViewSet names override model or Resource metadata at the presentation boundary. Lazy translations resolve per `get_meta()` call (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/lazy.py`).
+- `GuardianViewSet` inherits both constructor fields without extension changes; permission vocabulary and model-centric deletion/404 names are unaffected (`src/crud_views_guardian/lib/viewset.py`, `docs/reference/nested.md#labels`). No external integration was added.
+
+
+## Permission declaration integration
+
+- Core startup checks derive keys from concrete-model `Meta.default_permissions` and `Meta.permissions`; Django migrations still create the corresponding auth rows, and applications still grant permissions (`docs/reference/custom_form_view.md`).
+- `ViewSet.default_permissions` continues to read ContentType/Permission rows at runtime, using shared `_permission_key` normalization (`src/crud_views/lib/viewset/__init__.py`).
+- Guardian ViewSets are excluded from the new metadata check because their runtime map follows the configured content-type resolver (`docs/reference/guardian.md`, `src/crud_views/lib/ancestors.py`). Resource ViewSets retain their separate permission contract.
+
 ---
 
 *Integration audit: 2026-11-10*

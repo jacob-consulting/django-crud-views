@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: a025ddf096a6d4bd28bde23c8b5eb9a4eb687844
+last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
 last_mapped_at: 2026-11-10
 ---
 # Codebase Structure
@@ -241,6 +241,14 @@ django-crud-views/
 - Purpose: Project planning, mapping, research, phase execution and workflow artifacts.
 - Generated: Workflow-produced and human-maintained.
 - Committed: Yes in this repository workflow; keep codebase maps scoped to `.planning/codebase/`.
+
+## Label Override Navigation (Phase 06.20)
+
+- `src/crud_views/lib/viewset/__init__.py`: display-name fields, plain-string validation and `get_meta()` resolution; `src/crud_views/lib/lazy.py` supplies the existing lazy type.
+- `tests/test1/test_viewset_verbose_name.py`: defaults, independent fields, lazy language/construction behavior, Resource and Guardian inheritance, nested list heading.
+- `tests/test1/test_viewset_verbose_name_render.py`: headings/paragraphs, precedence, breadcrumb HTML, child links/buttons and message delivery.
+- `docs/reference/nested.md#labels`: contract and replacement declaration example; `docs/reference/breadcrumb.md`: variable semantics; `CHANGELOG.md`: issue #338 entry.
+
 
 ## Permission declaration locations (Phase 06.22)
 

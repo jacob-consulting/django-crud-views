@@ -1,18 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.20"
-current_phase_name: "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)"
+current_phase: "06.21"
+current_phase_name: "Snippet context exposes `view` and `parent_object` (#339)"
 status: "Phase 06.22 shipped — PR #343"
-stopped_at: Phase 06.22 complete; Phase 06.20 ready to execute
-last_updated: "2026-11-10T09:11:19.034Z"
+stopped_at: Phases 06.20 and 06.22 complete, ready to plan Phase 06.21
+last_updated: "2026-11-10T08:39:08.008Z"
 last_activity: 2026-11-10
-state_head: ed72b866b3ed5b49c624e3b6d25bf3391fb9433d
+state_head: 2515e73414fe0641efba53bd31ed9a3d3d593c6c
 progress:
   total_phases: 28
-  completed_phases: 22
+  completed_phases: 24
   total_plans: 158
-  completed_plans: 155
+  completed_plans: 158
+  percent: 92
 milestone_name: milestone
 ---
 
@@ -20,19 +21,19 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-10)
+See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.20 — ViewSet verbose_name / verbose_name_plural override
+**Current focus:** Phase 06.21 — Snippet context exposes `view` and `parent_object` (#339)
 
 ## Current Position
 
-Phase: 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
+Phase: 06.21 — Snippet context exposes `view` and `parent_object` (#339)
 Plan: Not started
 Status: Phase 06.22 shipped — PR #343
 Last activity: 2026-11-10
 
-Next: Phase 06.20 ($gsd-execute-phase 06.20); then Phase 06.21. Phase 06.22 is complete.
+Next: Phase 06.21; Phases 06.20 and 06.22 are verified and complete.
 
 ### Phase 06.22 completion — 2026-11-10
 
@@ -40,6 +41,13 @@ Next: Phase 06.20 ($gsd-execute-phase 06.20); then Phase 06.21. Phase 06.22 is c
 - Canonical verification passed 22/22; decisions 16/16, prohibitions 9/9, validation 7/7 tasks, security 9/9 closed, deep review 12 files with zero findings. No required human checks.
 - Full suite 12,074 passed with four workers; docs 42, examples system check 1, additional regression 334 examples plus 100 subtests and 153 static tests pass. Ruff, strict MkDocs and compileall pass. Four existing Django deprecation warnings recorded in deferred-items.
 - Completion scanner treated two pytest command strings as missing paths; both referenced RED XML artifacts exist. No pending phase todos, handoffs or learnings to graduate. Config/state.json edits preserved; no push or merge.
+
+### Phase 06.20 completion — 2026-11-09
+
+- All three plans complete; optional independent ViewSet display names resolve centrally, preserving lazy construction, defaults and explicit labels. Canonical verification passed 15/15, no required human checks.
+- Full suite: 12,066 passed with eight workers; Ruff and strict MkDocs clean. Test-only follow-up closed message-delivery/breadcrumb HTML coverage with 83 focused regressions and 21 label cases; production source unchanged.
+- Deep review clean; security 9/9 closed; validation complete with full-suite timing exception. UI audit source-scoped; browser/support-matrix limits explicit. No findings requiring a disposition ledger, matching todos, learnings or stale handoffs.
+- Existing config/state.json edits and untracked prompt preserved. No push or PR merge; phase branch contains the completed work.
 
 ### Phase 06.19 completion — 2026-11-09
 
@@ -707,6 +715,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.17 | 3 | - | - |
 | 06.18 | 13 | - | - |
 | 06.19 | 2 | - | - |
+| 06.20 | 3 | - | - |
 | 06.22 | 3 | - | - |
 
 | 06.15 | 4 | - | - |
@@ -833,6 +842,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P13 | 10min | 2 tasks | 5 files |
 | Phase 06.19 P01 | 6 min | 3 tasks | 5 files |
 | Phase 06.19 P02 | 6min | 3 tasks | 4 files |
+| Phase 06.20 P01 | 5min | 2 tasks | 2 files |
+| Phase 06.20 P03 | 5min | 2 tasks | 3 files |
+| Phase 06.20 P02 | 8min | 2 tasks | 1 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1074,6 +1086,9 @@ Recent decisions affecting current work:
 - [Phase 06.19]: Table exclude merge combines Meta.exclude, caller exclude and actions with an order-preserving dict.fromkeys dedupe (#337)
 - [Phase 06.19]: Table.cv_default_sequence inserts "..." before actions when a declared Meta.sequence has none, so django-tables2 never appends its ellipsis after actions (06.19-02, WR-01)
 - [Phase 06.19]: Table.__init__ normalises the caller exclude kwarg (falsy -> (), str -> one-tuple) only inside the cv_list_actions = None branch before the order-preserving merge (06.19-02, WR-02/WR-03)
+- [Phase 06.20]: Plan 01: resolve explicit ViewSet verbose_name overrides per call; preserve lazy model defaults and construction-time lazy values, reject only blank plain strings.
+- [Phase 06.20]: Plan 03: the label docs replace the Sideways declaration and preserve its context buttons; full label contract and non-breaking changelog published.
+- [Phase 06.20]: Plan 02: breadcrumb and success-message assertions remain producer-level; rendered requests cover pages, columns and buttons. All phase gates passed.
 
 ### Pending Todos
 
@@ -1135,7 +1150,6 @@ None yet.
 - Phase 06.17 inserted after Phase 06.16: Issue #328: open the first accordion group and initialize/dispose tabs through theme adapters; settled issue decisions are the planning handoff. (URGENT)
 - Phase 06.18 inserted after Phase 06.17: Ancestor authorization for nested ViewSets; canonical approved specification: superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md. Policy decisions remain locked; planning and implementation pending. (URGENT)
 - Phase 06.19 inserted after Phase 06.18: Table honours Meta.sequence and drops the empty actions column (tabler-test finding 26); canonical approved specification: superpowers/plans/2026-11-09-table-sequence-and-actions-column.md. Behaviour decisions are locked in its GSD handoff section; planning and implementation pending. (URGENT)
-- Phase 06.22 inserted after Phase 06.21: Custom permissions: Meta.permissions recipe and startup check for cv_permission and ancestor pair keys (#341, tabler-test finding 24) (URGENT)
 
 ## Deferred Items
 
@@ -1145,6 +1159,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T05:06:17.957Z
-Stopped at: Phase 06.22 complete; Phase 06.20 ready to execute
+Last session: 2026-11-09T21:26:24.250Z
+Stopped at: Phases 06.20 and 06.22 complete, ready to plan Phase 06.21
 Resume file: None

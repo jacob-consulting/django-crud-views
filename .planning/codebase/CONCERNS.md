@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: a025ddf096a6d4bd28bde23c8b5eb9a4eb687844
+last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
 last_mapped_at: 2026-11-10
 ---
 # Codebase Concerns
@@ -21,7 +21,7 @@ last_mapped_at: 2026-11-10
 - Fix approach: implement ViewSet/URL inspection or remove it.
 
 **Large central modules concentrate unrelated behavior:**
-- Files: `src/crud_views/lib/view/base.py` (1224 lines), `src/crud_views/templatetags/crud_views.py` (667), `src/crud_views/lib/view/buttons.py` (599), `src/crud_views/lib/ancestors.py` (607), `src/crud_views/lib/formsets/formsets.py` (544), `src/crud_views/lib/viewset/__init__.py` (514)
+- Files: `src/crud_views/lib/view/base.py` (1224 lines), `src/crud_views/templatetags/crud_views.py` (667), `src/crud_views/lib/view/buttons.py` (599), `src/crud_views/lib/ancestors.py` (559), `src/crud_views/lib/formsets/formsets.py` (544), `src/crud_views/lib/viewset/__init__.py` (534)
 - Impact: shared changes have broad regression surfaces; `base.py` has grown since the previous map.
 - Fix approach: extract cohesive subsystems behind current public APIs only when a concrete maintenance need justifies it.
 
@@ -138,6 +138,13 @@ None independently confirmed.
 
 - Phase 06.18 ancestor authorization for nested ViewSets shipped with a dedicated `tests/test1/test_ancestor_*.py` suite (databases, guardian, costs, redirect, migration, docs).
 - Earlier resolved: object-detail accordion/tab lifecycle (Phase 06.17), protected delete labels not linked (`src/crud_views/lib/views/delete.py`), workflow opt-in permission request-level tests (`tests/test1/test_workflow_permissions.py`).
+
+## ViewSet Label Boundaries (Phase 06.20)
+
+- Lazy overrides deliberately receive no construction-time blank check: evaluating them during app loading can raise `AppRegistryNotReady`. Plain blank strings fail validation; padded strings remain unchanged (`src/crud_views/lib/viewset/__init__.py`, `tests/test1/test_viewset_verbose_name.py`).
+- Model-centric deletion/404 text keeps model names; short action labels contain no object name. These are documented scope boundaries (`docs/reference/nested.md#labels`).
+- Canonical verification passes 15/15 truths; security reports nine closed threats. No required human check remains. Responsive long-label/browser checks are optional downstream work; the supported-version matrix remains a CI condition (`.planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-VERIFICATION.md`).
+
 
 ## Permission declaration boundaries (Phase 06.22)
 

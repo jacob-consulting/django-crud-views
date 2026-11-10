@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-10
-last_mapped_commit: a025ddf096a6d4bd28bde23c8b5eb9a4eb687844
+last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
 ---
 # External Integrations
 
@@ -104,6 +104,12 @@ last_mapped_commit: a025ddf096a6d4bd28bde23c8b5eb9a4eb687844
 
 **Outgoing:**
 - No package-managed webhooks. Django workflow callbacks use `transaction.on_commit()` for post-commit work (`src/crud_views_workflow/lib/views.py`).
+
+## ViewSet Display Names (Phase 06.20)
+
+- Optional singular/plural ViewSet names override model or Resource metadata at the presentation boundary. Lazy translations resolve per `get_meta()` call (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/lazy.py`).
+- `GuardianViewSet` inherits both constructor fields without extension changes; permission vocabulary and model-centric deletion/404 names are unaffected (`src/crud_views_guardian/lib/viewset.py`, `docs/reference/nested.md#labels`). No external integration was added.
+
 
 ## Permission declaration integration
 

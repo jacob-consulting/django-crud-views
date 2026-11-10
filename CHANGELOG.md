@@ -586,6 +586,15 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `ImproperlyConfigured` remain as backstops, and `E202` is unchanged.
   See [A permission of its own](docs/reference/custom_form_view.md#a-permission-of-its-own).
 
+- **ViewSet `verbose_name` / `verbose_name_plural` override**
+  ([#338](https://github.com/jacob-consulting/django-crud-views/issues/338)): two optional `ViewSet` fields name its
+  objects independently of the model's `Meta`. `get_meta()` resolves each override when set (lazy values per request),
+  so default labels containing the object name — snippets, breadcrumb container item, `LinkChildColumn` and
+  `ChildContextButton` — follow with no further code. Per-view `cv_*_template_code` and breadcrumb label attributes
+  still win. Blank plain strings raise `ValidationError` at construction; lazy values are not blank-checked.
+  Model-centric text (deletion summaries, 404 messages) keeps the model's names, and permission codenames are unchanged.
+  Unset fields preserve existing labels. See [Labels](docs/reference/nested.md#labels).
+
 - **Workflow business validation, standalone execution and native buttons**
   ([#322](https://github.com/jacob-consulting/django-crud-views/issues/322)): the model-data-only
   `workflow_check_transition(name, *, user)` hook reports ordered blockers; public

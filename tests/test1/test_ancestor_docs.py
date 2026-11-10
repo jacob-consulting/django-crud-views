@@ -942,3 +942,24 @@ def test_misspelled_recipe_key_fails_the_startup_check(published, monkeypatch):
     assert ours[0].obj.name == "author"
     assert ours[0].msg == "cv_permission 'contct' of view 'contact' is not declared on model app.Author"
     assert 'add ("contct_author", "...") to Author.Meta.permissions' in ours[0].hint
+
+
+def test_custom_permission_recipe_is_cross_linked():
+    assert "a-permission-of-its-own" in _anchors(CUSTOM_FORM_MD)
+    assert "custom_form_view.md#a-permission-of-its-own" in _section(ACTION_VIEW_MD.read_text(), "## View Classes")
+    guardian = _flat(_section(GUARDIAN_MD.read_text(), "### Configured content-type defaults"))
+    for term in ("viewset.E269", "GuardianViewSet", "skips", "request time", "ImproperlyConfigured"):
+        assert term in guardian
+    assert "permission-key-diagnostics" in _anchors(GUARDIAN_MD)
+    nested = _section(NESTED_MD.read_text(), "### Configuration errors")
+    assert "viewset.E269" in _flat(nested)
+    assert "both core ViewSets" in _flat(nested)
+    assert "| a required key missing from the permission map of a checked ancestor |" in nested
+    assert "cv_permission" in _section(CUSTOM_FORM_MD.read_text(), "## Configuration")
+    assert "example-permissions-for-a-nested-book-viewset" in _anchors(NESTED_MD)
+    assert "configured-content-type-defaults" in _anchors(GUARDIAN_MD)
+    unreleased = _section(CHANGELOG_MD.read_text(), "## Unreleased")
+    added = _section(unreleased, "### Added")
+    assert "issues/341" in added
+    assert "docs/reference/custom_form_view.md#a-permission-of-its-own" in added
+    assert "issues/341" not in _section(unreleased, "### Breaking")

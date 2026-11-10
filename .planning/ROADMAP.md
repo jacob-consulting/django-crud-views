@@ -1505,14 +1505,14 @@ only, `ViewContext.to_dict()` untouched, `parent_object` as a separate lazy key 
 level only. tabler-test findings 27 (#314) and 28 (Phase 06.20) are out of scope, as is restoring the richer demo
 texts (follow-up in tabler-test). This insertion assigns the phase; detailed planning and implementation remain
 pending.
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans executed
 
 Plans:
 **Wave 1**
 - [x] 06.21-01-PLAN.md — `cv_get_meta()` adds `view` and lazy `parent_object`; E2E tracer (nested create header, action message) plus unit, laziness/cost, class-label scope and Http404 tests in `tests/test1/test_snippet_context.py`
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.21-02-PLAN.md — canonical `## Snippet variables` table in `docs/reference/templates.md`, links from `messages.md`/`nested.md`/`breadcrumb.md`, `### Added` changelog entry, docs guard `tests/test1/test_snippet_docs.py`
+- [x] 06.21-02-PLAN.md — canonical `## Snippet variables` table in `docs/reference/templates.md`, links from `messages.md`/`nested.md`/`breadcrumb.md`, `### Added` changelog entry, docs guard `tests/test1/test_snippet_docs.py`
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1616,5 +1616,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
 | 06.19. Table honours Meta.sequence and omits the Actions column for None | 2/2 | Complete    | 2026-11-09 |
 | 06.20. ViewSet verbose_name override that every default label follows | 0/TBD | Not started | - |
-| 06.21. Snippet context exposes view and parent_object | 1/2 | In Progress | - |
+| 06.21. Snippet context exposes view and parent_object | 2/2 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

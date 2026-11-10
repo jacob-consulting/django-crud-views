@@ -1,19 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: "Phase 06.23 shipped — PR #345"
-stopped_at: Phase 06.23 complete, ready to plan Phase 7
-last_updated: "2026-11-10T12:43:13.216Z"
+current_phase: "06.24"
+current_phase_name: "Opt-in compact formsets: shared desktop headings and nested mobile cards"
+status: "Phase 06.24 context gathered — approved issue #347 decisions captured; ready to plan"
+stopped_at: Phase 06.24 context gathered
+last_updated: "2026-11-10T15:53:12.842Z"
 last_activity: 2026-11-10
-state_head: 8b61a331813b35376faa5ff4dad4cabba549ae0d
+state_head: 0ca942a6c43dbc7d7276497dda6cdd84bd0d9fc0
 progress:
-  total_phases: 29
+  total_phases: 30
   completed_phases: 25
   total_plans: 162
   completed_plans: 162
-  percent: 96
 milestone_name: milestone
 ---
 
@@ -24,16 +23,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-10)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.24 — Opt-in compact formsets
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.24 — Opt-in compact formsets: shared desktop headings and nested mobile cards
 Plan: Not started
-Status: Phase 06.23 shipped — PR #345
+Status: Phase 06.24 context gathered — approved issue #347 decisions captured; ready to plan
 Last activity: 2026-11-10
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.24
 
 ### Phase 06.23 completion — 2026-11-10
 
@@ -1173,6 +1172,7 @@ None yet.
 - Phase 06.18 inserted after Phase 06.17: Ancestor authorization for nested ViewSets; canonical approved specification: superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md. Policy decisions remain locked; planning and implementation pending. (URGENT)
 - Phase 06.19 inserted after Phase 06.18: Table honours Meta.sequence and drops the empty actions column (tabler-test finding 26); canonical approved specification: superpowers/plans/2026-11-09-table-sequence-and-actions-column.md. Behaviour decisions are locked in its GSD handoff section; planning and implementation pending. (URGENT)
 - Phase 06.23 inserted after Phase 06.22: Issue #329: explicit header-icon suppression with plain Icon constants; settled issue decisions are the planning handoff. Independent scope; complete before Phase 7. (URGENT)
+- Phase 06.24 inserted after Phase 06.23: Issue #347: opt-in compact formsets with shared desktop headings and nested mobile cards; approved issue decisions are the GSD handover, classic rendering unchanged. Complete before Phase 7. (URGENT)
 
 ## Deferred Items
 
@@ -1182,6 +1182,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T12:23:21.710490+00:00
-Stopped at: Phase 06.23 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-10T15:53:09.395Z
+Stopped at: Phase 06.24 context gathered
+Resume file: .planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-CONTEXT.md

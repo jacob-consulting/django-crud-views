@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.24"
-current_phase_name: "Opt-in compact formsets: shared desktop headings and nested mobile cards (#347)"
-status: Ready to execute
-stopped_at: Phase 06.24 plans converged in cycle 2; ready to execute
-last_updated: "2026-11-10T17:13:37.933Z"
+current_phase_name: Opt-in compact formsets
+status: executing
+stopped_at: Completed 06.24-01-PLAN.md
+last_updated: "2026-11-10T20:43:43.831Z"
 last_activity: 2026-11-10
-last_activity_desc: Phase 06.24 plans converged in cycle 2 with three complete reviews
-state_head: cf348989b117e8418f44bdc7bb174c2c31188a4c
+last_activity_desc: Phase 06.24 execution started
+state_head: 3ae98f2b665de5333172caa87bd1ff4bed6a1a33
 progress:
   total_phases: 30
   completed_phases: 25
   total_plans: 167
-  completed_plans: 162
+  completed_plans: 163
 milestone_name: milestone
 ---
 
@@ -28,10 +28,10 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 
 ## Current Position
 
-Phase: 06.24 (Opt-in compact formsets: shared desktop headings and nested mobile cards (#347)) — READY TO EXECUTE
-Plan: 0 of 5 executed
+Phase: 06.24 (Opt-in compact formsets) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-11-10 — Phase 06.24 plans converged in cycle 2 with three complete reviews
+Last activity: 2026-11-10 — Phase 06.24 execution started
 
 Next: $gsd-execute-phase 06.24
 
@@ -870,6 +870,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.20 P02 | 8min | 2 tasks | 1 files |
 | Phase 06.21 P01 | 8 min | 2 tasks | 2 files |
 | Phase 06.21 P02 | 7min | 2 tasks | 6 files |
+| Phase 06.24 P01 | 8min | 2 tasks | 7 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1118,6 +1119,7 @@ Recent decisions affecting current work:
 - [Phase 06.21]: Lazy wrapper is the bound cv_get_parent_object with no exception handling, so Http404 propagates out of the render (D-07)
 - [Phase 06.21]: Snippet variables documented once in templates.md (## Snippet variables); messages.md, nested.md, breadcrumb.md only link to it (D-08)
 - [Phase 06.21]: #339 recorded under CHANGELOG ### Added, not Breaking; nested.md parent_object example is an unmarked fence so the cv-sync fence stays byte-identical
+- [Phase 06.24]: Compact declarations use frozen dataclasses and InstanceOf; request-local XFormSet heading metadata bypasses classic helpers and never renders choices.
 
 ### Pending Todos
 
@@ -1190,6 +1192,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T17:13:34.379Z
-Stopped at: Phase 06.24 plans converged in cycle 2; ready to execute
-Resume file: .planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-REVIEWS.md
+Last session: 2026-11-10T20:43:40.345Z
+Stopped at: Completed 06.24-01-PLAN.md
+Resume file: None

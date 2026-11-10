@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="0.189" timestamp="2026-11-10T04:26:40.359462+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_permission_declarations" name="test_undeclared_cv_permission_is_reported_at_startup" time="0.003"><failure message="AssertionError: assert [] == [('viewset.E2...le_fb059f45')]&#10;  &#10;  Right contains one more item: ('viewset.E269', 'pd_approvable_fb059f45')&#10;  Use -v to get more diff">registry = None, sfx = 'fb059f45', no_db = None
+
+    def test_undeclared_cv_permission_is_reported_at_startup(registry, sfx, no_db):
+        with isolate_apps("tests.test1.app"):
+    
+            class Approvable(models.Model):
+                class Meta:
+                    app_label = "app"
+                    permissions = [("approve_approvable", "Can approve")]
+    
+            vs = ViewSet(model=Approvable, name=f"pd_approvable_{sfx}")
+            _view(_core("ListViewPermissionRequired"), vs)
+            _view(_core("ActionViewPermissionRequired"), vs, key="approve", cv_permission="approve")
+            _view(_core("ActionViewPermissionRequired"), vs, key="run", cv_permission="run")
+    
+&gt;           assert _ours(check_ancestor_declarations(), vs) == [("viewset.E269", vs.name)]
+E           AssertionError: assert [] == [('viewset.E2...le_fb059f45')]
+E             
+E             Right contains one more item: ('viewset.E269', 'pd_approvable_fb059f45')
+E             Use -v to get more diff
+
+tests/test1/test_permission_declarations.py:40: AssertionError</failure></testcase><testcase classname="tests.test1.test_permission_declarations" name="test_shared_registry_has_no_e269" time="0.001" /></testsuite></testsuites>

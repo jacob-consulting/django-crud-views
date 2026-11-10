@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.21"
-current_phase_name: "Snippet context exposes `view` and `parent_object` (#339) (INSERTED)"
+current_phase_name: "Snippet context exposes view and parent_object (#339)"
 status: executing
-stopped_at: Phase 06.21 context gathered
-last_updated: "2026-11-10T08:48:30.293Z"
-last_activity: 2026-11-09
-last_activity_desc: "Phase 06.19 shipped as PR #340"
-state_head: 17e824e5af45f76bfd7ecaa63bdd943d0b03ec8f
+stopped_at: Completed 06.21-01-PLAN.md
+last_updated: "2026-11-10T09:03:02.215Z"
+last_activity: 2026-11-10
+last_activity_desc: Phase 06.21 execution started
+state_head: 97b024a99eabe481bcbace0ac2f1e936f7af1be3
 progress:
   total_phases: 27
   completed_phases: 22
   total_plans: 154
-  completed_plans: 152
+  completed_plans: 153
 milestone_name: milestone
 ---
 
@@ -24,14 +24,14 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
+**Current focus:** Phase 06.21 — Snippet context exposes view and parent_object (#339)
 
 ## Current Position
 
-Phase: 06.21 (Snippet context exposes `view` and `parent_object` (#339) (INSERTED)) — READY TO EXECUTE
-Plan: Not started
+Phase: 06.21 (Snippet context exposes view and parent_object (#339)) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-11-09 -- Phase 06.19 shipped as PR #340
+Last activity: 2026-11-10 — Phase 06.21 execution started
 
 Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21
 
@@ -826,6 +826,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P13 | 10min | 2 tasks | 5 files |
 | Phase 06.19 P01 | 6 min | 3 tasks | 5 files |
 | Phase 06.19 P02 | 6min | 3 tasks | 4 files |
+| Phase 06.21 P01 | 8 min | 2 tasks | 2 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1067,6 +1068,8 @@ Recent decisions affecting current work:
 - [Phase 06.19]: Table exclude merge combines Meta.exclude, caller exclude and actions with an order-preserving dict.fromkeys dedupe (#337)
 - [Phase 06.19]: Table.cv_default_sequence inserts "..." before actions when a declared Meta.sequence has none, so django-tables2 never appends its ellipsis after actions (06.19-02, WR-01)
 - [Phase 06.19]: Table.__init__ normalises the caller exclude kwarg (falsy -> (), str -> one-tuple) only inside the cv_list_actions = None branch before the order-preserving merge (06.19-02, WR-02/WR-03)
+- [Phase 06.21]: Instance snippet context gains view and lazy parent_object in cv_get_meta() only; ViewContext.to_dict() and ViewSet.get_meta() unchanged (D-03, D-04)
+- [Phase 06.21]: Lazy wrapper is the bound cv_get_parent_object with no exception handling, so Http404 propagates out of the render (D-07)
 
 ### Pending Todos
 
@@ -1137,6 +1140,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T17:56:16.670Z
-Stopped at: Phase 06.21 context gathered
-Resume file: .planning/phases/06.21-snippet-context-exposes-view-and-parent-object/06.21-CONTEXT.md
+Last session: 2026-11-10T09:02:59.002Z
+Stopped at: Completed 06.21-01-PLAN.md
+Resume file: None

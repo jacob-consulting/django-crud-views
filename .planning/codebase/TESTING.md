@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
-last_mapped_at: 2026-11-09
+last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
+last_mapped_at: 2026-11-10
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## Test Framework
 
@@ -181,6 +181,14 @@ For view failures, assert response status, form errors, redirect, and unchanged 
 
 **Workflow execution/database routing:** `tests/test1/test_workflow_execution.py` exercises the public helper and request path, atomic and non-atomic view settings, transaction rollback, `on_commit` timing, selected database aliases, and rejection of unsaved or cross-database actors/objects. Database-router tests use the `shard` alias and verify history writes/reads remain aligned. Extend these cases when changing `src/crud_views_workflow/lib/execution.py` or `src/crud_views_workflow/lib/views.py`.
 
+## ViewSet Label Coverage (Phase 06.20)
+
+- `tests/test1/test_viewset_verbose_name.py`: 13 cases for model/Resource defaults, independent overrides, active-language translation, lazy/padded preservation, blank validation, Guardian inheritance and nested list rendering.
+- `tests/test1/test_viewset_verbose_name_render.py`: eight cases for headings/paragraphs, explicit precedence, breadcrumb GET HTML, child-column text/title, full/short button labels, and POST/message/alert delivery. Book message production remains separately asserted; delivery uses the existing message-enabled Publisher view.
+- Tests reuse registered fixtures with monkeypatch; constructor probes clean up under the registry lock. Exact DOM/message assertions exercise real requests.
+- Fresh shipping selection (these modules plus `test_breadcrumb.py` and `test_messages.py`): 96 passed with four workers. Ruff lint/format over `src`/`tests` and strict MkDocs passed on 2026-11-10.
+- Historical evidence: 12,066 full-suite passes before the final test-only addition; final request coverage has focused follow-up evidence. Do not describe the historical run as a full-suite run of the final tree (`.planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-VERIFICATION.md`).
+
 ---
 
-*Testing analysis: 2026-11-09*
+*Testing analysis: 2026-11-10*

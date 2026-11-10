@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
-last_mapped_at: 2026-11-09
+last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
+last_mapped_at: 2026-11-10
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## Maintainability Constraint
 
@@ -98,6 +98,12 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 
 **Barrel Files:** No general barrel-file pattern detected; import from the owning module.
 
+## Lazy Label Configuration (Phase 06.20)
+
+- Preserve unset metadata paths and resolve explicit overrides centrally in `get_meta()` (`src/crud_views/lib/viewset/__init__.py`).
+- Validate only plain blank strings at construction. Avoid stringifying lazy translations during app loading, normalizing padded strings, inferring plurals or using parent display names (`src/crud_views/lib/lazy.py`, `docs/reference/nested.md#labels`).
+- Tests monkeypatch existing shared ViewSets/views; constructor probes remove registry entries under `_REGISTRY_LOCK` in `finally` or teardown (`tests/test1/test_viewset_verbose_name.py`, `tests/test1/test_viewset_verbose_name_render.py`).
+
 ---
 
-*Convention analysis: 2026-11-09*
+*Convention analysis: 2026-11-10*

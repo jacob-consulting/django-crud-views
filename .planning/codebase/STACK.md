@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-09
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
+last_mapped_at: 2026-11-10
+last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## Languages
 
@@ -80,6 +80,11 @@ last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
 **Production:**
 - A host Django project; no database or host mandated. Demo runs on Render free plan with Gunicorn, WhiteNoise, ephemeral SQLite (`render.yaml`)
 
+## Label Configuration (Phase 06.20)
+
+- ViewSet display names reuse existing `LazyStr` and Pydantic field validation (`src/crud_views/lib/lazy.py`, `src/crud_views/lib/viewset/__init__.py`). No dependency, global setting, template or browser-runtime changes.
+- Runtime ranges and supported CI matrices are unchanged. Shipping checks used the existing Python 3.12 environment; supported-version coverage remains a CI check (`noxfile.py`).
+
 ---
 
-*Stack analysis: 2026-11-09*
+*Stack analysis: 2026-11-10*

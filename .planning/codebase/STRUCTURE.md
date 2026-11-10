@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
-last_mapped_at: 2026-11-09
+last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
+last_mapped_at: 2026-11-10
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## Directory Layout
 
@@ -242,6 +242,13 @@ django-crud-views/
 - Generated: Workflow-produced and human-maintained.
 - Committed: Yes in this repository workflow; keep codebase maps scoped to `.planning/codebase/`.
 
+## Label Override Navigation (Phase 06.20)
+
+- `src/crud_views/lib/viewset/__init__.py`: display-name fields, plain-string validation and `get_meta()` resolution; `src/crud_views/lib/lazy.py` supplies the existing lazy type.
+- `tests/test1/test_viewset_verbose_name.py`: defaults, independent fields, lazy language/construction behavior, Resource and Guardian inheritance, nested list heading.
+- `tests/test1/test_viewset_verbose_name_render.py`: headings/paragraphs, precedence, breadcrumb HTML, child links/buttons and message delivery.
+- `docs/reference/nested.md#labels`: contract and replacement declaration example; `docs/reference/breadcrumb.md`: variable semantics; `CHANGELOG.md`: issue #338 entry.
+
 ---
 
-*Structure analysis: 2026-11-09*
+*Structure analysis: 2026-11-10*

@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.24"
 current_phase_name: Opt-in compact formsets
 status: executing
-stopped_at: Completed 06.24-03-PLAN.md
-last_updated: "2026-11-10T21:03:51.486Z"
+stopped_at: Completed 06.24-04-PLAN.md
+last_updated: "2026-11-10T21:27:07.990Z"
 last_activity: 2026-11-10
 last_activity_desc: Phase 06.24 execution started
-state_head: 53633658d54fa98352ce647d0f0e3347882ec068
+state_head: b1585e6853abfa1ee20f01132bcf9fc2207cef13
 progress:
   total_phases: 30
   completed_phases: 25
   total_plans: 167
-  completed_plans: 165
+  completed_plans: 166
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 ## Current Position
 
 Phase: 06.24 (Opt-in compact formsets) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-11-10 — Phase 06.24 execution started
 
@@ -873,6 +873,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.24 P01 | 8min | 2 tasks | 7 files |
 | Phase 06.24 P02 | 9min | 2 tasks | 4 files |
 | Phase 06.24 P03 | 8min | 2 tasks | 5 files |
+| Phase 06.24 P04 | 21min | 3 tasks | 14 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1125,6 +1126,8 @@ Recent decisions affecting current work:
 - [Phase 06.24]: Plan 02: zero-total compact metadata constructs one detached form via copied get_form_kwargs(None); exact stock widget/schema checks avoid choices and preserve parent identity.
 - [Phase 06.24]: Plan 02: compact BoundField help text uses conditional_escape before crispy rendering, preserving explicitly safe markup and leaving classic rendering unchanged.
 - [Phase 06.24]: Plan 03: nested geometry uses the current node compact_layout; direct child CSS applies 8px padding with matching heading gutters while classic offsets/helpers remain unchanged.
+- [Phase 06.24]: Plan 04: compact browser evidence uses stock-only cases in the existing authenticated harness; 115 assertions, 16 ignored captures and matching 40-source hashes, with human grouping review pending.
+- [Phase 06.24]: Plan 04: hidden DELETE unmark emits an empty value because fresh Django CheckboxInput interprets nonempty '0' as checked; classic/compact real POST regressions prove original-parent retention, native checkbox branch unchanged.
 
 ### Pending Todos
 
@@ -1197,6 +1200,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T21:03:47.945Z
-Stopped at: Completed 06.24-03-PLAN.md
+Last session: 2026-11-10T21:27:04.206Z
+Stopped at: Completed 06.24-04-PLAN.md
 Resume file: None

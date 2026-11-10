@@ -160,6 +160,11 @@ class FooListView(MySpecialBase, ListView): ...
 
 ## Snippet variables
 
+Header content and its icon are independent: a custom header template or template-code snippet keeps the usual
+ViewSet icon inheritance. Set `cv_icon_header = Icon.NONE` to suppress it while retaining the content; use `None`
+or `Icon.VIEWSET_DEFAULT` to inherit. See [view header icons](icons.md#view-header-icons) for the public import,
+complete selection table and custom-header example.
+
 The texts a view renders for its own page — `cv_header_template[_code]`, `cv_paragraph_template[_code]`,
 `cv_message_template[_code]`, `cv_message_template_error[_code]` and the list/card `cv_filter_header_template[_code]`
 — are Django templates rendered with this context:

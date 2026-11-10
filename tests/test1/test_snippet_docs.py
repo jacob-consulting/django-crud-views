@@ -43,7 +43,7 @@ def test_snippet_variables_table_lists_exactly_the_eight_names():
 
 def test_snippet_variables_section_states_the_class_label_exclusion():
     section = _section(TEMPLATES, SECTION)
-    for needle in ("LinkChildColumn", "cv_action_label_template", "cv_breadcrumb_label_template"):
+    for needle in ("cv_action_label_template", "cv_breadcrumb_label_template"):
         assert needle in section
     assert "except" in section
     assert "parent_object" in section

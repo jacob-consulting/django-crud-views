@@ -8,11 +8,22 @@ from django.http import Http404
 from django.template import Context, Template
 from django.test import RequestFactory
 from django.test.utils import CaptureQueriesContext
+from django.urls import resolve
 from django.utils.functional import SimpleLazyObject
 
+from crud_views.lib.table import LinkChildColumn
+from crud_views.lib.table.table import TableWithViewContext
+from crud_views.lib.view import ContextButton
 from crud_views.lib.view.base import CrudView
 from tests.test1.app.models import Author
-from tests.test1.app.views import AuthorCreateView, AuthorPingView, BookCreateView, BookListView
+from tests.test1.app.views import (
+    AuthorCreateView,
+    AuthorDetailView,
+    AuthorPingView,
+    BookCreateView,
+    BookListView,
+    PublisherListView,
+)
 
 
 def _make_view(view_class, **url_kwargs):
@@ -171,6 +182,40 @@ def test_label_class_level_action_label_does_not_see_view(publisher_penguin):
 
     child_context = _make_view(BookCreateView, publisher_pk=publisher_penguin.pk).cv_get_view_context()
     assert ChildLabelled.cv_get_action_label(context=child_context) == "xy"
+
+
+@pytest.mark.django_db
+def test_context_button_own_label_uses_button_data_not_snippet_variables(author_douglas_adams):
+    view = _make_view(AuthorDetailView, pk=author_douglas_adams.pk)
+    view.object = author_douglas_adams
+    view.request.resolver_match = resolve(f"/author/{author_douglas_adams.pk}/detail/")
+    button = ContextButton(
+        key="home",
+        key_target="list",
+        label_template_code=(
+            "[VN:{{ verbose_name }}][VS:{{ viewset }}][O:{{ object }}]"
+            "[K:{{ cv_key }}][V:{{ view }}][P:{{ parent_object }}]"
+        ),
+    )
+    data = button.get_context(view.cv_get_view_context())
+    assert data["cv_action_label"] == "[VN:][VS:][O:][K:list][V:][P:]"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("supply_parent", [False, True])
+def test_link_child_column_inherits_hosting_page_context(publisher_penguin, supply_parent):
+    view = _make_view(PublisherListView)
+    column = LinkChildColumn(
+        name="book",
+        template_code=("[V:{{ view.cv_key }}][P:{{ parent_object }}][O:{{ object }}][VN:{{ verbose_name_plural }}]"),
+    )
+    table = TableWithViewContext([publisher_penguin], view=view, extra_columns=[("books", column)])
+    page_context = {"table": table, "view": view}
+    if supply_parent:
+        page_context["parent_object"] = publisher_penguin
+    rendered = Template("{% load django_tables2 %}{% render_table table %}").render(Context(page_context))
+    expected_parent = str(publisher_penguin) if supply_parent else ""
+    assert f"[V:list][P:{expected_parent}][O:None][VN:Books]" in rendered
 
 
 @pytest.mark.django_db

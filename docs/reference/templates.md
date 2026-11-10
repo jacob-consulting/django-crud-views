@@ -184,10 +184,18 @@ lookup, and a bad URL raises 404 rather than rendering an empty string. On a top
 header and paragraph see `object` as `None`, and a success message rendered by `MessageMixin` after the save sees
 the created instance.
 
-Action labels (`cv_action_label_template[_code]`, `cv_action_short_label_template[_code]`), breadcrumb labels
-(`cv_breadcrumb_label_template[_code]`), context, row and card buttons and `LinkChildColumn` are rendered *for* a
-target view *from* another page. They get the same variables **except** `view` and `parent_object`, because there
-the hosting page's view is not the labelled view.
+Action labels (`cv_action_label_template[_code]`, `cv_action_short_label_template[_code]`) and breadcrumb labels
+(`cv_breadcrumb_label_template[_code]`) are rendered *for* a target view *from* another page, including action
+labels used by context, row and card buttons. They get the same variables **except** `view` and `parent_object`,
+because the hosting page's view is not the labelled view.
+
+Two related templates have their own context:
+
+- A context button's own `label_template[_code]` gets the button data (the `cv_*` keys, such as `cv_key`), rather
+  than the snippet variables above; see [Context buttons](context_buttons.md).
+- A `LinkChildColumn` template gets the child ViewSet's variables on top of the hosting list page's context.
+  When rendered with `{% render_table table %}`, `view` is the hosting list view. The column does not add
+  `parent_object`, but can inherit it if the hosting page supplies it.
 
 `view` exposes the same attributes and argument-less methods as in a page template, where Django already provides
 it. Snippet texts are developer-set class attributes, and variable output stays autoescaped.

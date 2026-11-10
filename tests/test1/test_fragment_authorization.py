@@ -34,7 +34,7 @@ from django.urls import clear_url_caches, include, path, reverse
 from lxml import html as lxml_html
 
 from crud_views.lib.crispy import Column4, CrispyModelForm
-from crud_views.lib.formsets import FormSet, FormSets, Formsets, InlineFormSet
+from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet, FormSets, Formsets, InlineFormSet
 from tests.lib.helper.forms import form_payload
 from tests.test1.app.models import Author, Book, BookNote, Contract, Publisher, UUIDFragmentLeaf, UUIDFragmentRow
 
@@ -136,6 +136,21 @@ def two_child_formsets() -> FormSets:
             )
         )
     )
+
+
+def _compact_declarations(declarations, monkeypatch):
+    """Opt each real node in, restoring declarations after the parameterized test."""
+    for declaration in declarations.values():
+        fields = [name for name, field in declaration.klass.form.base_fields.items() if not field.widget.is_hidden]
+        monkeypatch.setattr(
+            declaration,
+            "compact_layout",
+            CompactLayout(
+                columns=[CompactColumn(name, span=4) for name in fields],
+                controls_span=4,
+            ),
+        )
+        _compact_declarations(declaration.children, monkeypatch)
 
 
 def three_level_formsets() -> FormSets:
@@ -1233,10 +1248,13 @@ def test_added_outer_fragment_retains_endpoint_for_nested_actions(fr, world):
     assert {item[0]["path"] for item in metadata.values()} == {url}
 
 
+@pytest.mark.parametrize("layout", ["classic", "compact"])
 @pytest.mark.django_db
-def test_two_child_declaration_round_trips_emitted_index_and_keeps_gates(fr, world):
+def test_two_child_declaration_round_trips_emitted_index_and_keeps_gates(fr, world, layout, monkeypatch):
     """A19: a real second-child fragment extends its owner and survives an authorized POST."""
     pa, ba = world.publisher_a, world.book_a
+    if layout == "compact":
+        _compact_declarations(fr.g2pub_vs.get_view_class("update").cv_formsets.formsets, monkeypatch)
     client = _editor_client(fr, world, viewset=fr.g2pub_vs)
     url = _url(fr.g2pub_vs, "update", pk=pa.pk)
     page = client.get(url)
@@ -1362,9 +1380,12 @@ def test_fragment_raw_wrappers_balance_before_dom_parsing(fr, world, mode):
 
 @pytest.mark.parametrize("mode", ["outer", "nested"])
 @pytest.mark.parametrize("capability", ["default", "native-unordered", "native-ordered"])
+@pytest.mark.parametrize("layout", ["classic", "compact"])
 @pytest.mark.django_db
-def test_server_fragment_dom_round_trip(fr, world, mode, capability, monkeypatch):
+def test_server_fragment_dom_round_trip(fr, world, mode, capability, layout, monkeypatch):
     """Vitest optionally supplies a real JS driver; ordinary Python runs remain Node-free."""
+    if layout == "compact":
+        _compact_declarations(fr.g2pub_vs.get_view_class("update").cv_formsets.formsets, monkeypatch)
     if capability != "default":
         monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
         for klass in (SecretBookFormSet, SecretNoteFormSet):
@@ -1412,6 +1433,7 @@ def test_server_fragment_dom_round_trip(fr, world, mode, capability, monkeypatch
                     "values": values,
                     "native": capability != "default",
                     "ordered": capability == "native-ordered",
+                    "compact": layout == "compact",
                 }
             ),
             text=True,
@@ -1423,7 +1445,10 @@ def test_server_fragment_dom_round_trip(fr, world, mode, capability, monkeypatch
         payload = rendered["payload"]
         assert len(rendered["events"]) == len(steps)
         with Path(os.environ["CV_FRAGMENT_RESULTS"]).open("a") as output:
-            output.write(json.dumps({"mode": mode, "capability": capability, "events": rendered["events"]}) + "\n")
+            output.write(
+                json.dumps({"mode": mode, "capability": capability, "layout": layout, "events": rendered["events"]})
+                + "\n"
+            )
     if capability != "default":
         assert f"books-{pa.pk}-0-0-DELETE" in payload  # persisted initial row
         for step in steps:
@@ -1439,6 +1464,25 @@ def test_server_fragment_dom_round_trip(fr, world, mode, capability, monkeypatch
     parent.refresh_from_db()
     pa.refresh_from_db()
     assert child.book_id == parent.pk and parent.publisher_id == pa.pk
+
+
+@pytest.mark.parametrize("layout", ["classic", "compact"])
+@pytest.mark.django_db
+def test_fragment_matrix_unauthorized_and_foreign_post_zero_write(fr, world, monkeypatch, layout):
+    if layout == "compact":
+        _compact_declarations(fr.g2pub_vs.get_view_class("update").cv_formsets.formsets, monkeypatch)
+    pa = world.publisher_a
+    url = _url(fr.g2pub_vs, "update", pk=pa.pk)
+    client = _editor_client(fr, world, viewset=fr.g2pub_vs)
+    payload = form_payload(client.get(url))
+    before = (list(Publisher.objects.values()), list(Book.objects.values()), list(BookNote.objects.values()))
+    assert _client(_user("matrix_denied")).post(url, payload).status_code == 403
+    payload[f"books-{pa.pk}-0-0-id"] = str(world.book_b.pk)
+    payload[f"books-{pa.pk}-0-0-title"] = "tampered foreign title"
+    response = client.post(url, payload)
+    assert response.status_code == 200
+    assert b"Invalid row." in response.content
+    assert before == (list(Publisher.objects.values()), list(Book.objects.values()), list(BookNote.objects.values()))
 
 
 @pytest.mark.parametrize("creating", [False, True], ids=["persisted-int-root", "unsaved-int-root"])
@@ -1577,8 +1621,9 @@ def deep_leaf_formset():
 
 
 @pytest.mark.parametrize("saved_parent", [True, False], ids=["persisted-deep-parent", "unsaved-deep-parent"])
+@pytest.mark.parametrize("layout", ["classic", "compact"])
 @pytest.mark.django_db(transaction=True)
-def test_deeper_second_sibling_fragment_posts(fr, world, deep_leaf_formset, monkeypatch, saved_parent):
+def test_deeper_second_sibling_fragment_posts(fr, world, deep_leaf_formset, monkeypatch, saved_parent, layout):
     Leaf, klass = deep_leaf_formset
     declarations = two_child_formsets()
     memos = declarations["books"].children["memos"]
@@ -1588,6 +1633,8 @@ def test_deeper_second_sibling_fragment_posts(fr, world, deep_leaf_formset, monk
     )
     # Reapply the hierarchy after extending the declaration, just as application declarations do at construction.
     declarations.apply_hierarchy()
+    if layout == "compact":
+        _compact_declarations(declarations.formsets, monkeypatch)
     monkeypatch.setattr(fr.DeepUpdate, "cv_formsets", declarations)
     pa, ba = world.publisher_a, world.book_a
     note = BookNote.objects.create(book=ba, note="deep-parent") if saved_parent else None

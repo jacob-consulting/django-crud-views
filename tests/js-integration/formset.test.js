@@ -70,6 +70,22 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
         assert.ok(inserted);
         assert.equal(inserted.parentElement, last.parentElement, "row inserted in the intended content wrapper");
         assert.equal(inserted.closest(".cv-formset-content"), content);
+        if (fixture.compact) {
+            const fragment = win.document.createElement("div");
+            fragment.innerHTML = step.fragment.html;
+            assert.equal(fragment.querySelectorAll(":scope > .cv-formset-compact-headings").length, 0);
+            assert.equal(content.querySelectorAll(":scope > .cv-formset-compact-headings").length, 1);
+            assert.ok(inserted.classList.contains("cv-formset-row-compact"));
+            for (const child of inserted.querySelectorAll(".cv-formset-content")) {
+                assert.equal(child.querySelectorAll(":scope > .cv-formset-compact-headings").length, 1);
+            }
+            for (const input of form.querySelectorAll(".cv-formset-compact-fields input:not([type=hidden]), .cv-formset-compact-fields select")) {
+                assert.equal(form.querySelectorAll(`[id="${input.id}"]`).length, 1);
+                const labels = [...form.querySelectorAll("label")].filter(label => label.htmlFor === input.id);
+                assert.equal(labels.length, 1);
+                assert.ok(labels[0].textContent.trim());
+            }
+        }
         for (const control of inserted.querySelectorAll(".cv-formset-form input[name]")) {
             const owner = control.closest(".cv-formset-row");
             assert.ok(control.name.startsWith(`${owner.getAttribute("cv-data-formset-form-prefix")}-`));
@@ -83,7 +99,10 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
     const submit = new win.Event("submit", { bubbles: true, cancelable: true });
     form.dispatchEvent(submit);
     assert.equal(submit.defaultPrevented, false, "valid native rows allow ordered submit");
-    const payload = Object.fromEntries(new win.FormData(form));
+    const data = [...new win.FormData(form)];
+    const names = data.map(([name]) => name);
+    assert.equal(new Set(names).size, names.length, "identities and management fields occur exactly once");
+    const payload = Object.fromEntries(data);
     dom.window.close();
     return { payload, events };
 }

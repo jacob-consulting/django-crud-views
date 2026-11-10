@@ -24,7 +24,7 @@ from collections.abc import Iterable
 from functools import cached_property
 from typing import Any
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.forms.forms import BaseForm
 from django.forms.formsets import BaseFormSet
 from django.utils.translation import gettext_lazy as _
@@ -113,6 +113,8 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     def compact_columns(self):
         if self.formset.compact_layout is None:
             return ()
+        if BasePolymorphicInlineFormSet and issubclass(self.formset.klass, BasePolymorphicInlineFormSet):
+            raise ImproperlyConfigured(f"FormSet '{self.key}': compact polymorphic formsets are unsupported")
         return _compact_projection(self)
 
     def __str__(self):

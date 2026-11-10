@@ -319,7 +319,7 @@ def test_compact_schema_rejects_unsupported_widget_shape(kind):
     elif kind == "select_multiple":
         widget.allow_multiple_selected = True
     node.forms[0].form.fields["title"].widget = widget
-    with pytest.raises(ImproperlyConfigured, match="books.*title.*widget"):
+    with pytest.raises(ImproperlyConfigured, match=r"books.*title.*widget"):
         _ = node.forms[0].helper
 
 
@@ -348,7 +348,7 @@ def test_compact_schema_rejects_polymorphic_even_with_uniform_first_row(monkeypa
 
     node = _runtime()
     monkeypatch.setattr(node.formset, "klass", BasePolymorphicInlineFormSet)
-    with pytest.raises(ImproperlyConfigured, match="books.*polymorphic"):
+    with pytest.raises(ImproperlyConfigured, match=r"books.*polymorphic"):
         _ = node.compact_columns
 
 
@@ -439,7 +439,7 @@ def test_compact_metadata_rejects_live_parent_instance():
 
     node = _runtime(factory_attrs={"extra": 0})
     node.instance.form_kwargs["instance"] = node.instance.instance
-    with pytest.raises(ImproperlyConfigured, match="books.*parent"):
+    with pytest.raises(ImproperlyConfigured, match=r"books.*parent"):
         _ = node.compact_columns
 
 
@@ -492,3 +492,45 @@ def test_compact_metadata_preserves_unsaved_uuid_parent():
             assert node.compact_columns[0].label == "Title"
         assert len(queries) == 0
         assert parent.pk == identity and parent._state.adding
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("widget_name", ["TextInput", "NumberInput", "DateInput", "Select"])
+def test_compact_schema_stock_widgets_preserve_attributes(widget_name):
+    from django import forms
+    from django.template.loader import render_to_string
+
+    node = _runtime()
+    widget = getattr(forms, widget_name)(attrs={"class": "small-owned-widget", "data-owned": "yes"})
+    node.forms[0].form.fields["title"].widget = widget
+    assert node.compact_columns[0].label == "Title"
+    rendered = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
+    document = html.fromstring(rendered)
+    assert len(document.cssselect('[data-owned="yes"].small-owned-widget')) == 1
+
+
+@pytest.mark.django_db
+def test_compact_metadata_context_translation_and_fragment_uniformity():
+    from django.test import RequestFactory
+    from django.utils.translation import gettext, gettext_lazy, override
+
+    from tests.test1.app.views_formset import BookFormSetForm, PublisherFormSetUpdateView
+
+    class ContextBook(BookFormSetForm):
+        def __init__(self, *args, **kwargs):
+            view = kwargs["cv_view"]
+            super().__init__(*args, **kwargs)
+            self.fields["title"].label = f"{view.request.GET['label']} {gettext_lazy('Yes')}"
+
+    labels = []
+    for language, request_label in (("en", "First"), ("de", "Second")):
+        view = PublisherFormSetUpdateView()
+        view.request = RequestFactory().get("/", {"label": request_label})
+        with override(language):
+            initial = _runtime(form_class=ContextBook, cv_view=view)
+            empty = _runtime(form_class=ContextBook, cv_view=view, factory_attrs={"extra": 0})
+            fragment = next(initial.formset.template(pk=None, index=0, force_form_index=4))
+            assert initial.compact_columns == empty.compact_columns == fragment.compact_columns
+            labels.append(empty.compact_columns[0].label)
+            assert labels[-1] == f"{request_label} {gettext('Yes')}"
+    assert labels[0] != labels[1]

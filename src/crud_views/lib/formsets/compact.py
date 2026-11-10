@@ -53,6 +53,8 @@ class _CompactHeading:
     span: int
     label: str
     required: bool
+    field_type: type
+    widget_type: type
 
 
 def _compact_schema(form, declaration):
@@ -79,10 +81,16 @@ def _compact_schema(form, declaration):
         widget = field.widget
         if type(widget) not in supported or widget.template_name != type(widget).template_name:
             invalid(name, "unsupported compact widget or custom template")
+        if widget.input_type != type(widget).input_type:
+            invalid(name, "unsupported compact widget input type")
+        if type(widget) is widgets.Select and (
+            widget.option_template_name != widgets.Select.option_template_name or widget.allow_multiple_selected
+        ):
+            invalid(name, "unsupported compact widget option template or multiple selection")
         label = form[name].label
         if label is None or not str(label).strip():
             invalid(name, "a nonempty effective label is required")
-        headings.append(_CompactHeading(name, column.span, str(label), field.required))
+        headings.append(_CompactHeading(name, column.span, str(label), field.required, type(field), type(widget)))
     return tuple(headings)
 
 
@@ -91,11 +99,24 @@ def _compact_projection(x_formset):
     if declaration.compact_layout is None:
         return ()
     if not x_formset.forms:
-        raise ImproperlyConfigured(f"FormSet '{x_formset.key}': compact metadata requires a form")
+        # Unlike empty_form, this does not call inline add_fields(), which can
+        # clear an unsaved parent's default PK. Constructors/kwargs must be
+        # query-free and provide index-independent compact field metadata.
+        instance = x_formset.instance
+        kwargs = dict(instance.get_form_kwargs(None))
+        if kwargs.get("instance") is instance.instance:
+            raise ImproperlyConfigured(
+                f"FormSet '{x_formset.key}': compact metadata cannot use the live parent instance"
+            )
+        return _compact_schema(instance.form(**kwargs), declaration)
     columns = _compact_schema(x_formset.forms[0].form, declaration)
     for row in x_formset.forms[1:]:
-        if _compact_schema(row.form, declaration) != columns:
-            raise ImproperlyConfigured(f"FormSet '{x_formset.key}': compact rows must have uniform fields and labels")
+        for baseline, current in zip(columns, _compact_schema(row.form, declaration), strict=True):
+            if current != baseline:
+                raise ImproperlyConfigured(
+                    f"FormSet '{x_formset.key}' compact field '{baseline.field}': "
+                    "rows must have uniform field types, labels, required state and widget shapes"
+                )
     return columns
 
 

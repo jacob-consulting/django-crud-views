@@ -44,7 +44,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)** - Shared ancestor enforcement under the approved design v2; planning pending. (completed 2026-11-09)
 - [x] **Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (INSERTED)** - #337 (tabler-test finding 26): honour `Meta.sequence`, append `actions` last, omit the column for `cv_list_actions = None`; context gathered, planning pending. (completed 2026-11-09)
 - [ ] **Phase 06.20: ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (INSERTED)** - #338 (tabler-test finding 28): two optional `LazyStr` fields resolved in `get_meta()`, independently for singular and plural; planning pending.
-- [ ] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending.
+- [x] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending. (completed 2026-11-10)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1505,7 +1505,7 @@ only, `ViewContext.to_dict()` untouched, `parent_object` as a separate lazy key 
 level only. tabler-test findings 27 (#314) and 28 (Phase 06.20) are out of scope, as is restoring the richer demo
 texts (follow-up in tabler-test). This insertion assigns the phase; detailed planning and implementation remain
 pending.
-**Plans:** 2/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 **Wave 1**
@@ -1616,5 +1616,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
 | 06.19. Table honours Meta.sequence and omits the Actions column for None | 2/2 | Complete    | 2026-11-09 |
 | 06.20. ViewSet verbose_name override that every default label follows | 0/TBD | Not started | - |
-| 06.21. Snippet context exposes view and parent_object | 2/2 | In Progress | - |
+| 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

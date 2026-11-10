@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.24"
 current_phase_name: Opt-in compact formsets
 status: executing
-stopped_at: Completed 06.24-01-PLAN.md
-last_updated: "2026-11-10T20:43:43.831Z"
+stopped_at: Completed 06.24-02-PLAN.md
+last_updated: "2026-11-10T20:54:12.217Z"
 last_activity: 2026-11-10
 last_activity_desc: Phase 06.24 execution started
-state_head: 3ae98f2b665de5333172caa87bd1ff4bed6a1a33
+state_head: 1d9c929468344f8f3d26c95c4625ed4215edeaac
 progress:
   total_phases: 30
   completed_phases: 25
   total_plans: 167
-  completed_plans: 163
+  completed_plans: 164
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 ## Current Position
 
 Phase: 06.24 (Opt-in compact formsets) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-11-10 — Phase 06.24 execution started
 
@@ -871,6 +871,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.21 P01 | 8 min | 2 tasks | 2 files |
 | Phase 06.21 P02 | 7min | 2 tasks | 6 files |
 | Phase 06.24 P01 | 8min | 2 tasks | 7 files |
+| Phase 06.24 P02 | 9min | 2 tasks | 4 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1120,6 +1121,8 @@ Recent decisions affecting current work:
 - [Phase 06.21]: Snippet variables documented once in templates.md (## Snippet variables); messages.md, nested.md, breadcrumb.md only link to it (D-08)
 - [Phase 06.21]: #339 recorded under CHANGELOG ### Added, not Breaking; nested.md parent_object example is an unmarked fence so the cv-sync fence stays byte-identical
 - [Phase 06.24]: Compact declarations use frozen dataclasses and InstanceOf; request-local XFormSet heading metadata bypasses classic helpers and never renders choices.
+- [Phase 06.24]: Plan 02: zero-total compact metadata constructs one detached form via copied get_form_kwargs(None); exact stock widget/schema checks avoid choices and preserve parent identity.
+- [Phase 06.24]: Plan 02: compact BoundField help text uses conditional_escape before crispy rendering, preserving explicitly safe markup and leaving classic rendering unchanged.
 
 ### Pending Todos
 
@@ -1192,6 +1195,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T20:43:40.345Z
-Stopped at: Completed 06.24-01-PLAN.md
+Last session: 2026-11-10T20:53:55.225Z
+Stopped at: Completed 06.24-02-PLAN.md
 Resume file: None

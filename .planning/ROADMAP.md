@@ -1664,14 +1664,14 @@ legend-hook implementation (#346) and downstream Tabler adoption. Mockup control
 
 All eight acceptance groups in issue #347 remain authoritative; this list summarizes them for roadmap tooling.
 Implementation remains pending; plans cover all 18 approved decisions.
-**Plans:** 1/5 plans executed
+**Plans:** 2/5 plans executed
 
 Plans:
 **Wave 1**
 - [x] 06.24-01-PLAN.md — Compact declaration and end-to-end rendering slice
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.24-02-PLAN.md — Schema, empty metadata and hidden-field boundaries
+- [x] 06.24-02-PLAN.md — Schema, empty metadata and hidden-field boundaries
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.24-03-PLAN.md — Responsive layout and independent nested styling
@@ -1792,5 +1792,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.20. ViewSet verbose_name override that every default label follows | 3/3 | Complete    | 2026-11-09 |
 | 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 06.23. Explicit header-icon suppression with Icon constants | 2/2 | Complete    | 2026-11-10 |
-| 06.24. Opt-in compact formsets | 1/5 | In Progress | - |
+| 06.24. Opt-in compact formsets | 2/5 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

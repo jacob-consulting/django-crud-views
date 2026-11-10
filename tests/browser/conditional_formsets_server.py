@@ -171,6 +171,7 @@ class BrowserPublisherForm(ConditionalGroupFormMixin, CrispyModelForm):
     def helper(self):
         helper = super().helper
         helper.form_tag = False
+        helper.disable_csrf = True
         return helper
 
     def get_layout_fields(self):
@@ -196,9 +197,19 @@ class BrowserRowForm(CrispyModelForm):
 
 
 class BookForm(BrowserRowForm):
+    proof = forms.CharField(required=False, widget=forms.HiddenInput, initial="retained proof")
+
     class Meta:
         model = Book
         fields = ["title"]
+
+    def clean(self):
+        data = super().clean()
+        if data.get("title") == "REJECT":
+            self.add_error("title", "Field correction required for this retained title.")
+            self.add_error("proof", "Hidden proof correction required.")
+            self.add_error(None, "Row correction required for this book.")
+        return data
 
 
 class NoteForm(BrowserRowForm):
@@ -216,6 +227,11 @@ class MemoForm(BrowserRowForm):
 class Rows(InlineFormSet):
     def get_helper_layout_fields(self):
         return [*self.form.base_fields, self.form_control]
+
+    def clean(self):
+        super().clean()
+        if any(form.data.get(f"{form.prefix}-title") == "REJECT" for form in self.forms):
+            raise forms.ValidationError("Formset correction required for these books.")
 
 
 class ScoreForm(BrowserRowForm):
@@ -278,6 +294,26 @@ EditBooks = inlineformset_factory(
 )
 
 
+class EmptyBooks(RestrictedBooks):
+    def get_queryset(self):
+        return super().get_queryset().none()
+
+
+BookEdges = {
+    name: inlineformset_factory(
+        Publisher,
+        Book,
+        form=BookForm,
+        formset=EmptyBooks if name in ("blank", "zero") else RestrictedBooks,
+        extra=1 if name in ("blank", "delete-absent") else 0,
+        can_delete=name != "no-controls",
+        can_delete_extra=name != "delete-absent",
+        edit_only=name == "no-controls",
+    )
+    for name in ("blank", "zero", "extra-zero", "no-controls", "delete-absent")
+}
+
+
 class RecordForm(ConditionalGroupFormMixin, BrowserRowForm):
     cv_conditional_groups = [
         ConditionalGroup(
@@ -317,6 +353,7 @@ class ProfileForm(ConditionalGroupFormMixin, BrowserRowForm):
     def helper(self):
         helper = super().helper
         helper.form_tag = False
+        helper.disable_csrf = True
         helper.layout = Layout("name", "with_contact", ToggleGroup("with_contact", "email", "phone"), Formsets())
         return helper
 
@@ -384,6 +421,11 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
                     controls_span=2,
                 ),
             )
+            if edge := self.request.GET.get("edge"):
+                books.klass = BookEdges[edge]
+                books.children = OrderedDict()
+                result.formsets.pop("scores")
+            result.apply_hierarchy()
         if self.request.GET.get("policy") == "edit":
             result.formsets["books"].klass = EditBooks
         if self.request.GET.get("capability"):
@@ -434,6 +476,7 @@ class BrowserFiles(BrowserEdit):
 
 
 actor = User.objects.create_superuser(username="browser", password=None, email="")
+denied_actor = User.objects.create_user(username="browser-denied", password=None)
 cases = []
 for mode in ("stock", "native"):
     for case in (
@@ -501,10 +544,13 @@ for case in ("compact-presentation", "compact-lifecycle"):
 events.clear()
 
 
-def edit(request, mode, pk, files=False, capability=None):
+def edit(request, mode, pk, files=False, capability=None, edge=None):
     if capability:
         request.GET = request.GET.copy()
         request.GET["capability"] = capability
+    if edge:
+        request.GET = request.GET.copy()
+        request.GET["edge"] = edge
     token = theme.set(mode)
     try:
         response = (BrowserFiles if files else BrowserEdit).as_view()(request, pk=pk)
@@ -516,7 +562,11 @@ def edit(request, mode, pk, files=False, capability=None):
 
 
 def signin(request):
-    login(request, actor, backend="django.contrib.auth.backends.ModelBackend")
+    login(
+        request,
+        denied_actor if request.GET.get("denied") else actor,
+        backend="django.contrib.auth.backends.ModelBackend",
+    )
     from django.middleware.csrf import get_token
 
     get_token(request)
@@ -566,6 +616,7 @@ urlpatterns = [
     path("state/", state),
     path("edit/<str:mode>/<int:pk>/", edit),
     path("compact/<str:mode>/<int:pk>/", edit),
+    path("compact/<str:edge>/<str:mode>/<int:pk>/", edit),
     path("capability/<str:capability>/<str:mode>/<int:pk>/", edit),
     path("files/<str:mode>/<int:pk>/", lambda request, mode, pk: edit(request, mode, pk, files=True)),
     path("harness/<str:mode>/<int:pk>/", harness),
@@ -591,7 +642,12 @@ def main():
             raise SystemExit(0)
 
         signal.signal(signal.SIGTERM, stop)
-        print(json.dumps({"ready": port, "database": "disposable SQLite", "media": "temporary"}), flush=True)
+        print(
+            json.dumps(
+                {"ready": port, "database": "disposable SQLite", "media": "temporary", "temporary": temporary.name}
+            ),
+            flush=True,
+        )
         try:
             server.serve_forever()
         finally:

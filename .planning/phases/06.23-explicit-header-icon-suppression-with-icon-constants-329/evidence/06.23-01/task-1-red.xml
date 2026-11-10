@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.887" timestamp="2026-11-10T11:45:20.740535+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_heading_icons" name="test_view_header_icon_suppression" time="0.743"><failure message="AssertionError: assert ('icon-inherited' in ['h3', 'icon-inherited']) is ('' is None)&#10; +  where ['h3', 'icon-inherited'] = &lt;built-in method split of str object at 0x734d0c3d7530&gt;()&#10; +    where &lt;built-in method split of str object at 0x734d0c3d7530&gt; = 'h3 icon-inherited'.split&#10; +      where 'h3 icon-inherited' = get('class', '')&#10; +        where get = &lt;Element h1 at 0x734d0bc37b10&gt;.get">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x734d0c41a4b0&gt;
+client_user_author_view = &lt;django.test.client.Client object at 0x734d0c41a1b0&gt;
+
+    @pytest.mark.django_db
+    def test_view_header_icon_suppression(monkeypatch, client_user_author_view):
+        from tests.test1.app.views import AuthorListView, cv_author
+    
+        monkeypatch.setattr(cv_author, "icon_header", "host:inherited")
+        with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+            for value in (None, ""):
+                monkeypatch.setattr(AuthorListView, "cv_icon_header", value)
+                response = client_user_author_view.get("/author/")
+                assert response.status_code == 200
+                (heading,) = html.fromstring(response.content).cssselect("[data-test-page-title] h1")
+                assert heading.text_content().strip() == "Authors"
+                assert not heading.cssselect("i")
+&gt;               assert ("icon-inherited" in heading.get("class", "").split()) is (value is None)
+E               AssertionError: assert ('icon-inherited' in ['h3', 'icon-inherited']) is ('' is None)
+E                +  where ['h3', 'icon-inherited'] = &lt;built-in method split of str object at 0x734d0c3d7530&gt;()
+E                +    where &lt;built-in method split of str object at 0x734d0c3d7530&gt; = 'h3 icon-inherited'.split
+E                +      where 'h3 icon-inherited' = get('class', '')
+E                +        where get = &lt;Element h1 at 0x734d0bc37b10&gt;.get
+
+tests/test1/test_heading_icons.py:187: AssertionError</failure></testcase></testsuite></testsuites>

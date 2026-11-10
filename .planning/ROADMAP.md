@@ -46,6 +46,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.20: ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (INSERTED)** - #338 (tabler-test finding 28): two optional `LazyStr` fields resolved in `get_meta()`, independently for singular and plural; planning pending. (completed 2026-11-09)
 - [x] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending. (completed 2026-11-10)
 - [x] **Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (INSERTED)** - #341 (tabler-test finding 24): document the custom-permission recipe for custom form and action views; new static check `viewset.E269` verifies `cv_permission` and nested ancestor pair keys against the model's declared permissions on core ViewSets; Guardian documented as unsupported; planning pending. (completed 2026-11-10)
+- [x] **Phase 06.23: Explicit header-icon suppression with Icon constants (INSERTED)** - #329: readable per-view suppression, preserved default inheritance, and paired breaking-change/migration guidance; 2 plans verified, ready to execute. (completed 2026-11-10)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1581,6 +1582,38 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.22-03-PLAN.md — `Author.Meta.permissions`, executed recipe section in `custom_form_view.md`, `action_view.md` pointer, `guardian.md` note, `nested.md` row, `### Added` changelog entry, phase gates incl. the examples system-check test (wave 3)
 
+### Phase 06.23: Explicit header-icon suppression with Icon constants (#329) (INSERTED)
+
+**Goal:** Let a view explicitly suppress its inherited header icon with readable constants while preserving default
+inheritance, explicit icon overrides, custom header content and dynamic method overrides.
+**Source:** [Issue #329](https://github.com/jacob-consulting/django-crud-views/issues/329), the canonical completed
+maintainer discussion and acceptance criteria. Carry its settled decisions into planning without reopening them;
+helper placement, annotations, fixtures, test organization and documentation placement are delegated.
+**Requirements:** HDRI-01, HDRI-02, HDRI-03, HDRI-04, HDRI-05, HDRI-06, HDRI-07, HDRI-08, HDRI-09
+**Depends on:** Phase 06.22 for scheduling only; independently deliverable, with no technical dependency on #327 or
+#328. Complete before Phase 7 freezes the affected public surface.
+**Settled scope:**
+
+1. Export plain constants from `crud_views.lib.icons`: `Icon.VIEWSET_DEFAULT = None` and `Icon.NONE = ""`.
+   Inherit the ViewSet header icon only when `cv_icon_header is None`; empty strings explicitly suppress it.
+2. Preserve supported explicit icon formats and existing validation. Custom template and template-code headers
+   retain normal inheritance unless explicitly suppressed; existing `cv_get_header_icon()` overrides remain valid.
+3. Verify rendered page and supported modal/theme headers, custom content, inheritance, suppression and validation
+   through focused regression tests; use multicore pytest for broad verification.
+4. Document constants, context-specific inheritance, custom-header examples and dynamic overrides. Pair the
+   `### Breaking` changelog entry for empty-string semantics with `docs/migrating-1.0.md` guidance.
+
+**Out of scope:** Enums, new sentinels/settings/flags, automatic suppression for custom headers, action-icon changes,
+header redesign and icon-registry refactors. Downstream edits/releases are not a completion dependency.
+**Plans:** 2/2 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.23-01-PLAN.md — Plain Icon constants, None-only inheritance and real rendered compatibility regressions (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.23-02-PLAN.md — Complete reference recipes, paired empty-string migration and final verification (wave 2)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1602,6 +1635,8 @@ diagnostics and migration contracts in the stability review.
 Phases 06.19 to 06.22 must also settle before this freeze; include the `Table` sequence/actions behaviour (#337), the
 `ViewSet` label fields (#338), the snippet context keys `view` / `parent_object` (#339) and the `viewset.E269` check id
 (#341) in the stability review.
+Phase 06.23 must also settle before this freeze; include the public `Icon` constants and the explicit header-icon
+inheritance/suppression contract (#329).
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -1685,4 +1720,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.19. Table honours Meta.sequence and omits the Actions column for None | 2/2 | Complete    | 2026-11-09 |
 | 06.20. ViewSet verbose_name override that every default label follows | 3/3 | Complete    | 2026-11-09 |
 | 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
+| 06.23. Explicit header-icon suppression with Icon constants | 2/2 | Complete    | 2026-11-10 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

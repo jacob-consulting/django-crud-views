@@ -1,6 +1,7 @@
 """Compile the actual published heading recipes with native styling and hostile input."""
 
 import re
+from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -12,8 +13,11 @@ from django.utils.translation import gettext_lazy
 from lxml import html
 
 from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES
+from crud_views.lib.icons import Icon
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
+from crud_views.lib.viewset import _REGISTRY, ViewSet
+from tests.test1.app.models import Publisher
 from tests.test1.test_heading_icons import HOST_LIBRARY
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -41,6 +45,43 @@ def native_classes():
     namespace = {}
     exec(compile(recipe(THEME, "### Native heading class table", "python"), str(THEME), "exec"), namespace)
     return namespace["CRUD_VIEWS_BUTTON_CLASSES"]
+
+
+def test_published_custom_header_suppression_recipe(settings):
+    """Execute the actual view class and render its real file snippet through the page recipe."""
+    name = "heading_docs_customer"
+    viewset = ViewSet(model=Publisher, name=name, icon_header="fas:book")
+    templates = deepcopy(settings.TEMPLATES)
+    templates[0]["APP_DIRS"] = False
+    templates[0]["OPTIONS"]["loaders"] = [
+        (
+            "django.template.loaders.locmem.Loader",
+            {"sales/customer_header.html": '<span data-avatar="customer">Avatar</span> {{ object.name }}'},
+        ),
+        "django.template.loaders.app_directories.Loader",
+    ]
+    try:
+        namespace = {"cv_customer": viewset}
+        exec(compile(recipe(ICONS, "### Custom header suppression recipe", "python"), str(ICONS), "exec"), namespace)
+        view_class = namespace["CustomerDetailView"]
+        assert view_class.cv_icon_header is Icon.NONE
+        assert view_class.cv_property_display == [{"title": "Customer", "properties": ["name"]}]
+        view = view_class()
+        view.object = Publisher(name="Customer Ada")
+        with override_settings(TEMPLATES=templates):
+            for value in (Icon.NONE, Icon.VIEWSET_DEFAULT):
+                view_class.cv_icon_header = value
+                rendered = Template(recipe(TEMPLATES, "### Page title recipe")).render(Context({"view": view}))
+                heading = html.fromstring(rendered)
+                assert heading.tag == "h1"
+                assert " ".join(heading.text_content().split()) == "Avatar Customer Ada"
+                assert len(heading.cssselect('[data-avatar="customer"]')) == 1
+                icons = heading.cssselect("i")
+                assert len(icons) == (1 if value is Icon.VIEWSET_DEFAULT else 0)
+                if icons:
+                    assert icons[0].get("class") == "fa-solid fa-book"
+    finally:
+        _REGISTRY.pop(name, None)
 
 
 def test_documented_heading_icon_defaults_match_registry():

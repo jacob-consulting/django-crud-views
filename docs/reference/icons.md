@@ -27,8 +27,9 @@ order:
    (`far:eye`, `bi:person`, `xy:rocket`).
 3. **Raw CSS class** - anything else without a colon (`"fa-solid fa-truck"`) renders as `<i class="...">`.
 
-An empty, whitespace-only or `None` value renders nothing; surrounding whitespace is ignored. The same holds for a
-table value, so `CRUD_VIEWS_ICONS = {"field-marker": None}` (or `""`) switches that icon off. Any other non-string
+Once an icon value is resolved, an empty, whitespace-only or `None` value renders nothing; surrounding whitespace
+is ignored. The same holds for a table value, so `CRUD_VIEWS_ICONS = {"field-marker": None}` (or `""`) switches that
+icon off. A view's `cv_icon_header=None` first inherits its ViewSet icon, as described below. Any other non-string
 value renders nothing and is reported by `crud_views.E356`.
 
 !!! warning "Colons and raw classes"
@@ -40,6 +41,72 @@ value renders nothing and is reported by `crud_views.E356`.
     with an unknown prefix renders nothing, and the system checks `crud_views.W352` / `crud_views.W353` warn about it.
 
 Icons are rendered with `aria-hidden="true"`; labels are provided as visually hidden text where needed.
+
+## View header icons
+
+Import the readable constants with `from crud_views.lib.icons import Icon`. They are plain primitive values:
+`Icon.VIEWSET_DEFAULT is None` and `Icon.NONE == ""`. On `cv_icon_header`, the view value wins whenever it is not
+`None`; only `None` falls back to `view.cv_viewset.icon_header`. This selection applies to page headers and
+supported modal/theme headers using the shared header API.
+
+| `cv_icon_header` | Behavior |
+|---|---|
+| Omitted (default) | Inherit the ViewSet header icon |
+| `None` | Inherit the ViewSet header icon |
+| `Icon.VIEWSET_DEFAULT` | Inherit the ViewSet header icon (literally `None`) |
+| `""` | Suppress the header icon |
+| `Icon.NONE` | Suppress the header icon (literally `""`) |
+| Explicit icon, e.g. `"bi:person"` | Override the ViewSet header icon |
+
+All five explicit forms are supported on a view:
+
+```python
+cv_icon_header = Icon.VIEWSET_DEFAULT  # Inherit the ViewSet icon.
+cv_icon_header = None  # Same behavior; existing default preserved.
+
+cv_icon_header = Icon.NONE  # Explicitly suppress the header icon.
+cv_icon_header = ""  # Same behavior; this literal changes meaning.
+
+cv_icon_header = "bi:person"  # Explicit per-view icon override.
+```
+
+Explicit values retain all [supported icon formats](#icon-values): semantic names such as `"detail"`, registered
+prefix values such as `"bi:person"`, and raw CSS classes such as `"fa-solid fa-truck"`.
+`Icon.VIEWSET_DEFAULT` means inheritance only on `cv_icon_header`. In object-detail group icons and the general
+icon registry, `None` still means no icon; neither context gains inheritance behavior.
+
+### Custom header suppression recipe
+
+Given the application's existing `cv_customer` ViewSet, keep the custom header content and suppress its inherited
+icon explicitly:
+
+```python
+from crud_views.lib.icons import Icon
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
+
+
+class CustomerDetailView(ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_customer  # Existing application ViewSet.
+    cv_property_display = [{"title": "Customer", "properties": ["name"]}]
+    cv_header_template = "sales/customer_header.html"
+    cv_icon_header = Icon.NONE  # Custom header contains an avatar; no inherited icon.
+```
+
+The template `sales/customer_header.html` supplies the visible content, for example an avatar beside
+`{{ object.name }}`. Configuring `cv_header_template` or `cv_header_template_code` alone keeps normal icon
+inheritance; custom content and icon selection are independent. Use `Icon.VIEWSET_DEFAULT` (or `None`) to keep
+the inherited icon alongside that content. See [snippet variables](templates.md#snippet-variables) and the
+[page title recipe](templates.md#page-title-recipe).
+
+### Dynamic header icon decisions
+
+For request/object-dependent decisions, the existing method override remains supported. Returning `None` from
+the getter suppresses the resolved icon; it does not trigger the attribute's ViewSet fallback:
+
+```python
+def cv_get_header_icon(self):
+    return None  # Existing supported way to suppress the icon dynamically.
+```
 
 ## Default table
 

@@ -156,7 +156,7 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     # icons
     cv_icon_action: str | None = None  # icon: semantic name, prefix:name or raw CSS classes
-    cv_icon_header: str | None = None  # icon: semantic name, prefix:name or raw CSS classes
+    cv_icon_header: str | None = None  # None inherits the ViewSet icon; "" suppresses; str overrides
 
     # semantic variant of the action button that targets this view: primary, secondary, tertiary or danger
     cv_action_variant: str = "secondary"
@@ -554,10 +554,9 @@ class CrudView(metaclass=CrudViewMetaClass):
             return None
         return self.render_snippet(self.cv_get_meta(), template, template_code)
 
-    def cv_get_header_icon(self) -> str:
+    def cv_get_header_icon(self) -> str | None:
         view_icon = self.cv_icon_header
-        icon = view_icon or self.cv_viewset.icon_header
-        return icon
+        return self.cv_viewset.icon_header if view_icon is None else view_icon
 
     @property
     def cv_header(self) -> str:

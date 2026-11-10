@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
+last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
 last_mapped_at: 2026-11-10
 ---
 # Testing Patterns
@@ -206,6 +206,14 @@ For view failures, assert response status, form errors, redirect, and unchanged 
 - `tests/test1/test_ancestor_docs.py` extracts and executes the published recipe against Author's real metadata; valid and misspelled keys provide positive/negative controls. Cross-links and release wording are asserted.
 - Retained phase execution evidence: `pytest tests/test1 -n 4 -q` passed 12,074 cases with four existing warnings; strict MkDocs and example system checks passed. These are recorded prior results, not a new run during mapping (`.planning/phases/06.22-custom-permissions-meta-permissions-recipe-and-startup-check/06.22-GATE-EVIDENCE.md`).
 - For focused regression use `.venv/bin/pytest tests/test1/test_permission_declarations.py tests/test1/test_missing_permission_access.py tests/test1/test_ancestor_docs.py -n 4 -q`.
+
+## Header Icon Inheritance and Published Recipes (Phase 06.23)
+
+- `tests/test1/test_heading_icons.py` exercises the actual page and modal heading paths. It distinguishes omitted/`None` view values (inherit `ViewSet.icon_header`) from empty string/`Icon.NONE` (suppress) and explicit icon overrides; it also covers custom file/code headers, modal rendering, theme host classes, inline icons, empty registry values and hostile title/class input.
+- `tests/test1/test_icons_registry.py` pins the public primitive values (`Icon.VIEWSET_DEFAULT is None`, `Icon.NONE == ""`) alongside the shared registry and renderer contracts. Keep their use context-specific: only `cv_icon_header` gives `None` the ViewSet fallback behavior (`src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`).
+- `tests/test1/test_heading_docs.py` checks the public reference/migration wording and executes the published custom-header suppression recipe through a real temporary ViewSet, object, configured file snippet, and header getter. It also checks the inherited-icon control. Keep the documentation fence and executable contract aligned.
+- Retained phase 06.23 evidence records 317 focused cases and a final full-suite result of 12,301 passed with four warnings. The full run used four workers and `PYTHONPATH=src` in one local Python 3.12.3 / Django 6.1.2 environment. Treat these counts as phase execution evidence for that environment, not as the project's supported Python/Django matrix (`.planning/phases/06.23-explicit-header-icon-suppression-with-icon-constants-329/06.23-02-SUMMARY.md`, `.planning/phases/06.23-explicit-header-icon-suppression-with-icon-constants-329/06.23-VERIFICATION.md`).
+- For direct pytest runs in this src-layout checkout, use `PYTHONPATH=src` when import precedence could select an older installed/editable package; retain multicore execution for broad runs (`pytest tests -n auto` or a bounded worker count such as `pytest tests -n 4`). Nox installs the checkout into isolated environments and its suite sessions use `-n auto` (`noxfile.py`).
 
 ---
 

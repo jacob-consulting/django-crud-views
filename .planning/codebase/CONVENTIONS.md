@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
+last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
 last_mapped_at: 2026-11-10
 ---
 # Coding Conventions
@@ -113,6 +113,13 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 - Use concrete-model metadata for declared core permission vocabulary and remove only the exact terminal `_<model_name>` suffix. Share `_permission_key` with the runtime map (`src/crud_views/lib/ancestors.py`, `src/crud_views/lib/viewset/__init__.py`).
 - Completion-dependent diagnostics belong behind the existing URLconf barrier; do not read Permission/ContentType rows at startup (`src/crud_views/checks.py`).
 - Keep declaration helpers private and preserve the distinct ownership of existing error codes/provider exclusions. Publish one executable recipe rather than duplicating application examples (`docs/reference/custom_form_view.md`, `tests/test1/test_ancestor_docs.py`).
+
+## Header Icon Values (Phase 06.23)
+
+- `Icon` in `src/crud_views/lib/icons.py` is a plain class of semantic constants, not an enum: `Icon.VIEWSET_DEFAULT` is literally `None`, and `Icon.NONE` is literally `""`. Use these names to make view-header configuration readable (`docs/reference/icons.md`).
+- On `cv_icon_header` only, `None` inherits `ViewSet.icon_header`; every non-None value is the view's explicit choice. Empty string and `Icon.NONE` suppress the header icon. Do not use truthiness fallback for this attribute (`src/crud_views/lib/view/base.py`, `tests/test1/test_heading_icons.py`).
+- Keep this context-specific meaning separate from general icon resolution: `Icon.VIEWSET_DEFAULT` has no ViewSet-fallback meaning in action or object-detail icon slots (`src/crud_views/lib/icons.py`, `docs/reference/icons.md`).
+- Custom heading text/template selection is independent of icon inheritance/suppression. Preserve custom file/code header content while testing icon selection (`tests/test1/test_heading_icons.py`, `tests/test1/test_heading_docs.py`).
 
 ---
 

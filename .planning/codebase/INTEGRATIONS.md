@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-10
-last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
+last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
 ---
 # External Integrations
 
@@ -9,61 +9,49 @@ last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 ## APIs & External Services
 
 **Django host application:**
-- Integrates with Django app registry, URL routing, templates, settings, auth, content types, messages, ORM, and system checks (`src/crud_views/apps.py`, `src/crud_views/checks.py`, `src/crud_views/lib/viewset/`).
+- Uses Django's app registry, URL routing, templates, settings, ORM, auth/permissions, content types, messages, and system checks (`src/crud_views/apps.py`, `src/crud_views/lib/viewset/`, `src/crud_views/checks.py`).
   - SDK/Client: Django APIs
-  - Auth: Host project's configured authentication and permissions
+  - Auth: Host project configures identity, middleware, and permissions
 
-**Forms, tables, and filters:**
-- django-crispy-forms and crispy-bootstrap5 render forms with the Bootstrap 5 pack (`src/crud_views/lib/crispy/`).
-  - SDK/Client: `crispy_forms`, `crispy_bootstrap5`
-  - Auth: Host Django configuration; no credentials
-- django-tables2 and django-filter adapt list views (`src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`).
-  - SDK/Client: `django_tables2`, `django_filters`
-  - Auth: None
+**Forms, tables, and filtering:**
+- django-crispy-forms with crispy-bootstrap5 renders forms; django-tables2 and django-filter provide list table/filter integration (`src/crud_views/lib/crispy/`, `src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`).
+  - SDK/Client: `crispy_forms`, `crispy_bootstrap5`, `django_tables2`, `django_filters`
+  - Auth: None; these use host Django configuration
 
 **Optional Django extensions:**
-- django-fsm-2 and django-fsm-2-admin provide workflow transitions and admin integration (`src/crud_views_workflow/`).
-  - SDK/Client: `django_fsm`
-  - Auth: Django permissions and workflow view configuration.
-  - `run_transition(object, name, *, user, comment=None)` is lazily exported from `src/crud_views_workflow/lib/__init__.py`; it checks transition availability and business/comment validation, requires the authenticated actor and object to be saved on the selected write alias, then saves state and `WorkflowInfo` history atomically on that alias (`src/crud_views_workflow/lib/execution.py`). `WorkflowView` schedules follow-up work with `transaction.on_commit()` on that alias (`src/crud_views_workflow/lib/views.py`). Direct decorated-method calls bypass these helper checks and history behavior.
-- django-polymorphic supports polymorphic querysets and subtype create forms (`src/crud_views_polymorphic/`).
-  - SDK/Client: `polymorphic`
-  - Auth: Django permissions
-- django-guardian provides object-level permissions (`src/crud_views_guardian/`).
-  - SDK/Client: `guardian`
-  - Auth: Host user model, auth backends, and Guardian permissions
-- django-ordered-model enables ordered actions when host models use it (`pyproject.toml`).
-- django-pipeline optionally bundles registered assets; with `CRUD_VIEWS_ASSETS_BUNDLED` tags emit only external entries (`src/crud_views/lib/pipeline.py`, `src/crud_views/lib/assets.py`, `src/crud_views/management/commands/cv_assets.py`). CSP nonce attribute via `CRUD_VIEWS_CSP_NONCE_ATTR`; SRI hashes supported on registered assets.
+- django-fsm-2 and django-fsm-2-admin power workflow transitions and admin integration (`src/crud_views_workflow/`). `run_transition()` validates actor/object/transition state and writes workflow history atomically on the chosen DB alias (`src/crud_views_workflow/lib/execution.py`); direct FSM method calls bypass this helper behavior.
+- django-polymorphic supports polymorphic querysets and type-specific creation (`src/crud_views_polymorphic/`).
+- django-guardian adds per-object permission checks and requires host auth backends/configuration (`src/crud_views_guardian/`).
+- django-ordered-model supports ordering actions for host models that opt into it (`pyproject.toml`).
+
+**Icons and frontend assets:**
+- `Icon` in `src/crud_views/lib/icons.py` is a namespace of plain Python values: `Icon.VIEWSET_DEFAULT` is `None`, and `Icon.NONE` is `""`. The package adds no icon SDK or runtime dependency for these constants.
+- Built-in icon values resolve through the semantic icon table and `far`, `fas`, and `bi` library configurations; the host template must load matching icon-font CSS for those classes to display (`src/crud_views/lib/icons.py`, `docs/reference/icons.md`). Projects and theme apps can register mappings/renderers with `register_icons()` and `register_icon_library()`.
+- Core static assets are emitted through Django static URLs. Optional django-pipeline integration exposes lazy `cv_sources()` values; setting `CRUD_VIEWS_ASSETS_BUNDLED` makes package tags emit external entries while the host bundler delivers local files (`src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `docs/reference/assets.md`). The package does not install or import django-pipeline at runtime.
+- Registered assets may use external CDN URLs and can carry SRI and CSP nonce attributes (`src/crud_views/lib/assets.py`). The host project owns Bootstrap/icon CSS delivery and CSP policy.
 
 **Caller-provided resource sources:**
-- `Resource` and `ResourceViewMixin` expose caller-defined data, including external API or filesystem sources (`src/crud_views/lib/resource.py`). The package supplies no provider SDK or adapter; callers implement `cv_get_items()` and optionally `cv_get_item()`.
-- Resource views default to `cv_atomic = False`; callers can opt into a transaction for ORM writes, while external side effects such as API or object-storage writes remain outside database rollback semantics (`src/crud_views/lib/resource.py`).
-
-## Model Metadata and Detail Rendering
-
-- Object-detail choice labels use Django's `get_FIELD_display()` on the terminal scalar model owner, including scalar FK/O2O paths; collections and terminal relation fields retain their normal behavior (`src/crud_views_object_detail/lib/resolvers.py`). Raw `value` remains available to badge/link callbacks and custom templates, while `display_value` supplies the presentation label (`src/crud_views_object_detail/templatetags/crud_views_object_detail.py`). Django escaping and localization remain the rendering boundary.
-- Help descriptions use terminal model field metadata with property, view, and project precedence. Lazy help remains unevaluated until rendering; choice labels resolve under the active language (`src/crud_views_object_detail/lib/resolvers.py`, `docs/reference/object_detail_configuration.md`). Object-detail settings are separately cached in `src/crud_views_object_detail/lib/conf.py`; `CRUD_VIEWS_OBJECT_DETAIL_SHOW_HELP_TEXT` defaults to false.
+- `Resource` and `ResourceViewMixin` let applications supply non-ORM data via `cv_get_items()` and optionally `cv_get_item()`; there is no provider SDK or built-in API/filesystem adapter (`src/crud_views/lib/resource.py`).
+- Resource views default to `cv_atomic = False`; opting into a database transaction cannot roll back external API or storage writes (`src/crud_views/lib/resource.py`).
 
 ## Data Storage
 
 **Databases:**
-- No provider is selected by the reusable package; ORM connections come from host `DATABASES` settings.
-  - Connection: Host Django `DATABASES`
-  - Client: Django ORM
-- Workflow audit history is stored in the host database (`src/crud_views_workflow/models.py`, `src/crud_views_workflow/migrations/`). Transition and history writes share a database transaction (`src/crud_views_workflow/lib/execution.py`).
-- Demo uses SQLite (`examples/bootstrap5/project/settings_demo.py`, `render.yaml`).
+- Provider is selected by the Django host through `DATABASES`; package ORM operations use Django connections.
+- Workflow audit history is stored in the host database and transition/history writes share a transaction (`src/crud_views_workflow/models.py`, `src/crud_views_workflow/lib/execution.py`).
+- Example demo uses SQLite (`examples/bootstrap5/project/settings_demo.py`, `render.yaml`).
 
 **File Storage:**
-- No package-managed storage integration; host Django owns storage backends. Demo serves collected static assets with WhiteNoise (`requirements/demo.txt`, `render.yaml`).
+- No package-managed file-storage service; Django host owns storage backends. Demo static files are collected and served by WhiteNoise (`render.yaml`, `requirements/demo.txt`).
 
 **Caching:**
-- No external caching service or package-managed cache detected.
+- No external cache or package-managed caching service detected.
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Django's configured authentication and permission system (`src/crud_views/lib/view/`).
-  - Implementation: Host configures identity, middleware, and permissions; optional `src/crud_views_guardian/` adds per-object permissions.
+- Django's configured authentication and permission system (`src/crud_views/lib/view/`). Host project owns users, auth middleware, and permission grants.
+- Optional `src/crud_views_guardian/` integrates django-guardian object permissions and its configured authentication backend.
 - No login implementation or external identity-provider client is included.
 
 ## Monitoring & Observability
@@ -72,49 +60,36 @@ last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 - No error-tracking SDK detected in package dependencies or source.
 
 **Logs:**
-- No package-specific logging backend; host Django deployment manages logs. Demo runs under Gunicorn (`render.yaml`).
+- No package-specific logging backend; host Django deployment manages logs. Demo process runs under Gunicorn (`render.yaml`).
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Package builds as a Python wheel with Hatchling (`pyproject.toml`); no hosting imposed.
-- Demo deploys to Render (`render.yaml`) using Gunicorn and WhiteNoise (`requirements/demo.txt`).
-- Documentation uses Read the Docs and MkDocs (`.readthedocs.yaml`, `mkdocs.yml`).
+- The package is built as a Python wheel/sdist using Hatchling; hosting is not prescribed (`pyproject.toml`).
+- Public example is hosted on Render with Gunicorn and WhiteNoise (`render.yaml`, `requirements/demo.txt`).
+- Documentation is built with MkDocs on Read the Docs (`mkdocs.yml`, `.readthedocs.yaml`).
 
 **CI Pipeline:**
-- GitHub Actions (`tests.yml`, `lint.yml`, `docs.yml`, `js.yml`, `publish.yml`, `demo.yml`, `readme-examples.yml`) run test matrices; actions are SHA-pinned and Dependabot-managed (`.github/dependabot.yml`)
-- `demo.yml` deploys release tags to Render via the Render API (secrets `RENDER_API_KEY`, `RENDER_SERVICE_ID`, var `DEMO_URL`) and resets demo data daily by cron
-- Local dev: Cloudflare tunnel via `cloudflare/cloudflared` container, token `TUNNEL_TOKEN` in `dev/.env` (`dev/docker-compose.yaml`, `task cf`)
-- GitHub Actions under `.github/workflows/` run test matrices, lint, docs, JS checks, and release publication.
-- Ruff formats Markdown Python fences as well as Python modules; CI runs `ruff format --check .` and `ruff check .` (`.github/workflows/lint.yml`).
-- Release uses PyPI trusted publishing (`.github/workflows/publish.yml`); coverage uploads to Codecov (`.github/workflows/tests.yml`).
+- GitHub Actions cover Python/Django tests, lint, docs, JavaScript, release publication, demo deployment, and README examples (`.github/workflows/`).
+- Release workflow uses PyPI trusted publishing; test coverage uploads to Codecov (`.github/workflows/publish.yml`, `.github/workflows/tests.yml`).
+- Demo workflow deploys release tags to Render through the Render API; credentials are configured in GitHub/Render settings (`.github/workflows/demo.yml`).
+- Local tunnel tooling uses Cloudflare Tunnel through Docker Compose; `.env` file presence is noted without reading contents (`dev/docker-compose.yaml`, `dev/.env`).
 
 ## Environment Configuration
 
 **Required env vars:**
-- The library defines no required environment variables. Host Django settings supply database and secrets. Demo deployment defines its settings module, secret key, and public demo URL in Render configuration (`render.yaml`).
+- None for the reusable library. Host Django settings provide project-specific database and secret configuration; Render generates the demo secret in its service config (`render.yaml`).
 
 **Secrets location:**
-- Host/deployment environment; `.env` files, if present, are not inspected.
+- Host/deployment environment or local env files; `.env` contents are not inspected.
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- None provided by the package. Django host applications supply URL endpoints.
+- None provided by the package; host applications define request endpoints.
 
 **Outgoing:**
-- No package-managed webhooks. Django workflow callbacks use `transaction.on_commit()` for post-commit work (`src/crud_views_workflow/lib/views.py`).
-
-## ViewSet Display Names (Phase 06.20)
-
-- Optional singular/plural ViewSet names override model or Resource metadata at the presentation boundary. Lazy translations resolve per `get_meta()` call (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/lazy.py`).
-- `GuardianViewSet` inherits both constructor fields without extension changes; permission vocabulary and model-centric deletion/404 names are unaffected (`src/crud_views_guardian/lib/viewset.py`, `docs/reference/nested.md#labels`). No external integration was added.
-
-## Permission declaration integration
-
-- Core startup checks derive keys from concrete-model `Meta.default_permissions` and `Meta.permissions`; Django migrations still create the corresponding auth rows, and applications still grant permissions (`docs/reference/custom_form_view.md`).
-- `ViewSet.default_permissions` continues to read ContentType/Permission rows at runtime, using shared `_permission_key` normalization (`src/crud_views/lib/viewset/__init__.py`).
-- Guardian ViewSets are excluded from the new metadata check because their runtime map follows the configured content-type resolver (`docs/reference/guardian.md`, `src/crud_views/lib/ancestors.py`). Resource ViewSets retain their separate permission contract.
+- No package-managed webhook delivery. Workflow views register follow-up work with Django `transaction.on_commit()` (`src/crud_views_workflow/lib/views.py`).
 
 ---
 

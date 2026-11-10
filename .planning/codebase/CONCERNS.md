@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
+last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
 last_mapped_at: 2026-11-10
 ---
 # Codebase Concerns
@@ -9,102 +9,110 @@ last_mapped_at: 2026-11-10
 ## Tech Debt
 
 **Settings snapshot at module import:**
-- Issue: `CrudViewsSettings` fields are populated from Django settings in the model class body (including the Phase 06.18 `CRUD_VIEWS_ANCESTOR_*` settings), and template-tag registration captures `theme_path` in decorators. `override_settings()` does not refresh captured configuration.
+- Issue: `CrudViewsSettings` field defaults read Django settings in the model class body, and the template-tag registration decorators capture `theme_path`. `override_settings()` does not refresh these captured values, though some settings such as label-mode defaults are deliberately read at call time.
 - Files: `src/crud_views/lib/settings.py`, `src/crud_views/templatetags/crud_views.py`
-- Impact: tests and applications that vary CRUD settings after app initialization see stale values; template registration cannot be switched dynamically.
-- Fix approach: distinguish startup-only from runtime settings; make runtime reads lazy or respond to `setting_changed`.
+- Impact: applications and tests cannot switch startup-captured CRUD settings or registered template paths dynamically after imports.
+- Fix approach: keep startup-only configuration explicit; make a setting lazy or respond to `setting_changed` only when runtime reconfiguration is a demonstrated requirement.
 
 **No-op public management command:**
-- Issue: `crud_views_show` is registered, but `handle()` only executes `pass` (comment: "placeholder command").
+- Issue: `crud_views_show` is registered, but `handle()` only contains `pass` and a placeholder comment.
 - Files: `src/crud_views/management/commands/crud_views_show.py`
-- Impact: `manage.py help` advertises a command that does nothing.
-- Fix approach: implement ViewSet/URL inspection or remove it.
+- Impact: `manage.py help` advertises a command that produces no output.
+- Fix approach: implement ViewSet/URL inspection or remove the command.
 
 **Large central modules concentrate unrelated behavior:**
-- Files: `src/crud_views/lib/view/base.py` (1224 lines), `src/crud_views/templatetags/crud_views.py` (667), `src/crud_views/lib/view/buttons.py` (599), `src/crud_views/lib/ancestors.py` (559), `src/crud_views/lib/formsets/formsets.py` (544), `src/crud_views/lib/viewset/__init__.py` (534)
-- Impact: shared changes have broad regression surfaces; `base.py` has grown since the previous map.
-- Fix approach: extract cohesive subsystems behind current public APIs only when a concrete maintenance need justifies it.
+- Files: `src/crud_views/lib/view/base.py` (1229 lines), `src/crud_views/templatetags/crud_views.py` (667), `src/crud_views/lib/view/buttons.py` (599), `src/crud_views/lib/ancestors.py` (607), `src/crud_views/lib/formsets/formsets.py` (544), `src/crud_views/lib/viewset/__init__.py` (532)
+- Impact: shared changes have broad regression surfaces; the base view and ancestor modules have grown beyond their sizes in the previous map.
+- Fix approach: extract cohesive subsystems behind existing public APIs only when a concrete maintenance need justifies the added abstraction.
 
-**Ancestor authorization subsystem is new and multi-module:**
-- Issue: Phase 06.18 added ancestor authorization across `ancestors.py`, `ancestor_db.py`, `ancestor_policy.py`, with hooks in `viewset/__init__.py`, `breadcrumb.py`, `resource.py`, `views/delete.py`, `views/manage.py`, and `crud_views_polymorphic/lib/create_select.py`. Behavior is configured by three settings dicts (cascade, read, write permissions).
-- Impact: new cross-cutting path with hidden state in settings; per CLAUDE.md maintainability rule, changes need to remain traceable by the developer.
-- Fix approach: modify via the existing `tests/test1/test_ancestor_*.py` suite (cost, database, guardian, migration, redirect coverage); keep it opt-in/bounded.
+**Ancestor authorization spans several runtime layers:**
+- Issue: authorization policy and resolution cross `ancestors.py`, `ancestor_db.py`, `ancestor_policy.py`, ViewSet hooks, breadcrumbs, resource loading, delete/manage views, polymorphic creation and Guardian adapters. Global policy also has three settings maps.
+- Files: `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_db.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views_guardian/lib/ancestors.py`
+- Impact: changes can alter request order, database routing, visibility and permission behavior across endpoint types.
+- Fix approach: preserve the opt-in bounded policy model and exercise the focused `tests/test1/test_ancestor_*.py` coverage for query costs, database routing, Guardian, migration and redirects when changing it.
+
+**Runtime contracts use Python assertions:**
+- Issue: public/configuration preconditions and type checks use `assert`, which Python removes under `-O`; examples include permission-map lookup in `CrudViewPermissionRequiredMixin`, workflow state configuration, and Guardian context input checks.
+- Files: `src/crud_views/lib/view/base.py`, `src/crud_views_workflow/lib/mixins.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views_polymorphic/lib/utils.py`, `src/crud_views/lib/formsets/formsets.py`
+- Impact: invalid configuration or unexpected inputs can fail later with less direct errors in optimized Python. No authorization bypass is established by the current evidence.
+- Fix approach: use explicit exceptions or Django checks for caller/configuration contracts; retain assertions for internal invariants.
 
 ## Known Bugs
 
-**Polymorphic create accepts unvalidated content-type ids (code-inspection concern, still open):**
-- Symptoms: `polymorphic_model` does `ContentType.objects.get(id=...)` with no handling, so a missing id raises `ContentType.DoesNotExist` (500). `get_form_class` raises `ValueError` for types absent from `polymorphic_forms`, and its message dereferences `self.object`, which does not exist on the create view (likely `AttributeError` instead of the intended error). The URL path only constrains the id to an int.
-- Files: `src/crud_views_polymorphic/lib/utils.py` (`polymorphic_model`, `get_form_class`), `src/crud_views_polymorphic/lib/create.py`, `src/crud_views_polymorphic/lib/create_select.py`
-- Trigger: request a polymorphic create URL with a nonexistent or non-configured content type id.
-- Workaround: none beyond not exposing arbitrary ids. Fix: return 404 for unknown/unconfigured ids and use `self.polymorphic_model` in the error message.
+**Polymorphic create with unknown or unconfigured content-type ids:**
+- Symptoms: `polymorphic_model` lets `ContentType.DoesNotExist` escape for an unknown id. A valid but unconfigured subtype reaches `get_form_class()` and raises `ValueError`; its message refers to `self.object.__class__` during create-form selection, which can identify `NoneType` instead of the requested subtype.
+- Files: `src/crud_views_polymorphic/lib/utils.py`, `src/crud_views_polymorphic/lib/create.py`, `src/crud_views_polymorphic/lib/create_select.py`
+- Trigger: request a direct polymorphic-create URL using a nonexistent content-type id or a model absent from `polymorphic_forms`.
+- Workaround: expose only the content types offered by the configured selector. Fix by converting missing/unconfigured types to a deliberate 404 or form error and reporting the resolved model accurately.
 
 ## Security Considerations
 
-**Runtime contracts use Python assertions:**
-- Risk: `assert` is stripped under `python -O`, so these guards vanish in optimized deployments.
-- Files: `src/crud_views/lib/view/base.py` (lines ~674, 1110, 1118, 1162), `src/crud_views/lib/views/create.py` (94), `src/crud_views/lib/formsets/formsets.py` (240, 530), `src/crud_views/lib/formsets/inline_formset.py`, `src/crud_views/templatetags/crud_views.py` (81), `src/crud_views_workflow/lib/mixins.py` (29, 36, 40), `src/crud_views_polymorphic/lib/utils.py` (14), `src/crud_views_guardian/lib/views.py` (373), `src/crud_views_guardian/lib/mixins.py` (240)
-- Current mitigation: system checks catch several configuration errors. The guardian `assert not isinstance(user, str)` guards are the most security-relevant.
-- Recommendations: raise explicit exceptions for correctness/security conditions; keep assertions for internal invariants.
+No distinct security defect is confirmed by the current evidence. Permission checks, including ancestor and Guardian paths, remain fragile cross-cutting code; use their request-level regression suites when changing them (see `tests/test1/test_ancestor_*.py`, `tests/test1/test_guardian.py`, and `tests/test1/test_authorization_matrix.py`).
 
 ## Performance Bottlenecks
 
-**Delete preview limit does not bound inspection cost:**
-- Problem: `cv_delete_preview_limit` limits visible entries only after full cascade inspection and visibility filtering.
+**Delete preview limit does not bound cascade inspection:**
+- Problem: `cv_delete_preview_limit` caps the entries selected for display only after cascade inspection and permission filtering have completed.
 - Files: `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/deletion.py`, `tests/test1/test_delete_preview_limit.py`
-- Improvement path: document as display limit; profile real cascades before designing bounded inspection.
+- Cause: `_cv_inspect_deletion()` runs before `_cv_select_delete_preview()` applies the limit.
+- Improvement path: treat the setting as a display limit; profile real cascades before introducing a separately bounded inspection contract.
 
-**Guardian permission checks can repeat per rendered object/action:**
+**Guardian checks may repeat for rendered objects and actions:**
 - Files: `src/crud_views_guardian/lib/mixins.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/views/card.py`
-- Cause: permission evaluation is part of each item's action visibility.
-- Improvement path: profile large lists; consider request-scoped `ObjectPermissionChecker` reuse. Ancestor checks add further per-request queries; `tests/test1/test_ancestor_costs.py` pins current costs.
-
-**Resource default lookup is linear:**
-- Files: `src/crud_views/lib/resource.py`
-- Cause: `cv_get_item()` scans the list from `cv_get_items()`.
-- Improvement path: override lookup for sources with direct key access.
+- Cause: permission checks can be invoked while building each object's visible actions; request-scoped caching exists for ancestor checks, but the regular object-action path constructs checkers in its own calls.
+- Improvement path: profile large list/card pages and consider request-scoped checker reuse if query counts are material. `tests/test1/test_ancestor_costs.py` pins current ancestor-query budgets.
 
 ## Fragile Areas
 
-**ViewSet registration, routing, and metaclass integration:**
+**ViewSet registration, routing and metaclass integration:**
 - Files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/viewset/path_regs.py`, `src/crud_views/checks.py`
-- Why fragile: views register at class construction; routing depends on shared registry, parent chain, PK shape, and checks.
-- Safe modification: preserve import-safety constraints in `src/crud_views/lib/resource.py`; test nested URLs and checks for affected combinations.
-- Test coverage: broad in `tests/test1/`.
+- Why fragile: views register during class construction; URL behavior depends on the shared registry, parent chain, PK shape and startup checks.
+- Safe modification: preserve the import-safety boundary documented in `src/crud_views/lib/resource.py`; cover nested URLs and startup checks for affected combinations.
+- Test coverage: broad request and system-check coverage exists in `tests/test1/`.
 
-**Template and theme extension surface:**
-- Files: `src/crud_views/lib/button_classes.py`, `src/crud_views/lib/view/button_data.py`, `src/crud_views/lib/icons.py`, `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/js/`
-- Why fragile: themes consume class keys, button context, icons, template variables and JS adapters as one contract.
-- Safe modification: update docs and golden tests with public surface changes; keep escaping at existing boundaries.
-- Test coverage: built-in output covered; third-party themes not exercised.
+**Template, theme and header-icon compatibility surface:**
+- Files: `src/crud_views/lib/button_classes.py`, `src/crud_views/lib/view/button_data.py`, `src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/js/`
+- Why fragile: themes consume class keys, button context, icons, template variables and JS adapters as a connected contract. Phase 06.23 also intentionally changes `cv_icon_header=""` from ViewSet inheritance to suppression.
+- Safe modification: consumers that used the empty string to inherit must switch to `None` or `Icon.VIEWSET_DEFAULT`; `Icon.NONE` is the readable suppression value. The Breaking entry and before/after instructions are in `CHANGELOG.md` and `docs/migrating-1.0.md#explicit-header-icon-suppression`. Preserve custom header content independently of icon choice.
+- Test coverage: Phase 06.23 verification reports 13/13 truths, with 317 focused tests and 12,301 full-suite tests recorded as passing; the example-theme fragment is rendered, but external theme installations are not certified.
 
 **Nested formset rendering and persistence:**
 - Files: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/inline_formset.py`
-- Why fragile: management forms, indexes, save order and errors must align between server and JS cloning.
-- Safe modification: cover GET, invalid POST, deletion, nested indexes, transactions.
+- Why fragile: management forms, indexes, save order and validation errors must stay aligned between server rendering and JavaScript cloning.
+- Safe modification: cover GET, invalid POST, deletion, nested indexes and transaction behavior.
+- Test coverage: focused formset tests are in `tests/test1/test_formsets*.py` and `tests/test1/test_fragment_authorization.py`.
 
-**Workflow permission recipe and helper boundaries:**
-- Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `docs/reference/workflow_view.md`, `tests/test1/test_workflow_permissions.py`, `tests/test1/test_workflow_execution.py`
-- Boundary: `run_transition()` requires persisted actor/object on the chosen write alias; direct django-fsm calls bypass helper validation/history; `workflow_check_transition()` is business validation, not authorization. Page gate and transition permissions stay independent.
-- Coverage: request-level tests exist; concurrency and Guardian/nested-object matrices are unverified. These are supported boundaries, not defects.
+**Workflow permission and transition helper boundaries:**
+- Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `docs/reference/workflow_view.md`
+- Why fragile: `run_transition()` requires a persisted actor/object on the selected write alias; direct django-fsm calls bypass helper validation/history, and `workflow_check_transition()` is business validation rather than authorization. Page access and transition permissions are independent.
+- Safe modification: route transitions through the documented helper and keep page/transition permission checks distinct.
+- Test coverage: request-level coverage exists in `tests/test1/test_workflow_permissions.py` and `tests/test1/test_workflow_execution.py`; concurrency and Guardian/nested-object combinations are not certified.
+
+**Snippet parent resolution and documentation boundary:**
+- Files: `src/crud_views/lib/view/base.py`, `docs/reference/templates.md`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`
+- Why fragile: `parent_object` is lazy and resolves through Django template evaluation; the docs' direct-render 404 statement does not cover operators such as `{% if parent_object %}`, whose variable-resolution error handling can suppress exceptions. `cv_assert_parent()` also interpolates undefined `self.cv_name` in its assertion message on a top-level ViewSet and repeats the same assertion in `cv_get_parent_object()`.
+- Safe modification: document/test direct variable access separately from operator expressions; replace the undefined name and duplicate guard with one explicit top-level error path.
+- Test coverage: direct lazy resolution and missing-parent 404 are covered, as is filter-header context (`tests/test1/test_snippet_context.py`); operator-expression behavior and top-level `cv_assert_parent()` are not covered.
 
 **Object-detail migration and template ownership:**
-- Boundary: model help defaults off, scalar choices show labels. Copied value templates keep old behavior until updated.
 - Files: `src/crud_views_object_detail/lib/conf.py`, `src/crud_views_object_detail/lib/resolvers.py`, `src/crud_views_object_detail/templatetags/crud_views_object_detail.py`, `docs/migrating-1.0.md`
-- Safe adoption: use documented help restoration or `choices_display=False`; cached settings are startup config.
+- Why fragile: model-derived help defaults off and scalar choices display labels; copied value templates keep their own behavior until migrated.
+- Safe modification: use documented help restoration or `choices_display=False` where needed; treat cached settings as startup configuration.
+- Test coverage: built-in configuration and rendering paths are exercised in `tests/test1/od/`; third-party copied templates are not.
 
 ## Scaling Limits
 
 **Resource lookup and list materialization:**
-- Current capacity: `Resource.cv_get_items()` returns a plain list with O(n) default lookup.
-- Limit: large external datasets incur full-read memory and linear lookup.
-- Scaling path: add paginated/source-native lookup only if large remote collections become supported.
+- Current capacity: `Resource.cv_get_items()` returns a plain list and the default `cv_get_item()` scans it linearly.
+- Limit: large remote datasets incur full-read memory and O(n) lookup.
+- Scaling path: override item lookup for sources with direct key access; add pagination/source-native lookup only if large remote collections become a supported use case.
 
 ## Dependencies at Risk
 
-**Django 4.2 support line:**
-- Risk: upstream support status is time-sensitive; Django 4.2 is past upstream end of life per its published schedule (April 2026), yet the test matrix still includes it (`CLAUDE.md`, `noxfile.py`).
-- Impact: security fixes unavailable upstream for that floor.
-- Migration plan: decide whether to raise the floor before 1.0.0 via the documented migration process (`docs/migrating-1.0.md`).
+**Django 4.2 support floor:**
+- Risk: Django 4.2 remains the declared package floor and appears in the supported-version test matrix.
+- Impact: the oldest compatibility line increases maintenance and release-verification work.
+- Migration plan: decide whether 1.0 retains this floor and update `pyproject.toml`, `noxfile.py`, and migration guidance together if it changes.
 
 ## Missing Critical Features
 
@@ -112,52 +120,35 @@ None independently confirmed.
 
 ## Test Coverage Gaps
 
-**Polymorphic invalid content-type URL cases:**
-- What's not tested: nonexistent ids and unconfigured subtype ids on direct create (no such test in `tests/test1/test_polymorphic.py`, `test_optional_polymorphic.py`, `test_cancel_polymorphic.py`).
-- Files: `src/crud_views_polymorphic/lib/utils.py`, `src/crud_views_polymorphic/lib/create.py`
-- Risk: server errors go unnoticed.
+**Invalid polymorphic content-type URL cases:**
+- What's not tested: direct create with nonexistent content-type ids or existing but unconfigured subtype ids.
+- Files: `src/crud_views_polymorphic/lib/utils.py`, `src/crud_views_polymorphic/lib/create.py`, `tests/test1/test_polymorphic.py`
+- Risk: uncaught lookup/form-selection exceptions return server errors instead of a controlled response.
 - Priority: High
 
 **Custom user model without `username` in manage view:**
-- What's not tested: `CRUD_VIEWS_MANAGE_SHOW_USERS` with an email-only user model; `manage.py` queries `values_list("username")` and `order_by("username")` directly.
-- Files: `src/crud_views/lib/views/manage.py` (lines ~87-88)
-- Risk: `FieldError` for custom user models.
+- What's not tested: `CRUD_VIEWS_MANAGE_SHOW_USERS=True` with an email-only user model; current query names `username` directly.
+- Files: `src/crud_views/lib/views/manage.py`, `tests/test1/test_manage.py`
+- Risk: Django raises `FieldError` when the configured user model has no `username` field.
 - Priority: Medium
 
 **Third-party theme contract compatibility:**
-- What's not tested: consumer theme overrides across variables, class keys, icons, JS adapters.
+- What's not tested: consumer overrides across template variables, class keys, icons and JS adapters; phase 06.23 tests the shipped example theme fragment but not separately installed consumer themes.
 - Files: `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/js/`, `docs/development/stability.md`
+- Risk: extension breakage may escape the built-in template suite.
 - Priority: Medium
 
-**Human acceptance items:**
-- What's not tested: other-browser, assistive-technology, visual and real third-party theme approval were excluded from the Phase 06.17 review.
-- Files: `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-UI-REVIEW.md`
+**Snippet operator/error and changelog-guard edge cases (Phase 06.21 review):**
+- What's not tested or robustly guarded: parent lookup inside Django `{% if %}` operator expressions, and resilience of the snippet documentation test to unrelated later changelog mentions of #339. The filter-header coverage finding from that review is resolved by `test_filter_header_snippet_sees_view_and_parent_object`.
+- Files: `docs/reference/templates.md`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`
+- Risk: docs can overstate 404 behavior for operator expressions; the changelog test can fail due to unrelated edits or section movement.
 - Priority: Low
 
-**Phase 06.21 snippet-context review follow-ups (all Info, open):**
-- What is not tested / documented: Django `{% if %}` operator expressions swallow exceptions from lazy parent resolution; card filter-header snippet behavior; release-proof identification of the snippet-context changelog entry; and top-level `cv_assert_parent()` error behavior.
-- Files: `docs/reference/templates.md`, `src/crud_views/lib/view/base.py`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`
-- Risk: documentation can overstate 404 behavior for operator expressions, a separately implemented card header can drift, and documentation guards can fail on unrelated later changelog edits. Calling `cv_assert_parent()` on a top-level ViewSet raises `AttributeError` because its message references undefined `self.cv_name`; it also repeats an assertion.
-- Priority: Low (recorded Info findings IN-01 through IN-04 in `.planning/phases/06.21-snippet-context-exposes-view-and-parent-object/06.21-REVIEW.md`; disposition remains open in `06.21-REVIEW-DISPOSITION.md`).
-
-## Resolved Since Previous Audit
-
-- Phase 06.18 ancestor authorization for nested ViewSets shipped with a dedicated `tests/test1/test_ancestor_*.py` suite (databases, guardian, costs, redirect, migration, docs).
-- Earlier resolved: object-detail accordion/tab lifecycle (Phase 06.17), protected delete labels not linked (`src/crud_views/lib/views/delete.py`), workflow opt-in permission request-level tests (`tests/test1/test_workflow_permissions.py`).
-- Phase 06.21 review warnings WR-01 and WR-02 are fixed: template-context documentation now reflects button/child-column contexts, and `tests/test1/test_snippet_docs.py` checks runtime metadata keys. The four Info findings IN-01 through IN-04 remain open and are recorded above.
-
-## ViewSet Label Boundaries (Phase 06.20)
-
-- Lazy overrides deliberately receive no construction-time blank check: evaluating them during app loading can raise `AppRegistryNotReady`. Plain blank strings fail validation; padded strings remain unchanged (`src/crud_views/lib/viewset/__init__.py`, `tests/test1/test_viewset_verbose_name.py`).
-- Model-centric deletion/404 text keeps model names; short action labels contain no object name. These are documented scope boundaries (`docs/reference/nested.md#labels`).
-- Canonical verification passes 15/15 truths; security reports nine closed threats. No required human check remains. Responsive long-label/browser checks are optional downstream work; the supported-version matrix remains a CI condition (`.planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-VERIFICATION.md`).
-
-## Permission declaration boundaries (Phase 06.22)
-
-- Undeclared core permission keys now fail startup with `viewset.E269`; this closes the previous delayed-discovery gap for `cv_permission` and effective ancestor pairs (`src/crud_views/checks.py`).
-- Checks deliberately validate metadata only. They cannot establish that migrations created auth rows or that users hold grants; applications must migrate and grant permissions as documented (`docs/reference/custom_form_view.md`).
-- Guardian/Resource paths are excluded, and checks defer when URLconf completion fails. Existing request-time diagnostics remain necessary; exclusions are tested rather than treated as complete startup coverage (`tests/test1/test_permission_declarations.py`).
-- Shared helpers add no startup database queries; runtime permission-map query behavior is preserved (`tests/test1/test_viewset.py`, `tests/test1/test_permission_declarations.py`). Existing concerns above remain outside this phase's scope.
+**Human acceptance and supported-environment coverage:**
+- What's not tested: Phase 06.23 has automated local evidence only on Python 3.12.3 / Django 6.1.2; no additional version matrix, downstream-theme installation, browser appearance or assistive-technology evaluation is claimed. The Phase 06.17 review also excluded other-browser, assistive-technology and visual acceptance.
+- Files: `.planning/phases/06.23-explicit-header-icon-suppression-with-icon-constants-329/06.23-VERIFICATION.md`, `.planning/phases/06.23-explicit-header-icon-suppression-with-icon-constants-329/06.23-REVIEW.md`, `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-UI-REVIEW.md`
+- Risk: automated pass results do not establish behavior on other supported combinations, consumer themes or assistive technologies.
+- Priority: Low
 
 ---
 

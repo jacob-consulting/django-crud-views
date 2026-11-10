@@ -11,6 +11,14 @@ from django.utils.html import format_html
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 
+
+class Icon:
+    """Plain icon values; VIEWSET_DEFAULT inherits only on a view's cv_icon_header."""
+
+    VIEWSET_DEFAULT = None
+    NONE = ""
+
+
 DEFAULT_ICONS: dict[str, str] = {
     "list": "far:rectangle-list",
     "card": "fas:rectangle-list",
@@ -312,11 +320,14 @@ REMOVED_SETTINGS: dict[str, str] = {
 }
 
 
-ICON_VALUE_HINT = "Use a semantic name, 'prefix:name', a raw CSS class, or None for no icon."
+ICON_VALUE_HINT = (
+    "Use a semantic name, 'prefix:name', a raw CSS class, an empty string for no icon, or None "
+    "(inherits the ViewSet icon for cv_icon_header; otherwise no icon)."
+)
 
 
 def is_icon_value(value: object) -> bool:
-    """True for the accepted icon value types: None (no icon) and str. Checks report anything else (E356)."""
+    """Accept None and str; None inherits for cv_icon_header, otherwise means no icon. Other types get E356."""
     return value is None or isinstance(value, str)
 
 

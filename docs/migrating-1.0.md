@@ -5,6 +5,45 @@ the route from **0.29.x** to 1.0.0. The [CHANGELOG](https://github.com/jacob-con
 stays the complete record, ordered by release and issue; this page orders the same changes by what you have to
 touch.
 
+## Explicit header-icon suppression
+
+Previously, `cv_icon_header=""` inherited the ViewSet's header icon. It now suppresses that icon, just like
+`Icon.NONE`. If your view used the empty string to inherit, replace it with `None` or `Icon.VIEWSET_DEFAULT`.
+
+Before, inside a view class:
+
+```python
+cv_icon_header = ""  # Previously inherited the ViewSet icon.
+```
+
+After, to preserve inheritance, use either form inside that class:
+
+```python
+cv_icon_header = None  # Inherit the ViewSet icon.
+```
+
+Or import the readable constant in the module and use it on the view:
+
+```python
+from crud_views.lib.icons import Icon
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
+
+
+class CustomerDetailView(ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_customer  # Existing application ViewSet.
+    cv_property_display = [{"title": "Customer", "properties": ["name"]}]
+    cv_icon_header = Icon.VIEWSET_DEFAULT  # Inherit the ViewSet icon.
+```
+
+For intentional suppression, keep `cv_icon_header=""` or use `cv_icon_header = Icon.NONE` with the same import.
+Omitting the attribute still inherits. Custom `cv_header_template` and `cv_header_template_code` content does not
+automatically suppress icons: choose inheritance or suppression independently. A `cv_get_header_icon()` override
+returning `None` still suppresses the icon dynamically. In the general registry and object-detail group icons,
+`None` continues to mean no icon; the inheritance rule belongs only to the view attribute.
+
+This change has no deprecation cycle or compatibility switch. See the complete
+[selection table and custom-header recipe](reference/icons.md#view-header-icons).
+
 ## Object-detail values and help
 
 Object-detail presentation (#327) changes three defaults: scalar model choices show readable

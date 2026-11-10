@@ -158,6 +158,42 @@ class FooListView(MySpecialBase, ListView): ...
     Point the override at a normal base template — one that extends your own
     site base (e.g. `{% extends "base.html" %}`) or none at all.
 
+## Snippet variables
+
+The texts a view renders for its own page — `cv_header_template[_code]`, `cv_paragraph_template[_code]`,
+`cv_message_template[_code]`, `cv_message_template_error[_code]` and the list/card `cv_filter_header_template[_code]`
+— are Django templates rendered with this context:
+
+| Variable | Value |
+|---|---|
+| `object` | the view's object, or `None` when the view has none (create form, list and card pages) |
+| `view` | the view instance, as in a page template (`{{ view.request.user }}`, `{{ view.my_attr }}`) |
+| `parent_object` | on a child ViewSet, the immediate parent, resolved lazily (see below); absent at top level |
+| `verbose_name` | `capfirst` of the model's `verbose_name` |
+| `verbose_name_plural` | `capfirst` of the model's `verbose_name_plural` |
+| `verbose_name_translate` | the translated `verbose_name` |
+| `verbose_name_plural_translate` | the translated `verbose_name_plural` |
+| `viewset` | the ViewSet (also available as `cv`) |
+
+`parent_object` is the parent one level up only; there is no `ancestors` list. It is lazy, so a snippet that never
+mentions it never resolves it. It resolves as `cv_get_parent_object()` does: on the dispatched request it reuses the
+resolved immediate parent the ancestor guard kept for that request and costs no query. Without that guard state (a
+direct `cv_get_meta()` call, or a mixin rendering before dispatch) each snippet that references it performs its own
+lookup, and a bad URL raises 404 rather than rendering an empty string. On a top-level ViewSet the key is absent, so
+`{{ parent_object }}` renders as Django's `string_if_invalid` (empty by default). On a create view the form page's
+header and paragraph see `object` as `None`, and a success message rendered by `MessageMixin` after the save sees
+the created instance.
+
+Action labels (`cv_action_label_template[_code]`, `cv_action_short_label_template[_code]`), breadcrumb labels
+(`cv_breadcrumb_label_template[_code]`), context, row and card buttons and `LinkChildColumn` are rendered *for* a
+target view *from* another page. They get the same variables **except** `view` and `parent_object`, because there
+the hosting page's view is not the labelled view.
+
+`view` exposes the same attributes and argument-less methods as in a page template, where Django already provides
+it. Snippet texts are developer-set class attributes, and variable output stays autoescaped.
+
+There is no `request` or `user` key: both are reachable as `view.request` and `view.request.user`.
+
 ## Validation
 
 If a ViewSet `extends` or a view `cv_extends_template` names a template that

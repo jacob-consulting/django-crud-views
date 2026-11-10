@@ -576,6 +576,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Snippet context exposes `view` and `parent_object`**
+  ([#339](https://github.com/jacob-consulting/django-crud-views/issues/339)): header, paragraph, filter-header and
+  success/error message snippets now see the view instance as `view` and, on a child ViewSet, the lazily resolved
+  parent as `parent_object` (absent at top level; resolved as `cv_get_parent_object()` does). Class-level action,
+  short-action and breadcrumb labels, buttons and `LinkChildColumn` are unchanged, and default snippets render as
+  before. See [Snippet variables](docs/reference/templates.md#snippet-variables).
 - **Workflow business validation, standalone execution and native buttons**
   ([#322](https://github.com/jacob-consulting/django-crud-views/issues/322)): the model-data-only
   `workflow_check_transition(name, *, user)` hook reports ordered blockers; public

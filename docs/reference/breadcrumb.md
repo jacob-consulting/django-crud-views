@@ -71,7 +71,8 @@ class NoteCreateView(CrudViewBreadcrumbMixin, CreateView):
 ```
 
 The template gets the same variables as the short label: `verbose_name`, `verbose_name_plural` (and their
-`*_translate` variants), `viewset`, and `object` on object views (`"Edit {{ object }}"`). It labels the view's own
+`*_translate` variants), `viewset`, and `object` on object views (`"Edit {{ object }}"`), but not `view` or
+`parent_object`, see [Snippet variables](templates.md#snippet-variables). It labels the view's own
 item only, so it has no effect on the view `cv_breadcrumb_key_object` names (`detail` by default) or on the
 viewset's container view (list, or card without a list), which have none.
 

@@ -113,6 +113,22 @@ before saving, using the same `attribute` (or `many_to_many_through_attribute`) 
 `CreateViewParentMixin` before the `CreateView`/`CreateViewPermissionRequired` base in the
 MRO, as shown above.
 
+The create page's header can name the parent from the URL through `{{ parent_object }}` in
+`cv_header_template_code`:
+
+```python
+class DepartmentCreateView(
+    BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired
+):
+    cv_viewset = cv_department
+    form_class = DepartmentForm
+    cv_header_template_code = _("New department for {{ parent_object }}")
+```
+
+This costs no extra query on the dispatched request, because the header reuses the resolved immediate parent the
+ancestor guard kept for that request (see [the resolved parent](#ancestor-querysets-and-the-resolved-parent)).
+[Snippet variables](templates.md#snippet-variables) lists everything a snippet can use.
+
 !!! note
     `BreadcrumbMixin` above is a small project-level mixin around
     `CrudViewBreadcrumbMixin` (see [Breadcrumb](breadcrumb.md)) — it is unrelated to nesting

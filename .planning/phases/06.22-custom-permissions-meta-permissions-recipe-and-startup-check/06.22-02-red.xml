@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="19" time="0.600" timestamp="2026-11-10T04:33:20.792796+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_permission_declarations" name="test_runtime_map_keys_equal_the_declared_keys" time="0.288" /><testcase classname="tests.test1.test_permission_declarations" name="test_guardian_viewset_is_skipped_and_still_fails_at_request_time" time="0.004" /><testcase classname="tests.test1.test_permission_declarations" name="test_undeclared_cv_permission_is_reported_at_startup" time="0.061" /><testcase classname="tests.test1.test_permission_declarations" name="test_shared_registry_has_no_e269" time="0.001" /><testcase classname="tests.test1.test_permission_declarations" name="test_declared_keys_map_default_actions_to_themselves" time="0.001" /><testcase classname="tests.test1.test_permission_declarations" name="test_declared_keys_strip_only_the_terminal_model_suffix" time="0.001" /><testcase classname="tests.test1.test_permission_declarations" name="test_declared_keys_of_a_proxy_come_from_the_concrete_model" time="0.001" /><testcase classname="tests.test1.test_permission_declarations" name="test_declared_keys_of_an_mti_child_are_its_own" time="0.001" /><testcase classname="tests.test1.test_permission_declarations" name="test_declared_keys_follow_trimmed_and_custom_meta" time="0.001" /><testcase classname="tests.test1.test_permission_declarations" name="test_trimmed_default_permissions_report_the_standard_message" time="0.002" /><testcase classname="tests.test1.test_permission_declarations" name="test_proxy_viewset_hint_names_the_concrete_model" time="0.001" /><testcase classname="tests.test1.test_permission_declarations" name="test_unset_cv_permission_is_left_to_e202" time="0.002" /><testcase classname="tests.test1.test_permission_declarations" name="test_resource_viewset_is_left_to_e260" time="0.002" /><testcase classname="tests.test1.test_permission_declarations" name="test_undeclared_cv_permission_is_deferred_until_the_urlconf_is_loaded" time="0.002" /><testcase classname="tests.test1.test_permission_declarations" name="test_actions_pair_key_missing_on_the_ancestor_is_reported" time="0.002"><failure message="AssertionError: assert [] == [('viewset.E2...ok_b41aa2b0')]&#10;  &#10;  Right contains one more item: ('viewset.E269', 'op_book_b41aa2b0')&#10;  Use -v to get more diff">registry = None, sfx = 'b41aa2b0', no_db = None
+
+    def test_actions_pair_key_missing_on_the_ancestor_is_reported(registry, sfx, no_db):
+        _, book_vs = _nested(
+            sfx, policy=AncestorPolicy(actions={"approve": AncestorPermissions(nearest="approve", higher="view")})
+        )
+        _view(_core("ActionView"), book_vs, key="approve")
+        _view(_core("ListView"), book_vs)
+&gt;       assert _ours(check_ancestor_declarations(), book_vs) == [("viewset.E269", book_vs.name)]
+E       AssertionError: assert [] == [('viewset.E2...ok_b41aa2b0')]
+E         
+E         Right contains one more item: ('viewset.E269', 'op_book_b41aa2b0')
+E         Use -v to get more diff
+
+tests/test1/test_permission_declarations.py:234: AssertionError</failure></testcase><testcase classname="tests.test1.test_permission_declarations" name="test_explicit_pairs_resolve_nearest_and_higher_on_their_ancestors" time="0.002"><failure message="assert [] == ['ancestor pe...pp.Publisher']&#10;  &#10;  Right contains 2 more items, first extra item: &quot;ancestor permission key 'audit' (ancestor_policy.read.nearest) of ViewSet 'pd_note_532e649d' is not declared on model app.Book&quot;&#10;  Use -v to get more diff">registry = None, sfx = '532e649d', no_db = None
+
+    def test_explicit_pairs_resolve_nearest_and_higher_on_their_ancestors(registry, sfx, no_db):
+        pub_vs, book_vs, note_vs = _chain(
+            sfx,
+            note_policy=AncestorPolicy(
+                read=AncestorPermissions(nearest="audit", higher="view"),
+                write=AncestorPermissions(nearest="change", higher="publish"),
+            ),
+        )
+        _view(_core("ListView"), note_vs)
+        _view(_core("DeleteView"), note_vs)
+&gt;       assert sorted(m.msg for m in _e269(note_vs)) == [
+            f"ancestor permission key 'audit' (ancestor_policy.read.nearest) of ViewSet {note_vs.name!r} "
+            "is not declared on model app.Book",
+            f"ancestor permission key 'publish' (ancestor_policy.write.higher) of ViewSet {note_vs.name!r} "
+            "is not declared on model app.Publisher",
+        ]
+E       assert [] == ['ancestor pe...pp.Publisher']
+E         
+E         Right contains 2 more items, first extra item: "ancestor permission key 'audit' (ancestor_policy.read.nearest) of ViewSet 'pd_note_532e649d' is not declared on model app.Book"
+E         Use -v to get more diff
+
+tests/test1/test_permission_declarations.py:257: AssertionError</failure></testcase><testcase classname="tests.test1.test_permission_declarations" name="test_inherited_global_pair_names_the_setting_and_skips_the_resource_leaf" time="0.002"><failure message="assert 0 == 1&#10; +  where 0 = len([])">registry = None, sfx = 'a284b5fc', no_db = None
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x708c05f6d0a0&gt;
+
+    def test_inherited_global_pair_names_the_setting_and_skips_the_resource_leaf(registry, sfx, no_db, monkeypatch):
+        monkeypatch.setattr(
+            crud_views_settings, "ancestor_read_permissions", AncestorPermissions(nearest="audit", higher="view")
+        )
+        _, book_vs = _nested(sfx)
+        _view(_core("ListView"), book_vs)
+        messages = check_ancestor_declarations()
+        ours = [m for m in messages if m.id == "viewset.E269" and m.obj is book_vs]
+&gt;       assert len(ours) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_permission_declarations.py:274: AssertionError</failure></testcase><testcase classname="tests.test1.test_permission_declarations" name="test_default_pairs_are_silent_and_nearest_only_ignores_higher" time="0.002" /><testcase classname="tests.test1.test_permission_declarations" name="test_one_error_per_unresolved_key_and_ancestor" time="0.002"><failure message="AssertionError: assert [] == ['app.Book', 'app.Publisher']&#10;  &#10;  Right contains 2 more items, first extra item: 'app.Book'&#10;  Use -v to get more diff">registry = None, sfx = 'b2d51a1d', no_db = None
+
+    def test_one_error_per_unresolved_key_and_ancestor(registry, sfx, no_db):
+        _, _, note_vs = _chain(sfx)
+        _view(_core("ListView"), note_vs)
+        with isolate_apps("tests.test1.app"):
+    
+            class Annotation(models.Model):
+                note = models.ForeignKey(BookNote, on_delete=models.CASCADE)
+    
+                class Meta:
+                    app_label = "app"
+    
+            leaf_vs = ViewSet(
+                model=Annotation,
+                name=f"pd_leaf_{sfx}",
+                parent=ParentViewSet(name=note_vs.name, attribute="note"),
+                ancestor_policy=AncestorPolicy(
+                    read=AncestorPermissions(nearest="view", higher="publish"),
+                    actions={"stamp": AncestorPermissions(nearest="view", higher="publish")},
+                ),
+            )
+            _view(_core("ListView"), leaf_vs)
+            _view(_core("ActionView"), leaf_vs, key="stamp")
+&gt;           assert sorted(m.msg.split(" is not declared on model ")[1] for m in _e269(leaf_vs)) == [
+                "app.Book",
+                "app.Publisher",
+            ]
+E           AssertionError: assert [] == ['app.Book', 'app.Publisher']
+E             
+E             Right contains 2 more items, first extra item: 'app.Book'
+E             Use -v to get more diff
+
+tests/test1/test_permission_declarations.py:319: AssertionError</failure></testcase></testsuite></testsuites>

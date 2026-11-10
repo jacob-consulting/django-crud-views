@@ -76,24 +76,28 @@ def test_compact_layout_rejects_implicit_or_ambiguous_configuration():
         CompactLayout([column], 4)
 
 
-def _runtime(*, compact=True, form_class=None, **declaration_kwargs):
+def _runtime(*, compact=True, form_class=None, parent=None, factory_attrs=None, **declaration_kwargs):
     from django.test import RequestFactory
 
     from crud_views.lib.formsets import FormSet
     from crud_views.lib.formsets.compact import CompactColumn, CompactLayout
     from tests.test1.app.views_formset import BookFormSet, PublisherFormSetForm
 
-    klass = BookFormSet if form_class is None else type("ConfiguredBooks", (BookFormSet,), {"form": form_class})
+    attrs = dict(factory_attrs or {})
+    if form_class is not None:
+        attrs["form"] = form_class
+    klass = type("ConfiguredBooks", (BookFormSet,), attrs) if attrs else BookFormSet
     if compact:
         declaration_kwargs["compact_layout"] = CompactLayout([CompactColumn("title", span=8)], controls_span=4)
     declaration = FormSet(key="books", klass=klass, **declaration_kwargs)
-    return next(declaration.init(RequestFactory().get("/"), [PublisherFormSetForm(cv_view=None, instance=Publisher())]))
+    parent = Publisher() if parent is None else parent
+    return next(declaration.init(RequestFactory().get("/"), [PublisherFormSetForm(cv_view=None, instance=parent)]))
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("explicit_none", [False, True])
 @pytest.mark.parametrize("show_labels", [False, True])
-def test_classic_keeps_custom_helper_and_query_observations(monkeypatch, explicit_none, show_labels):
+def test_compact_classic_keeps_custom_helper_and_query_observations(monkeypatch, explicit_none, show_labels):
     from crispy_forms.layout import Div
     from crispy_forms.utils import render_crispy_form
     from django.db import connection
@@ -187,7 +191,7 @@ def test_compact_rejects_empty_effective_label(label):
 
 
 @pytest.mark.django_db
-def test_classic_polymorphic_dispatch_keeps_form_owned_helper(monkeypatch):
+def test_compact_classic_polymorphic_dispatch_keeps_form_owned_helper(monkeypatch):
     from polymorphic.formsets import BasePolymorphicInlineFormSet
 
     node = _runtime(compact=False)
@@ -245,3 +249,246 @@ def test_compact_tracer_get_post(compact_books, client_user_publisher_formset):
     assert result.status_code == 302
     book.refresh_from_db()
     assert book.title == "Saved compact book"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("kind", ["field_type", "widget_type", "required", "label", "missing", "extra"])
+def test_compact_schema_rejects_heterogeneous_rows(kind):
+    from django import forms
+    from django.core.exceptions import ImproperlyConfigured
+
+    node = _runtime(factory_attrs={"extra": 2})
+    second = node.forms[1].form
+    if kind == "field_type":
+        second.fields["title"] = forms.RegexField(".*", label="Title")
+    elif kind == "widget_type":
+        second.fields["title"].widget = forms.NumberInput()
+    elif kind == "required":
+        second.fields["title"].required = False
+    elif kind == "label":
+        second.fields["title"].label = "Different"
+    elif kind == "missing":
+        del second.fields["title"]
+    else:
+        second.fields["other"] = forms.CharField(required=False, disabled=True)
+    field = "other" if kind == "extra" else "title"
+    with pytest.raises(ImproperlyConfigured, match=rf"books.*{field}"):
+        _ = node.forms[0].helper
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "kind",
+    [
+        "checkbox",
+        "radio",
+        "multiple",
+        "multiwidget",
+        "file",
+        "password",
+        "textarea",
+        "subclass",
+        "template",
+        "option",
+        "input_type",
+        "select_multiple",
+    ],
+)
+def test_compact_schema_rejects_unsupported_widget_shape(kind):
+    from django import forms
+    from django.core.exceptions import ImproperlyConfigured
+
+    node = _runtime()
+    choices = {
+        "checkbox": forms.CheckboxInput,
+        "radio": forms.RadioSelect,
+        "multiple": forms.SelectMultiple,
+        "multiwidget": forms.SplitDateTimeWidget,
+        "file": forms.FileInput,
+        "password": forms.PasswordInput,
+        "textarea": forms.Textarea,
+        "subclass": type("CustomText", (forms.TextInput,), {}),
+    }
+    widget = choices.get(kind, forms.Select if kind in ("option", "select_multiple") else forms.TextInput)()
+    if kind == "template":
+        widget.template_name = "custom.html"
+    elif kind == "option":
+        widget.option_template_name = "custom_option.html"
+    elif kind == "input_type":
+        widget.input_type = "password"
+    elif kind == "select_multiple":
+        widget.allow_multiple_selected = True
+    node.forms[0].form.fields["title"].widget = widget
+    with pytest.raises(ImproperlyConfigured, match="books.*title.*widget"):
+        _ = node.forms[0].helper
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("name", ["missing", "secret", "id", "publisher", "ORDER", "DELETE"])
+def test_compact_schema_rejects_hidden_identity_and_control_columns(name):
+    from django import forms
+    from django.core.exceptions import ImproperlyConfigured
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+
+    node = _runtime()
+    node.forms[0].form.fields["secret"] = forms.CharField(widget=forms.HiddenInput)
+    node.forms[0].form.fields["ORDER"] = forms.IntegerField(required=False)
+    node.formset.compact_layout = CompactLayout(
+        [CompactColumn("title", span=6), CompactColumn(name, span=2)], controls_span=4
+    )
+    with pytest.raises(ImproperlyConfigured, match=rf"books.*{name}"):
+        _ = node.compact_columns
+
+
+@pytest.mark.django_db
+def test_compact_schema_rejects_polymorphic_even_with_uniform_first_row(monkeypatch):
+    from django.core.exceptions import ImproperlyConfigured
+    from polymorphic.formsets import BasePolymorphicInlineFormSet
+
+    node = _runtime()
+    monkeypatch.setattr(node.formset, "klass", BasePolymorphicInlineFormSet)
+    with pytest.raises(ImproperlyConfigured, match="books.*polymorphic"):
+        _ = node.compact_columns
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("empty", [False, True])
+def test_compact_metadata_model_choice_projection_has_no_queries(empty):
+    from django import forms
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    from tests.test1.app.views_formset import BookFormSetForm
+
+    constructed = []
+
+    class ChoiceBook(BookFormSetForm):
+        title = forms.ModelChoiceField(queryset=Publisher.objects.all(), label="Publisher choice")
+
+        def __init__(self, *args, **kwargs):
+            constructed.append(kwargs.copy())
+            super().__init__(*args, **kwargs)
+
+    Publisher.objects.create(name="Choice")
+    node = _runtime(form_class=ChoiceBook, factory_attrs={"extra": 0 if empty else 2})
+    before = len(constructed)
+    with CaptureQueriesContext(connection) as queries:
+        columns = node.compact_columns
+        assert node.compact_columns is columns
+    assert len(queries) == 0
+    assert len(constructed) - before == int(empty)
+    assert columns[0].label == "Publisher choice"
+    widget_form = ChoiceBook(cv_view=None)
+    with CaptureQueriesContext(connection) as widget_queries:
+        rendered = str(widget_form["title"])
+    assert "Choice" in rendered
+    assert len(widget_queries) == 1
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("saved", [False, True])
+def test_compact_metadata_empty_uses_only_detached_constructor(monkeypatch, saved):
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    from tests.test1.app.views_formset import BookFormSetForm
+
+    calls = []
+
+    class MetadataBook(BookFormSetForm):
+        def __init__(self, *args, **kwargs):
+            calls.append(kwargs.copy())
+            super().__init__(*args, **kwargs)
+            self.fields["title"].label = "Request heading"
+
+    parent = Publisher.objects.create(name="Saved") if saved else Publisher()
+    identity = parent.pk
+    node = _runtime(form_class=MetadataBook, parent=parent, factory_attrs={"extra": 0})
+    assert not calls and not node.forms
+    kwargs_calls = []
+    original = node.instance.get_form_kwargs
+
+    def kwargs_for(index):
+        kwargs_calls.append(index)
+        return original(index)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Metadata must not augment, validate, render or consult helpers")
+
+    monkeypatch.setattr(node.instance, "get_form_kwargs", kwargs_for)
+    for method in ("add_fields", "_construct_form"):
+        monkeypatch.setattr(node.instance, method, forbidden)
+    monkeypatch.setattr(type(node.instance), "empty_form", property(forbidden))
+    for method in ("full_clean", "is_valid", "get_layout_fields"):
+        monkeypatch.setattr(MetadataBook, method, forbidden)
+    with CaptureQueriesContext(connection) as queries:
+        assert node.compact_columns[0].label == "Request heading"
+        assert node.compact_columns[0].label == "Request heading"
+    assert len(queries) == 0
+    assert kwargs_calls == [None]
+    assert len(calls) == 1 and calls[0]["cv_view"] is None
+    assert calls[0].get("instance") is not parent
+    assert parent.pk == identity
+    assert node.instance.total_form_count() == 0
+
+
+@pytest.mark.django_db
+def test_compact_metadata_rejects_live_parent_instance():
+    from django.core.exceptions import ImproperlyConfigured
+
+    node = _runtime(factory_attrs={"extra": 0})
+    node.instance.form_kwargs["instance"] = node.instance.instance
+    with pytest.raises(ImproperlyConfigured, match="books.*parent"):
+        _ = node.compact_columns
+
+
+@pytest.mark.django_db
+def test_compact_metadata_preserves_unsaved_uuid_parent():
+    import uuid
+
+    from django.db import connection, models
+    from django.forms import inlineformset_factory
+    from django.test.utils import CaptureQueriesContext, isolate_apps
+
+    from crud_views.lib.crispy import CrispyModelForm
+    from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet, InlineFormSet
+    from crud_views.lib.formsets.render_tree import XFormSet
+
+    with isolate_apps():
+
+        class Parent(models.Model):
+            id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+
+            class Meta:
+                app_label = "compact_tests"
+
+        class Child(models.Model):
+            parent = models.ForeignKey(Parent, on_delete=models.CASCADE)
+            title = models.CharField(max_length=100)
+
+            class Meta:
+                app_label = "compact_tests"
+
+        class ChildForm(CrispyModelForm):
+            class Meta:
+                model = Child
+                fields = ["title"]
+
+        factory = inlineformset_factory(Parent, Child, form=ChildForm, formset=InlineFormSet, extra=0)
+        declaration = FormSet(
+            key="uuid-children",
+            klass=factory,
+            compact_layout=CompactLayout([CompactColumn("title", span=8)], controls_span=4),
+        )
+        parent = Parent()
+        identity = parent.pk
+        instance = factory(formset=declaration, instance=parent, queryset=Child.objects.none())
+        assert not instance.forms
+        node = XFormSet(
+            level=0, prefix_key="None", formset=declaration, instance=instance, management_form=instance.management_form
+        )
+        with CaptureQueriesContext(connection) as queries:
+            assert node.compact_columns[0].label == "Title"
+        assert len(queries) == 0
+        assert parent.pk == identity and parent._state.adding

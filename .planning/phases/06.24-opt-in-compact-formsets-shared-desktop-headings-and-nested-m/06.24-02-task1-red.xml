@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.372" timestamp="2026-11-10T20:47:46.747744+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_heterogeneous_rows[field_type]" time="0.250"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">kind = 'field_type'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["field_type", "widget_type", "required", "label", "missing", "extra"])
+    def test_compact_schema_rejects_heterogeneous_rows(kind):
+        from django import forms
+        from django.core.exceptions import ImproperlyConfigured
+    
+        node = _runtime(factory_attrs={"extra": 2})
+        second = node.forms[1].form
+        if kind == "field_type":
+            second.fields["title"] = forms.RegexField(".*", label="Title")
+        elif kind == "widget_type":
+            second.fields["title"].widget = forms.NumberInput()
+        elif kind == "required":
+            second.fields["title"].required = False
+        elif kind == "label":
+            second.fields["title"].label = "Different"
+        elif kind == "missing":
+            del second.fields["title"]
+        else:
+            second.fields["other"] = forms.CharField(required=False, disabled=True)
+        field = "other" if kind == "extra" else "title"
+&gt;       with pytest.raises(ImproperlyConfigured, match=rf"books.*{field}"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_formsets_compact.py:275: Failed</failure></testcase></testsuite></testsuites>

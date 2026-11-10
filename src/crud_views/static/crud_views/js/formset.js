@@ -483,7 +483,8 @@ class XForm extends XBase {
             }
         }
         if (this.delete_input[0].type === "checkbox") this.delete_input.prop("checked", value);
-        else this.delete_input.val(value ? "1" : "0").attr("value", value ? "1" : "0");
+        // Django's fresh CheckboxInput treats nonempty "0" as checked on POST.
+        else this.delete_input.val(value ? "1" : "").attr("value", value ? "1" : "");
     }
 
 

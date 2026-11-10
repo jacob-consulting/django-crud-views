@@ -102,6 +102,13 @@ later resolver/permission changes require a fresh ViewSet or restart, without ru
 See the executable [configured-content-type migration](../migrating-1.0.md#guardian-configured-content-type-permissions)
 for grant/query/removal and a registered list. This is an immediate change to inferred defaults, without a grace period.
 
+The startup check `viewset.E269` verifies `cv_permission` and ancestor pair keys against declared `Meta` permissions
+([A permission of its own](custom_form_view.md#a-permission-of-its-own)), but skips `GuardianViewSet`s both as the
+checked ViewSet and as an ancestor because their map is discovered on the resolver's type rather than the
+ViewSet model's `Meta`. An undeclared key on a Guardian view still fails at request time with `ImproperlyConfigured`
+on Guardian list, card and object views (see [Permission key diagnostics](#permission-key-diagnostics)), or with the
+`permission_required` assertion where a view delegates to the core `has_permission`.
+
 ## Strict Mode (Default)
 
 By default, `cv_guardian_accept_global_perms = False`: a user with a model-level

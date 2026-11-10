@@ -77,6 +77,7 @@ The view is auto-registered with `cv_author` via `cv_key` and `cv_path`, so its 
 | `cv_key` | `str` | — | **Required.** Unique key within the ViewSet (e.g. `"contact"`) |
 | `cv_path` | `str` | — | **Required.** URL path segment (e.g. `"contact"`) |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
+| `cv_permission` | `str` | `"view"` | Permission-map key the `*PermissionRequired` variants require (`CustomFormView` itself has none); see [A permission of its own](#a-permission-of-its-own) |
 | `form_class` | `Form` | — | The form class to render |
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after a valid form submission |
 | `cv_cancel_key` | `str \| None` | `"list"` | ViewSet key the cancel button returns to (static fallback) |
@@ -131,6 +132,84 @@ class SiteFeedbackView(CrispyViewMixin, CustomFormNoObjectViewPermissionRequired
         # process feedback
         pass
 ```
+
+## A permission of its own
+
+A view outside the standard CRUD operations, such as a contact form or an approval, can require a permission of
+its own instead of reusing `view` or `change`. `cv_permission` is a key of the ViewSet's permission map: the model's
+permission codename with its exact terminal `_<model_name>` suffix removed, as `ViewSet.default_permissions` does.
+For `Author`, `view_author` becomes `view` and `contact_author` becomes `contact`. A codename without that suffix
+keeps its full name: `change_book_status` on `Book` stays `change_book_status`. The recipe has two declarations:
+the permission on the model and its key on the view.
+
+### Declare the permission on the model
+
+Add the custom permission to your existing model:
+
+```python
+class Author(models.Model):
+    ...
+
+    class Meta:
+        # only the permissions entry is new; keep the model's other Meta options
+        permissions = [("contact_author", "Can contact an author")]
+```
+
+Create the migration with `makemigrations` and apply it with `migrate`: Django's auth app creates a `Permission`
+row for each `Meta.permissions` entry, and that row must exist before you can grant it to a user.
+
+### Require it on the view
+
+Extend the contact form example with `cv_permission = "contact"`:
+
+```python
+from django.forms.fields import CharField
+from crud_views.lib.crispy import Column12, CrispyModelForm, CrispyViewMixin
+from crud_views.lib.views.form import CustomFormViewPermissionRequired
+from crud_views.lib.viewset import ViewSet
+from myapp.models import Author
+
+cv_author = ViewSet(model=Author, name="author")
+
+
+class AuthorContactForm(CrispyModelForm):
+    subject = CharField(label="Subject", required=True)
+    body = CharField(label="Body", required=True)
+
+    class Meta:
+        model = Author
+        fields = ["subject", "body"]
+
+    def get_layout_fields(self):
+        return Column12("subject"), Column12("body")
+
+
+class AuthorContactView(CrispyViewMixin, CustomFormViewPermissionRequired):
+    cv_key = "contact"
+    cv_path = "contact"
+    cv_viewset = cv_author
+    cv_permission = "contact"  # contact_author without its _author suffix
+    form_class = AuthorContactForm
+
+    def cv_form_valid(self, context):
+        # Process context["form"].cleaned_data here, e.g. send the contact message.
+        pass
+```
+
+The same keying applies to `CustomFormNoObjectViewPermissionRequired`: the `SiteFeedbackView` above sets
+`cv_permission` against `cv_site`'s model. It also applies to
+[`ActionViewPermissionRequired`](action_view.md).
+A nested custom endpoint additionally needs an `ancestor_policy.actions` pair whose keys resolve on the
+*ancestor's* model; see
+[Example: permissions for a nested Book ViewSet](nested.md#example-permissions-for-a-nested-book-viewset).
+
+The startup system check `viewset.E269` reports a `cv_permission` that names no declared permission before the
+first request. It reads only `Meta.default_permissions` and `Meta.permissions`, never the database, so it can
+run before `migrate`; migrations still need to create the permission rows. It resolves proxies to their concrete
+model, matching the runtime map, and its hint spells out the `Meta.permissions` entry to add.
+`GuardianViewSet`s are not covered because their map comes from the type Guardian's content-type resolver selects;
+an undeclared key still fails at request time (`ImproperlyConfigured` on Guardian list, card and object views).
+See [Configured content-type defaults](guardian.md#configured-content-type-defaults).
 
 ## CrispyViewMixin
 

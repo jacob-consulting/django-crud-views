@@ -249,6 +249,16 @@ django-crud-views/
 - `tests/test1/test_viewset_verbose_name_render.py`: headings/paragraphs, precedence, breadcrumb HTML, child links/buttons and message delivery.
 - `docs/reference/nested.md#labels`: contract and replacement declaration example; `docs/reference/breadcrumb.md`: variable semantics; `CHANGELOG.md`: issue #338 entry.
 
+
+## Permission declaration locations (Phase 06.22)
+
+- `src/crud_views/checks.py`: local and ancestor `viewset.E269` message builders inside the completed-registry check.
+- `src/crud_views/lib/ancestors.py`: private concrete-model vocabulary, suffix normalization, provider eligibility and shared pair-source helpers.
+- `src/crud_views/lib/viewset/__init__.py`: runtime permission-map population reuses the shared normalizer.
+- `tests/test1/test_permission_declarations.py`: declaration diagnostics, concrete-model boundaries, exclusions and zero-query checks.
+- `tests/test1/test_ancestor_docs.py`: executable custom-permission recipe and cross-link tests; `tests/test1/app/models.py` declares Author's `contact_author` permission while preserving OrderedModel Meta options.
+- `docs/reference/custom_form_view.md#a-permission-of-its-own`: canonical model/view recipe; action, Guardian and nested reference pages link or explain the applicable boundaries.
+
 ---
 
 *Structure analysis: 2026-11-10*

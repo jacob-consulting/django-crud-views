@@ -46,6 +46,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from django.contrib.auth import get_permission_codename
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured, PermissionDenied
 from django.db.models import QuerySet
 from django.http import Http404
@@ -57,6 +58,7 @@ from crud_views.lib.settings import crud_views_settings
 
 if TYPE_CHECKING:
     from django.db.models import Model
+    from django.db.models.options import Options
 
     from crud_views.lib.view import CrudView
     from crud_views.lib.viewset import ParentViewSet, ViewSet
@@ -299,6 +301,39 @@ def _action_declaration_problems(viewset: ViewSet) -> list[tuple[str, str]]:
     return problems
 
 
+def _concrete_opts(model: type[Model]) -> Options:
+    """Permission metadata used by the runtime map: ``get_for_model`` defaults to
+    ``for_concrete_model=True``, so a proxy reads its concrete model's declarations (D-01).
+    """
+    return model._meta.concrete_model._meta
+
+
+def _permission_key(codename: str, model_name: str) -> str:
+    """Strip only the exact terminal ``_<model>`` suffix of a Django permission codename.
+    Splitting on the first match would truncate custom names: ``change_book_status`` on
+    ``book`` must stay whole rather than becoming ``change``.
+    """
+    return codename.removesuffix(f"_{model_name}")
+
+
+def _declared_permission_keys(model: type[Model]) -> set[str]:
+    """Static mirror of the runtime permission map's keys, reading metadata only, never the database.
+    Declared and discovered keys agree once ``migrate`` has created the permission rows.
+    """
+    opts = _concrete_opts(model)
+    codenames = [get_permission_codename(action, opts) for action in opts.default_permissions]
+    codenames.extend(codename for codename, _ in opts.permissions)
+    return {_permission_key(codename, opts.model_name) for codename in codenames}
+
+
+def _has_model_vocabulary(viewset: ViewSet) -> bool:
+    """Whether the permission map comes from the core model's declared metadata.
+    Resources carry ``resource_permissions`` (E260) and must be skipped before any concrete-model
+    access; Guardian's class provider discovers its map on the configured resolver's type.
+    """
+    return not viewset.is_resource and type(viewset)._ancestor_provider == "model"
+
+
 def _validate_action_declarations(viewset: ViewSet) -> None:
     """Runtime guard: every ``actions`` key of a nested ViewSet is literally registered (``ImproperlyConfigured``
     otherwise). A missing entry is enforced per requested endpoint by ``_operation_requirements``."""
@@ -307,22 +342,35 @@ def _validate_action_declarations(viewset: ViewSet) -> None:
             raise ImproperlyConfigured(message)
 
 
+def _requirement_source(view_class: type[CrudView]) -> tuple[str, AncestorPermissions]:
+    """The D-11 source label and the pair applied by ``_operation_requirements``.
+    An exact entry is ``actions[<key>]``; family pairs come from ``ancestor_policy.read`` /
+    ``ancestor_policy.write`` or the inherited global CRUD_VIEWS_ANCESTOR_*_PERMISSIONS setting.
+    An unclassified endpoint without its entry raises ``ImproperlyConfigured``.
+    """
+    viewset = view_class.cv_viewset
+    policy = viewset.ancestor_policy
+    key = _registered_key(view_class)
+    if key in policy.actions:
+        return f"actions[{key!r}]", policy.actions[key]
+    family = _operation_family(view_class)
+    if family in (_READ, _WRITE):
+        explicit = getattr(policy, family)
+        if explicit is not None:
+            return f"ancestor_policy.{family}", explicit
+        return f"global CRUD_VIEWS_ANCESTOR_{family.upper()}_PERMISSIONS", _effective_pair(viewset, family)
+    raise ImproperlyConfigured(_missing_action_message(viewset, key, view_class))
+
+
 def _operation_requirements(view_class: type[CrudView]) -> AncestorPermissions:
     """The permission pair required of ancestors for a nested request to ``view_class``.
 
     The exact ``actions`` entry for its registered key wins; otherwise the family's pair (the ViewSet's
     ``read``/``write`` override, else the global default). An unclassified endpoint without an entry is a
     configuration error in every cascade mode, even with all-none ancestry.
+    The source label lives in ``_requirement_source``, shared with viewset.E269.
     """
-    viewset = view_class.cv_viewset
-    policy = viewset.ancestor_policy
-    key = _registered_key(view_class)
-    if key in policy.actions:
-        return policy.actions[key]
-    family = _operation_family(view_class)
-    if family in (_READ, _WRITE):
-        return _effective_pair(viewset, family)
-    raise ImproperlyConfigured(_missing_action_message(viewset, key, view_class))
+    return _requirement_source(view_class)[1]
 
 
 def _effective_pair(viewset: ViewSet, family: str) -> AncestorPermissions:

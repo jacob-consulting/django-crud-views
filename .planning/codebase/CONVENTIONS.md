@@ -104,6 +104,13 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 - Validate only plain blank strings at construction. Avoid stringifying lazy translations during app loading, normalizing padded strings, inferring plurals or using parent display names (`src/crud_views/lib/lazy.py`, `docs/reference/nested.md#labels`).
 - Tests monkeypatch existing shared ViewSets/views; constructor probes remove registry entries under `_REGISTRY_LOCK` in `finally` or teardown (`tests/test1/test_viewset_verbose_name.py`, `tests/test1/test_viewset_verbose_name_render.py`).
 
+
+## Static permission checks (Phase 06.22)
+
+- Use concrete-model metadata for declared core permission vocabulary and remove only the exact terminal `_<model_name>` suffix. Share `_permission_key` with the runtime map (`src/crud_views/lib/ancestors.py`, `src/crud_views/lib/viewset/__init__.py`).
+- Completion-dependent diagnostics belong behind the existing URLconf barrier; do not read Permission/ContentType rows at startup (`src/crud_views/checks.py`).
+- Keep declaration helpers private and preserve the distinct ownership of existing error codes/provider exclusions. Publish one executable recipe rather than duplicating application examples (`docs/reference/custom_form_view.md`, `tests/test1/test_ancestor_docs.py`).
+
 ---
 
 *Convention analysis: 2026-11-10*

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="10" time="0.358" timestamp="2026-11-10T04:38:29.254054+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_ancestor_docs" name="test_inventory_heading_and_fence_occur_once[### Example: permissions for a nested Book ViewSet]" time="0.002" /><testcase classname="tests.test1.test_ancestor_docs" name="test_inventory_heading_and_fence_occur_once[## Ancestor authorization]" time="0.001" /><testcase classname="tests.test1.test_ancestor_docs" name="test_inventory_heading_and_fence_occur_once[### Ancestor authorization of a Resource leaf]" time="0.001" /><testcase classname="tests.test1.test_ancestor_docs" name="test_inventory_heading_and_fence_occur_once[#### Nested ViewSets: instance-hinted write routing]" time="0.001" /><testcase classname="tests.test1.test_ancestor_docs" name="test_inventory_heading_and_fence_occur_once[### Core or Guardian parent]" time="0.001" /><testcase classname="tests.test1.test_ancestor_docs" name="test_inventory_heading_and_fence_occur_once[### Ancestor fallback and view fallback]" time="0.001" /><testcase classname="tests.test1.test_ancestor_docs" name="test_inventory_heading_and_fence_occur_once[#### Custom endpoints need an exact entry]" time="0.002" /><testcase classname="tests.test1.test_ancestor_docs" name="test_inventory_heading_and_fence_occur_once[### Require it on the view]" time="0.001"><failure message="AssertionError: '### Require it on the view' must appear exactly once, found 0&#10;assert 0 == 1&#10; +  where 0 = len([])">page = PosixPath('/home/alex/projects/workspaces/cv-phase-06-22/django-crud-views/docs/reference/custom_form_view.md')
+heading = '### Require it on the view'
+
+    @pytest.mark.parametrize(("page", "heading"), INVENTORY, ids=[h for _, h in INVENTORY])
+    def test_inventory_heading_and_fence_occur_once(page, heading):
+&gt;       source = _fence(page, heading)
+                 ^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_docs.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_docs.py:80: in _fence
+    fences = FENCE.findall(_section(page.read_text(), heading))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '# CustomFormView\n\n!!! example "Try it live"\n    The [Custom Form View example](https://django-crud-views-demo.onre...orm or CrispyForm\n    ...\n```\n\nSee [CreateView](create_view.md) for details on defining `CrispyModelForm` forms.\n'
+heading = '### Require it on the view'
+
+    def _section(text: str, heading: str) -&gt; str:
+        """The body below a markdown heading, up to the next heading of the same or a higher level."""
+        level = len(heading) - len(heading.lstrip("#"))
+        headings = _headings(text)
+        matches = [m for m in headings if m.group(0) == heading]
+&gt;       assert len(matches) == 1, f"{heading!r} must appear exactly once, found {len(matches)}"
+E       AssertionError: '### Require it on the view' must appear exactly once, found 0
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_label_mode_docs.py:40: AssertionError</failure></testcase><testcase classname="tests.test1.test_ancestor_docs" name="test_published_permission_recipe_passes_the_startup_check" time="0.002"><failure message="AssertionError: '### Require it on the view' must appear exactly once, found 0&#10;assert 0 == 1&#10; +  where 0 = len([])">published = namespace(run=&lt;function _published_registry.&lt;locals&gt;.run at 0x7b189693fb00&gt;, control=&lt;function _published_registry.&lt;locals&gt;.control at 0x7b189693fba0&gt;, ns={'__name__': 'myapp.views'}, files=[])
+
+    def test_published_permission_recipe_passes_the_startup_check(published):
+        from crud_views.checks import check_ancestor_declarations
+        from crud_views.lib.ancestors import _declared_permission_keys
+    
+&gt;       ns = published.run(*CUSTOM_PERMISSION)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_docs.py:923: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_docs.py:145: in run
+    exec(compile(_fence(page, heading), f"{page}:{heading}", "exec"), namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^
+tests/test1/test_ancestor_docs.py:80: in _fence
+    fences = FENCE.findall(_section(page.read_text(), heading))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '# CustomFormView\n\n!!! example "Try it live"\n    The [Custom Form View example](https://django-crud-views-demo.onre...orm or CrispyForm\n    ...\n```\n\nSee [CreateView](create_view.md) for details on defining `CrispyModelForm` forms.\n'
+heading = '### Require it on the view'
+
+    def _section(text: str, heading: str) -&gt; str:
+        """The body below a markdown heading, up to the next heading of the same or a higher level."""
+        level = len(heading) - len(heading.lstrip("#"))
+        headings = _headings(text)
+        matches = [m for m in headings if m.group(0) == heading]
+&gt;       assert len(matches) == 1, f"{heading!r} must appear exactly once, found {len(matches)}"
+E       AssertionError: '### Require it on the view' must appear exactly once, found 0
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_label_mode_docs.py:40: AssertionError</failure></testcase><testcase classname="tests.test1.test_ancestor_docs" name="test_misspelled_recipe_key_fails_the_startup_check" time="0.001"><failure message="AssertionError: '### Require it on the view' must appear exactly once, found 0&#10;assert 0 == 1&#10; +  where 0 = len([])">published = namespace(run=&lt;function _published_registry.&lt;locals&gt;.run at 0x7b18967afc40&gt;, control=&lt;function _published_registry.&lt;locals&gt;.control at 0x7b18967afce0&gt;, ns={'__name__': 'myapp.views'}, files=[])
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b18967d7c50&gt;
+
+    def test_misspelled_recipe_key_fails_the_startup_check(published, monkeypatch):
+        from crud_views.checks import check_ancestor_declarations
+    
+&gt;       ns = published.run(*CUSTOM_PERMISSION)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_docs.py:938: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_ancestor_docs.py:145: in run
+    exec(compile(_fence(page, heading), f"{page}:{heading}", "exec"), namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^
+tests/test1/test_ancestor_docs.py:80: in _fence
+    fences = FENCE.findall(_section(page.read_text(), heading))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '# CustomFormView\n\n!!! example "Try it live"\n    The [Custom Form View example](https://django-crud-views-demo.onre...orm or CrispyForm\n    ...\n```\n\nSee [CreateView](create_view.md) for details on defining `CrispyModelForm` forms.\n'
+heading = '### Require it on the view'
+
+    def _section(text: str, heading: str) -&gt; str:
+        """The body below a markdown heading, up to the next heading of the same or a higher level."""
+        level = len(heading) - len(heading.lstrip("#"))
+        headings = _headings(text)
+        matches = [m for m in headings if m.group(0) == heading]
+&gt;       assert len(matches) == 1, f"{heading!r} must appear exactly once, found {len(matches)}"
+E       AssertionError: '### Require it on the view' must appear exactly once, found 0
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_label_mode_docs.py:40: AssertionError</failure></testcase></testsuite></testsuites>

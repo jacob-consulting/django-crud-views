@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.21"
 current_phase_name: "Snippet context exposes `view` and `parent_object` (#339)"
-status: "Phase 06.20 shipped — PR #342"
-stopped_at: Phase 06.20 complete, ready to plan Phase 06.21
+status: "Phase 06.22 shipped — PR #343"
+stopped_at: Phases 06.20 and 06.22 complete, ready to plan Phase 06.21
 last_updated: "2026-11-10T08:39:08.008Z"
 last_activity: 2026-11-10
 state_head: 2515e73414fe0641efba53bd31ed9a3d3d593c6c
 progress:
-  total_phases: 27
-  completed_phases: 23
-  total_plans: 155
-  completed_plans: 155
+  total_phases: 28
+  completed_phases: 24
+  total_plans: 158
+  completed_plans: 158
   percent: 92
 milestone_name: milestone
 ---
@@ -30,10 +30,17 @@ See: .planning/PROJECT.md (updated 2026-11-09)
 
 Phase: 06.21 — Snippet context exposes `view` and `parent_object` (#339)
 Plan: Not started
-Status: Phase 06.20 shipped — PR #342
+Status: Phase 06.22 shipped — PR #343
 Last activity: 2026-11-10
 
-Next: Phase 06.21; Phase 06.20 is verified and complete.
+Next: Phase 06.21; Phases 06.20 and 06.22 are verified and complete.
+
+### Phase 06.22 completion — 2026-11-10
+
+- All three plans complete; database-free E269 checks cover core view and ancestor permission keys, and the custom Meta.permissions recipe is executed by tests. Runtime authorization and Guardian paths preserved.
+- Canonical verification passed 22/22; decisions 16/16, prohibitions 9/9, validation 7/7 tasks, security 9/9 closed, deep review 12 files with zero findings. No required human checks.
+- Full suite 12,074 passed with four workers; docs 42, examples system check 1, additional regression 334 examples plus 100 subtests and 153 static tests pass. Ruff, strict MkDocs and compileall pass. Four existing Django deprecation warnings recorded in deferred-items.
+- Completion scanner treated two pytest command strings as missing paths; both referenced RED XML artifacts exist. No pending phase todos, handoffs or learnings to graduate. Config/state.json edits preserved; no push or merge.
 
 ### Phase 06.20 completion — 2026-11-09
 
@@ -709,6 +716,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.18 | 13 | - | - |
 | 06.19 | 2 | - | - |
 | 06.20 | 3 | - | - |
+| 06.22 | 3 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1152,5 +1160,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-09T21:26:24.250Z
-Stopped at: Phase 06.20 complete, ready to plan Phase 06.21
+Stopped at: Phases 06.20 and 06.22 complete, ready to plan Phase 06.21
 Resume file: None

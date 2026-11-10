@@ -1,0 +1,13 @@
+{
+  "command": ".venv/bin/pytest tests/test1/test_permission_declarations.py -q --junitxml=.planning/phases/06.22-custom-permissions-meta-permissions-recipe-and-startup-check/06.22-01-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"2\" time=\"0.189\" timestamp=\"2026-11-10T04:26:40.359462+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_permission_declarations\" name=\"test_undeclared_cv_permission_is_reported_at_startup\" time=\"0.003\"><failure message=\"AssertionError: assert [] == [('viewset.E2...le_fb059f45')]&#10;  &#10;  Right contains one more item: ('viewset.E269', 'pd_approvable_fb059f45')&#10;  Use -v to get more diff\">registry = None, sfx = 'fb059f45', no_db = None\n\n    def test_undeclared_cv_permission_is_reported_at_startup(registry, sfx, no_db):\n        with isolate_apps(\"tests.test1.app\"):\n    \n            class Approvable(models.Model):\n                class Meta:\n                    app_label = \"app\"\n                    permissions = [(\"approve_approvable\", \"Can approve\")]\n    \n            vs = ViewSet(model=Approvable, name=f\"pd_approvable_{sfx}\")\n            _view(_core(\"ListViewPermissionRequired\"), vs)\n            _view(_core(\"ActionViewPermissionRequired\"), vs, key=\"approve\", cv_permission=\"approve\")\n            _view(_core(\"ActionViewPermissionRequired\"), vs, key=\"run\", cv_permission=\"run\")\n    \n&gt;           assert _ours(check_ancestor_declarations(), vs) == [(\"viewset.E269\", vs.name)]\nE           AssertionError: assert [] == [('viewset.E2...le_fb059f45')]\nE             \nE             Right contains one more item: ('viewset.E269', 'pd_approvable_fb059f45')\nE             Use -v to get more diff\n\ntests/test1/test_permission_declarations.py:40: AssertionError</failure></testcase><testcase classname=\"tests.test1.test_permission_declarations\" name=\"test_shared_registry_has_no_e269\" time=\"0.001\" /></testsuite></testsuites>",
+  "targetTest": "test_undeclared_cv_permission_is_reported_at_startup",
+  "targetFile": "tests/test1/test_permission_declarations.py",
+  "expected": "One viewset.E269 for the undeclared run key",
+  "actual": "Empty list, assertion failure; 1 failed, 1 passed",
+  "reportPath": ".planning/phases/06.22-custom-permissions-meta-permissions-recipe-and-startup-check/06.22-01-red.xml",
+  "reportModifiedAt": "2026-11-10T04:26:40.547819+00:00",
+  "semanticAssessment": "Target executed and failed on the planned equality: [] instead of one E269; no setup or collection errors.",
+  "runStartedAt": "2026-11-10T04:26:40.359462+00:00"
+}

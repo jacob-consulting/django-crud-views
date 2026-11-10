@@ -145,6 +145,14 @@ None independently confirmed.
 - Model-centric deletion/404 text keeps model names; short action labels contain no object name. These are documented scope boundaries (`docs/reference/nested.md#labels`).
 - Canonical verification passes 15/15 truths; security reports nine closed threats. No required human check remains. Responsive long-label/browser checks are optional downstream work; the supported-version matrix remains a CI condition (`.planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-VERIFICATION.md`).
 
+
+## Permission declaration boundaries (Phase 06.22)
+
+- Undeclared core permission keys now fail startup with `viewset.E269`; this closes the previous delayed-discovery gap for `cv_permission` and effective ancestor pairs (`src/crud_views/checks.py`).
+- Checks deliberately validate metadata only. They cannot establish that migrations created auth rows or that users hold grants; applications must migrate and grant permissions as documented (`docs/reference/custom_form_view.md`).
+- Guardian/Resource paths are excluded, and checks defer when URLconf completion fails. Existing request-time diagnostics remain necessary; exclusions are tested rather than treated as complete startup coverage (`tests/test1/test_permission_declarations.py`).
+- Shared helpers add no startup database queries; runtime permission-map query behavior is preserved (`tests/test1/test_viewset.py`, `tests/test1/test_permission_declarations.py`). Existing concerns above remain outside this phase's scope.
+
 ---
 
 *Concerns audit: 2026-11-10*

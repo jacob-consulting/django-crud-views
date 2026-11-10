@@ -85,6 +85,12 @@ last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
 - ViewSet display names reuse existing `LazyStr` and Pydantic field validation (`src/crud_views/lib/lazy.py`, `src/crud_views/lib/viewset/__init__.py`). No dependency, global setting, template or browser-runtime changes.
 - Runtime ranges and supported CI matrices are unchanged. Shipping checks used the existing Python 3.12 environment; supported-version coverage remains a CI check (`noxfile.py`).
 
+
+## Phase 06.22 refresh
+
+- Dependency/runtime/build configuration is unchanged since the preceding map (`pyproject.toml`, `package.json`, `noxfile.py`).
+- Permission declaration checks use existing Django model metadata and `get_permission_codename`; no new dependency, database service or setting is introduced (`src/crud_views/lib/ancestors.py`, `src/crud_views/checks.py`).
+
 ---
 
 *Stack analysis: 2026-11-10*

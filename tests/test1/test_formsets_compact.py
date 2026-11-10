@@ -76,6 +76,88 @@ def test_compact_layout_rejects_implicit_or_ambiguous_configuration():
         CompactLayout([column], 4)
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("dense", [False, True])
+def test_compact_presentation_columns_labels_and_owned_feedback(dense):
+    from django import forms
+    from django.forms.utils import ErrorList
+    from django.template.loader import render_to_string
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+
+    node = _runtime(factory_attrs={"extra": 2})
+    names = ["title", *[f"score_{i}" for i in range(7)]] if dense else ["title"]
+    spans = [3, *([1] * 7)] if dense else [4]
+    for row in node.forms:
+        row.form.fields["title"].label = "<script>Long translated heading</script>"
+        row.form.fields["title"].help_text = "Detailed help for this field"
+        for name in names[1:]:
+            row.form.fields[name] = forms.DecimalField(label=name, required=False)
+    node.formset.compact_layout = CompactLayout(
+        [CompactColumn(name, span=span) for name, span in zip(names, spans, strict=True)], controls_span=2
+    )
+    first = node.forms[0].form
+    first.is_bound = True
+    first.data = {first.add_prefix("title"): "Kept title"}
+    first.add_error("title", "Owned field error")
+    first.add_error(None, "Owned row error")
+    node.instance._non_form_errors = ErrorList(["Owned formset error"])
+    doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+    headings = doc.cssselect(".cv-formset-compact-headings")
+    assert len(headings) == 1
+    heading = headings[0]
+    assert not heading.xpath("ancestor::div[@cv-data-formset-form-prefix]")
+    assert [cell.get("class") for cell in heading] == [f"col-md-{span}" for span in [*spans, 2]]
+    assert not heading.cssselect("script")
+    assert "<script>Long translated heading</script>" in heading.text_content()
+    assert len(heading.cssselect(".asteriskField")) == 1
+    rows = doc.cssselect(".cv-formset-row-compact")
+    for row in rows:
+        cells = row.cssselect(".cv-formset-compact-fields > div")
+        assert [cell.get("class").strip() for cell in cells] == [f"col-md-{span}" for span in [*spans, 2]]
+        for name in names:
+            field = row.cssselect(f'input[name$="-{name}"]')
+            assert len(field) == 1
+            labels = row.xpath(".//label[@for=$id]", id=field[0].get("id"))
+            assert len(labels) == 1
+            assert "cv-formset-compact-label" in labels[0].get("class")
+            assert "aria-hidden" not in labels[0].attrib
+        assert len(row.cssselect("label .asteriskField")) == 1
+        assert not row.cssselect(".cv-formset-compact-headings")
+    assert "Owned field error" in rows[0].text_content()
+    assert "Owned row error" in rows[0].text_content()
+    assert "Owned field error" not in rows[1].text_content()
+    assert "Owned row error" not in rows[1].text_content()
+    assert "Owned formset error" in doc.text_content()
+    assert all("Owned formset error" not in row.text_content() for row in rows)
+    assert not doc.cssselect('[role="grid"], [role="gridcell"]')
+
+
+@pytest.mark.django_db
+def test_compact_presentation_heading_include_is_overridable():
+    from copy import deepcopy
+
+    from django.conf import settings
+    from django.template.loader import render_to_string
+    from django.test import override_settings
+
+    templates = deepcopy(settings.TEMPLATES)
+    templates[0]["APP_DIRS"] = False
+    templates[0]["OPTIONS"]["loaders"] = [
+        ("django.template.loaders.locmem.Loader", {"crud_views/formsets/compact_headings.html": "THEME HEADINGS"}),
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader",
+    ]
+    node = _runtime()
+    with override_settings(TEMPLATES=templates):
+        page = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
+        assert page.count("THEME HEADINGS") == 1
+        node.render_rows_only = True
+        fragment = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
+        assert "THEME HEADINGS" not in fragment
+        assert "cv-formset-row-compact" in fragment
+
+
 def _runtime(*, compact=True, form_class=None, parent=None, factory_attrs=None, **declaration_kwargs):
     from django.test import RequestFactory
 

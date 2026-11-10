@@ -27,12 +27,7 @@
     {{ x_formset.instance|as_crispy_errors }}
 
     {% if x_formset.formset.compact_layout %}
-        <div class="row cv-formset-compact-headings">
-            {% for column in x_formset.compact_columns %}
-                <div class="col-md-{{ column.span }}">{{ column.label }}{% if column.required %}<span class="asteriskField">*</span>{% endif %}</div>
-            {% endfor %}
-            <div class="col-md-{{ x_formset.formset.compact_layout.controls_span }}"></div>
-        </div>
+        {% include "crud_views/formsets/compact_headings.html" %}
     {% endif %}
 
 {% endif %}

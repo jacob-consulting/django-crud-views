@@ -51,6 +51,7 @@
     margin-bottom: 1rem;
     border: 1px solid var(--bs-border-color, #dee2e6);
     border-radius: var(--bs-border-radius, .375rem);
+    background-color: var(--bs-body-bg, #fff);
 }
 
 .cv-formset-compact-headings {
@@ -63,6 +64,7 @@
 .cv-formset-compact-fields,
 .cv-formset-compact-headings {
     --bs-gutter-x: 1rem;
+    align-items: flex-start;
 }
 
 .cv-formset-compact-fields > div,
@@ -75,11 +77,37 @@
     font-weight: 600;
 }
 
+.cv-formset-compact-fields > div > .mb-3 {
+    margin-bottom: 0 !important;
+}
+
+.cv-formset-row-compact > .cv-formset-form:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
+.cv-formset-compact-fields > div > .cv-form-ctrl fieldset {
+    flex-wrap: wrap;
+}
+
+.cv-formset-compact-headings .asteriskField {
+    margin-left: .25rem;
+}
+
+.cv-formset-compact > legend {
+    overflow-wrap: anywhere;
+}
+
 .cv-formset-compact-child {
     padding: .5rem;
     background-color: var(--bs-tertiary-bg, #f8f9fa);
     border: 1px solid var(--bs-border-color, #dee2e6);
     border-radius: var(--bs-border-radius, .375rem);
+}
+
+@media (max-width: 767.98px) {
+    .cv-formset-compact-fields {
+        row-gap: 1rem;
+    }
 }
 
 @media (min-width: 768px) {

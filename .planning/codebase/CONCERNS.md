@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 last_mapped_at: 2026-11-10
 ---
 # Codebase Concerns
@@ -151,7 +151,6 @@ None independently confirmed.
 - Lazy overrides deliberately receive no construction-time blank check: evaluating them during app loading can raise `AppRegistryNotReady`. Plain blank strings fail validation; padded strings remain unchanged (`src/crud_views/lib/viewset/__init__.py`, `tests/test1/test_viewset_verbose_name.py`).
 - Model-centric deletion/404 text keeps model names; short action labels contain no object name. These are documented scope boundaries (`docs/reference/nested.md#labels`).
 - Canonical verification passes 15/15 truths; security reports nine closed threats. No required human check remains. Responsive long-label/browser checks are optional downstream work; the supported-version matrix remains a CI condition (`.planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-VERIFICATION.md`).
-
 
 ## Permission declaration boundaries (Phase 06.22)
 

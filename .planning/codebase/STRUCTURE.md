@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 last_mapped_at: 2026-11-10
 ---
 # Codebase Structure
@@ -250,7 +250,6 @@ django-crud-views/
 - `tests/test1/test_viewset_verbose_name.py`: defaults, independent fields, lazy language/construction behavior, Resource and Guardian inheritance, nested list heading.
 - `tests/test1/test_viewset_verbose_name_render.py`: headings/paragraphs, precedence, breadcrumb HTML, child links/buttons and message delivery.
 - `docs/reference/nested.md#labels`: contract and replacement declaration example; `docs/reference/breadcrumb.md`: variable semantics; `CHANGELOG.md`: issue #338 entry.
-
 
 ## Permission declaration locations (Phase 06.22)
 

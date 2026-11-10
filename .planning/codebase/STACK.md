@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-10
-last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 ---
 # Technology Stack
 
@@ -84,7 +84,6 @@ last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
 
 - ViewSet display names reuse existing `LazyStr` and Pydantic field validation (`src/crud_views/lib/lazy.py`, `src/crud_views/lib/viewset/__init__.py`). No dependency, global setting, template or browser-runtime changes.
 - Runtime ranges and supported CI matrices are unchanged. Shipping checks used the existing Python 3.12 environment; supported-version coverage remains a CI check (`noxfile.py`).
-
 
 ## Phase 06.22 refresh
 

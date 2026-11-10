@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 last_mapped_at: 2026-11-10
 ---
 # Testing Patterns
@@ -198,7 +198,6 @@ For view failures, assert response status, form errors, redirect, and unchanged 
 - Tests reuse registered fixtures with monkeypatch; constructor probes clean up under the registry lock. Exact DOM/message assertions exercise real requests.
 - Fresh shipping selection (these modules plus `test_breadcrumb.py` and `test_messages.py`): 96 passed with four workers. Ruff lint/format over `src`/`tests` and strict MkDocs passed on 2026-11-10.
 - Historical evidence: 12,066 full-suite passes before the final test-only addition; final request coverage has focused follow-up evidence. Do not describe the historical run as a full-suite run of the final tree (`.planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-VERIFICATION.md`).
-
 
 ## Permission declaration coverage (Phase 06.22)
 

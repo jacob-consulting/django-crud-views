@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 last_mapped_at: 2026-11-10
 ---
 # Coding Conventions
@@ -107,7 +107,6 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 - Preserve unset metadata paths and resolve explicit overrides centrally in `get_meta()` (`src/crud_views/lib/viewset/__init__.py`).
 - Validate only plain blank strings at construction. Avoid stringifying lazy translations during app loading, normalizing padded strings, inferring plurals or using parent display names (`src/crud_views/lib/lazy.py`, `docs/reference/nested.md#labels`).
 - Tests monkeypatch existing shared ViewSets/views; constructor probes remove registry entries under `_REGISTRY_LOCK` in `finally` or teardown (`tests/test1/test_viewset_verbose_name.py`, `tests/test1/test_viewset_verbose_name_render.py`).
-
 
 ## Static permission checks (Phase 06.22)
 

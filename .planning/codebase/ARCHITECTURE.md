@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: c9c1ea19f7dd2a5f8bc90cede38d0051717ef9e7
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 last_mapped_at: 2026-11-10
 ---
 <!-- refreshed: 2026-11-10 -->
@@ -280,7 +280,6 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - `ViewSet.verbose_name` and `verbose_name_plural` are independent optional `LazyStr` fields. `get_meta()` resolves explicit overrides per call under the active language; `None` preserves the model/Resource metadata path, including lazy values (`src/crud_views/lib/viewset/__init__.py`).
 - `check_verbose_name()` rejects blank plain strings without stripping stored values or evaluating lazy objects at construction. There is no automatic pluralization or ancestor fallback.
 - Existing `CrudView.cv_get_meta()`, snippets, breadcrumbs, child-column and button consumers receive the resolved names. Explicit labels keep precedence; model-centric deletion/404 text and permission identity are unchanged (`src/crud_views/lib/view/base.py`, `docs/reference/nested.md#labels`). No new queries or consumer state are added.
-
 
 ## Permission declaration diagnostics (Phase 06.22)
 

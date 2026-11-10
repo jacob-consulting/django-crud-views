@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.24"
 current_phase_name: Opt-in compact formsets
-status: executing
-stopped_at: Completed 06.24-04-PLAN.md
-last_updated: "2026-11-10T21:27:07.990Z"
+status: verifying
+stopped_at: Completed 06.24-05-PLAN.md; independent phase verification pending
+last_updated: "2026-11-10T21:52:57.390Z"
 last_activity: 2026-11-10
-last_activity_desc: Phase 06.24 execution started
-state_head: b1585e6853abfa1ee20f01132bcf9fc2207cef13
+last_activity_desc: Phase 06.24 plans executed; independent verification pending
+state_head: 464613048e700a02081c6ed2436560db1ab1689a
 progress:
   total_phases: 30
   completed_phases: 25
   total_plans: 167
-  completed_plans: 166
+  completed_plans: 167
 milestone_name: milestone
 ---
 
@@ -28,12 +28,12 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 
 ## Current Position
 
-Phase: 06.24 (Opt-in compact formsets) — EXECUTING
+Phase: 06.24 (Opt-in compact formsets) — VERIFICATION PENDING
 Plan: 5 of 5
-Status: Ready to execute
-Last activity: 2026-11-10 — Phase 06.24 execution started
+Status: Execution complete — independent phase verification pending
+Last activity: 2026-11-10 — All five plans executed; final full suite 12,405 passed
 
-Next: $gsd-execute-phase 06.24
+Next: Independent phase verification, then human screenshot grouping/focus review
 
 ### Phase 06.24 planning convergence — 2026-11-10
 
@@ -874,6 +874,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.24 P02 | 9min | 2 tasks | 4 files |
 | Phase 06.24 P03 | 8min | 2 tasks | 5 files |
 | Phase 06.24 P04 | 21min | 3 tasks | 14 files |
+| Phase 06.24 P05 | 22min | 2 tasks | 7 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1128,6 +1129,8 @@ Recent decisions affecting current work:
 - [Phase 06.24]: Plan 03: nested geometry uses the current node compact_layout; direct child CSS applies 8px padding with matching heading gutters while classic offsets/helpers remain unchanged.
 - [Phase 06.24]: Plan 04: compact browser evidence uses stock-only cases in the existing authenticated harness; 115 assertions, 16 ignored captures and matching 40-source hashes, with human grouping review pending.
 - [Phase 06.24]: Plan 04: hidden DELETE unmark emits an empty value because fresh Django CheckboxInput interprets nonempty '0' as checked; classic/compact real POST regressions prove original-parent retention, native checkbox branch unchanged.
+- [Phase 06.24]: Compact documentation uses ordinary ModelForms accepting the existing cv_view keyword and InlineFormSet directly; classic nodes keep their own helpers.
+- [Phase 06.24]: Compact hidden-field errors reuse cv_alert and its escaped heading/items instead of defining another alert frame.
 
 ### Pending Todos
 
@@ -1200,6 +1203,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T21:27:04.206Z
-Stopped at: Completed 06.24-04-PLAN.md
+Last session: 2026-11-10T21:52:53.521Z
+Stopped at: Completed 06.24-05-PLAN.md; independent phase verification pending
 Resume file: None

@@ -180,6 +180,171 @@ def test_compact_labels_resolve_under_each_active_translation():
 
 
 @pytest.mark.django_db
+def test_compact_hidden_errors_and_plain_help_are_escaped(monkeypatch, compact_books, client_user_publisher_formset):
+    from django import forms
+    from django.core.exceptions import ValidationError
+
+    from tests.test1.app.views_formset import BookFormSetForm
+
+    class ErrorBook(BookFormSetForm):
+        secret = forms.CharField(widget=forms.HiddenInput, initial="initial-secret")
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["title"].help_text = "<script>help attack</script>"
+
+        def clean(self):
+            data = super().clean()
+            if data.get("secret") == "invalid-secret":
+                self.add_error("secret", "<script>hidden attack</script>")
+                self.add_error("title", "<script>field attack</script>")
+                self.add_error(None, "<script>row attack</script>")
+            return data
+
+    original_clean = BookInlineFormSet.clean
+
+    def clean_formset(self):
+        original_clean(self)
+        if any(f.data.get(f.add_prefix("secret")) == "invalid-secret" for f in self.forms):
+            raise ValidationError("<script>formset attack</script>")
+
+    monkeypatch.setattr(publisher_formsets["books"].klass, "form", ErrorBook)
+    monkeypatch.setattr(BookInlineFormSet, "clean", clean_formset)
+    publisher = Publisher.objects.create(name="Errors")
+    book = Book.objects.create(publisher=publisher, title="Original")
+    url = f"/publisher-formset/{publisher.pk}/update/"
+    initial = client_user_publisher_formset.get(url)
+    payload = form_payload(initial)
+    title_name = next(k for k, v in payload.items() if k.endswith("-title") and v == "Original")
+    prefix = title_name.removesuffix("-title")
+    payload[title_name] = "Retained value"
+    payload[f"{prefix}-secret"] = "invalid-secret"
+    response = client_user_publisher_formset.post(url, payload)
+    assert response.status_code == 200
+    document = html.fromstring(response.content)
+    row = document.xpath("//div[@cv-data-formset-form-prefix=$prefix]", prefix=prefix)[0]
+    own = row.cssselect(".cv-formset-form")[0]
+    for message in ("hidden attack", "field attack", "row attack"):
+        assert own.text_content().count(message) == 1
+    assert not own.cssselect("script")
+    assert "help attack" in own.text_content()
+    assert own.cssselect("input[name$='-title']")[0].get("value") == "Retained value"
+    assert "cv-formset-row-compact" in row.get("class")
+    assert not row.xpath(".//input[@required]")
+    assert own.cssselect(".asteriskField")
+    fieldset = row.xpath("ancestor::fieldset[contains(@class, 'cv-formset-compact')]")[0]
+    formset_message = fieldset.xpath(".//li[contains(., 'formset attack')]")
+    assert len(formset_message) == 1
+    assert not formset_message[0].xpath("ancestor::div[contains(@class, 'cv-formset-row')]")
+    for suffix in ("title", "secret", "id", "publisher", "DELETE"):
+        assert len(own.xpath(".//input[@name=$name]", name=f"{prefix}-{suffix}")) == 1
+    book.refresh_from_db()
+    assert book.title == "Original"
+    payload[f"{prefix}-secret"] = "valid-secret"
+    result = client_user_publisher_formset.post(url, payload)
+    assert result.status_code == 302
+    book.refresh_from_db()
+    assert book.title == "Retained value"
+
+
+@pytest.mark.django_db
+def test_compact_hidden_policy_errors_and_values_render_once(monkeypatch):
+    from django import forms
+    from django.template.loader import render_to_string
+
+    monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
+    node = _runtime(factory_attrs={"can_order": True})
+    form = node.forms[0].form
+    form.fields["secret"] = forms.CharField(widget=forms.HiddenInput)
+    form.data = {form.add_prefix("title"): "A title", form.add_prefix("secret"): "kept"}
+    form.is_bound = True
+    for name in ("secret", "id", "publisher", "ORDER", "DELETE"):
+        form.add_error(name, f"Error on {name}")
+    for _ in range(2):
+        rendered = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
+        doc = html.fromstring(rendered)
+        for name in ("secret", "id", "publisher", "ORDER", "DELETE"):
+            assert len(doc.xpath(".//input[@name=$name]", name=form.add_prefix(name))) == 1
+            assert doc.text_content().count(f"Error on {name}") == 1
+        assert doc.cssselect('input[name$="-secret"]')[0].get("value") == "kept"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("state", ["zero", "blank", "existing", "no_controls", "no_extra_delete"])
+def test_compact_empty_and_control_policy_edges(state):
+    from django.template.loader import render_to_string
+
+    parent = Publisher.objects.create(name="States")
+    attrs = {}
+    if state in ("existing", "no_controls"):
+        Book.objects.create(publisher=parent, title="Existing")
+    if state in ("zero", "existing", "no_controls"):
+        attrs["extra"] = 0
+    if state == "no_controls":
+        attrs.update(edit_only=True, can_order=False, can_delete=False)
+    if state == "no_extra_delete":
+        attrs["can_delete_extra"] = False
+    node = _runtime(parent=parent, factory_attrs=attrs)
+    rendered = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
+    doc = html.fromstring(rendered)
+    assert len(doc.cssselect(".cv-formset-compact-headings")) == 1
+    assert len(doc.cssselect('input[name$="-TOTAL_FORMS"]')) == 1
+    assert len(doc.cssselect(".cv-formset-row-compact")) == (0 if state == "zero" else 1)
+    if state in ("zero", "no_controls"):
+        assert not doc.cssselect("button")
+    if state == "no_controls":
+        cells = doc.cssselect(".cv-formset-compact-fields > div")
+        assert "col-md-4" in cells[-1].get("class")
+        assert "d-none" in cells[-1].get("class") and "d-md-block" in cells[-1].get("class")
+    if state == "no_extra_delete":
+        assert not doc.cssselect('input[name$="-DELETE"], .cv-form-ctrl-delete')
+        assert doc.cssselect(".cv-form-ctrl-add")
+    if state in ("zero", "existing"):
+        with pytest.raises(IndexError):
+            list(node.formset.template(pk=None, index=0, force_form_index=1))
+
+
+@pytest.mark.django_db
+def test_compact_optional_disabled_fields_and_safe_text():
+    from django import forms
+    from django.template.loader import render_to_string
+    from django.utils.safestring import mark_safe
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+
+    node = _runtime()
+    form = node.forms[0].form
+    form.fields["title"].label = mark_safe("<em>Safe label</em>")
+    form.fields["title"].help_text = mark_safe("<em>Safe help</em>")
+    form.fields["optional"] = forms.CharField(required=False, disabled=True, initial="Fixed")
+    node.formset.compact_layout = CompactLayout(
+        [CompactColumn("title", span=4), CompactColumn("optional", span=4)], controls_span=4
+    )
+    doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+    field = doc.cssselect('input[name$="-optional"]')
+    assert len(field) == 1 and "disabled" in field[0].attrib and field[0].get("value") == "Fixed"
+    assert len(doc.cssselect(".cv-formset-compact-headings .asteriskField")) == 1
+    assert len(doc.cssselect("em")) == 3
+
+
+@pytest.mark.django_db
+def test_compact_management_error_stays_on_zero_total_owner(compact_books, client_user_publisher_formset):
+    publisher = Publisher.objects.create(name="Management")
+    url = f"/publisher-formset/{publisher.pk}/update/"
+    payload = form_payload(client_user_publisher_formset.get(url))
+    key = next(k for k in payload if k.startswith("books-") and k.endswith("-TOTAL_FORMS"))
+    del payload[key]
+    response = client_user_publisher_formset.post(url, payload)
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    fieldset = doc.cssselect("fieldset.cv-formset-compact")[0]
+    assert "ManagementForm data is missing" in fieldset.text_content()
+    assert not fieldset.cssselect(".cv-formset-row-compact")
+    assert len(fieldset.cssselect(".cv-formset-compact-headings")) == 1
+    assert not fieldset.cssselect(".cv-form-ctrl-add")
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("label", ["", " "])
 def test_compact_rejects_empty_effective_label(label):
     from django.core.exceptions import ImproperlyConfigured

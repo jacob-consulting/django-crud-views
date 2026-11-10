@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: "06.24"
 current_phase_name: Opt-in compact formsets
 status: verifying
-stopped_at: Completed 06.24-05-PLAN.md; independent phase verification pending
-last_updated: "2026-11-10T21:52:57.390Z"
+stopped_at: Phase 06.24 automated verification complete; one human UAT item pending
+last_updated: "2026-11-10T22:17:11Z"
 last_activity: 2026-11-10
-last_activity_desc: Phase 06.24 plans executed; independent verification pending
+last_activity_desc: Phase 06.24 verified 14/15; human grouping and focus review pending
 state_head: 464613048e700a02081c6ed2436560db1ab1689a
 progress:
   total_phases: 30
@@ -28,12 +28,20 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 
 ## Current Position
 
-Phase: 06.24 (Opt-in compact formsets) — VERIFICATION PENDING
+Phase: 06.24 (Opt-in compact formsets) — HUMAN VERIFICATION PENDING
 Plan: 5 of 5
-Status: Execution complete — independent phase verification pending
-Last activity: 2026-11-10 — All five plans executed; final full suite 12,405 passed
+Status: All plans executed and automated verification complete; one human UAT item pending
+Last activity: 2026-11-10 — Verification 14/15; full suite 12,405 passed; UAT saved
 
-Next: Independent phase verification, then human screenshot grouping/focus review
+Next: $gsd-verify-work 06.24
+
+### Phase 06.24 execution and verification — 2026-11-10
+
+- Five plans and eleven tasks complete. Opt-in compact declarations, runtime schema checks, shared desktop headings, labelled mobile cards, independent nesting and executed documentation are committed.
+- Final full suite 12,405 passed; five Django/crispy environments 214 each; browser 115 assertions with 16 ignored captures and current 40-source hashes. Python 3.13–3.15 not replayed; four existing deprecations retained.
+- Validation 11/11 tasks, security 15/15 closed, deep review 18 files/zero findings. UI audit 19/24 records inherited deletion-state/AJAX limitations and dense 768px heading observation.
+- Canonical verification human_needed, 14/15 truths and 18/18 decisions. One UAT item awaits human desktop/mobile grouping, dense headings and focus judgment. Phase remains In Progress; no phase advancement.
+- Concrete fixes discovered during execution: hidden DELETE unmark now retains rows; hidden errors use shared alerts. Existing config.default.json edits preserved. No push or merge.
 
 ### Phase 06.24 planning convergence — 2026-11-10
 
@@ -1203,6 +1211,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T21:52:53.521Z
-Stopped at: Completed 06.24-05-PLAN.md; independent phase verification pending
-Resume file: None
+Last session: 2026-11-10T22:17:11Z
+Stopped at: Phase 06.24 automated verification complete; one human UAT item pending
+Resume file: .planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-UAT.md

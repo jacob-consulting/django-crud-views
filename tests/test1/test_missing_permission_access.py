@@ -225,3 +225,12 @@ def test_resource_missing_key_diagnostic_is_preserved(permission_routes, declare
     finally:
         with _REGISTRY_LOCK:
             _REGISTRY.pop(name, None)
+
+
+def test_undeclared_action_fixture_yields_one_e269(permission_routes):
+    from crud_views.checks import check_ancestor_declarations
+
+    ours = [m for m in check_ancestor_declarations() if m.id == "viewset.E269" and m.obj is permission_routes.viewset]
+    assert len(ours) == 1
+    assert ours[0].msg == "cv_permission 'undeclared_action' of view 'list' is not declared on model app.Publisher"
+    assert 'add ("undeclared_action_publisher", "...") to Publisher.Meta.permissions' in ours[0].hint

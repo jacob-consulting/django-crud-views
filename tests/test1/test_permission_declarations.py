@@ -9,7 +9,7 @@ from django.test import override_settings
 from django.test.utils import isolate_apps
 
 import tests.test1.project.urls  # noqa: F401 - registers shared ViewSets before any registry snapshot
-from crud_views.checks import check_ancestor_declarations
+from crud_views.checks import check_ancestor_declarations, check_viewsets
 from crud_views.lib.ancestors import _declared_permission_keys, _permission_key
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
@@ -326,3 +326,113 @@ def test_one_error_per_unresolved_key_and_ancestor(registry, sfx, no_db):
             f"ancestor permission key 'publish' (ancestor_policy.read.higher) of ViewSet {leaf_vs.name!r} "
             "is not declared on model app.Publisher",
         ]
+
+
+def test_guardian_checked_viewset_and_guardian_ancestors_are_skipped(registry, sfx, no_db):
+    _, gbook = _nested(
+        sfx + "c",
+        policy=AncestorPolicy(read=AncestorPermissions(nearest="audit", higher="view")),
+        viewset_cls=GuardianViewSet,
+    )
+    _view(_core("ListView"), gbook)
+    assert _e269(gbook) == []
+
+    gpub = GuardianViewSet(model=Publisher, name=f"pd_gpub_{sfx}")
+    gpub_model = GuardianViewSet(
+        model=Publisher, name=f"pd_gpubm_{sfx}", ancestor_policy=AncestorPolicy(provider="model")
+    )
+    core_pub = ViewSet(model=Publisher, name=f"pd_corepub_{sfx}")
+    for index, parent in enumerate((gpub, gpub_model, core_pub)):
+        child = ViewSet(
+            model=Book,
+            name=f"pd_gchild{index}_{sfx}",
+            parent=ParentViewSet(name=parent.name, attribute="publisher"),
+            ancestor_policy=AncestorPolicy(read=AncestorPermissions(nearest="audit", higher="view")),
+        )
+        _view(_core("ListView"), child)
+        if parent is core_pub:
+            messages = _e269(child)
+            assert len(messages) == 1
+            assert "'audit'" in messages[0].msg
+        else:
+            assert _e269(child) == []
+
+
+def test_none_ancestor_is_not_checked_and_does_not_consume_nearest(registry, sfx, no_db):
+    _, _, note_vs = _chain(
+        sfx,
+        book_policy=AncestorPolicy(provider="none"),
+        note_policy=AncestorPolicy(read=AncestorPermissions(nearest="audit", higher="publish")),
+    )
+    _view(_core("ListView"), note_vs)
+    assert [m.msg for m in _e269(note_vs)] == [
+        f"ancestor permission key 'audit' (ancestor_policy.read.nearest) of ViewSet {note_vs.name!r} "
+        "is not declared on model app.Publisher"
+    ]
+    _, _, note_ctl = _chain(
+        sfx + "p", note_policy=AncestorPolicy(read=AncestorPermissions(nearest="audit", higher="publish"))
+    )
+    _view(_core("ListView"), note_ctl)
+    assert sorted(m.msg.split(" is not declared on model ")[1] for m in _e269(note_ctl)) == [
+        "app.Book",
+        "app.Publisher",
+    ]
+    _, book_none, _ = _chain(
+        sfx + "a",
+        pub_policy=AncestorPolicy(provider="none"),
+        book_policy=AncestorPolicy(read=AncestorPermissions(nearest="audit", higher="audit")),
+    )
+    assert _e269(book_none) == []
+
+
+def test_unclassified_endpoint_without_entry_is_e268_only(registry, sfx, no_db):
+    _, book_vs = _nested(sfx)
+    _view(_core("ActionView"), book_vs, key="approve")
+    assert _ours(check_ancestor_declarations(), book_vs) == [("viewset.E268", book_vs.name)]
+
+
+def test_pairs_are_checked_only_through_registered_views(registry, sfx, no_db):
+    with isolate_apps("tests.test1.app"):
+
+        class Imprint(models.Model):
+            class Meta:
+                app_label = "app"
+                default_permissions = ("add", "delete", "view")
+
+        class Leaflet(models.Model):
+            imprint = models.ForeignKey(Imprint, on_delete=models.CASCADE)
+
+            class Meta:
+                app_label = "app"
+
+        imprint_vs = ViewSet(model=Imprint, name=f"pd_imprint_{sfx}")
+        _view(_core("ListView"), imprint_vs)
+        readonly = ViewSet(
+            model=Leaflet,
+            name=f"pd_leaflet_{sfx}",
+            parent=ParentViewSet(name=imprint_vs.name, attribute="imprint"),
+        )
+        _view(_core("ListView"), readonly)
+        assert _e269(readonly) == []
+        explicit = ViewSet(
+            model=Leaflet,
+            name=f"pd_leaflet2_{sfx}",
+            parent=ParentViewSet(name=imprint_vs.name, attribute="imprint"),
+            ancestor_policy=AncestorPolicy(write=AncestorPermissions(nearest="publish", higher="view")),
+        )
+        _view(_core("ListView"), explicit)
+        assert _e269(explicit) == []
+        _view(_core("DeleteView"), explicit)
+        assert [m.msg for m in _e269(explicit)] == [
+            f"ancestor permission key 'publish' (ancestor_policy.write.nearest) of ViewSet {explicit.name!r} "
+            "is not declared on model app.Imprint"
+        ]
+        assert _e269(readonly) == []
+
+
+@pytest.mark.django_db
+def test_checks_query_no_database(django_assert_num_queries):
+    with django_assert_num_queries(0):
+        ancestor_messages = check_ancestor_declarations()
+        view_messages = check_viewsets()
+    assert [m for m in [*ancestor_messages, *view_messages] if m.id == "viewset.E269"] == []

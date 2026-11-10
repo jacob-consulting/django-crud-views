@@ -11,11 +11,12 @@ from django.test.utils import isolate_apps
 import tests.test1.project.urls  # noqa: F401 - registers shared ViewSets before any registry snapshot
 from crud_views.checks import check_ancestor_declarations
 from crud_views.lib.ancestors import _declared_permission_keys, _permission_key
-from crud_views.lib.viewset import ViewSet
+from crud_views.lib.settings import crud_views_settings
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
 from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1 import test_ancestor_operations as _ops
-from tests.test1.app.models import Book, Car, Publisher, PublisherProxy, Royalty, WorkflowRequest
+from tests.test1.app.models import Book, BookNote, Car, Publisher, PublisherProxy, Royalty, WorkflowRequest
 from tests.test1.app.views import cv_book
 from tests.test1.test_resource_viewset import T5Item, check_error_ids
 
@@ -203,3 +204,125 @@ def test_undeclared_cv_permission_is_deferred_until_the_urlconf_is_loaded(regist
     messages = _e269(vs)
     assert len(messages) == 1
     assert "'run'" in messages[0].msg
+
+
+def _chain(sfx, *, pub_policy=None, book_policy=None, note_policy=None):
+    pub_vs = ViewSet(model=Publisher, name=f"pd_pub_{sfx}", ancestor_policy=pub_policy or AncestorPolicy())
+    _view(_core("ListView"), pub_vs)
+    book_vs = ViewSet(
+        model=Book,
+        name=f"pd_book_{sfx}",
+        parent=ParentViewSet(name=pub_vs.name, attribute="publisher"),
+        ancestor_policy=book_policy or AncestorPolicy(),
+    )
+    _view(_core("ListView"), book_vs)
+    note_vs = ViewSet(
+        model=BookNote,
+        name=f"pd_note_{sfx}",
+        parent=ParentViewSet(name=book_vs.name, attribute="book"),
+        ancestor_policy=note_policy or AncestorPolicy(),
+    )
+    return pub_vs, book_vs, note_vs
+
+
+def test_actions_pair_key_missing_on_the_ancestor_is_reported(registry, sfx, no_db):
+    _, book_vs = _nested(
+        sfx, policy=AncestorPolicy(actions={"approve": AncestorPermissions(nearest="approve", higher="view")})
+    )
+    _view(_core("ActionView"), book_vs, key="approve")
+    _view(_core("ListView"), book_vs)
+    assert _ours(check_ancestor_declarations(), book_vs) == [("viewset.E269", book_vs.name)]
+    message = _e269(book_vs)[0]
+    assert message.msg == (
+        f"ancestor permission key 'approve' (actions['approve'].nearest) of ViewSet {book_vs.name!r} "
+        "is not declared on model app.Publisher"
+    )
+    assert message.hint == (
+        'declare ("approve_publisher", "...") in Publisher.Meta.permissions, '
+        f"or change the pair on ViewSet {book_vs.name!r}"
+    )
+    assert len([m for m in run_checks(tags=["crud_views"]) if m.id == "viewset.E269" and m.obj is book_vs]) == 1
+
+
+def test_explicit_pairs_resolve_nearest_and_higher_on_their_ancestors(registry, sfx, no_db):
+    pub_vs, book_vs, note_vs = _chain(
+        sfx,
+        note_policy=AncestorPolicy(
+            read=AncestorPermissions(nearest="audit", higher="view"),
+            write=AncestorPermissions(nearest="change", higher="publish"),
+        ),
+    )
+    _view(_core("ListView"), note_vs)
+    _view(_core("DeleteView"), note_vs)
+    assert sorted(m.msg for m in _e269(note_vs)) == [
+        f"ancestor permission key 'audit' (ancestor_policy.read.nearest) of ViewSet {note_vs.name!r} "
+        "is not declared on model app.Book",
+        f"ancestor permission key 'publish' (ancestor_policy.write.higher) of ViewSet {note_vs.name!r} "
+        "is not declared on model app.Publisher",
+    ]
+    assert _e269(pub_vs, book_vs) == []
+
+
+def test_inherited_global_pair_names_the_setting_and_skips_the_resource_leaf(registry, sfx, no_db, monkeypatch):
+    monkeypatch.setattr(
+        crud_views_settings, "ancestor_read_permissions", AncestorPermissions(nearest="audit", higher="view")
+    )
+    _, book_vs = _nested(sfx)
+    _view(_core("ListView"), book_vs)
+    messages = check_ancestor_declarations()
+    ours = [m for m in messages if m.id == "viewset.E269" and m.obj is book_vs]
+    assert len(ours) == 1
+    assert ours[0].msg == (
+        "ancestor permission key 'audit' (global CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS.nearest) "
+        f"of ViewSet {book_vs.name!r} is not declared on model app.Publisher"
+    )
+    assert [m for m in messages if m.id == "viewset.E269" and m.obj.name == "publisherfile"] == []
+    assert [m for m in messages if m.id == "viewset.E269" and m.obj.name == "book"]
+
+
+def test_default_pairs_are_silent_and_nearest_only_ignores_higher(registry, sfx, no_db):
+    _, book_vs = _nested(sfx)
+    _view(_core("ListView"), book_vs)
+    _view(_core("DeleteView"), book_vs)
+    assert _e269(book_vs) == []
+    assert [m for m in check_ancestor_declarations() if m.id == "viewset.E269" and m.obj.name == "book"] == []
+    _, _, note_vs = _chain(
+        sfx + "n",
+        note_policy=AncestorPolicy(cascade=False, read=AncestorPermissions(nearest="view", higher="publish")),
+    )
+    _view(_core("ListView"), note_vs)
+    assert _e269(note_vs) == []
+
+
+def test_one_error_per_unresolved_key_and_ancestor(registry, sfx, no_db):
+    _, _, note_vs = _chain(sfx)
+    _view(_core("ListView"), note_vs)
+    with isolate_apps("tests.test1.app"):
+
+        class Annotation(models.Model):
+            note = models.ForeignKey(BookNote, on_delete=models.CASCADE)
+
+            class Meta:
+                app_label = "app"
+
+        leaf_vs = ViewSet(
+            model=Annotation,
+            name=f"pd_leaf_{sfx}",
+            parent=ParentViewSet(name=note_vs.name, attribute="note"),
+            ancestor_policy=AncestorPolicy(
+                read=AncestorPermissions(nearest="view", higher="publish"),
+                actions={"stamp": AncestorPermissions(nearest="view", higher="publish")},
+            ),
+        )
+        _view(_core("ListView"), leaf_vs)
+        _view(_core("ActionView"), leaf_vs, key="stamp")
+        assert sorted(m.msg.split(" is not declared on model ")[1] for m in _e269(leaf_vs)) == [
+            "app.Book",
+            "app.Publisher",
+        ]
+        assert sorted(m.msg for m in _e269(leaf_vs)) == [
+            f"ancestor permission key 'publish' (ancestor_policy.read.higher) of ViewSet {leaf_vs.name!r} "
+            "is not declared on model app.Book",
+            f"ancestor permission key 'publish' (ancestor_policy.read.higher) of ViewSet {leaf_vs.name!r} "
+            "is not declared on model app.Publisher",
+        ]

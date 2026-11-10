@@ -4,6 +4,7 @@ import pytest
 from django.test import override_settings
 
 from crud_views.checks import check_icons
+from crud_views.lib.icons import Icon
 from crud_views.lib.viewset import _REGISTRY, ViewSet
 from tests.lib.helper.icons import HOST_LIBRARY
 from tests.test1.app.models import Publisher
@@ -15,6 +16,17 @@ def ids(messages) -> list[str]:
 
 def test_default_config_has_no_icon_messages():
     assert check_icons() == []
+
+
+@pytest.mark.parametrize("value", [Icon.VIEWSET_DEFAULT, Icon.NONE], ids=["default", "suppress"])
+def test_public_icon_constants_pass_existing_checks(monkeypatch, value):
+    from tests.test1.app.views import AuthorListView, cv_author
+
+    monkeypatch.setattr(cv_author, "icon_header", value)
+    monkeypatch.setattr(AuthorListView, "cv_icon_header", value)
+    monkeypatch.setattr(AuthorListView, "cv_icon_action", value)
+    with override_settings(CRUD_VIEWS_ICONS={"detail": value}):
+        assert check_icons() == []
 
 
 @pytest.mark.parametrize(

@@ -1,11 +1,12 @@
 """Heading icon projection through real modal markup and the shared registry."""
 
 import re
+from copy import deepcopy
 from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-from django.template import Context, Engine, Template
+from django.template import Context, Engine, Template, engines
 from django.test import override_settings
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy
@@ -186,6 +187,137 @@ def test_view_header_icon_suppression(monkeypatch, client_user_author_view):
             assert heading.text_content().strip() == "Authors"
             assert not heading.cssselect("i")
             assert ("icon-inherited" in heading.get("class", "").split()) is (value is None)
+
+
+@pytest.mark.django_db
+def test_omitted_view_header_icon_inherits(monkeypatch, client_user_author_view):
+    from tests.test1.app.views import AuthorListView, cv_author
+
+    assert "cv_icon_header" not in AuthorListView.__dict__
+    monkeypatch.setattr(cv_author, "icon_header", "fas:book")
+    response = client_user_author_view.get("/author/")
+    assert response.status_code == 200
+    (heading,) = html.fromstring(response.content).cssselect("[data-test-page-title] h1")
+    assert heading.text_content().strip() == "Authors"
+    assert heading.get("class") == "h3"
+    (icon,) = heading.cssselect("i")
+    assert icon.get("class") == "fa-solid fa-book"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "value,host_class,inline_class",
+    [
+        ("detail", "", "fa-regular fa-eye"),
+        ("fas:pen", "", "fa-solid fa-pen"),
+        ("raw-icon", "", "raw-icon"),
+        ("host:edit", "icon-edit", ""),
+    ],
+)
+def test_explicit_view_header_icon_overrides_viewset(
+    monkeypatch, client_user_author_view, value, host_class, inline_class
+):
+    from tests.test1.app.views import AuthorListView, cv_author
+
+    monkeypatch.setattr(cv_author, "icon_header", "fas:book")
+    monkeypatch.setattr(AuthorListView, "cv_icon_header", value)
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+        response = client_user_author_view.get("/author/")
+    assert response.status_code == 200
+    (heading,) = html.fromstring(response.content).cssselect("[data-test-page-title] h1")
+    assert heading.text_content().strip() == "Authors"
+    assert heading.get("class", "").split() == ["h3", *([host_class] if host_class else [])]
+    assert [icon.get("class") for icon in heading.cssselect("i")] == ([inline_class] if inline_class else [])
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("mechanism", ["file", "code"])
+@pytest.mark.parametrize(
+    "value", [None, Icon.VIEWSET_DEFAULT, "", Icon.NONE], ids=["none", "default", "empty", "suppress"]
+)
+def test_custom_header_preserves_content_and_explicit_icon_choice(
+    monkeypatch, settings, client_user_author_view, mechanism, value
+):
+    from tests.test1.app.views import AuthorListView, cv_author
+
+    snippet = "<span data-custom-header>Custom {{ verbose_name_plural_translate }}</span>"
+    templates = deepcopy(settings.TEMPLATES)
+    templates[0]["APP_DIRS"] = False
+    templates[0]["OPTIONS"]["loaders"] = [
+        ("django.template.loaders.locmem.Loader", {"header-icon-probe.html": snippet}),
+        *engines["django"].engine.loaders,
+    ]
+    monkeypatch.setattr(cv_author, "icon_header", "host:inherited")
+    monkeypatch.setattr(AuthorListView, "cv_icon_header", value)
+    monkeypatch.setattr(AuthorListView, "cv_header_template", "header-icon-probe.html" if mechanism == "file" else None)
+    monkeypatch.setattr(AuthorListView, "cv_header_template_code", snippet if mechanism == "code" else None)
+    with override_settings(TEMPLATES=templates, CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+        response = client_user_author_view.get("/author/")
+    assert response.status_code == 200
+    (heading,) = html.fromstring(response.content).cssselect("[data-test-page-title] h1")
+    (custom,) = heading.cssselect("[data-custom-header]")
+    assert custom.text_content() == "Custom Authors"
+    assert heading.text_content().strip() == "Custom Authors"
+    assert not heading.cssselect("i")
+    assert heading.get("class", "").split() == ["h3", *(["icon-inherited"] if value is None else [])]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("value", [None, "", Icon.NONE], ids=["inherit", "empty", "suppress"])
+def test_modal_view_header_icon_choice(monkeypatch, client_user_author_modal, author_douglas_adams, value):
+    from tests.test1.app.views import AuthorModalDetailView, cv_author_modal
+
+    monkeypatch.setattr(cv_author_modal, "icon_header", "host:inherited")
+    monkeypatch.setattr(AuthorModalDetailView, "cv_icon_header", value)
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+        response = client_user_author_modal.get(
+            f"/author_modal/{author_douglas_adams.pk}/detail/", headers={"X-CV-Modal": "true"}
+        )
+    assert response.status_code == 200
+    (heading,) = html.fromstring(response.content).cssselect(".modal-title")
+    assert heading.text_content().strip() == "Author"
+    assert not heading.cssselect("i")
+    assert heading.get("class", "").split() == ["modal-title", *(["icon-inherited"] if value is None else [])]
+
+
+@pytest.mark.parametrize("value", [None, "", Icon.NONE], ids=["inherit", "empty", "suppress"])
+def test_example_theme_uses_real_header_icon_choice(monkeypatch, value):
+    from tests.test1.app.views import AuthorListView, cv_author
+
+    monkeypatch.setattr(cv_author, "icon_header", "host:inherited")
+    monkeypatch.setattr(AuthorListView, "cv_icon_header", value)
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+        heading = html.fromstring(Template(example_title_source()).render(Context({"view": AuthorListView()})))
+    assert heading.tag == "h1"
+    assert heading.text_content().strip() == "Authors"
+    assert not heading.cssselect("i")
+    assert heading.get("class", "").split() == ["h3", "mb-0", *(["icon-inherited"] if value is None else [])]
+
+
+@pytest.mark.parametrize("value", [None, "", Icon.NONE], ids=["inherit", "empty", "suppress"])
+def test_standalone_header_icon_uses_real_getter(monkeypatch, value):
+    from tests.test1.app.views import AuthorListView, cv_author
+
+    monkeypatch.setattr(cv_author, "icon_header", "fas:book")
+    monkeypatch.setattr(AuthorListView, "cv_icon_header", value)
+    markup = Template("{% load crud_views %}{% cv_header_icon %}").render(Context({"view": AuthorListView()}))
+    assert markup == ('<i class="fa-solid fa-book" aria-hidden="true"></i>' if value is None else "")
+
+
+@pytest.mark.django_db
+def test_header_icon_getter_override_can_still_suppress(monkeypatch, client_user_author_view):
+    from tests.test1.app.views import AuthorListView, cv_author
+
+    monkeypatch.setattr(cv_author, "icon_header", "host:inherited")
+    monkeypatch.setattr(AuthorListView, "cv_icon_header", "host:explicit")
+    monkeypatch.setattr(AuthorListView, "cv_get_header_icon", lambda self: None)
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+        response = client_user_author_view.get("/author/")
+    assert response.status_code == 200
+    (heading,) = html.fromstring(response.content).cssselect("[data-test-page-title] h1")
+    assert heading.text_content().strip() == "Authors"
+    assert heading.get("class") == "h3"
+    assert not heading.cssselect("i")
 
 
 @pytest.mark.django_db

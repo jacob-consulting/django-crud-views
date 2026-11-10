@@ -6,6 +6,7 @@ from lxml import html
 from tests.lib.helper.forms import form_payload
 from tests.test1.app.models import Book, Publisher
 from tests.test1.app.views_formset import BookInlineFormSet, publisher_formsets
+from tests.test1.test_fragment_authorization import deep_leaf_formset as deep_leaf_formset
 
 
 def test_public_compact_declarations():
@@ -156,6 +157,49 @@ def test_compact_presentation_heading_include_is_overridable():
         fragment = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
         assert "THEME HEADINGS" not in fragment
         assert "cv-formset-row-compact" in fragment
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+@pytest.mark.parametrize("show_labels", [False, True])
+def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, show_labels):
+    from django.template.loader import render_to_string
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+    from tests.test1.app.views_formset import BookNoteFormSet
+
+    child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+    node = _runtime(
+        compact=parent_compact,
+        form_show_labels=show_labels,
+        children={
+            "notes": FormSet(
+                key="notes", klass=BookNoteFormSet, compact_layout=child_layout, form_show_labels=show_labels
+            )
+        },
+    )
+    child = node.forms[0].formsets[0]
+    assert (child.has_pre_col, child.col, child.col_pre) == ((False, 12, 0) if child_compact else (True, 11, 1))
+    assert (node.has_pre_col, node.col, node.col_pre) == (False, 12, 0)
+    doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+    child_fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{child.prefix}")
+    assert ("cv-formset-compact-child" in child_fieldset.get("class")) is child_compact
+    owner = child_fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+    assert owner.get("cv-data-formset-form-prefix") == node.forms[0].prefix
+    assert child_fieldset.getparent().get("class") == ("col-12" if child_compact else "col-11")
+    for current in (node, child):
+        fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        own_content = fieldset.cssselect(".cv-formset-content")[0]
+        own_headings = own_content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
+        assert len(own_headings) == int(current.formset.compact_layout is not None)
+        field_name = "note" if current is child else "title"
+        field = fieldset.cssselect(f'input[name="{current.forms[0].prefix}-{field_name}"]')[0]
+        labels = fieldset.xpath(".//label[@for=$id]", id=field.get("id"))
+        assert bool(labels) is (current.formset.compact_layout is not None or show_labels)
+        if labels:
+            assert ("cv-formset-compact-label" in labels[0].get("class", "")) is (
+                current.formset.compact_layout is not None
+            )
 
 
 def _runtime(*, compact=True, form_class=None, parent=None, factory_attrs=None, **declaration_kwargs):

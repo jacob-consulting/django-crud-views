@@ -270,6 +270,21 @@ def test_compact_hidden_policy_errors_and_values_render_once(monkeypatch):
 
 
 @pytest.mark.django_db
+def test_compact_hidden_identity_roles_do_not_depend_on_original_widget():
+    from django import forms
+    from django.template.loader import render_to_string
+
+    node = _runtime()
+    for name in ("id", "publisher"):
+        node.forms[0].form.fields[name].widget = forms.TextInput()
+    for _ in range(2):
+        doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        for name in ("id", "publisher"):
+            fields = doc.xpath(".//input[@name=$name]", name=node.forms[0].form.add_prefix(name))
+            assert len(fields) == 1 and fields[0].get("type") == "hidden"
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("state", ["zero", "blank", "existing", "no_controls", "no_extra_delete"])
 def test_compact_empty_and_control_policy_edges(state):
     from django.template.loader import render_to_string

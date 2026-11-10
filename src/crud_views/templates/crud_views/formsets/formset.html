@@ -49,6 +49,19 @@
         <!-- crispy form: start {{ x_form.prefix }} -->
         <div class="cv-formset-form">
             {% crispy x_form.form x_form.helper %}
+            {% if x_formset.formset.compact_layout %}
+                {% for field in x_form.form.hidden_fields %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            <ul class="m-0">
+                                {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         </div>
         <!-- crispy form: end {{ x_form.prefix }} -->
 

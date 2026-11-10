@@ -6,6 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Field, Layout, Row
 from django.core.exceptions import ImproperlyConfigured
 from django.forms import widgets
+from django.utils.html import conditional_escape
 
 from .layout import FormControl
 
@@ -129,8 +130,18 @@ def _compact_helper(x_form):
     helper.render_hidden_fields = True
     helper.form_show_labels = True
     helper.label_class = "cv-formset-compact-label"
+    # The Bootstrap pack marks help text safe. Escape ordinary text on this
+    # presentation path while respecting explicitly safe application markup.
+    for column in columns:
+        bound_field = x_form.form[column.field]
+        bound_field.help_text = conditional_escape(bound_field.help_text)
     cells = [Div(column.field, css_class=f"col-md-{column.span}") for column in columns]
-    cells.append(Div(FormControl(formset=declaration), css_class=f"col-md-{declaration.compact_layout.controls_span}"))
-    hidden = [Field(name, type="hidden") for name in ("ORDER", "DELETE") if name in x_form.form.fields]
+    controls_class = f"col-md-{declaration.compact_layout.controls_span}"
+    if declaration.can_order or not declaration.edit_only or "DELETE" in x_form.form.fields:
+        cells.append(Div(FormControl(formset=declaration), css_class=controls_class))
+    else:
+        cells.append(Div(css_class=f"{controls_class} d-none d-md-block"))
+    identities = (declaration.klass.model._meta.pk.name, declaration.klass.fk.name, "ORDER", "DELETE")
+    hidden = [Field(name, type="hidden") for name in dict.fromkeys(identities) if name in x_form.form.fields]
     helper.layout = Layout(Row(*cells, css_class="cv-formset-compact-fields"), *hidden)
     return helper

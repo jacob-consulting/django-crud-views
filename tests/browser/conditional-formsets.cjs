@@ -8,7 +8,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '../..');
 process.chdir(root);
 const runtimeManifest = '.planning/phases/06-form-button-leaf/06-JS-RUNTIME.json';
-const runtime = JSON.parse(fs.readFileSync(runtimeManifest));
+const runtime = process.env.CV_FOCUS_NODE ? {} : JSON.parse(fs.readFileSync(runtimeManifest));
 const node = process.env.CV_FOCUS_NODE || runtime.node.path;
 assert(fs.existsSync(node), `Missing CV_FOCUS_NODE/runtime: ${node}`);
 if (fs.realpathSync(process.execPath) !== fs.realpathSync(node)) {
@@ -25,6 +25,9 @@ function option(name, fallback) {
 }
 const output = option('--output', '.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/08-browser-results.json');
 const requested = option('--case', 'all');
+const compactPhase = '.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m';
+const compositions = ['compact-compact', 'compact-classic', 'classic-compact'];
+const widths = [390, 767, 768, 1280];
 const portText = process.env.CV_CONDITIONAL_PORT || '8144';
 assert(/^\d+$/.test(portText), 'Invalid CV_CONDITIONAL_PORT');
 const port = Number(portText);
@@ -36,7 +39,9 @@ function filesIn(dir) {
     return fs.readdirSync(dir, {withFileTypes: true}).flatMap(e => e.isDirectory() ? filesIn(`${dir}/${e.name}`) : [`${dir}/${e.name}`]);
 }
 function hashes() {
-    const files = [runtimeManifest, 'package-lock.json', 'tests/browser/conditional-formsets.cjs',
+    const files = [...(process.env.CV_FOCUS_NODE ? [] : [runtimeManifest]), 'package-lock.json', 'tests/browser/conditional-formsets.cjs',
+        'tests/js-integration/formset.test.js', 'src/crud_views/static/crud_views/css/formset.css',
+        `${compactPhase}/browser-captures/.gitignore`,
         'tests/browser/conditional_formsets_server.py', 'tests/test1/app/models.py', 'tests/test1/conftest.py',
         'tests/test1/test_fragment_authorization.py', 'tests/test1/app/templates/app/base.html',
         ...filesIn('tests/browser/templates/conditional_formsets'), ...filesIn('src/crud_views/lib/conditional'),
@@ -47,6 +52,8 @@ function hashes() {
     return Object.fromEntries(files.filter(f => !f.includes('__pycache__')).sort().map(f => [f, digest(f)])); // NOSONAR S2871: test harness
 }
 const REQUIRED = {
+    'compact-presentation': compositions.flatMap(composition => widths.flatMap(width =>
+        ['assets', 'geometry', 'labels', 'nesting', 'classic-isolation', 'keyboard', 'resize-identity', 'capture'].map(id => `${composition}:${width}:${id}`))),
     'tracer': ['real-page', 'prefixed-group', 'actual-fragment', 'post-management', 'persisted-added-row'],
     'fragment-raw-balance': ['raw-wrapper-stack-balanced', 'rows-only-outer-wrapper-absent', 'parsed-nesting-correct', 'second-sibling-post-persisted'],
     'inline-file-clear-unchanged': ['file-has-changed-false', 'image-has-changed-false', 'actual-inline-save', 'file-reference-cleared', 'image-reference-cleared', 'stored-content-retained', 'disabled-reference-retained', 'explicit-none-retained', 'untouched-extra-not-created', 'file-upload-received', 'off-file-upload-discarded', 'uploaded-file-not-stored'],
@@ -81,13 +88,25 @@ function validateEvidence(r) {
     assert(r.completed && r.passed && !r.error && r.pageErrors.length === 0, 'Incomplete/failed browser record');
     assert.deepEqual(r.sourceHashes, hashes(), 'Stale source hashes or wrong input set');
     assert(r.scope === 'all' || Object.hasOwn(REQUIRED, r.scope), 'Unknown evidence scope');
-    const expected = r.scope === 'tracer' ? ['stock:tracer'] : ['stock', 'native'].flatMap(t => (r.scope === 'all' ? Object.keys(REQUIRED) : [r.scope]).map(id => `${t}:${id}`));
+    const ids = r.scope === 'all' ? Object.keys(REQUIRED) : [r.scope];
+    const expected = ids.flatMap(id => (id === 'tracer' || id.startsWith('compact-') ? ['stock'] : ['stock', 'native']).map(t => `${t}:${id}`));
     assert.deepEqual(r.cases.map(c => `${c.theme}:${c.id}`).sort(), expected.sort(), 'Missing/duplicate/extra case'); // NOSONAR S2871: test harness
     assert.equal(r.scope, requested, 'Evidence must match exact requested scope');
     for (const c of r.cases) {
         assert(c.passed && !c.skipped, `Case failed/skipped: ${c.id}`);
         assert.deepEqual(c.assertions.map(a => a.id).sort(), REQUIRED[c.id].slice().sort(), `Missing/duplicate assertion ${c.id}`);
         assert(c.assertions.every(a => a.passed === true), `False assertion ${c.id}`);
+        if (c.id.startsWith('compact-')) {
+            assert.equal(c.humanReview, 'pending');
+            assert.equal(c.captures.length, c.id === 'compact-presentation' ? 12 : 4);
+            assert.equal(new Set(c.captures.map(s => s.path)).size, c.captures.length);
+            for (const capture of c.captures) {
+                assert(capture.path.startsWith(`${compactPhase}/browser-captures/${c.id}/`));
+                assert.equal(cp.spawnSync('git', ['check-ignore', '--no-index', capture.path]).status, 0);
+                assert.equal(capture.sha256, digest(capture.path), 'Missing/stale compact screenshot');
+                assert(capture.measurements && capture.width, 'Missing browser measurements');
+            }
+        }
         if(c.id==='gap-ambiguity') {
             assert(c.humanReview.H1==='pending'&&c.humanReview.H2==='pending');
             assert.equal(c.captures.length,c.theme==='stock'?3:0);
@@ -147,6 +166,7 @@ async function main() {
         await context.request.get(`${base}/signin/`);
         const fixtures = await (await context.request.get(`${base}/cases/`)).json();
         const selected = requested === 'tracer' ? fixtures.filter(c => c.theme === 'stock' && c.id === 'tracer') : requested === 'all' ? fixtures : fixtures.filter(c=>c.id===requested);
+        assert(selected.length > 0, 'No selected browser cases');
         for (const c of selected) {
             const result = {theme:c.theme, id:c.id, assertions:[], requests:[], passed:false}; record.cases.push(result);
             const check = (id, value, detail) => { result.assertions.push({id, passed:Boolean(value), ...(detail === undefined ? {} : {detail})}); assert(value, `${c.theme}:${c.id}: ${id} ${JSON.stringify(detail)}`); };
@@ -220,6 +240,47 @@ async function main() {
     checkEvidence(output);
 }
 async function runCase({c, page, context, base, before, result, check, load, state, post, add, delay, rawBalance}) {
+    if (c.id === 'compact-presentation') {
+        result.captures = []; result.humanReview = 'pending';
+        for (const composition of compositions) {
+            await load(`${c.url}?composition=${composition}`);
+            const first = page.locator('#editor .cv-formset-row-compact input:not([type=hidden]):not([disabled])').first();
+            await first.fill('8');
+            await first.evaluate(el => { window.retainedCompactInput = el; });
+            for (const width of widths) {
+                await page.setViewportSize({width, height: 900});
+                await first.focus();
+                const measurements = await compactMeasurements(page);
+                const key = `${composition}:${width}`;
+                check(`${key}:assets`, measurements.assets.bootstrap && measurements.assets.compact && measurements.assets.grid);
+                check(`${key}:geometry`, measurements.geometry, measurements.failures);
+                check(`${key}:labels`, measurements.labels && measurements.required && measurements.help, measurements);
+                check(`${key}:nesting`, measurements.depth >= 3 && measurements.childInsets && measurements.parentBorders);
+                // Compare classic row computed properties to a genuinely unopted baseline at this width.
+                const baseline = await context.newPage();
+                await baseline.setViewportSize({width, height:900});
+                await baseline.goto(base + `${c.url}?composition=classic-classic`);
+                const classic = await classicStyles(page), original = await classicStyles(baseline);
+                check(`${key}:classic-isolation`, classic.every(style => original.some(other => JSON.stringify(other) === JSON.stringify(style))), classic);
+                await baseline.close();
+                const name = await first.getAttribute('name');
+                const accessible = await first.ariaSnapshot();
+                await page.keyboard.press('Tab');
+                const tab = await page.evaluate(name => {
+                    const all=[...document.querySelectorAll('#editor input:not([type=hidden]), #editor select, #editor button, #editor a[href]')]
+                        .filter(el => !el.disabled && el.getClientRects().length && el.tabIndex >= 0);
+                    const index=all.findIndex(el => el.name===name);
+                    return document.activeElement === all[index+1];
+                }, name);
+                check(`${key}:keyboard`, tab && accessible.includes('textbox'), {accessible,tab});
+                await first.focus();
+                check(`${key}:resize-identity`, await first.evaluate(el => el===window.retainedCompactInput && el===document.activeElement && el.value==='8'));
+                await compactCapture(page, result, `${composition}-${width}`, width, measurements);
+                check(`${key}:capture`, true);
+            }
+        }
+        return;
+    }
     const outer = page.locator('#editor input[name="outer"]');
     const inner = page.locator('#editor input[name="inner"]');
     const contact = page.locator('#editor input[name="contact"]');
@@ -580,5 +641,70 @@ async function runCase({c, page, context, base, before, result, check, load, sta
         await add(page.locator('#editor .cv-form-ctrl-add').first());
         check('reinit-single-action',await page.evaluate(()=>widgetEvents.length)===initial+1&&await page.locator(`#other input[name="books-${c.pk}-0-TOTAL_FORMS"]`).inputValue()===otherTotal);
     } else throw Error(`Unknown required case ${c.id}`);
+}
+async function classicStyles(page) {
+    return page.locator('#editor .cv-formset-fieldset:not(.cv-formset-compact)').evaluateAll(nodes => nodes.flatMap(node =>
+        [...node.querySelectorAll(':scope > .cv-formset-content > .cv-formset-row > .cv-formset-form label')].map(label => {
+            const style=getComputedStyle(label), rowStyle=getComputedStyle(label.closest('.cv-formset-row'));
+            return {position:style.position,clip:style.clip,display:style.display,margin:rowStyle.marginLeft,padding:rowStyle.paddingLeft};
+        })));
+}
+async function compactMeasurements(page) {
+    return page.evaluate(() => {
+        const form=document.querySelector('#editor'), desktop=innerWidth>=768;
+        const nodes=[...form.querySelectorAll('.cv-formset-compact')], failures=[];
+        let labels=true, childInsets=true, parentBorders=true, depth=0;
+        const rows=[];
+        for (const node of nodes) {
+            const content=node.querySelector(':scope > .cv-formset-content');
+            const heading=content.querySelector(':scope > .cv-formset-compact-headings');
+            if ((getComputedStyle(heading).display==='none')===desktop) failures.push('heading visibility');
+            if (content.querySelectorAll(':scope > .cv-formset-compact-headings').length!==1) failures.push('heading count');
+            if (node.classList.contains('cv-formset-compact-child')) childInsets &&= getComputedStyle(node).paddingLeft==='8px';
+            let d=0; for(let p=node;p;p=p.parentElement) if(p.classList.contains('cv-formset-fieldset')) d++;
+            depth=Math.max(depth,d);
+            for (const row of content.querySelectorAll(':scope > .cv-formset-row')) {
+                const grid=row.querySelector(':scope > .cv-formset-form > .cv-formset-compact-fields');
+                if(!grid) { failures.push('missing grid'); continue; }
+                parentBorders &&= parseFloat(getComputedStyle(row).borderLeftWidth)===1;
+                const cells=[...grid.children], heads=[...heading.children], gr=grid.getBoundingClientRect();
+                const rects=[];
+                cells.forEach((cell,i) => {
+                    const r=cell.getBoundingClientRect(), hr=heads[i].getBoundingClientRect();
+                    const span=Number(cell.className.match(/col-md-(\d+)/)?.[1]);
+                    const input=cell.querySelector('input:not([type=hidden]),select,button');
+                    const left=input?.getBoundingClientRect().left;
+                    if(desktop && (Math.abs(r.left-hr.left)>2 || Math.abs(r.width-gr.width*span/12)>2 ||
+                        (left!==undefined && Math.abs(left-(hr.left+parseFloat(getComputedStyle(heads[i]).paddingLeft)))>2))) failures.push({prefix:row.getAttribute('cv-data-formset-form-prefix'),i,left,heading:hr.left,cell:r.left,width:r.width,grid:gr.width,span});
+                    if(!desktop && getComputedStyle(cell).display!=='none' && Math.abs(r.width-gr.width)>2) failures.push('mobile full width');
+                    rects.push({left:r.left,width:r.width,headingLeft:hr.left,span,inputLeft:left});
+                    for(const control of cell.querySelectorAll('input:not([type=hidden]),select')) {
+                        const label=[...form.querySelectorAll('label')].filter(l=>l.htmlFor===control.id);
+                        if(label.length!==1 || !label[0].textContent.trim() || form.querySelectorAll(`[id="${control.id}"]`).length!==1) {labels=false;continue;}
+                        const s=getComputedStyle(label[0]);
+                        labels &&= s.display!=='none' && s.visibility!=='hidden' && !label[0].hasAttribute('aria-hidden') &&
+                            (desktop ? s.position==='absolute' && s.width==='1px' : s.position==='static' && label[0].getBoundingClientRect().height>1);
+                    }
+                });
+                rows.push({prefix:row.getAttribute('cv-data-formset-form-prefix'),cells:rects});
+            }
+        }
+        const help=form.querySelector('.cv-formset-compact-fields .form-text');
+        const grid=form.querySelector('.cv-formset-compact-fields');
+        const scroll={width:document.documentElement.scrollWidth,client:document.documentElement.clientWidth};
+        if(scroll.width>scroll.client) failures.push(scroll);
+        return {assets:{bootstrap:[...document.styleSheets].some(s=>s.href?.includes('bootstrap.min.css')),
+            compact:[...document.styleSheets].some(s=>s.href?.includes('formset.css')) && ['8px','16px'].includes(getComputedStyle(nodes[0].querySelector('.cv-formset-row')).paddingLeft),
+            grid:getComputedStyle(grid).display==='flex'},geometry:failures.length===0,failures,labels,childInsets,parentBorders,depth,rows,scroll,
+            required:!!form.querySelector('.cv-formset-compact-label .asteriskField'),
+            help:!!help && help.getBoundingClientRect().height>0 && getComputedStyle(help.parentElement.parentElement).overflowWrap==='anywhere'};
+    });
+}
+async function compactCapture(page, result, name, width, measurements) {
+    const capturePath=`${compactPhase}/browser-captures/${result.id}/${name}.png`;
+    assert.equal(cp.spawnSync('git', ['check-ignore', '--no-index', capturePath]).status, 0, 'Compact PNG must be ignored');
+    fs.mkdirSync(path.dirname(capturePath), {recursive:true});
+    await page.screenshot({path:capturePath,fullPage:true});
+    result.captures.push({path:capturePath,sha256:digest(capturePath),width,measurements});
 }
 (argv.includes('--check-evidence') ? Promise.resolve().then(()=>checkEvidence(option('--check-evidence'))) : main()).catch(error => { console.error(error); process.exitCode = 1; });

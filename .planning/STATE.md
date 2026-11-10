@@ -3,12 +3,11 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.20"
 current_phase_name: "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)"
-status: executing
+status: "Phase 06.22 shipped — PR #343"
 stopped_at: Phase 06.22 complete; Phase 06.20 ready to execute
-last_updated: "2026-11-10T05:06:20.688Z"
+last_updated: "2026-11-10T09:11:19.034Z"
 last_activity: 2026-11-10
-last_activity_desc: Phase 06.22 complete, transitioned to Phase 06.20
-state_head: fc8225117085d2d09a81f511e97d1076c7cb32f1
+state_head: ed72b866b3ed5b49c624e3b6d25bf3391fb9433d
 progress:
   total_phases: 28
   completed_phases: 22
@@ -30,8 +29,8 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 
 Phase: 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-11-10 — Phase 06.22 complete, transitioned to Phase 06.20
+Status: Phase 06.22 shipped — PR #343
+Last activity: 2026-11-10
 
 Next: Phase 06.20 ($gsd-execute-phase 06.20); then Phase 06.21. Phase 06.22 is complete.
 

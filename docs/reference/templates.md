@@ -169,8 +169,8 @@ The texts a view renders for its own page — `cv_header_template[_code]`, `cv_p
 | `object` | the view's object, or `None` when the view has none (create form, list and card pages) |
 | `view` | the view instance, as in a page template (`{{ view.request.user }}`, `{{ view.my_attr }}`) |
 | `parent_object` | on a child ViewSet, the immediate parent, resolved lazily (see below); absent at top level |
-| `verbose_name` | `capfirst` of the model's `verbose_name` |
-| `verbose_name_plural` | `capfirst` of the model's `verbose_name_plural` |
+| `verbose_name` | `capfirst` of the ViewSet override when set, otherwise the model's `verbose_name` |
+| `verbose_name_plural` | `capfirst` of the ViewSet override when set, otherwise the model's `verbose_name_plural` |
 | `verbose_name_translate` | the translated `verbose_name` |
 | `verbose_name_plural_translate` | the translated `verbose_name_plural` |
 | `viewset` | the ViewSet (also available as `cv`) |

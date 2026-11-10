@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
-last_mapped_at: 2026-11-09
+last_mapped_commit: a025ddf096a6d4bd28bde23c8b5eb9a4eb687844
+last_mapped_at: 2026-11-10
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## Test Framework
 
@@ -181,6 +181,14 @@ For view failures, assert response status, form errors, redirect, and unchanged 
 
 **Workflow execution/database routing:** `tests/test1/test_workflow_execution.py` exercises the public helper and request path, atomic and non-atomic view settings, transaction rollback, `on_commit` timing, selected database aliases, and rejection of unsaved or cross-database actors/objects. Database-router tests use the `shard` alias and verify history writes/reads remain aligned. Extend these cases when changing `src/crud_views_workflow/lib/execution.py` or `src/crud_views_workflow/lib/views.py`.
 
+## Permission declaration coverage (Phase 06.22)
+
+- `tests/test1/test_permission_declarations.py` has 24 active test functions covering declared custom/default keys, proxy/MTI metadata, exact diagnostics, URLconf deferral, registered-view pair scope, provider exclusions and zero SQL queries around both check functions.
+- `tests/test1/test_missing_permission_access.py` adds startup coverage to the existing deliberately undeclared action fixture while preserving request-time assertions.
+- `tests/test1/test_ancestor_docs.py` extracts and executes the published recipe against Author's real metadata; valid and misspelled keys provide positive/negative controls. Cross-links and release wording are asserted.
+- Retained phase execution evidence: `pytest tests/test1 -n 4 -q` passed 12,074 cases with four existing warnings; strict MkDocs and example system checks passed. These are recorded prior results, not a new run during mapping (`.planning/phases/06.22-custom-permissions-meta-permissions-recipe-and-startup-check/06.22-GATE-EVIDENCE.md`).
+- For focused regression use `.venv/bin/pytest tests/test1/test_permission_declarations.py tests/test1/test_missing_permission_access.py tests/test1/test_ancestor_docs.py -n 4 -q`.
+
 ---
 
-*Testing analysis: 2026-11-09*
+*Testing analysis: 2026-11-10*

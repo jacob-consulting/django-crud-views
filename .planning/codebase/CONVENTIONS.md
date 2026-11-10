@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
-last_mapped_at: 2026-11-09
+last_mapped_commit: a025ddf096a6d4bd28bde23c8b5eb9a4eb687844
+last_mapped_at: 2026-11-10
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## Maintainability Constraint
 
@@ -98,6 +98,12 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 
 **Barrel Files:** No general barrel-file pattern detected; import from the owning module.
 
+## Static permission checks (Phase 06.22)
+
+- Use concrete-model metadata for declared core permission vocabulary and remove only the exact terminal `_<model_name>` suffix. Share `_permission_key` with the runtime map (`src/crud_views/lib/ancestors.py`, `src/crud_views/lib/viewset/__init__.py`).
+- Completion-dependent diagnostics belong behind the existing URLconf barrier; do not read Permission/ContentType rows at startup (`src/crud_views/checks.py`).
+- Keep declaration helpers private and preserve the distinct ownership of existing error codes/provider exclusions. Publish one executable recipe rather than duplicating application examples (`docs/reference/custom_form_view.md`, `tests/test1/test_ancestor_docs.py`).
+
 ---
 
-*Convention analysis: 2026-11-09*
+*Convention analysis: 2026-11-10*

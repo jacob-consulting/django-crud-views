@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-09
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
+last_mapped_at: 2026-11-10
+last_mapped_commit: a025ddf096a6d4bd28bde23c8b5eb9a4eb687844
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## APIs & External Services
 
@@ -105,6 +105,12 @@ last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
 **Outgoing:**
 - No package-managed webhooks. Django workflow callbacks use `transaction.on_commit()` for post-commit work (`src/crud_views_workflow/lib/views.py`).
 
+## Permission declaration integration
+
+- Core startup checks derive keys from concrete-model `Meta.default_permissions` and `Meta.permissions`; Django migrations still create the corresponding auth rows, and applications still grant permissions (`docs/reference/custom_form_view.md`).
+- `ViewSet.default_permissions` continues to read ContentType/Permission rows at runtime, using shared `_permission_key` normalization (`src/crud_views/lib/viewset/__init__.py`).
+- Guardian ViewSets are excluded from the new metadata check because their runtime map follows the configured content-type resolver (`docs/reference/guardian.md`, `src/crud_views/lib/ancestors.py`). Resource ViewSets retain their separate permission contract.
+
 ---
 
-*Integration audit: 2026-11-09*
+*Integration audit: 2026-11-10*

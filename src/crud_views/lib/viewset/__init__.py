@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, PrivateAttr, field_validator, model_valid
 
 from crud_views.lib.ancestor_policy import AncestorPermissions as AncestorPermissions
 from crud_views.lib.ancestor_policy import AncestorPolicy
-from crud_views.lib.ancestors import _validate_ancestor_structure, _walk_ancestors
+from crud_views.lib.ancestors import _permission_key, _validate_ancestor_structure, _walk_ancestors
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ViewSetNotFoundError, cv_raise
 from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
@@ -475,11 +475,9 @@ class ViewSet(BaseModel):
         content_type = ContentType.objects.get_for_model(model)
         permissions = OrderedDict()
         for permission in Permission.objects.filter(content_type=content_type):
-            # Django codenames are "<action>_<model>"; the model name is the suffix. Strip it
-            # as a suffix (not split on the first match) so a custom permission whose codename
-            # contains "_<model>" before its end parses fully, e.g. "change_book_status" stays
-            # "change_book_status" instead of being truncated to "change" for model "book".
-            action = permission.codename.removesuffix(f"_{content_type.model}")
+            # Strip the exact terminal "_<model>" suffix through the same expression as
+            # viewset.E269's static declared set.
+            action = _permission_key(permission.codename, content_type.model)
             permissions[action] = f"{content_type.app_label}.{permission.codename}"
         if permissions:
             self._default_permissions = permissions

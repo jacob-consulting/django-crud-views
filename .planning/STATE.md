@@ -21,10 +21,10 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-09)
+See: .planning/PROJECT.md (updated 2026-11-10)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.22 — Custom permissions declaration checks and recipe
+**Current focus:** Phase 06.20 — ViewSet verbose_name / verbose_name_plural override
 
 ## Current Position
 
@@ -33,7 +33,14 @@ Plan: Not started
 Status: Ready to execute
 Last activity: 2026-11-10 — Phase 06.22 complete, transitioned to Phase 06.20
 
-Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21, then Phase 06.22 (#341)
+Next: Phase 06.20 ($gsd-execute-phase 06.20); then Phase 06.21. Phase 06.22 is complete.
+
+### Phase 06.22 completion — 2026-11-10
+
+- All three plans complete; database-free E269 checks cover core view and ancestor permission keys, and the custom Meta.permissions recipe is executed by tests. Runtime authorization and Guardian paths preserved.
+- Canonical verification passed 22/22; decisions 16/16, prohibitions 9/9, validation 7/7 tasks, security 9/9 closed, deep review 12 files with zero findings. No required human checks.
+- Full suite 12,074 passed with four workers; docs 42, examples system check 1, additional regression 334 examples plus 100 subtests and 153 static tests pass. Ruff, strict MkDocs and compileall pass. Four existing Django deprecation warnings recorded in deferred-items.
+- Completion scanner treated two pytest command strings as missing paths; both referenced RED XML artifacts exist. No pending phase todos, handoffs or learnings to graduate. Config/state.json edits preserved; no push or merge.
 
 ### Phase 06.19 completion — 2026-11-09
 

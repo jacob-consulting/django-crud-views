@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterable
+from functools import cached_property
 from typing import Any
 
 from django.core.exceptions import ValidationError
@@ -30,6 +31,8 @@ from django.utils.translation import gettext_lazy as _
 from pydantic import BaseModel, Field
 
 from crud_views.lib.exceptions import CrudViewError
+
+from .compact import _compact_helper, _compact_projection
 
 try:
     from polymorphic.formsets import BasePolymorphicInlineFormSet
@@ -83,6 +86,8 @@ class XForm(BaseModel, arbitrary_types_allowed=True):
 
     @property
     def helper(self):
+        if self.parent.formset.compact_layout is not None:
+            return _compact_helper(self)
         # in polymorphic formsets we need to get the helper from the form
         klass = self.parent.formset.klass
         if BasePolymorphicInlineFormSet and issubclass(klass, BasePolymorphicInlineFormSet):
@@ -103,6 +108,12 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     forms: list[XForm] = Field(default_factory=lambda: [])
     parent: XForm | None = None
     render_rows_only: bool = False  # True for the AJAX row template: skip the fieldset wrapper
+
+    @cached_property
+    def compact_columns(self):
+        if self.formset.compact_layout is None:
+            return ()
+        return _compact_projection(self)
 
     def __str__(self):
         return f"XFormSet({self.prefix},{self.prefix_key},{self.level})"

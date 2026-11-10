@@ -131,7 +131,7 @@
     {
       "number": "06.24",
       "name": "Opt-in compact formsets",
-      "status": "pending"
+      "status": "planned"
     },
     {
       "number": "7",
@@ -140,9 +140,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-progress",
-    "label": "Show progress",
-    "reason": "Unsure of state — showing progress"
+    "command": "$gsd-execute-phase 06.24",
+    "label": "Execute phase 06.24",
+    "reason": "Five plans converged in cycle 2; ready to execute"
   },
-  "updated_at": "2026-11-10T16:37:04.211Z"
+  "updated_at": "2026-11-10T17:13:10.551Z"
 }

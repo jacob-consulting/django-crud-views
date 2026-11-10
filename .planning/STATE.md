@@ -22,10 +22,10 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-09)
+See: .planning/PROJECT.md (updated 2026-11-10)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.21 — Snippet context exposes view and parent_object (#339)
+**Current focus:** Phase 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
 
 ## Current Position
 
@@ -34,7 +34,14 @@ Plan: Not started
 Status: Ready to plan
 Last activity: 2026-11-10 — Phase 06.21 complete, transitioned to Phase 06.20
 
-Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21
+Next: Phase 06.20 ($gsd-discuss-phase 06.20)
+
+### Phase 06.21 completion — 2026-11-10
+
+- Plans 06.21-01 (cv_get_meta adds `view` + lazy `parent_object`, 11 tests) and 06.21-02 (§ Snippet variables docs, cross-links, CHANGELOG, 6-test docs guard) executed sequentially (worktree base-check degrade).
+- Verification passed 15/15; full `tests/` 12216 passed multicore; ruff and mkdocs --strict clean. SECURITY: SECURED, 0 open. Nyquist: compliant, 0 gaps.
+- Review: 0 critical, 2 warnings, 4 info — all open in 06.21-REVIEW-DISPOSITION.md. WR-01: templates.md exclusion paragraph is imprecise for ContextButton label templates and LinkChildColumn (sees `view`); WR-02: no guard tying the docs table to cv_get_meta() keys — relevant when Phase 06.20 changes ViewSet.get_meta().
+- Concern: the worktree `.venv` has a non-editable install; run pytest with `PYTHONPATH=src` or reinstall editable.
 
 ### Phase 06.19 completion — 2026-11-09
 
@@ -1145,6 +1152,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T09:12:51.075Z
+Last session: 2026-11-10
 Stopped at: Phase 06.21 complete, ready to plan Phase 06.20
 Resume file: None

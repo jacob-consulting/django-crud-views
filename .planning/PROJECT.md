@@ -80,6 +80,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ **6.18** Ancestor authorization for nested ViewSets: one request-local engine validates declared ancestry and enforces typed AncestorPolicy/AncestorPermissions (Read/Write and exact action pairs, full or nearest-only cascade, core or Guardian provider with separate fallback) before independent endpoint-local gates; top-level views do no ancestor work. Legacy `cv_guardian_parent_*` fields removed with paired Breaking/migrating-1.0 guidance — Phase 06.18; ANCE-01–08 complete, re-verification 52/52, UAT 71 rows (gap G-06.18-2 closed by plan 13), measured costs in 06.18-COSTS.md.
 
 - ✓ **6.19** `Table` honours a declared `Meta.sequence` instead of overriding it; tables without one keep `actions` last. The actions column is configured through django-tables2 `Meta` (`sequence`, `exclude = ("actions",)`), documented in the list view reference and FAQ (#337) — Phase 06.19; re-scoped to a one-line fix after the convenience design (automatic `actions` append, `cv_list_actions = None` removal) was reverted, verification 9/9, full suite 12197 passed.
+- ✓ **6.21** Snippets a view renders for its own page (header, paragraph, list/card filter header, success and error message) can use `{{ view }}` and, on a child ViewSet, a lazy `{{ parent_object }}` added by `CrudView.cv_get_meta()`; default snippets render unchanged. Documented once in `docs/reference/templates.md` § Snippet variables and linked from messages, nested and breadcrumb pages (#339) — Phase 06.21; verification 15/15, full suite 12216 passed.
 
 ### Active
 
@@ -172,6 +173,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Authorize nested requests through one shared ancestor engine; endpoint-local gates stay independent and never waive or are waived by ancestry | One traceable mechanism across plain/core/Guardian/manage/Resource compositions; denial stops deeper lookup, state and writes | Validated (Phase 06.18) |
 | Fail closed with a named ImproperlyConfigured when a permission key has no vocabulary entry (core ancestry and Guardian local gates); render-time cv_has_access returns False | An unmigrated permission must never grant or crash with a raw TypeError | Validated (Phase 06.18 gap closure, plan 13) |
 | Configure the list table's actions column through django-tables2 `Meta` (`sequence`, `exclude`), not crud_views convenience logic | One `Meta` line expresses what the reverted append/exclude-merge helpers did with hidden rules and edge cases (CLAUDE.md maintainability rule) | Validated (Phase 06.19 re-scope) |
+| Expose `view` and a lazy `parent_object` only through `cv_get_meta()` (page snippets), not to labels, buttons or `LinkChildColumn` | One code path, zero extra queries unless a template uses `parent_object`; no `request`/`user` key added | Validated (Phase 06.21) |
 
 ## Evolution
 
@@ -191,4 +193,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-09 after Phase 06.19 completion*
+*Last updated: 2026-11-10 after Phase 06.21 completion*

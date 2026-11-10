@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.20"
-current_phase_name: "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)"
-status: planning
-stopped_at: Phase 06.19 complete, ready to plan Phase 06.20
-last_updated: "2026-11-09T17:09:18.574Z"
-last_activity: 2026-11-09
-last_activity_desc: "Phase 06.19 shipped as PR #340"
-state_head: 45de1ad263f65e8e69672ed7b7ee15f1f8f7d71a
+current_phase: "06.21"
+current_phase_name: "Snippet context exposes `view` and `parent_object` (#339)"
+status: "Phase 06.20 shipped — PR #342"
+stopped_at: Phase 06.20 complete, ready to plan Phase 06.21
+last_updated: "2026-11-10T08:39:08.008Z"
+last_activity: 2026-11-10
+state_head: 2515e73414fe0641efba53bd31ed9a3d3d593c6c
 progress:
   total_phases: 27
-  completed_phases: 22
-  total_plans: 152
-  completed_plans: 152
-  percent: 81
+  completed_phases: 23
+  total_plans: 155
+  completed_plans: 155
+  percent: 92
 milestone_name: milestone
 ---
 
@@ -25,16 +24,23 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
+**Current focus:** Phase 06.21 — Snippet context exposes `view` and `parent_object` (#339)
 
 ## Current Position
 
-Phase: 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
+Phase: 06.21 — Snippet context exposes `view` and `parent_object` (#339)
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-11-09 -- Phase 06.19 shipped as PR #340
+Status: Phase 06.20 shipped — PR #342
+Last activity: 2026-11-10
 
-Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21
+Next: Phase 06.21; Phase 06.20 is verified and complete.
+
+### Phase 06.20 completion — 2026-11-09
+
+- All three plans complete; optional independent ViewSet display names resolve centrally, preserving lazy construction, defaults and explicit labels. Canonical verification passed 15/15, no required human checks.
+- Full suite: 12,066 passed with eight workers; Ruff and strict MkDocs clean. Test-only follow-up closed message-delivery/breadcrumb HTML coverage with 83 focused regressions and 21 label cases; production source unchanged.
+- Deep review clean; security 9/9 closed; validation complete with full-suite timing exception. UI audit source-scoped; browser/support-matrix limits explicit. No findings requiring a disposition ledger, matching todos, learnings or stale handoffs.
+- Existing config/state.json edits and untracked prompt preserved. No push or PR merge; phase branch contains the completed work.
 
 ### Phase 06.19 completion — 2026-11-09
 
@@ -671,7 +677,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 148
+- Total plans completed: 151
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -702,6 +708,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.17 | 3 | - | - |
 | 06.18 | 13 | - | - |
 | 06.19 | 2 | - | - |
+| 06.20 | 3 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -827,6 +834,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.18 P13 | 10min | 2 tasks | 5 files |
 | Phase 06.19 P01 | 6 min | 3 tasks | 5 files |
 | Phase 06.19 P02 | 6min | 3 tasks | 4 files |
+| Phase 06.20 P01 | 5min | 2 tasks | 2 files |
+| Phase 06.20 P03 | 5min | 2 tasks | 3 files |
+| Phase 06.20 P02 | 8min | 2 tasks | 1 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1068,6 +1078,9 @@ Recent decisions affecting current work:
 - [Phase 06.19]: Table exclude merge combines Meta.exclude, caller exclude and actions with an order-preserving dict.fromkeys dedupe (#337)
 - [Phase 06.19]: Table.cv_default_sequence inserts "..." before actions when a declared Meta.sequence has none, so django-tables2 never appends its ellipsis after actions (06.19-02, WR-01)
 - [Phase 06.19]: Table.__init__ normalises the caller exclude kwarg (falsy -> (), str -> one-tuple) only inside the cv_list_actions = None branch before the order-preserving merge (06.19-02, WR-02/WR-03)
+- [Phase 06.20]: Plan 01: resolve explicit ViewSet verbose_name overrides per call; preserve lazy model defaults and construction-time lazy values, reject only blank plain strings.
+- [Phase 06.20]: Plan 03: the label docs replace the Sideways declaration and preserve its context buttons; full label contract and non-breaking changelog published.
+- [Phase 06.20]: Plan 02: breadcrumb and success-message assertions remain producer-level; rendered requests cover pages, columns and buttons. All phase gates passed.
 
 ### Pending Todos
 
@@ -1138,6 +1151,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09
-Stopped at: Phase 06.19 complete, ready to discuss/plan Phase 06.20
+Last session: 2026-11-09T21:26:24.250Z
+Stopped at: Phase 06.20 complete, ready to plan Phase 06.21
 Resume file: None

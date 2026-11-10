@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: 910d8bb98ea06a21ff838dacd56704c0ce31e4de
-last_mapped_at: 2026-11-09
+last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
+last_mapped_at: 2026-11-10
 ---
-<!-- refreshed: 2026-11-09 -->
+<!-- refreshed: 2026-11-10 -->
 
 # Architecture
 
-**Analysis Date:** 2026-11-09
+**Analysis Date:** 2026-11-10
 
 ## System Overview
 
@@ -268,6 +268,12 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 **Validation:** Pydantic validates ViewSet, Resource and object-detail configuration; Django forms and startup system checks validate request data and package configuration (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/resource.py`, `src/crud_views_object_detail/lib/config.py`, `src/crud_views/checks.py`).
 **Authentication:** Nested requests additionally authorize every protected ancestor (`src/crud_views/lib/ancestors.py`). Core permission-required CBVs integrate Django's permission mixins; Guardian adds object-level permission checks in `src/crud_views_guardian/lib/`.
 
+## ViewSet Label Metadata (Phase 06.20)
+
+- `ViewSet.verbose_name` and `verbose_name_plural` are independent optional `LazyStr` fields. `get_meta()` resolves explicit overrides per call under the active language; `None` preserves the model/Resource metadata path, including lazy values (`src/crud_views/lib/viewset/__init__.py`).
+- `check_verbose_name()` rejects blank plain strings without stripping stored values or evaluating lazy objects at construction. There is no automatic pluralization or ancestor fallback.
+- Existing `CrudView.cv_get_meta()`, snippets, breadcrumbs, child-column and button consumers receive the resolved names. Explicit labels keep precedence; model-centric deletion/404 text and permission identity are unchanged (`src/crud_views/lib/view/base.py`, `docs/reference/nested.md#labels`). No new queries or consumer state are added.
+
 ---
 
-*Architecture analysis: 2026-11-09*
+*Architecture analysis: 2026-11-10*

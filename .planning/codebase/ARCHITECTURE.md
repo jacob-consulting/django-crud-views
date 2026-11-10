@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
+last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
 last_mapped_at: 2026-11-10
 ---
 <!-- refreshed: 2026-11-10 -->
@@ -51,6 +51,7 @@ last_mapped_at: 2026-11-10
 | Polymorphic extension | Type selection and model-specific create/update/detail views | `src/crud_views_polymorphic/lib/` |
 | Guardian extension | Object permission-aware ViewSet, view mixins, permission management screens | `src/crud_views_guardian/lib/` |
 | Resource abstraction | Pydantic-backed, non-ORM row contract for read-oriented views | `src/crud_views/lib/resource.py` |
+| Semantic icon contract | Plain-value `Icon` constants, inherited/overridden view header icon selection, registry resolution and template projection | `src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templatetags/crud_views.py` |
 | Startup validation | Django checks over registered ViewSets, views, templates, asset declarations and extension configuration | `src/crud_views/checks.py`, `src/crud_views_workflow/checks.py`, `src/crud_views_guardian/checks.py` |
 | Ancestor authorization engine | Request-local guard for nested ViewSets: static ancestry validation, actor admission, outermost-inward ancestor resolution and permission gates, child/parent membership checks | `src/crud_views/lib/ancestors.py` |
 | Ancestor policy values | Strict Pydantic `AncestorPolicy` / `AncestorPermissions` (provider, cascade, read/write/action permission pairs) | `src/crud_views/lib/ancestor_policy.py` |
@@ -70,6 +71,8 @@ last_mapped_at: 2026-11-10
 - Nested requests pass through one ancestor-authorization guard (`_authorize_ancestors`) before any endpoint work: it resolves each ancestor through its own ViewSet queryset, applies per-ancestor permission gates (provider `model`, `guardian` or `none`; full cascade or nearest-only) and stores the resolved chain on the view instance (`src/crud_views/lib/ancestors.py`). Top-level requests do no ancestor work.
 - `CrudViewMetaClass` performs registration during class creation; consumers include the ViewSet's `urlpatterns` from their Django URL configuration.
 - `CrudView.cv_get_meta()` adds `view` and, only for child ViewSets, a `SimpleLazyObject` for immediate `parent_object`; resolving it delegates to `cv_get_parent_object()`, which reuses the ancestor guard's resolved parent when available and otherwise looks up the parent from the URL kwarg (`src/crud_views/lib/view/base.py`).
+- Header icon selection is a separate view presentation contract: `cv_get_header_icon()` returns `cv_icon_header` whenever it is not `None`, including `""` for suppression; only `None` falls back to `ViewSet.icon_header`. `Icon.VIEWSET_DEFAULT` and `Icon.NONE` in `crud_views.lib.icons` are plain primitive constants (`None` and `""`), not enum objects. Heading templates resolve the selected value through `cv_heading_icon` to host classes plus inline HTML; a custom getter returning `None` suppresses rather than re-running attribute fallback (`src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templatetags/crud_views.py`, `docs/reference/icons.md`).
+- Page-owned header, paragraph, message, and list/card filter-header snippets render `cv_get_meta()` data: ViewSet metadata, `object` when present, the current `view`, and a lazy immediate `parent_object` only on nested ViewSets. Request dispatch's ancestor state is reused if that lazy value is read; direct/pre-dispatch reads resolve the parent through its URL kwarg. Action/breadcrumb labels and context-button labels use distinct contracts (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/buttons.py`, `docs/reference/templates.md`).
 - Concrete request handlers combine the package's `CrudView` mixin with Django generic CBVs; permission-required classes add `CrudViewPermissionRequiredMixin`.
 - The core theme is implemented in Django templates and template tags. App-contributed behavior can add static assets through `register_assets()` from an app's `AppConfig.ready()`.
 - Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
@@ -134,6 +137,15 @@ last_mapped_at: 2026-11-10
 1. View-owned header, paragraph, message and list/card filter-header snippets receive ViewSet metadata plus `object` when present and `view` (`src/crud_views/lib/view/base.py`, `docs/reference/templates.md`).
 2. Child snippets receive lazy immediate `parent_object`; unused values trigger no lookup. Dispatched requests reuse ancestor-guard state; calls without that state resolve using the parent URL kwarg and `get_object_or_404`.
 3. Action and breadcrumb labels omit `view` and `parent_object`; context-button labels use button data. `LinkChildColumn` templates add child ViewSet variables to the host list context and do not create `parent_object`, though they can inherit it (`docs/reference/templates.md`).
+
+The snippet-variable contract is deliberately bounded: `object`, `view`, optional lazy `parent_object`, the singular/plural names in resolved and translated forms, and `viewset` (also `cv`). There is no top-level `parent_object` key or separate `request`/`user` key; snippets can reach the latter through `view.request`. Labels rendered for another view do not receive the rendering page's `view` or `parent_object`. Context-button label templates receive resolved button data instead (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/view/buttons.py`, `docs/reference/templates.md`).
+
+### Header Icon Selection and Rendering
+
+1. The view's `cv_icon_header` is selected unless it is exactly `None`; that value means inherit `ViewSet.icon_header`. Empty string is an explicit suppression value (`src/crud_views/lib/view/base.py`).
+2. `Icon.VIEWSET_DEFAULT` and `Icon.NONE` are public readability constants from `crud_views.lib.icons`, defined as the primitive values `None` and `""`. They are not enum/sentinel instances, and `VIEWSET_DEFAULT` has inheritance meaning only for `cv_icon_header` (`src/crud_views/lib/icons.py`, `docs/reference/icons.md`).
+3. The standard page/modal heading template calls `cv_heading_icon` with the getter and location. It projects the resolved icon to host-library classes and inline HTML so a host theme can put the class on its own heading and place icon markup inside it. The standalone `cv_header_icon` tag remains an icon renderer and does not provide the heading host-class projection (`src/crud_views/templatetags/crud_views.py`, `docs/reference/templates.md`).
+4. A custom `cv_get_header_icon()` implementation owns its return value; returning `None` means no icon and does not invoke the class-attribute/ViewSet fallback again (`src/crud_views/lib/view/base.py`, `tests/test1/test_heading_icons.py`).
 
 ### Nested Request Path (ancestor authorization)
 
@@ -274,6 +286,12 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 **Logging:** No package-wide application logging layer is present; Django and host application logging remain in control.
 **Validation:** Pydantic validates ViewSet, Resource and object-detail configuration; Django forms and startup system checks validate request data and package configuration (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/resource.py`, `src/crud_views_object_detail/lib/config.py`, `src/crud_views/checks.py`).
 **Authentication:** Nested requests additionally authorize every protected ancestor (`src/crud_views/lib/ancestors.py`). Core permission-required CBVs integrate Django's permission mixins; Guardian adds object-level permission checks in `src/crud_views_guardian/lib/`.
+
+## Permission and Snippet Boundary
+
+- The ancestor guard is a request-time security boundary for nested ViewSets, not just a queryset convenience: it validates declared ancestry, admits or rejects actors before ancestor lookups, resolves ancestor objects outermost inward, applies the configured provider/permission pair, and caches the resolved chain on the request view (`src/crud_views/lib/ancestors.py`).
+- Core permission-required dispatch reaches the ancestor guard before Django's `PermissionRequiredMixin` state-loading `has_permission()`; Guardian and manage views have corresponding dispatch bridges. Subsequent child object retrieval validates parent membership, and list context scopes child rows (`src/crud_views/lib/view/base.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/ancestors.py`).
+- Snippet `parent_object` reads reuse this authorized/cached immediate parent after dispatch. Template snippets do not establish or bypass authorization; accessing the lazy object outside the guarded request path performs the documented parent lookup and may raise 404 (`src/crud_views/lib/view/base.py`, `docs/reference/templates.md`).
 
 ## ViewSet Label Metadata (Phase 06.20)
 

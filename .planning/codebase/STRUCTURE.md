@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
+last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
 last_mapped_at: 2026-11-10
 ---
 # Codebase Structure
@@ -51,12 +51,14 @@ django-crud-views/
 - Key files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/action_menu.py`, `src/crud_views/lib/view/buttons.py`.
 - Form Cancel URL resolution lives in `src/crud_views/lib/view/base.py`; the template-tag API is in `src/crud_views/templatetags/crud_views.py`, and button data/rendering is in `src/crud_views/lib/view/button_data.py` plus `src/crud_views/templates/crud_views/tags/button/form.html`.
 - Snippet metadata is assembled by `CrudView.cv_get_meta()` in `src/crud_views/lib/view/base.py`; child views expose lazy immediate `parent_object`, reusing ancestor-guard state after dispatch and otherwise resolving through the parent URL kwarg. Action/breadcrumb labels, context-button labels, and `LinkChildColumn` templates use separate contexts; see `docs/reference/templates.md`.
+- Header icon selection is implemented by `CrudView.cv_get_header_icon()` in `src/crud_views/lib/view/base.py`: only `None` inherits `ViewSet.icon_header`, while `""` suppresses. The public readability constants live in `src/crud_views/lib/icons.py` as plain values (`Icon.VIEWSET_DEFAULT is None`, `Icon.NONE == ""`). Heading templates should use the `cv_heading_icon` projection in `src/crud_views/templatetags/crud_views.py` to place library classes on the host heading and inline icon HTML inside it; getter overrides returning `None` suppress the icon.
 
 **`src/crud_views/lib/ancestors.py`, `ancestor_policy.py`, `ancestor_db.py`:**
 - Purpose: Ancestor authorization for nested ViewSets (engine, policy values, default-database boundary).
 - Contains: `_authorize_ancestors`, `_walk_ancestors`, `_validate_child_parent`, `_scope_child_queryset`; `AncestorPolicy`/`AncestorPermissions`; `_check_nested_*` database guards.
 - Key files: `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/ancestor_db.py`, `src/crud_views_guardian/lib/ancestors.py` (Guardian provider).
 - Tests: `tests/test1/test_ancestor_*.py`, `tests/test1/test_guardian_*.py`, `tests/test1/test_nested_viewset.py`; docs in `docs/reference/nested.md`.
+- Nested dispatch must reach `_authorize_ancestors` before the endpoint's state-loading permission check; core permission-required, Guardian, and manage views use dispatch bridges. The resolved chain is cached on the request view for child membership/list scoping and lazy snippet `parent_object` reuse (`src/crud_views/lib/view/base.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/views/manage.py`).
 
 **`src/crud_views/lib/deletion.py` and `src/crud_views/templates/crud_views/snippets/delete/`:**
 - Purpose: Build bounded related-object delete previews and render blocked relationships.
@@ -162,12 +164,13 @@ django-crud-views/
 - `src/crud_views/lib/resource.py`: Non-ORM row interface.
 - `src/crud_views/lib/deletion.py`: Bounded delete preview and protection collection.
 - `src/crud_views/lib/table/table.py`: `Table` base (view context, `actions` column, `Meta.sequence`-aware default ordering).
-- `src/crud_views/lib/view/base.py`: `cv_get_meta()` creates snippet metadata; `cv_get_parent_object()` returns the immediate parent using the request's resolved ancestor when available.
+- `src/crud_views/lib/view/base.py`: `cv_get_meta()` creates page-snippet metadata; `cv_get_parent_object()` returns the immediate parent using the request's resolved ancestor when available; `cv_get_header_icon()` applies the None-only ViewSet fallback.
+- `src/crud_views/lib/icons.py`: semantic icon registry and plain public `Icon.VIEWSET_DEFAULT` / `Icon.NONE` constants.
 
 **Presentation and Browser Behavior:**
 - `src/crud_views/templates/crud_views/`: Core theme templates and reusable partials.
 - `src/crud_views/static/crud_views/`: Core CSS/JavaScript.
-- `src/crud_views/templatetags/crud_views.py`: Theme-facing template tag API.
+- `src/crud_views/templatetags/crud_views.py`: `{% cv_heading_icon %}` host-class/inline-HTML projection, standalone icon tag, snippet-facing tags and theme API.
 - `src/crud_views_object_detail/templates/crud_views_object_detail/`: Object detail layout and field rendering packs.
 - `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`: Object-detail tab lifecycle bridge loaded through asset registration in `src/crud_views_object_detail/apps.py`.
 
@@ -259,6 +262,14 @@ django-crud-views/
 - `tests/test1/test_permission_declarations.py`: declaration diagnostics, concrete-model boundaries, exclusions and zero-query checks.
 - `tests/test1/test_ancestor_docs.py`: executable custom-permission recipe and cross-link tests; `tests/test1/app/models.py` declares Author's `contact_author` permission while preserving OrderedModel Meta options.
 - `docs/reference/custom_form_view.md#a-permission-of-its-own`: canonical model/view recipe; action, Guardian and nested reference pages link or explain the applicable boundaries.
+
+## Header icons and snippet context (Phase 06.23)
+
+- `src/crud_views/lib/view/base.py`: `cv_get_header_icon()` uses the view value unless it is `None`, then falls back to `cv_viewset.icon_header`; `cv_get_meta()` provides ViewSet metadata, optional `object`, `view`, and lazy `parent_object` for nested views.
+- `src/crud_views/lib/icons.py`: import `Icon.VIEWSET_DEFAULT` and `Icon.NONE` from `crud_views.lib.icons`; these public constants are plain `None` and empty-string values. Do not treat them as enum/sentinel instances.
+- `src/crud_views/templatetags/crud_views.py`: `cv_heading_icon` splits selected icon presentation into host classes and inline markup for heading templates. Use the documented page/modal recipes in `docs/reference/templates.md`; a custom getter returning `None` suppresses rather than falling back again.
+- `docs/reference/templates.md#snippet-variables`: canonical snippet variable list and distinctions among page snippets, target action/breadcrumb labels, context-button labels, and `LinkChildColumn` context. Child `parent_object` is lazy and reuses request-authorized ancestor state after dispatch.
+- `tests/test1/test_heading_icons.py`, `tests/test1/test_snippet_docs.py`: header selection/rendering and documented snippet context contracts.
 
 ---
 

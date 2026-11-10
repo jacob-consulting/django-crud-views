@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-10
-last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
+last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
 ---
 # Technology Stack
 
@@ -9,86 +9,77 @@ last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 ## Languages
 
 **Primary:**
-- Python >=3.12 - distributable Django package, five apps in `src/crud_views*/`, examples in `examples/bootstrap5/`, tests in `tests/`
+- Python >=3.12 - installable Django library, split across five packages under `src/`
 
 **Secondary:**
-- JavaScript - browser behavior in `src/crud_views/static/crud_views/js/` (`adapters.js`, `formset.js`, `modal.js`, `toggle.js`, `tooltip.js`); tests under `tests/js*/`. Node >=20 (`package.json`), CI uses Node 22 (`.github/workflows/js.yml`)
-- HTML (Django templates), CSS, gettext PO/MO translations (locale `de`, `taskfile.yaml` vars `LOCALES`, `I18N_PACKAGES`)
+- JavaScript - browser behavior and tests under `src/crud_views/static/` and `tests/js*/`
+- HTML, CSS, gettext catalogs - Django templates, styling, and translations in `src/crud_views/templates/`, `src/crud_views/static/`, and locale directories
 
 ## Runtime
 
 **Environment:**
-- Python >=3.12; matrix 3.12, 3.13, 3.14, 3.15 (`noxfile.py`, `.github/workflows/tests.yml`)
-- Django >=4.2; matrix 4.2, 5.2, 6.0. Django 4.2 sessions skip Python 3.14+ (`noxfile.py`)
-- Node >=20 for the JS harness only
+- Python >=3.12; CI/nox covers 3.12–3.15 (`pyproject.toml`, `noxfile.py`, `.github/workflows/tests.yml`)
+- Django >=4.2; supported matrix is 4.2, 5.2, and 6.0 (`pyproject.toml`, `noxfile.py`); Django 4.2 sessions skip Python 3.14+
+- Node.js >=20 and npm for the JavaScript test harness (`package.json`, `package-lock.json`)
 
 **Package Manager:**
-- Python: `uv` (dev, nox `venv_backend="uv"`); pip for installation
+- Python: `uv` for development and nox environments; `pip` for normal installs
 - Lockfile: `uv.lock` present
-- JavaScript: npm, `package-lock.json` present
-- Pinned hashed CI/docs locks: `.github/requirements/ci.txt`, `docs/requirements.txt` (kept fresh by `.github/dependabot.yml`, 7-day cooldown)
+- JavaScript: npm; `package-lock.json` present
 
 ## Frameworks
 
 **Core:**
-- Django >=4.2 - host framework and ORM
-- Pydantic >=2.2.1 - ViewSet models and settings (`src/crud_views/lib/settings.py`, `src/crud_views/lib/viewset/__init__.py`)
-- django-crispy-forms >=2.0 + crispy-bootstrap5 >=2023.10 - form rendering (`src/crud_views/lib/crispy/`)
-- django-tables2 >=2.5.3, django-filter >=21.1 - list tables and filters
+- Django >=4.2 - host framework, ORM, auth, templates, and app integration
+- Pydantic >=2.2.1 - typed `ViewSet` and settings models (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/settings.py`)
+- django-crispy-forms >=2.0 and crispy-bootstrap5 >=2023.10 - form rendering (`src/crud_views/lib/crispy/`)
+- django-tables2 >=2.5.3 and django-filter >=21.1 - list tables, filtering, and pagination (`src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`)
 
 **Testing:**
-- pytest, pytest-django, pytest-cov, pytest-xdist, pytest-mock, pytest-random-order; nox matrix (`noxfile.py`)
-- lxml, cssselect, polib (test extras); Vitest ^5.0.5 + jsdom ^30.1.3 + jquery ~3.7.1 (`package.json`, `vitest.config.js`, `vitest.integration.config.js`)
+- pytest, pytest-django, pytest-cov, pytest-xdist, pytest-mock, pytest-random-order - Python tests (`noxfile.py`, `pyproject.toml`)
+- Vitest, jsdom, and jQuery - JavaScript tests (`package.json`, `vitest.config.js`, `vitest.integration.config.js`)
 
 **Build/Dev:**
-- Hatchling - build backend; wheel packages the five `src/` apps, sdist uses `only-include` allowlist verified by `scripts/check_dist.py`
-- Ruff >=0.17,<0.18 - format and lint (line length 120, rules E,F,I,UP,B,C4,SIM,RUF)
-- MkDocs (readthedocs theme) with awesome-pages and pymdown-extensions (`mkdocs.yml`)
-- bump-my-version, pre-commit (`ruff-format`), Task (`taskfile.yaml`)
+- Hatchling - wheel and source distribution backend (`pyproject.toml`); wheel includes five `src/` apps and sdist uses an explicit allowlist
+- Ruff - lint and formatting (`pyproject.toml`); line length 120, double quotes
+- MkDocs with Read the Docs theme, awesome-pages, and pymdown-extensions (`mkdocs.yml`)
+- Nox, Task, pre-commit, bump-my-version - test matrix and maintenance (`noxfile.py`, `taskfile.yaml`, `.pre-commit-config.yaml`, `pyproject.toml`)
 
 ## Key Dependencies
 
 **Critical:**
-- `django`, `pydantic`, `python-box`, `typing-extensions`, `django-tables2`, `django-filter`, `django-crispy-forms`, `crispy-bootstrap5` (`pyproject.toml`)
+- `django`, `pydantic`, `python-box`, `typing-extensions`, `django-tables2`, `django-filter`, `django-crispy-forms`, `crispy-bootstrap5` - required package dependencies (`pyproject.toml`)
 
 **Optional extras:**
-- `[workflow]`: `django-fsm-2>=4.0.0`, `django-fsm-2-admin>=2.0.1` (`src/crud_views_workflow/`)
-- `[polymorphic]`: `django-polymorphic>=3.1.0` (`src/crud_views_polymorphic/`)
-- `[ordered]`: `django-ordered-model>=3.4.3`
-- `[guardian]`: `django-guardian>=2.4` (`src/crud_views_guardian/`)
-- `[all]` combines the four; `[examples]`: `pygments`; `[test]` also pulls `django-guardian`, `django-pipeline`
-
-**Demo-only (`requirements/demo.txt`):** `gunicorn>=23`, `whitenoise>=6.9`, `django-ratelimit>=4.1`
+- `[workflow]`: `django-fsm-2`, `django-fsm-2-admin` - state transitions and admin support (`src/crud_views_workflow/`)
+- `[polymorphic]`: `django-polymorphic` - polymorphic model support (`src/crud_views_polymorphic/`)
+- `[ordered]`: `django-ordered-model` - ordering actions when host models use it
+- `[guardian]`: `django-guardian` - per-object permissions (`src/crud_views_guardian/`)
+- `[all]` installs the four extension extras; `[test]` adds test tools plus Guardian and django-pipeline; `[examples]` adds Pygments (`pyproject.toml`)
+- Demo-only requirements include Gunicorn, WhiteNoise, and django-ratelimit (`requirements/demo.txt`)
 
 ## Configuration
 
 **Environment:**
-- Package config from host Django settings with `CRUD_VIEWS_*` names, modeled in `src/crud_views/lib/settings.py` (e.g. `CRUD_VIEWS_EXTENDS`, `CRUD_VIEWS_MANAGE_VIEWS_ENABLED`, `CRUD_VIEWS_MANAGE_GROUP`, `CRUD_VIEWS_SESSION_DATA_KEY`, `CRUD_VIEWS_ORIGIN_PARAM`, `CRUD_VIEWS_CSP_NONCE_ATTR`, `CRUD_VIEWS_ASSETS_BUNDLED`, `CRUD_VIEWS_INACCESSIBLE_ACTIONS`, `CRUD_VIEWS_HEADER_LEVEL`, `CRUD_VIEWS_DELETE_PREVIEW_LIMIT`, `CRUD_VIEWS_BREADCRUMB_PREFIX`, `CRUD_VIEWS_*_LABEL_MODE`, `CRUD_VIEWS_*_CONTEXT_ACTIONS`, filter persistence/pinned)
-- Object-detail settings cached separately in `src/crud_views_object_detail/lib/conf.py` (`CRUD_VIEWS_OBJECT_DETAIL_*`)
-- Asset registration with CSP nonce and SRI, optional django-pipeline bundling (`src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `src/crud_views/management/commands/cv_assets.py`)
-- i18n extraction settings: `settings_i18n.py`, `src/` locale dirs
-- No dotenv loading in the package; `dev/.env` (tunnel token) exists for local dev only and is not read
+- Runtime configuration is read from host Django settings; core options are modeled in `src/crud_views/lib/settings.py` and use the `CRUD_VIEWS_*` prefix
+- Object-detail options are modeled separately in `src/crud_views_object_detail/lib/conf.py`; settings can configure themes, assets, permissions, buttons, icons, and display behavior
+- `Icon` in `src/crud_views/lib/icons.py` is a plain namespace of primitive values (`VIEWSET_DEFAULT = None`, `NONE = ""`), not a Pydantic enum or extra dependency
+- Asset registration supports CSP nonce and SRI attributes; optional django-pipeline integration is implemented without importing pipeline at settings import time (`src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`)
+- The library defines no required environment variables and does not load dotenv files
 
 **Build:**
-- `pyproject.toml` (metadata, extras, hatch, ruff, pytest `--strict-markers`, coverage), `noxfile.py` (sessions: `tests`, `crispy_floor`, `examples`, `package`), `taskfile.yaml`, `codecov.yml`, `mkdocs.yml`, `.readthedocs.yaml`
+- `pyproject.toml` - package metadata, dependencies, extras, Hatchling, Ruff, pytest, and coverage configuration
+- `noxfile.py` - Python/Django test matrix and package checks
+- `taskfile.yaml`, `mkdocs.yml`, `.readthedocs.yaml`, `settings_i18n.py` - task shortcuts, docs, and translation extraction
 
 ## Platform Requirements
 
 **Development:**
-- Python >=3.12, `uv`, Task; Node/npm for JS tests; optional Docker for Cloudflare tunnel (`dev/docker-compose.yaml`)
+- Python >=3.12, `uv`, and Task; Node/npm for browser JavaScript tests; Docker is optional for the local tunnel (`dev/docker-compose.yaml`)
 
 **Production:**
-- A host Django project; no database or host mandated. Demo runs on Render free plan with Gunicorn, WhiteNoise, ephemeral SQLite (`render.yaml`)
-
-## Label Configuration (Phase 06.20)
-
-- ViewSet display names reuse existing `LazyStr` and Pydantic field validation (`src/crud_views/lib/lazy.py`, `src/crud_views/lib/viewset/__init__.py`). No dependency, global setting, template or browser-runtime changes.
-- Runtime ranges and supported CI matrices are unchanged. Shipping checks used the existing Python 3.12 environment; supported-version coverage remains a CI check (`noxfile.py`).
-
-## Phase 06.22 refresh
-
-- Dependency/runtime/build configuration is unchanged since the preceding map (`pyproject.toml`, `package.json`, `noxfile.py`).
-- Permission declaration checks use existing Django model metadata and `get_permission_codename`; no new dependency, database service or setting is introduced (`src/crud_views/lib/ancestors.py`, `src/crud_views/checks.py`).
+- Any Django host project; the package selects no database, cache, storage, or hosting provider
+- Public example deploys to Render with Gunicorn, WhiteNoise, and ephemeral SQLite (`render.yaml`, `requirements/demo.txt`)
 
 ---
 

@@ -17,6 +17,10 @@ class Author(OrderedModel):
     last_name = models.CharField(max_length=100)
     pseudonym = models.CharField(max_length=100, blank=True, null=True)
 
+    # Keep OrderedModel's ordering; this permission backs docs/reference/custom_form_view.md's executed recipe.
+    class Meta(OrderedModel.Meta):
+        permissions = [("contact_author", "Can contact an author")]
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 

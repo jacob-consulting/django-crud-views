@@ -45,7 +45,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (INSERTED)** - #337 (tabler-test finding 26): honour `Meta.sequence`, append `actions` last, omit the column for `cv_list_actions = None`; context gathered, planning pending. (completed 2026-11-09)
 - [ ] **Phase 06.20: ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (INSERTED)** - #338 (tabler-test finding 28): two optional `LazyStr` fields resolved in `get_meta()`, independently for singular and plural; planning pending.
 - [ ] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending.
-- [ ] **Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (INSERTED)** - #341 (tabler-test finding 24): document the custom-permission recipe for custom form and action views; new static check `viewset.E269` verifies `cv_permission` and nested ancestor pair keys against the model's declared permissions on core ViewSets; Guardian documented as unsupported; planning pending.
+- [x] **Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (INSERTED)** - #341 (tabler-test finding 24): document the custom-permission recipe for custom form and action views; new static check `viewset.E269` verifies `cv_permission` and nested ancestor pair keys against the model's declared permissions on core ViewSets; Guardian documented as unsupported; planning pending. (completed 2026-11-10)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1564,17 +1564,17 @@ error, not warning; ancestor pair values covered; `E202` unchanged; no new API; 
 coverage of the check, verifying `Permission` rows exist, auto-deriving `cv_permission`, tabler-test findings 23
 (child tabs) and 25 (manage pages). This insertion assigns the phase; detailed planning and implementation remain
 pending.
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
-- [ ] 06.22-01-PLAN.md — Declared-set helper (`_permission_key`, `_declared_permission_keys`, concrete `Meta`), `viewset.E269` cv_permission half in `check_ancestor_declarations`, `default_permissions` keyed through the shared expression; SC-1, SC-2, SC-4 (half 1) tests (wave 1, tracer)
+- [x] 06.22-01-PLAN.md — Declared-set helper (`_permission_key`, `_declared_permission_keys`, concrete `Meta`), `viewset.E269` cv_permission half in `check_ancestor_declarations`, `default_permissions` keyed through the shared expression; SC-1, SC-2, SC-4 (half 1) tests (wave 1, tracer)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.22-02-PLAN.md — `viewset.E269` ancestor pair half (`_requirement_source`, nearest/higher per selected ancestor, D-11/D-12 messages), Guardian/none/Resource skips, D-16 fixture test, zero-query assertion over both check functions (wave 2)
+- [x] 06.22-02-PLAN.md — `viewset.E269` ancestor pair half (`_requirement_source`, nearest/higher per selected ancestor, D-11/D-12 messages), Guardian/none/Resource skips, D-16 fixture test, zero-query assertion over both check functions (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.22-03-PLAN.md — `Author.Meta.permissions`, executed recipe section in `custom_form_view.md`, `action_view.md` pointer, `guardian.md` note, `nested.md` row, `### Added` changelog entry, phase gates incl. the examples system-check test (wave 3)
+- [x] 06.22-03-PLAN.md — `Author.Meta.permissions`, executed recipe section in `custom_form_view.md`, `action_view.md` pointer, `guardian.md` note, `nested.md` row, `### Added` changelog entry, phase gates incl. the examples system-check test (wave 3)
 
 ### Phase 7: Theme-surface stability policy
 

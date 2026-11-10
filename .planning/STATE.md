@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.22"
-current_phase_name: "Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (#341) (INSERTED)"
+current_phase: "06.20"
+current_phase_name: "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)"
 status: executing
-stopped_at: Phase 06.22 context gathered
-last_updated: "2026-11-09T23:43:09.897Z"
-last_activity: 2026-11-09
-last_activity_desc: "Phase 06.19 shipped as PR #340"
-state_head: 87552c7c8162814e288d585bac86167021f894d0
+stopped_at: Phase 06.22 complete; Phase 06.20 ready to execute
+last_updated: "2026-11-10T05:06:20.688Z"
+last_activity: 2026-11-10
+last_activity_desc: Phase 06.22 complete, transitioned to Phase 06.20
+state_head: fc8225117085d2d09a81f511e97d1076c7cb32f1
 progress:
   total_phases: 28
   completed_phases: 22
   total_plans: 158
-  completed_plans: 152
+  completed_plans: 155
 milestone_name: milestone
 ---
 
@@ -24,14 +24,14 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
+**Current focus:** Phase 06.22 — Custom permissions declaration checks and recipe
 
 ## Current Position
 
-Phase: 06.22 (Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (#341) (INSERTED)) — READY TO EXECUTE
+Phase: 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
 Plan: Not started
 Status: Ready to execute
-Last activity: 2026-11-09 -- Phase 06.19 shipped as PR #340
+Last activity: 2026-11-10 — Phase 06.22 complete, transitioned to Phase 06.20
 
 Next: Phase 06.20 ($gsd-discuss-phase 06.20); then Phase 06.21, then Phase 06.22 (#341)
 
@@ -670,7 +670,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 148
+- Total plans completed: 151
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -701,6 +701,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.17 | 3 | - | - |
 | 06.18 | 13 | - | - |
 | 06.19 | 2 | - | - |
+| 06.22 | 3 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1138,6 +1139,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T20:10:52.310Z
-Stopped at: Phase 06.22 context gathered
-Resume file: .planning/phases/06.22-custom-permissions-meta-permissions-recipe-and-startup-check/06.22-CONTEXT.md
+Last session: 2026-11-10T05:06:17.957Z
+Stopped at: Phase 06.22 complete; Phase 06.20 ready to execute
+Resume file: None

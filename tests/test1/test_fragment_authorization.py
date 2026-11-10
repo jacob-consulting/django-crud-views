@@ -1463,6 +1463,7 @@ def test_server_fragment_dom_round_trip(fr, world, mode, capability, layout, mon
     child.refresh_from_db()
     parent.refresh_from_db()
     pa.refresh_from_db()
+    assert Book.objects.filter(pk=ba.pk, publisher=pa).exists(), "unmarked initial parent must survive the DOM POST"
     assert child.book_id == parent.pk and parent.publisher_id == pa.pk
 
 

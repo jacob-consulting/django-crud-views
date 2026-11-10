@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="62" failures="1" errors="0" time="0.700524299">
+    <testsuite name="tests/js/formset.test.js" timestamp="2026-11-10T21:18:33.484Z" hostname="weaver-dev" tests="62" failures="1" errors="0" skipped="0" time="0.700524299">
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; parses config, pk and index from the fixture" time="0.014603187">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; parses a concrete parent pk" time="0.005461705">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; parses multi-digit and UUID parent pks with the server&apos;s pk grammar" time="0.008857504">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; reads and writes the management form" time="0.004394436">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; renumbers ORDER inputs 1..n in DOM order" time="0.006980484">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; blanks ORDER for empty rows" time="0.004150407">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; blanks ORDER for delete-marked rows (hidden DELETE input)" time="0.003673689">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; blanks ORDER for delete-marked rows (checkbox DELETE input)" time="0.003549021">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XFormset &gt; does nothing when the formset is not orderable" time="0.002711218">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; computes row position facts" time="0.00375433">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; delete() toggles the hidden DELETE input and button styling" time="0.012855131">
+            <failure message="expected &apos;0&apos; to be &apos;&apos; // Object.is equality" type="AssertionError">
+AssertionError: expected &apos;0&apos; to be &apos;&apos; // Object.is equality
+
+- Expected
++ Received
+
++ 0
+
+ ❯ tests/js/formset.test.js:139:47
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; delete() keeps a token shared by both class strings in both directions" time="0.002895525">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; delete() still recolours when one class string is empty" time="0.002842606">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; delete() without data-cv-class attributes only toggles the input" time="0.003107606">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; up() moves the row before its predecessor and renumbers" time="0.004385873">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; up() on the first row is a no-op" time="0.02001134">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; down() moves the row after its successor and renumbers" time="0.004185921">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; down() on the last row is a no-op" time="0.001774375">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; requests a new row with the formset&apos;s coordinates" time="0.007062909">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; appends after the last row, bumps TOTAL_FORMS and wires controls" time="0.004018719">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; dispatches a bubbling cv:formset:row-added event on the inserted row" time="0.003766048">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; dispatches no separate event for nested rows inside a new parent row" time="0.004293713">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; XForm &gt; add() &gt; inserts before the next row when adding from a middle row" time="0.003098772">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; rejects a custom Add on an edit-only formset at activation" time="0.068951768">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; initializes same-prefix forms repeatedly through automatic page and modal events" time="0.030111909">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; blocks disabled, inactive and non-button override actions including synthetic clicks" time="0.015011913">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; rechecks Delete and Reorder capabilities on each activation" time="0.021640497">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; uses exact names and prefixes through deep ancestry with pk 12" time="0.036407011">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; uses exact names and prefixes through deep ancestry with pk 0a1b2c3d-0000-4000-8000-00000000000a" time="0.027699352">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; initializes on a non-orderable formset without aborting (regression)" time="0.012595941">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; initializes on an edit-only formset without an add button" time="0.00747488">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; wires the control buttons to row actions" time="0.015530225">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; binds each control of a row added after init exactly once" time="0.014921588">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; delegates remaining native actions when an override omits order buttons" time="0.006849527">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; reorders all formsets on submit and lets the submit proceed" time="0.002085664">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; CrudViewsFormset &gt; blocks the submit when reordering fails outright" time="0.002930109">
+            <system-err>
+crud_views formset.js: reorder failed Error: broken reorder
+    at CrudViewsFormset.&lt;anonymous&gt; (/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:505:87)
+    at CrudViewsFormset.reorder_formsets (file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/spy.DgMTfhrK.js:323:40)
+    at Proxy.CrudViewsFormset.onSubmit (eval at loadScript (/home/alex/projects/alex/django-crud-views/tests/js/helpers/load.js:42:5), &lt;anonymous&gt;:541:27)
+    at Proxy.callTheUserObjectsOperation (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+    at innerInvokeEventListeners (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:378:16)
+    at invokeEventListeners (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:320:3)
+    at HTMLFormElementImpl._dispatch (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:269:9)
+    at HTMLFormElementImpl.dispatchEvent (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:137:17)
+    at Proxy.dispatchEvent (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/generated/idl/EventTarget.js:226:20)
+    at /home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:507:18
+
+            </system-err>
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; allows Add and submit without extra DELETE (ordered=true)" time="0.009773245">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; allows Add and submit without extra DELETE (ordered=false)" time="0.006617808">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; keeps an initial row deletable after an extra moves above it" time="0.005906415">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; refuses custom extra Delete after upward movement (direct)" time="0.001739783">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; refuses custom extra Delete after upward movement (delegated)" time="0.004937875">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; moves a native extra above an initial row and then deletes the initial row" time="0.014348943">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; inserts an extra before an initial row without renumbering bound prefixes" time="0.017055885">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects missing DELETE on eligible rows (ordered=true)" time="0.002786132">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects missing DELETE on eligible rows (ordered=false)" time="0.001875187">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; permits ordered rows when deletion is disabled entirely" time="0.002788325">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects malformed bound row suffix -1" time="0.002214849">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects malformed bound row suffix 1.5" time="0.001927536">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects malformed bound row suffix 1x" time="0.001542885">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects malformed bound row suffix " time="0.001520803">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects malformed bound row suffix 9007199254740992" time="0.001662857">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; rejects malformed bound row suffix 0-1" time="0.00197019">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; keeps native capabilities scoped to a nested 12 parent and owning form" time="0.010773975">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; keeps native capabilities scoped to a nested 0a1b2c3d-0000-4000-8000-00000000000a parent and owning form" time="0.010555493">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; native row deletion eligibility &gt; serializes native mixed rows in final order before modal fetch" time="0.047031178">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; starts automatically when executed after the page is ready" time="0.0375079">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; stays silent on a page without formsets" time="0.009940467">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; reports missing jQuery once and supports an explicit late retry" time="0.023149442">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; waits for DOMContentLoaded so jQuery can load later" time="0.024155108">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; retries on window load for deferred jQuery" time="0.023616646">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; reports missing jQuery once after the load retry" time="0.011081277">
+        </testcase>
+        <testcase classname="tests/js/formset.test.js" name="formset.js &gt; start-up guard &gt; initializes a DocumentFragment and root formset/control elements" time="0.024208639">
+        </testcase>
+    </testsuite>
+</testsuites>

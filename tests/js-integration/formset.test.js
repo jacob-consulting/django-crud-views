@@ -23,6 +23,12 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
         events.push({ prefix: event.detail.prefix, rows: event.detail.rows });
         assert.equal(event.target.getAttribute("cv-data-formset-form-prefix"), event.detail.prefix);
     });
+    const initialRow = form.querySelector(".cv-formset-row");
+    const initialPrefix = initialRow.getAttribute("cv-data-formset-form-prefix");
+    const remove = [...initialRow.querySelectorAll(".cv-form-ctrl-delete")]
+        .find(button => button.getAttribute("cv-data-formset-form-prefix") === initialPrefix);
+    remove.click();
+    remove.click();
     for (const step of fixture.steps) {
         const content = [...form.querySelectorAll(".cv-formset-content")]
             .find(el => el.getAttribute("cv-data-formset-prefix") === step.prefix);
@@ -100,6 +106,7 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
     form.dispatchEvent(submit);
     assert.equal(submit.defaultPrevented, false, "valid native rows allow ordered submit");
     const data = [...new win.FormData(form)];
+    assert.equal(data.find(([name]) => name === `${initialPrefix}-DELETE`)[1], "", "unmarked hidden DELETE posts false");
     const names = data.map(([name]) => name);
     assert.equal(new Set(names).size, names.length, "identities and management fields occur exactly once");
     const payload = Object.fromEntries(data);

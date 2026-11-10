@@ -46,6 +46,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from django.contrib.auth import get_permission_codename
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured, PermissionDenied
 from django.db.models import QuerySet
 from django.http import Http404
@@ -57,6 +58,7 @@ from crud_views.lib.settings import crud_views_settings
 
 if TYPE_CHECKING:
     from django.db.models import Model
+    from django.db.models.options import Options
 
     from crud_views.lib.view import CrudView
     from crud_views.lib.viewset import ParentViewSet, ViewSet
@@ -297,6 +299,39 @@ def _action_declaration_problems(viewset: ViewSet) -> list[tuple[str, str]]:
         if key not in policy.actions and _operation_family(view_class) is None:
             problems.append(("E268", _missing_action_message(viewset, key, view_class)))
     return problems
+
+
+def _concrete_opts(model: type[Model]) -> Options:
+    """Permission metadata used by the runtime map: ``get_for_model`` defaults to
+    ``for_concrete_model=True``, so a proxy reads its concrete model's declarations (D-01).
+    """
+    return model._meta.concrete_model._meta
+
+
+def _permission_key(codename: str, model_name: str) -> str:
+    """Strip only the exact terminal ``_<model>`` suffix of a Django permission codename.
+    Splitting on the first match would truncate custom names: ``change_book_status`` on
+    ``book`` must stay whole rather than becoming ``change``.
+    """
+    return codename.removesuffix(f"_{model_name}")
+
+
+def _declared_permission_keys(model: type[Model]) -> set[str]:
+    """Static mirror of the runtime permission map's keys, reading metadata only, never the database.
+    Declared and discovered keys agree once ``migrate`` has created the permission rows.
+    """
+    opts = _concrete_opts(model)
+    codenames = [get_permission_codename(action, opts) for action in opts.default_permissions]
+    codenames.extend(codename for codename, _ in opts.permissions)
+    return {_permission_key(codename, opts.model_name) for codename in codenames}
+
+
+def _has_model_vocabulary(viewset: ViewSet) -> bool:
+    """Whether the permission map comes from the core model's declared metadata.
+    Resources carry ``resource_permissions`` (E260) and must be skipped before any concrete-model
+    access; Guardian's class provider discovers its map on the configured resolver's type.
+    """
+    return not viewset.is_resource and type(viewset)._ancestor_provider == "model"
 
 
 def _validate_action_declarations(viewset: ViewSet) -> None:

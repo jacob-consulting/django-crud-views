@@ -126,7 +126,7 @@
     {
       "number": "06.23",
       "name": "Explicit header-icon suppression with Icon constants",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "number": "7",
@@ -136,8 +136,8 @@
   ],
   "next": {
     "command": "$gsd-progress --next",
-    "label": "Advance to the next step (plan phase 06.23)",
-    "reason": "Phase 37 of 38 — needs a plan"
+    "label": "Advance to the next step (plan phase 7)",
+    "reason": "Phase 38 of 38 — needs a plan"
   },
-  "updated_at": "2026-11-10T11:25:34.408Z"
+  "updated_at": "2026-11-10T12:22:20.898Z"
 }

@@ -300,16 +300,15 @@ The initial no-ID spec-less probe skip is superseded by a probe of these concret
 
 Source: [Issue #329](https://github.com/jacob-consulting/django-crud-views/issues/329); settled decisions and full examples in `phases/06.23-explicit-header-icon-suppression-with-icon-constants-329/06.23-CONTEXT.md`.
 
-- [ ] **HDRI-01**: Public `from crud_views.lib.icons import Icon` works; `Icon.VIEWSET_DEFAULT is None` and `Icon.NONE == ""`, as plain constants.
-- [ ] **HDRI-02**: Omitted, `None` and `Icon.VIEWSET_DEFAULT` view settings inherit a configured ViewSet header icon.
-- [ ] **HDRI-03**: `""` and `Icon.NONE` suppress a non-empty ViewSet icon in actual rendered headers.
-- [ ] **HDRI-04**: Explicit view icons override the ViewSet icon in existing supported semantic, registered-prefix and raw CSS-class formats.
-- [ ] **HDRI-05**: Custom template and template-code headers retain inheritance by default; explicit suppression removes the icon while preserving custom content.
-- [ ] **HDRI-06**: Existing `cv_get_header_icon()` overrides returning `None` remain effective; supported modal and shared theme header rendering uses the same decision.
-- [ ] **HDRI-07**: Existing icon type/prefix validation accepts the primitive constants and still rejects unrelated invalid values without relaxed validation.
-- [ ] **HDRI-08**: Icon/header references document all agreed examples and the context-specific meaning of `None`; paired Breaking changelog and migration guidance explain empty-string suppression and migration to `None`/`Icon.VIEWSET_DEFAULT` for inheritance.
-- [ ] **HDRI-09**: Focused header/icon regressions and appropriate documentation checks pass; broad pytest runs use multiple workers.
-
+- [x] **HDRI-01**: Public `from crud_views.lib.icons import Icon` works; `Icon.VIEWSET_DEFAULT is None` and `Icon.NONE == ""`, as plain constants.
+- [x] **HDRI-02**: Omitted, `None` and `Icon.VIEWSET_DEFAULT` view settings inherit a configured ViewSet header icon.
+- [x] **HDRI-03**: `""` and `Icon.NONE` suppress a non-empty ViewSet icon in actual rendered headers.
+- [x] **HDRI-04**: Explicit view icons override the ViewSet icon in existing supported semantic, registered-prefix and raw CSS-class formats.
+- [x] **HDRI-05**: Custom template and template-code headers retain inheritance by default; explicit suppression removes the icon while preserving custom content.
+- [x] **HDRI-06**: Existing `cv_get_header_icon()` overrides returning `None` remain effective; supported modal and shared theme header rendering uses the same decision.
+- [x] **HDRI-07**: Existing icon type/prefix validation accepts the primitive constants and still rejects unrelated invalid values without relaxed validation.
+- [x] **HDRI-08**: Icon/header references document all agreed examples and the context-specific meaning of `None`; paired Breaking changelog and migration guidance explain empty-string suppression and migration to `None`/`Icon.VIEWSET_DEFAULT` for inheritance.
+- [x] **HDRI-09**: Focused header/icon regressions and appropriate documentation checks pass; broad pytest runs use multiple workers.
 
 ## Deferred URL and visibility work
 
@@ -352,15 +351,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HDRI-01 | Phase 06.23 | Pending |
-| HDRI-02 | Phase 06.23 | Pending |
-| HDRI-03 | Phase 06.23 | Pending |
-| HDRI-04 | Phase 06.23 | Pending |
-| HDRI-05 | Phase 06.23 | Pending |
-| HDRI-06 | Phase 06.23 | Pending |
-| HDRI-07 | Phase 06.23 | Pending |
-| HDRI-08 | Phase 06.23 | Pending |
-| HDRI-09 | Phase 06.23 | Pending |
+| HDRI-01 | Phase 06.23 | Complete |
+| HDRI-02 | Phase 06.23 | Complete |
+| HDRI-03 | Phase 06.23 | Complete |
+| HDRI-04 | Phase 06.23 | Complete |
+| HDRI-05 | Phase 06.23 | Complete |
+| HDRI-06 | Phase 06.23 | Complete |
+| HDRI-07 | Phase 06.23 | Complete |
+| HDRI-08 | Phase 06.23 | Complete |
+| HDRI-09 | Phase 06.23 | Complete |
 | POLY-01 | Phase 06.15 (plan 02) | Complete |
 | POLY-02 | Phase 06.15 (plan 01) | Complete |
 | POLY-03 | Phase 06.15 (plan 01) | Complete |

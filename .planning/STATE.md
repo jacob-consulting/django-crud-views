@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.23"
-current_phase_name: Explicit header-icon suppression with Icon constants
-status: Ready to execute — Phase 06.23 plans verified
-stopped_at: Phase 06.23 planning complete; checker passed; ready to execute
-last_updated: "2026-11-10T11:26:00.630Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.23 complete, ready to plan Phase 7
+last_updated: "2026-11-10T12:22:20.873Z"
 last_activity: 2026-11-10
-last_activity_desc: Phase 06.23 planning complete
-state_head: ce49bf6a5206176b97172f52602df663428d90f3
+last_activity_desc: Phase 06.23 complete, transitioned to Phase 7
+state_head: 37d2740a5c3124a3c8799fb87ca5d1a78e2921a6
 progress:
   total_phases: 29
-  completed_phases: 24
+  completed_phases: 25
   total_plans: 162
-  completed_plans: 160
+  completed_plans: 162
+  percent: 96
 milestone_name: milestone
 ---
 
@@ -21,19 +22,26 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-09)
+See: .planning/PROJECT.md (updated 2026-11-10)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.23 — Explicit header-icon suppression with Icon constants
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.23 (Explicit header-icon suppression with Icon constants) — READY TO EXECUTE
-Plan: 0 of 2 executed; 2 plans verified
-Status: Ready to execute — Phase 06.23 plans verified
-Last activity: 2026-11-10 — Phase 06.23 planning complete
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-10 — Phase 06.23 complete, transitioned to Phase 7
 
-Next: $gsd-execute-phase 06.23
+Next: $gsd-discuss-phase 7
+
+### Phase 06.23 completion — 2026-11-10
+
+- Both plans complete: plain Icon constants and None-only header inheritance; custom content, dynamic overrides and existing render/check paths preserved. Breaking change paired with migration guidance and executed public recipes.
+- Canonical verification passed 13/13; HDRI-01–09 and D-01–11 verified. Validation zero gaps, security four threats closed/zero open, deep review ten files/zero findings. UI preservation 24/24 source-only; browser appearance and broader support matrix unverified.
+- Full suite 12,301 passed with four workers on Python 3.12.3/Django 6.1.2; focused 317 and fresh verifier 13 passed. Scoped Ruff and strict MkDocs pass; four existing Django deprecation warnings retained.
+- Completion scanner flagged three phase-relative evidence references; all exist under this phase directory. Summary formatting corrected so evaluation scope resolves all five task commits and ten files. No pending todos, handoffs or learnings to graduate; unrelated config/prompt preserved. No push or merge.
 
 ### Phase 06.21 completion — 2026-11-10
 
@@ -691,7 +699,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 151
+- Total plans completed: 158
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -725,6 +733,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.20 | 3 | - | - |
 | 06.22 | 3 | - | - |
 | 06.21 | 2 | - | - |
+| 06.23 | 2 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1174,6 +1183,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-09T21:26:24.250Z
-Stopped at: Phase 06.23 planning complete; checker passed; ready to execute
+Last session: 2026-11-10T12:23:21.710490+00:00
+Stopped at: Phase 06.23 complete, ready to plan Phase 7
 Resume file: None

@@ -86,6 +86,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.20** Independent optional ViewSet display names, lazy translation at metadata resolution, plain blank validation and default-label propagation — Phase 06.20; canonical 15/15, clean deep review, security 9/9, delivered-message and breadcrumb HTML checks.
 
+- ✓ **6.23** Explicit header-icon suppression with plain `Icon.NONE` and `Icon.VIEWSET_DEFAULT`; None-only inheritance, preserved custom content and tested migration — Phase 06.23; canonical13/13.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -135,6 +137,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Header icons inherit only for None; plain Icon constants name inheritance and suppression | A bounded getter change preserves renderers and dynamic overrides while allowing custom headings to omit inherited icons | Validated (Phase 06.23; 13/13) |
 | Resolve optional singular/plural display names only in get_meta; preserve unset metadata and explicit consumer overrides | One bounded opt-in seam reaches existing label consumers without new state, queries or permission changes | Validated (Phase 06.20; 15/15) |
 | Keep raw values separate from choice display metadata; resolve help text without mutating shared config | Preserve existing traversal/query costs and custom-template ownership; stock leaves render exact empty text and unlocalized choice fallbacks | Validated (Phase 06.16; canonical21/21) |
 | Empty card insertion blocks plus existing ViewSet configuration | Preserve default rendering and proven navigation; themes expose their own overridden blocks and applications translate recipe captions | Validated (Phase 06.14) |
@@ -200,4 +203,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-10 after Phases 06.20, 06.21 and 06.22 completion*
+*Last updated: 2026-11-10 after Phase 06.23 completion*

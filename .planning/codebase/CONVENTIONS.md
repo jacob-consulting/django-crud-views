@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 last_mapped_at: 2026-11-10
 ---
 # Coding Conventions
@@ -91,6 +91,10 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 - Keep rendered empty values exact: None/empty strings differ from zero, False, spaces and collections. Preserve escaping, newline behavior and custom-template ownership.
 - Published examples use unique HTML recipe markers beside fenced snippets, enabling tests to execute the actual documentation (`tests/test1/test_object_detail_value_docs.py`). Format Markdown Python fences with the repository-wide Ruff command.
 - Before 1.0, pair a `### Breaking` changelog entry with `docs/migrating-1.0.md`; document restoration/opt-out recipes for changed defaults (`CLAUDE.md`).
+- Instance snippets receive the `cv` object and a deliberately small, documented context (`view`, `object`, model labels, and `viewset`; child views additionally receive lazy `parent_object`). Keep the metadata key set exact; do not add request/user/ancestor state to this published context (`src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/base.py`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`).
+- When publishing snippet variables, keep `docs/reference/templates.md#snippet-variables` canonical and link other reference pages to it. Tests execute snippet behavior and pin the exact key sets as well as lazy parent resolution and absent-key behavior (`tests/test1/test_snippet_docs.py`, `tests/test1/test_snippet_context.py`).
+- Table behavior should preserve explicit django-tables2 customization: default `actions` placement is last only absent a declared sequence, explicit constructor sequence takes precedence, and `Meta.exclude` can remove it (`src/crud_views/lib/table/table.py`, `tests/test1/test_table_meta.py`).
+- Button data is normalized to an explicit location-specific contract; preserve exact key sets and each leaf's tag/URL/submit-target semantics. Use `tests/test1/test_button_data.py` and golden/render tests when changing button fields or markup.
 
 ## Module Design
 
@@ -103,7 +107,6 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 - Preserve unset metadata paths and resolve explicit overrides centrally in `get_meta()` (`src/crud_views/lib/viewset/__init__.py`).
 - Validate only plain blank strings at construction. Avoid stringifying lazy translations during app loading, normalizing padded strings, inferring plurals or using parent display names (`src/crud_views/lib/lazy.py`, `docs/reference/nested.md#labels`).
 - Tests monkeypatch existing shared ViewSets/views; constructor probes remove registry entries under `_REGISTRY_LOCK` in `finally` or teardown (`tests/test1/test_viewset_verbose_name.py`, `tests/test1/test_viewset_verbose_name_render.py`).
-
 
 ## Static permission checks (Phase 06.22)
 

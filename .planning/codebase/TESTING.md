@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 last_mapped_at: 2026-11-10
 ---
 # Testing Patterns
@@ -31,6 +31,8 @@ task test-js                              # Vitest unit suite via Task
 ```
 
 Prefer `-n auto` or bounded `-n N` for broad pytest runs; the nox sessions also use `-n auto`. Use serial execution for a small selection where worker startup dominates, or a concrete isolation, ordering, or debugging constraint. Browser scenarios use dedicated harnesses in `tests/browser/` and may require Playwright/Chromium; inspect their preflight requirements.
+
+For a worktree that appears to import an older globally installed editable package, run pytest with `PYTHONPATH="$PWD/src"` so the current checkout's `src/` packages win. Keep this scoped to that invocation or shell; the nox sessions install the checkout into isolated environments.
 
 ## Test File Organization
 
@@ -87,6 +89,7 @@ This request-level pattern is represented in `tests/test1/test_crud.py`: exercis
 - `tests/test1/od/test_choice_display.py` covers scalar/related choices, unknown/missing labels, lazy translation, escaping, raw custom ownership, badge precedence, and query baselines. `test_help_text_policy.py` covers all 48 property/project/view combinations plus interleaving and stable resolved results.
 - Query-count assertions distinguish loaded FK/O2O (zero), uncached scalar relations (one), and prefetched collections (zero); they do not promise application display overrides are query-free.
 - `tests/test1/test_object_detail_value_docs.py` extracts unique marked fences from current Markdown and executes real core/Guardian/polymorphic composition and migration recipes. This suite passed 38 cases during shipping, using four pytest workers on Python 3.12 / Django 5.2.
+- `tests/test1/test_snippet_docs.py` pins the exact eight documented instance-snippet variables, the class-label exclusion, lazy 404/absent-key behavior, reference links, and changelog/migration placement for issue #339. `tests/test1/test_snippet_context.py` tests the runtime contract: exact `cv_get_meta()` key sets for child and top-level views, object key preservation, lazy `parent_object` without eager queries, real header/message/filter snippet rendering, and a child table column inheriting its hosting view context.
 - Phase 06.16 retained final-source evidence records 10,837 passed/one existing skip on the full Django 5.2 suite and 665 focused cases each on Django 4.2/5.2/6.0. These are historical phase results, not a new full matrix run (`.planning/phases/06.16-object-detail-choice-labels-help-text-policy-empty-values-an/06.16-VERIFICATION.md`).
 - CI lint formats Markdown Python fences too. Run `ruff format --check .` and `ruff check .` before shipping documentation changes (`.github/workflows/lint.yml`).
 
@@ -105,6 +108,13 @@ This request-level pattern is represented in `tests/test1/test_crud.py`: exercis
 
 - `tests/test1/test_table_meta.py` builds `Table` subclasses over plain dict rows with a dummy `view=object()` (no DB, no request) and asserts column order via `[c.name for c in table.columns]`.
 - Covers: default `actions` last, `Meta.sequence` used as written, `sequence` kwarg precedence over `Meta.sequence`, `Meta.exclude = ("actions",)` removing the column.
+
+## Snippet Context and Button Contract Coverage (Phase 06.21)
+
+- `tests/test1/test_snippet_context.py` and `tests/test1/test_snippet_docs.py` pair user-visible docs checks with behavior tests. Keep metadata's exact key set in sync across runtime and reference docs; child views alone add lazy `parent_object`, while `object` remains present (possibly `None`).
+- Tests cover that evaluating metadata does not resolve the parent, an unused lazy parent adds no query, and rendered snippets resolve it only when referenced. The end-to-end checks use Django clients and `CaptureQueriesContext` to assert no parent-table query delta in dispatched rendering.
+- `tests/test1/test_button_data.py` treats normalized output keys and action location behavior as a contract. Parameterized cases distinguish GET anchors, POST buttons with form targets, modal actions, disabled actions, and location-specific label/title fields. On changes, assert the entire expected key set where applicable, not just selected values.
+- `tests/test1/test_table_meta.py` is intentionally DB-free: instantiate a minimal table from dict rows and assert the ordered column names for default actions, explicit metadata sequence, constructor override, and exclusion.
 
 ## Mocking
 
@@ -188,7 +198,6 @@ For view failures, assert response status, form errors, redirect, and unchanged 
 - Tests reuse registered fixtures with monkeypatch; constructor probes clean up under the registry lock. Exact DOM/message assertions exercise real requests.
 - Fresh shipping selection (these modules plus `test_breadcrumb.py` and `test_messages.py`): 96 passed with four workers. Ruff lint/format over `src`/`tests` and strict MkDocs passed on 2026-11-10.
 - Historical evidence: 12,066 full-suite passes before the final test-only addition; final request coverage has focused follow-up evidence. Do not describe the historical run as a full-suite run of the final tree (`.planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-VERIFICATION.md`).
-
 
 ## Permission declaration coverage (Phase 06.22)
 

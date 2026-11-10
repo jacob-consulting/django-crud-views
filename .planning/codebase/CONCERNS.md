@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 last_mapped_at: 2026-11-10
 ---
 # Codebase Concerns
@@ -134,17 +134,23 @@ None independently confirmed.
 - Files: `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-UI-REVIEW.md`
 - Priority: Low
 
+**Phase 06.21 snippet-context review follow-ups (all Info, open):**
+- What is not tested / documented: Django `{% if %}` operator expressions swallow exceptions from lazy parent resolution; card filter-header snippet behavior; release-proof identification of the snippet-context changelog entry; and top-level `cv_assert_parent()` error behavior.
+- Files: `docs/reference/templates.md`, `src/crud_views/lib/view/base.py`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`
+- Risk: documentation can overstate 404 behavior for operator expressions, a separately implemented card header can drift, and documentation guards can fail on unrelated later changelog edits. Calling `cv_assert_parent()` on a top-level ViewSet raises `AttributeError` because its message references undefined `self.cv_name`; it also repeats an assertion.
+- Priority: Low (recorded Info findings IN-01 through IN-04 in `.planning/phases/06.21-snippet-context-exposes-view-and-parent-object/06.21-REVIEW.md`; disposition remains open in `06.21-REVIEW-DISPOSITION.md`).
+
 ## Resolved Since Previous Audit
 
 - Phase 06.18 ancestor authorization for nested ViewSets shipped with a dedicated `tests/test1/test_ancestor_*.py` suite (databases, guardian, costs, redirect, migration, docs).
 - Earlier resolved: object-detail accordion/tab lifecycle (Phase 06.17), protected delete labels not linked (`src/crud_views/lib/views/delete.py`), workflow opt-in permission request-level tests (`tests/test1/test_workflow_permissions.py`).
+- Phase 06.21 review warnings WR-01 and WR-02 are fixed: template-context documentation now reflects button/child-column contexts, and `tests/test1/test_snippet_docs.py` checks runtime metadata keys. The four Info findings IN-01 through IN-04 remain open and are recorded above.
 
 ## ViewSet Label Boundaries (Phase 06.20)
 
 - Lazy overrides deliberately receive no construction-time blank check: evaluating them during app loading can raise `AppRegistryNotReady`. Plain blank strings fail validation; padded strings remain unchanged (`src/crud_views/lib/viewset/__init__.py`, `tests/test1/test_viewset_verbose_name.py`).
 - Model-centric deletion/404 text keeps model names; short action labels contain no object name. These are documented scope boundaries (`docs/reference/nested.md#labels`).
 - Canonical verification passes 15/15 truths; security reports nine closed threats. No required human check remains. Responsive long-label/browser checks are optional downstream work; the supported-version matrix remains a CI condition (`.planning/phases/06.20-viewset-verbose-name-override-for-every-default-label/06.20-VERIFICATION.md`).
-
 
 ## Permission declaration boundaries (Phase 06.22)
 

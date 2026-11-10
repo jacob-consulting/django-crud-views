@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 last_mapped_at: 2026-11-10
 ---
 <!-- refreshed: 2026-11-10 -->
@@ -69,6 +69,7 @@ last_mapped_at: 2026-11-10
 - Workflow transitions use the shared form-frame and themeable presentation contracts; the documented opt-in page gate uses explicit transition rules and is covered by request tests (`src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/templates/crud_views_workflow/`, `tests/test1/`).
 - Nested requests pass through one ancestor-authorization guard (`_authorize_ancestors`) before any endpoint work: it resolves each ancestor through its own ViewSet queryset, applies per-ancestor permission gates (provider `model`, `guardian` or `none`; full cascade or nearest-only) and stores the resolved chain on the view instance (`src/crud_views/lib/ancestors.py`). Top-level requests do no ancestor work.
 - `CrudViewMetaClass` performs registration during class creation; consumers include the ViewSet's `urlpatterns` from their Django URL configuration.
+- `CrudView.cv_get_meta()` adds `view` and, only for child ViewSets, a `SimpleLazyObject` for immediate `parent_object`; resolving it delegates to `cv_get_parent_object()`, which reuses the ancestor guard's resolved parent when available and otherwise looks up the parent from the URL kwarg (`src/crud_views/lib/view/base.py`).
 - Concrete request handlers combine the package's `CrudView` mixin with Django generic CBVs; permission-required classes add `CrudViewPermissionRequiredMixin`.
 - The core theme is implemented in Django templates and template tags. App-contributed behavior can add static assets through `register_assets()` from an app's `AppConfig.ready()`.
 - Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
@@ -127,6 +128,12 @@ last_mapped_at: 2026-11-10
 3. The concrete CBV dispatches the request. `CrudView` supplies sibling URL/context behavior, model defaults and optional permission-aware action state (`src/crud_views/lib/view/base.py`).
 4. Object querysets are obtained from the ViewSet and filtered by parent attributes for nested ViewSets; Resource-based views instead use resource-specific mixins and row-provider methods (`src/crud_views/lib/resource.py`).
 5. The CBV renders a full page or configured content partial; template tags resolve the view context and render theme components (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/`).
+
+### Snippet Metadata and Parent Lookup
+
+1. View-owned header, paragraph, message and list/card filter-header snippets receive ViewSet metadata plus `object` when present and `view` (`src/crud_views/lib/view/base.py`, `docs/reference/templates.md`).
+2. Child snippets receive lazy immediate `parent_object`; unused values trigger no lookup. Dispatched requests reuse ancestor-guard state; calls without that state resolve using the parent URL kwarg and `get_object_or_404`.
+3. Action and breadcrumb labels omit `view` and `parent_object`; context-button labels use button data. `LinkChildColumn` templates add child ViewSet variables to the host list context and do not create `parent_object`, though they can inherit it (`docs/reference/templates.md`).
 
 ### Nested Request Path (ancestor authorization)
 
@@ -273,7 +280,6 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - `ViewSet.verbose_name` and `verbose_name_plural` are independent optional `LazyStr` fields. `get_meta()` resolves explicit overrides per call under the active language; `None` preserves the model/Resource metadata path, including lazy values (`src/crud_views/lib/viewset/__init__.py`).
 - `check_verbose_name()` rejects blank plain strings without stripping stored values or evaluating lazy objects at construction. There is no automatic pluralization or ancestor fallback.
 - Existing `CrudView.cv_get_meta()`, snippets, breadcrumbs, child-column and button consumers receive the resolved names. Explicit labels keep precedence; model-centric deletion/404 text and permission identity are unchanged (`src/crud_views/lib/view/base.py`, `docs/reference/nested.md#labels`). No new queries or consumer state are added.
-
 
 ## Permission declaration diagnostics (Phase 06.22)
 

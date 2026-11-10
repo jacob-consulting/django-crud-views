@@ -6,6 +6,9 @@ crud_views already *emits* flash messages: create, update and delete views push 
 [`ActionView`](action_view.md) pushes a success or an error message per action. `{% cv_messages %}`
 renders that queue as Bootstrap 5 alerts.
 
+The message snippets see `object`, `view` and, on a child ViewSet, `parent_object` — see
+[Snippet variables](templates.md#snippet-variables) for the full list.
+
 !!! example "Try it live"
     The [Messages example](https://django-crud-views-demo.onrender.com/messages/notice/compose/) in the live demo queues
     a message at any level and shows one inline `{% cv_alert %}` — log in as `alice` / `alice`. See

@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-10
-last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
+last_mapped_commit: 60c46599983916590d6e6f03af66c78751438ad1
 ---
 # External Integrations
 
@@ -109,7 +109,6 @@ last_mapped_commit: 9afb8b2f0d9597f2044089d44840fe38d055b72b
 
 - Optional singular/plural ViewSet names override model or Resource metadata at the presentation boundary. Lazy translations resolve per `get_meta()` call (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/lazy.py`).
 - `GuardianViewSet` inherits both constructor fields without extension changes; permission vocabulary and model-centric deletion/404 names are unaffected (`src/crud_views_guardian/lib/viewset.py`, `docs/reference/nested.md#labels`). No external integration was added.
-
 
 ## Permission declaration integration
 

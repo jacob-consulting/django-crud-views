@@ -44,7 +44,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.18: Ancestor authorization for nested ViewSets (INSERTED)** - Shared ancestor enforcement under the approved design v2; planning pending. (completed 2026-11-09)
 - [x] **Phase 06.19: Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (INSERTED)** - #337 (tabler-test finding 26): honour `Meta.sequence`, append `actions` last, omit the column for `cv_list_actions = None`; context gathered, planning pending. (completed 2026-11-09)
 - [x] **Phase 06.20: ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (INSERTED)** - #338 (tabler-test finding 28): two optional `LazyStr` fields resolved in `get_meta()`, independently for singular and plural; planning pending. (completed 2026-11-09)
-- [ ] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending.
+- [x] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending. (completed 2026-11-10)
 - [x] **Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (INSERTED)** - #341 (tabler-test finding 24): document the custom-permission recipe for custom form and action views; new static check `viewset.E269` verifies `cv_permission` and nested ancestor pair keys against the model's declared permissions on core ViewSets; Guardian documented as unsupported; planning pending. (completed 2026-11-10)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
@@ -1501,19 +1501,24 @@ view. One level only (no `ancestors` list); no `request` or `user` keys. `### Ad
 4. Class-level labels unchanged: a `cv_action_label_template_code` referencing `{{ view }}` still renders empty,
    pinning the scope decision.
 
-5. `CHANGELOG.md` gains a `### Added` entry (not Breaking; `docs/migrating-1.0.md` untouched); the three docs pages
-   list the snippet variables (`object`, `view`, `parent_object`, `verbose_name*`, `viewset`) and state that
-   action, short-action and breadcrumb labels do not get `view` or `parent_object`; `pytest tests/test1 -n auto` and
-   ruff are clean.
+5. `CHANGELOG.md` gains a `### Added` entry (not Breaking; `docs/migrating-1.0.md` untouched);
+   `docs/reference/templates.md` carries the one canonical table of snippet variables (`object`, `view`,
+   `parent_object`, `verbose_name*`, `viewset`) and states that action, short-action and breadcrumb labels do not get
+   `view` or `parent_object`, with `docs/reference/messages.md` and `docs/reference/nested.md` linking to it (D-08);
+   `pytest tests/test1 -n auto` and ruff are clean.
 **Planning handoff:** Carry the issue's decisions into context without reopening them: instance-rendered snippets
 only, `ViewContext.to_dict()` untouched, `parent_object` as a separate lazy key absent on top-level ViewSets, one
 level only. tabler-test findings 27 (#314) and 28 (Phase 06.20) are out of scope, as is restoring the richer demo
 texts (follow-up in tabler-test). This insertion assigns the phase; detailed planning and implementation remain
 pending.
-**Plans:** 0 plans
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 06.21 to break down)
+**Wave 1**
+- [x] 06.21-01-PLAN.md — `cv_get_meta()` adds `view` and lazy `parent_object`; E2E tracer (nested create header, action message) plus unit, laziness/cost, class-label scope and Http404 tests in `tests/test1/test_snippet_context.py`
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.21-02-PLAN.md — canonical `## Snippet variables` table in `docs/reference/templates.md`, links from `messages.md`/`nested.md`/`breadcrumb.md`, `### Added` changelog entry, docs guard `tests/test1/test_snippet_docs.py`
 
 ### Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (#341) (INSERTED)
 
@@ -1679,5 +1684,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.18. Ancestor authorization for nested ViewSets | 13/13 | Complete    | 2026-11-09 |
 | 06.19. Table honours Meta.sequence and omits the Actions column for None | 2/2 | Complete    | 2026-11-09 |
 | 06.20. ViewSet verbose_name override that every default label follows | 3/3 | Complete    | 2026-11-09 |
-| 06.21. Snippet context exposes view and parent_object | 0/TBD | Not started | - |
+| 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

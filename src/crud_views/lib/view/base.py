@@ -24,6 +24,7 @@ from django.template import Template
 from django.template.loader import render_to_string
 from django.urls import NoReverseMatch, reverse
 from django.utils.cache import patch_vary_headers
+from django.utils.functional import SimpleLazyObject
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import FormMixin
@@ -1095,7 +1096,7 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def cv_get_meta(self) -> dict:
         """
-        Metadata from ViewSet plus ViewContext
+        Metadata from ViewSet plus ViewContext, plus the view as `view` and, on a child ViewSet, `parent_object`.
         """
         context = self.cv_get_view_context()
         data = self.cv_viewset.get_meta(context=context)
@@ -1103,6 +1104,11 @@ class CrudView(metaclass=CrudViewMetaClass):
         # add view specific data
         if hasattr(self, "object"):
             data["object"] = self.object
+        data["view"] = self
+        if self.cv_viewset.has_parent:
+            # lazy: a snippet that never mentions the parent never resolves it; one that does reuses the
+            # ancestor guard's parent or falls back as cv_get_parent_object() does
+            data["parent_object"] = SimpleLazyObject(self.cv_get_parent_object)
 
         return data
 

@@ -1,10 +1,10 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.21"
-current_phase_name: "Snippet context exposes `view` and `parent_object` (#339)"
-status: "Phase 06.22 shipped — PR #343"
-stopped_at: Phases 06.20 and 06.22 complete, ready to plan Phase 06.21
+current_phase: "7"
+current_phase_name: "Theme-surface stability policy"
+status: "Phase 06.21 shipped — PR #344"
+stopped_at: Phase 06.21 shipped; phases 06.20 and 06.22 already merged
 last_updated: "2026-11-10T08:39:08.008Z"
 last_activity: 2026-11-10
 state_head: 2515e73414fe0641efba53bd31ed9a3d3d593c6c
@@ -24,16 +24,23 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.21 — Snippet context exposes `view` and `parent_object` (#339)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.21 — Snippet context exposes `view` and `parent_object` (#339)
+Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Phase 06.22 shipped — PR #343
+Status: Phase 06.21 shipped — PR #344
 Last activity: 2026-11-10
 
-Next: Phase 06.21; Phases 06.20 and 06.22 are verified and complete.
+Next: Phase 7; Phases 06.20, 06.21 and 06.22 are verified and complete.
+
+### Phase 06.21 completion — 2026-11-10
+
+- Plans 06.21-01 (cv_get_meta adds `view` + lazy `parent_object`, 11 tests) and 06.21-02 (§ Snippet variables docs, cross-links, CHANGELOG, 6-test docs guard) executed sequentially (worktree base-check degrade).
+- Verification passed 15/15; full `tests/` 12216 passed multicore; ruff and mkdocs --strict clean. SECURITY: SECURED, 0 open. Nyquist: compliant, 0 gaps.
+- Review refreshed after fixes: 0 critical, 0 open warnings, 4 info open in 06.21-REVIEW-DISPOSITION.md. WR-01 context documentation corrected; WR-02 docs/runtime key-set guard added. Re-verification passed 15/15 with 59 fresh focused/docs-sync checks, strict MkDocs and targeted Ruff checks. PR #344 created for phase 06.21.
+- Concern: the worktree `.venv` has a non-editable install; run pytest with `PYTHONPATH=src` or reinstall editable.
 
 ### Phase 06.22 completion — 2026-11-10
 
@@ -717,6 +724,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.19 | 2 | - | - |
 | 06.20 | 3 | - | - |
 | 06.22 | 3 | - | - |
+| 06.21 | 2 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -845,6 +853,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.20 P01 | 5min | 2 tasks | 2 files |
 | Phase 06.20 P03 | 5min | 2 tasks | 3 files |
 | Phase 06.20 P02 | 8min | 2 tasks | 1 files |
+| Phase 06.21 P01 | 8 min | 2 tasks | 2 files |
+| Phase 06.21 P02 | 7min | 2 tasks | 6 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1089,6 +1099,10 @@ Recent decisions affecting current work:
 - [Phase 06.20]: Plan 01: resolve explicit ViewSet verbose_name overrides per call; preserve lazy model defaults and construction-time lazy values, reject only blank plain strings.
 - [Phase 06.20]: Plan 03: the label docs replace the Sideways declaration and preserve its context buttons; full label contract and non-breaking changelog published.
 - [Phase 06.20]: Plan 02: breadcrumb and success-message assertions remain producer-level; rendered requests cover pages, columns and buttons. All phase gates passed.
+- [Phase 06.21]: Instance snippet context gains view and lazy parent_object in cv_get_meta() only; ViewContext.to_dict() and ViewSet.get_meta() unchanged (D-03, D-04)
+- [Phase 06.21]: Lazy wrapper is the bound cv_get_parent_object with no exception handling, so Http404 propagates out of the render (D-07)
+- [Phase 06.21]: Snippet variables documented once in templates.md (## Snippet variables); messages.md, nested.md, breadcrumb.md only link to it (D-08)
+- [Phase 06.21]: #339 recorded under CHANGELOG ### Added, not Breaking; nested.md parent_object example is an unmarked fence so the cv-sync fence stays byte-identical
 
 ### Pending Todos
 
@@ -1160,5 +1174,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-09T21:26:24.250Z
-Stopped at: Phases 06.20 and 06.22 complete, ready to plan Phase 06.21
+Stopped at: Phase 06.21 shipped — PR #344
 Resume file: None

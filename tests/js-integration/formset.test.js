@@ -137,13 +137,12 @@ process.stdout.write(JSON.stringify(insert(fixture, JSDOM, jquery, assert, ${JSO
             });
             expect(result.error, `CV_FRAGMENT_PYTHON=${python}`).toBeUndefined();
             expect(result.status, `CV_FRAGMENT_PYTHON=${python}\n${result.stdout}\n${result.stderr}`).toBe(0);
-            expect(result.stdout).toContain("6 passed");
+            expect(result.stdout).toContain("12 passed");
             const records = fs.readFileSync(results, "utf8").trim().split("\n").map(line => JSON.parse(line));
-            expect(records.map(record => record.mode)).toEqual(["outer", "nested", "outer", "nested", "outer", "nested"]);
-            expect(records.map(record => record.capability)).toEqual([
-                "default", "default", "native-unordered", "native-unordered", "native-ordered", "native-ordered",
-            ]);
-            expect(records.map(record => record.events.length)).toEqual([2, 1, 2, 1, 2, 1]);
+            expect(records.map(record => [record.layout, record.capability, record.mode, record.events.length])).toEqual(
+                ["classic", "compact"].flatMap(layout => ["default", "native-unordered", "native-ordered"].flatMap(capability =>
+                    [[layout, capability, "outer", 2], [layout, capability, "nested", 1]])),
+            );
         } finally {
             fs.rmSync(directory, { recursive: true, force: true });
         }

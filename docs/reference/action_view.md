@@ -65,3 +65,7 @@ A falsy result does not roll back what `action()` wrote; see
 |-------|-------------|
 | `ActionView` | Runs `action()` on POST, emits messages, redirects (no permission check) |
 | `ActionViewPermissionRequired` | Same, requires `change` permission |
+
+`ActionViewPermissionRequired` checks `change` by default; set `cv_permission` to another key of the ViewSet's
+permission map, or give the action a permission of its own with a `Meta.permissions` entry and its stripped key:
+see [A permission of its own](custom_form_view.md#a-permission-of-its-own).

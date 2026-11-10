@@ -576,6 +576,16 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Custom permission recipe and startup check for permission keys**
+  ([#341](https://github.com/jacob-consulting/django-crud-views/issues/341)): the custom form reference documents
+  how a non-CRUD view gets a permission of its own: a `Meta.permissions` entry on the model plus the codename's
+  stripped key in `cv_permission`. The static system check `viewset.E269` reports, at startup instead of the first
+  request, a `*PermissionRequired` view whose `cv_permission` is not declared on its ViewSet's model, and a nested
+  ViewSet whose Read, Write or `actions` pair names a key the ancestor model does not declare. Core `ViewSet`s only:
+  Guardian ViewSets, Resource ViewSets and `"none"` ancestors are skipped; request-time `assert` /
+  `ImproperlyConfigured` remain as backstops, and `E202` is unchanged.
+  See [A permission of its own](docs/reference/custom_form_view.md#a-permission-of-its-own).
+
 - **Workflow business validation, standalone execution and native buttons**
   ([#322](https://github.com/jacob-consulting/django-crud-views/issues/322)): the model-data-only
   `workflow_check_transition(name, *, user)` hook reports ordered blockers; public

@@ -392,7 +392,7 @@ Mistakes are reported as early as they can be decided, and never turn into weake
 | a nested generic action, custom form, workflow or other custom endpoint without its `actions` entry | system check `viewset.E268`; `ImproperlyConfigured` at the request, in both cascade modes and with all-`"none"` ancestry |
 | an ancestry cycle, an unregistered parent or a relationship that is not one supported field | system check `viewset.E266`; `ImproperlyConfigured` at URL construction and at the request |
 | a Resource used as a parent | system check `viewset.E261` |
-| a required key missing from the permission map of a checked ancestor | `ImproperlyConfigured` when that gate is reached |
+| a required key missing from the permission map of a checked ancestor | system check `viewset.E269` when the nested ViewSet and that ancestor are both core ViewSets (the key is resolved against the ancestor model's declared `Meta` permissions); `ImproperlyConfigured` when that gate is reached (Resource leaves and Guardian ViewSets are not checked) |
 
 A child ViewSet may still name a parent that is registered later; the reference must resolve by the time URLs
 are built. Structural checks read declarations and model metadata only, never the database.

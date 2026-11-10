@@ -172,6 +172,22 @@ def example_title_source():
 
 
 @pytest.mark.django_db
+def test_view_header_icon_suppression(monkeypatch, client_user_author_view):
+    from tests.test1.app.views import AuthorListView, cv_author
+
+    monkeypatch.setattr(cv_author, "icon_header", "host:inherited")
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+        for value in (None, ""):
+            monkeypatch.setattr(AuthorListView, "cv_icon_header", value)
+            response = client_user_author_view.get("/author/")
+            assert response.status_code == 200
+            (heading,) = html.fromstring(response.content).cssselect("[data-test-page-title] h1")
+            assert heading.text_content().strip() == "Authors"
+            assert not heading.cssselect("i")
+            assert ("icon-inherited" in heading.get("class", "").split()) is (value is None)
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("site", ["page", "example"])
 @pytest.mark.parametrize("level,size", [(None, "h3"), (2, "native-size"), (3, "")])
 @pytest.mark.parametrize("icon", ["host:edit", "fas:pen", "", None, "disabled"])

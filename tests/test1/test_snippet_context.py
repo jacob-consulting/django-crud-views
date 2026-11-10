@@ -24,6 +24,7 @@ from tests.test1.app.views import (
     BookListView,
     PublisherListView,
 )
+from tests.test1.test_snippet_docs import VARIABLES
 
 
 def _make_view(view_class, **url_kwargs):
@@ -89,6 +90,14 @@ def test_meta_has_no_parent_object_on_top_level_view():
     assert Template("[{{ parent_object }}]").render(Context(data)) == "[]"
     for key in ("request", "user", "ancestors"):
         assert key not in data
+
+
+@pytest.mark.django_db
+def test_meta_keys_match_the_documented_table(publisher_penguin):
+    child = _make_view(BookCreateView, publisher_pk=publisher_penguin.pk)
+    assert set(child.cv_get_meta()) == {*VARIABLES, "cv"}
+    top = _make_view(AuthorCreateView)
+    assert set(top.cv_get_meta()) == {*VARIABLES, "cv"} - {"parent_object"}
 
 
 @pytest.mark.django_db

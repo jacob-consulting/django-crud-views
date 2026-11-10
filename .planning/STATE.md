@@ -3,12 +3,11 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.20"
 current_phase_name: "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)"
-status: planning
+status: "Phase 06.21 shipped — PR #344"
 stopped_at: Phase 06.21 complete, ready to plan Phase 06.20
-last_updated: "2026-11-10T09:38:54.570Z"
+last_updated: "2026-11-10T10:18:58.629Z"
 last_activity: 2026-11-10
-last_activity_desc: Phase 06.21 complete, transitioned to Phase 06.20
-state_head: 69473227e4e03379653a52da319af9cdfed5d7fd
+state_head: b3c00b7b3c28d9c77cad05bb726fd0ed32500daa
 progress:
   total_phases: 27
   completed_phases: 23
@@ -31,8 +30,8 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 
 Phase: 06.20 — ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-11-10 — Phase 06.21 complete, transitioned to Phase 06.20
+Status: Phase 06.21 shipped — PR #344
+Last activity: 2026-11-10
 
 Next: Phase 06.20 ($gsd-discuss-phase 06.20)
 
@@ -40,7 +39,7 @@ Next: Phase 06.20 ($gsd-discuss-phase 06.20)
 
 - Plans 06.21-01 (cv_get_meta adds `view` + lazy `parent_object`, 11 tests) and 06.21-02 (§ Snippet variables docs, cross-links, CHANGELOG, 6-test docs guard) executed sequentially (worktree base-check degrade).
 - Verification passed 15/15; full `tests/` 12216 passed multicore; ruff and mkdocs --strict clean. SECURITY: SECURED, 0 open. Nyquist: compliant, 0 gaps.
-- Review: 0 critical, 2 warnings, 4 info — all open in 06.21-REVIEW-DISPOSITION.md. WR-01: templates.md exclusion paragraph is imprecise for ContextButton label templates and LinkChildColumn (sees `view`); WR-02: no guard tying the docs table to cv_get_meta() keys — relevant when Phase 06.20 changes ViewSet.get_meta().
+- Review refreshed after fixes: 0 critical, 0 open warnings, 4 info open in 06.21-REVIEW-DISPOSITION.md. WR-01 context documentation corrected; WR-02 docs/runtime key-set guard added. Re-verification passed 15/15 with 59 fresh focused/docs-sync checks, strict MkDocs and targeted Ruff checks. PR #344 created for phase 06.21.
 - Concern: the worktree `.venv` has a non-editable install; run pytest with `PYTHONPATH=src` or reinstall editable.
 
 ### Phase 06.19 completion — 2026-11-09

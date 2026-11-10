@@ -3,12 +3,11 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.21"
 current_phase_name: "Snippet context exposes `view` and `parent_object` (#339)"
-status: planning
+status: "Phase 06.20 shipped — PR #342"
 stopped_at: Phase 06.20 complete, ready to plan Phase 06.21
-last_updated: "2026-11-09T21:46:24.576Z"
-last_activity: 2026-11-09
-last_activity_desc: Phase 06.20 complete, transitioned to Phase 06.21
-state_head: e364e57d5430709b9219abe507e1b6416d6a9eef
+last_updated: "2026-11-10T08:39:08.008Z"
+last_activity: 2026-11-10
+state_head: 2515e73414fe0641efba53bd31ed9a3d3d593c6c
 progress:
   total_phases: 27
   completed_phases: 23
@@ -31,8 +30,8 @@ See: .planning/PROJECT.md (updated 2026-11-09)
 
 Phase: 06.21 — Snippet context exposes `view` and `parent_object` (#339)
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-11-09 — Phase 06.20 complete, transitioned to Phase 06.21
+Status: Phase 06.20 shipped — PR #342
+Last activity: 2026-11-10
 
 Next: Phase 06.21; Phase 06.20 is verified and complete.
 

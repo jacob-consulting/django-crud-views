@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "gsd": {
+    "min_version": "1.20.1"
+  },
+  "runtimes": {
+    "claude": {
+      "high": {
+        "session_model": "claude-fable-5-1",
+        "agent_model": "fable",
+        "session_effort": "high"
+      },
+      "medium": {
+        "session_model": "claude-opus-5-5",
+        "agent_model": "opus",
+        "session_effort": "medium"
+      },
+      "low": {
+        "session_model": "claude-sonnet-5-5",
+        "agent_model": "sonnet",
+        "session_effort": "low"
+      }
+    },
+    "codex": {
+      "high": {
+        "session_model": "gpt-6-astra",
+        "agent_model": "gpt-6-astra",
+        "session_effort": "high"
+      },
+      "medium": {
+        "session_model": "gpt-6.1-sol",
+        "agent_model": "gpt-6.1-sol",
+        "session_effort": "medium"
+      },
+      "low": {
+        "session_model": "gpt-6-luna",
+        "agent_model": "gpt-6-luna",
+        "session_effort": "low"
+      }
+    }
+  },
+  "phase_defaults": {
+    "planning": "high",
+    "discuss": "high",
+    "research": "high",
+    "execution": "medium",
+    "verification": "high"
+  },
+  "agent_levels": {
+    "gsd-nyquist-auditor": "medium",
+    "gsd-integration-checker": "medium",
+    "gsd-pattern-mapper": "medium",
+    "gsd-doc-verifier": "medium",
+    "gsd-research-synthesizer": "medium",
+    "gsd-codebase-mapper": "low",
+    "gsd-intel-updater": "low",
+    "gsd-doc-classifier": "low",
+    "gsd-user-profiler": "low",
+    "gsd-mempalace-curator": "low"
+  },
+  "agent_efforts": {
+    "gsd-planner": "high",
+    "gsd-roadmapper": "high",
+    "gsd-plan-checker": "high",
+    "gsd-integration-checker": "high",
+    "gsd-nyquist-auditor": "high",
+    "gsd-research-synthesizer": "high",
+    "gsd-pattern-mapper": "medium",
+    "gsd-codebase-mapper": "medium",
+    "gsd-intel-updater": "medium",
+    "gsd-doc-verifier": "medium",
+    "gsd-user-profiler": "medium",
+    "gsd-debugger": "high",
+    "gsd-security-auditor": "high",
+    "gsd-assumptions-analyzer": "high",
+    "gsd-doc-classifier": "low"
+  },
+  "reviewers": {
+    "fable-review": {
+      "cli": "claude",
+      "model": "claude-fable-5-1"
+    },
+    "astra-review": {
+      "cli": "codex",
+      "model": "gpt-6-astra"
+    },
+    "grok-review": {
+      "cli": "opencode",
+      "model": "openrouter/x-ai/grok-4.7"
+    },
+    "gemini-review": {
+      "cli": "opencode",
+      "model": "openrouter/google/gemini-4-argon"
+    },
+    "deepseek-review": {
+      "cli": "opencode",
+      "model": "openrouter/deepseek/deepseek-v3.2"
+    }
+  },
+  "reviewer_efforts": {
+    "claude": "high",
+    "codex": "high",
+    "opencode": "high"
+  },
+  "reviewer_groups": {
+    "review-codex-plan": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ],
+    "review-claude-plan": [
+      "astra-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  "workflows": {
+    "plan": {
+      "tasks": [
+        "planning",
+        "discuss",
+        "research"
+      ],
+      "task_levels": {
+        "verification": "high"
+      },
+      "reviewer_groups": {
+        "claude": "review-claude-plan",
+        "codex": "review-codex-plan"
+      },
+      "parallel_reviews": true,
+      "permissions": {
+        "claude": "normal",
+        "codex": "bypass"
+      }
+    },
+    "exec": {
+      "tasks": [
+        "execution"
+      ],
+      "task_levels": {
+        "verification": "high"
+      },
+      "reviewer_groups": {
+        "claude": "review-claude-plan",
+        "codex": "review-codex-plan"
+      },
+      "parallel_reviews": true,
+      "permissions": {
+        "claude": "bypass",
+        "codex": "bypass"
+      },
+      "session_efforts": {
+        "codex": {
+          "high": "medium"
+        }
+      }
+    }
+  },
+  "gsd_defaults": {
+    "workflow": {
+      "compact_content": true
+    }
+  }
+}

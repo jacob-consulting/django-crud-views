@@ -27,3 +27,12 @@ examples/bootstrap5/staticfiles/
 
 # local GSD install (opencode agents with pinned models)
 .opencode/
+
+# gsd-cli project configuration
+!/.gitignore
+!/gsd-cli.config.json
+!/.planning/config.default.json
+/.planning/config.json
+/.planning/.gsd-cli-*
+/.planning/.gsd-cli.lock
+/.gsd-cli-tmp-*

@@ -202,6 +202,147 @@ def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, sh
             )
 
 
+def _nested_declarations(parent_compact=True, leaf_class=None):
+    from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet, FormSets
+    from tests.test1.app.views_formset import BookFormSet, BookNoteFormSet
+
+    def layout(name, span, controls):
+        return CompactLayout([CompactColumn(name, span=span)], controls_span=controls)
+
+    leaves = {"leaf": FormSet(klass=leaf_class, compact_layout=layout("text", 8, 4))} if leaf_class else {}
+    return FormSets(
+        formsets={
+            "books": FormSet(
+                klass=BookFormSet,
+                compact_layout=layout("title", 8, 4) if parent_compact else None,
+                children={
+                    "notes": FormSet(klass=BookNoteFormSet, form_show_labels=True),
+                    "memos": FormSet(klass=BookNoteFormSet, compact_layout=layout("note", 4, 2), children=leaves),
+                },
+            )
+        }
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("parent_compact", [False, True])
+def test_compact_nested_siblings_keep_headings_helpers_and_error_owners(parent_compact, monkeypatch):
+    from django.forms.utils import ErrorList
+    from django.template.loader import render_to_string
+    from django.test import RequestFactory
+
+    from tests.test1.app.views_formset import BookNoteInlineFormSet, PublisherFormSetForm
+
+    calls = []
+    original = BookNoteInlineFormSet.get_helper_layout_fields
+
+    def classic_fields(self):
+        calls.append(self.prefix)
+        return original(self)
+
+    monkeypatch.setattr(BookNoteInlineFormSet, "get_helper_layout_fields", classic_fields)
+    declarations = _nested_declarations(parent_compact)
+    node = next(declarations["books"].init(RequestFactory().get("/"), [PublisherFormSetForm(cv_view=None)]))
+    notes, memos = node.forms[0].formsets
+    for child in (notes, memos):
+        form = child.forms[0].form
+        form.is_bound = True
+        form.data = {form.add_prefix("note"): "Preserved note"}
+        form.add_error("note", f"Field error for {child.key}")
+        form.add_error(None, f"Row error for {child.key}")
+        child.instance._non_form_errors = ErrorList([f"Formset error for {child.key}"])
+    doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+    assert calls == [notes.prefix]
+    for child, compact in ((notes, False), (memos, True)):
+        fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{child.prefix}")
+        assert ("cv-formset-compact-child" in fieldset.get("class")) is compact
+        assert len(fieldset.cssselect(".cv-formset-compact-headings")) == int(compact)
+        assert (
+            fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0].get("cv-data-formset-form-prefix")
+            == node.forms[0].prefix
+        )
+        for error in ("Field", "Row", "Formset"):
+            assert f"{error} error for {child.key}" in fieldset.text_content()
+        other = memos if child is notes else notes
+        assert f"error for {other.key}" not in fieldset.text_content()
+        own_row = fieldset.cssselect(".cv-formset-row")[0]
+        assert f"Formset error for {child.key}" not in own_row.text_content()
+        if compact:
+            cells = fieldset.cssselect(".cv-formset-compact-headings > div")
+            assert [c.get("class") for c in cells] == ["col-md-4", "col-md-2"]
+
+
+@pytest.mark.django_db(transaction=True)
+def test_compact_nested_grandchild_and_authorized_fragments(
+    deep_leaf_formset, client_user_publisher_formset, monkeypatch
+):
+    from tests.test1.app.models import BookNote
+    from tests.test1.app.views_formset import PublisherFormSetUpdateView
+    from tests.test1.test_fragment_authorization import _assert_raw_wrappers, browser_add_row
+
+    Leaf, leaf_class = deep_leaf_formset
+    declarations = _nested_declarations(leaf_class=leaf_class)
+    monkeypatch.setattr(PublisherFormSetUpdateView, "cv_formsets", declarations)
+    publisher = Publisher.objects.create(name="Nested")
+    book = Book.objects.create(publisher=publisher, title="Owner")
+    note = BookNote.objects.create(book=book, note="Grandchild owner")
+    Leaf.objects.create(note=note, text="Leaf value")
+    url = f"/publisher-formset/{publisher.pk}/update/"
+    response = client_user_publisher_formset.get(url)
+    assert response.status_code == 200
+    _assert_raw_wrappers(response.content.decode())
+    doc = html.fromstring(response.content)
+
+    def assert_tree(tree):
+        ids = tree.xpath(".//*[@id]/@id")
+        assert len(ids) == len(set(ids))
+        for fieldset in tree.cssselect("fieldset.cv-formset-fieldset"):
+            compact = "cv-formset-compact" in fieldset.get("class").split()
+            content = fieldset.cssselect(".cv-formset-content")[0]
+            headings = content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
+            assert len(headings) == int(compact)
+            key = fieldset.get("cv-data-formset-key")
+            if key == "books":
+                continue
+            owner = fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+            if key == "books-memos-leaf":
+                assert owner.get("cv-data-formset-form-prefix").startswith("books-memos-")
+                assert fieldset.getparent().get("class") == "col-12"
+            else:
+                assert owner.get("cv-data-formset-form-prefix").startswith("books-")
+        for field in tree.cssselect(".cv-formset-compact-fields input:not([type=hidden])"):
+            labels = tree.xpath(".//label[@for=$id]", id=field.get("id"))
+            assert len(labels) == 1
+
+    assert_tree(doc)
+    for key in ("books", "books-memos", "books-memos-leaf"):
+        fieldset = doc.cssselect(f'fieldset[cv-data-formset-key="{key}"]')[0]
+        prefix = fieldset.get("cv-data-formset-prefix")
+        params = browser_add_row(response.content, prefix)
+        fragment_response = client_user_publisher_formset.get(url, params)
+        assert fragment_response.status_code == 200
+        fragment = fragment_response.json()
+        _assert_raw_wrappers(fragment["html"])
+        tree = html.fragment_fromstring(fragment["html"], create_parent="div")
+        assert_tree(tree)
+        # Only advertised rows are roots; their complete children stay inside them.
+        roots = [element for element in tree if isinstance(element.tag, str)]
+        assert [row.get("cv-data-formset-form-prefix") for row in roots] == fragment["rows"]
+        assert all("cv-formset-row-compact" in row.get("class") for row in roots)
+        for heading in tree.cssselect(".cv-formset-compact-headings"):
+            assert heading.xpath("ancestor::fieldset[contains(@class, 'cv-formset-compact')]")
+        if key == "books":
+            assert tree.cssselect('fieldset[cv-data-formset-key="books-notes"]')
+            assert tree.cssselect('fieldset[cv-data-formset-key="books-memos-leaf"]')
+        if key == "books-memos":
+            assert params["template"] == "books|memos"
+            assert params["formset_parent_prefix_key"] == f"{publisher.pk}-0-0"
+            assert tree.cssselect('fieldset[cv-data-formset-key="books-memos-leaf"]')
+        if key == "books-memos-leaf":
+            assert params["template"] == "books|memos|leaf"
+            assert not tree.cssselect(".cv-formset-compact-headings")
+
+
 def _runtime(*, compact=True, form_class=None, parent=None, factory_attrs=None, **declaration_kwargs):
     from django.test import RequestFactory
 

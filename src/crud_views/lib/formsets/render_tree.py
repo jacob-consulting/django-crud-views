@@ -167,15 +167,15 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
 
     @property
     def has_pre_col(self) -> bool:
-        return self.level > 0
+        return self.level > 0 and self.formset.compact_layout is None
 
     @property
     def col(self) -> int:
-        return 11 if self.level > 0 else 12
+        return 11 if self.has_pre_col else 12
 
     @property
     def col_pre(self) -> int:
-        return 1 if self.level > 0 else 0
+        return 1 if self.has_pre_col else 0
 
     @property
     def css_col(self) -> str:

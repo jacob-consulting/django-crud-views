@@ -1,6 +1,6 @@
 {
-  "captured": "2026-11-10T21:23:27.865Z",
-  "revision": "e4d07fa90db0a2b9e94b4c7b42cad4f89243dc8b",
+  "captured": "2026-11-10T21:42:26.454Z",
+  "revision": "b1389a10c26da681d8b754ffd844f18aa267db18",
   "sourceHashes": {
     ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/.gitignore": "88d1099650ee449edf68179321b1fbfb215d89a5170e36a4d6371141027bc9dd",
     "package-lock.json": "f3ea8ff7293a09b93ef84305a784ed1a13760aed26b140940a606218cc6462af",
@@ -27,7 +27,7 @@
     "src/crud_views/templates/crud_views/conditional/toggle_group.html": "2b69481a30ed7279e97ec65edffc2780f89c24ee225edfdd2d2c975301f824d0",
     "src/crud_views/templates/crud_views/formsets/compact_headings.html": "2f4b3b5133ee315a8c25c99e20bb6c4ad034c2d7a223d5daccdd7d55fe6ccfd0",
     "src/crud_views/templates/crud_views/formsets/control.html": "eed84cc006d4de94bddf442c366f2faf32d3ab135872e4631fb58f30338d974e",
-    "src/crud_views/templates/crud_views/formsets/formset.html": "bec7eb67e595a3084ec3e2cd05df3546da4a9a5d23f73bca85b9f7cefbb51305",
+    "src/crud_views/templates/crud_views/formsets/formset.html": "df0b5a882fd81da7ea077fde73faddaf29eceaced0226bd1e1cc7eb08376e6d4",
     "src/crud_views/templates/crud_views/formsets/formsets.html": "1c6f6e86aff72847f044a62963cfb9fa41489a4d511578d13273c4ade1e83626",
     "tests/browser/conditional-formsets.cjs": "3ff30d6cd5a25ca206764319bca8a3610172034b7fdf8a15f2dc8ce8293d4371",
     "tests/browser/conditional_formsets_server.py": "3c5a4d0db70789a59c0f57b5f5c1878e7aafd1fa790a893a4630a2c744a2febd",
@@ -9280,7 +9280,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/compact-classic-768.png",
-          "sha256": "d283bed88371a72cdd04f4eabd277725e739a8c809a8f3febcb1baf086f83a27",
+          "sha256": "fa60a8d4687853fd4e61532f859165f465723fa575368e0028bffeffe5682bbb",
           "width": 768,
           "measurements": {
             "assets": {
@@ -11449,7 +11449,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/classic-compact-1280.png",
-          "sha256": "098922d91ec272036110019f80ddfdf1ae6e298dbe8d0f458e3fa804cda73487",
+          "sha256": "f1463f91162f66288e3548398a944779dc9322a3ba3300a7ca7632fcf685934a",
           "width": 1280,
           "measurements": {
             "assets": {
@@ -11941,7 +11941,7 @@
   "pageErrors": [],
   "cleanup": {
     "reaped": true,
-    "temporaryPath": "/tmp/dcv-064-browser-lgwch51b",
+    "temporaryPath": "/tmp/dcv-064-browser-62pgghzx",
     "temporaryRemoved": true
   },
   "completed": true,

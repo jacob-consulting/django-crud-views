@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "7"
-current_phase_name: "Theme-surface stability policy"
-status: "Phase 06.21 shipped — PR #344"
-stopped_at: Phase 06.21 shipped; phases 06.20 and 06.22 already merged
-last_updated: "2026-11-10T08:39:08.008Z"
+current_phase: "06.23"
+current_phase_name: Explicit header-icon suppression with Icon constants
+status: Ready to execute — Phase 06.23 plans verified
+stopped_at: Phase 06.23 planning complete; checker passed; ready to execute
+last_updated: "2026-11-10T11:26:00.630Z"
 last_activity: 2026-11-10
-state_head: 2515e73414fe0641efba53bd31ed9a3d3d593c6c
+last_activity_desc: Phase 06.23 planning complete
+state_head: ce49bf6a5206176b97172f52602df663428d90f3
 progress:
-  total_phases: 28
+  total_phases: 29
   completed_phases: 24
-  total_plans: 158
-  completed_plans: 158
-  percent: 92
+  total_plans: 162
+  completed_plans: 160
 milestone_name: milestone
 ---
 
@@ -24,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-09)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.23 — Explicit header-icon suppression with Icon constants
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
-Plan: Not started
-Status: Phase 06.21 shipped — PR #344
-Last activity: 2026-11-10
+Phase: 06.23 (Explicit header-icon suppression with Icon constants) — READY TO EXECUTE
+Plan: 0 of 2 executed; 2 plans verified
+Status: Ready to execute — Phase 06.23 plans verified
+Last activity: 2026-11-10 — Phase 06.23 planning complete
 
-Next: Phase 7; Phases 06.20, 06.21 and 06.22 are verified and complete.
+Next: $gsd-execute-phase 06.23
 
 ### Phase 06.21 completion — 2026-11-10
 
@@ -1164,6 +1164,7 @@ None yet.
 - Phase 06.17 inserted after Phase 06.16: Issue #328: open the first accordion group and initialize/dispose tabs through theme adapters; settled issue decisions are the planning handoff. (URGENT)
 - Phase 06.18 inserted after Phase 06.17: Ancestor authorization for nested ViewSets; canonical approved specification: superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md. Policy decisions remain locked; planning and implementation pending. (URGENT)
 - Phase 06.19 inserted after Phase 06.18: Table honours Meta.sequence and drops the empty actions column (tabler-test finding 26); canonical approved specification: superpowers/plans/2026-11-09-table-sequence-and-actions-column.md. Behaviour decisions are locked in its GSD handoff section; planning and implementation pending. (URGENT)
+- Phase 06.23 inserted after Phase 06.22: Issue #329: explicit header-icon suppression with plain Icon constants; settled issue decisions are the planning handoff. Independent scope; complete before Phase 7. (URGENT)
 
 ## Deferred Items
 
@@ -1174,5 +1175,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-09T21:26:24.250Z
-Stopped at: Phase 06.21 shipped — PR #344
+Stopped at: Phase 06.23 planning complete; checker passed; ready to execute
 Resume file: None

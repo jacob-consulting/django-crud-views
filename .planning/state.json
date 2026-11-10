@@ -124,9 +124,9 @@
       "status": "complete"
     },
     {
-      "number": "06.22",
-      "name": "Custom permission recipe and startup checks",
-      "status": "complete"
+      "number": "06.23",
+      "name": "Explicit header-icon suppression with Icon constants",
+      "status": "pending"
     },
     {
       "number": "7",
@@ -136,8 +136,8 @@
   ],
   "next": {
     "command": "$gsd-progress --next",
-    "label": "Advance to Phase 7",
-    "reason": "Phases 06.20, 06.21 and 06.22 complete"
+    "label": "Advance to the next step (plan phase 06.23)",
+    "reason": "Phase 37 of 38 — needs a plan"
   },
-  "updated_at": "2026-11-10T05:06:03.075Z"
+  "updated_at": "2026-11-10T11:25:34.408Z"
 }

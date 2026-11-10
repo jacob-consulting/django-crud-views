@@ -1,5 +1,5 @@
 {% load crispy_forms_tags %}
-{% load crud_views_formsets %}
+{% load crud_views crud_views_formsets %}
 
 {% if not x_formset.render_rows_only %}
 
@@ -47,13 +47,7 @@
             {% if x_formset.formset.compact_layout %}
                 {% for field in x_form.form.hidden_fields %}
                     {% if field.errors %}
-                        <div class="alert alert-danger">
-                            <ul class="m-0">
-                                {% for error in field.errors %}
-                                    <li>{{ field.label }}: {{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+                        {% cv_alert "error" heading=field.label items=field.errors %}
                     {% endif %}
                 {% endfor %}
             {% endif %}

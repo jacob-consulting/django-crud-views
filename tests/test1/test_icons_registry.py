@@ -6,6 +6,7 @@ from crud_views.lib import icons as icons_module
 from crud_views.lib.icons import (
     BOOTSTRAP_ICONS,
     DEFAULT_ICONS,
+    Icon,
     get_icons,
     register_icon_library,
     register_icons,
@@ -49,6 +50,14 @@ def test_raw_class_fallback():
 @pytest.mark.parametrize("value", [None, ""])
 def test_empty_renders_nothing(value):
     assert render_icon(value) == ""
+
+
+def test_public_icon_constants():
+    assert Icon.VIEWSET_DEFAULT is None
+    assert type(Icon.NONE) is str
+    assert Icon.NONE == ""
+    assert render_icon(Icon.VIEWSET_DEFAULT) == ""
+    assert render_icon(Icon.NONE) == ""
 
 
 def test_unknown_prefix_renders_nothing():

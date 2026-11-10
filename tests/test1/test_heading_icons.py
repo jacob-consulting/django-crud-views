@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy
 from lxml import html
 
 from crud_views.lib import button_classes as bc
+from crud_views.lib.icons import Icon
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 from crud_views.templatetags.crud_views import cv_heading_icon
@@ -177,7 +178,7 @@ def test_view_header_icon_suppression(monkeypatch, client_user_author_view):
 
     monkeypatch.setattr(cv_author, "icon_header", "host:inherited")
     with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
-        for value in (None, ""):
+        for value in (None, Icon.VIEWSET_DEFAULT, "", Icon.NONE):
             monkeypatch.setattr(AuthorListView, "cv_icon_header", value)
             response = client_user_author_view.get("/author/")
             assert response.status_code == 200

@@ -181,28 +181,40 @@ class NoteForm(InlineRowForm):
 
 
 BookFormSet = inlineformset_factory(
-    Publisher, Book, form=BookForm, formset=InlineFormSet,
-    extra=1, can_delete=True, can_order=False,
+    Publisher,
+    Book,
+    form=BookForm,
+    formset=InlineFormSet,
+    extra=1,
+    can_delete=True,
+    can_order=False,
 )
 NoteFormSet = inlineformset_factory(
-    Book, BookNote, form=NoteForm, formset=InlineFormSet,
-    extra=1, can_delete=True, can_order=False,
+    Book,
+    BookNote,
+    form=NoteForm,
+    formset=InlineFormSet,
+    extra=1,
+    can_delete=True,
+    can_order=False,
 )
 
-cv_formsets = FormSets(formsets={
-    "books": FormSet(
-        title=_("Books"),
-        klass=BookFormSet,
-        compact_layout=CompactLayout(columns=[CompactColumn("title", span=8)], controls_span=4),
-        children={
-            "notes": FormSet(
-                title=_("Notes"),
-                klass=NoteFormSet,
-                compact_layout=CompactLayout(columns=[CompactColumn("note", span=8)], controls_span=4),
-            ),
-        },
-    ),
-})
+cv_formsets = FormSets(
+    formsets={
+        "books": FormSet(
+            title=_("Books"),
+            klass=BookFormSet,
+            compact_layout=CompactLayout(columns=[CompactColumn("title", span=8)], controls_span=4),
+            children={
+                "notes": FormSet(
+                    title=_("Notes"),
+                    klass=NoteFormSet,
+                    compact_layout=CompactLayout(columns=[CompactColumn("note", span=8)], controls_span=4),
+                ),
+            },
+        ),
+    }
+)
 ```
 
 Assign this `cv_formsets` to your existing `FormSetMixin` create/update view. Keep the main form's

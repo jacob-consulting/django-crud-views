@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.24"
 current_phase_name: Opt-in compact formsets
-status: verifying
-stopped_at: Phase 06.24 automated verification complete; one human UAT item pending
-last_updated: "2026-11-10T22:17:11Z"
-last_activity: 2026-11-10
-last_activity_desc: Phase 06.24 verified 14/15; human grouping and focus review pending
+status: ready
+stopped_at: Phase 06.24 plan 06 added for requested examples-app extension; prior human UAT still pending
+last_updated: "2026-11-11T06:46:23Z"
+last_activity: 2026-11-11
+last_activity_desc: Phase 06.24 examples-app plan 06 prepared; plans 01–05 remain verified 14/15 with human review pending
 state_head: 464613048e700a02081c6ed2436560db1ab1689a
 progress:
   total_phases: 30
   completed_phases: 25
-  total_plans: 167
+  total_plans: 168
   completed_plans: 167
 milestone_name: milestone
 ---
@@ -28,12 +28,19 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 
 ## Current Position
 
-Phase: 06.24 (Opt-in compact formsets) — HUMAN VERIFICATION PENDING
-Plan: 5 of 5
-Status: All plans executed and automated verification complete; one human UAT item pending
-Last activity: 2026-11-10 — Verification 14/15; full suite 12,405 passed; UAT saved
+Phase: 06.24 (Opt-in compact formsets) — EXAMPLE PLAN PENDING; PRIOR HUMAN VERIFICATION PENDING
+Plan: 6 of 6 planned; 5 of 6 executed
+Status: Requested examples-app extension planned; prior plans 01–05 automated verification complete, one human UAT item pending
+Last activity: 2026-11-11 — Added plan 06 for a runnable compact questionnaire example and classic comparison
 
-Next: $gsd-verify-work 06.24
+Next: $gsd-execute-phase 06.24 for checked plan 06; re-verify the extended scope and retain $gsd-verify-work 06.24 for human review
+
+### Phase 06.24 examples-app extension — 2026-11-11
+
+- User requested a follow-up plan adding this feature to the examples app. Plan 06, wave 6 after completed plan 05, reuses Questionnaire → Question → Choice and the existing seed/accounts; no new models, migration, app or core API.
+- Three tasks cover compact create/update actions beside classic editors, coherent catalog/snippets/reference guidance, and focused server/browser evidence. The example runner baseline passed 51 tests with four workers and zero system-check issues.
+- Prior VERIFICATION (14/15), VALIDATION (11/11), security/review/UI evidence and browser fingerprints remain historical for plans 01–05. They do not cover plan 06; no human UAT result was changed or approved.
+- Plan checker passed with zero blockers or warnings; structure and frontmatter checks pass. Pending plan 06 is unexecuted. Existing .planning/config.default.json edits are preserved. No product implementation, push or merge.
 
 ### Phase 06.24 execution and verification — 2026-11-10
 
@@ -1211,6 +1218,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T22:17:11Z
-Stopped at: Phase 06.24 automated verification complete; one human UAT item pending
-Resume file: .planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-UAT.md
+Last session: 2026-11-11T06:46:23Z
+Stopped at: Phase 06.24 examples-app plan 06 prepared; prior human UAT still pending
+Resume file: .planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-06-PLAN.md

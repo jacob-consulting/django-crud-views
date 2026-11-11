@@ -236,7 +236,7 @@ async function full(context,cases) {
         }
         record.widths.push({width,profile});
     }
-    await authorization(context,c);
+    await authorization(context,c,cases.find(item=>item.id==='tracer' && item.theme==='stock').profile);
 }
 
 async function observedPage(context,width) {
@@ -489,7 +489,7 @@ async function nestedLifecycle(page,context,c,url,composition) {
     check('persisted-memo-order',state.memos.find(m=>String(m.id)===identities[1].id).order<state.memos.find(m=>String(m.id)===identities[0].id).order);
     record.persisted.push({composition,identities,post,book:saved});
 }
-async function authorization(context,c) {
+async function authorization(context,c,foreignProfile) {
     const page=await observedPage(context,1280);await load(page,c.url);
     const params=await content(page,`records-${c.profile}-0`).evaluate(el=>{
         const data=JSON.parse(el.getAttribute('cv-data-formset'));
@@ -501,7 +501,7 @@ async function authorization(context,c) {
     try {
         await denied.request.get(`${base}/signin/?denied=1`);
         for(const [actor,client,payload,status] of [
-            ['denied_actor',denied,{...params},403],['authorized_actor',context,{...params,pk:String(c.profile+1)},400]]) {
+            ['denied_actor',denied,{...params},403],['authorized_actor',context,{...params,pk:String(foreignProfile)},400]]) {
             const response=await client.request.get(base+c.url,{params:payload}),body=await response.text();
             check(`${actor}:fragment-${status}`,response.status()===status && !body.includes('cv-formset-row') && !body.includes('"rows"'),{status:response.status()});
             record.requests.push({kind:'rejected-fragment',actor,status:response.status(),rowHtml:false,params:payload});

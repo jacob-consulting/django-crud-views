@@ -502,7 +502,16 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
                     else Scores
                 ),
                 compact_layout=CompactLayout(
-                    columns=[CompactColumn(name, span=3 if name == "taster" else 1) for name in ScoreForm.Meta.fields],
+                    columns=[
+                        CompactColumn(name, span=3 if name == "taster" else 1)
+                        # Django 4.2 inline instances append their FK to the shared Meta.fields list.
+                        # This multi-request checkbox fixture needs the original visible score schema.
+                        for name in (
+                            ScoreForm.base_fields
+                            if self.object.pk == compact_checkbox_publisher_pk
+                            else ScoreForm.Meta.fields
+                        )
+                    ],
                     controls_span=2,
                 ),
             )

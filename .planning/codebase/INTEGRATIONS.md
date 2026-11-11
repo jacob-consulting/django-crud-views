@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-11
-last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
+last_mapped_commit: 702469fe04c5d27262391e04a52d78904a93659f
 ---
 # External Integrations
 
@@ -17,6 +17,7 @@ last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
 - django-crispy-forms and crispy-bootstrap5 render Bootstrap forms; django-tables2 and django-filter integrate list tables and filters (`src/crud_views/lib/crispy/`, `src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`).
   - SDK/Client: `crispy_forms`, `crispy_bootstrap5`, `django_tables2`, `django_filters`
   - Auth: None; these use host Django configuration.
+- Theme styling for the `ToggleGroup` and formset `<legend>` elements is exposed through the `conditional:legend` and `formset:legend` button-class slots; it adds no dependency or service integration (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/lib/button_classes.py`).
 - Compact formsets add explicit `CompactColumn` and `CompactLayout` presentation metadata on top of Django inline formsets and crispy helpers; they introduce no service or package dependency (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/formsets.py`, `docs/reference/formsets.md`).
 
 **Optional Django extensions:**

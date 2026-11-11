@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
+last_mapped_commit: 702469fe04c5d27262391e04a52d78904a93659f
 last_mapped_at: 2026-11-11
 ---
 # Coding Conventions
@@ -141,5 +141,13 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 - Compact rendering is an opt-in projection over the existing recursive formset renderer. Preserve classic custom helper/layout behavior, request-local resolved labels, form-owned field errors and row controls. Keep heading includes independently overridable and headings outside their owning rows (`src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `tests/test1/test_formsets_compact.py`).
 - When declaring nested compact examples, define a separate compact formset tree rather than mutating/reusing the classic tree. Use normal `InlineFormSet` factories and existing CRUD routes/actions so authorization and persistence stay on the proven view path (`examples/bootstrap5/formsets/views.py`, `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-06-SUMMARY.md`).
 - For example navigation, use existing labelled action menus and keep classic/compact labels visible on list rows; mobile layout should be achieved through existing theme behavior rather than a new menu or CSS mechanism (`examples/bootstrap5/formsets/views.py`, `examples/bootstrap5/formsets/tests.py`).
+
+## Independent Legend Class Hooks (Phase 06.25.1)
+
+- Add presentation hooks through the existing layered button-class registry, with separate keys for independent consumers (`conditional:legend`, `formset:legend`). Both keys default to `""`; keep empty overrides meaningful and preserve the existing default rendering (`src/crud_views/lib/button_classes.py`, `tests/test1/test_button_classes.py`).
+- Registry precedence is defaults → installed theme registrations → `CRUD_VIEWS_BUTTON_CLASSES`; cache invalidation follows theme registration and settings changes. Tests that register theme classes should snapshot/restore `bc._THEME_BUTTON_CLASSES` and reset the cache around each test (`tests/test1/test_button_classes_checks.py`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
+- Keep legend text as ordinary template-interpolated values and classes in quoted attributes. Test hostile plain strings at both boundaries by asserting escaped source output, exact parsed text/attribute values, and absence of injected nodes (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
+- Preserve markup ownership: ToggleGroup without a legend remains a `div`; formset row-only fragments omit their own outer fieldset/legend, while nested full formsets retain their own direct legends. Assert direct-child ownership and fragment roots rather than banning all descendant legends (`tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
+- Button-class reference inventories are executable contracts: core has 90 keys and the effective core-plus-workflow inventory has 100. Update the canonical table, reference docs, workflow inventory, and embedded fresh-process guard together (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
 *Convention analysis: 2026-11-11*

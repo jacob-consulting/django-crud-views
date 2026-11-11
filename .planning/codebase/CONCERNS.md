@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
+last_mapped_commit: 702469fe04c5d27262391e04a52d78904a93659f
 last_mapped_at: 2026-11-11
 ---
 # Codebase Concerns
@@ -72,9 +72,9 @@ No distinct security defect is confirmed by the current evidence. Permission che
 
 **Template, theme and header-icon compatibility surface:**
 - Files: `src/crud_views/lib/button_classes.py`, `src/crud_views/lib/view/button_data.py`, `src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/js/`
-- Why fragile: themes consume class keys, button context, icons, template variables and JS adapters as a connected contract. Phase 06.23 also intentionally changes `cv_icon_header=""` from ViewSet inheritance to suppression.
+- Why fragile: themes consume class keys, button context, icons, template variables and JS adapters as a connected contract. Phase 06.23 intentionally changes `cv_icon_header=""` from ViewSet inheritance to suppression; Phase 06.25.1 adds independently configured `conditional:legend` and `formset:legend` hooks through the existing registry.
 - Safe modification: consumers that used the empty string to inherit must switch to `None` or `Icon.VIEWSET_DEFAULT`; `Icon.NONE` is the readable suppression value. The Breaking entry and before/after instructions are in `CHANGELOG.md` and `docs/migrating-1.0.md#explicit-header-icon-suppression`. Preserve custom header content independently of icon choice.
-- Test coverage: Phase 06.23 verification reports 13/13 truths, with 317 focused tests and 12,301 full-suite tests recorded as passing; the example-theme fragment is rendered, but external theme installations are not certified.
+- Test coverage: Phase 06.23 verification reports 13/13 truths, with 317 focused tests and 12,301 full-suite tests recorded as passing; the example-theme fragment is rendered, but external theme installations are not certified. Phase 06.25.1 verifies both new hooks through rendered templates, nested/row-only formset ownership, escaping, and theme/project override precedence; its review found zero findings across 12 files and security closed all three threats (`.planning/phases/06.25.1-issue-346/06.25.1-REVIEW.md`, `06.25.1-SECURITY.md`).
 
 **Nested formset rendering and persistence:**
 - Files: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/inline_formset.py`
@@ -156,10 +156,10 @@ None independently confirmed.
 - Risk: docs can overstate 404 behavior for operator expressions; the changelog test can fail due to unrelated edits or section movement.
 - Priority: Low
 
-**Human acceptance and supported-environment coverage:**
-- What's not tested: Phase 06.23 has automated local evidence only on Python 3.12.3 / Django 6.1.2; no additional version matrix, downstream-theme installation, browser appearance or assistive-technology evaluation is claimed. The Phase 06.17 review also excluded other-browser, assistive-technology and visual acceptance.
-- Files: `.planning/phases/06.23-explicit-header-icon-suppression-with-icon-constants-329/06.23-VERIFICATION.md`, `.planning/phases/06.23-explicit-header-icon-suppression-with-icon-constants-329/06.23-REVIEW.md`, `.planning/phases/06.17-object-detail-open-the-first-accordion-group-and-initialize/06.17-UI-REVIEW.md`
-- Risk: automated pass results do not establish behavior on other supported combinations, consumer themes or assistive technologies.
+**Supported-environment replay for recent presentation hooks:**
+- What's not tested: Phase 06.25.1's final suite and independent review ran on Python 3.12.3 / Django 5.2.19. Other supported combinations and downstream theme installations were not replayed. Browser appearance and assistive-technology evaluation were not required or claimed for the empty-default class hooks.
+- Files: `.planning/phases/06.25.1-issue-346/06.25.1-VERIFICATION.md`, `.planning/phases/06.25.1-issue-346/06.25.1-REVIEW.md`, `tests/test1/test_assets.py`
+- Risk: local automated evidence does not establish behavior on every supported Python/Django combination or consumer theme. The existing CSP middleware test skips on Django < 6.0; this is the previously waived WINDOWS entry 3, not a new skip.
 - Priority: Low
 
 **Compact formset consumer-extension and unsupported-hook cases:**

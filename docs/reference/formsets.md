@@ -352,8 +352,11 @@ cv_formsets = {
     "records": FormSet(
         title="Records",
         klass=inlineformset_factory(
-            Profile, ConditionalPersistenceRecord,
-            form=CheckboxRecordForm, formset=InlineFormSet, extra=1,
+            Profile,
+            ConditionalPersistenceRecord,
+            form=CheckboxRecordForm,
+            formset=InlineFormSet,
+            extra=1,
         ),
         compact_layout=CompactLayout(
             columns=[CompactColumn("active", span=5), CompactColumn("flag", span=5)],

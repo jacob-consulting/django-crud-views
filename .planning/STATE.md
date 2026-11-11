@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.25"
-current_phase_name: "Compact widget compatibility (#349)"
-status: verifying
-stopped_at: Phase 06.25 verification human_needed; one consolidated visual UAT pending
-last_updated: "2026-11-11T12:57:08.041Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.25 complete, ready to plan Phase 7
+last_updated: "2026-11-11T13:01:56.753Z"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.25 verified 12/12 truths; awaiting visual UAT
-state_head: 437df861c1178b75e442db117b2c5528b5a90b31
+last_activity_desc: Phase 06.25 complete, transitioned to Phase 7
+state_head: 3af5211af2015814a066f4d770872998affeaadd
 progress:
   total_phases: 31
   completed_phases: 26
   total_plans: 170
   completed_plans: 170
+  percent: 84
 milestone_name: milestone
 ---
 
@@ -24,23 +25,23 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.25 — Compact widget compatibility (#349)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.25 (Compact widget compatibility (#349)) — VERIFYING
-Plan: 2 of 2
-Status: Human verification needed — 12/12 truths verified; one visual UAT pending
-Last activity: 2026-11-11 — Phase 06.25 audits and canonical verification finished
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-11 — Phase 06.25 complete, transitioned to Phase 7
 
-Next: $gsd-verify-work 06.25
+Next: $gsd-discuss-phase 7
 
-### Phase 06.25 verification — 2026-11-11
+### Phase 06.25 completion — 2026-11-11
 
-- Both plans executed; canonical verification is `human_needed`, 12/12 truths and 5/5 decisions verified, with no implementation gaps. One consolidated UAT awaits human review of the six committed mobile/desktop captures and recorded focus/error/add/delete observations.
-- Validation covers 4/4 tasks; security closes 7/7 threats; deep code review covers eight changed files with zero findings. UI audit scores 21/24 with inherited advisory observations only.
-- The fresh full suite passed 12,445 tests with four existing warnings; focused tests passed 127 and browser assertions passed 49. Independent verifier spot-checks passed eight cases and matched all 28 source/six capture hashes. Prior-phase regression coverage reuses the unchanged-source full run.
-- No human approval, phase completion, push or merge. Existing config.default.json and untracked phase .gitkeep preserved. Resume the pending visual check with `$gsd-verify-work 06.25`.
+- User passed the consolidated mobile/desktop visual check, including dense headings and focus. UAT 1/1 passed, zero issues; canonical verification promoted to passed and combined completion predicate passes with no blockers. Both plans complete.
+- Empty inherited CompactWidgetCompatible marker bypasses only widget restrictions; shared schema checks and existing rendering remain intact. Executed documentation and six committed browser captures provide the adoption example.
+- Full suite 12,445 passed; focused 127; browser 49 assertions; independent verifier eight cases, 12/12 truths. Validation 4/4, security 7/7 closed, deep review eight files/zero findings, UI 21/24 with inherited advisories.
+- No completion warnings, learnings or stale handoffs require action. Existing config.default.json and untracked phase .gitkeep preserved. No push or merge.
 
 ### Phase 06.24 completion — 2026-11-11
 
@@ -735,7 +736,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 164
+- Total plans completed: 166
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -771,6 +772,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.21 | 2 | - | - |
 | 06.23 | 2 | - | - |
 | 06.24 | 6 | - | - |
+| 06.25 | 2 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1243,6 +1245,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T12:57:08.041Z
-Stopped at: Phase 06.25 verification human_needed; one consolidated visual UAT pending
+Last session: 2026-11-11T13:02:31.700595+00:00
+Stopped at: Phase 06.25 complete, ready to plan Phase 7
 Resume file: None

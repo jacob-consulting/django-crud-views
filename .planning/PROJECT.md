@@ -90,6 +90,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.24** Opt-in compact formsets with explicit columns, shared desktop headings, labelled mobile cards and independent nested composition; runnable questionnaire comparison and preserved Django validation errors — Phase 06.24; six plans complete, human UAT 1/1 and canonical verification passed.
 
+- ✓ **6.25** General inherited CompactWidgetCompatible opt-in, bounded widget-only admission bypass and executed custom Select recipe — Phase 06.25; canonical12/12, UAT1/1, six committed browser captures, security7/7 and clean deep review.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -189,6 +191,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Compact rendering is opt-in per formset node, with explicit columns and request-local heading metadata | Keeps classic paths and independent nested composition understandable; examples reuse existing models and permissions | Validated (Phase 06.24) |
 
+| CompactWidgetCompatible is an empty inherited developer promise; shared schema checks and rendering remain unchanged | One explicit marker and guard allow application widgets without a registry, renderer abstraction or certification claim | Validated (Phase 06.25) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -207,4 +211,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-11 after Phase 06.24 completion*
+*Last updated: 2026-11-11 after Phase 06.25 completion*

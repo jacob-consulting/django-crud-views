@@ -11,6 +11,16 @@ from django.utils.html import conditional_escape
 from .layout import FormControl
 
 
+class CompactWidgetCompatible:
+    """Promise that an application widget supports the complete compact presentation.
+
+    This inherited marker bypasses widget-specific checks only. It supplies no
+    rendering behavior or certification: the author owns accessible labels or
+    group semantics, headings, help/errors, prefixed IDs/names and dynamic rows.
+    Shared field coverage, roles, effective labels and row consistency still apply.
+    """
+
+
 def _validate_span(value, name):
     if type(value) is not int or not 1 <= value <= 12:
         raise ValueError(f"{name} must be an integer from 1 to 12")
@@ -80,14 +90,15 @@ def _compact_schema(form, declaration):
         if name in roles or field.widget.is_hidden:
             invalid(name, "hidden and identity/control fields cannot be compact columns")
         widget = field.widget
-        if type(widget) not in supported or widget.template_name != type(widget).template_name:
-            invalid(name, "unsupported compact widget or custom template")
-        if widget.input_type != type(widget).input_type:
-            invalid(name, "unsupported compact widget input type")
-        if type(widget) is widgets.Select and (
-            widget.option_template_name != widgets.Select.option_template_name or widget.allow_multiple_selected
-        ):
-            invalid(name, "unsupported compact widget option template or multiple selection")
+        if not isinstance(widget, CompactWidgetCompatible):
+            if type(widget) not in supported or widget.template_name != type(widget).template_name:
+                invalid(name, "unsupported compact widget or custom template")
+            if widget.input_type != type(widget).input_type:
+                invalid(name, "unsupported compact widget input type")
+            if type(widget) is widgets.Select and (
+                widget.option_template_name != widgets.Select.option_template_name or widget.allow_multiple_selected
+            ):
+                invalid(name, "unsupported compact widget option template or multiple selection")
         label = form[name].label
         if label is None or not str(label).strip():
             invalid(name, "a nonempty effective label is required")

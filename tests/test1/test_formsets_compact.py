@@ -11,10 +11,12 @@ from tests.test1.test_fragment_authorization import deep_leaf_formset as deep_le
 
 def test_public_compact_declarations():
     import crud_views.lib.formsets as api
-    from crud_views.lib.formsets.compact import CompactColumn, CompactLayout
+    from crud_views.lib.formsets.compact import CompactColumn, CompactLayout, CompactWidgetCompatible
 
     assert getattr(api, "CompactColumn", None) is CompactColumn
     assert getattr(api, "CompactLayout", None) is CompactLayout
+    assert getattr(api, "CompactWidgetCompatible", None) is CompactWidgetCompatible
+    assert not any(callable(value) for value in vars(CompactWidgetCompatible).values())
 
 
 def test_compact_declarations_are_immutable_and_deepcopy_safe():
@@ -699,6 +701,124 @@ def test_compact_tracer_get_post(compact_books, client_user_publisher_formset):
 
 
 @pytest.mark.django_db
+def test_compact_marked_select_requests(monkeypatch, compact_books, client_user_publisher_formset):
+    from django import forms
+
+    import crud_views.lib.formsets as api
+    from crud_views.lib.formsets import compact
+    from tests.test1.app.views_formset import BookFormSetForm
+    from tests.test1.test_fragment_authorization import browser_add_row
+
+    marker = getattr(api, "CompactWidgetCompatible", None)
+    assert marker is not None, "CompactWidgetCompatible must be publicly importable"
+    assert marker is compact.CompactWidgetCompatible
+
+    class ProductSelect(marker, forms.Select):
+        def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+            option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+            if value == "Original":
+                option["attrs"]["data-beans"] = "1"
+            return option
+
+    class ChoiceBook(BookFormSetForm):
+        title = forms.ChoiceField(
+            choices=[("", "---------"), ("Original", "Original beans"), ("Retained", "Retained"), ("Saved", "Saved")],
+            widget=ProductSelect,
+            help_text="Choose the book title",
+        )
+
+    monkeypatch.setattr(publisher_formsets["books"].klass, "form", ChoiceBook)
+    publisher = Publisher.objects.create(name="Marked publisher")
+    book = Book.objects.create(publisher=publisher, title="Original")
+    retained = Book.objects.create(publisher=publisher, title="Retained")
+    url = f"/publisher-formset/{publisher.pk}/update/"
+
+    def assert_rows(tree, *, headings):
+        owned_headings = tree.cssselect(".cv-formset-compact-headings")
+        assert len(owned_headings) == headings
+        for heading in owned_headings:
+            assert "Title" in heading.text_content()
+            assert not heading.xpath("ancestor::div[@cv-data-formset-form-prefix]")
+        selects = tree.cssselect(".cv-formset-row-compact select[name$='-title']")
+        assert selects
+        for select in selects:
+            name = select.get("name")
+            assert select.get("id") == f"id_{name}"
+            row = select.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+            own = row.cssselect(".cv-formset-form")[0]
+            assert name == f"{row.get('cv-data-formset-form-prefix')}-title"
+            labels = own.xpath(".//label[@for=$id]", id=select.get("id"))
+            assert len(labels) == 1 and "cv-formset-compact-label" in labels[0].get("class")
+            assert "Choose the book title" in own.text_content()
+            option = select.cssselect("option[value='Original']")
+            assert len(option) == 1 and option[0].get("data-beans") == "1"
+            assert option[0].text == "Original beans"
+            for suffix in ("id", "publisher", "DELETE"):
+                controls = own.xpath(".//input[@name=$name]", name=f"{name.removesuffix('-title')}-{suffix}")
+                assert len(controls) == 1 and controls[0].get("type") == "hidden"
+            assert not own.cssselect(".cv-formset-compact-headings")
+        return selects
+
+    initial = client_user_publisher_formset.get(url)
+    assert initial.status_code == 200
+    document = html.fromstring(initial.content)
+    assert len(document.cssselect("form.cv-form")) == 1
+    assert len(document.cssselect("input[name='csrfmiddlewaretoken']")) == 1
+    fieldset = document.cssselect('fieldset[cv-data-formset-key="books"]')[0]
+    assert_rows(fieldset, headings=1)
+    payload = form_payload(initial)
+    original_name = next(k for k, v in payload.items() if k.endswith("-title") and v == "Original")
+    retained_name = next(k for k, v in payload.items() if k.endswith("-title") and v == "Retained")
+    extra_names = [k for k in payload if k.endswith("-title") and k not in (original_name, retained_name)]
+    assert len(extra_names) == 1 and payload[extra_names[0]] == ""
+
+    # The independently invalid retained row forces redisplay even when the first is deleted.
+    for invalid in ("", "not-a-choice"):
+        payload[retained_name] = invalid
+        for delete_value in ("", "on", ""):
+            payload[original_name.removesuffix("-title") + "-DELETE"] = delete_value
+            response = client_user_publisher_formset.post(url, payload)
+            assert response.status_code == 200
+            tree = html.fromstring(response.content)
+            current = tree.cssselect('fieldset[cv-data-formset-key="books"]')[0]
+            assert_rows(current, headings=1)
+            invalid_row = tree.xpath(
+                "//select[@name=$name]/ancestor::div[@cv-data-formset-form-prefix][1]", name=retained_name
+            )[0]
+            other_row = tree.xpath(
+                "//select[@name=$name]/ancestor::div[@cv-data-formset-form-prefix][1]", name=original_name
+            )[0]
+            message = "This field is required." if invalid == "" else "Select a valid choice."
+            assert message in invalid_row.text_content() and message not in other_row.text_content()
+            if invalid == "":
+                assert invalid_row.cssselect("option[value=''][selected]")
+            delete_input = other_row.xpath(
+                ".//input[@name=$name]", name=original_name.removesuffix("-title") + "-DELETE"
+            )[0]
+            assert bool(delete_input.get("value")) == bool(delete_value)
+
+    params = browser_add_row(initial.content, fieldset.get("cv-data-formset-prefix"))
+    added = client_user_publisher_formset.get(url, params)
+    assert added.status_code == 200
+    fragment = added.json()
+    added_tree = html.fragment_fromstring(fragment["html"], create_parent="div")
+    added_selects = assert_rows(added_tree, headings=0)
+    assert [s.get("name").removesuffix("-title") for s in added_selects] == fragment["rows"]
+    assert not added_tree.cssselect("form, input[name='csrfmiddlewaretoken']")
+
+    payload[original_name] = "Saved"
+    payload[retained_name] = "Retained"
+    payload[original_name.removesuffix("-title") + "-DELETE"] = ""
+    assert payload[extra_names[0]] == ""
+    result = client_user_publisher_formset.post(url, payload)
+    assert result.status_code == 302
+    book.refresh_from_db()
+    retained.refresh_from_db()
+    assert book.title == "Saved" and retained.title == "Retained"
+    assert Book.objects.filter(publisher=publisher).count() == 2
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("kind", ["field_type", "widget_type", "required", "label", "missing", "extra"])
 def test_compact_schema_rejects_heterogeneous_rows(kind):
     from django import forms
@@ -768,6 +888,314 @@ def test_compact_schema_rejects_unsupported_widget_shape(kind):
     node.forms[0].form.fields["title"].widget = widget
     with pytest.raises(ImproperlyConfigured, match=r"books.*title.*widget"):
         _ = node.forms[0].helper
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "kind",
+    [
+        "checkbox",
+        "radio",
+        "multiple",
+        "multiwidget",
+        "file",
+        "password",
+        "textarea",
+        "subclass",
+        "template",
+        "option",
+        "input_type",
+        "select_multiple",
+    ],
+)
+def test_compact_marked_schema_admission(kind):
+    from django import forms
+
+    from crud_views.lib.formsets import CompactWidgetCompatible
+
+    families = {
+        "checkbox": forms.CheckboxInput,
+        "radio": forms.RadioSelect,
+        "multiple": forms.SelectMultiple,
+        "multiwidget": forms.SplitDateTimeWidget,
+        "file": forms.FileInput,
+        "password": forms.PasswordInput,
+        "textarea": forms.Textarea,
+        "subclass": type("CustomText", (forms.TextInput,), {}),
+    }
+    base = families.get(kind, forms.Select if kind in ("option", "select_multiple") else forms.TextInput)
+    marked = type("MarkedWidget", (CompactWidgetCompatible, base), {})
+    widget = marked()
+    if kind == "template":
+        widget.template_name = "custom.html"
+    elif kind == "option":
+        widget.option_template_name = "custom_option.html"
+    elif kind == "input_type":
+        widget.input_type = "password"
+    elif kind == "select_multiple":
+        widget.allow_multiple_selected = True
+    node = _runtime()
+    node.forms[0].form.fields["title"].widget = widget
+    # These deliberately mismatched pairs prove admission, never output certification.
+    assert node.compact_columns[0].widget_type is marked
+    assert node.forms[0].helper.label_class == "cv-formset-compact-label"
+
+
+@pytest.mark.django_db
+def test_compact_marked_inheritance_and_pretty_name():
+    from django import forms
+
+    from crud_views.lib.formsets import CompactWidgetCompatible
+
+    class MarkedText(CompactWidgetCompatible, forms.TextInput):
+        pass
+
+    class Descendant(MarkedText):
+        pass
+
+    node = _runtime(factory_attrs={"extra": 2})
+    for row in node.forms:
+        row.form.fields["title"].widget = Descendant()
+        row.form.fields["title"].label = None
+    assert node.compact_columns[0].label == "Title"
+    assert node.compact_columns[0].widget_type is Descendant
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "kind",
+    [
+        "field_type",
+        "widget_type",
+        "descendant_type",
+        "required",
+        "label",
+        "missing",
+        "extra",
+        "omitted_optional",
+        "omitted_disabled",
+        "effective_none",
+        "empty_label",
+        "blank_label",
+        "column_missing",
+        "secret",
+        "id",
+        "publisher",
+        "ORDER",
+        "DELETE",
+    ],
+)
+def test_compact_marked_schema_retains_checks(kind):
+    from django import forms
+    from django.core.exceptions import ImproperlyConfigured
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout, CompactWidgetCompatible
+
+    class MarkedText(CompactWidgetCompatible, forms.TextInput):
+        pass
+
+    class OtherMarkedText(CompactWidgetCompatible, forms.TextInput):
+        pass
+
+    class Descendant(MarkedText):
+        pass
+
+    node = _runtime(factory_attrs={"extra": 2})
+    for row in node.forms:
+        row.form.fields["title"].widget = MarkedText()
+    second = node.forms[1].form
+    field = "title"
+    if kind == "field_type":
+        second.fields["title"] = forms.RegexField(".*", label="Title", widget=MarkedText)
+    elif kind in ("widget_type", "descendant_type"):
+        second.fields["title"].widget = (OtherMarkedText if kind == "widget_type" else Descendant)()
+    elif kind == "required":
+        second.fields["title"].required = False
+    elif kind == "label":
+        second.fields["title"].label = "Different"
+    elif kind == "missing":
+        del second.fields["title"]
+    elif kind in ("extra", "omitted_optional", "omitted_disabled"):
+        field = "other"
+        second.fields[field] = forms.CharField(
+            widget=MarkedText, required=kind == "omitted_disabled", disabled=kind in ("extra", "omitted_disabled")
+        )
+    elif kind in ("effective_none", "empty_label", "blank_label"):
+        for row in node.forms:
+            if kind == "effective_none":
+                row.form["title"].label = None
+            else:
+                row.form.fields["title"].label = "" if kind == "empty_label" else " \t "
+    else:
+        field = "missing" if kind == "column_missing" else kind
+        for row in node.forms:
+            if field == "secret":
+
+                class MarkedHidden(CompactWidgetCompatible, forms.HiddenInput):
+                    pass
+
+                row.form.fields[field] = forms.CharField(widget=MarkedHidden)
+            elif field == "ORDER":
+                row.form.fields[field] = forms.IntegerField(widget=MarkedText, required=False)
+            elif field != "missing":
+                original_widget = row.form.fields[field].widget
+                marked = type("MarkedRole", (CompactWidgetCompatible, type(original_widget)), {})
+                row.form.fields[field].widget = marked()
+        node.formset.compact_layout = CompactLayout(
+            [CompactColumn("title", span=6), CompactColumn(field, span=2)], controls_span=4
+        )
+    with pytest.raises(ImproperlyConfigured, match=rf"books.*{field}"):
+        _ = node.compact_columns
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("custom_template", [False, True])
+def test_compact_marked_widgets_render_with_existing_helper(custom_template):
+    from copy import deepcopy
+    from pathlib import Path
+
+    from django import forms
+    from django.conf import settings
+    from django.forms.renderers import TemplatesSetting
+    from django.template.loader import render_to_string
+    from django.test import override_settings
+
+    from crud_views.lib.formsets import CompactWidgetCompatible
+    from tests.test1.app.views_formset import BookFormSetForm
+
+    class MarkedTextarea(CompactWidgetCompatible, forms.Textarea):
+        pass
+
+    class CustomInput(CompactWidgetCompatible, forms.TextInput):
+        template_name = "marked_input.html"
+
+    class MarkedBook(BookFormSetForm):
+        title = forms.CharField(widget=CustomInput if custom_template else MarkedTextarea)
+
+    original_templates = settings.TEMPLATES
+    templates = deepcopy(original_templates)
+    templates[0]["APP_DIRS"] = False
+    templates[0]["DIRS"] = [*templates[0]["DIRS"], str(Path(forms.__file__).parent / "templates")]
+    templates[0]["OPTIONS"]["loaders"] = [
+        (
+            "django.template.loaders.locmem.Loader",
+            {
+                "marked_input.html": (
+                    '<span data-marked-template="yes">{% include "django/forms/widgets/text.html" %}</span>'
+                )
+            },
+        ),
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader",
+    ]
+    with override_settings(TEMPLATES=templates):
+        node = _runtime(form_class=MarkedBook, factory_attrs={"renderer": TemplatesSetting()})
+        page = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        bound = node.forms[0].form["title"]
+        element = page.xpath("//*[@id=$id]", id=bound.auto_id)
+        assert len(element) == 1 and element[0].get("name") == bound.html_name
+        assert element[0].tag == ("input" if custom_template else "textarea")
+        labels = page.xpath("//label[@for=$id]", id=bound.auto_id)
+        assert len(labels) == 1 and "cv-formset-compact-label" in labels[0].get("class")
+        assert bool(page.cssselect("[data-marked-template='yes']")) is custom_template
+        assert page.cssselect(".cv-formset-compact-headings")
+    assert settings.TEMPLATES is original_templates
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("empty", [False, True])
+@pytest.mark.parametrize("saved", [False, True])
+def test_compact_marked_metadata_has_no_side_effects(monkeypatch, empty, saved):
+    from django import forms
+    from django.db import connection
+    from django.forms.models import ModelChoiceIterator
+    from django.test.utils import CaptureQueriesContext
+
+    from crud_views.lib.formsets import CompactWidgetCompatible
+    from tests.test1.app.views_formset import BookFormSetForm
+
+    constructed = []
+    widgets = []
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Metadata must not augment, validate, render or consult helpers")
+
+    class MarkedSelect(CompactWidgetCompatible, forms.Select):
+        render = forbidden
+        create_option = forbidden
+
+    class ChoiceBook(BookFormSetForm):
+        title = forms.ModelChoiceField(queryset=Publisher.objects.all(), label="Publisher choice", widget=MarkedSelect)
+
+        def __init__(self, *args, **kwargs):
+            constructed.append(kwargs.copy())
+            super().__init__(*args, **kwargs)
+            field = self.fields["title"]
+            assert isinstance(field.widget.choices, ModelChoiceIterator)
+            assert field.widget.choices.field is field
+            widgets.append(field.widget)
+
+    parent = Publisher.objects.create(name="Choice") if saved else Publisher()
+    identity = parent.pk
+    original_iterator = ModelChoiceIterator.__iter__
+
+    class ChoiceIteration(Exception):
+        pass
+
+    def forbidden_choices(self):
+        raise ChoiceIteration("Actual field-bound choices were iterated")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(ModelChoiceIterator, "__iter__", forbidden_choices)
+        node = _runtime(form_class=ChoiceBook, parent=parent, factory_attrs={"extra": 0 if empty else 2})
+        before = len(constructed)
+        assert before == (0 if empty else 2)
+        kwargs_calls = []
+        original_kwargs = node.instance.get_form_kwargs
+
+        def get_kwargs(index):
+            kwargs_calls.append(index)
+            return original_kwargs(index)
+
+        patch.setattr(node.instance, "get_form_kwargs", get_kwargs)
+        for method in ("add_fields", "_construct_form"):
+            patch.setattr(node.instance, method, forbidden)
+        patch.setattr(type(node.instance), "empty_form", property(forbidden))
+        patch.setattr(type(node.instance), "helper", property(forbidden))
+        for method in ("full_clean", "is_valid", "get_layout_fields"):
+            patch.setattr(ChoiceBook, method, forbidden)
+        patch.setattr(ChoiceBook, "helper", property(forbidden))
+        with CaptureQueriesContext(connection) as queries:
+            columns = node.compact_columns
+            assert node.compact_columns is columns
+        assert len(queries) == 0
+        assert len(constructed) - before == int(empty)
+        assert kwargs_calls == ([None] if empty else [])
+        assert columns[0].label == "Publisher choice" and columns[0].widget_type is MarkedSelect
+        assert parent.pk == identity
+        assert len(widgets) == (1 if empty else 2)
+        if empty:
+            assert constructed[0]["cv_view"] is None
+            assert constructed[0].get("instance") is not parent
+            assert node.instance.total_form_count() == 0
+        for widget in widgets:
+            with pytest.raises(ChoiceIteration, match="Actual field-bound choices"):
+                list(widget.choices)
+
+    assert ModelChoiceIterator.__iter__ is original_iterator
+
+    class RenderableSelect(CompactWidgetCompatible, forms.Select):
+        pass
+
+    class RenderableBook(BookFormSetForm):
+        title = forms.ModelChoiceField(queryset=Publisher.objects.all(), widget=RenderableSelect)
+
+    if not saved:
+        Publisher.objects.create(name="Choice")
+    normal = RenderableBook(cv_view=None)
+    with CaptureQueriesContext(connection) as queries:
+        rendered = str(normal["title"])
+    assert "Choice" in rendered and len(queries) == 1
 
 
 @pytest.mark.django_db

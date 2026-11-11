@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
 status: planning
-stopped_at: Phase 06.24 complete, ready to plan Phase 7
-last_updated: "2026-11-11T08:37:09.953Z"
+stopped_at: Phase 06.25 complete, ready to plan Phase 7
+last_updated: "2026-11-11T13:13:59.530Z"
 last_activity: 2026-11-11
-last_activity_desc: "Phase 06.24 shipped as PR #348"
-state_head: 67928a0695c680b681a6b0964841a35e4451b86d
+last_activity_desc: "Phase 06.25 shipped as PR #350"
+state_head: f4d9d7bad46bd25004369847223664cb2c3c1db9
 progress:
-  total_phases: 30
+  total_phases: 31
   completed_phases: 26
-  total_plans: 168
-  completed_plans: 168
-  percent: 87
+  total_plans: 170
+  completed_plans: 170
+  percent: 84
 milestone_name: milestone
 ---
 
@@ -32,9 +32,16 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-11 -- Phase 06.24 shipped as PR #348
+Last activity: 2026-11-11 — Phase 06.25 shipped as PR #350
 
-Next: $gsd-plan-phase 7
+Next: $gsd-discuss-phase 7
+
+### Phase 06.25 completion — 2026-11-11
+
+- User passed the consolidated mobile/desktop visual check, including dense headings and focus. UAT 1/1 passed, zero issues; canonical verification promoted to passed and combined completion predicate passes with no blockers. Both plans complete.
+- Empty inherited CompactWidgetCompatible marker bypasses only widget restrictions; shared schema checks and existing rendering remain intact. Executed documentation and six committed browser captures provide the adoption example.
+- Full suite 12,445 passed; focused 127; browser 49 assertions; independent verifier eight cases, 12/12 truths. Validation 4/4, security 7/7 closed, deep review eight files/zero findings, UI 21/24 with inherited advisories.
+- No completion warnings, learnings or stale handoffs require action. Existing config.default.json and untracked phase .gitkeep preserved. No push or merge.
 
 ### Phase 06.24 completion — 2026-11-11
 
@@ -729,7 +736,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 164
+- Total plans completed: 166
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -765,6 +772,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.21 | 2 | - | - |
 | 06.23 | 2 | - | - |
 | 06.24 | 6 | - | - |
+| 06.25 | 2 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -901,6 +909,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.24 P04 | 21min | 3 tasks | 14 files |
 | Phase 06.24 P05 | 22min | 2 tasks | 7 files |
 | Phase 06.24 P06 | 19min | 3 tasks | 23 files |
+| Phase 06.25 P01 | 7min | 2 tasks | 5 files |
+| Phase 06.25 P02 | 17min | 2 tasks | 15 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1159,6 +1169,9 @@ Recent decisions affecting current work:
 - [Phase 06.24]: Compact hidden-field errors reuse cv_alert and its escaped heading/items instead of defining another alert frame.
 - [Phase 06.24]: Keep one questionnaire ViewSet with independent classic/compact trees; use existing labelled action menus and list labels for mobile comparison.
 - [Phase 06.24]: Skip parent-presence checks after individual child field errors so classic and compact invalid POSTs redisplay correctly.
+- [Phase 06.25]: CompactWidgetCompatible is an empty inherited developer promise; only widget-specific checks are bypassed, with actual widget types and shared schema retained.
+- [Phase 06.25]: Plan 01 Task 2 is test-only: its RED control replays pre-guard admission temporarily, then restores the exact Task 1 source.
+- [Phase 06.25]: User requested committing six browser captures; named PNG allowlist and driver trackability checks supersede the original local-ignored policy.
 
 ### Pending Todos
 
@@ -1222,6 +1235,7 @@ None yet.
 - Phase 06.19 inserted after Phase 06.18: Table honours Meta.sequence and drops the empty actions column (tabler-test finding 26); canonical approved specification: superpowers/plans/2026-11-09-table-sequence-and-actions-column.md. Behaviour decisions are locked in its GSD handoff section; planning and implementation pending. (URGENT)
 - Phase 06.23 inserted after Phase 06.22: Issue #329: explicit header-icon suppression with plain Icon constants; settled issue decisions are the planning handoff. Independent scope; complete before Phase 7. (URGENT)
 - Phase 06.24 inserted after Phase 06.23: Issue #347: opt-in compact formsets with shared desktop headings and nested mobile cards; approved issue decisions are the GSD handover, classic rendering unchanged. Complete before Phase 7. (URGENT)
+- Phase 06.25 inserted after Phase 6: Issue #349 (URGENT)
 
 ## Deferred Items
 
@@ -1231,6 +1245,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T08:22:13.993867+00:00
-Stopped at: Phase 06.24 complete, ready to plan Phase 7
+Last session: 2026-11-11T13:02:31.700595+00:00
+Stopped at: Phase 06.25 complete, ready to plan Phase 7
 Resume file: None

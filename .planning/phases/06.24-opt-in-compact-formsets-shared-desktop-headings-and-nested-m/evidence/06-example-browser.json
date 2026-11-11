@@ -1,0 +1,4645 @@
+{
+  "started": "2026-11-11T07:05:48.900Z",
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/evidence/06-example-browser.cjs"
+  ],
+  "revision": "690a69ea48560a728eb352787af33175875e6883",
+  "humanReview": "pending",
+  "assertions": [
+    {
+      "name": "Create compact menu label is visible",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "home catalog reaches compact create",
+      "passed": true,
+      "measurements": {
+        "url": "http://127.0.0.1:44655/formsets/questionnaire/create-compact/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8"
+      }
+    },
+    {
+      "name": "create redirect and persisted nested values",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "new question successful HTTP fragment",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "choice under nonfirst question successful HTTP fragment",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "unique IDs and prefixes after actual additions",
+      "passed": true,
+      "measurements": {
+        "ids": [
+          "div_id_title",
+          "id_title",
+          "cv-formset-fieldset-questions-3-0",
+          "id_questions-3-0-TOTAL_FORMS",
+          "id_questions-3-0-INITIAL_FORMS",
+          "id_questions-3-0-MIN_NUM_FORMS",
+          "id_questions-3-0-MAX_NUM_FORMS",
+          "div_id_questions-3-0-0-text",
+          "id_questions-3-0-0-text",
+          "id_questions-3-0-0-id",
+          "id_questions-3-0-0-questionnaire",
+          "id_questions-3-0-0-ORDER",
+          "id_questions-3-0-0-DELETE",
+          "cv-formset-fieldset-questions-choices-3-0-0-4-0",
+          "id_questions-choices-3-0-0-4-0-TOTAL_FORMS",
+          "id_questions-choices-3-0-0-4-0-INITIAL_FORMS",
+          "id_questions-choices-3-0-0-4-0-MIN_NUM_FORMS",
+          "id_questions-choices-3-0-0-4-0-MAX_NUM_FORMS",
+          "div_id_questions-choices-3-0-0-4-0-0-label",
+          "id_questions-choices-3-0-0-4-0-0-label",
+          "id_questions-choices-3-0-0-4-0-0-id",
+          "id_questions-choices-3-0-0-4-0-0-question",
+          "id_questions-choices-3-0-0-4-0-0-ORDER",
+          "id_questions-choices-3-0-0-4-0-0-DELETE",
+          "div_id_questions-choices-3-0-0-4-0-1-label",
+          "id_questions-choices-3-0-0-4-0-1-label",
+          "id_questions-choices-3-0-0-4-0-1-id",
+          "id_questions-choices-3-0-0-4-0-1-question",
+          "id_questions-choices-3-0-0-4-0-1-ORDER",
+          "id_questions-choices-3-0-0-4-0-1-DELETE",
+          "div_id_questions-3-0-1-text",
+          "id_questions-3-0-1-text",
+          "id_questions-3-0-1-id",
+          "id_questions-3-0-1-questionnaire",
+          "id_questions-3-0-1-ORDER",
+          "id_questions-3-0-1-DELETE",
+          "cv-formset-fieldset-questions-choices-3-0-1-None-0",
+          "id_questions-choices-3-0-1-None-0-TOTAL_FORMS",
+          "id_questions-choices-3-0-1-None-0-INITIAL_FORMS",
+          "id_questions-choices-3-0-1-None-0-MIN_NUM_FORMS",
+          "id_questions-choices-3-0-1-None-0-MAX_NUM_FORMS",
+          "div_id_questions-choices-3-0-1-None-0-0-label",
+          "id_questions-choices-3-0-1-None-0-0-label",
+          "id_questions-choices-3-0-1-None-0-0-id",
+          "id_questions-choices-3-0-1-None-0-0-question",
+          "id_questions-choices-3-0-1-None-0-0-ORDER",
+          "id_questions-choices-3-0-1-None-0-0-DELETE",
+          "div_id_questions-3-0-2-text",
+          "id_questions-3-0-2-text",
+          "id_questions-3-0-2-id",
+          "id_questions-3-0-2-questionnaire",
+          "id_questions-3-0-2-ORDER",
+          "id_questions-3-0-2-DELETE",
+          "cv-formset-fieldset-questions-choices-3-0-2-None-0",
+          "id_questions-choices-3-0-2-None-0-TOTAL_FORMS",
+          "id_questions-choices-3-0-2-None-0-INITIAL_FORMS",
+          "id_questions-choices-3-0-2-None-0-MIN_NUM_FORMS",
+          "id_questions-choices-3-0-2-None-0-MAX_NUM_FORMS",
+          "div_id_questions-choices-3-0-2-None-0-0-label",
+          "id_questions-choices-3-0-2-None-0-0-label",
+          "id_questions-choices-3-0-2-None-0-0-id",
+          "id_questions-choices-3-0-2-None-0-0-question",
+          "id_questions-choices-3-0-2-None-0-0-ORDER",
+          "id_questions-choices-3-0-2-None-0-0-DELETE",
+          "div_id_questions-choices-3-0-2-None-0-1-label",
+          "id_questions-choices-3-0-2-None-0-1-label",
+          "id_questions-choices-3-0-2-None-0-1-id",
+          "id_questions-choices-3-0-2-None-0-1-question",
+          "id_questions-choices-3-0-2-None-0-1-ORDER",
+          "id_questions-choices-3-0-2-None-0-1-DELETE",
+          "submit-id-submit",
+          "button-id-reset"
+        ],
+        "prefixes": [
+          "questions-3-0-0",
+          "questions-choices-3-0-0-4-0-0",
+          "questions-choices-3-0-0-4-0-1",
+          "questions-3-0-1",
+          "questions-choices-3-0-1-None-0-0",
+          "questions-3-0-2",
+          "questions-choices-3-0-2-None-0-0",
+          "questions-choices-3-0-2-None-0-1"
+        ]
+      }
+    },
+    {
+      "name": "added child remains inside owning compact question",
+      "passed": true,
+      "measurements": {
+        "text": "Added browser question",
+        "choices": [
+          "Initial added-question choice",
+          "AJAX nested choice"
+        ],
+        "compact": true
+      }
+    },
+    {
+      "name": "delete marks containing question",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "unmark retains containing question",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "order moves containing question",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "order can restore question position",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "saved AJAX question owns both choices",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-1280 no horizontal page overflow",
+      "passed": true,
+      "measurements": {
+        "width": 1280,
+        "scrollWidth": 1280
+      }
+    },
+    {
+      "name": "compact-saved-1280 no horizontal formset overflow",
+      "passed": true,
+      "measurements": {
+        "form": {
+          "x": 99,
+          "y": 459.1875,
+          "width": 1082,
+          "height": 1226,
+          "right": 1181
+        },
+        "scrollWidth": 1094,
+        "clientWidth": 1082,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 1280,
+          "scrollWidth": 1280
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 1082,
+            "scrollWidth": 1082,
+            "box": {
+              "x": 99,
+              "y": 589.1875,
+              "width": 1082,
+              "height": 1042,
+              "right": 1181
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 745.1875,
+              "width": 1030,
+              "height": 160,
+              "right": 1155
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 1087.1875,
+              "width": 1030,
+              "height": 232,
+              "right": 1155
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 1501.1875,
+              "width": 1030,
+              "height": 88,
+              "right": 1155
+            }
+          }
+        ],
+        "fields": [
+          {
+            "id": "id_questions-3-0-0-text",
+            "input": {
+              "x": 116,
+              "y": 638.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 638.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 638.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 637.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 786.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 786.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 786.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 785.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-1-label",
+            "input": {
+              "x": 134,
+              "y": 858.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 858.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 858.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 857.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-3-0-1-text",
+            "input": {
+              "x": 116,
+              "y": 980.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 980.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 980.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 979.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 1128.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1128.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1128.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1127.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-1-label",
+            "input": {
+              "x": 134,
+              "y": 1200.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1200.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1200.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1199.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-2-label",
+            "input": {
+              "x": 134,
+              "y": 1272.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1272.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1272.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1271.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-3-0-2-text",
+            "input": {
+              "x": 116,
+              "y": 1394.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 1394.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 1394.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 1393.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-2-None-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 1542.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1542.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1542.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1541.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          }
+        ],
+        "headings": [
+          {
+            "display": "flex",
+            "insideRow": false,
+            "owner": "questions"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          }
+        ],
+        "children": [
+          {
+            "box": {
+              "x": 116,
+              "y": 692.1875,
+              "width": 1048,
+              "height": 238,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 621.1875,
+              "width": 1082,
+              "height": 326,
+              "right": 1181
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 116,
+              "y": 1034.1875,
+              "width": 1048,
+              "height": 310,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 963.1875,
+              "width": 1082,
+              "height": 398,
+              "right": 1181
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 116,
+              "y": 1448.1875,
+              "width": 1048,
+              "height": 166,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 1377.1875,
+              "width": 1082,
+              "height": 254,
+              "right": 1181
+            },
+            "display": "block"
+          }
+        ],
+        "errors": [],
+        "compactRows": 9
+      }
+    },
+    {
+      "name": "compact-saved-1280 associated labels",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-1280 responsive headings",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-1280 expanded owned choices",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-1280 headings outside own rows",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-1280 desktop label association retained",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-1280 keyboard reaches input and row controls",
+      "passed": true,
+      "measurements": {
+        "focused": [
+          {
+            "name": "questions-3-0-0-text",
+            "classes": "textinput form-control",
+            "outline": "rgb(33, 37, 41) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-up",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-down",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-add",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-delete",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          }
+        ]
+      }
+    },
+    {
+      "name": "compact-saved-390 no horizontal page overflow",
+      "passed": true,
+      "measurements": {
+        "width": 390,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "name": "compact-saved-390 no horizontal formset overflow",
+      "passed": true,
+      "measurements": {
+        "form": {
+          "x": 29,
+          "y": 408.1875,
+          "width": 332,
+          "height": 1857.375,
+          "right": 361
+        },
+        "scrollWidth": 344,
+        "clientWidth": 332,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 390,
+          "scrollWidth": 390
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 332,
+            "scrollWidth": 332,
+            "box": {
+              "x": 29,
+              "y": 534.53125,
+              "width": 332,
+              "height": 1677.03125,
+              "right": 361
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 740.875,
+              "width": 280,
+              "height": 300,
+              "right": 335
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 1305.21875,
+              "width": 280,
+              "height": 458,
+              "right": 335
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 2027.5625,
+              "width": 280,
+              "height": 142,
+              "right": 335
+            }
+          }
+        ],
+        "fields": [
+          {
+            "id": "id_questions-3-0-0-text",
+            "input": {
+              "x": 46,
+              "y": 583.53125,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 551.53125,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 551.53125,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 551.53125,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 781.875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 749.875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 749.875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 749.875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-1-label",
+            "input": {
+              "x": 64,
+              "y": 939.875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 907.875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 907.875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 907.875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-3-0-1-text",
+            "input": {
+              "x": 46,
+              "y": 1147.875,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 1115.875,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 1115.875,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 1115.875,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 1346.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1314.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1314.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1314.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-1-label",
+            "input": {
+              "x": 64,
+              "y": 1504.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1472.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1472.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1472.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-2-label",
+            "input": {
+              "x": 64,
+              "y": 1662.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1630.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1630.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1630.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-3-0-2-text",
+            "input": {
+              "x": 46,
+              "y": 1870.21875,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 1838.21875,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 1838.21875,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 1838.21875,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-2-None-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 2068.5625,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 2036.5625,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 2036.5625,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 2036.5625,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          }
+        ],
+        "headings": [
+          {
+            "display": "none",
+            "insideRow": false,
+            "owner": "questions"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          }
+        ],
+        "children": [
+          {
+            "box": {
+              "x": 46,
+              "y": 691.53125,
+              "width": 298,
+              "height": 374.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 534.53125,
+              "width": 332,
+              "height": 548.34375,
+              "right": 361
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 46,
+              "y": 1255.875,
+              "width": 298,
+              "height": 532.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 1098.875,
+              "width": 332,
+              "height": 706.34375,
+              "right": 361
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 46,
+              "y": 1978.21875,
+              "width": 298,
+              "height": 216.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 1821.21875,
+              "width": 332,
+              "height": 390.34375,
+              "right": 361
+            },
+            "display": "block"
+          }
+        ],
+        "errors": [],
+        "compactRows": 9
+      }
+    },
+    {
+      "name": "compact-saved-390 associated labels",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-390 responsive headings",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-390 expanded owned choices",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-390 headings outside own rows",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-390 full-width labelled fields",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-saved-390 keyboard reaches input and row controls",
+      "passed": true,
+      "measurements": {
+        "focused": [
+          {
+            "name": "questions-3-0-0-text",
+            "classes": "textinput form-control",
+            "outline": "rgb(33, 37, 41) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-up",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-down",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-add",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-delete",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Edit classic menu label is visible",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "visible classic action edits same records",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "classic-saved-1280 no horizontal page overflow",
+      "passed": true,
+      "measurements": {
+        "width": 1280,
+        "scrollWidth": 1280
+      }
+    },
+    {
+      "name": "classic-saved-1280 classic comparison has no compact rows",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "classic-saved-390 no horizontal page overflow",
+      "passed": true,
+      "measurements": {
+        "width": 390,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "name": "classic-saved-390 classic comparison has no compact rows",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "Edit compact menu label is visible",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "server invalid POST redisplays submitted nested value",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-1280 no horizontal page overflow",
+      "passed": true,
+      "measurements": {
+        "width": 1280,
+        "scrollWidth": 1280
+      }
+    },
+    {
+      "name": "compact-invalid-1280 no horizontal formset overflow",
+      "passed": true,
+      "measurements": {
+        "form": {
+          "x": 99,
+          "y": 459.1875,
+          "width": 1082,
+          "height": 1251,
+          "right": 1181
+        },
+        "scrollWidth": 1094,
+        "clientWidth": 1082,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 1280,
+          "scrollWidth": 1280
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 1082,
+            "scrollWidth": 1082,
+            "box": {
+              "x": 99,
+              "y": 589.1875,
+              "width": 1082,
+              "height": 1067,
+              "right": 1181
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 745.1875,
+              "width": 1030,
+              "height": 160,
+              "right": 1155
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 1087.1875,
+              "width": 1030,
+              "height": 257,
+              "right": 1155
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 1526.1875,
+              "width": 1030,
+              "height": 88,
+              "right": 1155
+            }
+          }
+        ],
+        "fields": [
+          {
+            "id": "id_questions-3-0-0-text",
+            "input": {
+              "x": 116,
+              "y": 638.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 638.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 638.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 637.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 786.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 786.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 786.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 785.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-1-label",
+            "input": {
+              "x": 134,
+              "y": 858.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 858.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 858.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 857.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-3-0-1-text",
+            "input": {
+              "x": 116,
+              "y": 980.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 980.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 980.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 979.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 1128.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1128.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1128.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1127.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-1-label",
+            "input": {
+              "x": 134,
+              "y": 1200.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1200.1875,
+              "width": 685.328125,
+              "height": 63,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1200.1875,
+              "width": 1028,
+              "height": 63,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1199.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-2-label",
+            "input": {
+              "x": 134,
+              "y": 1297.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1297.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1297.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1296.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-3-0-2-text",
+            "input": {
+              "x": 116,
+              "y": 1419.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 1419.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 1419.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 1418.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-2-None-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 1567.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1567.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1567.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1566.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          }
+        ],
+        "headings": [
+          {
+            "display": "flex",
+            "insideRow": false,
+            "owner": "questions"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          }
+        ],
+        "children": [
+          {
+            "box": {
+              "x": 116,
+              "y": 692.1875,
+              "width": 1048,
+              "height": 238,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 621.1875,
+              "width": 1082,
+              "height": 326,
+              "right": 1181
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 116,
+              "y": 1034.1875,
+              "width": 1048,
+              "height": 335,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 963.1875,
+              "width": 1082,
+              "height": 423,
+              "right": 1181
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 116,
+              "y": 1473.1875,
+              "width": 1048,
+              "height": 166,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 1402.1875,
+              "width": 1082,
+              "height": 254,
+              "right": 1181
+            },
+            "display": "block"
+          }
+        ],
+        "errors": [
+          {
+            "text": " Ensure this value has at most 100 characters (it has 101). ",
+            "display": "block",
+            "owner": true
+          }
+        ],
+        "compactRows": 9
+      }
+    },
+    {
+      "name": "compact-invalid-1280 associated labels",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-1280 responsive headings",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-1280 expanded owned choices",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-1280 headings outside own rows",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-1280 desktop label association retained",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-1280 visible field-local error",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-1280 keyboard reaches input and row controls",
+      "passed": true,
+      "measurements": {
+        "focused": [
+          {
+            "name": "questions-3-0-0-text",
+            "classes": "textinput form-control",
+            "outline": "rgb(33, 37, 41) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-up",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-down",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-add",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-delete",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          }
+        ]
+      }
+    },
+    {
+      "name": "compact-invalid-390 no horizontal page overflow",
+      "passed": true,
+      "measurements": {
+        "width": 390,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "name": "compact-invalid-390 no horizontal formset overflow",
+      "passed": true,
+      "measurements": {
+        "form": {
+          "x": 29,
+          "y": 408.1875,
+          "width": 332,
+          "height": 1903.375,
+          "right": 361
+        },
+        "scrollWidth": 344,
+        "clientWidth": 332,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 390,
+          "scrollWidth": 390
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 332,
+            "scrollWidth": 332,
+            "box": {
+              "x": 29,
+              "y": 534.53125,
+              "width": 332,
+              "height": 1723.03125,
+              "right": 361
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 740.875,
+              "width": 280,
+              "height": 300,
+              "right": 335
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 1305.21875,
+              "width": 280,
+              "height": 504,
+              "right": 335
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 2073.5625,
+              "width": 280,
+              "height": 142,
+              "right": 335
+            }
+          }
+        ],
+        "fields": [
+          {
+            "id": "id_questions-3-0-0-text",
+            "input": {
+              "x": 46,
+              "y": 583.53125,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 551.53125,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 551.53125,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 551.53125,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 781.875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 749.875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 749.875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 749.875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-1-label",
+            "input": {
+              "x": 64,
+              "y": 939.875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 907.875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 907.875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 907.875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-3-0-1-text",
+            "input": {
+              "x": 46,
+              "y": 1147.875,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 1115.875,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 1115.875,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 1115.875,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 1346.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1314.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1314.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1314.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-1-label",
+            "input": {
+              "x": 64,
+              "y": 1504.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1472.21875,
+              "width": 278,
+              "height": 116,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1472.21875,
+              "width": 278,
+              "height": 170,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1472.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-2-label",
+            "input": {
+              "x": 64,
+              "y": 1708.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1676.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1676.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1676.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-3-0-2-text",
+            "input": {
+              "x": 46,
+              "y": 1916.21875,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 1884.21875,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 1884.21875,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 1884.21875,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-2-None-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 2114.5625,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 2082.5625,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 2082.5625,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 2082.5625,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          }
+        ],
+        "headings": [
+          {
+            "display": "none",
+            "insideRow": false,
+            "owner": "questions"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          }
+        ],
+        "children": [
+          {
+            "box": {
+              "x": 46,
+              "y": 691.53125,
+              "width": 298,
+              "height": 374.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 534.53125,
+              "width": 332,
+              "height": 548.34375,
+              "right": 361
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 46,
+              "y": 1255.875,
+              "width": 298,
+              "height": 578.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 1098.875,
+              "width": 332,
+              "height": 752.34375,
+              "right": 361
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 46,
+              "y": 2024.21875,
+              "width": 298,
+              "height": 216.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 1867.21875,
+              "width": 332,
+              "height": 390.34375,
+              "right": 361
+            },
+            "display": "block"
+          }
+        ],
+        "errors": [
+          {
+            "text": " Ensure this value has at most 100 characters (it has 101). ",
+            "display": "block",
+            "owner": true
+          }
+        ],
+        "compactRows": 9
+      }
+    },
+    {
+      "name": "compact-invalid-390 associated labels",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-390 responsive headings",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-390 expanded owned choices",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-390 headings outside own rows",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-390 full-width labelled fields",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-390 visible field-local error",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "compact-invalid-390 keyboard reaches input and row controls",
+      "passed": true,
+      "measurements": {
+        "focused": [
+          {
+            "name": "questions-3-0-0-text",
+            "classes": "textinput form-control",
+            "outline": "rgb(33, 37, 41) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-up",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-down",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-add",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          },
+          {
+            "name": "",
+            "classes": "btn btn-light cv-form-ctrl-delete",
+            "outline": "rgb(0, 0, 0) none 0px",
+            "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+          }
+        ]
+      }
+    },
+    {
+      "name": "corrected save visible in classic editor",
+      "passed": true,
+      "measurements": {}
+    },
+    {
+      "name": "database confirms nested persistence and ownership",
+      "passed": true,
+      "measurements": {
+        "id": 3,
+        "questions": [
+          {
+            "id": 4,
+            "text": "First browser question",
+            "questionnaire": 3,
+            "choices": [
+              {
+                "label": "First browser choice",
+                "question": 4
+              }
+            ]
+          },
+          {
+            "id": 5,
+            "text": "Added browser question",
+            "questionnaire": 3,
+            "choices": [
+              {
+                "label": "Initial added-question choice",
+                "question": 5
+              },
+              {
+                "label": "Corrected AJAX choice",
+                "question": 5
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "actual Bootstrap and formset assets loaded",
+      "passed": true,
+      "measurements": {
+        "scripts": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:44655/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:44655/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+          "http://127.0.0.1:44655/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:44655/static/crud_views/js/modal.js",
+          "http://127.0.0.1:44655/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:44655/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:44655/static/crud_views_object_detail/js/tabs.js"
+        ],
+        "styles": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:44655/static/crud_views/css/property.css",
+          "http://127.0.0.1:44655/static/crud_views/css/table.css",
+          "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+          "http://127.0.0.1:44655/static/crud_views/css/icons.css"
+        ],
+        "jquery": "function",
+        "bootstrap": "object"
+      }
+    },
+    {
+      "name": "no browser page errors",
+      "passed": true,
+      "measurements": []
+    }
+  ],
+  "captures": [
+    {
+      "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-example/compact-saved-1280.png",
+      "sha256": "a94d7a22f8b04fd324a3d984e3c4bec46a21802660ea9add83db7eda9655f327",
+      "width": 1280,
+      "url": "http://127.0.0.1:44655/formsets/questionnaire/3/update-compact/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8",
+      "measurements": {
+        "form": {
+          "x": 99,
+          "y": 459.1875,
+          "width": 1082,
+          "height": 1226,
+          "right": 1181
+        },
+        "scrollWidth": 1094,
+        "clientWidth": 1082,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 1280,
+          "scrollWidth": 1280
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 1082,
+            "scrollWidth": 1082,
+            "box": {
+              "x": 99,
+              "y": 589.1875,
+              "width": 1082,
+              "height": 1042,
+              "right": 1181
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 745.1875,
+              "width": 1030,
+              "height": 160,
+              "right": 1155
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 1087.1875,
+              "width": 1030,
+              "height": 232,
+              "right": 1155
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 1501.1875,
+              "width": 1030,
+              "height": 88,
+              "right": 1155
+            }
+          }
+        ],
+        "fields": [
+          {
+            "id": "id_questions-3-0-0-text",
+            "input": {
+              "x": 116,
+              "y": 638.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 638.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 638.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 637.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 786.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 786.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 786.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 785.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-1-label",
+            "input": {
+              "x": 134,
+              "y": 858.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 858.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 858.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 857.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-3-0-1-text",
+            "input": {
+              "x": 116,
+              "y": 980.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 980.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 980.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 979.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 1128.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1128.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1128.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1127.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-1-label",
+            "input": {
+              "x": 134,
+              "y": 1200.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1200.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1200.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1199.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-2-label",
+            "input": {
+              "x": 134,
+              "y": 1272.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1272.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1272.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1271.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-3-0-2-text",
+            "input": {
+              "x": 116,
+              "y": 1394.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 1394.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 1394.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 1393.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-2-None-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 1542.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1542.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1542.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1541.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          }
+        ],
+        "headings": [
+          {
+            "display": "flex",
+            "insideRow": false,
+            "owner": "questions"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          }
+        ],
+        "children": [
+          {
+            "box": {
+              "x": 116,
+              "y": 692.1875,
+              "width": 1048,
+              "height": 238,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 621.1875,
+              "width": 1082,
+              "height": 326,
+              "right": 1181
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 116,
+              "y": 1034.1875,
+              "width": 1048,
+              "height": 310,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 963.1875,
+              "width": 1082,
+              "height": 398,
+              "right": 1181
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 116,
+              "y": 1448.1875,
+              "width": 1048,
+              "height": 166,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 1377.1875,
+              "width": 1082,
+              "height": 254,
+              "right": 1181
+            },
+            "display": "block"
+          }
+        ],
+        "errors": [],
+        "compactRows": 9
+      }
+    },
+    {
+      "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-example/compact-saved-390.png",
+      "sha256": "1daed637d7e9e20cdd0075aa482d141614cdca8aec54744302f68c3c07fa2b0d",
+      "width": 390,
+      "url": "http://127.0.0.1:44655/formsets/questionnaire/3/update-compact/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8",
+      "measurements": {
+        "form": {
+          "x": 29,
+          "y": 408.1875,
+          "width": 332,
+          "height": 1857.375,
+          "right": 361
+        },
+        "scrollWidth": 344,
+        "clientWidth": 332,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 390,
+          "scrollWidth": 390
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 332,
+            "scrollWidth": 332,
+            "box": {
+              "x": 29,
+              "y": 534.53125,
+              "width": 332,
+              "height": 1677.03125,
+              "right": 361
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 740.875,
+              "width": 280,
+              "height": 300,
+              "right": 335
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 1305.21875,
+              "width": 280,
+              "height": 458,
+              "right": 335
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 2027.5625,
+              "width": 280,
+              "height": 142,
+              "right": 335
+            }
+          }
+        ],
+        "fields": [
+          {
+            "id": "id_questions-3-0-0-text",
+            "input": {
+              "x": 46,
+              "y": 583.53125,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 551.53125,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 551.53125,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 551.53125,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 781.875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 749.875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 749.875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 749.875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-1-label",
+            "input": {
+              "x": 64,
+              "y": 939.875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 907.875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 907.875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 907.875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-3-0-1-text",
+            "input": {
+              "x": 46,
+              "y": 1147.875,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 1115.875,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 1115.875,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 1115.875,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 1346.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1314.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1314.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1314.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-1-label",
+            "input": {
+              "x": 64,
+              "y": 1504.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1472.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1472.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1472.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-2-label",
+            "input": {
+              "x": 64,
+              "y": 1662.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1630.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1630.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1630.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-3-0-2-text",
+            "input": {
+              "x": 46,
+              "y": 1870.21875,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 1838.21875,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 1838.21875,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 1838.21875,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-2-None-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 2068.5625,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 2036.5625,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 2036.5625,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 2036.5625,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          }
+        ],
+        "headings": [
+          {
+            "display": "none",
+            "insideRow": false,
+            "owner": "questions"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          }
+        ],
+        "children": [
+          {
+            "box": {
+              "x": 46,
+              "y": 691.53125,
+              "width": 298,
+              "height": 374.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 534.53125,
+              "width": 332,
+              "height": 548.34375,
+              "right": 361
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 46,
+              "y": 1255.875,
+              "width": 298,
+              "height": 532.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 1098.875,
+              "width": 332,
+              "height": 706.34375,
+              "right": 361
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 46,
+              "y": 1978.21875,
+              "width": 298,
+              "height": 216.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 1821.21875,
+              "width": 332,
+              "height": 390.34375,
+              "right": 361
+            },
+            "display": "block"
+          }
+        ],
+        "errors": [],
+        "compactRows": 9
+      }
+    },
+    {
+      "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-example/classic-saved-1280.png",
+      "sha256": "b138900f0a37a3da6e2d52fc1de3cdca7074111d244ecd4a676c3317ea6972b2",
+      "width": 1280,
+      "url": "http://127.0.0.1:44655/formsets/questionnaire/3/update/",
+      "measurements": {
+        "form": {
+          "x": 99,
+          "y": 459.1875,
+          "width": 1082,
+          "height": 786,
+          "right": 1181
+        },
+        "scrollWidth": 1094,
+        "clientWidth": 1082,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 1280,
+          "scrollWidth": 1280
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 1082,
+            "scrollWidth": 1094,
+            "box": {
+              "x": 99,
+              "y": 589.1875,
+              "width": 1082,
+              "height": 618,
+              "right": 1181
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 990,
+            "scrollWidth": 1002,
+            "box": {
+              "x": 191.15625,
+              "y": 687.1875,
+              "width": 989.828125,
+              "height": 108,
+              "right": 1180.984375
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 990,
+            "scrollWidth": 1002,
+            "box": {
+              "x": 191.15625,
+              "y": 893.1875,
+              "width": 989.828125,
+              "height": 162,
+              "right": 1180.984375
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 990,
+            "scrollWidth": 1002,
+            "box": {
+              "x": 191.15625,
+              "y": 1153.1875,
+              "width": 989.828125,
+              "height": 54,
+              "right": 1180.984375
+            }
+          }
+        ],
+        "fields": [],
+        "headings": [],
+        "children": [],
+        "errors": [],
+        "compactRows": 0
+      }
+    },
+    {
+      "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-example/classic-saved-390.png",
+      "sha256": "baa3f3ecab0879037569799387894292a4d80e9884a470c370b07f5d0d5b78d4",
+      "width": 390,
+      "url": "http://127.0.0.1:44655/formsets/questionnaire/3/update/",
+      "measurements": {
+        "form": {
+          "x": 29,
+          "y": 522.1875,
+          "width": 332,
+          "height": 1113.375,
+          "right": 361
+        },
+        "scrollWidth": 344,
+        "clientWidth": 332,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 390,
+          "scrollWidth": 390
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 332,
+            "scrollWidth": 344,
+            "box": {
+              "x": 29,
+              "y": 648.53125,
+              "width": 332,
+              "height": 949.03125,
+              "right": 361
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 302,
+            "scrollWidth": 314,
+            "box": {
+              "x": 58.65625,
+              "y": 780.875,
+              "width": 302.328125,
+              "height": 184,
+              "right": 360.984375
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 302,
+            "scrollWidth": 314,
+            "box": {
+              "x": 58.65625,
+              "y": 1097.21875,
+              "width": 302.328125,
+              "height": 276,
+              "right": 360.984375
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 302,
+            "scrollWidth": 314,
+            "box": {
+              "x": 58.65625,
+              "y": 1505.5625,
+              "width": 302.328125,
+              "height": 92,
+              "right": 360.984375
+            }
+          }
+        ],
+        "fields": [],
+        "headings": [],
+        "children": [],
+        "errors": [],
+        "compactRows": 0
+      }
+    },
+    {
+      "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-example/compact-invalid-1280.png",
+      "sha256": "a210002c0caebfc94b9e31d8ce330096df1a0fe9ec2a1c2cad06b3cca2f6e60c",
+      "width": 1280,
+      "url": "http://127.0.0.1:44655/formsets/questionnaire/3/update-compact/",
+      "measurements": {
+        "form": {
+          "x": 99,
+          "y": 459.1875,
+          "width": 1082,
+          "height": 1251,
+          "right": 1181
+        },
+        "scrollWidth": 1094,
+        "clientWidth": 1082,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 1280,
+          "scrollWidth": 1280
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 1082,
+            "scrollWidth": 1082,
+            "box": {
+              "x": 99,
+              "y": 589.1875,
+              "width": 1082,
+              "height": 1067,
+              "right": 1181
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 745.1875,
+              "width": 1030,
+              "height": 160,
+              "right": 1155
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 1087.1875,
+              "width": 1030,
+              "height": 257,
+              "right": 1155
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 1030,
+            "scrollWidth": 1030,
+            "box": {
+              "x": 125,
+              "y": 1526.1875,
+              "width": 1030,
+              "height": 88,
+              "right": 1155
+            }
+          }
+        ],
+        "fields": [
+          {
+            "id": "id_questions-3-0-0-text",
+            "input": {
+              "x": 116,
+              "y": 638.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 638.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 638.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 637.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 786.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 786.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 786.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 785.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-1-label",
+            "input": {
+              "x": 134,
+              "y": 858.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 858.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 858.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 857.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-3-0-1-text",
+            "input": {
+              "x": 116,
+              "y": 980.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 980.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 980.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 979.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 1128.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1128.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1128.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1127.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-1-label",
+            "input": {
+              "x": 134,
+              "y": 1200.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1200.1875,
+              "width": 685.328125,
+              "height": 63,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1200.1875,
+              "width": 1028,
+              "height": 63,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1199.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-2-label",
+            "input": {
+              "x": 134,
+              "y": 1297.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1297.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1297.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1296.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-3-0-2-text",
+            "input": {
+              "x": 116,
+              "y": 1419.1875,
+              "width": 693.328125,
+              "height": 38,
+              "right": 809.328125
+            },
+            "column": {
+              "x": 108,
+              "y": 1419.1875,
+              "width": 709.328125,
+              "height": 38,
+              "right": 817.328125
+            },
+            "grid": {
+              "x": 108,
+              "y": 1419.1875,
+              "width": 1064,
+              "height": 38,
+              "right": 1172
+            },
+            "label": {
+              "x": 115,
+              "y": 1418.1875,
+              "width": 1,
+              "height": 1,
+              "right": 116
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          },
+          {
+            "id": "id_questions-choices-3-0-2-None-0-0-label",
+            "input": {
+              "x": 134,
+              "y": 1567.1875,
+              "width": 669.328125,
+              "height": 38,
+              "right": 803.328125
+            },
+            "column": {
+              "x": 126,
+              "y": 1567.1875,
+              "width": 685.328125,
+              "height": 38,
+              "right": 811.328125
+            },
+            "grid": {
+              "x": 126,
+              "y": 1567.1875,
+              "width": 1028,
+              "height": 38,
+              "right": 1154
+            },
+            "label": {
+              "x": 133,
+              "y": 1566.1875,
+              "width": 1,
+              "height": 1,
+              "right": 134
+            },
+            "labelPosition": "absolute",
+            "clip": "rect(0px, 0px, 0px, 0px)"
+          }
+        ],
+        "headings": [
+          {
+            "display": "flex",
+            "insideRow": false,
+            "owner": "questions"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "flex",
+            "insideRow": true,
+            "owner": "questions-choices"
+          }
+        ],
+        "children": [
+          {
+            "box": {
+              "x": 116,
+              "y": 692.1875,
+              "width": 1048,
+              "height": 238,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 621.1875,
+              "width": 1082,
+              "height": 326,
+              "right": 1181
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 116,
+              "y": 1034.1875,
+              "width": 1048,
+              "height": 335,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 963.1875,
+              "width": 1082,
+              "height": 423,
+              "right": 1181
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 116,
+              "y": 1473.1875,
+              "width": 1048,
+              "height": 166,
+              "right": 1164
+            },
+            "parent": {
+              "x": 99,
+              "y": 1402.1875,
+              "width": 1082,
+              "height": 254,
+              "right": 1181
+            },
+            "display": "block"
+          }
+        ],
+        "errors": [
+          {
+            "text": " Ensure this value has at most 100 characters (it has 101). ",
+            "display": "block",
+            "owner": true
+          }
+        ],
+        "compactRows": 9
+      }
+    },
+    {
+      "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-example/compact-invalid-390.png",
+      "sha256": "02a7e599fbdd29d4790065ffcc3fb212ce2753c1041e28309e4fe81231439b29",
+      "width": 390,
+      "url": "http://127.0.0.1:44655/formsets/questionnaire/3/update-compact/",
+      "measurements": {
+        "form": {
+          "x": 29,
+          "y": 408.1875,
+          "width": 332,
+          "height": 1903.375,
+          "right": 361
+        },
+        "scrollWidth": 344,
+        "clientWidth": 332,
+        "bootstrapRowDisplay": "flex",
+        "viewport": {
+          "width": 390,
+          "scrollWidth": 390
+        },
+        "outsideViewport": [],
+        "formsets": [
+          {
+            "prefix": "questions-3-0",
+            "width": 332,
+            "scrollWidth": 332,
+            "box": {
+              "x": 29,
+              "y": 534.53125,
+              "width": 332,
+              "height": 1723.03125,
+              "right": 361
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-0-4-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 740.875,
+              "width": 280,
+              "height": 300,
+              "right": 335
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-1-5-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 1305.21875,
+              "width": 280,
+              "height": 504,
+              "right": 335
+            }
+          },
+          {
+            "prefix": "questions-choices-3-0-2-None-0",
+            "width": 280,
+            "scrollWidth": 280,
+            "box": {
+              "x": 55,
+              "y": 2073.5625,
+              "width": 280,
+              "height": 142,
+              "right": 335
+            }
+          }
+        ],
+        "fields": [
+          {
+            "id": "id_questions-3-0-0-text",
+            "input": {
+              "x": 46,
+              "y": 583.53125,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 551.53125,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 551.53125,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 551.53125,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 781.875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 749.875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 749.875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 749.875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-0-4-0-1-label",
+            "input": {
+              "x": 64,
+              "y": 939.875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 907.875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 907.875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 907.875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-3-0-1-text",
+            "input": {
+              "x": 46,
+              "y": 1147.875,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 1115.875,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 1115.875,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 1115.875,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 1346.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1314.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1314.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1314.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-1-label",
+            "input": {
+              "x": 64,
+              "y": 1504.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1472.21875,
+              "width": 278,
+              "height": 116,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1472.21875,
+              "width": 278,
+              "height": 170,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1472.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-1-5-0-2-label",
+            "input": {
+              "x": 64,
+              "y": 1708.21875,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 1676.21875,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 1676.21875,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 1676.21875,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-3-0-2-text",
+            "input": {
+              "x": 46,
+              "y": 1916.21875,
+              "width": 298,
+              "height": 38,
+              "right": 344
+            },
+            "column": {
+              "x": 38,
+              "y": 1884.21875,
+              "width": 314,
+              "height": 70,
+              "right": 352
+            },
+            "grid": {
+              "x": 38,
+              "y": 1884.21875,
+              "width": 314,
+              "height": 124,
+              "right": 352
+            },
+            "label": {
+              "x": 46,
+              "y": 1884.21875,
+              "width": 50,
+              "height": 24,
+              "right": 96
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          },
+          {
+            "id": "id_questions-choices-3-0-2-None-0-0-label",
+            "input": {
+              "x": 64,
+              "y": 2114.5625,
+              "width": 262,
+              "height": 38,
+              "right": 326
+            },
+            "column": {
+              "x": 56,
+              "y": 2082.5625,
+              "width": 278,
+              "height": 70,
+              "right": 334
+            },
+            "grid": {
+              "x": 56,
+              "y": 2082.5625,
+              "width": 278,
+              "height": 124,
+              "right": 334
+            },
+            "label": {
+              "x": 64,
+              "y": 2082.5625,
+              "width": 60,
+              "height": 24,
+              "right": 124
+            },
+            "labelPosition": "static",
+            "clip": "auto"
+          }
+        ],
+        "headings": [
+          {
+            "display": "none",
+            "insideRow": false,
+            "owner": "questions"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          },
+          {
+            "display": "none",
+            "insideRow": true,
+            "owner": "questions-choices"
+          }
+        ],
+        "children": [
+          {
+            "box": {
+              "x": 46,
+              "y": 691.53125,
+              "width": 298,
+              "height": 374.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 534.53125,
+              "width": 332,
+              "height": 548.34375,
+              "right": 361
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 46,
+              "y": 1255.875,
+              "width": 298,
+              "height": 578.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 1098.875,
+              "width": 332,
+              "height": 752.34375,
+              "right": 361
+            },
+            "display": "block"
+          },
+          {
+            "box": {
+              "x": 46,
+              "y": 2024.21875,
+              "width": 298,
+              "height": 216.34375,
+              "right": 344
+            },
+            "parent": {
+              "x": 29,
+              "y": 1867.21875,
+              "width": 332,
+              "height": 390.34375,
+              "right": 361
+            },
+            "display": "block"
+          }
+        ],
+        "errors": [
+          {
+            "text": " Ensure this value has at most 100 characters (it has 101). ",
+            "display": "block",
+            "owner": true
+          }
+        ],
+        "compactRows": 9
+      }
+    }
+  ],
+  "fragments": [
+    {
+      "name": "new question",
+      "url": "http://127.0.0.1:44655/formsets/questionnaire/3/update-compact/?template=questions&pk=3&num=2&formset_parent_prefix_key=",
+      "status": 200,
+      "rows": [
+        "questions-3-0-2"
+      ]
+    },
+    {
+      "name": "choice under nonfirst question",
+      "url": "http://127.0.0.1:44655/formsets/questionnaire/3/update-compact/?template=questions%7Cchoices&pk=None&num=1&formset_parent_prefix_key=3-0-2",
+      "status": 200,
+      "rows": [
+        "questions-choices-3-0-2-None-0-1"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:44655/static/crud_views/js/formset.js",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "cleanup": {
+    "server": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "reaped": true,
+    "temporaryRemoved": true
+  },
+  "passed": true,
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "playwright": "1.64.1",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "django": "6.1.2",
+    "chromium": "149.0.7827.55"
+  },
+  "sourceHashes": {
+    "examples/bootstrap5/formsets/views.py": "2e702b2be760f7c3c3591cf6a0d2c77464a2f3cdd14e00beec658bee04caa583",
+    "examples/bootstrap5/formsets/tests.py": "f6b74ac05845bbf313d6750a271dfc9be5a11e67d248de5ea24227496b755631",
+    "examples/bootstrap5/project/features.py": "755079ebc9a6cce5e9fdfe41d1f59ab3e0dfd63ab823b2ef5cdce11bb940e996",
+    "examples/bootstrap5/project/tests.py": "ce2e7fc663c1bece2e18dfe4de69645af04a88af27163d68bc9bf79761c7d040",
+    "docs/reference/formsets.md": "92833b0a4234df7e9e0cefbfaa4ad816b28e39b3a5f291cbed879f031ae11995",
+    "src/crud_views/lib/formsets/inline_formset.py": "55f5866844e04df5efe2ec5b550ae1252e970220b0901dc6631e8be0fb024195",
+    "src/crud_views/lib/formsets/compact.py": "9723570b0d8ad8f7f806d23f6d31d4104a3d5e7e628bf81da9a89d4d0e337ade",
+    "src/crud_views/static/crud_views/css/formset.css": "4f7f833fc666b062b5a32f8fdb598f46f40927d1a73d30e82a7279c954ac4c0b",
+    "src/crud_views/static/crud_views/js/formset.js": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
+    "src/crud_views/templates/crud_views/formsets/formset.html": "df0b5a882fd81da7ea077fde73faddaf29eceaced0226bd1e1cc7eb08376e6d4",
+    "examples/bootstrap5/project/templates/project/base.html": "6d16fdf17d3112a1fd826cd24e4542f837499e566d8f410ca6588312d55e4107",
+    ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/evidence/06-example-browser.cjs": "e23c9e938be98362862cc61d4abb213159d7a9f99da82428f9eae3f3578cae93"
+  },
+  "setup": {
+    "settings": "from project.settings import *\nDATABASES = {\"default\": {\"ENGINE\": \"django.db.backends.sqlite3\", \"NAME\": \"/tmp/cv-compact-example-M5Gide/demo.sqlite3\"}}\nALLOWED_HOSTS = [\"127.0.0.1\", \"localhost\"]\n",
+    "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views/examples/bootstrap5:/tmp/cv-compact-example-M5Gide",
+    "DJANGO_SETTINGS_MODULE": "compact_example_settings",
+    "commands": [
+      {
+        "command": [
+          "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+          "examples/bootstrap5/manage.py",
+          "migrate",
+          "--noinput"
+        ],
+        "exitCode": 0,
+        "output": "Operations to perform:\n  Apply all migrations: action_menus, admin, auth, breadcrumbs, conditional, contenttypes, context_buttons, custom_form, cvw, delete_demo, disabled_actions, flash_messages, formsets, formsets_conditional, guardian, guardian_demo, label_modes, library, nested, object_detail, polymorphic_demo, resources, sessions, workflow\nRunning migrations:\n  Applying action_menus.0001_initial... OK\n  Applying contenttypes.0001_initial... OK\n  Applying auth.0001_initial... OK\n  Applying admin.0001_initial... OK\n  Applying admin.0002_logentry_remove_auto_add... OK\n  Applying admin.0003_logentry_add_action_flag_choices... OK\n  Applying contenttypes.0002_remove_content_type_name... OK\n  Applying auth.0002_alter_permission_name_max_length... OK\n  Applying auth.0003_alter_user_email_max_length... OK\n  Applying auth.0004_alter_user_username_opts... OK\n  Applying auth.0005_alter_user_last_login_null... OK\n  Applying auth.0006_require_contenttypes_0002... OK\n  Applying auth.0007_alter_validators_add_error_messages... OK\n  Applying auth.0008_alter_user_username_max_length... OK\n  Applying auth.0009_alter_user_last_name_max_length... OK\n  Applying auth.0010_alter_group_name_max_length... OK\n  Applying auth.0011_update_proxy_permissions... OK\n  Applying auth.0012_alter_user_first_name_max_length... OK\n  Applying breadcrumbs.0001_initial... OK\n  Applying breadcrumbs.0002_translatable_verbose_names... OK\n  Applying conditional.0001_initial... OK\n  Applying conditional.0002_event_with_speakers_registration_note_speaker... OK\n  Applying conditional.0003_translatable_verbose_names... OK\n  Applying context_buttons.0001_initial... OK\n  Applying custom_form.0001_initial... OK\n  Applying cvw.0001_initial... OK\n  Applying cvw.0002_rename_workflow_object_id_to_pk... OK\n  Applying delete_demo.0001_initial... OK\n  Applying disabled_actions.0001_initial... OK\n  Applying flash_messages.0001_initial... OK\n  Applying formsets.0001_initial... OK\n  Applying formsets.0002_translatable_verbose_names... OK\n  Applying formsets_conditional.0001_initial... OK\n  Applying guardian.0001_initial... OK\n  Applying guardian.0002_generic_permissions_index... OK\n  Applying guardian.0003_remove_groupobjectpermission_guardian_gr_content_ae6aec_idx_and_more... OK\n  Applying guardian_demo.0001_initial... OK\n  Applying guardian_demo.0002_translatable_verbose_names... OK\n  Applying guardian_demo.0003_note... OK\n  Applying label_modes.0001_initial... OK\n  Applying library.0001_initial... OK\n  Applying library.0002_translatable_verbose_names... OK\n  Applying library.0003_pseudonym_not_null... OK\n  Applying library.0004_contract... OK\n  Applying nested.0001_initial... OK\n  Applying nested.0002_translatable_verbose_names... OK\n  Applying object_detail.0001_initial... OK\n  Applying object_detail.0002_translatable_verbose_names... OK\n  Applying polymorphic_demo.0001_initial... OK\n  Applying polymorphic_demo.0002_translatable_verbose_names... OK\n  Applying resources.0001_initial... OK\n  Applying resources.0002_translatable_verbose_names... OK\n  Applying sessions.0001_initial... OK\n  Applying workflow.0001_initial... OK\n  Applying workflow.0002_translatable_verbose_names... OK\n"
+      },
+      {
+        "command": [
+          "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+          "examples/bootstrap5/manage.py",
+          "seed"
+        ],
+        "exitCode": 0,
+        "output": "users: alice/alice, bob/bob\nseeded library\nseeded card_view\nseeded nested\nseeded formsets\nseeded workflow\nseeded polymorphic_demo\nseeded guardian_demo\nseeded resources\nseeded object_detail\nseeded breadcrumbs\nseeded conditional\nseeded formsets_conditional\nseeded custom_form\nseeded context_buttons\nseeded action_menus\nseeded label_modes\nseeded flash_messages\nseeded disabled_actions\nseeded delete_demo\nseeded theming\nDone.\n"
+      }
+    ],
+    "serverCommand": [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "runserver",
+      "127.0.0.1:44655",
+      "--noreload"
+    ]
+  },
+  "base": "http://127.0.0.1:44655",
+  "serverLog": "Performing system checks...\n\nSystem check identified no issues (0 silenced).\nNovember 11, 2026 - 07:05:54\nDjango version 6.1.2, using settings 'compact_example_settings'\nStarting WSGI development server at http://127.0.0.1:44655/\nQuit the server with CONTROL-C.\n\nWARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.\nFor more information on production servers see: https://docs.djangoproject.com/en/6.1/howto/deployment/\n[11/Nov/2026 07:05:54] \"GET /login/ HTTP/1.1\" 200 17123\n[11/Nov/2026 07:05:55] \"GET /login/ HTTP/1.1\" 200 17123\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 2776\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 7073\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21226\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n[11/Nov/2026 07:05:55] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 10043\n[11/Nov/2026 07:05:55] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2564\nNot Found: /favicon.ico\n[11/Nov/2026 07:05:55] \"GET /favicon.ico HTTP/1.1\" 404 6001\n[11/Nov/2026 07:05:55] \"POST /login/ HTTP/1.1\" 302 0\n[11/Nov/2026 07:05:55] \"GET / HTTP/1.1\" 200 33441\n[11/Nov/2026 07:05:56] \"GET /formsets/questionnaire/ HTTP/1.1\" 200 55447\n[11/Nov/2026 07:05:56] \"GET /formsets/questionnaire/create-compact/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8 HTTP/1.1\" 200 61999\n[11/Nov/2026 07:05:57] \"POST /formsets/questionnaire/create-compact/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8 HTTP/1.1\" 302 0\n[11/Nov/2026 07:05:57] \"GET /formsets/questionnaire/ HTTP/1.1\" 200 57861\n[11/Nov/2026 07:05:57] \"GET /formsets/questionnaire/3/update-compact/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8 HTTP/1.1\" 200 73909\n[11/Nov/2026 07:05:58] \"GET /formsets/questionnaire/3/update-compact/?template=questions&pk=3&num=2&formset_parent_prefix_key= HTTP/1.1\" 200 9513\n[11/Nov/2026 07:05:58] \"GET /formsets/questionnaire/3/update-compact/?template=questions%7Cchoices&pk=None&num=1&formset_parent_prefix_key=3-0-2 HTTP/1.1\" 200 3906\n[11/Nov/2026 07:05:58] \"POST /formsets/questionnaire/3/update-compact/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8 HTTP/1.1\" 302 0\n[11/Nov/2026 07:05:58] \"GET /formsets/questionnaire/ HTTP/1.1\" 200 57861\n[11/Nov/2026 07:05:58] \"GET /formsets/questionnaire/3/update-compact/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8 HTTP/1.1\" 200 88642\n[11/Nov/2026 07:06:00] \"GET /formsets/questionnaire/3/update/ HTTP/1.1\" 200 85106\n[11/Nov/2026 07:06:01] \"GET /formsets/questionnaire/3/update-compact/ HTTP/1.1\" 200 87902\n[11/Nov/2026 07:06:02] \"POST /formsets/questionnaire/3/update-compact/ HTTP/1.1\" 200 88309\n[11/Nov/2026 07:06:03] \"POST /formsets/questionnaire/3/update-compact/ HTTP/1.1\" 302 0\n[11/Nov/2026 07:06:03] \"GET /formsets/questionnaire/ HTTP/1.1\" 200 57861\n[11/Nov/2026 07:06:03] \"GET /formsets/questionnaire/3/update/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8 HTTP/1.1\" 200 85858\n",
+  "compactURL": "http://127.0.0.1:44655/formsets/questionnaire/3/update-compact/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsInF1ZXN0aW9ubmFpcmUiXSwicGFyZW50cyI6e319%3AxGhtGz8NWn-VZj59DLasvdrPBhtnkwDAmq-QE2VIlx8",
+  "classicURL": "http://127.0.0.1:44655/formsets/questionnaire/3/update/",
+  "completed": "2026-11-11T07:06:04.254Z"
+}

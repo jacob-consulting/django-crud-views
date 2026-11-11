@@ -1,0 +1,141 @@
+System check identified no issues (0 silenced).
+/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/django/views/generic/list.py:91: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'workflow.models.Campaign'> QuerySet.
+  return self.paginator_class(
+/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/django/views/generic/list.py:91: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'workflow.models.Campaign'> QuerySet.
+  return self.paginator_class(
+users: alice/alice, bob/bob
+seeded library
+seeded card_view
+seeded nested
+seeded formsets
+seeded workflow
+seeded polymorphic_demo
+seeded guardian_demo
+seeded resources
+seeded object_detail
+seeded breadcrumbs
+seeded conditional
+seeded formsets_conditional
+seeded custom_form
+seeded context_buttons
+seeded action_menus
+seeded label_modes
+seeded flash_messages
+seeded disabled_actions
+seeded delete_demo
+seeded theming
+Done.
+users: alice/alice, bob/bob
+seeded library
+seeded card_view
+seeded nested
+seeded formsets
+seeded workflow
+seeded polymorphic_demo
+seeded guardian_demo
+seeded resources
+seeded object_detail
+seeded breadcrumbs
+seeded conditional
+seeded formsets_conditional
+seeded custom_form
+seeded context_buttons
+seeded action_menus
+seeded label_modes
+seeded flash_messages
+seeded disabled_actions
+seeded delete_demo
+seeded theming
+Done.
+users: alice/alice, bob/bob
+seeded library
+seeded card_view
+seeded nested
+seeded formsets
+seeded workflow
+seeded polymorphic_demo
+seeded guardian_demo
+seeded resources
+seeded object_detail
+seeded breadcrumbs
+seeded conditional
+seeded formsets_conditional
+seeded custom_form
+seeded context_buttons
+seeded action_menus
+seeded label_modes
+seeded flash_messages
+seeded disabled_actions
+seeded delete_demo
+seeded theming
+Done.
+users: alice/alice, bob/bob
+seeded library
+seeded card_view
+seeded nested
+seeded formsets
+seeded workflow
+seeded polymorphic_demo
+seeded guardian_demo
+seeded resources
+seeded object_detail
+seeded breadcrumbs
+seeded conditional
+seeded formsets_conditional
+seeded custom_form
+seeded context_buttons
+seeded action_menus
+seeded label_modes
+seeded flash_messages
+seeded disabled_actions
+seeded delete_demo
+seeded theming
+Done.
+users: alice/alice, bob/bob
+seeded library
+seeded card_view
+seeded nested
+seeded formsets
+seeded workflow
+seeded polymorphic_demo
+seeded guardian_demo
+seeded resources
+seeded object_detail
+seeded breadcrumbs
+seeded conditional
+seeded formsets_conditional
+seeded custom_form
+seeded context_buttons
+seeded action_menus
+seeded label_modes
+seeded flash_messages
+seeded disabled_actions
+seeded delete_demo
+seeded theming
+Done.
+users: alice/alice, bob/bob
+seeded library
+seeded card_view
+seeded nested
+seeded formsets
+seeded workflow
+seeded polymorphic_demo
+seeded guardian_demo
+seeded resources
+seeded object_detail
+seeded breadcrumbs
+seeded conditional
+seeded formsets_conditional
+seeded custom_form
+seeded context_buttons
+seeded action_menus
+seeded label_modes
+seeded flash_messages
+seeded disabled_actions
+seeded delete_demo
+seeded theming
+Done.
+----------------------------------------------------------------------
+Ran 60 tests in 5.155s
+
+OK

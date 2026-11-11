@@ -1,0 +1,1 @@
+{"passed":true,"assertions":58,"captures":6,"cleanup":{"server":{"code":null,"signal":"SIGTERM"},"reaped":true,"temporaryRemoved":true}}

@@ -1,6 +1,6 @@
 {
-  "captured": "2026-11-10T21:42:26.454Z",
-  "revision": "b1389a10c26da681d8b754ffd844f18aa267db18",
+  "captured": "2026-11-11T07:00:46.583Z",
+  "revision": "690a69ea48560a728eb352787af33175875e6883",
   "sourceHashes": {
     ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/.gitignore": "88d1099650ee449edf68179321b1fbfb215d89a5170e36a4d6371141027bc9dd",
     "package-lock.json": "f3ea8ff7293a09b93ef84305a784ed1a13760aed26b140940a606218cc6462af",
@@ -12,7 +12,7 @@
     "src/crud_views/lib/formsets/__init__.py": "98cd182285d1fd35581c5ce986a1abbb4cd8139759f578e3e5813ca554ab2f73",
     "src/crud_views/lib/formsets/compact.py": "9723570b0d8ad8f7f806d23f6d31d4104a3d5e7e628bf81da9a89d4d0e337ade",
     "src/crud_views/lib/formsets/formsets.py": "d4cdee62b1edbe58794b4bf671cd93ccf756603e4e2e50f3162288fd93242cd7",
-    "src/crud_views/lib/formsets/inline_formset.py": "3d83d1860546d9cc10cac25dfbae739c5527581da2e4745d10d6e8ce1b3254b4",
+    "src/crud_views/lib/formsets/inline_formset.py": "55f5866844e04df5efe2ec5b550ae1252e970220b0901dc6631e8be0fb024195",
     "src/crud_views/lib/formsets/layout.py": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937",
     "src/crud_views/lib/formsets/mixins.py": "a7c424b9e86a9aef3cecd094c2680fe9dcd47607257e5fef1e9742f2e6f0985c",
     "src/crud_views/lib/formsets/render_tree.py": "c90eeb13961690e867fe691c7264f4d0b356ee85881496a6f46119ad7427d893",
@@ -55,12 +55,12 @@
   "runtime": {
     "node": "v24.21.0",
     "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
-    "pythonPath": "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
     "pythonRealPath": "/usr/bin/python3.12",
     "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
     "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
     "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
-    "django": "6.1.2",
+    "django": "6.0.9",
     "playwright": "1.64.1",
     "chromium": "149.0.7827.55"
   },
@@ -635,7 +635,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Title*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -1213,7 +1213,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Title*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -1791,7 +1791,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Title*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -2369,7 +2369,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Title*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -2828,7 +2828,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Title*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -3287,7 +3287,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Title*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -3746,7 +3746,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Title*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -4205,7 +4205,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Title*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -4748,7 +4748,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Note*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -5291,7 +5291,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Note*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -5834,7 +5834,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Note*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -6377,7 +6377,7 @@
           "passed": true,
           "detail": {
             "accessible": "- textbox \"Note*\": \"8\"",
-            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"- Select an option -\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
+            "selectName": "- combobox \"Verkostende Person mit ausführlicher übersetzter Bezeichnung*\":\n  - option \"---------\"\n  - option \"browser\" [selected]\n  - option \"browser-denied\"",
             "tab": true
           }
         },
@@ -6396,7 +6396,7 @@
       "captures": [
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/compact-compact-390.png",
-          "sha256": "7bb7fb1abc200c6f19310344b0ca5a714a76902c171cf1d092bb485775ff0200",
+          "sha256": "02ec65bc9be1d93e82acf9f68c74b2f90960108a1d8f34c949b54121b1edfc6b",
           "width": 390,
           "measurements": {
             "assets": {
@@ -6940,7 +6940,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/compact-compact-767.png",
-          "sha256": "22acbab68d31d72b8feb3ef441b6200ed3ffa9c5539207984ff30ce8c3a91d1a",
+          "sha256": "ce92e14c37e915d15f8bac1da966b870131fa67c514954d246a34784d2c3f83d",
           "width": 767,
           "measurements": {
             "assets": {
@@ -7484,7 +7484,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/compact-compact-768.png",
-          "sha256": "4bbd3ead474639ea3f560b27cbdacd3428f7e4649a9654efa70528fdf3d206b0",
+          "sha256": "c9cf22e9fb18c7530596774a8ea92b26a8e0fcbc678a72f3a59996e04a27cb29",
           "width": 768,
           "measurements": {
             "assets": {
@@ -8028,7 +8028,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/compact-compact-1280.png",
-          "sha256": "0202e55afd12f3acba62972a1044986e3c88f25c91ea9a9d7b4a1aa9933ead24",
+          "sha256": "c004a11e8537c8f4f83b37f0b7d4d49f1c52306e46a234ea7d304c3b24b050bc",
           "width": 1280,
           "measurements": {
             "assets": {
@@ -8572,7 +8572,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/compact-classic-390.png",
-          "sha256": "df32bdaba8ca96891c9604ed3ad51a98d7755532b0da1369a3c21bc0ebd7f5d2",
+          "sha256": "526d9e3e5f5ea0430499396275fb3afc405851c65bdbfc528c24189c42130aab",
           "width": 390,
           "measurements": {
             "assets": {
@@ -8926,7 +8926,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/compact-classic-767.png",
-          "sha256": "8c6305459e5560cb3bc4f7cc5857d3fc3a3a77d722a984b0f6f1ad53c68950f4",
+          "sha256": "a8371b893c38bdd4d275abd848ec5226478c128c86ed2bca72a5203653d11440",
           "width": 767,
           "measurements": {
             "assets": {
@@ -9280,7 +9280,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/compact-classic-768.png",
-          "sha256": "fa60a8d4687853fd4e61532f859165f465723fa575368e0028bffeffe5682bbb",
+          "sha256": "2724a439a29ca836f16825ecda1472e9f312007f906f2812075e8d51017574fa",
           "width": 768,
           "measurements": {
             "assets": {
@@ -9634,7 +9634,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/compact-classic-1280.png",
-          "sha256": "48e2e3a006c3e00822389b0042f81ff57e009648bc9baac23cb3e66d0f42747c",
+          "sha256": "34a9728ec0aa72718a99ef5952895a33865142f4c0b3fd0e1a2b30cb384a54d8",
           "width": 1280,
           "measurements": {
             "assets": {
@@ -9988,7 +9988,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/classic-compact-390.png",
-          "sha256": "d68994cb35d5be62c9922baa9435bde091cbbd893cda6c9e02a9655db87cb3b2",
+          "sha256": "7a8c23ecead0a1cddd60c61ca539d16f9e542dfc04ffdcba4df24f75c5865b81",
           "width": 390,
           "measurements": {
             "assets": {
@@ -10475,7 +10475,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/classic-compact-767.png",
-          "sha256": "ef0d84b6213a6373ece2391aac9a0935448a84bc084f57c3c5d477e90163d2e7",
+          "sha256": "21e12337ac58f24ee8cd97917196239a6fc299ee5412a0a9c88ebfbc85e07f89",
           "width": 767,
           "measurements": {
             "assets": {
@@ -10962,7 +10962,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/classic-compact-768.png",
-          "sha256": "9c02b53b740c03a7e482492d5f5394379ab3baf72ec6efa98c5ca9797f868422",
+          "sha256": "5e3b9cf7c00f71a1faa5b4c14d4d792b898561fabb949af79474a08e12442903",
           "width": 768,
           "measurements": {
             "assets": {
@@ -11449,7 +11449,7 @@
         },
         {
           "path": ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-presentation/classic-compact-1280.png",
-          "sha256": "f1463f91162f66288e3548398a944779dc9322a3ba3300a7ca7632fcf685934a",
+          "sha256": "a271a1a30ee204fc16c4b38fbc5487dcbbeea190e69e92abdc9eff5526c19e64",
           "width": 1280,
           "measurements": {
             "assets": {
@@ -11941,7 +11941,7 @@
   "pageErrors": [],
   "cleanup": {
     "reaped": true,
-    "temporaryPath": "/tmp/dcv-064-browser-62pgghzx",
+    "temporaryPath": "/tmp/dcv-064-browser-n60buej1",
     "temporaryRemoved": true
   },
   "completed": true,

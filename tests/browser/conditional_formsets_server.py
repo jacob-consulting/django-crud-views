@@ -87,7 +87,7 @@ from crud_views.lib.formsets import (
 from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.views import UpdateViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
-from tests.test1.app.models import Book, BookNote, Profile, Publisher
+from tests.test1.app.models import Book, BookNote, ConditionalPersistenceRecord, Profile, Publisher
 
 events = []
 observed = []
@@ -359,6 +359,17 @@ Records = inlineformset_factory(
 )
 
 
+class CheckboxRecordForm(BrowserRowForm):
+    class Meta:
+        model = ConditionalPersistenceRecord
+        fields = ["active"]
+
+
+CheckboxRecords = inlineformset_factory(
+    Profile, ConditionalPersistenceRecord, form=CheckboxRecordForm, formset=Rows, extra=0
+)
+
+
 class ProfileForm(ConditionalGroupFormMixin, BrowserRowForm):
     cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("with_contact"), ["email", "phone"])]
 
@@ -495,6 +506,23 @@ class BrowserFiles(BrowserEdit):
     form_class = ProfileForm
     cv_formsets = FormSets(formsets=OrderedDict(records=FormSet(title="Records", klass=Records)))
 
+    def cv_get_formsets(self):
+        result = super().cv_get_formsets()
+        if self.object.pk == compact_checkbox_pk:
+            records = result.formsets["records"]
+            assert records.cv_view is self
+            records.klass = CheckboxRecords
+            records.fields = list(records.klass.form.base_fields)
+            records.compact_layout = compact("active")
+            result.apply_hierarchy()
+        return result
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.object.pk == compact_checkbox_pk:
+            data["compact_fixture"] = True
+        return data
+
 
 actor = User.objects.create_superuser(username="browser", password=None, email="")
 denied_actor = User.objects.create_user(username="browser-denied", password=None)
@@ -554,6 +582,21 @@ for model in (Publisher, Profile, Book, BookNote, BrowserMemo, BrowserConditiona
 events.clear()
 
 compact_widget_pk = None
+compact_checkbox_pk = None
+if os.environ.get("CV_COMPACT_CHECKBOX_FIXTURE") == "1":
+    profile = Profile.objects.create(name="compact-checkbox")
+    compact_checkbox_pk = profile.pk
+    record = ConditionalPersistenceRecord.objects.create(parent=profile)
+    cases.append(
+        {
+            "theme": "stock",
+            "id": "compact-checkbox",
+            "profile": profile.pk,
+            "record": record.pk,
+            "url": f"/files/stock/{profile.pk}/",
+            "fields": list(CheckboxRecordForm.base_fields),
+        }
+    )
 compact_cases = ["compact-presentation", "compact-lifecycle"]
 if os.environ.get("CV_COMPACT_WIDGET_FIXTURE") == "1":
     compact_cases.append("compact-widget")
@@ -614,6 +657,9 @@ def state(request):
             "scores": list(BrowserScore.objects.values()),
             "leaves": list(BrowserLeaf.objects.values()),
             "records": records,
+            "checkbox_records": list(
+                ConditionalPersistenceRecord.objects.filter(parent_id=compact_checkbox_pk).values()
+            ),
             "storageContent": {
                 str(p.relative_to(settings.MEDIA_ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in Path(settings.MEDIA_ROOT).rglob("*")

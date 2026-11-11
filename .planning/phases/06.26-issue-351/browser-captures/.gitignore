@@ -1,5 +1,6 @@
 *
 !.gitignore
+!checklist/
 !current-390-initial.png
 !current-390-invalid.png
 !current-390-added.png

@@ -1,0 +1,1696 @@
+{
+  "revision": "58f1ae16380f723611d914f922b8f73aff91516e",
+  "started": "2026-11-11T20:21:30.041Z",
+  "humanReview": "pending",
+  "temporaryRoot": "/tmp/cv-checklist-0r1TDz",
+  "sourceHashes": {
+    "examples/bootstrap5/formsets/models.py": "22cbc0f2b1bdc94617c5e764fa4e8bc94a185415f0df1c15acaf3a5b58683448",
+    "examples/bootstrap5/formsets/views.py": "a0cf7806a5b195798dd6a222b6effae5a245859ce549452ccbd93eb5c7ab21b2",
+    "examples/bootstrap5/formsets/urls.py": "0447731804948bacdfda7d58b7fa6cfc5d938ecb19f678fe34bb2eb39be20cdc",
+    "examples/bootstrap5/formsets/seed.py": "afe82f890baa13ef5576030649b6a575781e8f296b6433ed42bc2b6de4be96d6",
+    "examples/bootstrap5/formsets/tests.py": "da5e63e012a1e458bdef3618f54b425ff77d843e24d320227801be86bc03e139",
+    "examples/bootstrap5/formsets/migrations/0003_checklist_checklistitem.py": "968961636ec67cb4c17f57b2dc12341f3706e226c7a0e65235580ff0aa8b1627",
+    "examples/bootstrap5/project/features.py": "110de7cf3f601f1ef3861073ad2b1702ee87c14a903f9e24c5929566796ef1fd",
+    "examples/bootstrap5/project/tests.py": "dcebd4d8c2ae4d2e37f229e1d8852c1dae9ceef52f56deda0d609d34267d4dee",
+    "examples/bootstrap5/project/settings.py": "cfb7855197ca4c978b5d014edbff6d9b6662e05d01e6fcc9a0596beea879c7b8",
+    "docs/reference/formsets.md": "b4340d095e51a22c8a49799dd691f5998934e8fa320093c2a62162f4548f71ad",
+    "src/crud_views/lib/formsets/compact.py": "01899c7a619457efcfd4b093cb8050aea5a2368736af10c60f8d3854fea06a81",
+    "src/crud_views/lib/formsets/render_tree.py": "c90eeb13961690e867fe691c7264f4d0b356ee85881496a6f46119ad7427d893",
+    "src/crud_views/static/crud_views/css/formset.css": "4b5fd32545077a17c2bd2a2af4d387256c9039e22dcd765494267587c4d0ba84",
+    "src/crud_views/static/crud_views/js/formset.js": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
+    "src/crud_views/templates/crud_views/formsets/formset.html": "df0b5a882fd81da7ea077fde73faddaf29eceaced0226bd1e1cc7eb08376e6d4",
+    ".planning/phases/06.26-issue-351/06.26-checklist-browser.cjs": "ae38a291299258a430afe873cb825303aaae931c52c2fd07bfc1c9bc732e80ff"
+  },
+  "commands": [
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "migrate",
+      "--noinput"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "seed"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "runserver",
+      "127.0.0.1:45825",
+      "--noreload"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 390\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 390\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 390\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 390\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 390\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 1280\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 1280\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 1280\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 1280\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ],
+    [
+      "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+      "examples/bootstrap5/manage.py",
+      "shell",
+      "-c",
+      "import json; from formsets.models import Checklist; c=Checklist.objects.get(title=\"Browser checklist 1280\"); print(json.dumps(list(c.items.values_list(\"label\",\"done\"))))"
+    ]
+  ],
+  "checks": [
+    {
+      "name": "server ready",
+      "passed": true
+    },
+    {
+      "name": "390:landing link",
+      "passed": true
+    },
+    {
+      "name": "390:Tab focuses native checkbox",
+      "passed": true
+    },
+    {
+      "name": "390:visible focus",
+      "passed": true,
+      "detail": {
+        "visible": true,
+        "shadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px",
+        "outline": "none"
+      }
+    },
+    {
+      "name": "390:Space checks native checkbox",
+      "passed": true
+    },
+    {
+      "name": "390:single editor form and unique identities",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "390:associated labels and no compact overflow",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "390:assets loaded",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "390:responsive labels",
+      "passed": true,
+      "detail": [
+        {
+          "width": 40,
+          "clip": "none",
+          "position": "static"
+        }
+      ]
+    },
+    {
+      "name": "390:shared headings",
+      "passed": true,
+      "detail": [
+        "none"
+      ]
+    },
+    {
+      "name": "390:real authorized fragment",
+      "passed": true
+    },
+    {
+      "name": "390:single editor form and unique identities",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          },
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "390:associated labels and no compact overflow",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          },
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "390:assets loaded",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          },
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "390:responsive labels",
+      "passed": true,
+      "detail": [
+        {
+          "width": 40,
+          "clip": "none",
+          "position": "static"
+        },
+        {
+          "width": 40,
+          "clip": "none",
+          "position": "static"
+        }
+      ]
+    },
+    {
+      "name": "390:shared headings",
+      "passed": true,
+      "detail": [
+        "none"
+      ]
+    },
+    {
+      "name": "390:mixed values persisted",
+      "passed": true
+    },
+    {
+      "name": "390:reload checked and unchecked",
+      "passed": true
+    },
+    {
+      "name": "390:omission persisted False",
+      "passed": true
+    },
+    {
+      "name": "390:reload omitted False",
+      "passed": true
+    },
+    {
+      "name": "390:mark delete",
+      "passed": true
+    },
+    {
+      "name": "390:unmark delete",
+      "passed": true
+    },
+    {
+      "name": "390:deletion persisted",
+      "passed": true
+    },
+    {
+      "name": "390:invalid checked state retained",
+      "passed": true
+    },
+    {
+      "name": "390:server validation atomic",
+      "passed": true
+    },
+    {
+      "name": "390:single editor form and unique identities",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          },
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "390:associated labels and no compact overflow",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          },
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "390:assets loaded",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          },
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "390:responsive labels",
+      "passed": true,
+      "detail": [
+        {
+          "width": 40,
+          "clip": "none",
+          "position": "static"
+        },
+        {
+          "width": 40,
+          "clip": "none",
+          "position": "static"
+        }
+      ]
+    },
+    {
+      "name": "390:shared headings",
+      "passed": true,
+      "detail": [
+        "none"
+      ]
+    },
+    {
+      "name": "390:corrected save",
+      "passed": true
+    },
+    {
+      "name": "1280:landing link",
+      "passed": true
+    },
+    {
+      "name": "1280:Tab focuses native checkbox",
+      "passed": true
+    },
+    {
+      "name": "1280:visible focus",
+      "passed": true,
+      "detail": {
+        "visible": true,
+        "shadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px",
+        "outline": "none"
+      }
+    },
+    {
+      "name": "1280:Space checks native checkbox",
+      "passed": true
+    },
+    {
+      "name": "1280:single editor form and unique identities",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "1280:associated labels and no compact overflow",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "1280:assets loaded",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "1280:responsive labels",
+      "passed": true,
+      "detail": [
+        {
+          "width": 1,
+          "clip": "none",
+          "position": "absolute"
+        }
+      ]
+    },
+    {
+      "name": "1280:shared headings",
+      "passed": true,
+      "detail": [
+        "flex"
+      ]
+    },
+    {
+      "name": "1280:real authorized fragment",
+      "passed": true
+    },
+    {
+      "name": "1280:single editor form and unique identities",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          },
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "1280:associated labels and no compact overflow",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          },
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "1280:assets loaded",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          },
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "1280:responsive labels",
+      "passed": true,
+      "detail": [
+        {
+          "width": 1,
+          "clip": "none",
+          "position": "absolute"
+        },
+        {
+          "width": 1,
+          "clip": "none",
+          "position": "absolute"
+        }
+      ]
+    },
+    {
+      "name": "1280:shared headings",
+      "passed": true,
+      "detail": [
+        "flex"
+      ]
+    },
+    {
+      "name": "1280:mixed values persisted",
+      "passed": true
+    },
+    {
+      "name": "1280:reload checked and unchecked",
+      "passed": true
+    },
+    {
+      "name": "1280:omission persisted False",
+      "passed": true
+    },
+    {
+      "name": "1280:reload omitted False",
+      "passed": true
+    },
+    {
+      "name": "1280:mark delete",
+      "passed": true
+    },
+    {
+      "name": "1280:unmark delete",
+      "passed": true
+    },
+    {
+      "name": "1280:deletion persisted",
+      "passed": true
+    },
+    {
+      "name": "1280:invalid checked state retained",
+      "passed": true
+    },
+    {
+      "name": "1280:server validation atomic",
+      "passed": true
+    },
+    {
+      "name": "1280:single editor form and unique identities",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          },
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "1280:associated labels and no compact overflow",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          },
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "1280:assets loaded",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          },
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "1280:responsive labels",
+      "passed": true,
+      "detail": [
+        {
+          "width": 1,
+          "clip": "none",
+          "position": "absolute"
+        },
+        {
+          "width": 1,
+          "clip": "none",
+          "position": "absolute"
+        }
+      ]
+    },
+    {
+      "name": "1280:shared headings",
+      "passed": true,
+      "detail": [
+        "flex"
+      ]
+    },
+    {
+      "name": "1280:corrected save",
+      "passed": true
+    },
+    {
+      "name": "767:single editor form and unique identities",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          },
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "767:associated labels and no compact overflow",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          },
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "767:assets loaded",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          },
+          {
+            "width": 40,
+            "clip": "none",
+            "position": "static"
+          }
+        ],
+        "headings": [
+          "none"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "767:responsive labels",
+      "passed": true,
+      "detail": [
+        {
+          "width": 40,
+          "clip": "none",
+          "position": "static"
+        },
+        {
+          "width": 40,
+          "clip": "none",
+          "position": "static"
+        }
+      ]
+    },
+    {
+      "name": "767:shared headings",
+      "passed": true,
+      "detail": [
+        "none"
+      ]
+    },
+    {
+      "name": "768:single editor form and unique identities",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          },
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "768:associated labels and no compact overflow",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          },
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "768:assets loaded",
+      "passed": true,
+      "detail": {
+        "forms": 4,
+        "nestedForms": 0,
+        "editorForms": 1,
+        "uniqueIds": true,
+        "uniqueNames": true,
+        "associations": true,
+        "labels": [
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          },
+          {
+            "width": 1,
+            "clip": "none",
+            "position": "absolute"
+          }
+        ],
+        "headings": [
+          "flex"
+        ],
+        "overflow": false,
+        "css": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+          "http://127.0.0.1:45825/static/crud_views/css/property.css",
+          "http://127.0.0.1:45825/static/crud_views/css/table.css",
+          "http://127.0.0.1:45825/static/crud_views/css/formset.css",
+          "http://127.0.0.1:45825/static/crud_views/css/icons.css"
+        ],
+        "js": [
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+          "https://code.jquery.com/jquery-3.7.1.js",
+          "http://127.0.0.1:45825/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:45825/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/formset.js",
+          "http://127.0.0.1:45825/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:45825/static/crud_views/js/modal.js",
+          "http://127.0.0.1:45825/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:45825/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:45825/static/crud_views_object_detail/js/tabs.js"
+        ]
+      }
+    },
+    {
+      "name": "768:responsive labels",
+      "passed": true,
+      "detail": [
+        {
+          "width": 1,
+          "clip": "none",
+          "position": "absolute"
+        },
+        {
+          "width": 1,
+          "clip": "none",
+          "position": "absolute"
+        }
+      ]
+    },
+    {
+      "name": "768:shared headings",
+      "passed": true,
+      "detail": [
+        "flex"
+      ]
+    },
+    {
+      "name": "no page errors",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no failed assets",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "developer database unchanged",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "kind": "fragment",
+      "url": "http://127.0.0.1:45825/formsets/checklist/create/?template=items&pk=None&num=1&formset_parent_prefix_key=",
+      "status": 200,
+      "rows": [
+        "items-None-0-1"
+      ]
+    },
+    {
+      "kind": "save",
+      "url": "http://127.0.0.1:45825/formsets/checklist/create/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImNoZWNrbGlzdCJdLCJwYXJlbnRzIjp7fX0%3A96JXUab-AqgZXdw85LTjqUHmVQTrILOWlIFSBxIgm3A",
+      "fields": [
+        "------WebKitFormBoundarylhZKBkpQK6oXcvBV\r\nContent-Disposition: form-data; name"
+      ]
+    },
+    {
+      "kind": "edit",
+      "url": "http://127.0.0.1:45825/formsets/checklist/2/update/"
+    },
+    {
+      "kind": "save",
+      "url": "http://127.0.0.1:45825/formsets/checklist/2/update/",
+      "fields": [
+        "------WebKitFormBoundaryBiYAIbPVOtANJ1uH\r\nContent-Disposition: form-data; name"
+      ]
+    },
+    {
+      "kind": "save",
+      "url": "http://127.0.0.1:45825/formsets/checklist/2/update/",
+      "fields": [
+        "------WebKitFormBoundaryUEWdstyNhJlaYSM0\r\nContent-Disposition: form-data; name"
+      ]
+    },
+    {
+      "kind": "save",
+      "url": "http://127.0.0.1:45825/formsets/checklist/2/update/",
+      "fields": [
+        "------WebKitFormBoundaryQitjyemABKZ5LYka\r\nContent-Disposition: form-data; name"
+      ]
+    },
+    {
+      "kind": "fragment",
+      "url": "http://127.0.0.1:45825/formsets/checklist/create/?template=items&pk=None&num=1&formset_parent_prefix_key=",
+      "status": 200,
+      "rows": [
+        "items-None-0-1"
+      ]
+    },
+    {
+      "kind": "save",
+      "url": "http://127.0.0.1:45825/formsets/checklist/create/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImNoZWNrbGlzdCJdLCJwYXJlbnRzIjp7fX0%3A96JXUab-AqgZXdw85LTjqUHmVQTrILOWlIFSBxIgm3A",
+      "fields": [
+        "------WebKitFormBoundaryv3tfE5uESucAtU5P\r\nContent-Disposition: form-data; name"
+      ]
+    },
+    {
+      "kind": "edit",
+      "url": "http://127.0.0.1:45825/formsets/checklist/3/update/"
+    },
+    {
+      "kind": "save",
+      "url": "http://127.0.0.1:45825/formsets/checklist/3/update/",
+      "fields": [
+        "------WebKitFormBoundaryqa7vAcL46obuulkz\r\nContent-Disposition: form-data; name"
+      ]
+    },
+    {
+      "kind": "save",
+      "url": "http://127.0.0.1:45825/formsets/checklist/3/update/",
+      "fields": [
+        "------WebKitFormBoundaryZLVk5lebBIN9qOVO\r\nContent-Disposition: form-data; name"
+      ]
+    },
+    {
+      "kind": "save",
+      "url": "http://127.0.0.1:45825/formsets/checklist/3/update/",
+      "fields": [
+        "------WebKitFormBoundarymbQRl0tkRJAEcAuW\r\nContent-Disposition: form-data; name"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/390-initial.png",
+      "sha256": "a99489b2c80d6c2206d8e519d1758f9cad0aec79e7c68e07b95df16cadbe07d1"
+    },
+    {
+      "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/390-added.png",
+      "sha256": "7459fa643d947886dcfef39cfc2251b9ff63b8b5b5b129a399ae24d7c0169576"
+    },
+    {
+      "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/390-invalid.png",
+      "sha256": "4894bce3b5945404b677a74fd5edbd8099d6e67146fa5e684132510ef768083c"
+    },
+    {
+      "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/1280-initial.png",
+      "sha256": "ca3c7743f049164fc6afcb0432f2c77c747258644294f24418d083e6160b2757"
+    },
+    {
+      "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/1280-added.png",
+      "sha256": "0a0d6c482ad935571e06b8d563c28f25871be79b531bbaaf90f15043eea7b1ae"
+    },
+    {
+      "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/1280-invalid.png",
+      "sha256": "ac2a55ef1cac434484d20e09249aa3e340694f8d39e55f57d70c888a6fb15783"
+    },
+    {
+      "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/767-labels.png",
+      "sha256": "0f742ba22cfdb976e2e3c96d6bc5073d5dcbf26f9ec4df3968ee59aff9dbda16"
+    },
+    {
+      "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/768-labels.png",
+      "sha256": "4c4941b39020296ab4d570a7455078ca499ddd4f343ef0b41e49c9a91c2f34bb"
+    }
+  ],
+  "pageErrors": [],
+  "failedAssets": [],
+  "developerDbBefore": "59dcf579f0afff63079924d52fe2f31076a127264e1084f4dfb26d98c1fb41e4",
+  "base": "http://127.0.0.1:45825",
+  "runtime": {
+    "node": "v24.21.0",
+    "playwright": "1.64.1",
+    "chromium": "149.0.7827.55",
+    "python": "{\"python\": \"3.12.3\", \"Django\": \"6.1.2\", \"django-crispy-forms\": \"2.7\", \"crispy-bootstrap5\": \"2026.9\"}"
+  },
+  "serverExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "developerDbAfter": "59dcf579f0afff63079924d52fe2f31076a127264e1084f4dfb26d98c1fb41e4",
+  "cleanup": {
+    "serverReaped": true,
+    "temporaryRemoved": true
+  },
+  "finished": "2026-11-11T20:21:51.012Z"
+}

@@ -43,10 +43,13 @@ function runner(t, {retain = true, publicationFailure = false} = {}) {
         diagnostic:()=>JSON.parse(fs.readFileSync(path.join(root,'checklist-example-failed.json'),'utf8'))};
 }
 
-async function ownedChild(t) {
-    const child = cp.spawn(process.execPath, ['-e', 'setInterval(()=>{},1000)']);
+async function ownedChild(t, ignoreTerm = false) {
+    const child = cp.spawn(process.execPath, ['-e',
+        (ignoreTerm ? 'process.on("SIGTERM",()=>{}); process.send("ready");' : '') + 'setInterval(()=>{},1000)'],
+        ignoreTerm ? {stdio:['ignore','ignore','ignore','ipc']} : {});
     t.after(() => {if(child.exitCode===null && child.signalCode===null) child.kill('SIGKILL');});
     await once(child,'spawn');
+    if(ignoreTerm) await once(child,'message');
     return child;
 }
 
@@ -85,4 +88,35 @@ test('ordinary success publishes captures beside its report and removes temporar
     const report = JSON.parse(fs.readFileSync(run.output,'utf8'));
     assert.equal(report.cleanup.temporaryRemoved,true);
     assert(!fs.existsSync(path.join(run.root,'.planning/phases/06.26-issue-351/browser-captures/checklist')));
+});
+
+test('a child whose SIGTERM exit preceded cleanup does not block reporting or temporary removal', async t => {
+    const run = runner(t);
+    const child = await ownedChild(t);
+    const exit = once(child,'exit');
+    child.kill('SIGTERM');
+    await exit;
+    assert.equal(child.exitCode,null);
+    assert.equal(child.signalCode,'SIGTERM');
+    run.api.setResources(child);
+    let timer;
+    try {
+        await Promise.race([run.api.finish(),new Promise((_,reject)=>{
+            timer=setTimeout(()=>reject(new Error('cleanup waited for an exit event that already fired')),250);
+        })]);
+    } finally { clearTimeout(timer); }
+    assert(!fs.existsSync(run.api.scratch));
+    const report = JSON.parse(fs.readFileSync(run.output,'utf8'));
+    assert.equal(report.cleanup.serverReaped,true);
+    assert.equal(report.serverExit.signal,'SIGTERM');
+});
+
+test('an owned child ignoring SIGTERM is killed within a bounded cleanup wait', {timeout:6000}, async t => {
+    const run = runner(t);
+    const child = await ownedChild(t,true);
+    run.api.setResources(child);
+    await run.api.finish();
+    assert.equal(child.signalCode,'SIGKILL');
+    assert(!fs.existsSync(run.api.scratch));
+    assert.equal(JSON.parse(fs.readFileSync(run.output,'utf8')).cleanup.serverReaped,true);
 });

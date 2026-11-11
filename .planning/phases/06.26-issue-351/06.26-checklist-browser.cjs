@@ -186,7 +186,25 @@ let server, browser, logFd, failed;
         };
         try { if(browser) await browser.close(); } catch(error) { cleanupError('browser close',error); }
         try {
-            if(server && server.exitCode===null) { const exit=new Promise(resolve=>server.once('exit',(code,signal)=>resolve({code,signal}))); server.kill('SIGTERM'); record.serverExit=await exit; }
+            if(server) {
+                if(server.exitCode===null && server.signalCode===null) {
+                    let onExit;
+                    const exit=new Promise(resolve=>{onExit=()=>resolve(true);server.once('exit',onExit);});
+                    const waitForExit=async ms=>{
+                        let timer;
+                        try { return await Promise.race([exit,new Promise(resolve=>{timer=setTimeout(()=>resolve(false),ms);})]); }
+                        finally { clearTimeout(timer); }
+                    };
+                    try {
+                        server.kill('SIGTERM');
+                        if(!await waitForExit(3000)) {
+                            server.kill('SIGKILL');
+                            assert(await waitForExit(1000),'Owned server did not exit after SIGKILL');
+                        }
+                    } finally { server.removeListener('exit',onExit); }
+                }
+                record.serverExit={code:server.exitCode,signal:server.signalCode};
+            }
         } catch(error) { cleanupError('server termination',error); }
         try { if(logFd!==undefined) fs.closeSync(logFd); } catch(error) { cleanupError('log close',error); }
         try {

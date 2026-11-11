@@ -131,7 +131,7 @@
     {
       "number": "06.24",
       "name": "Opt-in compact formsets",
-      "status": "in_progress"
+      "status": "complete"
     },
     {
       "number": "7",
@@ -141,8 +141,8 @@
   ],
   "next": {
     "command": "$gsd-progress --next",
-    "label": "Advance to the next step (verify)",
-    "reason": "Phase 38 of 39 · ready to verify"
+    "label": "Advance to the next step (plan phase 7)",
+    "reason": "Phase 39 of 39 — needs a plan"
   },
-  "updated_at": "2026-11-10T21:52:41.058Z"
+  "updated_at": "2026-11-11T08:21:55.471Z"
 }

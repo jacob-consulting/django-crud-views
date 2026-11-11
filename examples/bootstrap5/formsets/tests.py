@@ -187,6 +187,7 @@ class ChecklistCrudTest(FormsetsTestCase):
         self.assertEqual(
             list(checklist.items.values_list("label", "done")), [("Review changes", True), ("Publish", False)]
         )
+
         payload[label] = "Reviewed changes"
         self.assertRedirects(self.client.post(url, payload), reverse("checklist-list"))
         self.assertTrue(checklist.items.get(label="Reviewed changes").done)
@@ -255,6 +256,55 @@ class ChecklistCrudTest(FormsetsTestCase):
                         list(checklist.items.values_list("label", "done")),
                         [("Review changes", True), ("Publish", False)],
                     )
+
+
+class ChecklistDiscoveryTest(FormsetsTestCase):
+    def test_landing_links_to_checklist_and_back(self):
+        landing = self.client.get(reverse("questionnaire-list"))
+        document = html.fromstring(landing.content)
+        links = document.xpath("//a[@href=$url]", url=reverse("checklist-list"))
+        self.assertTrue(any("Checklist example" in link.text_content() for link in links))
+        page = self.client.get(reverse("checklist-list"))
+        document = html.fromstring(page.content)
+        links = document.xpath("//a[@href=$url]", url=reverse("questionnaire-list"))
+        self.assertTrue(any("Questionnaire examples" in link.text_content() for link in links))
+
+    def test_seed_is_idempotent_preserves_edits_and_demo_users_can_edit(self):
+        from django.core.management import call_command
+
+        call_command("seed")
+        checklist = Checklist.objects.get(title="Release checklist")
+        self.assertEqual(list(checklist.items.values_list("done", flat=True)), [True, False])
+        item = checklist.items.first()
+        item.done = False
+        item.save()
+        counts = (Checklist.objects.count(), ChecklistItem.objects.count())
+        call_command("seed")
+        self.assertEqual((Checklist.objects.count(), ChecklistItem.objects.count()), counts)
+        item.refresh_from_db()
+        self.assertFalse(item.done)
+        for username in ("alice", "bob"):
+            user = get_user_model().objects.get(username=username)
+            self.assertFalse(user.is_superuser)
+            self.client.force_login(user)
+            create = reverse("checklist-create")
+            page = self.client.get(create)
+            self.assertEqual(page.status_code, 200)
+            payload = form_payload(page)
+            payload["title"] = f"{username} checklist"
+            label = field_key(payload, "-label")
+            payload[label] = "Demo task"
+            payload[label.removesuffix("label") + "done"] = "on"
+            self.assertRedirects(self.client.post(create, payload), reverse("checklist-list"))
+            created = Checklist.objects.get(title=payload["title"])
+            update = reverse("checklist-update", kwargs={"pk": created.pk})
+            page = self.client.get(update)
+            params = ChecklistCrudTest.fragment_params(self, page)
+            self.assertEqual(self.client.get(update, params).status_code, 200)
+            payload = form_payload(page)
+            payload.pop(next(key for key in payload if key.endswith("-done")))
+            self.assertRedirects(self.client.post(update, payload), reverse("checklist-list"))
+            self.assertFalse(created.items.get().done)
 
 
 class CompactQuestionnaireTest(FormsetsTestCase):

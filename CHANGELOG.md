@@ -589,6 +589,10 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Stock checkboxes in compact formsets** (#351): exact Django `CheckboxInput` works without a compatibility
+  marker, with shared desktop headings and associated responsive row labels. Native checked/omitted, required
+  and disabled semantics are preserved. See the executed [stock checkbox recipe](docs/reference/formsets.md#stock-checkbox-recipe).
+
 - **Explicit compact widget compatibility** ([#349](https://github.com/jacob-consulting/django-crud-views/issues/349)):
   inherit the public `CompactWidgetCompatible` marker to opt a custom widget into compact formsets while
   retaining shared schema checks. The developer owns its rendering integration; unmarked stock defaults

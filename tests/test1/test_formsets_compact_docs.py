@@ -5,15 +5,86 @@ from pathlib import Path
 
 import pytest
 from django import forms
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.test import RequestFactory
 from lxml import html
 
-from crud_views.lib.formsets import CompactColumn, CompactLayout, InlineFormSet
+from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSets, InlineFormSet
 from tests.lib.helper.forms import form_payload
-from tests.test1.app.models import Book, BookNote, Publisher
+from tests.test1.app.models import Book, BookNote, ConditionalPersistenceRecord, Profile, Publisher
 from tests.test1.app.views_formset import PublisherFormSetUpdateView
 
 ROOT = Path(__file__).resolve().parents[2]
 REFERENCE = ROOT / "docs/reference/formsets.md"
+
+
+@pytest.mark.django_db
+def test_published_compact_checkbox_recipe():
+    text = REFERENCE.read_text()
+    heading = "### Stock checkbox recipe\n"
+    assert text.count(heading) == 1
+    section = re.split(r"\n#{2,3} ", text.split(heading, 1)[1], maxsplit=1)[0]
+    fences = re.findall(r"^```python\n(.*?)^```", section, re.M | re.S)
+    assert len(fences) == 1
+    namespace = {"__name__": "tests.test1.app.checkbox_recipe", "__package__": "tests.test1.app"}
+    exec(compile(fences[0], str(REFERENCE), "exec"), namespace)
+    assert "CompactWidgetCompatible" not in namespace
+    assert namespace["CheckboxRecordForm"].__bases__ == (forms.ModelForm,)
+    declaration = namespace["cv_formsets"]["records"]
+    assert declaration.klass.__bases__ == (InlineFormSet,)
+    parent = Profile.objects.create(name="Checkbox recipe")
+    record = ConditionalPersistenceRecord.objects.create(parent=parent)
+
+    def initialize(data=None):
+        trees = FormSets(formsets=namespace["cv_formsets"])
+        request = RequestFactory().get("/") if data is None else RequestFactory().post("/", data)
+        trees.init(request, forms.modelform_factory(Profile, fields=[])(instance=parent))
+        return trees, trees.x_formsets[0]
+
+    for checked in (True, False):
+        _, initial = initialize()
+        retained, extra = [row.form for row in initial.forms]
+        assert retained.cv_view is declaration.cv_view
+        assert extra.cv_view is declaration.cv_view
+        for form in (retained, extra):
+            for name in ("active", "flag"):
+                assert type(form.fields[name].widget) is forms.CheckboxInput
+        markup = render_to_string("crud_views/formsets/formset.html", {"x_formset": initial})
+        document = html.fromstring(markup)
+        headings = document.cssselect(".cv-formset-compact-headings")
+        assert len(headings) == 1
+        assert "Active" in headings[0].text_content() and "Flag" in headings[0].text_content()
+        controls = document.cssselect('.cv-formset-compact-fields input[type="checkbox"]')
+        assert len(controls) == 4
+        for control in controls:
+            labels = document.xpath(".//label[@for=$id]", id=control.get("id"))
+            assert len(labels) == 1
+            assert labels[0].text_content().strip() in ("Active", "Flag")
+        payload = form_payload(HttpResponse(f"<form>{markup}</form>"))
+        for control in document.cssselect("input[disabled], select[disabled], textarea[disabled]"):
+            payload.pop(control.get("name"), None)
+        assert payload[extra.add_prefix("flag")] == "on"
+        name = retained.add_prefix("active")
+        payload.pop(name, None)
+        if checked:
+            payload[name] = "on"
+        trees, bound = initialize(payload)
+        assert all(row.form.cv_view is declaration.cv_view for row in bound.forms)
+        assert not bound.forms[1].form.has_changed()
+        assert trees.all_valid()
+        trees.save()
+        record.refresh_from_db()
+        assert record.active is checked and record.flag is True
+        assert ConditionalPersistenceRecord.objects.filter(parent=parent).count() == 1
+
+    prefix = initial.instance.prefix
+    trees, empty = initialize({f"{prefix}-TOTAL_FORMS": "0", f"{prefix}-INITIAL_FORMS": "0"})
+    assert empty.forms == []
+    assert [column.label for column in empty.compact_columns] == ["Active", "Flag"]
+    assert empty.instance.empty_form.cv_view is declaration.cv_view
+    assert "Active" in render_to_string("crud_views/formsets/formset.html", {"x_formset": empty})
+    assert trees.all_valid()
 
 
 @pytest.mark.django_db

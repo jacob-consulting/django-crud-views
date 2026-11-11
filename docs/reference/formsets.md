@@ -272,10 +272,11 @@ Unmarked widgets use these **exact stock Django widget classes** with standard t
 | `NumberInput` | `django/forms/widgets/number.html` | `number` |
 | `DateInput` | `django/forms/widgets/date.html` | `text` |
 | `Select` | `django/forms/widgets/select.html` | `select` |
+| `CheckboxInput` | `django/forms/widgets/checkbox.html` | `checkbox` |
 
 `Select` also requires the stock `django/forms/widgets/select_option.html` and single selection. This includes
 `ModelChoiceField` using `Select`. Unmarked subclasses, custom widget/option templates, changed `input_type`,
-multiple selection and unlisted widgets are rejected. Unmarked checkboxes, radio groups, multiwidgets, file
+multiple selection and unlisted widgets are rejected. Checkbox groups, switches, radio groups, multiwidgets, file
 inputs, password inputs and textareas are unsupported. Stock `DateInput` remains a text input; setting its
 type to `date` is outside this default boundary. Ordinary attributes remain form-owned.
 
@@ -291,8 +292,11 @@ and neither inspects nor validates arbitrary HTML, CSS or JavaScript, nor guaran
 must provide accessible associated row labels or group semantics, shared desktop headings and mobile row
 labels, visible necessary option labels, readable help and errors, correct prefixed IDs/names, and any
 dynamic-row initialization their widget needs. Test focus, invalid redisplay and added/deleted rows at both
-widths. Built-in `CheckboxInput` support and its desktop/mobile label fix are a **separate issue**; marking a
-checkbox alone does not repair its labels. A marked checkbox needs an application-owned adaptation.
+widths. Exact stock `CheckboxInput` is supported without a marker. Its Bootstrap styling targets owned crispy
+checkbox markup: a marked subclass emitting that same markup may receive the styling incidentally, but only
+the exact stock widget is newly certified. Marker admission is unchanged; custom widget/template authors
+remain responsible for their markup, labels and verification. These Bootstrap-specific rules do not certify
+alternative template packs or themes.
 
 Effective form labels, including constructor changes and lazy translation resolved in the current request,
 supply both headings and associated row labels. They must be nonblank and uniform within each formset.
@@ -300,6 +304,77 @@ There is no second label dictionary or global translated-label cache. Compact mo
 `form_show_labels=False`: it always emits associated labels, visually clips them at desktop widths and
 shows them on mobile. Required markers, help text and field errors remain available at every width; row
 non-field errors and formset errors stay with their respective owners.
+
+Stock checkboxes use shared desktop headings and associated, visually clipped row labels at widths of 768px
+and above. On smaller screens the form-owned label appears beside the checkbox and can wrap. Django's native
+semantics remain unchanged: checked values become `True`, omitted optional values become `False`, and a
+server-required BooleanField must be checked on a retained or otherwise nonempty row. Formsets suppress HTML
+`required` for their row controls; do not force it onto extra rows. Disabled fields retain trusted initial
+values. Hidden identity, management and row controls remain outside the visible columns.
+
+### Stock checkbox recipe
+
+This executable example uses the repository's **test-fixture models** `Profile` and
+`ConditionalPersistenceRecord`, whose ordinary model BooleanFields are `active` (default `False`) and `flag`
+(default `True`). Replace these model imports and the parent/child relation with your application's models.
+No widget subclass or compatibility marker is needed. The constructor accepts the `cv_view` keyword supplied
+by `InlineFormSet`, including bound and zero-total formsets. Assign `cv_formsets` to your view as usual.
+
+```python
+from django import forms
+from django.forms import inlineformset_factory
+from django.utils.translation import gettext_lazy as _
+
+from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet, InlineFormSet
+
+from .models import ConditionalPersistenceRecord, Profile
+
+
+class CheckboxRecordForm(forms.ModelForm):
+    def __init__(self, *args, cv_view=None, **kwargs):
+        self.cv_view = cv_view
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = ConditionalPersistenceRecord
+        fields = ["active", "flag"]
+        labels = {"active": _("Active"), "flag": _("Flag")}
+
+
+cv_formsets = {
+    "records": FormSet(
+        title="Records",
+        klass=inlineformset_factory(
+            Profile, ConditionalPersistenceRecord,
+            form=CheckboxRecordForm, formset=InlineFormSet, extra=1,
+        ),
+        compact_layout=CompactLayout(
+            columns=[CompactColumn("active", span=5), CompactColumn("flag", span=5)],
+            controls_span=2,
+        ),
+    ),
+}
+```
+
+The documentation test renders this exact declaration, submits checked then omitted `active` values and
+refreshes the saved record. Untouched extra rows keep their rendered default-checked `flag` controls and
+create no records. In an application, let the browser submit its successful controls normally.
+
+For a runnable interactive example, the repository's opt-in browser fixture exercises checked/unchecked,
+required/disabled, invalid redisplay and nested rows at 390, 767, 768 and 1280px. From the repository root,
+using existing Python and Playwright/Chromium installations:
+
+```bash
+CV_FOCUS_PYTHON="$PWD/.venv/bin/python" \
+CV_FOCUS_PLAYWRIGHT="/path/to/node_modules/playwright" \
+CV_FOCUS_CHROMIUM="/path/to/chrome" \
+node tests/browser/compact-checkboxes.cjs --output /tmp/compact-checkboxes.json
+```
+
+The runner enables `CV_COMPACT_CHECKBOX_FIXTURE=1` on its disposable authenticated host and records captures
+and runtime versions. These are test-fixture models and a runnable example, not a published model API.
+Browser evidence covers the recorded current and floor Bootstrap packs; other themes require their own
+verification, and human visual acceptance remains separate from automated measurements.
 
 ### Custom widget compatibility recipe
 

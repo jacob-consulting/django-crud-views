@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src .venv/bin/python examples/bootstrap5/manage.py test project.tests.CompactFormsetsCatalogTest.test_unique_formsets_catalog_teaches_both_presentations --noinput -v 1",
+  "exitCode": 1,
+  "output": "Creating test database for alias 'default'...\nF\n======================================================================\nFAIL: test_unique_formsets_catalog_teaches_both_presentations (project.tests.CompactFormsetsCatalogTest.test_unique_formsets_catalog_teaches_both_presentations)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/alex/projects/alex/django-crud-views/examples/bootstrap5/project/tests.py\", line 132, in test_unique_formsets_catalog_teaches_both_presentations\n    self.assertIn(\"compact\", feature.description)\nAssertionError: 'compact' not found in 'Inline formsets: edit a questionnaire with its questions and choices on one page.'\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nFAILED (failures=1)\nDestroying test database for alias 'default'...\nFound 1 test(s).\nSystem check identified no issues (0 silenced).\n",
+  "targetTest": "project.tests.CompactFormsetsCatalogTest.test_unique_formsets_catalog_teaches_both_presentations",
+  "targetFile": "examples/bootstrap5/project/tests.py",
+  "expected": "Single formsets catalog entry explains compact/classic comparison",
+  "actual": "Existing description lacks compact",
+  "semanticAssessment": "Named target executes and fails on absent compact discovery text, not setup/import."
+}

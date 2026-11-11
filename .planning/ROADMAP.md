@@ -1708,18 +1708,20 @@ Plans:
 **Goal:** [Urgent work - to be planned]
 **Requirements**: TBD
 **Depends on:** Phase 6
-**Plans:** 3/3 plans executed
+**Plans:** 3/4 plans executed; example extension ready
 
 Plans:
 **Wave 1**
 - [x] 06.26-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 06.26 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.26-02-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.26-03-PLAN.md
+
+**Wave 4** *(depends on completed Plan 03)*
+- [ ] 06.26-04-PLAN.md — Separate Checklist ViewSet with compact checkbox rows, demo integration and browser evidence
 
 ### Phase 7: Theme-surface stability policy
 

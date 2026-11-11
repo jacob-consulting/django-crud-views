@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.26"
 current_phase_name: Stock checkboxes in compact formsets
-status: verifying
-stopped_at: Phase 06.26 verified; one consolidated visual UAT pending
-last_updated: "2026-11-11T18:22:25.681Z"
+status: planning
+stopped_at: Phase 06.26 plan 04 added; ready to execute example extension
+last_updated: "2026-11-11T20:08:41.976Z"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.26 automated verification complete; human visual UAT pending
-state_head: 392a749805a3435b7855c96f0b6d3ff4d131aa5d
+last_activity_desc: Phase 06.26 plan 04 added for the requested compact example ViewSet
+state_head: 52f3dddb45efd96987f8aff387c643dbd0145ef5
 progress:
   total_phases: 32
   completed_phases: 26
-  total_plans: 173
+  total_plans: 174
   completed_plans: 173
 milestone_name: milestone
 ---
@@ -30,12 +30,18 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 
 ## Current Position
 
-Phase: 06.26 (Stock checkboxes in compact formsets) — HUMAN VERIFICATION PENDING
-Plan: 3 of 3
-Status: verifying
-Last activity: 2026-11-11 — Phase 06.26 verification human_needed (12/13); one UAT pending
+Phase: 06.26 (Stock checkboxes in compact formsets) — PLAN 04 READY
+Plan: 3 of 4 complete; Plan 04 ready
+Status: planning
+Last activity: 2026-11-11 — Added Plan 04 for a new compact checklist ViewSet
 
-Next: $gsd-verify-work 06.26
+Next: $gsd-execute-phase 06.26
+
+### Phase 06.26 example extension planned — 2026-11-11
+
+- User requested a new ViewSet with a compact formset example. Added Plan 04, Wave 4 after completed Plan 03, with three sequential tasks.
+- Planned Checklist/ChecklistItem models and migration in the existing formsets app; separate cv_checklist routes, native Done checkboxes, idempotent demo seed, catalog links and actual example browser evidence. No core API or renderer change.
+- Structure validation passes with no errors/warnings; plan index reports 04 ready. Roadmap records 3/4 complete. Prior verification is stale after the explicit scope extension; preserve historical results and pending UAT until execution and re-verification. No implementation executed.
 
 ### Phase 06.26 execution and verification — 2026-11-11
 
@@ -1263,5 +1269,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-11T18:00:14.067Z
-Stopped at: Phase 06.26 verified; one consolidated visual UAT pending
+Stopped at: Phase 06.26 plan 04 added; ready to execute example extension
 Resume file: None

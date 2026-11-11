@@ -699,6 +699,124 @@ def test_compact_tracer_get_post(compact_books, client_user_publisher_formset):
 
 
 @pytest.mark.django_db
+def test_compact_marked_select_requests(monkeypatch, compact_books, client_user_publisher_formset):
+    from django import forms
+
+    import crud_views.lib.formsets as api
+    from crud_views.lib.formsets import compact
+    from tests.test1.app.views_formset import BookFormSetForm
+    from tests.test1.test_fragment_authorization import browser_add_row
+
+    marker = getattr(api, "CompactWidgetCompatible", None)
+    assert marker is not None, "CompactWidgetCompatible must be publicly importable"
+    assert marker is compact.CompactWidgetCompatible
+
+    class ProductSelect(marker, forms.Select):
+        def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+            option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+            if value == "Original":
+                option["attrs"]["data-beans"] = "1"
+            return option
+
+    class ChoiceBook(BookFormSetForm):
+        title = forms.ChoiceField(
+            choices=[("", "---------"), ("Original", "Original beans"), ("Retained", "Retained"), ("Saved", "Saved")],
+            widget=ProductSelect,
+            help_text="Choose the book title",
+        )
+
+    monkeypatch.setattr(publisher_formsets["books"].klass, "form", ChoiceBook)
+    publisher = Publisher.objects.create(name="Marked publisher")
+    book = Book.objects.create(publisher=publisher, title="Original")
+    retained = Book.objects.create(publisher=publisher, title="Retained")
+    url = f"/publisher-formset/{publisher.pk}/update/"
+
+    def assert_rows(tree, *, headings):
+        owned_headings = tree.cssselect(".cv-formset-compact-headings")
+        assert len(owned_headings) == headings
+        for heading in owned_headings:
+            assert "Title" in heading.text_content()
+            assert not heading.xpath("ancestor::div[@cv-data-formset-form-prefix]")
+        selects = tree.cssselect(".cv-formset-row-compact select[name$='-title']")
+        assert selects
+        for select in selects:
+            name = select.get("name")
+            assert select.get("id") == f"id_{name}"
+            row = select.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+            own = row.cssselect(".cv-formset-form")[0]
+            assert name == f"{row.get('cv-data-formset-form-prefix')}-title"
+            labels = own.xpath(".//label[@for=$id]", id=select.get("id"))
+            assert len(labels) == 1 and "cv-formset-compact-label" in labels[0].get("class")
+            assert "Choose the book title" in own.text_content()
+            option = select.cssselect("option[value='Original']")
+            assert len(option) == 1 and option[0].get("data-beans") == "1"
+            assert option[0].text == "Original beans"
+            for suffix in ("id", "publisher", "DELETE"):
+                controls = own.xpath(".//input[@name=$name]", name=f"{name.removesuffix('-title')}-{suffix}")
+                assert len(controls) == 1 and controls[0].get("type") == "hidden"
+            assert not own.cssselect(".cv-formset-compact-headings")
+        return selects
+
+    initial = client_user_publisher_formset.get(url)
+    assert initial.status_code == 200
+    document = html.fromstring(initial.content)
+    assert len(document.cssselect("form.cv-form")) == 1
+    assert len(document.cssselect("input[name='csrfmiddlewaretoken']")) == 1
+    fieldset = document.cssselect('fieldset[cv-data-formset-key="books"]')[0]
+    assert_rows(fieldset, headings=1)
+    payload = form_payload(initial)
+    original_name = next(k for k, v in payload.items() if k.endswith("-title") and v == "Original")
+    retained_name = next(k for k, v in payload.items() if k.endswith("-title") and v == "Retained")
+    extra_names = [k for k in payload if k.endswith("-title") and k not in (original_name, retained_name)]
+    assert len(extra_names) == 1 and payload[extra_names[0]] == ""
+
+    # The independently invalid retained row forces redisplay even when the first is deleted.
+    for invalid in ("", "not-a-choice"):
+        payload[retained_name] = invalid
+        for delete_value in ("", "on", ""):
+            payload[original_name.removesuffix("-title") + "-DELETE"] = delete_value
+            response = client_user_publisher_formset.post(url, payload)
+            assert response.status_code == 200
+            tree = html.fromstring(response.content)
+            current = tree.cssselect('fieldset[cv-data-formset-key="books"]')[0]
+            assert_rows(current, headings=1)
+            invalid_row = tree.xpath(
+                "//select[@name=$name]/ancestor::div[@cv-data-formset-form-prefix][1]", name=retained_name
+            )[0]
+            other_row = tree.xpath(
+                "//select[@name=$name]/ancestor::div[@cv-data-formset-form-prefix][1]", name=original_name
+            )[0]
+            message = "This field is required." if invalid == "" else "Select a valid choice."
+            assert message in invalid_row.text_content() and message not in other_row.text_content()
+            if invalid == "":
+                assert invalid_row.cssselect("option[value=''][selected]")
+            delete_input = other_row.xpath(
+                ".//input[@name=$name]", name=original_name.removesuffix("-title") + "-DELETE"
+            )[0]
+            assert bool(delete_input.get("value")) == bool(delete_value)
+
+    params = browser_add_row(initial.content, fieldset.get("cv-data-formset-prefix"))
+    added = client_user_publisher_formset.get(url, params)
+    assert added.status_code == 200
+    fragment = added.json()
+    added_tree = html.fragment_fromstring(fragment["html"], create_parent="div")
+    added_selects = assert_rows(added_tree, headings=0)
+    assert [s.get("name").removesuffix("-title") for s in added_selects] == fragment["rows"]
+    assert not added_tree.cssselect("form, input[name='csrfmiddlewaretoken']")
+
+    payload[original_name] = "Saved"
+    payload[retained_name] = "Retained"
+    payload[original_name.removesuffix("-title") + "-DELETE"] = ""
+    assert payload[extra_names[0]] == ""
+    result = client_user_publisher_formset.post(url, payload)
+    assert result.status_code == 302
+    book.refresh_from_db()
+    retained.refresh_from_db()
+    assert book.title == "Saved" and retained.title == "Retained"
+    assert Book.objects.filter(publisher=publisher).count() == 2
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("kind", ["field_type", "widget_type", "required", "label", "missing", "extra"])
 def test_compact_schema_rejects_heterogeneous_rows(kind):
     from django import forms

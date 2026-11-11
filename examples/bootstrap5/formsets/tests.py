@@ -10,6 +10,18 @@ from project.testing import field_key, field_keys, form_payload
 from formsets.models import Choice, Question, Questionnaire
 
 
+class ChecklistRegistrationTest(TestCase):
+    def test_checklist_has_distinct_viewset(self):
+        from formsets import views
+
+        self.assertTrue(hasattr(views, "cv_checklist"), "A separate Checklist ViewSet must be registered")
+        self.assertIsNot(views.cv_checklist, views.cv_questionnaire)
+        for action in ("list", "create", "update"):
+            self.assertIn(action, views.cv_checklist.get_all_views())
+            kwargs = {"pk": 1} if action == "update" else None
+            self.assertNotEqual(reverse(f"checklist-{action}", kwargs=kwargs), reverse("questionnaire-list"))
+
+
 class FormsetsTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):

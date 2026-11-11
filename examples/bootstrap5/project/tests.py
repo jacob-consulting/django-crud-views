@@ -123,6 +123,56 @@ class FeatureRegistryTest(TestCase):
             self.assertTrue(feature.look_at.strip(), f"{feature.app} has no look_at text")
 
 
+class CompactFormsetsCatalogTest(TestCase):
+    def test_unique_formsets_catalog_teaches_both_presentations(self):
+        features = [feature for feature in FEATURES if feature.app == "formsets"]
+        self.assertEqual(len(features), 1)
+        feature = features[0]
+        self.assertEqual((feature.title, feature.group, feature.url_name), ("Formsets", "forms", "questionnaire-list"))
+        self.assertIn("compact", feature.description)
+        self.assertIn("classic", feature.description)
+        self.assertIn("shared desktop headings", feature.about)
+        self.assertIn("labelled mobile cards", feature.about)
+        self.assertTrue(any(ref.anchor == "compact-layout" for ref in feature.docs))
+        home = self.client.get(reverse("home"))
+        self.assertContains(home, feature.description)
+        self.assertContains(home, f'href="{reverse(feature.url_name)}">Open</a>')
+
+    def test_compact_pages_show_formsets_about_code_and_active_navigation(self):
+        from django.utils.html import escape
+        from formsets.models import Questionnaire
+        from lxml import html
+
+        admin = get_user_model().objects.create_superuser(username="compact-catalog", password="pw")
+        self.client.force_login(admin)
+        questionnaire = Questionnaire.objects.create(title="Catalog comparison")
+        feature = next(feature for feature in FEATURES if feature.app == "formsets")
+        for action in ("create", "update"):
+            kwargs = {"pk": questionnaire.pk} if action == "update" else None
+            page = self.client.get(reverse(f"questionnaire-compact_{action}", kwargs=kwargs))
+            self.assertContains(page, escape(feature.about))
+            self.assertContains(page, escape(feature.look_at))
+            self.assertContains(page, "#compact-layout")
+            nav = navbar_html(page)
+            self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), ["forms"])
+            self.assertEqual(ACTIVE_NAV_ITEM.findall(nav), [reverse("questionnaire-list")])
+            document = html.fromstring(page.content)
+            code = document.cssselect("#snippet-formsets-views-py")[0].text_content()
+            for name in (
+                "cv_formsets",
+                "cv_compact_formsets",
+                "CompactQuestionFormSet",
+                "CompactChoiceFormSet",
+                "CompactLayout",
+            ):
+                self.assertIn(name, code)
+            classic_url = reverse(f"questionnaire-{action}", kwargs=kwargs)
+            links = document.xpath("//a[@href=$url]", url=classic_url)
+            label = "Create classic" if action == "create" else "Edit classic"
+            self.assertTrue(any(label in link.text_content() for link in links))
+            self.assertEqual(self.client.get(classic_url).status_code, 200)
+
+
 class ExampleAboutTest(TestCase):
     def setUp(self):
         admin = get_user_model().objects.create_superuser(username="test-admin", password="pw")

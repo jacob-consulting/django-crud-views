@@ -3,17 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
-status: "Phase 06.23 shipped — PR #345"
-stopped_at: Phase 06.23 complete, ready to plan Phase 7
-last_updated: "2026-11-10T12:43:13.216Z"
-last_activity: 2026-11-10
-state_head: 8b61a331813b35376faa5ff4dad4cabba549ae0d
+status: planning
+stopped_at: Phase 06.24 complete, ready to plan Phase 7
+last_updated: "2026-11-11T08:37:09.953Z"
+last_activity: 2026-11-11
+last_activity_desc: "Phase 06.24 shipped as PR #348"
+state_head: 67928a0695c680b681a6b0964841a35e4451b86d
 progress:
-  total_phases: 29
-  completed_phases: 25
-  total_plans: 162
-  completed_plans: 162
-  percent: 96
+  total_phases: 30
+  completed_phases: 26
+  total_plans: 168
+  completed_plans: 168
+  percent: 87
 milestone_name: milestone
 ---
 
@@ -21,7 +22,7 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-10)
+See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -30,10 +31,40 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Phase 06.23 shipped — PR #345
-Last activity: 2026-11-10
+Status: Ready to plan
+Last activity: 2026-11-11 -- Phase 06.24 shipped as PR #348
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 7
+
+### Phase 06.24 completion — 2026-11-11
+
+- User passed the consolidated grouping, dense-heading and focus UAT. UAT 1/1 passed, zero issues; canonical verification promoted to passed and the combined completion predicate passes with no blockers. All six plans complete.
+- Public compact declarations remain opt-in, nested nodes choose independently, and the runnable questionnaire example compares compact/classic editors. Inherited deletion-state accessibility and AJAX failure feedback remain documented follow-ups.
+- Completion scanner warnings refer to the existing template loader path and test command strings, not missing implementation. No learnings or stale handoffs to graduate.
+
+### Phase 06.24 examples-app extension — 2026-11-11
+
+- User requested a follow-up plan adding this feature to the examples app. Plan 06, wave 6 after completed plan 05, reuses Questionnaire → Question → Choice and the existing seed/accounts; no new models, migration, app or core API.
+- All three tasks are committed: compact create/update beside classic editors, one coherent catalog/snippets/reference path, and actual example browser evidence. Labelled More actions menus and list edit labels keep the comparison readable without mobile page overflow.
+- Final examples 60 passed (four workers), affected core formset/fragment tests 399 passed (four workers), docs recipe/sync 39 passed; strict MkDocs and scoped Ruff pass. Example Chromium: 58 assertions/six ignored captures, real nested AJAX/POST/ownership/invalid correction. Disposable DB/settings/server cleanup passed.
+- Required invalid-input testing found a classic/compact nested field crash; a minimal InlineFormSet.clean guard now preserves Django field errors. Fixed changelog and independent RED/green regression retained. This necessary bounded core repair required refreshed original browser scopes: 96 presentation/19 lifecycle assertions and both source checkers pass; humanReview remains pending.
+- Refreshed VERIFICATION: human_needed, 18/19 truths, zero implementation gaps, 81 covered files. VALIDATION: 14/14 tasks; SECURITY: 19/19 closed; incremental deep review: eight changed files plus browser harness, zero findings; UI: 19/24. One consolidated UAT item covers 22 captures and the live example; no human approval or phase advancement. Previous full-suite/matrix counts remain historical before the validation guard; current scoped gates are recorded above.
+- Aggregate state.update-progress declined once with the known unscoped-phase reason; no repair loop. Existing .planning/config.default.json edits preserved. No push, merge, deployment or developer database change.
+
+### Phase 06.24 execution and verification — 2026-11-10
+
+- Five plans and eleven tasks complete. Opt-in compact declarations, runtime schema checks, shared desktop headings, labelled mobile cards, independent nesting and executed documentation are committed.
+- Final full suite 12,405 passed; five Django/crispy environments 214 each; browser 115 assertions with 16 ignored captures and current 40-source hashes. Python 3.13–3.15 not replayed; four existing deprecations retained.
+- Validation 11/11 tasks, security 15/15 closed, deep review 18 files/zero findings. UI audit 19/24 records inherited deletion-state/AJAX limitations and dense 768px heading observation.
+- Canonical verification human_needed, 14/15 truths and 18/18 decisions. One UAT item awaits human desktop/mobile grouping, dense headings and focus judgment. Phase remains In Progress; no phase advancement.
+- Concrete fixes discovered during execution: hidden DELETE unmark now retains rows; hidden errors use shared alerts. Existing config.default.json edits preserved. No push or merge.
+
+### Phase 06.24 planning convergence — 2026-11-10
+
+- Five plans, eleven tasks, five sequential waves; all eighteen approved decisions and eight issue #347 acceptance groups covered.
+- UI contract approved; internal plan checks passed. Cycle 1's two MEDIUM browser-evidence findings are incorporated in executable plans.
+- Cycle 2: Fable, Gemini and Grok each completed 5/5 plans; zero HIGH, zero actionable non-HIGH and zero open revision conflicts. Review committed as cf348989.
+- Source-index semantic coverage remains limited and disclosed in REVIEWS.md. Implementation/browser acceptance is pending; planning approval does not certify implementation.
 
 ### Phase 06.23 completion — 2026-11-10
 
@@ -698,7 +729,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 158
+- Total plans completed: 164
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -733,6 +764,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.22 | 3 | - | - |
 | 06.21 | 2 | - | - |
 | 06.23 | 2 | - | - |
+| 06.24 | 6 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -863,6 +895,12 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.20 P02 | 8min | 2 tasks | 1 files |
 | Phase 06.21 P01 | 8 min | 2 tasks | 2 files |
 | Phase 06.21 P02 | 7min | 2 tasks | 6 files |
+| Phase 06.24 P01 | 8min | 2 tasks | 7 files |
+| Phase 06.24 P02 | 9min | 2 tasks | 4 files |
+| Phase 06.24 P03 | 8min | 2 tasks | 5 files |
+| Phase 06.24 P04 | 21min | 3 tasks | 14 files |
+| Phase 06.24 P05 | 22min | 2 tasks | 7 files |
+| Phase 06.24 P06 | 19min | 3 tasks | 23 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1111,6 +1149,16 @@ Recent decisions affecting current work:
 - [Phase 06.21]: Lazy wrapper is the bound cv_get_parent_object with no exception handling, so Http404 propagates out of the render (D-07)
 - [Phase 06.21]: Snippet variables documented once in templates.md (## Snippet variables); messages.md, nested.md, breadcrumb.md only link to it (D-08)
 - [Phase 06.21]: #339 recorded under CHANGELOG ### Added, not Breaking; nested.md parent_object example is an unmarked fence so the cv-sync fence stays byte-identical
+- [Phase 06.24]: Compact declarations use frozen dataclasses and InstanceOf; request-local XFormSet heading metadata bypasses classic helpers and never renders choices.
+- [Phase 06.24]: Plan 02: zero-total compact metadata constructs one detached form via copied get_form_kwargs(None); exact stock widget/schema checks avoid choices and preserve parent identity.
+- [Phase 06.24]: Plan 02: compact BoundField help text uses conditional_escape before crispy rendering, preserving explicitly safe markup and leaving classic rendering unchanged.
+- [Phase 06.24]: Plan 03: nested geometry uses the current node compact_layout; direct child CSS applies 8px padding with matching heading gutters while classic offsets/helpers remain unchanged.
+- [Phase 06.24]: Plan 04: compact browser evidence uses stock-only cases in the existing authenticated harness; 115 assertions, 16 ignored captures and matching 40-source hashes, with human grouping review pending.
+- [Phase 06.24]: Plan 04: hidden DELETE unmark emits an empty value because fresh Django CheckboxInput interprets nonempty '0' as checked; classic/compact real POST regressions prove original-parent retention, native checkbox branch unchanged.
+- [Phase 06.24]: Compact documentation uses ordinary ModelForms accepting the existing cv_view keyword and InlineFormSet directly; classic nodes keep their own helpers.
+- [Phase 06.24]: Compact hidden-field errors reuse cv_alert and its escaped heading/items instead of defining another alert frame.
+- [Phase 06.24]: Keep one questionnaire ViewSet with independent classic/compact trees; use existing labelled action menus and list labels for mobile comparison.
+- [Phase 06.24]: Skip parent-presence checks after individual child field errors so classic and compact invalid POSTs redisplay correctly.
 
 ### Pending Todos
 
@@ -1173,6 +1221,7 @@ None yet.
 - Phase 06.18 inserted after Phase 06.17: Ancestor authorization for nested ViewSets; canonical approved specification: superpowers/notes/2026-11-07-ancestor-authorization-design-v2.md. Policy decisions remain locked; planning and implementation pending. (URGENT)
 - Phase 06.19 inserted after Phase 06.18: Table honours Meta.sequence and drops the empty actions column (tabler-test finding 26); canonical approved specification: superpowers/plans/2026-11-09-table-sequence-and-actions-column.md. Behaviour decisions are locked in its GSD handoff section; planning and implementation pending. (URGENT)
 - Phase 06.23 inserted after Phase 06.22: Issue #329: explicit header-icon suppression with plain Icon constants; settled issue decisions are the planning handoff. Independent scope; complete before Phase 7. (URGENT)
+- Phase 06.24 inserted after Phase 06.23: Issue #347: opt-in compact formsets with shared desktop headings and nested mobile cards; approved issue decisions are the GSD handover, classic rendering unchanged. Complete before Phase 7. (URGENT)
 
 ## Deferred Items
 
@@ -1182,6 +1231,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-10T12:23:21.710490+00:00
-Stopped at: Phase 06.23 complete, ready to plan Phase 7
+Last session: 2026-11-11T08:22:13.993867+00:00
+Stopped at: Phase 06.24 complete, ready to plan Phase 7
 Resume file: None

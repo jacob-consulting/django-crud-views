@@ -75,7 +75,15 @@ from crud_views.lib.conditional import (
     ToggleGroup,
 )
 from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin
-from crud_views.lib.formsets import FormSet, FormSetMixin, FormSets, Formsets, InlineFormSet
+from crud_views.lib.formsets import (
+    CompactColumn,
+    CompactLayout,
+    FormSet,
+    FormSetMixin,
+    FormSets,
+    Formsets,
+    InlineFormSet,
+)
 from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.views import UpdateViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
@@ -107,9 +115,32 @@ class BrowserConditionalRecord(models.Model):
         app_label = "app"
 
 
+class BrowserScore(models.Model):
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
+    taster = models.ForeignKey(User, on_delete=models.PROTECT)
+    aroma = models.IntegerField(default=7)
+    flavor = models.IntegerField(default=7)
+    acidity = models.IntegerField(default=7)
+    body = models.IntegerField(default=7)
+    balance = models.IntegerField(default=7)
+    sweetness = models.IntegerField(default=7)
+    overall = models.IntegerField(default=7)
+
+    class Meta:
+        app_label = "app"
+
+
+class BrowserLeaf(models.Model):
+    note = models.ForeignKey(BookNote, on_delete=models.CASCADE)
+    text = models.CharField(max_length=100)
+
+    class Meta:
+        app_label = "app"
+
+
 call_command("migrate", run_syncdb=True, verbosity=0)
 with connection.schema_editor() as editor:
-    for model in (BrowserMemo, BrowserConditionalRecord):
+    for model in (BrowserMemo, BrowserConditionalRecord, BrowserScore, BrowserLeaf):
         if model._meta.db_table not in connection.introspection.table_names():
             editor.create_model(model)
 
@@ -140,6 +171,7 @@ class BrowserPublisherForm(ConditionalGroupFormMixin, CrispyModelForm):
     def helper(self):
         helper = super().helper
         helper.form_tag = False
+        helper.disable_csrf = True
         return helper
 
     def get_layout_fields(self):
@@ -165,9 +197,19 @@ class BrowserRowForm(CrispyModelForm):
 
 
 class BookForm(BrowserRowForm):
+    proof = forms.CharField(required=False, widget=forms.HiddenInput, initial="retained proof")
+
     class Meta:
         model = Book
         fields = ["title"]
+
+    def clean(self):
+        data = super().clean()
+        if data.get("title") == "REJECT":
+            self.add_error("title", "Field correction required for this retained title.")
+            self.add_error("proof", "Hidden proof correction required.")
+            self.add_error(None, "Row correction required for this book.")
+        return data
 
 
 class NoteForm(BrowserRowForm):
@@ -185,6 +227,38 @@ class MemoForm(BrowserRowForm):
 class Rows(InlineFormSet):
     def get_helper_layout_fields(self):
         return [*self.form.base_fields, self.form_control]
+
+    def clean(self):
+        super().clean()
+        if any(form.data.get(f"{form.prefix}-title") == "REJECT" for form in self.forms):
+            raise forms.ValidationError("Formset correction required for these books.")
+
+
+class ScoreForm(BrowserRowForm):
+    class Meta:
+        model = BrowserScore
+        fields = ["taster", "aroma", "flavor", "acidity", "body", "balance", "sweetness", "overall"]
+        labels = {"taster": "Verkostende Person mit ausführlicher übersetzter Bezeichnung"}
+        help_texts = {"taster": "AusführlicherHinweisOhneTrennzeichenFürDieVerkostungUndBewertung"}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["overall"].disabled = True
+        self.fields["sweetness"].required = False
+
+
+class LeafForm(BrowserRowForm):
+    class Meta:
+        model = BrowserLeaf
+        fields = ["text"]
+
+
+Scores = inlineformset_factory(Publisher, BrowserScore, form=ScoreForm, formset=Rows, extra=1)
+Leaves = inlineformset_factory(BookNote, BrowserLeaf, form=LeafForm, formset=Rows, extra=1)
+
+
+def compact(field, span=8):
+    return CompactLayout(columns=[CompactColumn(field, span=span)], controls_span=2)
 
 
 class RestrictedBooks(Rows):
@@ -218,6 +292,26 @@ ExtraMemos = inlineformset_factory(
 EditBooks = inlineformset_factory(
     Publisher, Book, form=BookForm, formset=RestrictedBooks, extra=0, can_delete=True, edit_only=True
 )
+
+
+class EmptyBooks(RestrictedBooks):
+    def get_queryset(self):
+        return super().get_queryset().none()
+
+
+BookEdges = {
+    name: inlineformset_factory(
+        Publisher,
+        Book,
+        form=BookForm,
+        formset=EmptyBooks if name in ("blank", "zero") else RestrictedBooks,
+        extra=1 if name in ("blank", "delete-absent") else 0,
+        can_delete=name != "no-controls",
+        can_delete_extra=name != "delete-absent",
+        edit_only=name == "no-controls",
+    )
+    for name in ("blank", "zero", "extra-zero", "no-controls", "delete-absent")
+}
 
 
 class RecordForm(ConditionalGroupFormMixin, BrowserRowForm):
@@ -259,6 +353,7 @@ class ProfileForm(ConditionalGroupFormMixin, BrowserRowForm):
     def helper(self):
         helper = super().helper
         helper.form_tag = False
+        helper.disable_csrf = True
         helper.layout = Layout("name", "with_contact", ToggleGroup("with_contact", "email", "phone"), Formsets())
         return helper
 
@@ -291,14 +386,46 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
     def get_template_names(self):
         return [self.template_name]
 
+    def cv_get_cancel_url(self, obj=None, user=None, request=None):
+        # This disposable host has only its editor route, no registered list destination.
+        return self.request.path
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data.update(theme=theme.get(), modal=cv_is_modal_request(self.request))
         data["other_form"] = self.form_class(cv_view=self, instance=self.object)
+        data["compact_fixture"] = self.request.path.startswith("/compact/")
         return data
 
     def cv_get_formsets(self):
         result = super().cv_get_formsets()
+        if self.request.path.startswith("/compact/"):
+            composition = self.request.GET.get("composition", "compact-compact")
+            books = result.formsets["books"]
+            books.form_show_labels = True
+            books.conditional = None
+            books.compact_layout = None if composition.startswith("classic-") else compact("title")
+            for key, child in books.children.items():
+                child.form_show_labels = True
+                child.compact_layout = (
+                    None if composition.endswith("-classic") else compact("note" if key == "notes" else "text")
+                )
+            books.children["notes"].children = OrderedDict(
+                leaves=FormSet(title="Grandchild observations", klass=Leaves, compact_layout=compact("text"))
+            )
+            result.formsets["scores"] = FormSet(
+                title="Cupping scores",
+                klass=Scores,
+                compact_layout=CompactLayout(
+                    columns=[CompactColumn(name, span=3 if name == "taster" else 1) for name in ScoreForm.Meta.fields],
+                    controls_span=2,
+                ),
+            )
+            if edge := self.request.GET.get("edge"):
+                books.klass = BookEdges[edge]
+                books.children = OrderedDict()
+                result.formsets.pop("scores")
+            result.apply_hierarchy()
         if self.request.GET.get("policy") == "edit":
             result.formsets["books"].klass = EditBooks
         if self.request.GET.get("capability"):
@@ -349,6 +476,7 @@ class BrowserFiles(BrowserEdit):
 
 
 actor = User.objects.create_superuser(username="browser", password=None, email="")
+denied_actor = User.objects.create_user(username="browser-denied", password=None)
 cases = []
 for mode in ("stock", "native"):
     for case in (
@@ -404,11 +532,25 @@ for model in (Publisher, Profile, Book, BookNote, BrowserMemo, BrowserConditiona
     watch(model)
 events.clear()
 
+for case in ("compact-presentation", "compact-lifecycle"):
+    parent = Publisher.objects.create(name=case)
+    for index in range(2):
+        book = Book.objects.create(publisher=parent, title=f"Parent book {index}")
+        note = BookNote.objects.create(book=book, note=f"Child note {index}")
+        BrowserLeaf.objects.create(note=note, text=f"Grandchild {index}")
+        BrowserMemo.objects.create(book=book, text=f"Sibling memo {index}")
+    BrowserScore.objects.create(publisher=parent, taster=actor)
+    cases.append({"theme": "stock", "id": case, "pk": parent.pk, "url": f"/compact/stock/{parent.pk}/"})
+events.clear()
 
-def edit(request, mode, pk, files=False, capability=None):
+
+def edit(request, mode, pk, files=False, capability=None, edge=None):
     if capability:
         request.GET = request.GET.copy()
         request.GET["capability"] = capability
+    if edge:
+        request.GET = request.GET.copy()
+        request.GET["edge"] = edge
     token = theme.set(mode)
     try:
         response = (BrowserFiles if files else BrowserEdit).as_view()(request, pk=pk)
@@ -420,7 +562,11 @@ def edit(request, mode, pk, files=False, capability=None):
 
 
 def signin(request):
-    login(request, actor, backend="django.contrib.auth.backends.ModelBackend")
+    login(
+        request,
+        denied_actor if request.GET.get("denied") else actor,
+        backend="django.contrib.auth.backends.ModelBackend",
+    )
     from django.middleware.csrf import get_token
 
     get_token(request)
@@ -437,6 +583,8 @@ def state(request):
             "books": list(Book.objects.values()),
             "notes": list(BookNote.objects.values()),
             "memos": list(BrowserMemo.objects.values()),
+            "scores": list(BrowserScore.objects.values()),
+            "leaves": list(BrowserLeaf.objects.values()),
             "records": records,
             "storageContent": {
                 str(p.relative_to(settings.MEDIA_ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
@@ -467,6 +615,8 @@ urlpatterns = [
     path("cases/", lambda request: JsonResponse(cases, safe=False)),
     path("state/", state),
     path("edit/<str:mode>/<int:pk>/", edit),
+    path("compact/<str:mode>/<int:pk>/", edit),
+    path("compact/<str:edge>/<str:mode>/<int:pk>/", edit),
     path("capability/<str:capability>/<str:mode>/<int:pk>/", edit),
     path("files/<str:mode>/<int:pk>/", lambda request, mode, pk: edit(request, mode, pk, files=True)),
     path("harness/<str:mode>/<int:pk>/", harness),
@@ -492,7 +642,12 @@ def main():
             raise SystemExit(0)
 
         signal.signal(signal.SIGTERM, stop)
-        print(json.dumps({"ready": port, "database": "disposable SQLite", "media": "temporary"}), flush=True)
+        print(
+            json.dumps(
+                {"ready": port, "database": "disposable SQLite", "media": "temporary", "temporary": temporary.name}
+            ),
+            flush=True,
+        )
         try:
             server.serve_forever()
         finally:

@@ -47,6 +47,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending. (completed 2026-11-10)
 - [x] **Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (INSERTED)** - #341 (tabler-test finding 24): document the custom-permission recipe for custom form and action views; new static check `viewset.E269` verifies `cv_permission` and nested ancestor pair keys against the model's declared permissions on core ViewSets; Guardian documented as unsupported; planning pending. (completed 2026-11-10)
 - [x] **Phase 06.23: Explicit header-icon suppression with Icon constants (INSERTED)** - #329: readable per-view suppression, preserved default inheritance, and paired breaking-change/migration guidance; 2 plans verified, ready to execute. (completed 2026-11-10)
+- [x] **Phase 06.24: Opt-in compact formsets: shared desktop headings and nested mobile cards (#347) (INSERTED)** - six plans complete; canonical verification and human grouping/focus UAT passed. (completed 2026-11-11)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1614,6 +1615,78 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.23-02-PLAN.md — Complete reference recipes, paired empty-string migration and final verification (wave 2)
 
+### Phase 06.24: Opt-in compact formsets: shared desktop headings and nested mobile cards (#347) (INSERTED)
+
+**Goal:** Developers can opt individual formsets into compact desktop rows with shared headings and labelled
+mobile cards, including nested compositions, while classic crispy rendering and the existing formset lifecycle
+remain unchanged.
+**Source / canonical handover:** [Issue #347](https://github.com/jacob-consulting/django-crud-views/issues/347).
+Its approved design, decisions, GSD handover and acceptance criteria govern this phase. The originating case is
+tabler-test Roastery finding 22; the user approved option B and the nested desktop/mobile layout.
+**Requirements**: TBD
+**Depends on:** Phase 06.23 for scheduling only. Reuse the existing formset render tree and lifecycle; no technical
+dependency on header-icon work. Complete before Phase 7 freezes the new public/theme surface. Legend hooks
+(issue #346, finding 21) remain separate; reuse them if available without duplicating their scope.
+**Settled scope:**
+
+1. Optional `FormSet.compact_layout`, with explicit `CompactLayout` / `CompactColumn` declarations as the single
+   source of column order and spans. Compact rendering replaces the row's crispy layout declaration; it does not
+   interpret arbitrary crispy layouts or require a duplicate layout.
+2. Classic rendering and `form_show_labels` retain their behavior when compact layout is absent. Each child
+   formset opts in independently; compact/classic mixtures are supported within a page and nested hierarchy.
+3. Desktop headings are independent of the first row. Mobile rows have visible labels and card grouping; child
+   formsets stay within their parent with small insets and remain expanded. Forms own widgets, labels and validation.
+4. Preserve accessible input labels, help text, errors, existing row controls, hidden/management fields, prefixes,
+   AJAX row-add behavior, authorization, ordering/deletion policy and persistence. Verify initial and dynamic rows,
+   mixed nested layouts and a grandchild example through the existing supported nesting mechanism.
+5. Publish the bounded declaration/widget contract, classic-to-compact adoption example and additive changelog
+   entry. Verify responsive rendering in a browser and run appropriate formset regressions, using multicore pytest
+   for broad runs.
+
+**Planning discretion:** Resolve class representation, declaration validation, supported widget boundary,
+header metadata source and scoped theme styling using the issue's bounded implementation choices. Preserve
+approved behavior without reopening it; follow the developer-maintainability rule rather than expanding support.
+**Out of scope:** Arbitrary crispy layout inference, mixed polymorphic row schemas, conditional columns,
+collapsible sections, sticky headers, computed row summaries, a new grid/formset engine, the jQuery port (#210),
+legend-hook implementation (#346) and downstream Tabler adoption. Mockup controls are illustrative, not a new API.
+**Success Criteria**:
+
+1. Unconfigured formsets retain classic helper/layout and label behavior; compact rendering uses one explicit
+   column declaration, honors form-owned labels and reports unsupported declarations clearly.
+2. Desktop headings align with fields and survive first-row deletion/reordering; mobile cards preserve labels,
+   accessible names, help text and all error levels without overflow for supported demo fields.
+3. Compact/compact, compact/classic and classic/compact compositions, including a grandchild example, preserve
+   hierarchy and independently scoped headings, errors and controls.
+4. Initial and AJAX-added rows preserve add/delete/order behavior, invalid POST redisplay, hidden and management
+   fields, existing empty-form limits, authorization and persistence; relevant lifecycle regressions pass.
+5. Public declarations, widget limits, adoption examples and exclusions are documented with an additive changelog
+   entry; focused Python/browser/JS checks and appropriate multicore regressions verify rendered behavior.
+
+All eight acceptance groups in issue #347 remain authoritative; this list summarizes them for roadmap tooling.
+All six plans executed, including the requested compact questionnaire example and classic comparison.
+Refreshed verification covers the extended scope: 18/19 truths verified, no implementation gaps.
+Human grouping/focus review remains pending; no phase advancement.
+**Plans:** 6/6 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.24-01-PLAN.md — Compact declaration and end-to-end rendering slice
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.24-02-PLAN.md — Schema, empty metadata and hidden-field boundaries
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.24-03-PLAN.md — Responsive layout and independent nested styling
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.24-04-PLAN.md — Real browser and fragment lifecycle verification
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.24-05-PLAN.md — Executable documentation and compatibility checks
+
+**Wave 6** *(depends on completed plan 05)*
+- [x] 06.24-06-PLAN.md — Runnable compact questionnaire example with classic comparison and browser evidence
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1637,6 +1710,8 @@ Phases 06.19 to 06.22 must also settle before this freeze; include the `Table` s
 (#341) in the stability review.
 Phase 06.23 must also settle before this freeze; include the public `Icon` constants and the explicit header-icon
 inheritance/suppression contract (#329).
+Phase 06.24 must also settle before this freeze; include the opt-in compact formset declaration, responsive
+rendering and nested composition contracts (#347).
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -1690,7 +1765,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 16 | 6.14 (#325) | Empty card blocks and tested cards-first navigation |
 | 17 | 6.15 (#326) | Polymorphic labels and per-model groups, including tabler-test adoption and verification |
 | 18 | 6.18 (ancestor authorization) | Follows completed 6.17; approved design v2 governs scope and acceptance |
-| 19 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15/6.18 contracts settled; last change before the 1.0.0 bump |
+| 19 | 06.24 (#347) | Opt-in compact formset declarations and nested responsive rendering before the freeze |
+| 20 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15/6.18/06.24 contracts settled; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -1721,4 +1797,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.20. ViewSet verbose_name override that every default label follows | 3/3 | Complete    | 2026-11-09 |
 | 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 06.23. Explicit header-icon suppression with Icon constants | 2/2 | Complete    | 2026-11-10 |
+| 06.24. Opt-in compact formsets | 6/6 | Complete    | 2026-11-11 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

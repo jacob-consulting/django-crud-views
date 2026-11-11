@@ -423,6 +423,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- Invalid nested formset fields now redisplay their errors instead of raising an `AttributeError`
+  while checking whether the parent row is present. Classic and compact editors retain the submitted values.
+
+- Unmarking a formset row for deletion now submits an empty hidden `DELETE` value instead of `"0"`,
+  which Django treated as checked on the next POST. The existing row and its children are retained in
+  both classic and compact layouts; native checkbox behavior is unchanged.
+
 - **`Table` honours `Meta.sequence`.** A `Table` subclass's `Meta.sequence` was silently replaced by the
   default `("...", "actions")`; it is now used as written. Tables without a `Meta.sequence` keep `actions` last.
   An existing `Meta.sequence` that does not name `"actions"` now takes effect and places the Actions column first
@@ -581,6 +588,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- **Opt-in compact formsets** ([#347](https://github.com/jacob-consulting/django-crud-views/issues/347)):
+  `CompactColumn`, `CompactLayout` and `FormSet.compact_layout` provide shared desktop headings and labelled
+  mobile cards, with independent nested adoption and preserved classic helpers. See the executed
+  [recipe, supported widgets and explicit limits](docs/reference/formsets.md#compact-layout).
 
 - **Snippet context exposes `view` and `parent_object`**
   ([#339](https://github.com/jacob-consulting/django-crud-views/issues/339)): header, paragraph, filter-header and

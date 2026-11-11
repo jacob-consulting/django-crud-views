@@ -135,7 +135,8 @@ describe("formset.js", () => {
             expect(btn.classList.contains("cv-form-ctrl-delete")).toBe(true);
 
             new window.cv.XForm(null, "book-None-0-0").delete();
-            expect(del.getAttribute("value")).toBe("0");
+            // Django CheckboxInput treats nonempty "0" as checked on the next POST.
+            expect(del.getAttribute("value")).toBe("");
             expect(btn.classList.contains("x-ctrl")).toBe(true);
             expect(btn.classList.contains("x-danger")).toBe(false);
         });

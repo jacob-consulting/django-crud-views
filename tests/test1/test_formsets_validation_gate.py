@@ -13,11 +13,33 @@ from django.test.client import Client
 
 from crud_views.lib.formsets import FormSets
 from tests.lib.helper.forms import field_key, form_payload
-from tests.test1.app.models import BookNote, Publisher
+from tests.test1.app.models import Book, BookNote, Publisher
 from tests.test1.app.views_formset import BookNoteInlineFormSet
 from tests.test1.test_formsets_policy import editor, observe_saves
 from tests.test1.test_formsets_policy import policy_routes as policy_routes
 from tests.test1.test_formsets_policy import policy_world as policy_world
+
+
+@pytest.mark.django_db
+def test_invalid_nested_field_redisplays_then_saves_correction(client_user_publisher_formset):
+    publisher = Publisher.objects.create(name="Invalid child")
+    book = Book.objects.create(publisher=publisher, title="Existing book")
+    note = BookNote.objects.create(book=book, note="Original note")
+    url = f"/publisher-formset/{publisher.pk}/update/"
+    payload = form_payload(client_user_publisher_formset.get(url))
+    key = next(key for key, value in payload.items() if key.endswith("-note") and value == note.note)
+    payload[key] = "x" * 201
+    client_user_publisher_formset.raise_request_exception = False
+    response = client_user_publisher_formset.post(url, payload)
+    assert response.status_code == 200
+    assert b"Ensure this value has at most 200 characters" in response.content
+    assert form_payload(response)[key] == "x" * 201
+    note.refresh_from_db()
+    assert note.note == "Original note"
+    payload[key] = "Corrected note"
+    assert client_user_publisher_formset.post(url, payload).status_code == 302
+    note.refresh_from_db()
+    assert note.note == "Corrected note" and note.book_id == book.pk
 
 
 @pytest.mark.django_db

@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
-last_mapped_at: 2026-11-10
+last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_at: 2026-11-11
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-10
+**Analysis Date:** 2026-11-11
 
 ## Maintainability Constraint
 
@@ -123,4 +123,11 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 
 ---
 
-*Convention analysis: 2026-11-10*
+## Compact Formset Declarations and Rendering (Phase 06.24)
+
+- Keep compact layout declarations explicit and immutable: use `CompactColumn(field_name, span=...)` and `CompactLayout(columns, controls_span=...)`; the public API is re-exported from `src/crud_views/lib/formsets/__init__.py`. Constructors reject coercion, positional convenience, duplicate/ambiguous fields, and non-instance `FormSet.compact_layout` values (`src/crud_views/lib/formsets/compact.py`, `tests/test1/test_formsets_compact.py`).
+- Compact rendering is an opt-in projection over the existing recursive formset renderer. Preserve classic custom helper/layout behavior, request-local resolved labels, form-owned field errors and row controls. Keep heading includes independently overridable and headings outside their owning rows (`src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `tests/test1/test_formsets_compact.py`).
+- When declaring nested compact examples, define a separate compact formset tree rather than mutating/reusing the classic tree. Use normal `InlineFormSet` factories and existing CRUD routes/actions so authorization and persistence stay on the proven view path (`examples/bootstrap5/formsets/views.py`, `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-06-SUMMARY.md`).
+- For example navigation, use existing labelled action menus and keep classic/compact labels visible on list rows; mobile layout should be achieved through existing theme behavior rather than a new menu or CSS mechanism (`examples/bootstrap5/formsets/views.py`, `examples/bootstrap5/formsets/tests.py`).
+
+*Convention analysis: 2026-11-11*

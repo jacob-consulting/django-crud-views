@@ -1,0 +1,10 @@
+{
+  "command": "CV_FRAGMENT_PYTHON=$PWD/.venv/bin/python npm run test:integration -- --run tests/js-integration/formset.test.js --reporter=junit --outputFile=.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-04-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<testsuites name=\"vitest tests\" tests=\"2\" failures=\"1\" errors=\"0\" time=\"9.872501363\">\n    <testsuite name=\"tests/js-integration/formset.test.js\" timestamp=\"2026-11-10T21:10:42.157Z\" hostname=\"weaver-dev\" tests=\"2\" failures=\"1\" errors=\"0\" skipped=\"0\" time=\"9.872501363\">\n        <testcase classname=\"tests/js-integration/formset.test.js\" name=\"real Django fragment insertion &gt; inserts outer and second-sibling fragments and POSTs their real FormData\" time=\"8.636646385\">\n            <failure message=\"expected &apos;......                               \u2026&apos; to contain &apos;12 passed&apos;\" type=\"AssertionError\">\nAssertionError: expected &apos;......                               \u2026&apos; to contain &apos;12 passed&apos;\n\n- Expected\n+ Received\n\n- 12 passed\n+ ......                                                                   [100%]\n+ 6 passed, 88 deselected in 7.75s\n+\n\n \u276f tests/js-integration/formset.test.js:140:35\n            </failure>\n        </testcase>\n        <testcase classname=\"tests/js-integration/formset.test.js\" name=\"integration runtime selection &gt; rejects an explicitly invalid interpreter without falling back\" time=\"1.231902109\">\n        </testcase>\n    </testsuite>\n</testsuites>\n",
+  "targetTest": "real Django fragment insertion > inserts outer and second-sibling fragments and POSTs their real FormData",
+  "targetFile": "tests/js-integration/formset.test.js",
+  "expected": "12 passed (six classic and six compact cases)",
+  "actual": "6 passed; compact variants absent",
+  "semanticAssessment": "Named test executed and failed on expected 12-case matrix versus existing six successful cases. No fixture, import or collection failure."
+}

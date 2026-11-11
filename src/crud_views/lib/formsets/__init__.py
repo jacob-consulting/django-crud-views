@@ -1,3 +1,5 @@
+from .compact import CompactColumn as CompactColumn
+from .compact import CompactLayout as CompactLayout
 from .formsets import FormSet as FormSet
 from .formsets import FormSets as FormSets
 from .inline_formset import InlineFormSet as InlineFormSet

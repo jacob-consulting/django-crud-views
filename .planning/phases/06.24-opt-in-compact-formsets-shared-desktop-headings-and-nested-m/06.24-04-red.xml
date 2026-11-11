@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="2" failures="1" errors="0" time="9.872501363">
+    <testsuite name="tests/js-integration/formset.test.js" timestamp="2026-11-10T21:10:42.157Z" hostname="weaver-dev" tests="2" failures="1" errors="0" skipped="0" time="9.872501363">
+        <testcase classname="tests/js-integration/formset.test.js" name="real Django fragment insertion &gt; inserts outer and second-sibling fragments and POSTs their real FormData" time="8.636646385">
+            <failure message="expected &apos;......                               …&apos; to contain &apos;12 passed&apos;" type="AssertionError">
+AssertionError: expected &apos;......                               …&apos; to contain &apos;12 passed&apos;
+
+- Expected
++ Received
+
+- 12 passed
++ ......                                                                   [100%]
++ 6 passed, 88 deselected in 7.75s
++
+
+ ❯ tests/js-integration/formset.test.js:140:35
+            </failure>
+        </testcase>
+        <testcase classname="tests/js-integration/formset.test.js" name="integration runtime selection &gt; rejects an explicitly invalid interpreter without falling back" time="1.231902109">
+        </testcase>
+    </testsuite>
+</testsuites>

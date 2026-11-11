@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.943" timestamp="2026-11-10T20:50:35.602511+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_formsets_compact" name="test_compact_hidden_errors_and_plain_help_are_escaped" time="0.749"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = &lt;built-in method count of str object at 0x76e75fc4dc60&gt;('hidden attack')&#10; +    where &lt;built-in method count of str object at 0x76e75fc4dc60&gt; = '   &lt;script&gt;row attack&lt;/script&gt;      \n                Title*    &lt;script&gt;field attack&lt;/script&gt;  help attack  \n           \n\n\n\n\n\n     '.count&#10;[+2 more lines; full report in element text]">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76e7600c9b50&gt;
+compact_books = CompactLayout(columns=(CompactColumn(field='title', span=8),), controls_span=4)
+client_user_publisher_formset = &lt;django.test.client.Client object at 0x76e7600c9760&gt;
+
+    @pytest.mark.django_db
+    def test_compact_hidden_errors_and_plain_help_are_escaped(monkeypatch, compact_books, client_user_publisher_formset):
+        from django import forms
+        from django.core.exceptions import ValidationError
+    
+        from tests.test1.app.views_formset import BookFormSetForm
+    
+        class ErrorBook(BookFormSetForm):
+            secret = forms.CharField(widget=forms.HiddenInput, initial="initial-secret")
+    
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.fields["title"].help_text = "&lt;script&gt;help attack&lt;/script&gt;"
+    
+            def clean(self):
+                data = super().clean()
+                if data.get("secret") == "invalid-secret":
+                    self.add_error("secret", "&lt;script&gt;hidden attack&lt;/script&gt;")
+                    self.add_error("title", "&lt;script&gt;field attack&lt;/script&gt;")
+                    self.add_error(None, "&lt;script&gt;row attack&lt;/script&gt;")
+                return data
+    
+        original_clean = BookInlineFormSet.clean
+    
+        def clean_formset(self):
+            original_clean(self)
+            if any(f.data.get(f.add_prefix("secret")) == "invalid-secret" for f in self.forms):
+                raise ValidationError("&lt;script&gt;formset attack&lt;/script&gt;")
+    
+        monkeypatch.setattr(publisher_formsets["books"].klass, "form", ErrorBook)
+        monkeypatch.setattr(BookInlineFormSet, "clean", clean_formset)
+        publisher = Publisher.objects.create(name="Errors")
+        book = Book.objects.create(publisher=publisher, title="Original")
+        url = f"/publisher-formset/{publisher.pk}/update/"
+        initial = client_user_publisher_formset.get(url)
+        payload = form_payload(initial)
+        title_name = next(k for k, v in payload.items() if k.endswith("-title") and v == "Original")
+        prefix = title_name.removesuffix("-title")
+        payload[title_name] = "Retained value"
+        payload[f"{prefix}-secret"] = "invalid-secret"
+        response = client_user_publisher_formset.post(url, payload)
+        assert response.status_code == 200
+        document = html.fromstring(response.content)
+        row = document.xpath('//div[@cv-data-formset-form-prefix=$prefix]', prefix=prefix)[0]
+        own = row.cssselect(".cv-formset-form")[0]
+        for message in ("hidden attack", "field attack", "row attack"):
+&gt;           assert own.text_content().count(message) == 1
+E           AssertionError: assert 0 == 1
+E            +  where 0 = &lt;built-in method count of str object at 0x76e75fc4dc60&gt;('hidden attack')
+E            +    where &lt;built-in method count of str object at 0x76e75fc4dc60&gt; = '   &lt;script&gt;row attack&lt;/script&gt;      \n                Title*    &lt;script&gt;field attack&lt;/script&gt;  help attack  \n           \n\n\n\n\n\n     '.count
+E            +      where '   &lt;script&gt;row attack&lt;/script&gt;      \n                Title*    &lt;script&gt;field attack&lt;/script&gt;  help attack  \n           \n\n\n\n\n\n     ' = text_content()
+E            +        where text_content = &lt;Element div at 0x76e75f581e00&gt;.text_content
+
+tests/test1/test_formsets_compact.py:228: AssertionError</failure></testcase></testsuite></testsuites>

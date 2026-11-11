@@ -14,7 +14,7 @@ formset).
 
 !!! note "Stability"
     This page documents the supported formsets surface: `FormSetMixin`, `FormSets`, `FormSet`,
-    `InlineFormSet`, `Formsets`, `FormControl` — exactly the names exported by
+    `InlineFormSet`, `Formsets`, `FormControl`, `CompactColumn`, `CompactLayout` — the names exported by
     `crud_views.lib.formsets`. The formsets machinery behind them (rendering tree, per-formset
     plumbing) is internal and stays internal in 1.0 — see [API stability](../development/stability.md).
 
@@ -117,11 +117,242 @@ class QuestionnaireCreateView(
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
+    cv_context_actions = ["home", "create", "compact_create"]
+    cv_context_actions_inline = []
+    cv_action_label_template_code = _("Create classic")
+    cv_action_short_label_template_code = _("Create classic")
     cv_message_template_code = _("Created questionnaire “{{ object }}”")
 ```
 
 The update view mirrors this exactly, mixing `FormSetMixin` in against
 `UpdateViewPermissionRequired` instead.
+
+## Compact layout
+
+Set `FormSet.compact_layout` to opt one formset into shared desktop column headings and labelled mobile
+cards. Omit it or use `None` to retain the classic helper and `form_show_labels` behavior, without compact
+metadata work. In compact mode, the columns declaration **replaces** `get_helper_layout_fields()`;
+the classic helper is never consulted. Do not duplicate the same row in crispy layout objects.
+
+For a runnable comparison, open **Formsets** from the Bootstrap 5 example home page and sign in as
+`alice` / `alice` or `bob` / `bob`. Open **More actions** for **Create classic** / **Create compact**.
+Use **Edit classic** / **Edit compact** on each questionnaire list row or in the detail/editor **More actions**
+menu. Both presentations edit the same questionnaire,
+questions and choices. The code panel shows `cv_compact_formsets`, with independently declared question
+and choice columns, and factories using ordinary `InlineFormSet` without duplicate crispy row layouts.
+The classic `cv_formsets` tree retains its helper layouts.
+
+### Standalone compact recipe
+
+This recipe uses your application's existing `Publisher`, `Book` and `BookNote` models: `Book.publisher`
+is a foreign key to `Publisher`, `Book.title` is a character field, and `BookNote.book` points to `Book`
+with a character field `note`. Import these models from your own app. The ordinary Django model forms
+accept the existing `cv_view` keyword supplied by `InlineFormSet`; no crispy form subclass or row helper
+override is needed. The recipe is executed by the documentation tests through a real update GET and POST.
+
+```python
+from django import forms
+from django.forms import inlineformset_factory
+from django.utils.translation import gettext_lazy as _
+
+from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet, FormSets, InlineFormSet
+
+from .models import Book, BookNote, Publisher
+
+
+class InlineRowForm(forms.ModelForm):
+    def __init__(self, *args, cv_view=None, **kwargs):
+        self.cv_view = cv_view
+        super().__init__(*args, **kwargs)
+
+
+class BookForm(InlineRowForm):
+    class Meta:
+        model = Book
+        fields = ["title"]
+        labels = {"title": _("Book title")}
+
+
+class NoteForm(InlineRowForm):
+    class Meta:
+        model = BookNote
+        fields = ["note"]
+        labels = {"note": _("Note")}
+
+
+BookFormSet = inlineformset_factory(
+    Publisher,
+    Book,
+    form=BookForm,
+    formset=InlineFormSet,
+    extra=1,
+    can_delete=True,
+    can_order=False,
+)
+NoteFormSet = inlineformset_factory(
+    Book,
+    BookNote,
+    form=NoteForm,
+    formset=InlineFormSet,
+    extra=1,
+    can_delete=True,
+    can_order=False,
+)
+
+cv_formsets = FormSets(
+    formsets={
+        "books": FormSet(
+            title=_("Books"),
+            klass=BookFormSet,
+            compact_layout=CompactLayout(columns=[CompactColumn("title", span=8)], controls_span=4),
+            children={
+                "notes": FormSet(
+                    title=_("Notes"),
+                    klass=NoteFormSet,
+                    compact_layout=CompactLayout(columns=[CompactColumn("note", span=8)], controls_span=4),
+                ),
+            },
+        ),
+    }
+)
+```
+
+Assign this `cv_formsets` to your existing `FormSetMixin` create/update view. Keep the main form's
+`Formsets()` placement, page-owned outer form and CSRF token, permission checks and normal validation/save
+flow from [Usage](#usage). The compact row helper emits neither another form nor another CSRF token.
+Load the bundled Bootstrap theme and `crud_views/css/formset.css` along with the existing formset JavaScript.
+
+Each node chooses independently. To use **compact books / classic notes**, retain the books declaration
+and use your existing classic notes `FormSet` under `children["notes"]`, with `compact_layout=None` and its
+existing `InlineFormSet` subclass implementing `get_helper_layout_fields()`. For **classic books / compact
+notes**, retain your classic books declaration and attach the recipe's compact notes declaration under its
+`children`. Compact/compact and classic/classic also work, as do independently configured siblings. Merely
+removing `compact_layout` from this recipe's bare `InlineFormSet` is insufficient: classic rendering needs
+its usual helper implementation. Existing custom classic helpers remain valid and unchanged.
+
+### Declaration and validation
+
+The public constructors are `CompactColumn(field: str, *, span: int)` and
+`CompactLayout(columns: list[CompactColumn] | tuple[CompactColumn, ...], *, controls_span: int)`.
+Both are frozen dataclasses; columns are copied into an immutable tuple. `FormSet.compact_layout` accepts
+a `CompactLayout` instance or `None`, not a dictionary or string shorthand.
+
+Columns render in declaration order. Names must be nonempty exact field names without whitespace or
+duplicates. Spans and `controls_span` must be actual integers from 1 through 12, excluding booleans and
+coercible strings/floats. At least one column is required. Field spans plus controls must total at most 12;
+an underfilled row keeps trailing empty space rather than stretching. The controls width stays reserved on
+desktop even when no buttons are available. Width does not grant add/delete/order capabilities.
+
+Bad declarations raise `ValueError` during construction, for example `CompactColumn.span must be an integer
+from 1 to 12`, `CompactLayout.columns must not contain duplicate field names`, or
+`CompactLayout field and controls spans must total at most 12`. Pydantic rejects an invalid
+`FormSet.compact_layout` value when constructing `FormSet`.
+
+Field/schema validation occurs against request-time forms when compact headings or helpers are first
+accessed for rendering, including invalid POST redisplays and fragments. It raises Django
+`ImproperlyConfigured`, with messages such as `FormSet 'books' compact field 'title': visible field is missing
+from CompactLayout`, `field does not exist`, `hidden and identity/control fields cannot be compact columns`,
+`unsupported compact widget or custom template`, or `a nonempty effective label is required` (each reason
+uses the same formset/field prefix). Rows must have uniform field types, labels, required state and widget
+shapes; disagreement reports `rows must have uniform field types, labels, required state and widget shapes`.
+These are configuration errors, not user-input validation errors or a silent fallback to classic rendering.
+
+### Fields, labels and supported widgets
+
+Forms own fields, widgets, attributes, labels, help text, required state and validation. Every ordinary
+visible field must appear once, including optional and disabled fields. Hidden fields, model PK, parent FK,
+`ORDER` and `DELETE` stay outside the columns; existing hidden values and management fields still render.
+Do not declare them as visible compact columns. Hidden-field errors remain visible with their owning row.
+
+Only these **exact stock Django widget classes** with their standard templates and input types are supported:
+
+| Widget | Template | Input type |
+| --- | --- | --- |
+| `TextInput` | `django/forms/widgets/text.html` | `text` |
+| `NumberInput` | `django/forms/widgets/number.html` | `number` |
+| `DateInput` | `django/forms/widgets/date.html` | `text` |
+| `Select` | `django/forms/widgets/select.html` | `select` |
+
+`Select` also requires the stock `django/forms/widgets/select_option.html` and single selection. This includes
+`ModelChoiceField` using `Select`. Subclasses, custom widget/option templates, changed `input_type`, multiple
+selection and unlisted widgets are rejected. Thus checkboxes, radio groups, multiwidgets, file inputs,
+password inputs and textareas are unsupported. Stock `DateInput` remains a text input; setting its type to
+`date` is outside this boundary. Ordinary widget attributes (such as a CSS class or size) remain form-owned.
+
+Effective form labels, including constructor changes and lazy translation resolved in the current request,
+supply both headings and associated row labels. They must be nonblank and uniform within each formset.
+There is no second label dictionary or global translated-label cache. Compact mode takes precedence over
+`form_show_labels=False`: it always emits associated labels, visually clips them at desktop widths and
+shows them on mobile. Required markers, help text and field errors remain available at every width; row
+non-field errors and formset errors stay with their respective owners.
+
+### Metadata and query boundary
+
+Headings reuse actual row forms without evaluating choices, rendering widgets or consulting classic helpers.
+For a **zero-total** formset, compact constructs one metadata-only form using the formset's `form` class and
+`get_form_kwargs(None)`. It does not call `empty_form` or inline `add_fields()`, so it does not clear an
+unsaved parent's default primary key. Custom form constructors and `get_form_kwargs(None)` must be query-free
+and supply index-independent field/label/required/widget metadata. Do not supply the live parent as that
+metadata form's `instance`; this raises `compact metadata cannot use the live parent instance`.
+Adding or changing compact columns in `add_fields()` is unsupported because that hook is not part of the
+zero-total metadata path. Keep column metadata in the form constructor or field declarations.
+
+Compact itself adds no database queries merely for headings. This is not a promise that rendering a formset
+is query-free: authorized row querysets and normal model-choice widget rendering can query the database.
+Classic formsets do not construct compact metadata forms.
+
+### Responsive nesting, controls and empty cases
+
+At **768px and wider** (Bootstrap `md`), one heading strip per compact formset aligns with the declared
+field and control widths. It belongs to the formset, outside its rows, and survives first-row deletion or
+reordering. Below 768px, headings are hidden visually and each row becomes a full-width labelled card.
+Inputs keep their own programmatic labels at every width. Resizing changes presentation, not form values,
+IDs or focus. Descriptive labels/help/errors wrap; native controls retain native value display behavior.
+
+Children remain expanded inside their parent row. Each compact child has its own heading strip and small
+local inset, without a full grid-column offset at each compact level. Classic children retain classic
+geometry. Existing recursion supports a verified grandchild composition; this adds neither an arbitrary-depth
+guarantee nor a new depth limit. Top-level rows-only AJAX fragments omit duplicate headings; a new parent row
+can contain complete child wrappers and their headings.
+
+Existing add/delete/order controls, flags and scoped row identities remain authoritative. Delete is still
+a reversible mark until save. `can_delete_extra=False` can omit `DELETE` on extra rows; compact neither
+requires nor fabricates it. Read-only/edit-only/no-control rows reserve the declared desktop control width.
+
+- **Zero initial rows with `extra > 0`:** blank extra rows render with headings, labels and existing controls.
+- **Zero total rows:** management data and headings remain, but there is no row-owned Add control and no new
+  empty-state recovery button.
+- **`extra=0`:** existing rows can render, but the existing Add fragment path needs an extra form. Requesting
+  Add raises `IndexError`/HTTP 500 and inserts nothing. Compact does not fix that existing limitation; configure
+  an extra form when adding is required.
+- Failed AJAX retains the existing absence of visible error/retry UI. Authorization, prefixes, row-added
+  events, validation, deletion/order policy, transactions and saving continue through the existing lifecycle.
+
+### Compact theme surface and exclusions
+
+The additive public surface is `CompactColumn`, `CompactLayout`, `FormSet.compact_layout`, these six CSS hooks
+and the overridable `crud_views/formsets/compact_headings.html` include:
+
+| Hook | Owner / purpose |
+| --- | --- |
+| `cv-formset-compact` | Opted-in formset fieldset |
+| `cv-formset-compact-headings` | Shared heading strip outside all rows |
+| `cv-formset-row-compact` | Opted-in row boundary and padding |
+| `cv-formset-compact-fields` | Row's own field/control grid, excluding child formsets |
+| `cv-formset-compact-label` | Associated label with responsive visual clipping |
+| `cv-formset-compact-child` | Compact child node's local inset; absent on classic children |
+
+Theme styles should target each node's own hooks or direct owned structure to avoid affecting classic
+descendants. Keep `div.cv-formset-row`, `.cv-formset-form`, `.cv-formset-content`, prefix/control attributes and
+the existing row-added event contract. Use the existing `formset:*` button class registry for controls; no new
+registry is introduced. The heading include uses escaped form labels and declared spans. Private projection
+and helper functions, and the runtime render tree, remain implementation details.
+
+Arbitrary crispy layout inference/objects, custom HTML cells, multiple row layouts, per-row conditional
+columns, heterogeneous/polymorphic schemas, collapsing children, sticky headings, computed/numbered summaries,
+configurable mobile variants, separate bottom Add buttons and new empty-state controls are excluded.
+There is no promise to implement these later. jQuery removal is separate work. Existing legend rendering is
+reused; this adds no legend-hook API (issue #346). Downstream theme adoption is separate follow-up work.
 
 ## Control button classes
 

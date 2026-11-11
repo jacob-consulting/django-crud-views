@@ -12,12 +12,13 @@ from django.forms.forms import BaseForm
 from django.forms.models import BaseInlineFormSet, ModelForm
 from django.http.request import HttpRequest
 from django.template.loader import render_to_string
-from pydantic import BaseModel, Field, PrivateAttr, model_validator
+from pydantic import BaseModel, Field, InstanceOf, PrivateAttr, model_validator
 
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.lazy import LazyStr
 from crud_views.lib.view import CrudView
 
+from .compact import CompactLayout
 from .render_tree import XForm, XFormSet
 
 # A row index or ``num`` in a fragment request: ASCII digits only (``str.isdigit`` would accept "²"), at most
@@ -62,6 +63,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
     path: str | None = None
     pk: PK = PK.INT
     form_show_labels: bool = False
+    compact_layout: InstanceOf[CompactLayout] | None = None
     conditional: ConditionalFormSet | None = None
 
     def __str__(self):

@@ -1,0 +1,192 @@
+{
+  "elements": [
+    {
+      "id": "E1",
+      "text": "Compact formset collection with nested rows and field inputs",
+      "elements": [
+        "form",
+        "list-collection"
+      ]
+    },
+    {
+      "id": "E2",
+      "text": "Shared headings and associated field labels, help and errors",
+      "elements": [
+        "static-content",
+        "form"
+      ]
+    },
+    {
+      "id": "E3",
+      "text": "Existing Add, Delete and Order row controls",
+      "elements": [
+        "interactive-control"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "requirement_id": "E1",
+      "category": "empty",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Distinguish zero initial rows with a blank extra from zero total rows; follow Empty state rows above; headings exist independently of rows; no new empty recovery control",
+      "reason": null,
+      "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+    },
+    {
+      "requirement_id": "E1",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Preserve current controller during requests; keep existing rows/data visible; insert only successful authorized fragments; no new loading state mechanism",
+      "reason": null,
+      "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+    },
+    {
+      "requirement_id": "E1",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Validation messages retain owner and visibility; invalid POST keeps compact selection and values; AJAX failure retains existing no-insert behavior and documented feedback limitation",
+      "reason": null,
+      "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+    },
+    {
+      "requirement_id": "E1",
+      "category": "populated",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Shared desktop headings, ordered fields and aligned controls; mobile cards; expanded children remain with their exact owning parent",
+      "reason": null,
+      "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+    },
+    {
+      "requirement_id": "E1",
+      "category": "partial",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Render every ordinary visible field exactly once; preserve values, help, disabled semantics, hidden payload and validation; no inferred completion summaries",
+      "reason": null,
+      "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+    },
+    {
+      "requirement_id": "E1",
+      "category": "overflow",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Text wraps and cells shrink within declared widths; mobile fields are full-width; controls wrap; no compact-induced horizontal page scroll at acceptance widths",
+      "reason": null,
+      "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+    },
+    {
+      "requirement_id": "E1",
+      "category": "zero-one-many",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "One shared heading strip per compact formset regardless of row count; each row keeps identical layout; existing zero-row/extra=0 Add limitations remain documented",
+      "reason": null,
+      "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+    },
+    {
+      "requirement_id": "E1",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Wrap descriptive text without ellipsis; native controls retain native long-value behavior; no clipped errors or compressed font sizes",
+      "reason": null,
+      "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+    },
+    {
+      "requirement_id": "E2",
+      "category": "empty",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Distinguish zero initial rows with a blank extra from zero total rows; follow Empty state rows above; headings exist independently of rows; no new empty recovery control",
+      "reason": null,
+      "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+    },
+    {
+      "requirement_id": "E2",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Preserve current controller during requests; keep existing rows/data visible; insert only successful authorized fragments; no new loading state mechanism",
+      "reason": null,
+      "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+    },
+    {
+      "requirement_id": "E2",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Validation messages retain owner and visibility; invalid POST keeps compact selection and values; AJAX failure retains existing no-insert behavior and documented feedback limitation",
+      "reason": null,
+      "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+    },
+    {
+      "requirement_id": "E2",
+      "category": "partial",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Render every ordinary visible field exactly once; preserve values, help, disabled semantics, hidden payload and validation; no inferred completion summaries",
+      "reason": null,
+      "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+    },
+    {
+      "requirement_id": "E2",
+      "category": "overflow",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Text wraps and cells shrink within declared widths; mobile fields are full-width; controls wrap; no compact-induced horizontal page scroll at acceptance widths",
+      "reason": null,
+      "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+    },
+    {
+      "requirement_id": "E2",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Wrap descriptive text without ellipsis; native controls retain native long-value behavior; no clipped errors or compressed font sizes",
+      "reason": null,
+      "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+    },
+    {
+      "requirement_id": "E3",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Preserve current controller during requests; keep existing rows/data visible; insert only successful authorized fragments; no new loading state mechanism",
+      "reason": null,
+      "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+    },
+    {
+      "requirement_id": "E3",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Validation messages retain owner and visibility; invalid POST keeps compact selection and values; AJAX failure retains existing no-insert behavior and documented feedback limitation",
+      "reason": null,
+      "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+    },
+    {
+      "requirement_id": "E3",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Wrap descriptive text without ellipsis; native controls retain native long-value behavior; no clipped errors or compressed font sizes",
+      "reason": null,
+      "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+    }
+  ],
+  "coverage": {
+    "applicable": 17,
+    "resolved": 17,
+    "unresolved": 0,
+    "unclassified": 0,
+    "byVerification": {
+      "explicit": 17,
+      "backstop": 0
+    }
+  }
+}

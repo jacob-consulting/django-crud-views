@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.405" timestamp="2026-11-10T20:59:24.377299+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_geometry_is_node_local[False-True-True]" time="0.263"><failure message="assert (True, 11, 1) == (False, 12, 0)&#10;  &#10;  At index 0 diff: True != False&#10;  Use -v to get more diff">parent_compact = True, child_compact = True, show_labels = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize("show_labels", [False, True])
+    def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, show_labels):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            form_show_labels=show_labels,
+            children={
+                "notes": FormSet(
+                    key="notes", klass=BookNoteFormSet, compact_layout=child_layout, form_show_labels=show_labels
+                )
+            },
+        )
+        child = node.forms[0].formsets[0]
+&gt;       assert (child.has_pre_col, child.col, child.col_pre) == ((False, 12, 0) if child_compact else (True, 11, 1))
+E       assert (True, 11, 1) == (False, 12, 0)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/test1/test_formsets_compact.py:182: AssertionError</failure></testcase></testsuite></testsuites>

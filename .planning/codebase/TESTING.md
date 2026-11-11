@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
-last_mapped_at: 2026-11-10
+last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_at: 2026-11-11
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-10
+**Analysis Date:** 2026-11-11
 
 ## Test Framework
 
@@ -217,4 +217,19 @@ For view failures, assert response status, form errors, redirect, and unchanged 
 
 ---
 
-*Testing analysis: 2026-11-10*
+## Compact Formset Coverage (Phase 06.24)
+
+- `tests/test1/test_formsets_compact.py` has focused declaration, rendering, schema, metadata, query, error-ownership and nested-geometry coverage. Prefer its parametrized matrices when editing projection behavior: dense layout, compact/classic parent-child combinations, label modes, empty/control policies, unsupported field/widget shapes, and nested sibling/grandchild trees are covered independently.
+- Request lifecycle coverage uses the real formset renderer and authenticated client, then posts generated management/form data and checks persistence (`test_compact_tracer_get_post`, `test_compact_nested_grandchild_and_authorized_fragments`). Preserve helper ownership and assert query behavior only for the specific projection/helper contract being changed.
+- `tests/test1/test_formsets_compact_docs.py` executes the published compact recipe against nested rows and verifies save behavior. Keep documentation examples runnable and pair behavior changes with recipe coverage.
+- Example coverage is Django `TestCase` based in `examples/bootstrap5/formsets/tests.py`; `CompactQuestionnaireTest` exercises create/update through both classic and compact routes, nested authorization/ownership, denied requests, fragments, validation redisplay and persistence. `examples/bootstrap5/project/tests.py::CompactFormsetsCatalogTest` pins the single catalog entry, navigation, code/about panels and comparison links.
+- Phase 06.24 retained focused results, not a fresh full suite during this map: combined example gate 60 passed on four workers; affected core formset/fragment regression 399 passed on four workers; compact recipe/docs selection 39 passed serially to avoid worker startup overhead. Compatibility and support-series evidence is recorded separately in `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-05-SUMMARY.md`; do not treat these counts as a new full matrix run.
+
+## Browser Evidence for Formsets (Phase 06.24)
+
+- `tests/browser/conditional-formsets.cjs` is a Node/Playwright harness with named `--case` scopes and a fail-closed `--check-evidence` mode. It hashes relevant source inputs, checks required assertions/capture hashes, adversarially corrupts copied records to ensure validation rejects them, and tracks server/temp-resource cleanup. Supply `CV_FOCUS_NODE`; lifecycle runs also supply `CV_FOCUS_PYTHON` where the retained recipe requires it.
+- Retained phase records are `browser-presentation.json` (96 assertions, 12 captures) and `browser-lifecycle.json` (19 assertions, four captures), plus the example run at `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/evidence/06-example-browser.json` (58 assertions, six captures). These are recorded successful runs, not rerun as part of this mapping. Presentation and lifecycle used different installed Django versions (6.0.9 and 6.1.2); the example evidence uses its disposable SQLite/settings/server lifecycle. Each report carries source/capture hashes and cleanup evidence (`06.24-EXAMPLE-EVIDENCE.md`).
+- The example browser validates desktop/mobile geometry (1280px and 390px), visible mobile labels, nested heading containment, keyboard traversal, authorized fragment loading, invalid/corrected posts and database ownership. Browser captures are automation evidence; human visual acceptance remains explicitly pending in the phase records.
+- Reproduce the phase's example browser run with the recorded command and runtime in `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-EXAMPLE-EVIDENCE.md`; run the harness's `--check-evidence` after source changes before relying on retained results.
+
+*Testing analysis: 2026-11-11*

@@ -88,6 +88,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.23** Explicit header-icon suppression with plain `Icon.NONE` and `Icon.VIEWSET_DEFAULT`; None-only inheritance, preserved custom content and tested migration — Phase 06.23; canonical13/13.
 
+- ✓ **6.24** Opt-in compact formsets with explicit columns, shared desktop headings, labelled mobile cards and independent nested composition; runnable questionnaire comparison and preserved Django validation errors — Phase 06.24; six plans complete, human UAT 1/1 and canonical verification passed.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -185,6 +187,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Validate core permission declarations from concrete-model metadata after URL registration; keep database-row and Guardian checks at request time | Catches configuration errors before requests without database access or changing authorization | Validated (Phase 06.22) |
 
+| Compact rendering is opt-in per formset node, with explicit columns and request-local heading metadata | Keeps classic paths and independent nested composition understandable; examples reuse existing models and permissions | Validated (Phase 06.24) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -203,4 +207,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-10 after Phase 06.23 completion*
+*Last updated: 2026-11-11 after Phase 06.24 completion*

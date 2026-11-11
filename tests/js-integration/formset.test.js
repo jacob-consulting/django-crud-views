@@ -23,6 +23,12 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
         events.push({ prefix: event.detail.prefix, rows: event.detail.rows });
         assert.equal(event.target.getAttribute("cv-data-formset-form-prefix"), event.detail.prefix);
     });
+    const initialRow = form.querySelector(".cv-formset-row");
+    const initialPrefix = initialRow.getAttribute("cv-data-formset-form-prefix");
+    const remove = [...initialRow.querySelectorAll(".cv-form-ctrl-delete")]
+        .find(button => button.getAttribute("cv-data-formset-form-prefix") === initialPrefix);
+    remove.click();
+    remove.click();
     for (const step of fixture.steps) {
         const content = [...form.querySelectorAll(".cv-formset-content")]
             .find(el => el.getAttribute("cv-data-formset-prefix") === step.prefix);
@@ -70,6 +76,22 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
         assert.ok(inserted);
         assert.equal(inserted.parentElement, last.parentElement, "row inserted in the intended content wrapper");
         assert.equal(inserted.closest(".cv-formset-content"), content);
+        if (fixture.compact) {
+            const fragment = win.document.createElement("div");
+            fragment.innerHTML = step.fragment.html;
+            assert.equal(fragment.querySelectorAll(":scope > .cv-formset-compact-headings").length, 0);
+            assert.equal(content.querySelectorAll(":scope > .cv-formset-compact-headings").length, 1);
+            assert.ok(inserted.classList.contains("cv-formset-row-compact"));
+            for (const child of inserted.querySelectorAll(".cv-formset-content")) {
+                assert.equal(child.querySelectorAll(":scope > .cv-formset-compact-headings").length, 1);
+            }
+            for (const input of form.querySelectorAll(".cv-formset-compact-fields input:not([type=hidden]), .cv-formset-compact-fields select")) {
+                assert.equal(form.querySelectorAll(`[id="${input.id}"]`).length, 1);
+                const labels = [...form.querySelectorAll("label")].filter(label => label.htmlFor === input.id);
+                assert.equal(labels.length, 1);
+                assert.ok(labels[0].textContent.trim());
+            }
+        }
         for (const control of inserted.querySelectorAll(".cv-formset-form input[name]")) {
             const owner = control.closest(".cv-formset-row");
             assert.ok(control.name.startsWith(`${owner.getAttribute("cv-data-formset-form-prefix")}-`));
@@ -83,7 +105,11 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
     const submit = new win.Event("submit", { bubbles: true, cancelable: true });
     form.dispatchEvent(submit);
     assert.equal(submit.defaultPrevented, false, "valid native rows allow ordered submit");
-    const payload = Object.fromEntries(new win.FormData(form));
+    const data = [...new win.FormData(form)];
+    assert.equal(data.find(([name]) => name === `${initialPrefix}-DELETE`)[1], "", "unmarked hidden DELETE posts false");
+    const names = data.map(([name]) => name);
+    assert.equal(new Set(names).size, names.length, "identities and management fields occur exactly once");
+    const payload = Object.fromEntries(data);
     dom.window.close();
     return { payload, events };
 }
@@ -137,13 +163,12 @@ process.stdout.write(JSON.stringify(insert(fixture, JSDOM, jquery, assert, ${JSO
             });
             expect(result.error, `CV_FRAGMENT_PYTHON=${python}`).toBeUndefined();
             expect(result.status, `CV_FRAGMENT_PYTHON=${python}\n${result.stdout}\n${result.stderr}`).toBe(0);
-            expect(result.stdout).toContain("6 passed");
+            expect(result.stdout).toContain("12 passed");
             const records = fs.readFileSync(results, "utf8").trim().split("\n").map(line => JSON.parse(line));
-            expect(records.map(record => record.mode)).toEqual(["outer", "nested", "outer", "nested", "outer", "nested"]);
-            expect(records.map(record => record.capability)).toEqual([
-                "default", "default", "native-unordered", "native-unordered", "native-ordered", "native-ordered",
-            ]);
-            expect(records.map(record => record.events.length)).toEqual([2, 1, 2, 1, 2, 1]);
+            expect(records.map(record => [record.layout, record.capability, record.mode, record.events.length])).toEqual(
+                ["classic", "compact"].flatMap(layout => ["default", "native-unordered", "native-ordered"].flatMap(capability =>
+                    [[layout, capability, "outer", 2], [layout, capability, "nested", 1]])),
+            );
         } finally {
             fs.rmSync(directory, { recursive: true, force: true });
         }

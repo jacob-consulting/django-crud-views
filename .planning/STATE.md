@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.24"
-current_phase_name: Opt-in compact formsets
-status: verifying
-stopped_at: Phase 06.24 verified 18/19; human grouping/focus UAT pending
-last_updated: "2026-11-11T07:37:38Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.24 complete, ready to plan Phase 7
+last_updated: "2026-11-11T08:21:55.443Z"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.24 all six plans verified; one human UAT item pending
-state_head: 946f7c24791a226d324a3eabfadb6e1df87f7c95
+last_activity_desc: Phase 06.24 complete, transitioned to Phase 7
+state_head: bff8b3db2c81275f58ffa3c66a104d11ca4eaf10
 progress:
   total_phases: 30
-  completed_phases: 25
+  completed_phases: 26
   total_plans: 168
   completed_plans: 168
+  percent: 87
 milestone_name: milestone
 ---
 
@@ -21,19 +22,25 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-10)
+See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.24 — Opt-in compact formsets
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.24 (Opt-in compact formsets) — HUMAN VERIFICATION PENDING
-Plan: 6 of 6
-Status: All six plans executed and automated verification refreshed; one human UAT item pending
-Last activity: 2026-11-11 — Phase 06.24 plan 06 executed with real example browser evidence
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-11 — Phase 06.24 complete, transitioned to Phase 7
 
-Next: $gsd-verify-work 06.24
+Next: $gsd-plan-phase 7
+
+### Phase 06.24 completion — 2026-11-11
+
+- User passed the consolidated grouping, dense-heading and focus UAT. UAT 1/1 passed, zero issues; canonical verification promoted to passed and the combined completion predicate passes with no blockers. All six plans complete.
+- Public compact declarations remain opt-in, nested nodes choose independently, and the runnable questionnaire example compares compact/classic editors. Inherited deletion-state accessibility and AJAX failure feedback remain documented follow-ups.
+- Completion scanner warnings refer to the existing template loader path and test command strings, not missing implementation. No learnings or stale handoffs to graduate.
 
 ### Phase 06.24 examples-app extension — 2026-11-11
 
@@ -722,7 +729,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 158
+- Total plans completed: 164
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -757,6 +764,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.22 | 3 | - | - |
 | 06.21 | 2 | - | - |
 | 06.23 | 2 | - | - |
+| 06.24 | 6 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1223,6 +1231,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T07:11:35.902Z
-Stopped at: Phase 06.24 verified 18/19; human grouping/focus UAT pending
+Last session: 2026-11-11T08:22:13.993867+00:00
+Stopped at: Phase 06.24 complete, ready to plan Phase 7
 Resume file: None

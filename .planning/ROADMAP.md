@@ -47,7 +47,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending. (completed 2026-11-10)
 - [x] **Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (INSERTED)** - #341 (tabler-test finding 24): document the custom-permission recipe for custom form and action views; new static check `viewset.E269` verifies `cv_permission` and nested ancestor pair keys against the model's declared permissions on core ViewSets; Guardian documented as unsupported; planning pending. (completed 2026-11-10)
 - [x] **Phase 06.23: Explicit header-icon suppression with Icon constants (INSERTED)** - #329: readable per-view suppression, preserved default inheritance, and paired breaking-change/migration guidance; 2 plans verified, ready to execute. (completed 2026-11-10)
-- [ ] **Phase 06.24: Opt-in compact formsets: shared desktop headings and nested mobile cards (#347) (INSERTED)** - six plans executed and verified 18/19; human grouping/focus review pending.
+- [x] **Phase 06.24: Opt-in compact formsets: shared desktop headings and nested mobile cards (#347) (INSERTED)** - six plans complete; canonical verification and human grouping/focus UAT passed. (completed 2026-11-11)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1666,7 +1666,7 @@ All eight acceptance groups in issue #347 remain authoritative; this list summar
 All six plans executed, including the requested compact questionnaire example and classic comparison.
 Refreshed verification covers the extended scope: 18/19 truths verified, no implementation gaps.
 Human grouping/focus review remains pending; no phase advancement.
-**Plans:** 6/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 **Wave 1**
@@ -1797,5 +1797,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.20. ViewSet verbose_name override that every default label follows | 3/3 | Complete    | 2026-11-09 |
 | 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 06.23. Explicit header-icon suppression with Icon constants | 2/2 | Complete    | 2026-11-10 |
-| 06.24. Opt-in compact formsets | 6/6 | In Progress | - |
+| 06.24. Opt-in compact formsets | 6/6 | Complete    | 2026-11-11 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

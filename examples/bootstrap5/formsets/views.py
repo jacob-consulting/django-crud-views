@@ -164,12 +164,15 @@ class QuestionnaireListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermiss
     cv_viewset = cv_questionnaire
     table_class = QuestionnaireTable
     cv_context_actions = ["parent", "list", "filter", "create", "compact_create"]
+    cv_context_actions_inline = []  # labelled menu keeps the comparison readable on narrow screens
     cv_list_actions = ["detail", "update", "compact_update", "delete"]
+    cv_list_actions_label_mode = {"update": "label", "compact_update": "label"}
 
 
 class QuestionnaireDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_questionnaire
     cv_context_actions = ["home", "detail", "update", "compact_update", "delete"]
+    cv_context_actions_inline = []
     cv_property_display = [
         {
             "title": _("Questionnaire"),
@@ -189,6 +192,7 @@ class QuestionnaireCreateView(
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
     cv_context_actions = ["home", "create", "compact_create"]
+    cv_context_actions_inline = []
     cv_action_label_template_code = _("Create classic")
     cv_action_short_label_template_code = _("Create classic")
     cv_message_template_code = _("Created questionnaire “{{ object }}”")
@@ -201,6 +205,7 @@ class QuestionnaireUpdateView(
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
     cv_context_actions = ["home", "detail", "update", "compact_update", "delete"]
+    cv_context_actions_inline = []
     cv_action_label_template_code = _("Edit classic")
     cv_action_short_label_template_code = _("Edit classic")
     cv_message_template_code = _("Updated questionnaire “{{ object }}”")

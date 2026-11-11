@@ -172,6 +172,7 @@ FEATURES: list[Feature] = [
         description="Compare classic and compact inline formsets for the same questionnaire, questions and choices.",
         about=(
             "Create classic / Create compact and Edit classic / Edit compact use the same questionnaire records. "
+            "Open More actions for the create choices or to switch editors; list rows also show both edit labels. "
             "Both edit nested Questions and Choices on one page through FormSetMixin, with the existing add, "
             "delete and order controls. Compact formsets use shared desktop headings and labelled mobile cards; "
             "questions and their expanded choices each declare their own compact layout independently. "

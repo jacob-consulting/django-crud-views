@@ -185,6 +185,12 @@ class CompactQuestionnaireTest(FormsetsTestCase):
         listing = self.client.get(reverse("questionnaire-list"))
         for label in ("Create classic", "Create compact", "Edit classic", "Edit compact"):
             self.assertContains(listing, label)
+        document = html.fromstring(listing.content)
+        for key in ("update", "compact_update"):
+            link = document.cssselect(f'tbody a[cv-key="{key}"]')[0]
+            self.assertFalse(link.cssselect(".visually-hidden"))
+        for key in ("create", "compact_create"):
+            self.assertTrue(document.cssselect(f'.dropdown-menu a[cv-key="{key}"]'))
 
     def test_fragments_keep_nonfirst_question_ownership(self):
         questionnaire = Questionnaire.objects.create(title="Fragments")

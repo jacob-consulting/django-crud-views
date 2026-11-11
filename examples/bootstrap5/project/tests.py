@@ -140,9 +140,8 @@ class CompactFormsetsCatalogTest(TestCase):
 
     def test_compact_pages_show_formsets_about_code_and_active_navigation(self):
         from django.utils.html import escape
-        from lxml import html
-
         from formsets.models import Questionnaire
+        from lxml import html
 
         admin = get_user_model().objects.create_superuser(username="compact-catalog", password="pw")
         self.client.force_login(admin)

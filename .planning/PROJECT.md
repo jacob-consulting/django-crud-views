@@ -92,6 +92,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.25** General inherited CompactWidgetCompatible opt-in, bounded widget-only admission bypass and executed custom Select recipe — Phase 06.25; canonical12/12, UAT1/1, six committed browser captures, security7/7 and clean deep review.
 
+- ✓ Independent empty-default conditional/formset legend class hooks, layered overrides and escaped nested fragment rendering — Phase 06.25.1
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -193,6 +195,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | CompactWidgetCompatible is an empty inherited developer promise; shared schema checks and rendering remain unchanged | One explicit marker and guard allow application widgets without a registry, renderer abstraction or certification claim | Validated (Phase 06.25) |
 
+| Legend styling reuses two empty class keys and existing template tags | Keeps themes independently overridable without changing runtime machinery | Validated (Phase 06.25.1) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -211,4 +215,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-11 after Phase 06.25 completion*
+*Last updated: 2026-11-11 after Phase 06.25.1 completion*

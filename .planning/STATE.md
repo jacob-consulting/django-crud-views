@@ -4,16 +4,17 @@ milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
 status: planning
-stopped_at: Phase 06.25.1 context gathered
-last_updated: "2026-11-11T16:13:59.483Z"
+stopped_at: Phase 06.25.1 complete, ready to plan Phase 7
+last_updated: "2026-11-11T20:40:01.866Z"
 last_activity: 2026-11-11
-last_activity_desc: "Phase 06.25 shipped as PR #350"
-state_head: bfcd383fe130678bc3d5a74f190f084e2ed4472c
+last_activity_desc: Phase 06.25.1 complete, transitioned to Phase 7
+state_head: c67cc7df800be401b28de00c0c86272b26bb3d81
 progress:
   total_phases: 32
   completed_phases: 26
-  total_plans: 170
-  completed_plans: 170
+  total_plans: 171
+  completed_plans: 171
+  percent: 81
 milestone_name: milestone
 ---
 
@@ -24,16 +25,23 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.25.1 — Issue #346
 
 ## Current Position
 
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-11 — Phase 06.25 shipped as PR #350
+Last activity: 2026-11-11 — Phase 06.25.1 complete, transitioned to Phase 7
 
-Next: $gsd-plan-phase 06.25.1
+Next: $gsd-plan-phase 7
+
+### Phase 06.25.1 completion — 2026-11-11
+
+- Independent empty-default conditional:legend and formset:legend hooks use the existing registry; full, nested and row-only ownership and escaping are preserved. One plan complete; production changes confined to three files.
+- Full suite 12,486 passed, one existing skip; focused 934/expanded 961; independent reviewer/verifier 48 each. Scoped Ruff and strict MkDocs pass on Python 3.12.3/Django 5.2.19; other environments not replayed.
+- Canonical verification passed 11/11; validation 1/1, security 3/3 closed, deep review 12 files/zero findings; UI preservation 24/24 source/rendered only. No human checks required.
+- One test-only inventory correction documented. Completion scanner's phase-relative evidence reference exists. Codebase map drift advisory remains for refresh after shipping. Existing untracked PATTERNS/.gitkeep preserved; no push or merge.
 
 ### Phase 06.25 completion — 2026-11-11
 
@@ -735,7 +743,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 166
+- Total plans completed: 167
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -772,6 +780,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.23 | 2 | - | - |
 | 06.24 | 6 | - | - |
 | 06.25 | 2 | - | - |
+| 06.25.1 | 1 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1245,6 +1254,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T16:13:55.770Z
-Stopped at: Phase 06.25.1 context gathered
-Resume file: .planning/phases/06.25.1-issue-346/06.25.1-CONTEXT.md
+Last session: 2026-11-11T20:40:27.165962+00:00
+Stopped at: Phase 06.25.1 complete, ready to plan Phase 7
+Resume file: None

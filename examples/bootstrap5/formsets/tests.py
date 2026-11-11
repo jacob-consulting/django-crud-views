@@ -7,7 +7,7 @@ from django.urls import reverse
 from lxml import html
 from project.testing import field_key, field_keys, form_payload
 
-from formsets.models import Choice, Question, Questionnaire
+from formsets.models import Checklist, ChecklistItem, Choice, Question, Questionnaire
 
 
 class ChecklistRegistrationTest(TestCase):
@@ -108,6 +108,153 @@ class FormsetsSeedTest(TestCase):
         call_command("seed")
         self.assertEqual((Questionnaire.objects.count(), Question.objects.count(), Choice.objects.count()), counts)
         self.assertGreater(Questionnaire.objects.count(), 0)
+
+
+class ChecklistCrudTest(FormsetsTestCase):
+    def make_checklist(self):
+        checklist = Checklist.objects.create(title="Release checklist")
+        ChecklistItem.objects.create(checklist=checklist, label="Review changes", done=True)
+        ChecklistItem.objects.create(checklist=checklist, label="Publish", done=False)
+        return checklist
+
+    def fragment_params(self, response):
+        content = html.fromstring(response.content).cssselect(".cv-formset-content")[0]
+        data = json.loads(content.get("cv-data-formset"))
+        return {
+            "template": "|".join(data["hierarchy"]),
+            "pk": data["prefix_key"].rsplit("-", 2)[-2],
+            "num": form_payload(response)[f"{content.get('cv-data-formset-prefix')}-TOTAL_FORMS"],
+            "formset_parent_prefix_key": data["parent_prefix_key"],
+        }
+
+    def test_create_with_native_checked_and_omitted_values_and_fragment(self):
+        url = reverse("checklist-create")
+        response = self.client.get(url)
+        payload = form_payload(response)
+        payload["title"] = "New checklist"
+        label = field_key(payload, "-label")
+        payload[label] = "Checked item"
+        payload[label.removesuffix("label") + "done"] = "on"
+        fragment = self.client.get(url, self.fragment_params(response))
+        self.assertEqual(fragment.status_code, 200)
+        document = html.fromstring(fragment.json()["html"])
+        for control in document.cssselect("input[name]"):
+            if control.get("type") != "checkbox":
+                payload[control.get("name")] = control.get("value", "")
+        added_label = document.cssselect('input[name$="-label"]')[0].get("name")
+        payload[added_label] = "Unchecked added item"
+        total = field_key(payload, "-TOTAL_FORMS")
+        payload[total] = str(int(payload[total]) + 1)
+        ids = [el.get("id") for el in document.cssselect("[id]")]
+        self.assertEqual(len(ids), len(set(ids)))
+        for control in document.cssselect('input[name$="-label"], input[name$="-done"]'):
+            self.assertEqual(len(document.xpath("//label[@for=$id]", id=control.get("id"))), 1)
+            self.assertNotIn(control.get("name"), form_payload(response))
+        saved = self.client.post(url, payload)
+        self.assertRedirects(saved, reverse("checklist-list"))
+        checklist = Checklist.objects.get(title=payload["title"])
+        self.assertEqual(
+            list(checklist.items.values_list("label", "done")),
+            [("Checked item", True), ("Unchecked added item", False)],
+        )
+
+    def test_update_omitted_checkbox_saves_false_and_untouched_extra_stays_empty(self):
+        checklist = self.make_checklist()
+        url = reverse("checklist-update", kwargs={"pk": checklist.pk})
+        payload = form_payload(self.client.get(url))
+        done_keys = [key for key in payload if key.endswith("-done")]
+        self.assertEqual(len(done_keys), 1)
+        payload.pop(done_keys[0])
+        self.assertRedirects(self.client.post(url, payload), reverse("checklist-list"))
+        self.assertEqual(list(checklist.items.values_list("done", flat=True)), [False, False])
+        reloaded = form_payload(self.client.get(url))
+        self.assertFalse(any(key.endswith("-done") for key in reloaded))
+        self.assertEqual(checklist.items.count(), 2)
+
+    def test_invalid_label_is_atomic_and_keeps_checked_state_then_corrects(self):
+        checklist = self.make_checklist()
+        url = reverse("checklist-update", kwargs={"pk": checklist.pk})
+        payload = form_payload(self.client.get(url))
+        label = next(key for key in field_keys(payload, "-label") if payload[key] == "Review changes")
+        payload["title"] = "Edited title"
+        payload[label] = "x" * 201
+        response = self.client.post(url, payload)
+        self.assertContains(response, "Ensure this value has at most 200 characters")
+        self.assertEqual(form_payload(response)[label], "x" * 201)
+        self.assertIn(label.removesuffix("label") + "done", form_payload(response))
+        checklist.refresh_from_db()
+        self.assertEqual(checklist.title, "Release checklist")
+        self.assertEqual(
+            list(checklist.items.values_list("label", "done")), [("Review changes", True), ("Publish", False)]
+        )
+        payload[label] = "Reviewed changes"
+        self.assertRedirects(self.client.post(url, payload), reverse("checklist-list"))
+        self.assertTrue(checklist.items.get(label="Reviewed changes").done)
+
+    def test_hidden_delete_can_be_unmarked_before_deleting(self):
+        checklist = self.make_checklist()
+        url = reverse("checklist-update", kwargs={"pk": checklist.pk})
+        response = self.client.get(url)
+        document = html.fromstring(response.content)
+        fields = document.cssselect(".cv-formset-compact-fields")
+        self.assertTrue(fields)
+        for grid in fields:
+            self.assertFalse(grid.cssselect('input[type="hidden"]'))
+        payload = form_payload(response)
+        label = next(key for key in field_keys(payload, "-label") if payload[key] == "Review changes")
+        delete_key = label.removesuffix("label") + "DELETE"
+        payload[delete_key] = "on"
+        payload[delete_key] = ""  # what the existing unmark action submits
+        self.assertRedirects(self.client.post(url, payload), reverse("checklist-list"))
+        self.assertEqual(checklist.items.count(), 2)
+        payload = form_payload(self.client.get(url))
+        payload[delete_key] = "on"
+        self.assertRedirects(self.client.post(url, payload), reverse("checklist-list"))
+        self.assertEqual(list(checklist.items.values_list("label", flat=True)), ["Publish"])
+
+    def test_foreign_child_id_is_rejected_without_storage_changes(self):
+        checklist = self.make_checklist()
+        foreign_parent = Checklist.objects.create(title="Other owner")
+        foreign = ChecklistItem.objects.create(checklist=foreign_parent, label="Foreign", done=True)
+        url = reverse("checklist-update", kwargs={"pk": checklist.pk})
+        payload = form_payload(self.client.get(url))
+        id_key = field_keys(payload, "-id")[0]
+        payload[id_key] = str(foreign.pk)
+        payload["title"] = "Must not save"
+        before = list(ChecklistItem.objects.values_list("pk", "checklist_id", "label", "done"))
+        self.assertEqual(self.client.post(url, payload).status_code, 200)
+        checklist.refresh_from_db()
+        self.assertEqual(checklist.title, "Release checklist")
+        self.assertEqual(list(ChecklistItem.objects.values_list("pk", "checklist_id", "label", "done")), before)
+
+    def test_anonymous_and_no_permission_users_cannot_read_fragments_or_write(self):
+        checklist = self.make_checklist()
+        reader = get_user_model().objects.create_user(username="checklist-denied", password="pw")
+        for action in ("list", "create", "update"):
+            url = reverse(f"checklist-{action}", kwargs={"pk": checklist.pk} if action == "update" else None)
+            self.client.force_login(self.admin)
+            page = self.client.get(url)
+            payload = form_payload(page) if action != "list" else {}
+            params = self.fragment_params(page) if action != "list" else {}
+            for user in (None, reader):
+                with self.subTest(action=action, user=user):
+                    self.client.logout()
+                    if user:
+                        self.client.force_login(user)
+                    for response in (
+                        self.client.get(url),
+                        self.client.get(url, params),
+                        self.client.post(url, payload),
+                    ):
+                        self.assertIn(response.status_code, (302, 403))
+                        self.assertNotContains(response, "cv-formset-row-compact", status_code=response.status_code)
+                    checklist.refresh_from_db()
+                    self.assertEqual(checklist.title, "Release checklist")
+                    self.assertEqual(Checklist.objects.count(), 1)
+                    self.assertEqual(
+                        list(checklist.items.values_list("label", "done")),
+                        [("Review changes", True), ("Publish", False)],
+                    )
 
 
 class CompactQuestionnaireTest(FormsetsTestCase):

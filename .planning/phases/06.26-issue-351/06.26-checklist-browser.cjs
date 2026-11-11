@@ -178,17 +178,46 @@ let server, browser, logFd, failed;
         check('no failed assets',record.failedAssets.length===0,record.failedAssets);
     } catch(error) { failed=error; record.error=String(error.stack); console.error(error); }
     finally {
-        if(browser) await browser.close();
-        if(server && server.exitCode===null) { const exit=new Promise(resolve=>server.once('exit',(code,signal)=>resolve({code,signal}))); server.kill('SIGTERM'); record.serverExit=await exit; }
-        if(logFd!==undefined) fs.closeSync(logFd);
-        record.developerDbAfter=fs.existsSync(developerDb)?hash(developerDb):null;
-        check('developer database unchanged',record.developerDbBefore===record.developerDbAfter);
-        if(!failed) { fs.mkdirSync(captures,{recursive:true}); for(const file of fs.readdirSync(staged)) fs.copyFileSync(path.join(staged,file),path.join(captures,file)); }
-        fs.rmSync(scratch,{recursive:true,force:true});
+        const cleanupError = (stage,error) => {
+            (record.cleanupErrors ??= []).push(`${stage}: ${error.stack || error}`);
+            failed ??= error;
+            record.error ??= String(error.stack || error);
+            console.error(stage,error);
+        };
+        try { if(browser) await browser.close(); } catch(error) { cleanupError('browser close',error); }
+        try {
+            if(server && server.exitCode===null) { const exit=new Promise(resolve=>server.once('exit',(code,signal)=>resolve({code,signal}))); server.kill('SIGTERM'); record.serverExit=await exit; }
+        } catch(error) { cleanupError('server termination',error); }
+        try { if(logFd!==undefined) fs.closeSync(logFd); } catch(error) { cleanupError('log close',error); }
+        try {
+            record.developerDbAfter=fs.existsSync(developerDb)?hash(developerDb):null;
+            check('developer database unchanged',record.developerDbBefore===record.developerDbAfter);
+        } catch(error) { cleanupError('developer database check',error); }
+        // Hold this small capture set in memory so cleanup finishes before retained publication.
+        let images=[];
+        try { if(!failed) images=fs.readdirSync(staged).map(file=>[file,fs.readFileSync(path.join(staged,file))]); }
+        catch(error) { cleanupError('capture staging',error); }
+        try { fs.rmSync(scratch,{recursive:true,force:true}); } catch(error) { cleanupError('temporary removal',error); }
         record.cleanup={serverReaped:!server||server.exitCode!==null||server.signalCode!==null,temporaryRemoved:!fs.existsSync(scratch)};
         record.finished=new Date().toISOString();
-        const destination=failed?path.join(os.tmpdir(),'checklist-example-failed.json'):output;
-        fs.mkdirSync(path.dirname(destination),{recursive:true}); fs.writeFileSync(destination,JSON.stringify(record,null,2)+'\n');
+        try {
+            if(!failed) {
+                fs.mkdirSync(captures,{recursive:true});
+                for(const [file,data] of images) fs.writeFileSync(path.join(captures,file),data);
+            }
+        } catch(error) { cleanupError('capture publication',error); }
+        let destination=failed?path.join(os.tmpdir(),'checklist-example-failed.json'):output;
+        record.passed=!failed;
+        try {
+            fs.mkdirSync(path.dirname(destination),{recursive:true});
+            fs.writeFileSync(destination,JSON.stringify(record,null,2)+'\n');
+        } catch(error) {
+            cleanupError('report publication',error);
+            record.passed=false;
+            destination=path.join(os.tmpdir(),'checklist-example-failed.json');
+            try { fs.writeFileSync(destination,JSON.stringify(record,null,2)+'\n'); }
+            catch(diagnosticError) { cleanupError('diagnostic publication',diagnosticError); }
+        }
         console.log(JSON.stringify({output:destination,checks:record.checks.length,captures:record.captures.length,cleanup:record.cleanup}));
         if(failed) process.exitCode=1;
     }

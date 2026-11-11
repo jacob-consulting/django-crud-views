@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-11
-last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
 ---
 # Technology Stack
 
@@ -53,7 +53,7 @@ last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
 - `[workflow]`: `django-fsm-2`, `django-fsm-2-admin`; `[polymorphic]`: `django-polymorphic`; `[ordered]`: `django-ordered-model`; `[guardian]`: `django-guardian` (`pyproject.toml`)
 - `[all]` combines the four extension extras; `[test]` adds test tooling and Django integrations; `[examples]` adds Pygments (`pyproject.toml`)
 - Demo-only dependencies are Gunicorn, WhiteNoise, and django-ratelimit (`requirements/demo.txt`)
-- Compact formsets in phase 06.24 use existing Django forms and crispy APIs; no new dependency or extra is introduced (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/layout.py`)
+- Formset layouts, including compact layouts, use existing Django forms and crispy APIs; no additional package dependency is introduced (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/layout.py`)
 
 ## Configuration
 
@@ -68,6 +68,7 @@ last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
 - `noxfile.py` and `taskfile.yaml` - matrix sessions and task shortcuts
 - `package.json` and `package-lock.json` - JavaScript test harness
 - `mkdocs.yml`, `.readthedocs.yaml`, and `settings_i18n.py` - docs and translation tooling
+- `.github/workflows/` - test, lint, docs, JavaScript, package publishing, example, and demo automation
 
 ## Platform Requirements
 

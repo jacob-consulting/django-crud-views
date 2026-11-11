@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
 last_mapped_at: 2026-11-11
 ---
 # Codebase Concerns
@@ -21,7 +21,7 @@ last_mapped_at: 2026-11-11
 - Fix approach: implement ViewSet/URL inspection or remove the command.
 
 **Large central modules concentrate unrelated behavior:**
-- Files: `src/crud_views/lib/view/base.py` (1229 lines), `src/crud_views/templatetags/crud_views.py` (667), `src/crud_views/lib/view/buttons.py` (599), `src/crud_views/lib/ancestors.py` (607), `src/crud_views/lib/formsets/formsets.py` (544), `src/crud_views/lib/viewset/__init__.py` (532)
+- Files: `src/crud_views/lib/view/base.py` (1229 lines), `src/crud_views/checks.py` (600), `src/crud_views/templatetags/crud_views.py` (667), `src/crud_views/lib/view/buttons.py` (599), `src/crud_views/lib/ancestors.py` (607), `src/crud_views/lib/formsets/formsets.py` (546), `src/crud_views/lib/viewset/__init__.py` (532)
 - Impact: shared changes have broad regression surfaces; the base view and ancestor modules have grown beyond their sizes in the previous map.
 - Fix approach: extract cohesive subsystems behind existing public APIs only when a concrete maintenance need justifies the added abstraction.
 

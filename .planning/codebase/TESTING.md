@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
 last_mapped_at: 2026-11-11
 ---
 # Testing Patterns
@@ -31,6 +31,8 @@ task test-js                              # Vitest unit suite via Task
 ```
 
 Prefer `-n auto` or bounded `-n N` for broad pytest runs; the nox sessions also use `-n auto`. Use serial execution for a small selection where worker startup dominates, or a concrete isolation, ordering, or debugging constraint. Browser scenarios use dedicated harnesses in `tests/browser/` and may require Playwright/Chromium; inspect their preflight requirements.
+
+`pytest-random-order` is installed for order-sensitivity checks. When a test mutates process-global registries or URL configuration, scope the mutation with `monkeypatch`/fixtures and restore URL and ContentType caches in `finally` (`tests/conftest.py`, `tests/test1/test_ancestor_authorization.py`). The root setup configures Django once with in-memory SQLite databases named `default` and `shard`; database fixtures use `@pytest.mark.django_db` (`tests/conftest.py`).
 
 For a worktree that appears to import an older globally installed editable package, run pytest with `PYTHONPATH="$PWD/src"` so the current checkout's `src/` packages win. Keep this scoped to that invocation or shell; the nox sessions install the checkout into isolated environments.
 
@@ -153,6 +155,8 @@ Follow `cv_<model>`, `user_<model>_<permission>`, and `client_user_<model>_<perm
 ## Coverage
 
 **Requirements:** Coverage must reach 88%; `[tool.coverage.report].fail_under` enforces this in `pyproject.toml`. Nox emits a separate XML report per Python/Django session (`noxfile.py`).
+
+The dedicated `crispy_floor` Nox session validates the declared django-crispy-forms and crispy-bootstrap5 minimum versions on Django 4.2 and 6.0. It checks resolved package versions and a `format_html()` compatibility rule before running its curated form/button regression selection (`noxfile.py`). `examples` sessions run the Bootstrap demo suite independently of the core package suite.
 
 **View Coverage:**
 

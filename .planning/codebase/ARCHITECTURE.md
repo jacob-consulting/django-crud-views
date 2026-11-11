@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
 last_mapped_at: 2026-11-11
 ---
 <!-- refreshed: 2026-11-11 -->
@@ -78,7 +78,7 @@ last_mapped_at: 2026-11-11
 - The core theme is implemented in Django templates and template tags. App-contributed behavior can add static assets through `register_assets()` from an app's `AppConfig.ready()`.
 - Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
 - Optional packages depend on the core public view abstractions and are enabled by installing their app and declaring their specialized views.
-- Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Compact metadata and crispy helpers are derived from request-time bound forms, while `compact_layout=None` preserves the classic helper layout (`src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`).
+- Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Compact metadata and crispy helpers are derived from request-time bound forms, while `compact_layout=None` preserves the classic helper layout. Custom widgets can inherit the public `CompactWidgetCompatible` marker to accept responsibility for full compact rendering; this skips widget-specific checks only, leaving shared role, label and row-consistency validation in place (`src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`).
 
 ## Layers
 
@@ -236,7 +236,7 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 **FormSet / CompactLayout:**
 - Purpose: Describe recursive formset structure, deletion/order metadata and optional compact field/control grid without embedding markup in consumer views.
 - Examples: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `examples/bootstrap5/formsets/views.py`
-- Pattern: Keep the classic crispy helper on each inline formset class for classic rendering; opt in with `compact_layout=CompactLayout(...)` on only the formset nodes that should use shared headings and row labels.
+- Pattern: Keep the classic crispy helper on each inline formset class for classic rendering; opt in with `compact_layout=CompactLayout(...)` on only the formset nodes that should use shared headings and row labels. Custom widgets that fully own accessible labels/group semantics, headings, help/errors, prefixed IDs/names and dynamic rows may inherit `CompactWidgetCompatible`; the marker does not implement rendering (`src/crud_views/lib/formsets/compact.py`, `docs/reference/formsets.md`).
 
 ## Entry Points
 

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
 last_mapped_at: 2026-11-11
 ---
 # Coding Conventions
@@ -101,6 +101,18 @@ Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner a
 **Exports:** Keep Python imports explicit. JavaScript test helpers use named exports.
 
 **Barrel Files:** No general barrel-file pattern detected; import from the owning module.
+
+## JavaScript Conventions
+
+- Use ES modules, double-quoted strings, semicolons, and camelCase identifiers in the Vitest harness (`tests/js/formset.test.js`).
+- Import Vitest APIs explicitly (`describe`, `it`, `expect`, lifecycle hooks, and `vi`) and import Node modules via `node:` specifiers (`tests/js/formset.test.js`).
+- Load shipped browser scripts through `tests/js/helpers/load.js`; do not duplicate production logic in test helpers. Build DOM state with focused fixtures from `tests/js/helpers/dom.js` and reset globals/mocks via shared setup and per-test hooks (`tests/js/helpers/setup.js`).
+
+## Test Isolation Conventions
+
+- Treat module registries, warning deduplication sets, URL caches, and Django ContentType caches as shared process state. Snapshot and restore state using fixtures or `monkeypatch`, including teardown paths (`tests/conftest.py`, `tests/test1/test_ancestor_authorization.py`).
+- For temporary ViewSet registration or URLconf replacement, restore registries and Django URL caches in `finally` blocks so randomized test order remains safe (`tests/test1/test_ancestor_authorization.py`).
+- Prefer strict configuration validation and exact output assertions where behavior is public: tests pin complete button data key sets, metadata key sets, and system-check diagnostics (`tests/test1/test_button_data.py`, `tests/test1/test_snippet_context.py`, `tests/test1/test_permission_declarations.py`).
 
 ## Lazy Label Configuration (Phase 06.20)
 

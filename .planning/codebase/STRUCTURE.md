@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
 last_mapped_at: 2026-11-11
 ---
 # Codebase Structure
@@ -80,6 +80,7 @@ django-crud-views/
 - Contains: Public exports in `__init__.py`, recursive declarations in `formsets.py`, compact grid metadata/helper generation in `compact.py`, render-tree nodes in `render_tree.py`, orchestration mixins in `mixins.py`, and layout helpers in `layout.py` / `inline_formset.py`.
 - Key files: `src/crud_views/lib/formsets/__init__.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`.
 - Guidance: Add opt-in compact behavior to this package and its formset templates; declare it with `compact_layout` per `FormSet` node. Keep consumer declarations and comparison UI in the example app.
+- Custom widgets may inherit the publicly exported `CompactWidgetCompatible` marker alongside their Django widget class to promise complete compact rendering support; this bypasses widget-specific checks only and supplies no rendering behavior. Shared field coverage, roles, effective labels and row consistency are still validated (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/__init__.py`, `docs/reference/formsets.md`).
 
 **`src/crud_views/templates/crud_views/formsets/`:**
 - Purpose: Render the recursive formset tree and its browser controls.

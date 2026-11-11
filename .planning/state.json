@@ -140,9 +140,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-verify-work 06.26",
-    "label": "Review phase 06.26 visual checks",
-    "reason": "All four plans executed; human_needed, two visual UAT checks pending"
+    "command": "$gsd-discuss-phase 7",
+    "label": "Discuss theme-surface stability policy",
+    "reason": "Phase 06.26 complete; canonical verification and UAT passed"
   },
-  "updated_at": "2026-11-11T20:54:27.644984+00:00"
+  "updated_at": "2026-11-11T21:58:28.065021+00:00"
 }

@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.26"
-current_phase_name: Stock checkboxes in compact formsets
-status: verifying
-stopped_at: Phase 06.26 all four plans executed and verified; two visual UAT checks pending
-last_updated: "2026-11-11T20:54:27.644984+00:00"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.26 complete, ready to plan Phase 7
+last_updated: "2026-11-11T21:57:46.989Z"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.26 example complete; verification human_needed, 2 visual checks pending
-state_head: 8fd86fe19591175dc23adfafa9b8a2de5edf7de8
+last_activity_desc: Phase 06.26 complete, transitioned to Phase 7
+state_head: 3fe289608ba174ae2ceb30bab41ef96728219554
 progress:
   total_phases: 32
   completed_phases: 26
   total_plans: 174
   completed_plans: 174
+  percent: 81
 milestone_name: milestone
 ---
 
@@ -26,16 +27,23 @@ Total Phases: 32
 See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.26 — Stock checkboxes in compact formsets
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.26 (Stock checkboxes in compact formsets) — AWAITING VISUAL UAT
-Plan: 4 of 4 complete
-Status: Verification human_needed — two visual checks pending
-Last activity: 2026-11-11 — All four plans executed; fresh verification 16/17, no implementation blockers
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-11 — Phase 06.26 complete, transitioned to Phase 7
 
-Next: $gsd-verify-work 06.26
+Next: $gsd-discuss-phase 7
+
+### Phase 06.26 completion — 2026-11-11
+
+- All four plans complete. User approved the live review after direct navigation and exact “Formsets Compact Checklist” label feedback, then explicitly requested commit/phase closure. UAT 2/2 passed, zero issues; existing visual observations accepted without inventing runtime-specific human inspection.
+- Navigation committed e0ad7484; final report/captures and independent review committed. Final example/project 70, independent navigation 16, JavaScript 383 and actual browser 90/eight captures pass. Original full core/runtime matrix remains historical; no product core changes in navigation follow-up.
+- Fresh verification passed 17/17 with 93 covered inputs; owner and combined UAT predicate pass without blockers. Security 13/13 closed, validation nine tasks, review zero findings; WR-01..04 resolutions retained. Final reviewer additionally ran three navigation checks.
+- Completion scanner warning misclassifies two shell command strings in Plan 01 SUMMARY as missing file paths; actual runner exists. No unresolved implementation gap, matching todo, handoff or learnings graduation. No push/merge; existing untracked .gitkeep preserved. Review servers 8765/9000 remain running with temporary storage.
 
 ### Phase 06.26 example extension executed and re-verified — 2026-11-11
 
@@ -758,7 +766,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 166
+- Total plans completed: 170
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -795,6 +803,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.23 | 2 | - | - |
 | 06.24 | 6 | - | - |
 | 06.25 | 2 | - | - |
+| 06.26 | 4 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1275,6 +1284,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T18:00:14.067Z
-Stopped at: Phase 06.26 plan 04 added; ready to execute example extension
+Last session: 2026-11-11T21:58:28.065021+00:00
+Stopped at: Phase 06.26 complete, ready to plan Phase 7
 Resume file: None

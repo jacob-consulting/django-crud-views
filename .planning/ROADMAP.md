@@ -49,7 +49,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.23: Explicit header-icon suppression with Icon constants (INSERTED)** - #329: readable per-view suppression, preserved default inheritance, and paired breaking-change/migration guidance; 2 plans verified, ready to execute. (completed 2026-11-10)
 - [x] **Phase 06.24: Opt-in compact formsets: shared desktop headings and nested mobile cards (#347) (INSERTED)** - six plans complete; canonical verification and human grouping/focus UAT passed. (completed 2026-11-11)
 - [x] **Phase 06.25: Issue #349** (completed 2026-11-11)
-- [ ] **Phase 06.26: Issue #351**
+- [x] **Phase 06.26: Issue #351** (completed 2026-11-11)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1708,7 +1708,7 @@ Plans:
 **Goal:** [Urgent work - to be planned]
 **Requirements**: TBD
 **Depends on:** Phase 6
-**Plans:** 4/4 plans executed; example extension ready
+**Plans:** 4/4 plans complete; example extension ready
 
 Plans:
 **Wave 1**

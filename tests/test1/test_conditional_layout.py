@@ -11,7 +11,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row
 from crispy_forms.utils import render_crispy_form
 from django import forms
+from django.test import override_settings
+from django.utils.html import escape
+from lxml import html as lxml_html
 
+from crud_views.lib import button_classes as bc
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
 from crud_views.lib.conditional.layout import ToggleGroup
 from crud_views.lib.conditional.toggle import ModelFieldToggle
@@ -19,6 +23,16 @@ from crud_views.lib.crispy import Column6
 from tests.test1.app.models import Profile
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture(autouse=True)
+def _isolate_registry():
+    snapshot = dict(bc._THEME_BUTTON_CLASSES)
+    bc.reset_button_classes_cache()
+    yield
+    bc._THEME_BUTTON_CLASSES.clear()
+    bc._THEME_BUTTON_CLASSES.update(snapshot)
+    bc.reset_button_classes_cache()
 
 
 class _LayoutForm(forms.ModelForm):
@@ -84,10 +98,56 @@ def test_toggle_group_legend_renders_fieldset():
     form = _LegendLayoutForm()
     html = render_crispy_form(form, helper=form.helper)
     assert "<fieldset" in html
-    assert "<legend>Contact details</legend>" in html
+    legend = lxml_html.fromstring(html).cssselect("fieldset.cv-toggle-group")[0].xpath("./legend")[0]
+    assert legend.text_content() == "Contact details"
+    assert legend.get("class") == ""
     # marker lives on the fieldset so toggle.js hides the whole group
     assert 'cv-data-toggle-field="with_contact"' in html
     assert "cv-data-toggle-group" in html
+
+
+@pytest.mark.parametrize(
+    "project,expected",
+    [
+        ({}, "theme-conditional"),
+        ({"conditional:legend": "project-conditional"}, "project-conditional"),
+        ({"conditional:legend": ""}, ""),
+        ({"formset:legend": "project-formset"}, "theme-conditional"),
+        ({"formset:legend": ""}, "theme-conditional"),
+    ],
+)
+def test_toggle_group_legend_classes_follow_independent_layers(project, expected):
+    bc.register_button_classes({"conditional:legend": "theme-conditional", "formset:legend": "theme-formset"})
+    form = _LegendLayoutForm(prefix="editor-0")
+    helper = form.helper
+    helper.layout.fields[-1].css_class = "caller-group"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+        doc = lxml_html.fromstring(render_crispy_form(form, helper=helper))
+    group = doc.cssselect("fieldset.cv-toggle-group")[0]
+    assert set(group.get("class").split()) == {"cv-toggle-group", "caller-group"}
+    assert "cv-data-toggle-group" in group.attrib
+    assert group.get("cv-data-toggle-field") == "editor-0-with_contact"
+    legend = group.xpath("./legend")[0]
+    assert legend.get("class") == expected
+    assert legend.text_content() == "Contact details"
+
+
+def test_toggle_group_legend_escapes_plain_text_and_classes():
+    title = '<script data-legend="injected">Contact & details</script>'
+    classes = '" data-injected="yes"><img src=x> & legend'
+    bc.register_button_classes({"conditional:legend": classes})
+    form = _LegendLayoutForm(prefix="editor-0")
+    helper = form.helper
+    helper.layout.fields[-1].legend = title
+    rendered = render_crispy_form(form, helper=helper)
+    assert str(escape(title)) in rendered
+    assert f'class="{escape(classes)}"' in rendered
+    doc = lxml_html.fromstring(rendered)
+    legend = doc.cssselect("fieldset.cv-toggle-group")[0].xpath("./legend")[0]
+    assert legend.text_content() == title
+    assert legend.attrib == {"class": classes}
+    assert len(legend) == 0
+    assert not doc.cssselect("script, img, [data-injected], [data-legend]")
 
 
 def test_toggle_group_without_legend_stays_a_div():

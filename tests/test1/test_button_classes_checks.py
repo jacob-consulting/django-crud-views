@@ -28,6 +28,13 @@ def test_default_config_has_no_messages():
 
 
 @pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
+@pytest.mark.parametrize("value", ["theme-section-legend", ""])
+def test_legend_keys_are_recognized(source, key, value):
+    assert messages_for({key: value}, source) == []
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
 @pytest.mark.parametrize("active", [True, False])
 @pytest.mark.parametrize(
     "key,valid",

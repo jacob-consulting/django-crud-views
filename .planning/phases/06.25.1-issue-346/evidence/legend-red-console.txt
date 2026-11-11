@@ -1,0 +1,2431 @@
+bringing up nodes...
+bringing up nodes...
+
+FFFFFFFFFF.FFFFFFFFFFFFFFFFFF.FFFFF.FFFFFFFF                             [100%]
+=================================== FAILURES ===================================
+__________________ test_toggle_group_legend_renders_fieldset ___________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+    def test_toggle_group_legend_renders_fieldset():
+        form = _LegendLayoutForm()
+        html = render_crispy_form(form, helper=form.helper)
+        assert "<fieldset" in html
+        legend = lxml_html.fromstring(html).cssselect("fieldset.cv-toggle-group")[0].xpath("./legend")[0]
+        assert legend.text_content() == "Contact details"
+>       assert legend.get("class") == ""
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75cbed2ef980>.get
+
+tests/test1/test_conditional_layout.py:103: AssertionError
+_ test_toggle_group_legend_classes_follow_independent_layers[project1-project-conditional] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+project = {'conditional:legend': 'project-conditional'}
+expected = 'project-conditional'
+
+    @pytest.mark.parametrize(
+        "project,expected",
+        [
+            ({}, "theme-conditional"),
+            ({"conditional:legend": "project-conditional"}, "project-conditional"),
+            ({"conditional:legend": ""}, ""),
+            ({"formset:legend": "project-formset"}, "theme-conditional"),
+            ({"formset:legend": ""}, "theme-conditional"),
+        ],
+    )
+    def test_toggle_group_legend_classes_follow_independent_layers(project, expected):
+        bc.register_button_classes({"conditional:legend": "theme-conditional", "formset:legend": "theme-formset"})
+        form = _LegendLayoutForm(prefix="editor-0")
+        helper = form.helper
+        helper.layout.fields[-1].css_class = "caller-group"
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = lxml_html.fromstring(render_crispy_form(form, helper=helper))
+        group = doc.cssselect("fieldset.cv-toggle-group")[0]
+        assert set(group.get("class").split()) == {"cv-toggle-group", "caller-group"}
+        assert "cv-data-toggle-group" in group.attrib
+        assert group.get("cv-data-toggle-field") == "editor-0-with_contact"
+        legend = group.xpath("./legend")[0]
+>       assert legend.get("class") == expected
+E       AssertionError: assert None == 'project-conditional'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x74e9f19daa30>.get
+
+tests/test1/test_conditional_layout.py:131: AssertionError
+_ test_toggle_group_legend_classes_follow_independent_layers[project0-theme-conditional] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+project = {}, expected = 'theme-conditional'
+
+    @pytest.mark.parametrize(
+        "project,expected",
+        [
+            ({}, "theme-conditional"),
+            ({"conditional:legend": "project-conditional"}, "project-conditional"),
+            ({"conditional:legend": ""}, ""),
+            ({"formset:legend": "project-formset"}, "theme-conditional"),
+            ({"formset:legend": ""}, "theme-conditional"),
+        ],
+    )
+    def test_toggle_group_legend_classes_follow_independent_layers(project, expected):
+        bc.register_button_classes({"conditional:legend": "theme-conditional", "formset:legend": "theme-formset"})
+        form = _LegendLayoutForm(prefix="editor-0")
+        helper = form.helper
+        helper.layout.fields[-1].css_class = "caller-group"
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = lxml_html.fromstring(render_crispy_form(form, helper=helper))
+        group = doc.cssselect("fieldset.cv-toggle-group")[0]
+        assert set(group.get("class").split()) == {"cv-toggle-group", "caller-group"}
+        assert "cv-data-toggle-group" in group.attrib
+        assert group.get("cv-data-toggle-field") == "editor-0-with_contact"
+        legend = group.xpath("./legend")[0]
+>       assert legend.get("class") == expected
+E       AssertionError: assert None == 'theme-conditional'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75cbed24c050>.get
+
+tests/test1/test_conditional_layout.py:131: AssertionError
+____ test_toggle_group_legend_classes_follow_independent_layers[project2-] _____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+project = {'conditional:legend': ''}, expected = ''
+
+    @pytest.mark.parametrize(
+        "project,expected",
+        [
+            ({}, "theme-conditional"),
+            ({"conditional:legend": "project-conditional"}, "project-conditional"),
+            ({"conditional:legend": ""}, ""),
+            ({"formset:legend": "project-formset"}, "theme-conditional"),
+            ({"formset:legend": ""}, "theme-conditional"),
+        ],
+    )
+    def test_toggle_group_legend_classes_follow_independent_layers(project, expected):
+        bc.register_button_classes({"conditional:legend": "theme-conditional", "formset:legend": "theme-formset"})
+        form = _LegendLayoutForm(prefix="editor-0")
+        helper = form.helper
+        helper.layout.fields[-1].css_class = "caller-group"
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = lxml_html.fromstring(render_crispy_form(form, helper=helper))
+        group = doc.cssselect("fieldset.cv-toggle-group")[0]
+        assert set(group.get("class").split()) == {"cv-toggle-group", "caller-group"}
+        assert "cv-data-toggle-group" in group.attrib
+        assert group.get("cv-data-toggle-field") == "editor-0-with_contact"
+        legend = group.xpath("./legend")[0]
+>       assert legend.get("class") == expected
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x74e9f1931f40>.get
+
+tests/test1/test_conditional_layout.py:131: AssertionError
+_ test_toggle_group_legend_classes_follow_independent_layers[project3-theme-conditional] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+project = {'formset:legend': 'project-formset'}, expected = 'theme-conditional'
+
+    @pytest.mark.parametrize(
+        "project,expected",
+        [
+            ({}, "theme-conditional"),
+            ({"conditional:legend": "project-conditional"}, "project-conditional"),
+            ({"conditional:legend": ""}, ""),
+            ({"formset:legend": "project-formset"}, "theme-conditional"),
+            ({"formset:legend": ""}, "theme-conditional"),
+        ],
+    )
+    def test_toggle_group_legend_classes_follow_independent_layers(project, expected):
+        bc.register_button_classes({"conditional:legend": "theme-conditional", "formset:legend": "theme-formset"})
+        form = _LegendLayoutForm(prefix="editor-0")
+        helper = form.helper
+        helper.layout.fields[-1].css_class = "caller-group"
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = lxml_html.fromstring(render_crispy_form(form, helper=helper))
+        group = doc.cssselect("fieldset.cv-toggle-group")[0]
+        assert set(group.get("class").split()) == {"cv-toggle-group", "caller-group"}
+        assert "cv-data-toggle-group" in group.attrib
+        assert group.get("cv-data-toggle-field") == "editor-0-with_contact"
+        legend = group.xpath("./legend")[0]
+>       assert legend.get("class") == expected
+E       AssertionError: assert None == 'theme-conditional'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x79b06cce2a80>.get
+
+tests/test1/test_conditional_layout.py:131: AssertionError
+_ test_toggle_group_legend_classes_follow_independent_layers[project4-theme-conditional] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+project = {'formset:legend': ''}, expected = 'theme-conditional'
+
+    @pytest.mark.parametrize(
+        "project,expected",
+        [
+            ({}, "theme-conditional"),
+            ({"conditional:legend": "project-conditional"}, "project-conditional"),
+            ({"conditional:legend": ""}, ""),
+            ({"formset:legend": "project-formset"}, "theme-conditional"),
+            ({"formset:legend": ""}, "theme-conditional"),
+        ],
+    )
+    def test_toggle_group_legend_classes_follow_independent_layers(project, expected):
+        bc.register_button_classes({"conditional:legend": "theme-conditional", "formset:legend": "theme-formset"})
+        form = _LegendLayoutForm(prefix="editor-0")
+        helper = form.helper
+        helper.layout.fields[-1].css_class = "caller-group"
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = lxml_html.fromstring(render_crispy_form(form, helper=helper))
+        group = doc.cssselect("fieldset.cv-toggle-group")[0]
+        assert set(group.get("class").split()) == {"cv-toggle-group", "caller-group"}
+        assert "cv-data-toggle-group" in group.attrib
+        assert group.get("cv-data-toggle-field") == "editor-0-with_contact"
+        legend = group.xpath("./legend")[0]
+>       assert legend.get("class") == expected
+E       AssertionError: assert None == 'theme-conditional'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x79b06d3f1fe0>.get
+
+tests/test1/test_conditional_layout.py:131: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--True-True] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = True, theme = {}, project = {}
+expected = ''
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75cbed24ea30>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75cbed24ea80>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--False-False] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = False, theme = {}, project = {}
+expected = ''
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x74e9f1874b90>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x74e9f1874be0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+___________ test_toggle_group_legend_escapes_plain_text_and_classes ____________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+    def test_toggle_group_legend_escapes_plain_text_and_classes():
+        title = '<script data-legend="injected">Contact & details</script>'
+        classes = '\" data-injected="yes"><img src=x> & legend'
+        bc.register_button_classes({"conditional:legend": classes})
+        form = _LegendLayoutForm(prefix="editor-0")
+        helper = form.helper
+        helper.layout.fields[-1].legend = title
+        rendered = render_crispy_form(form, helper=helper)
+        assert str(escape(title)) in rendered
+>       assert f'class="{escape(classes)}"' in rendered
+E       assert 'class="&quot; data-injected=&quot;yes&quot;&gt;&lt;img src=x&gt; &amp; legend"' in '\n\n<form  method="post" > <div  class="row " > <div \n     class="col-md-6" > <div id="div_id_editor-0-name" class="..." maxlength="100" class="textinput form-control" id="id_editor-0-phone"> </div> </div> </div>\n\n</fieldset> </form>\n'
+
+tests/test1/test_conditional_layout.py:144: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-False-True] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = True
+theme = {'formset:legend': 'theme-formset', 'conditional:legend': 'theme-conditional'}
+project = {}, expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x79b06d40cbe0>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x79b06d40cc30>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--True-False] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = False, theme = {}, project = {}
+expected = ''
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75cbeceb1f90>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75cbeceb1f40>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-True-True] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = True
+theme = {'formset:legend': 'theme-formset', 'conditional:legend': 'theme-conditional'}
+project = {}, expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x74e9f1867c00>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x74e9f1867cf0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-True-True] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = True
+theme = {'formset:legend': 'theme-formset'}
+project = {'formset:legend': 'project-formset'}, expected = 'project-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75bda05acb40>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'project-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75bda05aecb0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-False-False] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = False
+theme = {'formset:legend': 'theme-formset', 'conditional:legend': 'theme-conditional'}
+project = {}, expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x79b06d3b94f0>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x79b06d3ba3f0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--False-True] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = True, theme = {}, project = {}
+expected = ''
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75cbed24c410>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75cbed24c320>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-True-False] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = False
+theme = {'formset:legend': 'theme-formset', 'conditional:legend': 'theme-conditional'}
+project = {}, expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x74e9f1872670>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x74e9f1872ad0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-True-False] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = False
+theme = {'formset:legend': 'theme-formset'}
+project = {'formset:legend': 'project-formset'}, expected = 'project-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75bda05af610>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'project-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75bda05afa20>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-False-True] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = True
+theme = {'formset:legend': 'theme-formset'}
+project = {'formset:legend': 'project-formset'}, expected = 'project-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x79b06d389fe0>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'project-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x79b06d38a440>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--True-True] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = True
+theme = {'formset:legend': 'theme-formset'}, project = {'formset:legend': ''}
+expected = ''
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75cbece54c30>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75cbece54870>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--False-True] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = True
+theme = {'formset:legend': 'theme-formset'}, project = {'formset:legend': ''}
+expected = ''
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x74e9f1867480>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x74e9f1866fd0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--False-False] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = False
+theme = {'formset:legend': 'theme-formset'}, project = {'formset:legend': ''}
+expected = ''
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75bda050bb60>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75bda050ab70>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-False-False] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = False
+theme = {'formset:legend': 'theme-formset'}
+project = {'formset:legend': 'project-formset'}, expected = 'project-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x79b06d38b6b0>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'project-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x79b06d38a3a0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--True-False] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = False
+theme = {'formset:legend': 'theme-formset'}, project = {'formset:legend': ''}
+expected = ''
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75cbed2a9180>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == ''
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75cbed2abcf0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-True-True] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = True
+theme = {'formset:legend': 'theme-formset'}
+project = {'conditional:legend': 'project-conditional'}
+expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x74e9f1874910>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x74e9f1875090>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-True-False] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = False
+theme = {'formset:legend': 'theme-formset'}
+project = {'conditional:legend': 'project-conditional'}
+expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75bda018da40>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75bda018dea0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-False-True] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = True
+theme = {'formset:legend': 'theme-formset'}
+project = {'conditional:legend': 'project-conditional'}
+expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x79b06d38a670>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x79b06d3894a0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-False-False] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = False
+theme = {'formset:legend': 'theme-formset'}
+project = {'conditional:legend': 'project-conditional'}
+expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75cbed2a9220>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75cbece57160>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-True-True] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = True
+theme = {'formset:legend': 'theme-formset'}
+project = {'conditional:legend': ''}, expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x74e9f1872030>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x74e9f1871860>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-True-False] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = True, child_compact = False
+theme = {'formset:legend': 'theme-formset'}
+project = {'conditional:legend': ''}, expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75bda018fe80>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75bda018f840>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_legend_keys_are_recognized[theme-section-legend-conditional:legend-settings] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+source = 'settings', key = 'conditional:legend', value = 'theme-section-legend'
+
+    @pytest.mark.parametrize("source", ["settings", "theme"])
+    @pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
+    @pytest.mark.parametrize("value", ["theme-section-legend", ""])
+    def test_legend_keys_are_recognized(source, key, value):
+>       assert messages_for({key: value}, source) == []
+E       assert [<Warning: le..._views.W362'>] == []
+E         
+E         Left contains one more item: <Warning: level=30, msg="Button class 'conditional:legend' is not a known key (typo?).", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'>
+E         Use -v to get more diff
+
+tests/test1/test_button_classes_checks.py:34: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-False-False] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = False
+theme = {'formset:legend': 'theme-formset'}
+project = {'conditional:legend': ''}, expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x75cbecebc7d0>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x75cbecebcaa0>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+_ test_legend_keys_are_recognized[theme-section-legend-conditional:legend-theme] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+source = 'theme', key = 'conditional:legend', value = 'theme-section-legend'
+
+    @pytest.mark.parametrize("source", ["settings", "theme"])
+    @pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
+    @pytest.mark.parametrize("value", ["theme-section-legend", ""])
+    def test_legend_keys_are_recognized(source, key, value):
+>       assert messages_for({key: value}, source) == []
+E       assert [<Warning: le..._views.W362'>] == []
+E         
+E         Left contains one more item: <Warning: level=30, msg="Button class 'conditional:legend' is not a known key (typo?).", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'>
+E         Use -v to get more diff
+
+tests/test1/test_button_classes_checks.py:34: AssertionError
+_ test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-False-True] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+parent_compact = False, child_compact = True
+theme = {'formset:legend': 'theme-formset'}
+project = {'conditional:legend': ''}, expected = 'theme-formset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize(
+        "theme,project,expected",
+        [
+            ({}, {}, ""),
+            ({"formset:legend": "theme-formset", "conditional:legend": "theme-conditional"}, {}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": "project-formset"}, "project-formset"),
+            ({"formset:legend": "theme-formset"}, {"formset:legend": ""}, ""),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": "project-conditional"}, "theme-formset"),
+            ({"formset:legend": "theme-formset"}, {"conditional:legend": ""}, "theme-formset"),
+        ],
+    )
+    def test_formset_legend_classes_on_full_nested_and_row_only_nodes(parent_compact, child_compact, theme, project, expected):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        bc.register_button_classes(theme)
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            title="Books title",
+            children={"notes": FormSet(key="notes", klass=BookNoteFormSet, title="Notes title", compact_layout=child_layout)},
+        )
+        child = node.forms[0].formsets[0]
+    
+        def assert_owner(tree, current):
+            fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            classes = {"cv-formset-fieldset"}
+            if current.formset.compact_layout:
+                classes.add("cv-formset-compact")
+                if current.has_parent:
+                    classes.add("cv-formset-compact-child")
+            assert set(fieldset.get("class").split()) == classes
+            assert fieldset.get("cv-data-formset-key") == current.key
+            assert fieldset.get("cv-data-formset-prefix") == current.prefix
+            legends = fieldset.xpath("./legend")
+            assert len(legends) == 1
+            assert legends[0].text_content() == current.title
+            assert legends[0].get("class") == expected
+            content = fieldset.xpath('./div[@class="cv-formset-content"]')[0]
+            assert content.get("cv-data-formset-prefix") == current.prefix
+            assert "cv-data-formset" in content.attrib
+            rows = content.xpath('./div[@cv-data-formset-form-prefix]')
+            assert [row.get("cv-data-formset-form-prefix") for row in rows] == [row.prefix for row in current.forms]
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+>           assert_owner(doc, node)
+
+tests/test1/test_formsets_compact.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <Element div at 0x79b06d40ccd0>
+current = XFormSet(books-None-0,None-0,0)
+
+    def assert_owner(tree, current):
+        fieldset = tree.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+        classes = {"cv-formset-fieldset"}
+        if current.formset.compact_layout:
+            classes.add("cv-formset-compact")
+            if current.has_parent:
+                classes.add("cv-formset-compact-child")
+        assert set(fieldset.get("class").split()) == classes
+        assert fieldset.get("cv-data-formset-key") == current.key
+        assert fieldset.get("cv-data-formset-prefix") == current.prefix
+        legends = fieldset.xpath("./legend")
+        assert len(legends) == 1
+        assert legends[0].text_content() == current.title
+>       assert legends[0].get("class") == expected
+E       AssertionError: assert None == 'theme-formset'
+E        +  where None = get('class')
+E        +    where get = <Element legend at 0x79b06d40ea30>.get
+
+tests/test1/test_formsets_compact.py:260: AssertionError
+__ test_legend_keys_are_recognized[theme-section-legend-formset:legend-theme] __
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+source = 'theme', key = 'formset:legend', value = 'theme-section-legend'
+
+    @pytest.mark.parametrize("source", ["settings", "theme"])
+    @pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
+    @pytest.mark.parametrize("value", ["theme-section-legend", ""])
+    def test_legend_keys_are_recognized(source, key, value):
+>       assert messages_for({key: value}, source) == []
+E       assert [<Warning: le..._views.W362'>] == []
+E         
+E         Left contains one more item: <Warning: level=30, msg="Button class 'formset:legend' is not a known key (typo?).", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'>
+E         Use -v to get more diff
+
+tests/test1/test_button_classes_checks.py:34: AssertionError
+_ test_legend_keys_are_recognized[theme-section-legend-formset:legend-settings] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+source = 'settings', key = 'formset:legend', value = 'theme-section-legend'
+
+    @pytest.mark.parametrize("source", ["settings", "theme"])
+    @pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
+    @pytest.mark.parametrize("value", ["theme-section-legend", ""])
+    def test_legend_keys_are_recognized(source, key, value):
+>       assert messages_for({key: value}, source) == []
+E       assert [<Warning: le..._views.W362'>] == []
+E         
+E         Left contains one more item: <Warning: level=30, msg="Button class 'formset:legend' is not a known key (typo?).", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'>
+E         Use -v to get more diff
+
+tests/test1/test_button_classes_checks.py:34: AssertionError
+__________ test_legend_keys_are_recognized[-conditional:legend-theme] __________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+source = 'theme', key = 'conditional:legend', value = ''
+
+    @pytest.mark.parametrize("source", ["settings", "theme"])
+    @pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
+    @pytest.mark.parametrize("value", ["theme-section-legend", ""])
+    def test_legend_keys_are_recognized(source, key, value):
+>       assert messages_for({key: value}, source) == []
+E       assert [<Warning: le..._views.W362'>] == []
+E         
+E         Left contains one more item: <Warning: level=30, msg="Button class 'conditional:legend' is not a known key (typo?).", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'>
+E         Use -v to get more diff
+
+tests/test1/test_button_classes_checks.py:34: AssertionError
+____________ test_legend_keys_are_recognized[-formset:legend-theme] ____________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+source = 'theme', key = 'formset:legend', value = ''
+
+    @pytest.mark.parametrize("source", ["settings", "theme"])
+    @pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
+    @pytest.mark.parametrize("value", ["theme-section-legend", ""])
+    def test_legend_keys_are_recognized(source, key, value):
+>       assert messages_for({key: value}, source) == []
+E       assert [<Warning: le..._views.W362'>] == []
+E         
+E         Left contains one more item: <Warning: level=30, msg="Button class 'formset:legend' is not a known key (typo?).", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'>
+E         Use -v to get more diff
+
+tests/test1/test_button_classes_checks.py:34: AssertionError
+___________ test_formset_legend_escapes_plain_text_and_classes[True] ___________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+compact = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("compact", [False, True])
+    def test_formset_legend_escapes_plain_text_and_classes(compact):
+        from django.template.loader import render_to_string
+        from django.utils.html import escape
+    
+        title = '<script data-legend="injected">Books & notes</script>'
+        classes = '\" data-injected="yes"><img src=x> & legend'
+        bc.register_button_classes({"formset:legend": classes})
+        node = _runtime(compact=compact, title=title)
+        rendered = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
+        assert str(escape(title)) in rendered
+>       assert f'class="{escape(classes)}"' in rendered
+E       assert 'class="&quot; data-injected=&quot;yes&quot;&gt;&lt;img src=x&gt; &amp; legend"' in '\n\n\n\n\n    <!-- formsets: start books-None-0 -->\n    <div class="row">\n\n    \n\n    <div class="col-12">\n\n   ...msets: end books-None-0-0 -->\n\n    </div>\n\n\n\n\n\n    </div>\n\n    </fieldset>\n\n    </div>\n\n    </div>\n\n\n'
+
+tests/test1/test_formsets_compact.py:310: AssertionError
+__________ test_legend_keys_are_recognized[-formset:legend-settings] ___________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+source = 'settings', key = 'formset:legend', value = ''
+
+    @pytest.mark.parametrize("source", ["settings", "theme"])
+    @pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
+    @pytest.mark.parametrize("value", ["theme-section-legend", ""])
+    def test_legend_keys_are_recognized(source, key, value):
+>       assert messages_for({key: value}, source) == []
+E       assert [<Warning: le..._views.W362'>] == []
+E         
+E         Left contains one more item: <Warning: level=30, msg="Button class 'formset:legend' is not a known key (typo?).", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'>
+E         Use -v to get more diff
+
+tests/test1/test_button_classes_checks.py:34: AssertionError
+__________ test_formset_legend_escapes_plain_text_and_classes[False] ___________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+compact = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("compact", [False, True])
+    def test_formset_legend_escapes_plain_text_and_classes(compact):
+        from django.template.loader import render_to_string
+        from django.utils.html import escape
+    
+        title = '<script data-legend="injected">Books & notes</script>'
+        classes = '\" data-injected="yes"><img src=x> & legend'
+        bc.register_button_classes({"formset:legend": classes})
+        node = _runtime(compact=compact, title=title)
+        rendered = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
+        assert str(escape(title)) in rendered
+>       assert f'class="{escape(classes)}"' in rendered
+E       assert 'class="&quot; data-injected=&quot;yes&quot;&gt;&lt;img src=x&gt; &amp; legend"' in '\n\n\n\n\n    <!-- formsets: start books-None-0 -->\n    <div class="row">\n\n    \n\n    <div class="col-12">\n\n   ...msets: end books-None-0-0 -->\n\n    </div>\n\n\n\n\n\n    </div>\n\n    </fieldset>\n\n    </div>\n\n    </div>\n\n\n'
+
+tests/test1/test_formsets_compact.py:310: AssertionError
+________ test_legend_keys_are_recognized[-conditional:legend-settings] _________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+source = 'settings', key = 'conditional:legend', value = ''
+
+    @pytest.mark.parametrize("source", ["settings", "theme"])
+    @pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
+    @pytest.mark.parametrize("value", ["theme-section-legend", ""])
+    def test_legend_keys_are_recognized(source, key, value):
+>       assert messages_for({key: value}, source) == []
+E       assert [<Warning: le..._views.W362'>] == []
+E         
+E         Left contains one more item: <Warning: level=30, msg="Button class 'conditional:legend' is not a known key (typo?).", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'>
+E         Use -v to get more diff
+
+tests/test1/test_button_classes_checks.py:34: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_conditional_layout.py::test_toggle_group_legend_renders_fieldset
+FAILED tests/test1/test_conditional_layout.py::test_toggle_group_legend_classes_follow_independent_layers[project1-project-conditional]
+FAILED tests/test1/test_conditional_layout.py::test_toggle_group_legend_classes_follow_independent_layers[project0-theme-conditional]
+FAILED tests/test1/test_conditional_layout.py::test_toggle_group_legend_classes_follow_independent_layers[project2-]
+FAILED tests/test1/test_conditional_layout.py::test_toggle_group_legend_classes_follow_independent_layers[project3-theme-conditional]
+FAILED tests/test1/test_conditional_layout.py::test_toggle_group_legend_classes_follow_independent_layers[project4-theme-conditional]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--True-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--False-False]
+FAILED tests/test1/test_conditional_layout.py::test_toggle_group_legend_escapes_plain_text_and_classes
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-False-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--True-False]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-True-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-True-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-False-False]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--False-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-True-False]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-True-False]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-False-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--True-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--False-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--False-False]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-False-False]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--True-False]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-True-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-True-False]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-False-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-False-False]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-True-True]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-True-False]
+FAILED tests/test1/test_button_classes_checks.py::test_legend_keys_are_recognized[theme-section-legend-conditional:legend-settings]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-False-False]
+FAILED tests/test1/test_button_classes_checks.py::test_legend_keys_are_recognized[theme-section-legend-conditional:legend-theme]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-False-True]
+FAILED tests/test1/test_button_classes_checks.py::test_legend_keys_are_recognized[theme-section-legend-formset:legend-theme]
+FAILED tests/test1/test_button_classes_checks.py::test_legend_keys_are_recognized[theme-section-legend-formset:legend-settings]
+FAILED tests/test1/test_button_classes_checks.py::test_legend_keys_are_recognized[-conditional:legend-theme]
+FAILED tests/test1/test_button_classes_checks.py::test_legend_keys_are_recognized[-formset:legend-theme]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_escapes_plain_text_and_classes[True]
+FAILED tests/test1/test_button_classes_checks.py::test_legend_keys_are_recognized[-formset:legend-settings]
+FAILED tests/test1/test_formsets_compact.py::test_formset_legend_escapes_plain_text_and_classes[False]
+FAILED tests/test1/test_button_classes_checks.py::test_legend_keys_are_recognized[-conditional:legend-settings]
+41 failed, 3 passed in 2.67s

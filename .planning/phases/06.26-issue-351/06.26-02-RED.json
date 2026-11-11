@@ -1,0 +1,10 @@
+{
+  "command": "node --test-reporter=tap tests/browser/compact-checkboxes.cjs --variant current --output /tmp/06.26-checkbox-expanded-red.json",
+  "exitCode": 1,
+  "output": "TAP version 13\n# Subtest: stock checkbox renders and persists through native POST\nnot ok 1 - stock checkbox renders and persists through native POST\n  ---\n  duration_ms: 6178.984308\n  type: 'test'\n  location: '/home/alex/projects/alex/django-crud-views/tests/browser/compact-checkboxes.cjs:175:1'\n  failureType: 'testCodeFailure'\n  error: 'retained-required-checkbox: undefined'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    check (/home/alex/projects/alex/django-crud-views/tests/browser/compact-checkboxes.cjs:32:5)\n    full (/home/alex/projects/alex/django-crud-views/tests/browser/compact-checkboxes.cjs:170:9)\n    async startHost (/home/alex/projects/alex/django-crud-views/tests/browser/compact-checkboxes.cjs:78:9)\n    async TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/tests/browser/compact-checkboxes.cjs:181:9)\n    async Test.run (node:internal/test_runner/test:1409:7)\n    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 10986.420288\n",
+  "targetTest": "stock checkbox renders and persists through native POST",
+  "targetFile": "tests/browser/compact-checkboxes.cjs",
+  "expected": "Retained checkbox rows expose required accepted and disabled flag controls",
+  "actual": "retained-required-checkbox assertion fails: accepted input absent",
+  "semanticAssessment": "Target ran after both authenticated legacy checks and checkbox editor GET passed. Missing required accepted control fails its explicit assertion; both hosts cleaned up."
+}

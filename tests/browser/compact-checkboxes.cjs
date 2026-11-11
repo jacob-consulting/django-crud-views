@@ -161,13 +161,24 @@ async function tracer(context,cases) {
         await page.close();
     }
 }
+async function full(context,cases) {
+    const c=cases.find(c=>c.id==='compact-checkbox');assert(c);
+    const page=await context.newPage();
+    try {
+        await load(page,c.url);
+        const {row,prefix}=await control(page,c);
+        check('retained-required-checkbox',await row.locator(`input[name="${prefix}-accepted"]`).count()===1);
+        check('retained-disabled-checkbox',await row.locator(`input[name="${prefix}-flag"]`).isDisabled());
+        check('nested-checkbox-case',typeof c.publisherUrl==='string');
+    } finally {await page.close();}
+}
 test('stock checkbox renders and persists through native POST',async()=>{
     let browser;
     try {
         for(const file of [python,playwright,chromium]) assert(fs.existsSync(file),file);
         browser=await require(playwright).chromium.launch({headless:true,executablePath:chromium,args:['--no-sandbox']});
         await startHost(browser,false,async()=>{});
-        await startHost(browser,true,tracer);
+        await startHost(browser,true,args.includes('--tracer') ? tracer : full);
         check('no-page-errors',record.pageErrors.length===0,record.pageErrors);
         record.completed=true;record.passed=true;
     } catch(error) {record.error=error.stack;throw error;}

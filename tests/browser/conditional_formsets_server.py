@@ -253,7 +253,24 @@ class LeafForm(BrowserRowForm):
         fields = ["text"]
 
 
+from crud_views.lib.formsets import CompactWidgetCompatible
+
+
+class CompactCompatibleSelect(CompactWidgetCompatible, forms.Select):
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+        if str(value) == str(actor.pk):
+            option["attrs"]["data-beans"] = "1"
+        return option
+
+
+class CompatibleScoreForm(ScoreForm):
+    class Meta(ScoreForm.Meta):
+        widgets = {**getattr(ScoreForm.Meta, "widgets", {}), "taster": CompactCompatibleSelect}
+
+
 Scores = inlineformset_factory(Publisher, BrowserScore, form=ScoreForm, formset=Rows, extra=1)
+CompatibleScores = inlineformset_factory(Publisher, BrowserScore, form=CompatibleScoreForm, formset=Rows, extra=1)
 Leaves = inlineformset_factory(BookNote, BrowserLeaf, form=LeafForm, formset=Rows, extra=1)
 
 
@@ -415,7 +432,11 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
             )
             result.formsets["scores"] = FormSet(
                 title="Cupping scores",
-                klass=Scores,
+                klass=(
+                    CompatibleScores
+                    if os.environ.get("CV_COMPACT_WIDGET_FIXTURE") == "1" and self.object.pk == compact_widget_pk
+                    else Scores
+                ),
                 compact_layout=CompactLayout(
                     columns=[CompactColumn(name, span=3 if name == "taster" else 1) for name in ScoreForm.Meta.fields],
                     controls_span=2,
@@ -532,7 +553,11 @@ for model in (Publisher, Profile, Book, BookNote, BrowserMemo, BrowserConditiona
     watch(model)
 events.clear()
 
-for case in ("compact-presentation", "compact-lifecycle"):
+compact_widget_pk = None
+compact_cases = ["compact-presentation", "compact-lifecycle"]
+if os.environ.get("CV_COMPACT_WIDGET_FIXTURE") == "1":
+    compact_cases.append("compact-widget")
+for case in compact_cases:
     parent = Publisher.objects.create(name=case)
     for index in range(2):
         book = Book.objects.create(publisher=parent, title=f"Parent book {index}")
@@ -541,6 +566,9 @@ for case in ("compact-presentation", "compact-lifecycle"):
         BrowserMemo.objects.create(book=book, text=f"Sibling memo {index}")
     BrowserScore.objects.create(publisher=parent, taster=actor)
     cases.append({"theme": "stock", "id": case, "pk": parent.pk, "url": f"/compact/stock/{parent.pk}/"})
+    if case == "compact-widget":
+        compact_widget_pk = parent.pk
+        cases[-1].update(taster=actor.pk, taster_label=str(actor), widget_class="CompactCompatibleSelect")
 events.clear()
 
 

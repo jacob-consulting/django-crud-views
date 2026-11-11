@@ -1,0 +1,1125 @@
+{
+  "date": "2026-11-11T12:19:22.677Z",
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/compact-widget-compatibility.cjs"
+  ],
+  "environment": {
+    "CV_FOCUS_PYTHON": "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+    "CV_FOCUS_PLAYWRIGHT": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "CV_FOCUS_CHROMIUM": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome"
+  },
+  "revision": "d8641a28d80f3a1c88548a3324424d37fb759b52",
+  "sourceHashes": {
+    ".planning/phases/06.25-issue-349/browser-captures/.gitignore": "c6bbae08065351c5d93621ede3317568262d9d24d974780a0e3caf1f30734a55",
+    "docs/reference/formsets.md": "1e87ca23722a4972c826b2d534f903cd23cce38fc1e6389a35f80851eab65e2d",
+    "package-lock.json": "f3ea8ff7293a09b93ef84305a784ed1a13760aed26b140940a606218cc6462af",
+    "src/crud_views/lib/formsets/__init__.py": "2fdf0da93267781d818af1dc00344083d2d2579508390c6a682ad86c92a26e72",
+    "src/crud_views/lib/formsets/compact.py": "e2d7e005ea26a4c1d4fc0369de0356a2d8aa16b6d5d15ca2510f24c9ba425dbd",
+    "src/crud_views/lib/formsets/formsets.py": "d4cdee62b1edbe58794b4bf671cd93ccf756603e4e2e50f3162288fd93242cd7",
+    "src/crud_views/lib/formsets/inline_formset.py": "55f5866844e04df5efe2ec5b550ae1252e970220b0901dc6631e8be0fb024195",
+    "src/crud_views/lib/formsets/layout.py": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937",
+    "src/crud_views/lib/formsets/mixins.py": "a7c424b9e86a9aef3cecd094c2680fe9dcd47607257e5fef1e9742f2e6f0985c",
+    "src/crud_views/lib/formsets/render_tree.py": "c90eeb13961690e867fe691c7264f4d0b356ee85881496a6f46119ad7427d893",
+    "src/crud_views/static/crud_views/css/formset.css": "4f7f833fc666b062b5a32f8fdb598f46f40927d1a73d30e82a7279c954ac4c0b",
+    "src/crud_views/static/crud_views/js/adapters.js": "06eed642fdf55daa7aa6afea2099f25c69ac153062d926c707e34c74316eaf2b",
+    "src/crud_views/static/crud_views/js/formset.js": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
+    "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+    "src/crud_views/static/crud_views/js/toggle.js": "057805c08eea725b67ac6ce9bf40d656d9bf506231a88cc79da35e762525fc21",
+    "src/crud_views/templates/crud_views/formsets/compact_headings.html": "2f4b3b5133ee315a8c25c99e20bb6c4ad034c2d7a223d5daccdd7d55fe6ccfd0",
+    "src/crud_views/templates/crud_views/formsets/control.html": "eed84cc006d4de94bddf442c366f2faf32d3ab135872e4631fb58f30338d974e",
+    "src/crud_views/templates/crud_views/formsets/formset.html": "df0b5a882fd81da7ea077fde73faddaf29eceaced0226bd1e1cc7eb08376e6d4",
+    "src/crud_views/templates/crud_views/formsets/formsets.html": "1c6f6e86aff72847f044a62963cfb9fa41489a4d511578d13273c4ade1e83626",
+    "tests/browser/compact-widget-compatibility.cjs": "821f3edde9b212a14431186831c690d47763c21b4e1206eec8660cb9e8d64593",
+    "tests/browser/conditional-formsets.cjs": "3ff30d6cd5a25ca206764319bca8a3610172034b7fdf8a15f2dc8ce8293d4371",
+    "tests/browser/conditional_formsets_server.py": "b5afded7bd6c04753c0e943abc1696b487e0cf90ea2bcf57400fd8b02aa19fe0",
+    "tests/browser/templates/conditional_formsets/native_control.html": "6163b7168522f909a2e68881ce4315477854fd834b6e8b64a6ff64b6e07bd2a5",
+    "tests/browser/templates/conditional_formsets/native_formset.html": "03ae7569f1b7a4ac8f60b7236f99a8f995acdc88d6f6314af81a9f8c4767b46e",
+    "tests/browser/templates/conditional_formsets/native_formsets.html": "2bd6207e5acc6591c2d530755fd8950e36eb583376150c22a98d0b54dd6abafa",
+    "tests/browser/templates/conditional_formsets/native_toggle_group.html": "95c26b5476faf74611921ea876442c45373fec4dd21e9d74bcec6c2ccdbac527",
+    "tests/browser/templates/conditional_formsets/page.html": "1f5fb43557d64fe2b50bd7af7e5725227159fea6a67cd3d42c74d5fe298b6814",
+    "tests/test1/test_formsets_compact_docs.py": "ded510d495dc10a580c1a7c505a2fa505e55c75dfc6de52ac15b2ad7db609a8f"
+  },
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "django": "6.1.2",
+    "crispy": "2.7",
+    "pythonPath": "/usr/bin/python3.12",
+    "playwright": "1.64.1",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "chromium": "149.0.7827.55"
+  },
+  "hosts": [
+    {
+      "enabled": false,
+      "authentication": {
+        "status": 200,
+        "authenticated": true
+      },
+      "cleanup": {
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "reaped": true,
+        "temporaryRemoved": true
+      },
+      "temporary": "/tmp/dcv-064-browser-wnh5ylnx",
+      "caseIds": [
+        "compact-lifecycle",
+        "compact-presentation",
+        "conditional-focus",
+        "disabled-same-value-ownership",
+        "fragment-raw-balance",
+        "gap-ambiguity",
+        "gap-capability",
+        "inline-file-clear-unchanged",
+        "late-init",
+        "lifecycle",
+        "native-reset-user-cancelled",
+        "native-reset-user-default",
+        "tampered-post",
+        "tracer"
+      ]
+    },
+    {
+      "enabled": true,
+      "authentication": {
+        "status": 200,
+        "authenticated": true
+      },
+      "cleanup": {
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "reaped": true,
+        "temporaryRemoved": true
+      },
+      "temporary": "/tmp/dcv-064-browser-n9n0_u_s",
+      "caseIds": [
+        "compact-lifecycle",
+        "compact-presentation",
+        "compact-widget",
+        "conditional-focus",
+        "disabled-same-value-ownership",
+        "fragment-raw-balance",
+        "gap-ambiguity",
+        "gap-capability",
+        "inline-file-clear-unchanged",
+        "late-init",
+        "lifecycle",
+        "native-reset-user-cancelled",
+        "native-reset-user-default",
+        "tampered-post",
+        "tracer"
+      ]
+    }
+  ],
+  "widths": [
+    {
+      "width": 390,
+      "initial": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "1",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      },
+      "invalid": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [
+          {
+            "id": "id_scores-75-0-0-taster_error",
+            "text": "This field is required.",
+            "visible": true
+          }
+        ],
+        "deleteValue": ""
+      },
+      "fragment": {
+        "status": 200,
+        "url": "http://127.0.0.1:8144/compact/stock/75/?template=scores&pk=75&num=2&formset_parent_prefix_key=",
+        "prefix": "scores-75-0-2"
+      },
+      "added": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      },
+      "deleted": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": "1"
+      },
+      "unmarked": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "width": 1280,
+      "initial": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "1",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      },
+      "invalid": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [
+          {
+            "id": "id_scores-75-0-0-taster_error",
+            "text": "This field is required.",
+            "visible": true
+          }
+        ],
+        "deleteValue": ""
+      },
+      "fragment": {
+        "status": 200,
+        "url": "http://127.0.0.1:8144/compact/stock/75/?template=scores&pk=75&num=2&formset_parent_prefix_key=",
+        "prefix": "scores-75-0-2"
+      },
+      "added": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      },
+      "deleted": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": "1"
+      },
+      "unmarked": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    }
+  ],
+  "captures": [
+    {
+      "path": ".planning/phases/06.25-issue-349/browser-captures/390-initial.png",
+      "width": 390,
+      "state": "initial",
+      "sha256": "6916d030f30b3bdc32871898391852e3357830b932345462b46bd552c64fb033",
+      "trackable": true
+    },
+    {
+      "path": ".planning/phases/06.25-issue-349/browser-captures/390-invalid.png",
+      "width": 390,
+      "state": "invalid",
+      "sha256": "384bafb26c5be92ef7dce59b5309ecf205c89c1a7cca5bcbf29911aa8f7be39d",
+      "trackable": true
+    },
+    {
+      "path": ".planning/phases/06.25-issue-349/browser-captures/390-added.png",
+      "width": 390,
+      "state": "added",
+      "sha256": "1640e377f7cecb5dd4f51c31b72bbd81ad8d2373936e0483f51676480269d248",
+      "trackable": true
+    },
+    {
+      "path": ".planning/phases/06.25-issue-349/browser-captures/1280-initial.png",
+      "width": 1280,
+      "state": "initial",
+      "sha256": "3896962e5f7f4c3309f4d25e14282113d4d151aa6d8620433c0e42d48d1be3df",
+      "trackable": true
+    },
+    {
+      "path": ".planning/phases/06.25-issue-349/browser-captures/1280-invalid.png",
+      "width": 1280,
+      "state": "invalid",
+      "sha256": "38714bd76d015bf00e61332c69f3d2c70d3c338ea4972c717ab6087d096edc8c",
+      "trackable": true
+    },
+    {
+      "path": ".planning/phases/06.25-issue-349/browser-captures/1280-added.png",
+      "width": 1280,
+      "state": "added",
+      "sha256": "781c05fe0eb49d6188f5656ec2e5bae55a081c8b4d3121d8b8df6f0d53dd52d6",
+      "trackable": true
+    }
+  ],
+  "assertions": [
+    {
+      "id": "fresh-context:false",
+      "passed": true
+    },
+    {
+      "id": "signin:false",
+      "passed": true
+    },
+    {
+      "id": "case-ids:false",
+      "passed": true,
+      "detail": [
+        "compact-lifecycle",
+        "compact-presentation",
+        "conditional-focus",
+        "disabled-same-value-ownership",
+        "fragment-raw-balance",
+        "gap-ambiguity",
+        "gap-capability",
+        "inline-file-clear-unchanged",
+        "late-init",
+        "lifecycle",
+        "native-reset-user-cancelled",
+        "native-reset-user-default",
+        "tampered-post",
+        "tracer"
+      ]
+    },
+    {
+      "id": "legacy-required-map:false",
+      "passed": true
+    },
+    {
+      "id": "protected-editor:/compact/stock/73/",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "url": "http://127.0.0.1:8144/compact/stock/73/"
+      }
+    },
+    {
+      "id": "legacy-stock:false",
+      "passed": true,
+      "detail": {
+        "choices": [
+          "browser",
+          "browser-denied"
+        ],
+        "marked": false
+      }
+    },
+    {
+      "id": "cleanup:false",
+      "passed": true,
+      "detail": {
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "reaped": true,
+        "temporaryRemoved": true
+      }
+    },
+    {
+      "id": "fresh-context:true",
+      "passed": true
+    },
+    {
+      "id": "signin:true",
+      "passed": true
+    },
+    {
+      "id": "case-ids:true",
+      "passed": true,
+      "detail": [
+        "compact-lifecycle",
+        "compact-presentation",
+        "compact-widget",
+        "conditional-focus",
+        "disabled-same-value-ownership",
+        "fragment-raw-balance",
+        "gap-ambiguity",
+        "gap-capability",
+        "inline-file-clear-unchanged",
+        "late-init",
+        "lifecycle",
+        "native-reset-user-cancelled",
+        "native-reset-user-default",
+        "tampered-post",
+        "tracer"
+      ]
+    },
+    {
+      "id": "legacy-required-map:true",
+      "passed": true
+    },
+    {
+      "id": "protected-editor:/compact/stock/73/",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "url": "http://127.0.0.1:8144/compact/stock/73/"
+      }
+    },
+    {
+      "id": "legacy-stock:true",
+      "passed": true,
+      "detail": {
+        "choices": [
+          "browser",
+          "browser-denied"
+        ],
+        "marked": false
+      }
+    },
+    {
+      "id": "protected-editor:/compact/stock/75/",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "url": "http://127.0.0.1:8144/compact/stock/75/"
+      }
+    },
+    {
+      "id": "390:initial:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "1",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "390:initial:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "1",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "390:keyboard-focus",
+      "passed": true
+    },
+    {
+      "id": "390:invalid-status",
+      "passed": true,
+      "detail": {
+        "status": 422,
+        "url": "http://127.0.0.1:8144/compact/stock/75/"
+      }
+    },
+    {
+      "id": "390:invalid:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [
+          {
+            "id": "id_scores-75-0-0-taster_error",
+            "text": "This field is required.",
+            "visible": true
+          }
+        ],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "390:invalid:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [
+          {
+            "id": "id_scores-75-0-0-taster_error",
+            "text": "This field is required.",
+            "visible": true
+          }
+        ],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "390:owned-error",
+      "passed": true,
+      "detail": [
+        {
+          "id": "id_scores-75-0-0-taster_error",
+          "text": "This field is required.",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "id": "390:added:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "390:added:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "390:deleted:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": "1"
+      }
+    },
+    {
+      "id": "390:deleted:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": "1"
+      }
+    },
+    {
+      "id": "390:delete",
+      "passed": true
+    },
+    {
+      "id": "390:unmarked:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "390:unmarked:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "390:unmark",
+      "passed": true
+    },
+    {
+      "id": "protected-editor:/compact/stock/75/",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "url": "http://127.0.0.1:8144/compact/stock/75/"
+      }
+    },
+    {
+      "id": "1280:initial:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "1",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "1280:initial:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "1",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "1280:keyboard-focus",
+      "passed": true
+    },
+    {
+      "id": "1280:invalid-status",
+      "passed": true,
+      "detail": {
+        "status": 422,
+        "url": "http://127.0.0.1:8144/compact/stock/75/"
+      }
+    },
+    {
+      "id": "1280:invalid:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [
+          {
+            "id": "id_scores-75-0-0-taster_error",
+            "text": "This field is required.",
+            "visible": true
+          }
+        ],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "1280:invalid:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-0",
+        "id": "id_scores-75-0-0-taster",
+        "name": "scores-75-0-0-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [
+          {
+            "id": "id_scores-75-0-0-taster_error",
+            "text": "This field is required.",
+            "visible": true
+          }
+        ],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "1280:owned-error",
+      "passed": true,
+      "detail": [
+        {
+          "id": "id_scores-75-0-0-taster_error",
+          "text": "This field is required.",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "id": "1280:added:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "1280:added:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "1280:deleted:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": "1"
+      }
+    },
+    {
+      "id": "1280:deleted:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": "1"
+      }
+    },
+    {
+      "id": "1280:delete",
+      "passed": true
+    },
+    {
+      "id": "1280:unmarked:metadata",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "1280:unmarked:layout",
+      "passed": true,
+      "detail": {
+        "prefix": "scores-75-0-2",
+        "id": "id_scores-75-0-2-taster",
+        "name": "scores-75-0-2-taster",
+        "value": "",
+        "option": {
+          "value": "1",
+          "label": "browser",
+          "beans": "1"
+        },
+        "identity": true,
+        "label": true,
+        "heading": true,
+        "help": true,
+        "overflow": true,
+        "disabledOverall": true,
+        "optionalSweetness": true,
+        "errors": [],
+        "deleteValue": ""
+      }
+    },
+    {
+      "id": "1280:unmark",
+      "passed": true
+    },
+    {
+      "id": "cleanup:true",
+      "passed": true,
+      "detail": {
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "reaped": true,
+        "temporaryRemoved": true
+      }
+    },
+    {
+      "id": "no-page-errors",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "id": "all-widths-and-captures",
+      "passed": true
+    },
+    {
+      "id": "unchanged-measured-source",
+      "passed": true
+    }
+  ],
+  "pageErrors": [],
+  "humanReview": "pending",
+  "completed": true,
+  "passed": true,
+  "widgetClass": "CompactCompatibleSelect",
+  "pageURL": "http://127.0.0.1:8144/compact/stock/75/"
+}

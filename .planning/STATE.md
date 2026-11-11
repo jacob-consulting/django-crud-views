@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.26"
 current_phase_name: Stock checkboxes in compact formsets
-status: planning
-stopped_at: Phase 06.26 plan 04 added; ready to execute example extension
-last_updated: "2026-11-11T20:08:41.976Z"
+status: verifying
+stopped_at: Phase 06.26 all four plans executed and verified; two visual UAT checks pending
+last_updated: "2026-11-11T20:54:27.644984+00:00"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.26 plan 04 added for the requested compact example ViewSet
-state_head: 52f3dddb45efd96987f8aff387c643dbd0145ef5
+last_activity_desc: Phase 06.26 example complete; verification human_needed, 2 visual checks pending
+state_head: 8fd86fe19591175dc23adfafa9b8a2de5edf7de8
 progress:
   total_phases: 32
   completed_phases: 26
   total_plans: 174
-  completed_plans: 173
+  completed_plans: 174
 milestone_name: milestone
 ---
 
@@ -30,12 +30,19 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 
 ## Current Position
 
-Phase: 06.26 (Stock checkboxes in compact formsets) — PLAN 04 READY
-Plan: 3 of 4 complete; Plan 04 ready
-Status: planning
-Last activity: 2026-11-11 — Added Plan 04 for a new compact checklist ViewSet
+Phase: 06.26 (Stock checkboxes in compact formsets) — AWAITING VISUAL UAT
+Plan: 4 of 4 complete
+Status: Verification human_needed — two visual checks pending
+Last activity: 2026-11-11 — All four plans executed; fresh verification 16/17, no implementation blockers
 
-Next: $gsd-execute-phase 06.26
+Next: $gsd-verify-work 06.26
+
+### Phase 06.26 example extension executed and re-verified — 2026-11-11
+
+- All four plans/nine tasks complete. Separate Checklist list/create/update example, bounded models/migration, native Done values, seed/demo permissions and navigation are committed; core rendering unchanged by this extension.
+- Example/project 70 and full examples 283 passed with four workers; compact/docs 158; affected formset regression 471; JS 383. Migration consistency, Ruff and strict docs passed. Original full core/matrix evidence remains historical.
+- Actual example browser refreshed after three bounded harness repairs: 90 assertions/eight captures per run, 16 source hashes, eight decoded multipart saves, disposable cleanup and unchanged developer DB. Original current/floor evidence preserved. Twelve runner regressions pass; independent deep re-review clean, WR-01..04 disposition fixed.
+- Validation 9/9 tasks, security 13/13 closed, UI 19/24 with pending readability advisories. Fresh verifier ran 44 targeted cases; canonical human_needed, 16/17 truths, zero implementation gaps, fingerprint 92 inputs. Two pending UAT checks cover original layouts and actual Checklist, including 768px Done-help wrapping/long intro. Phase remains In Progress; no phase completion, push or merge. Existing untracked .gitkeep preserved.
 
 ### Phase 06.26 example extension planned — 2026-11-11
 

@@ -140,9 +140,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step (verify)",
-    "reason": "Phase 40 of 41 · ready to verify"
+    "command": "$gsd-verify-work 06.26",
+    "label": "Review phase 06.26 visual checks",
+    "reason": "All four plans executed; human_needed, two visual UAT checks pending"
   },
-  "updated_at": "2026-11-11T18:00:09.664Z"
+  "updated_at": "2026-11-11T20:54:27.644984+00:00"
 }

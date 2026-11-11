@@ -1708,7 +1708,7 @@ Plans:
 **Goal:** [Urgent work - to be planned]
 **Requirements**: TBD
 **Depends on:** Phase 6
-**Plans:** 3/4 plans executed; example extension ready
+**Plans:** 4/4 plans executed; example extension ready
 
 Plans:
 **Wave 1**
@@ -1721,7 +1721,7 @@ Plans:
 - [x] 06.26-03-PLAN.md
 
 **Wave 4** *(depends on completed Plan 03)*
-- [ ] 06.26-04-PLAN.md — Separate Checklist ViewSet with compact checkbox rows, demo integration and browser evidence
+- [x] 06.26-04-PLAN.md — Separate Checklist ViewSet with compact checkbox rows, demo integration and browser evidence
 
 ### Phase 7: Theme-surface stability policy
 

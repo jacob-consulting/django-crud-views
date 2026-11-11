@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.26"
 current_phase_name: Stock checkboxes in compact formsets
 status: executing
-stopped_at: Completed 06.26-01-PLAN.md
-last_updated: "2026-11-11T17:18:42.497Z"
+stopped_at: Completed 06.26-02-PLAN.md
+last_updated: "2026-11-11T17:45:26.059Z"
 last_activity: 2026-11-11
 last_activity_desc: Phase 06.26 execution started
-state_head: f54325a1a9f0e949e15c1b1adb18307ed72fb1aa
+state_head: a2e7ebdd1c3f5b55ca1784256894e812c2626b0d
 progress:
   total_phases: 32
   completed_phases: 26
   total_plans: 173
-  completed_plans: 171
+  completed_plans: 172
 milestone_name: milestone
 ---
 
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 ## Current Position
 
 Phase: 06.26 (Stock checkboxes in compact formsets) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-11-11 — Phase 06.26 execution started
 
@@ -913,6 +913,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.25 P01 | 7min | 2 tasks | 5 files |
 | Phase 06.25 P02 | 17min | 2 tasks | 15 files |
 | Phase 06.26 P01 | 7min | 2 tasks | 5 files |
+| Phase 06.26 P02 | 14min | 2 tasks | 23 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1176,6 +1177,8 @@ Recent decisions affecting current work:
 - [Phase 06.25]: User requested committing six browser captures; named PNG allowlist and driver trackability checks supersede the original local-ignored policy.
 - [Phase 06.26]: Stock checkboxes reuse crispy input/label siblings and compact-owned CSS; no renderer or widget abstraction.
 - [Phase 06.26]: Use Node's built-in TAP reporter for machine-verifiable browser RED evidence without new dependencies.
+- [Phase 06.26]: Plan 02: checkbox fixture preserves composition through same-origin editor Referer for coordinate-only fragments; product routing unchanged.
+- [Phase 06.26]: Plan 02: only opt-in checkbox score columns read stable ScoreForm.base_fields to avoid Django 4.2 shared Meta.fields FK mutation.
 
 ### Pending Todos
 
@@ -1250,6 +1253,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T17:18:24.337Z
-Stopped at: Completed 06.26-01-PLAN.md
+Last session: 2026-11-11T17:45:22.237Z
+Stopped at: Completed 06.26-02-PLAN.md
 Resume file: None

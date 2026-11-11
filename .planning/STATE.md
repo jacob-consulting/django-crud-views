@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.24"
 current_phase_name: Opt-in compact formsets
-status: ready
-stopped_at: Phase 06.24 plan 06 added for requested examples-app extension; prior human UAT still pending
-last_updated: "2026-11-11T06:46:23Z"
+status: verifying
+stopped_at: Completed 06.24-06-PLAN.md; extended verification and human UAT pending
+last_updated: "2026-11-11T07:11:39.993Z"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.24 examples-app plan 06 prepared; plans 01–05 remain verified 14/15 with human review pending
-state_head: 464613048e700a02081c6ed2436560db1ab1689a
+last_activity_desc: Phase 06.24 plan 06 executed; extended verification and human review pending
+state_head: 946f7c24791a226d324a3eabfadb6e1df87f7c95
 progress:
   total_phases: 30
   completed_phases: 25
   total_plans: 168
-  completed_plans: 167
+  completed_plans: 168
 milestone_name: milestone
 ---
 
@@ -28,19 +28,21 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 
 ## Current Position
 
-Phase: 06.24 (Opt-in compact formsets) — EXAMPLE PLAN PENDING; PRIOR HUMAN VERIFICATION PENDING
-Plan: 6 of 6 planned; 5 of 6 executed
-Status: Requested examples-app extension planned; prior plans 01–05 automated verification complete, one human UAT item pending
-Last activity: 2026-11-11 — Added plan 06 for a runnable compact questionnaire example and classic comparison
+Phase: 06.24 (Opt-in compact formsets) — VERIFYING
+Plan: 6 of 6
+Status: Execution complete — extended verification and human review pending
+Last activity: 2026-11-11 — Phase 06.24 plan 06 executed with real example browser evidence
 
-Next: $gsd-execute-phase 06.24 for checked plan 06; re-verify the extended scope and retain $gsd-verify-work 06.24 for human review
+Next: Refresh phase audits and canonical verification for plan 06; retain $gsd-verify-work 06.24 for human review
 
 ### Phase 06.24 examples-app extension — 2026-11-11
 
 - User requested a follow-up plan adding this feature to the examples app. Plan 06, wave 6 after completed plan 05, reuses Questionnaire → Question → Choice and the existing seed/accounts; no new models, migration, app or core API.
-- Three tasks cover compact create/update actions beside classic editors, coherent catalog/snippets/reference guidance, and focused server/browser evidence. The example runner baseline passed 51 tests with four workers and zero system-check issues.
-- Prior VERIFICATION (14/15), VALIDATION (11/11), security/review/UI evidence and browser fingerprints remain historical for plans 01–05. They do not cover plan 06; no human UAT result was changed or approved.
-- Plan checker passed with zero blockers or warnings; structure and frontmatter checks pass. Pending plan 06 is unexecuted. Existing .planning/config.default.json edits are preserved. No product implementation, push or merge.
+- All three tasks are committed: compact create/update beside classic editors, one coherent catalog/snippets/reference path, and actual example browser evidence. Labelled More actions menus and list edit labels keep the comparison readable without mobile page overflow.
+- Final examples 60 passed (four workers), affected core formset/fragment tests 399 passed (four workers), docs recipe/sync 39 passed; strict MkDocs and scoped Ruff pass. Example Chromium: 58 assertions/six ignored captures, real nested AJAX/POST/ownership/invalid correction. Disposable DB/settings/server cleanup passed.
+- Required invalid-input testing found a classic/compact nested field crash; a minimal InlineFormSet.clean guard now preserves Django field errors. Fixed changelog and independent RED/green regression retained. This necessary bounded core repair required refreshed original browser scopes: 96 presentation/19 lifecycle assertions and both source checkers pass; humanReview remains pending.
+- Prior VERIFICATION (14/15), VALIDATION (11/11), security/review/UI audits remain historical for plans 01–05 pending orchestrator refresh. Existing UAT has not been approved. Plan 06 SUMMARY and EXAMPLE-EVIDENCE are committed; roadmap 6/6 In Progress, no phase advancement.
+- Aggregate state.update-progress declined once with the known unscoped-phase reason; no repair loop. Existing .planning/config.default.json edits preserved. No push, merge, deployment or developer database change.
 
 ### Phase 06.24 execution and verification — 2026-11-10
 
@@ -890,6 +892,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.24 P03 | 8min | 2 tasks | 5 files |
 | Phase 06.24 P04 | 21min | 3 tasks | 14 files |
 | Phase 06.24 P05 | 22min | 2 tasks | 7 files |
+| Phase 06.24 P06 | 19min | 3 tasks | 23 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1146,6 +1149,8 @@ Recent decisions affecting current work:
 - [Phase 06.24]: Plan 04: hidden DELETE unmark emits an empty value because fresh Django CheckboxInput interprets nonempty '0' as checked; classic/compact real POST regressions prove original-parent retention, native checkbox branch unchanged.
 - [Phase 06.24]: Compact documentation uses ordinary ModelForms accepting the existing cv_view keyword and InlineFormSet directly; classic nodes keep their own helpers.
 - [Phase 06.24]: Compact hidden-field errors reuse cv_alert and its escaped heading/items instead of defining another alert frame.
+- [Phase 06.24]: Keep one questionnaire ViewSet with independent classic/compact trees; use existing labelled action menus and list labels for mobile comparison.
+- [Phase 06.24]: Skip parent-presence checks after individual child field errors so classic and compact invalid POSTs redisplay correctly.
 
 ### Pending Todos
 
@@ -1218,6 +1223,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T06:46:23Z
-Stopped at: Phase 06.24 examples-app plan 06 prepared; prior human UAT still pending
-Resume file: .planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-06-PLAN.md
+Last session: 2026-11-11T07:11:35.902Z
+Stopped at: Completed 06.24-06-PLAN.md; extended verification and human UAT pending
+Resume file: None

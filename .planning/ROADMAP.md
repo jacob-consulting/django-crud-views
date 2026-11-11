@@ -1667,7 +1667,7 @@ Plans 01–05 executed and independently verified 14/15; human screenshot review
 2026-11-11 the user requested an examples-app follow-up: plan 06 adds a discoverable compact questionnaire
 variant and classic comparison using the existing models and seed data. Prior verification/audits cover
 plans 01–05 only; plan 06 needs execution and subsequent verification without approving the pending UAT.
-**Plans:** 6 plans; 5/6 executed
+**Plans:** 6/6 plans executed; 5/6 executed
 
 Plans:
 **Wave 1**
@@ -1686,7 +1686,7 @@ Plans:
 - [x] 06.24-05-PLAN.md — Executable documentation and compatibility checks
 
 **Wave 6** *(depends on completed plan 05)*
-- [ ] 06.24-06-PLAN.md — Runnable compact questionnaire example with classic comparison and browser evidence
+- [x] 06.24-06-PLAN.md — Runnable compact questionnaire example with classic comparison and browser evidence
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1798,5 +1798,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.20. ViewSet verbose_name override that every default label follows | 3/3 | Complete    | 2026-11-09 |
 | 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 06.23. Explicit header-icon suppression with Icon constants | 2/2 | Complete    | 2026-11-10 |
-| 06.24. Opt-in compact formsets | 5/6 | In Progress | - |
+| 06.24. Opt-in compact formsets | 6/6 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

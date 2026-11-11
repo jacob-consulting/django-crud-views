@@ -589,6 +589,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Independent legend class hooks** (#346): `conditional:legend` and `formset:legend` use the existing
+  theme/project class registry for ToggleGroup and formset title legends, both empty by default. Full nested
+  formsets inherit the hook in classic and compact layouts; row-only fragments keep their existing boundaries.
+  See [legend classes](docs/reference/buttons.md#legend-classes).
+
 - **Explicit compact widget compatibility** ([#349](https://github.com/jacob-consulting/django-crud-views/issues/349)):
   inherit the public `CompactWidgetCompatible` marker to opt a custom widget into compact formsets while
   retaining shared schema checks. The developer owns its rendering integration; unmarked stock defaults

@@ -128,6 +128,8 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `form:filter-reset` | `btn btn-secondary` |
 | `form:actions` / `form:filter-actions` | `""` |
 | `form:cancel-tag` | `"button"` (`"a"`: an eligible cancel renders as a native link, see [Forms](#forms)) |
+| `conditional:legend` | `""` |
+| `formset:legend` | `""` |
 | `formset:control` | `btn btn-light` |
 | `formset:container` | `btn-group` |
 | `formset:control-danger` | `btn btn-danger` |
@@ -157,7 +159,7 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `heading:icon-inline` | `me-2` |
 | `heading-page:icon-inline` / `heading-modal:icon-inline` | `""` |
 
-The default table has 88 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 90 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
 keys and two dismissal utilities; the two form-group utilities each contribute one key. The `context` and `list`
@@ -167,8 +169,8 @@ from the default-table count.
 
 ### Optional workflow defaults
 
-The 88-key table above is core-only. Installing `crud_views_workflow` adds these ten app-owned defaults,
-for 98 effective default keys with only that contribution. Other installed extensions may add more.
+The 90-key table above is core-only. Installing `crud_views_workflow` adds these ten app-owned defaults,
+for 100 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|
@@ -367,6 +369,45 @@ class MyAppThemeConfig(AppConfig):
 ```
 
 `register_button_classes(classes)` takes a dict of key to classes and resets the resolved cache.
+
+### Legend classes
+
+`conditional:legend` styles a [`ToggleGroup(legend=...)`](conditional.md#togglegroup-layout) legend;
+`formset:legend` styles [formset title legends](formsets.md#compact-layout), including full nested formsets
+in classic and compact layouts. Both default to `""`, preserving the default appearance. A group without a
+legend stays a div. Row-only formset fragments omit their own outer legend; full children inside them keep theirs.
+
+A theme can give both legends the same classes in `AppConfig.ready()`:
+
+```python
+from django.apps import AppConfig
+
+
+class MyLegendThemeConfig(AppConfig):
+    name = "my_legend_theme"
+
+    def ready(self):
+        from crud_views.lib.button_classes import register_button_classes
+
+        register_button_classes(
+            {
+                "conditional:legend": "theme-section-legend",
+                "formset:legend": "theme-section-legend",
+            }
+        )
+```
+
+The keys are independent, and project settings win over theme registration per key:
+
+```python
+CRUD_VIEWS_BUTTON_CLASSES = {
+    "conditional:legend": "project-section-legend",
+    "formset:legend": "",  # suppress the theme's formset legend classes
+}
+```
+
+Overriding only one leaves the other's resolved classes unchanged. An explicit empty value suppresses
+that key's theme classes while keeping the legend and its text.
 
 ### Precedence
 

@@ -15,7 +15,7 @@
     <fieldset class="cv-formset-fieldset{% if x_formset.formset.compact_layout %} cv-formset-compact{% if x_formset.has_parent %} cv-formset-compact-child{% endif %}{% endif %}" id="cv-formset-fieldset-{{ x_formset.prefix }}"
               cv-data-formset-key="{{ x_formset.key }}" cv-data-formset-prefix="{{ x_formset.prefix }}">
 
-    <legend>{{ x_formset.title }}</legend>
+    <legend class="{% cv_button_class 'formset' 'legend' %}">{{ x_formset.title }}</legend>
 
     <div class="cv-formset-content" cv-data-formset="{{ x_formset.json_data }}"
          cv-data-formset-prefix="{{ x_formset.prefix }}">

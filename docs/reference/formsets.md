@@ -392,8 +392,10 @@ and helper functions, and the runtime render tree, remain implementation details
 Arbitrary crispy layout inference/objects, custom HTML cells, multiple row layouts, per-row conditional
 columns, heterogeneous/polymorphic schemas, collapsing children, sticky headings, computed/numbered summaries,
 configurable mobile variants, separate bottom Add buttons and new empty-state controls are excluded.
-There is no promise to implement these later. jQuery removal is separate work. Existing legend rendering is
-reused; this adds no legend-hook API (issue #346). Downstream theme adoption is separate follow-up work.
+There is no promise to implement these later. jQuery removal is separate work. Existing legend rendering uses
+the independent `formset:legend` [class-table key](buttons.md#legend-classes), defaulting to `""`, for classic,
+compact and full nested formsets. Row-only fragments omit their outer legend while full children retain theirs.
+Downstream theme adoption is separate follow-up work.
 
 ## Control button classes
 

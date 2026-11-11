@@ -314,6 +314,13 @@ values. Hidden identity, management and row controls remain outside the visible 
 
 ### Stock checkbox recipe
 
+For a runnable example, start the Bootstrap 5 examples project and open **Formsets → Checklist example**.
+Sign in as **alice/alice** or **bob/bob**, then create or edit a checklist. The separate `cv_checklist`
+ViewSet stores `ChecklistItem.label` and the ordinary optional `done` BooleanField in compact rows:
+checked Done values save as `True`; omitted checkboxes save as `False`. Add a row, save and reload to
+see the stored values. Desktop rows share headings; below 768px each checkbox has its visible associated
+label. The Questionnaire links still demonstrate classic and compact nested formsets.
+
 This executable example uses the repository's **test-fixture models** `Profile` and
 `ConditionalPersistenceRecord`, whose ordinary model BooleanFields are `active` (default `False`) and `flag`
 (default `True`). Replace these model imports and the parent/child relation with your application's models.

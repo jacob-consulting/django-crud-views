@@ -167,6 +167,9 @@ class QuestionnaireListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermiss
     cv_context_actions_inline = []  # labelled menu keeps the comparison readable on narrow screens
     cv_list_actions = ["detail", "update", "compact_update", "delete"]
     cv_list_actions_label_mode = {"update": "label", "compact_update": "label"}
+    cv_paragraph_template_code = _(
+        'Try the <a href="{% url "checklist-list" %}">Checklist example</a> for compact rows with Done checkboxes.'
+    )
 
 
 class QuestionnaireDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
@@ -292,6 +295,7 @@ class ChecklistListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionR
     table_class = ChecklistTable
     cv_context_actions = ["list", "create"]
     cv_list_actions = ["update"]
+    cv_paragraph_template_code = _('<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>')
 
 
 class ChecklistCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, CreateViewPermissionRequired):
@@ -299,6 +303,7 @@ class ChecklistCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, Messag
     form_class = ChecklistForm
     cv_formsets = cv_checklist_formsets
     cv_context_actions = ["list", "create"]
+    cv_paragraph_template_code = _('<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>')
     cv_message_template_code = _("Created checklist “{{ object }}”")
 
 
@@ -307,4 +312,5 @@ class ChecklistUpdateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, Messag
     form_class = ChecklistForm
     cv_formsets = cv_checklist_formsets
     cv_context_actions = ["list", "update"]
+    cv_paragraph_template_code = _('<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>')
     cv_message_template_code = _("Updated checklist “{{ object }}”")

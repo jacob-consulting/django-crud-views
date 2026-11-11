@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.25"
 current_phase_name: "Compact widget compatibility (#349)"
 status: executing
-stopped_at: Phase 06.25 plans converged; ready to execute
-last_updated: "2026-11-11T11:59:24.657Z"
+stopped_at: Completed 06.25-01-PLAN.md; Plan 02 remains
+last_updated: "2026-11-11T12:13:05.306Z"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.25 plans converged in 3 of 5 allowed cycles; 0 HIGH, 0 actionable findings
-state_head: d4d6584dcd0c0a1c0771c93d3ff0b2111eb70c20
+last_activity_desc: Phase 06.25 execution started
+state_head: 70ea50b27f7e359287431f0f326ce780a7a30d88
 progress:
   total_phases: 31
   completed_phases: 26
   total_plans: 170
-  completed_plans: 168
+  completed_plans: 169
 milestone_name: milestone
 ---
 
@@ -24,14 +24,14 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.25 — Compact widget compatibility (#349); plans converged
+**Current focus:** Phase 06.25 — Compact widget compatibility (#349)
 
 ## Current Position
 
-Phase: 06.25 (Compact widget compatibility (#349)) — READY TO EXECUTE
-Plan: Not started
+Phase: 06.25 (Compact widget compatibility (#349)) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-11-11 -- Phase 06.25 plans converged in 3 of 5 allowed cycles; 0 HIGH, 0 actionable findings
+Last activity: 2026-11-11 — Phase 06.25 execution started
 
 Next: $gsd-execute-phase 06.25
 
@@ -900,6 +900,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.24 P04 | 21min | 3 tasks | 14 files |
 | Phase 06.24 P05 | 22min | 2 tasks | 7 files |
 | Phase 06.24 P06 | 19min | 3 tasks | 23 files |
+| Phase 06.25 P01 | 7min | 2 tasks | 5 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1158,6 +1159,8 @@ Recent decisions affecting current work:
 - [Phase 06.24]: Compact hidden-field errors reuse cv_alert and its escaped heading/items instead of defining another alert frame.
 - [Phase 06.24]: Keep one questionnaire ViewSet with independent classic/compact trees; use existing labelled action menus and list labels for mobile comparison.
 - [Phase 06.24]: Skip parent-presence checks after individual child field errors so classic and compact invalid POSTs redisplay correctly.
+- [Phase 06.25]: CompactWidgetCompatible is an empty inherited developer promise; only widget-specific checks are bypassed, with actual widget types and shared schema retained.
+- [Phase 06.25]: Plan 01 Task 2 is test-only: its RED control replays pre-guard admission temporarily, then restores the exact Task 1 source.
 
 ### Pending Todos
 
@@ -1231,6 +1234,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T11:59:21.029Z
-Stopped at: Phase 06.25 plans converged; ready to execute
-Resume file: .planning/phases/06.25-issue-349/06.25-REVIEWS.md
+Last session: 2026-11-11T12:12:39.841Z
+Stopped at: Completed 06.25-01-PLAN.md; Plan 02 remains
+Resume file: None

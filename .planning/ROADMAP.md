@@ -1705,13 +1705,13 @@ Plans:
 
 ### Phase 06.25.1: Issue #346 (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
+**Goal:** Theme authors can independently style conditional and formset legends through empty-default class hooks while preserving rendering, escaping and fragment ownership.
+**Requirements**: Issue #346; approved decisions D-01–D-11 (no assigned requirement IDs)
 **Depends on:** Phase 6.25
 **Plans:** 1/1 plans complete
 
 Plans:
-- [ ] TBD (run $gsd-plan-phase 06.25.1 to break down)
+- [x] 06.25.1-01-PLAN.md — Independent legend class hooks, rendered regression coverage and reference documentation
 
 ### Phase 7: Theme-surface stability policy
 

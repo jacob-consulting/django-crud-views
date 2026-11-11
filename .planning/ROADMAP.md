@@ -1693,7 +1693,7 @@ Plans:
 **Goal:** [Urgent work - to be planned]
 **Requirements**: TBD
 **Depends on:** Phase 6
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans executed
 
 Plans:
 **Wave 1**
@@ -1701,7 +1701,7 @@ Plans:
 - [ ] TBD (run $gsd-plan-phase 06.25 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.25-02-PLAN.md
+- [x] 06.25-02-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 

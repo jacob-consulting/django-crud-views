@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.25"
 current_phase_name: "Compact widget compatibility (#349)"
-status: executing
-stopped_at: Completed 06.25-01-PLAN.md; Plan 02 remains
-last_updated: "2026-11-11T12:13:05.306Z"
+status: verifying
+stopped_at: Completed 06.25-02-PLAN.md; human visual acceptance and phase verification pending
+last_updated: "2026-11-11T12:32:55.322Z"
 last_activity: 2026-11-11
 last_activity_desc: Phase 06.25 execution started
-state_head: 70ea50b27f7e359287431f0f326ce780a7a30d88
+state_head: 437df861c1178b75e442db117b2c5528b5a90b31
 progress:
   total_phases: 31
   completed_phases: 26
   total_plans: 170
-  completed_plans: 169
+  completed_plans: 170
 milestone_name: milestone
 ---
 
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 
 Phase: 06.25 (Compact widget compatibility (#349)) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-11-11 — Phase 06.25 execution started
 
 Next: $gsd-execute-phase 06.25
@@ -901,6 +901,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.24 P05 | 22min | 2 tasks | 7 files |
 | Phase 06.24 P06 | 19min | 3 tasks | 23 files |
 | Phase 06.25 P01 | 7min | 2 tasks | 5 files |
+| Phase 06.25 P02 | 17min | 2 tasks | 15 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1161,6 +1162,7 @@ Recent decisions affecting current work:
 - [Phase 06.24]: Skip parent-presence checks after individual child field errors so classic and compact invalid POSTs redisplay correctly.
 - [Phase 06.25]: CompactWidgetCompatible is an empty inherited developer promise; only widget-specific checks are bypassed, with actual widget types and shared schema retained.
 - [Phase 06.25]: Plan 01 Task 2 is test-only: its RED control replays pre-guard admission temporarily, then restores the exact Task 1 source.
+- [Phase 06.25]: User requested committing six browser captures; named PNG allowlist and driver trackability checks supersede the original local-ignored policy.
 
 ### Pending Todos
 
@@ -1234,6 +1236,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T12:12:39.841Z
-Stopped at: Completed 06.25-01-PLAN.md; Plan 02 remains
+Last session: 2026-11-11T12:32:51.563Z
+Stopped at: Completed 06.25-02-PLAN.md; human visual acceptance and phase verification pending
 Resume file: None

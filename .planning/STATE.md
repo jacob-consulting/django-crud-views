@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: "06.24"
 current_phase_name: Opt-in compact formsets
 status: verifying
-stopped_at: Completed 06.24-06-PLAN.md; extended verification and human UAT pending
-last_updated: "2026-11-11T07:11:39.993Z"
+stopped_at: Phase 06.24 verified 18/19; human grouping/focus UAT pending
+last_updated: "2026-11-11T07:37:38Z"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.24 plan 06 executed; extended verification and human review pending
+last_activity_desc: Phase 06.24 all six plans verified; one human UAT item pending
 state_head: 946f7c24791a226d324a3eabfadb6e1df87f7c95
 progress:
   total_phases: 30
@@ -28,12 +28,12 @@ See: .planning/PROJECT.md (updated 2026-11-10)
 
 ## Current Position
 
-Phase: 06.24 (Opt-in compact formsets) — VERIFYING
+Phase: 06.24 (Opt-in compact formsets) — HUMAN VERIFICATION PENDING
 Plan: 6 of 6
-Status: Execution complete — extended verification and human review pending
+Status: All six plans executed and automated verification refreshed; one human UAT item pending
 Last activity: 2026-11-11 — Phase 06.24 plan 06 executed with real example browser evidence
 
-Next: Refresh phase audits and canonical verification for plan 06; retain $gsd-verify-work 06.24 for human review
+Next: $gsd-verify-work 06.24
 
 ### Phase 06.24 examples-app extension — 2026-11-11
 
@@ -41,7 +41,7 @@ Next: Refresh phase audits and canonical verification for plan 06; retain $gsd-v
 - All three tasks are committed: compact create/update beside classic editors, one coherent catalog/snippets/reference path, and actual example browser evidence. Labelled More actions menus and list edit labels keep the comparison readable without mobile page overflow.
 - Final examples 60 passed (four workers), affected core formset/fragment tests 399 passed (four workers), docs recipe/sync 39 passed; strict MkDocs and scoped Ruff pass. Example Chromium: 58 assertions/six ignored captures, real nested AJAX/POST/ownership/invalid correction. Disposable DB/settings/server cleanup passed.
 - Required invalid-input testing found a classic/compact nested field crash; a minimal InlineFormSet.clean guard now preserves Django field errors. Fixed changelog and independent RED/green regression retained. This necessary bounded core repair required refreshed original browser scopes: 96 presentation/19 lifecycle assertions and both source checkers pass; humanReview remains pending.
-- Prior VERIFICATION (14/15), VALIDATION (11/11), security/review/UI audits remain historical for plans 01–05 pending orchestrator refresh. Existing UAT has not been approved. Plan 06 SUMMARY and EXAMPLE-EVIDENCE are committed; roadmap 6/6 In Progress, no phase advancement.
+- Refreshed VERIFICATION: human_needed, 18/19 truths, zero implementation gaps, 81 covered files. VALIDATION: 14/14 tasks; SECURITY: 19/19 closed; incremental deep review: eight changed files plus browser harness, zero findings; UI: 19/24. One consolidated UAT item covers 22 captures and the live example; no human approval or phase advancement. Previous full-suite/matrix counts remain historical before the validation guard; current scoped gates are recorded above.
 - Aggregate state.update-progress declined once with the known unscoped-phase reason; no repair loop. Existing .planning/config.default.json edits preserved. No push, merge, deployment or developer database change.
 
 ### Phase 06.24 execution and verification — 2026-11-10
@@ -1224,5 +1224,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-11T07:11:35.902Z
-Stopped at: Completed 06.24-06-PLAN.md; extended verification and human UAT pending
+Stopped at: Phase 06.24 verified 18/19; human grouping/focus UAT pending
 Resume file: None

@@ -47,7 +47,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.21: Snippet context exposes `view` and `parent_object` (INSERTED)** - #339 (tabler-test finding 29): `cv_get_meta()` adds `view` and a lazy `parent_object` for header, paragraph, filter-header and message snippets; class-level labels unchanged; planning pending. (completed 2026-11-10)
 - [x] **Phase 06.22: Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (INSERTED)** - #341 (tabler-test finding 24): document the custom-permission recipe for custom form and action views; new static check `viewset.E269` verifies `cv_permission` and nested ancestor pair keys against the model's declared permissions on core ViewSets; Guardian documented as unsupported; planning pending. (completed 2026-11-10)
 - [x] **Phase 06.23: Explicit header-icon suppression with Icon constants (INSERTED)** - #329: readable per-view suppression, preserved default inheritance, and paired breaking-change/migration guidance; 2 plans verified, ready to execute. (completed 2026-11-10)
-- [ ] **Phase 06.24: Opt-in compact formsets: shared desktop headings and nested mobile cards (#347) (INSERTED)** - five of six plans executed; requested examples-app plan pending, prior human screenshot review still pending.
+- [ ] **Phase 06.24: Opt-in compact formsets: shared desktop headings and nested mobile cards (#347) (INSERTED)** - six plans executed and verified 18/19; human grouping/focus review pending.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1663,11 +1663,10 @@ legend-hook implementation (#346) and downstream Tabler adoption. Mockup control
    entry; focused Python/browser/JS checks and appropriate multicore regressions verify rendered behavior.
 
 All eight acceptance groups in issue #347 remain authoritative; this list summarizes them for roadmap tooling.
-Plans 01–05 executed and independently verified 14/15; human screenshot review remains pending. On
-2026-11-11 the user requested an examples-app follow-up: plan 06 adds a discoverable compact questionnaire
-variant and classic comparison using the existing models and seed data. Prior verification/audits cover
-plans 01–05 only; plan 06 needs execution and subsequent verification without approving the pending UAT.
-**Plans:** 6/6 plans executed; 5/6 executed
+All six plans executed, including the requested compact questionnaire example and classic comparison.
+Refreshed verification covers the extended scope: 18/19 truths verified, no implementation gaps.
+Human grouping/focus review remains pending; no phase advancement.
+**Plans:** 6/6 plans executed
 
 Plans:
 **Wave 1**

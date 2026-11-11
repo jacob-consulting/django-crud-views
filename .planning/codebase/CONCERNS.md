@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
-last_mapped_at: 2026-11-10
+last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_at: 2026-11-11
 ---
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-10
+**Analysis Date:** 2026-11-11
 
 ## Tech Debt
 
@@ -82,6 +82,18 @@ No distinct security defect is confirmed by the current evidence. Permission che
 - Safe modification: cover GET, invalid POST, deletion, nested indexes and transaction behavior.
 - Test coverage: focused formset tests are in `tests/test1/test_formsets*.py` and `tests/test1/test_fragment_authorization.py`.
 
+**Opt-in compact formset projection:**
+- Files: `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/static/crud_views/css/formset.css`, `src/crud_views/static/crud_views/js/formset.js`
+- Why fragile: compact layout derives a shared schema from request-time form metadata, projects hidden/control field feedback into row owners, and shares geometry rules with nested rendering and dynamic row cloning. These are opt-in APIs; classic helper dispatch remains a separate path.
+- Safe modification: keep compact metadata query-free and index-independent, preserve exact visible-field/schema validation and hidden-error ownership, and verify actual fragment lifecycle plus nested compact/classic combinations. See `tests/test1/test_formsets_compact.py`, `tests/js/formset.test.js`, and `tests/js-integration/formset.test.js`.
+- Test coverage: Phase 06.24 records focused, browser, docs, and compatibility replay evidence in `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-VERIFICATION.md` and `06.24-COMPATIBILITY.md`.
+
+**Accepted compact-formset support boundaries (Phase 06.24):**
+- Issue: compact metadata requires constructors and `get_form_kwargs(None)` to be query-free and independent of a live row index; changing compact columns in `add_fields()` is unsupported. Compact polymorphic declarations reject explicitly. Password inputs and textareas are unsupported compact columns; configured custom widgets/templates outside the documented stock set are rejected.
+- Files: `src/crud_views/lib/formsets/compact.py`, `docs/reference/formsets.md`, `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-02-SUMMARY.md`
+- Impact: these constraints exclude some custom formset construction and field rendering patterns from compact mode, while classic rendering remains available. They are documented product boundaries, not known defects.
+- Fix approach: retain/document the bounded contract; expand support only with a concrete consumer need and a query-safe metadata design. The Vite native config-loader ESM warning recorded in `06.24-03-SUMMARY.md` is a pre-existing test-harness warning, accepted as outside compact presentation scope.
+
 **Workflow permission and transition helper boundaries:**
 - Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `docs/reference/workflow_view.md`
 - Why fragile: `run_transition()` requires a persisted actor/object on the selected write alias; direct django-fsm calls bypass helper validation/history, and `workflow_check_transition()` is business validation rather than authorization. Page access and transition permissions are independent.
@@ -150,6 +162,12 @@ None independently confirmed.
 - Risk: automated pass results do not establish behavior on other supported combinations, consumer themes or assistive technologies.
 - Priority: Low
 
+**Compact formset consumer-extension and unsupported-hook cases:**
+- What's not tested: arbitrary third-party form widgets/templates, compact-column mutation in `add_fields()`, query-issuing constructors/`get_form_kwargs(None)`, and compact polymorphic forms are outside the documented support contract; consumer-specific custom themes are not exhaustively tested.
+- Files: `docs/reference/formsets.md`, `src/crud_views/lib/formsets/compact.py`, `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-COMPATIBILITY.md`
+- Risk: an application opting into compact mode with an unsupported field or metadata hook receives configuration failure or behavior outside the supported contract.
+- Priority: Low; documentation and explicit validation define the current boundary.
+
 ---
 
-*Concerns audit: 2026-11-10*
+*Concerns audit: 2026-11-11*

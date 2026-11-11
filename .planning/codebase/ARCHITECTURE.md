@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
-last_mapped_at: 2026-11-10
+last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_at: 2026-11-11
 ---
-<!-- refreshed: 2026-11-10 -->
+<!-- refreshed: 2026-11-11 -->
 
 # Architecture
 
-**Analysis Date:** 2026-11-10
+**Analysis Date:** 2026-11-11
 
 ## System Overview
 
@@ -58,6 +58,7 @@ last_mapped_at: 2026-11-10
 | Nested default-database boundary | Refuses non-`default` aliases for nested ORM data, writes and authorization records | `src/crud_views/lib/ancestor_db.py` |
 | Guardian ancestor provider | Object-permission gate for a `GuardianViewSet` used as an ancestor | `src/crud_views_guardian/lib/ancestors.py` |
 | Delete preview and protection | Bounded related-object preview, protected-row labels, and deletion lifecycle integration | `src/crud_views/lib/deletion.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/templates/crud_views/snippets/delete/` |
+| Nested formset rendering | Request-local recursive formset tree with per-node classic or compact presentation | `src/crud_views/lib/formsets/`, `src/crud_views/templates/crud_views/formsets/` |
 
 ## Pattern Overview
 
@@ -77,6 +78,7 @@ last_mapped_at: 2026-11-10
 - The core theme is implemented in Django templates and template tags. App-contributed behavior can add static assets through `register_assets()` from an app's `AppConfig.ready()`.
 - Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
 - Optional packages depend on the core public view abstractions and are enabled by installing their app and declaring their specialized views.
+- Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Compact metadata and crispy helpers are derived from request-time bound forms, while `compact_layout=None` preserves the classic helper layout (`src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`).
 
 ## Layers
 
@@ -100,6 +102,13 @@ last_mapped_at: 2026-11-10
 - Contains: Focused helpers and presentation data models; theme settings are centralized in `src/crud_views/lib/settings.py`.
 - Depends on: View/ViewSet configuration, request/user state, and optional Django presentation packages.
 - Used by: CBVs, template tags and the core theme.
+
+**Nested formset layer:**
+- Purpose: Build and render recursively nested inline formsets with independent classic or compact layout choice per node.
+- Location: `src/crud_views/lib/formsets/`, `src/crud_views/templates/crud_views/formsets/`
+- Contains: Formset declarations/cloning, recursive render-tree nodes, compact field projection, crispy helper generation and recursive templates.
+- Depends on: Django inline formsets, crispy-forms, the owning create/update view and Bootstrap grid classes.
+- Used by: `FormSetMixin` in create/update view compositions and formset feature apps.
 
 **Theme and browser layer:**
 - Purpose: Render complete views and reusable components, and supply progressive-enhancement JavaScript.
@@ -224,6 +233,11 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - Examples: `src/crud_views/lib/view/action_menu.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/button_data.py`
 - Pattern: Resolve presentation through the helpers and template tags rather than constructing markup in view code.
 
+**FormSet / CompactLayout:**
+- Purpose: Describe recursive formset structure, deletion/order metadata and optional compact field/control grid without embedding markup in consumer views.
+- Examples: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `examples/bootstrap5/formsets/views.py`
+- Pattern: Keep the classic crispy helper on each inline formset class for classic rendering; opt in with `compact_layout=CompactLayout(...)` on only the formset nodes that should use shared headings and row labels.
+
 ## Entry Points
 
 **Django app initialization:**
@@ -309,4 +323,4 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 
 ---
 
-*Architecture analysis: 2026-11-10*
+*Architecture analysis: 2026-11-11*

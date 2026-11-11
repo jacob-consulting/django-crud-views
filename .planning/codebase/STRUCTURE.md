@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 83fb88014f76f3c500964a822b06e3ff8c5f4c7b
-last_mapped_at: 2026-11-10
+last_mapped_commit: 8eb29692c0f41a919593a05bfbcb9e7426efe2bd
+last_mapped_at: 2026-11-11
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-10
+**Analysis Date:** 2026-11-11
 
 ## Directory Layout
 
@@ -75,6 +75,18 @@ django-crud-views/
 - Contains: Asset registry/pipeline support, resource abstraction, settings, breadcrumbs, icons, buttons, formsets, conditional fields/layouts, table configuration, crispy integration, messages, ordering and session helpers.
 - Key files: `src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `src/crud_views/lib/resource.py`, `src/crud_views/lib/settings.py`, `src/crud_views/lib/formsets/`, `src/crud_views/lib/conditional/`, `src/crud_views/lib/table/`, `src/crud_views/lib/crispy/`.
 
+**`src/crud_views/lib/formsets/`:**
+- Purpose: Describe, initialize, recursively traverse and adapt nested inline formsets for view context and templates.
+- Contains: Public exports in `__init__.py`, recursive declarations in `formsets.py`, compact grid metadata/helper generation in `compact.py`, render-tree nodes in `render_tree.py`, orchestration mixins in `mixins.py`, and layout helpers in `layout.py` / `inline_formset.py`.
+- Key files: `src/crud_views/lib/formsets/__init__.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`.
+- Guidance: Add opt-in compact behavior to this package and its formset templates; declare it with `compact_layout` per `FormSet` node. Keep consumer declarations and comparison UI in the example app.
+
+**`src/crud_views/templates/crud_views/formsets/`:**
+- Purpose: Render the recursive formset tree and its browser controls.
+- Contains: `formset.html` for rows and child insertion, `compact_headings.html` for shared headings, control/empty-form partials, plus accompanying static JavaScript and CSS under `src/crud_views/static/crud_views/`.
+- Key files: `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/static/crud_views/js/formset.js`, `src/crud_views/static/crud_views/css/formset.css`.
+- Guidance: Preserve the existing row/control attributes and JavaScript add/delete/reorder contract when changing markup; compact class hooks are additive and per node.
+
 **`src/crud_views/templates/crud_views/` and `src/crud_views/static/crud_views/`:**
 - Purpose: Bundled Bootstrap 5 theme and browser-side behavior.
 - Contains: Full view templates and content partials, tag partials, action/button snippets, formsets, modal shell/content, shared CSS/JS hooks, CSS and JavaScript adapters/components.
@@ -110,6 +122,7 @@ django-crud-views/
 **`examples/bootstrap5/`:**
 - Purpose: Consumer-like demo application and integrated examples.
 - Contains: Django project settings/URLs, management commands and feature apps demonstrating list/detail/forms, nested data, resources, formsets, conditional fields, object detail, Guardian, workflow, polymorphic views, action menus and breadcrumbs.
+- Compact formsets are demonstrated beside classic formsets in `examples/bootstrap5/formsets/views.py`: `cv_formsets` remains the classic recursive tree and `cv_compact_formsets` opts questions and choices in independently. The `compact_create` and `compact_update` views provide comparison routes without changing the default create/update flow.
 - Key files: `examples/bootstrap5/project/settings_demo.py`, `examples/bootstrap5/project/urls.py`, `examples/bootstrap5/project/management/commands/seed.py`.
 
 **`docs/` and `site/`:**
@@ -166,6 +179,9 @@ django-crud-views/
 - `src/crud_views/lib/table/table.py`: `Table` base (view context, `actions` column, `Meta.sequence`-aware default ordering).
 - `src/crud_views/lib/view/base.py`: `cv_get_meta()` creates page-snippet metadata; `cv_get_parent_object()` returns the immediate parent using the request's resolved ancestor when available; `cv_get_header_icon()` applies the None-only ViewSet fallback.
 - `src/crud_views/lib/icons.py`: semantic icon registry and plain public `Icon.VIEWSET_DEFAULT` / `Icon.NONE` constants.
+- `src/crud_views/lib/formsets/compact.py`: explicit compact layout declarations, validated form schema projection, compact heading metadata and per-form crispy helper generation.
+- `src/crud_views/lib/formsets/render_tree.py`: recursive formset context tree; chooses compact helper generation only for nodes with `compact_layout` set.
+- `examples/bootstrap5/formsets/views.py`: classic/compact formset declarations and opt-in create/update comparison views.
 
 **Presentation and Browser Behavior:**
 - `src/crud_views/templates/crud_views/`: Core theme templates and reusable partials.
@@ -202,6 +218,7 @@ django-crud-views/
 - Primary code: Add a reusable core abstraction under `src/crud_views/lib/`; add a request handler to `src/crud_views/lib/views/` when it is a new view type.
 - Tests: Add Python behavior tests in the nearest `tests/test1/` feature module; extend browser tests under `tests/js/` or `tests/js-integration/` when client behavior changes.
 - User-facing theme: Add/update the corresponding template in `src/crud_views/templates/crud_views/`, Python template-tag/context support in `src/crud_views/templatetags/` or `src/crud_views/lib/view/`, and static behavior in `src/crud_views/static/crud_views/`.
+- Formset presentation: Extend `src/crud_views/lib/formsets/` and `src/crud_views/templates/crud_views/formsets/`; preserve classic rendering as the `compact_layout=None` path and add a demonstration under `examples/bootstrap5/formsets/`.
 - Interactive object-detail layouts: Put markup in `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/<layout>/`. For tabs, use the existing scoped lifecycle bridge in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and `cv.adapters.tab`; for accordion markup, preserve Bootstrap Collapse data attributes and render initial selected state from `presentation.selected` in the template.
 - Nested/ancestor authorization changes: edit `src/crud_views/lib/ancestors.py` (engine), `src/crud_views/lib/ancestor_policy.py` (config values), `src/crud_views/lib/ancestor_db.py` (database boundary); add tests as `tests/test1/test_ancestor_<aspect>.py` and update `docs/reference/nested.md`.
 - Demonstration: Add or update an example app under `examples/bootstrap5/<feature>/` and connect it through `examples/bootstrap5/project/`.
@@ -273,4 +290,4 @@ django-crud-views/
 
 ---
 
-*Structure analysis: 2026-11-10*
+*Structure analysis: 2026-11-11*

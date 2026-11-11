@@ -1,6 +1,23 @@
 {
+  "model_profile": "adaptive",
+  "commit_docs": true,
+  "parallelization": true,
+  "search_gitignored": false,
+  "brave_search": false,
+  "firecrawl": false,
+  "exa_search": false,
+  "tavily_search": false,
+  "ref_search": false,
+  "perplexity": false,
+  "jina": false,
+  "git": {
+    "branching_strategy": "phase",
+    "create_tag": true,
+    "phase_branch_template": "gsd/phase-{phase}-{slug}",
+    "milestone_branch_template": "gsd/{milestone}-{slug}",
+    "quick_branch_template": null
+  },
   "workflow": {
-    "compact_content": false,
     "research": true,
     "plan_check": true,
     "verifier": true,
@@ -15,6 +32,7 @@
     "human_verify_mode": "end-of-phase",
     "context_guard_mode": "warn",
     "text_mode": false,
+    "compact_content": false,
     "research_before_questions": false,
     "discuss_mode": "discuss",
     "skip_discuss": false,
@@ -33,24 +51,6 @@
     "tdd_mode": false,
     "ui_review": true,
     "plan_review_convergence": true
-  },
-  "model_profile": "adaptive",
-  "commit_docs": true,
-  "parallelization": true,
-  "search_gitignored": false,
-  "brave_search": false,
-  "firecrawl": false,
-  "exa_search": false,
-  "tavily_search": false,
-  "ref_search": false,
-  "perplexity": false,
-  "jina": false,
-  "git": {
-    "branching_strategy": "phase",
-    "create_tag": true,
-    "phase_branch_template": "gsd/phase-{phase}-{slug}",
-    "milestone_branch_template": "gsd/{milestone}-{slug}",
-    "quick_branch_template": null
   },
   "ship": {
     "pr_body_sections": []

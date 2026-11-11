@@ -7,7 +7,15 @@ from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column8, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
-from crud_views.lib.formsets import FormSet, FormSetMixin, FormSets, Formsets, InlineFormSet
+from crud_views.lib.formsets import (
+    CompactColumn,
+    CompactLayout,
+    FormSet,
+    FormSetMixin,
+    FormSets,
+    Formsets,
+    InlineFormSet,
+)
 from crud_views.lib.table import LinkDetailColumn, Table
 from crud_views.lib.views import (
     CreateViewPermissionRequired,
@@ -100,6 +108,52 @@ cv_formsets: FormSets = FormSets(
     )
 )
 
+# Compact rows use the column declaration instead of a duplicate crispy row layout.
+CompactQuestionFormSet = inlineformset_factory(
+    Questionnaire,
+    Question,
+    formset=InlineFormSet,
+    form=QuestionForm,
+    fields=["text"],
+    extra=1,
+    can_delete=True,
+    can_delete_extra=True,
+    can_order=True,
+)
+
+CompactChoiceFormSet = inlineformset_factory(
+    Question,
+    Choice,
+    formset=InlineFormSet,
+    form=ChoiceForm,
+    fields=["label"],
+    extra=1,
+    can_delete=True,
+    can_delete_extra=True,
+    can_order=True,
+)
+
+cv_compact_formsets = FormSets(
+    formsets=OrderedDict(
+        questions=FormSet(
+            title=_("Questions"),
+            klass=CompactQuestionFormSet,
+            fields=["text"],
+            pk_field="id",
+            compact_layout=CompactLayout(columns=[CompactColumn("text", span=8)], controls_span=4),
+            children=OrderedDict(
+                choices=FormSet(
+                    title=_("Choices"),
+                    klass=CompactChoiceFormSet,
+                    fields=["label"],
+                    pk_field="id",
+                    compact_layout=CompactLayout(columns=[CompactColumn("label", span=8)], controls_span=4),
+                )
+            ),
+        )
+    )
+)
+
 
 class QuestionnaireTable(Table):
     id = LinkDetailColumn()
@@ -109,10 +163,13 @@ class QuestionnaireTable(Table):
 class QuestionnaireListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_questionnaire
     table_class = QuestionnaireTable
+    cv_context_actions = ["parent", "list", "filter", "create", "compact_create"]
+    cv_list_actions = ["detail", "update", "compact_update", "delete"]
 
 
 class QuestionnaireDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_questionnaire
+    cv_context_actions = ["home", "detail", "update", "compact_update", "delete"]
     cv_property_display = [
         {
             "title": _("Questionnaire"),
@@ -131,6 +188,9 @@ class QuestionnaireCreateView(
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
+    cv_context_actions = ["home", "create", "compact_create"]
+    cv_action_label_template_code = _("Create classic")
+    cv_action_short_label_template_code = _("Create classic")
     cv_message_template_code = _("Created questionnaire “{{ object }}”")
 
 
@@ -140,7 +200,32 @@ class QuestionnaireUpdateView(
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
+    cv_context_actions = ["home", "detail", "update", "compact_update", "delete"]
+    cv_action_label_template_code = _("Edit classic")
+    cv_action_short_label_template_code = _("Edit classic")
     cv_message_template_code = _("Updated questionnaire “{{ object }}”")
+
+
+class QuestionnaireCompactCreateView(QuestionnaireCreateView):
+    cv_viewset = cv_questionnaire
+    cv_key = "compact_create"
+    cv_path = "create-compact"
+    cv_permission = "add"
+    cv_cancel_key = "create"
+    cv_formsets = cv_compact_formsets
+    cv_action_label_template_code = _("Create compact")
+    cv_action_short_label_template_code = _("Create compact")
+
+
+class QuestionnaireCompactUpdateView(QuestionnaireUpdateView):
+    cv_viewset = cv_questionnaire
+    cv_key = "compact_update"
+    cv_path = "update-compact"
+    cv_permission = "change"
+    cv_cancel_key = "update"
+    cv_formsets = cv_compact_formsets
+    cv_action_label_template_code = _("Edit compact")
+    cv_action_short_label_template_code = _("Edit compact")
 
 
 class QuestionnaireDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):

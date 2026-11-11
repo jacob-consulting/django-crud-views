@@ -20,6 +20,21 @@ class FormsetsTestCase(TestCase):
 
 
 class QuestionnaireCrudTest(FormsetsTestCase):
+    def test_classic_invalid_nested_choice_redisplays_without_saving(self):
+        questionnaire = Questionnaire.objects.create(title="Classic invalid")
+        question = Question.objects.create(questionnaire=questionnaire, text="Unchanged")
+        choice = Choice.objects.create(question=question, label="Unchanged")
+        url = reverse("questionnaire-update", kwargs={"pk": questionnaire.pk})
+        payload = form_payload(self.client.get(url))
+        key = next(key for key in field_keys(payload, "-label") if payload[key] == choice.label)
+        payload[key] = "x" * 101
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ensure this value has at most 100 characters")
+        self.assertEqual(form_payload(response)[key], "x" * 101)
+        choice.refresh_from_db()
+        self.assertEqual(choice.label, "Unchanged")
+
     def test_list_renders_with_snippets(self):
         Questionnaire.objects.create(title="Customer Survey")
         resp = self.client.get(reverse("questionnaire-list"))
@@ -97,7 +112,7 @@ class CompactQuestionnaireTest(FormsetsTestCase):
         payload = form_payload(response)
         return {
             "template": "|".join(data["hierarchy"]),
-            "pk": data["pk"] if data["pk"] is not None else "None",
+            "pk": data["prefix_key"].rsplit("-", 2)[-2],
             "num": payload[f"{content.get('cv-data-formset-prefix')}-TOTAL_FORMS"],
             "formset_parent_prefix_key": data["parent_prefix_key"],
         }
@@ -137,8 +152,7 @@ class CompactQuestionnaireTest(FormsetsTestCase):
         payload[label_key] = "Edited choice"
         extra_text = next(key for key in field_keys(payload, "-text") if not payload[key])
         payload[extra_text] = "Added question"
-        extra_prefix = extra_text.removesuffix("-text")
-        extra_label = next(key for key in field_keys(payload, "-label") if key.startswith(extra_prefix))
+        extra_label = field_keys(payload, "-label")[-1]  # the last extra question owns this choice
         payload[extra_label] = "Added nested choice"
         saved = self.client.post(url, payload, follow=True)
         self.assertEqual(saved.status_code, 200)
@@ -186,11 +200,17 @@ class CompactQuestionnaireTest(FormsetsTestCase):
             rows = doc.cssselect(".cv-formset-row-compact")
             self.assertTrue(rows)
             if index == 2:
-                self.assertEqual(params["pk"], second.pk)
-                self.assertNotEqual(params["pk"], first.pk)
+                self.assertEqual(params["pk"], str(second.pk))
+                self.assertNotEqual(params["pk"], str(first.pk))
                 prefix = rows[0].get("cv-data-formset-form-prefix")
-                self.assertTrue(prefix.startswith(params["formset_parent_prefix_key"]))
-                self.assertEqual(doc.cssselect('input[name$="-question"]')[0].get("value"), str(second.pk))
+                self.assertEqual(
+                    prefix,
+                    f"questions-choices-{params['formset_parent_prefix_key']}-{second.pk}-0-{params['num']}",
+                )
+                self.assertEqual(doc.cssselect('input[name$="-question"]')[0].get("name"), f"{prefix}-question")
+                foreign = Questionnaire.objects.create(title="Other survey")
+                foreign_question = Question.objects.create(questionnaire=foreign, text="Other owner")
+                self.assertEqual(self.client.get(url, {**params, "pk": foreign_question.pk}).status_code, 400)
 
     def test_denied_pages_fragments_and_posts_leave_records_unchanged(self):
         questionnaire = Questionnaire.objects.create(title="Protected")

@@ -423,6 +423,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- Invalid nested formset fields now redisplay their errors instead of raising an `AttributeError`
+  while checking whether the parent row is present. Classic and compact editors retain the submitted values.
+
 - Unmarking a formset row for deletion now submits an empty hidden `DELETE` value instead of `"0"`,
   which Django treated as checked on the next POST. The existing row and its children are retained in
   both classic and compact layouts; native checkbox behavior is unchanged.

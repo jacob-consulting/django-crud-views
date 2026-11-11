@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: planning
-stopped_at: Phase 06.25 context gathered; ready for planning
-last_updated: "2026-11-11T10:40:18.763Z"
+current_phase: "06.25"
+current_phase_name: "Compact widget compatibility (#349)"
+status: executing
+stopped_at: Phase 06.25 plans converged; ready to execute
+last_updated: "2026-11-11T11:59:24.657Z"
 last_activity: 2026-11-11
-last_activity_desc: "Phase 06.24 shipped as PR #348"
-state_head: 19ce9a12958515ff1e45b12fbba9d01c78aafc68
+last_activity_desc: Phase 06.25 plans converged in 3 of 5 allowed cycles; 0 HIGH, 0 actionable findings
+state_head: d4d6584dcd0c0a1c0771c93d3ff0b2111eb70c20
 progress:
-  total_phases: 30
+  total_phases: 31
   completed_phases: 26
-  total_plans: 168
+  total_plans: 170
   completed_plans: 168
-  percent: 87
 milestone_name: milestone
 ---
 
@@ -25,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.25 — Compact widget compatibility (#349); plans converged
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.25 (Compact widget compatibility (#349)) — READY TO EXECUTE
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-11-11 -- Phase 06.24 shipped as PR #348
+Status: Ready to execute
+Last activity: 2026-11-11 -- Phase 06.25 plans converged in 3 of 5 allowed cycles; 0 HIGH, 0 actionable findings
 
-Next: $gsd-plan-phase 7
+Next: $gsd-execute-phase 06.25
 
 ### Phase 06.24 completion — 2026-11-11
 
@@ -1222,6 +1221,7 @@ None yet.
 - Phase 06.19 inserted after Phase 06.18: Table honours Meta.sequence and drops the empty actions column (tabler-test finding 26); canonical approved specification: superpowers/plans/2026-11-09-table-sequence-and-actions-column.md. Behaviour decisions are locked in its GSD handoff section; planning and implementation pending. (URGENT)
 - Phase 06.23 inserted after Phase 06.22: Issue #329: explicit header-icon suppression with plain Icon constants; settled issue decisions are the planning handoff. Independent scope; complete before Phase 7. (URGENT)
 - Phase 06.24 inserted after Phase 06.23: Issue #347: opt-in compact formsets with shared desktop headings and nested mobile cards; approved issue decisions are the GSD handover, classic rendering unchanged. Complete before Phase 7. (URGENT)
+- Phase 06.25 inserted after Phase 6: Issue #349 (URGENT)
 
 ## Deferred Items
 
@@ -1231,6 +1231,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T10:40:15.137Z
-Stopped at: Phase 06.25 context gathered; ready for planning
-Resume file: .planning/phases/06.25-issue-349/06.25-CONTEXT.md
+Last session: 2026-11-11T11:59:21.029Z
+Stopped at: Phase 06.25 plans converged; ready to execute
+Resume file: .planning/phases/06.25-issue-349/06.25-REVIEWS.md

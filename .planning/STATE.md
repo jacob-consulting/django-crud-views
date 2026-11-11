@@ -4,11 +4,11 @@ milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
 status: planning
-stopped_at: Phase 06.24 complete, ready to plan Phase 7
-last_updated: "2026-11-11T08:37:09.953Z"
+stopped_at: Phase 06.25 context gathered; ready for planning
+last_updated: "2026-11-11T10:40:18.763Z"
 last_activity: 2026-11-11
 last_activity_desc: "Phase 06.24 shipped as PR #348"
-state_head: 67928a0695c680b681a6b0964841a35e4451b86d
+state_head: 19ce9a12958515ff1e45b12fbba9d01c78aafc68
 progress:
   total_phases: 30
   completed_phases: 26
@@ -1231,6 +1231,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T08:22:13.993867+00:00
-Stopped at: Phase 06.24 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-11T10:40:15.137Z
+Stopped at: Phase 06.25 context gathered; ready for planning
+Resume file: .planning/phases/06.25-issue-349/06.25-CONTEXT.md

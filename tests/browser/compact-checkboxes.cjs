@@ -6,6 +6,7 @@ const net = require('node:net');
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const crypto = require('node:crypto');
+const os = require('node:os');
 const root = path.resolve(__dirname, '../..');
 process.chdir(root);
 const args = process.argv.slice(2);
@@ -13,7 +14,12 @@ const option = (name, fallback) => args.includes(name) ? args[args.indexOf(name)
 const output = option('--output', '/tmp/compact-checkboxes.json');
 const variant = option('--variant', 'current');
 const phase = '.planning/phases/06.26-issue-351';
-const captureRoot = `${phase}/browser-captures`;
+const canonicalCaptureRoot = `${phase}/browser-captures`;
+const canonicalRefresh = path.resolve(output) === path.resolve(`${phase}/06.26-browser-${variant}.json`);
+assert(canonicalRefresh || !['current','floor'].some(v=>path.resolve(output)===path.resolve(`${phase}/06.26-browser-${v}.json`)),
+    'The variant must match the canonical report destination.');
+const captureRoot = canonicalRefresh ? canonicalCaptureRoot : `${output}.captures`;
+let stagedCaptureRoot;
 const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 const filesIn = dir => fs.readdirSync(dir,{withFileTypes:true}).flatMap(e =>
     e.isDirectory() ? (e.name==='__pycache__' ? [] : filesIn(`${dir}/${e.name}`)) : [`${dir}/${e.name}`]);
@@ -25,7 +31,7 @@ const sourceFiles = ['tests/browser/compact-checkboxes.cjs','tests/browser/condi
     ...['formset','toggle','adapters','modal'].map(n=>`src/crud_views/static/crud_views/js/${n}.js`)];
 const hashes = () => Object.fromEntries(sourceFiles.sort().map(f=>[f,digest(f)]));
 const captureNames = v => ['390-initial','390-invalid','390-added','1280-initial','1280-invalid','1280-added',
-    '767-nested','768-nested'].map(n=>`${captureRoot}/${v}-${n}.png`);
+    '767-nested','768-nested'].map(n=>`${canonicalCaptureRoot}/${v}-${n}.png`);
 if(args.includes('--check-evidence')) {
     for(const v of ['current','floor']) {
         const data=JSON.parse(fs.readFileSync(`${phase}/06.26-browser-${v}.json`));
@@ -50,6 +56,7 @@ if(args.includes('--check-evidence')) {
     process.exit(0);
 }
 assert(['current', 'floor'].includes(variant));
+assert(!(canonicalRefresh && args.includes('--tracer')), 'Canonical evidence requires a full run; use a temporary output for --tracer.');
 const python = process.env.CV_FOCUS_PYTHON || `${root}/.venv/bin/python`;
 const playwright = process.env.CV_FOCUS_PLAYWRIGHT || `${process.env.HOME}/.npm/_npx/e41f203b7505f1fb/node_modules/playwright`;
 const chromium = process.env.CV_FOCUS_CHROMIUM || `${process.env.HOME}/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome`;
@@ -256,12 +263,35 @@ const content = (page,prefix) => page.locator(`#editor .cv-formset-content[cv-da
 const ownedRows = node => node.locator(':scope > .cv-formset-row');
 const ownControl = (row,kind) => row.locator(`:scope > .cv-formset-form .cv-form-ctrl-${kind}`);
 async function capture(page,name) {
-    fs.mkdirSync(captureRoot,{recursive:true});
+    if(canonicalRefresh && !stagedCaptureRoot) stagedCaptureRoot=fs.mkdtempSync(path.join(os.tmpdir(),`cv-checkboxes-${variant}-`));
+    const destination=stagedCaptureRoot || captureRoot;
+    fs.mkdirSync(destination,{recursive:true});
     const file=`${captureRoot}/${variant}-${name}.png`;
-    await page.screenshot({path:file,fullPage:true});
-    const trackable=cp.spawnSync('git',['check-ignore','-q',file]).status===1;
-    record.captures.push({path:file,sha256:digest(file),trackable});
-    check(`capture:${name}`,trackable,file);
+    const screenshot=`${destination}/${variant}-${name}.png`;
+    await page.screenshot({path:screenshot,fullPage:true});
+    const trackable=canonicalRefresh ? cp.spawnSync('git',['check-ignore','-q',file]).status===1 : null;
+    record.captures.push({path:file,sha256:digest(screenshot),trackable});
+    check(`capture:${name}`,fs.existsSync(screenshot) && (!canonicalRefresh || trackable),file);
+}
+function finishOutput() {
+    try {
+        const successful=record.completed && record.passed && !record.error;
+        let report=output;
+        if(canonicalRefresh) {
+            if(successful) {
+                assert.deepEqual(record.captures.map(c=>c.path).sort(),captureNames(variant).sort());
+                fs.mkdirSync(canonicalCaptureRoot,{recursive:true});
+                for(const capture of record.captures) fs.copyFileSync(path.join(stagedCaptureRoot,path.basename(capture.path)),capture.path);
+            } else {
+                report=path.join(os.tmpdir(),`compact-checkboxes-${variant}-failed.json`);
+                console.error(`Canonical evidence preserved; failed run report: ${report}`);
+            }
+        }
+        fs.mkdirSync(path.dirname(report),{recursive:true});
+        fs.writeFileSync(report,JSON.stringify(record,null,2)+'\n');
+    } finally {
+        if(stagedCaptureRoot) fs.rmSync(stagedCaptureRoot,{recursive:true,force:true});
+    }
 }
 async function inspect(page,c,width) {
     const measurement=await page.locator('#editor').evaluate((editor,{width,fields,nestedFields})=>{
@@ -524,7 +554,11 @@ test('stock checkbox renders and persists through native POST',async()=>{
         record.completed=true;record.passed=true;
     } catch(error) {record.error=error.stack;throw error;}
     finally {
-        if(browser) await browser.close();
-        fs.writeFileSync(output,JSON.stringify(record,null,2)+'\n');
+        try {
+            if(browser) await browser.close();
+        } catch(error) {
+            record.completed=false;record.passed=false;record.error=error.stack;
+            throw error;
+        } finally {finishOutput();}
     }
 });

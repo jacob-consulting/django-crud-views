@@ -58,10 +58,18 @@ const label = row => row.locator('input[name$="-label"]');
 const done = row => row.locator('input[name$="-done"]');
 const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
 async function save(page) {
+    const doneFields=await page.locator('input[name$="-done"]').evaluateAll(inputs=>
+        inputs.map(({name,checked,disabled})=>({name,checked,disabled})));
     const request = page.waitForRequest(r=>r.method()==='POST' && r.url().includes('/checklist/'));
     await page.locator('button[type=submit]').filter({hasText:'Save'}).click();
     const post = await request;
-    record.requests.push({kind:'save',url:post.url(),fields:[...new URLSearchParams(post.postData()).keys()]});
+    const contentType=post.headers()['content-type'];
+    const fields=[...(await new Response(post.postDataBuffer(),{headers:{'Content-Type':contentType}}).formData()).keys()];
+    record.requests.push({kind:'save',url:post.url(),contentType,fields,doneFields});
+    check('save:parent and management fields',fields.includes('title') && fields.includes('csrfmiddlewaretoken') &&
+        ['TOTAL_FORMS','INITIAL_FORMS'].every(suffix=>fields.some(name=>name.endsWith('-'+suffix))),fields);
+    check('save:checkbox submission matches checked state',doneFields.length>0 &&
+        doneFields.every(field=>fields.includes(field.name)===(field.checked && !field.disabled)),doneFields);
     await page.waitForURL('**/formsets/checklist/');
 }
 async function capture(page,name) {

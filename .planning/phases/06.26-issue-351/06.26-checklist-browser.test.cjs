@@ -120,3 +120,37 @@ test('an owned child ignoring SIGTERM is killed within a bounded cleanup wait', 
     assert(!fs.existsSync(run.api.scratch));
     assert.equal(JSON.parse(fs.readFileSync(run.output,'utf8')).cleanup.serverReaped,true);
 });
+
+async function saveFixture(api, {urlencoded = false, wrongDone = false} = {}) {
+    const fields = new FormData();
+    for(const [name,value] of [
+        ['csrfmiddlewaretoken','token'],['title','Release'],['items-TOTAL_FORMS','2'],['items-INITIAL_FORMS','0'],
+        ['items-0-id',''],['items-0-label','Review'],['items-0-done','on'],['items-1-id',''],['items-1-label','Publish'],
+    ]) fields.append(name,value);
+    if(wrongDone) {fields.delete('items-0-done'); fields.append('items-1-done','on');}
+    const request = new Request('http://localhost/formsets/checklist/create/',
+        {method:'POST',body:urlencoded ? new URLSearchParams(fields) : fields});
+    const body = Buffer.from(await request.arrayBuffer());
+    const post = {url:()=>request.url, postData:()=>body.toString(),postDataBuffer:()=>body,
+        headers:()=>Object.fromEntries(request.headers)};
+    const page = {waitForRequest:async()=>post,waitForURL:async()=>{},locator:()=>({
+        filter:()=>({click:async()=>{}}),
+        evaluateAll:async()=>[{name:'items-0-done',checked:true,disabled:false},{name:'items-1-done',checked:false,disabled:false}],
+    })};
+    await api.save(page);
+}
+
+for(const urlencoded of [false,true]) test(`${urlencoded?'URL-encoded':'multipart'} save records actual keys and native checkbox omission`, async t => {
+    const {api} = runner(t);
+    await saveFixture(api,{urlencoded});
+    assert.deepEqual(Array.from(api.record.requests[0].fields),[
+        'csrfmiddlewaretoken','title','items-TOTAL_FORMS','items-INITIAL_FORMS','items-0-id','items-0-label',
+        'items-0-done','items-1-id','items-1-label',
+    ]);
+    assert(!api.record.requests[0].fields.includes('items-1-done'));
+});
+
+test('save rejects a request that swaps the checked and omitted Done fields', async t => {
+    const {api} = runner(t);
+    await assert.rejects(saveFixture(api,{wrongDone:true}),/checkbox submission/);
+});

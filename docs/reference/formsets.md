@@ -14,7 +14,7 @@ formset).
 
 !!! note "Stability"
     This page documents the supported formsets surface: `FormSetMixin`, `FormSets`, `FormSet`,
-    `InlineFormSet`, `Formsets`, `FormControl`, `CompactColumn`, `CompactLayout` — the names exported by
+    `InlineFormSet`, `Formsets`, `FormControl`, `CompactColumn`, `CompactLayout`, `CompactWidgetCompatible` — the names exported by
     `crud_views.lib.formsets`. The formsets machinery behind them (rendering tree, per-formset
     plumbing) is internal and stays internal in 1.0 — see [API stability](../development/stability.md).
 
@@ -264,7 +264,7 @@ visible field must appear once, including optional and disabled fields. Hidden f
 `ORDER` and `DELETE` stay outside the columns; existing hidden values and management fields still render.
 Do not declare them as visible compact columns. Hidden-field errors remain visible with their owning row.
 
-Only these **exact stock Django widget classes** with their standard templates and input types are supported:
+Unmarked widgets use these **exact stock Django widget classes** with standard templates and input types:
 
 | Widget | Template | Input type |
 | --- | --- | --- |
@@ -274,10 +274,25 @@ Only these **exact stock Django widget classes** with their standard templates a
 | `Select` | `django/forms/widgets/select.html` | `select` |
 
 `Select` also requires the stock `django/forms/widgets/select_option.html` and single selection. This includes
-`ModelChoiceField` using `Select`. Subclasses, custom widget/option templates, changed `input_type`, multiple
-selection and unlisted widgets are rejected. Thus checkboxes, radio groups, multiwidgets, file inputs,
-password inputs and textareas are unsupported. Stock `DateInput` remains a text input; setting its type to
-`date` is outside this boundary. Ordinary widget attributes (such as a CSS class or size) remain form-owned.
+`ModelChoiceField` using `Select`. Unmarked subclasses, custom widget/option templates, changed `input_type`,
+multiple selection and unlisted widgets are rejected. Unmarked checkboxes, radio groups, multiwidgets, file
+inputs, password inputs and textareas are unsupported. Stock `DateInput` remains a text input; setting its
+type to `date` is outside this default boundary. Ordinary attributes remain form-owned.
+
+For explicit opt-in, inherit `CompactWidgetCompatible` alongside the widget class. Descendants inherit the
+marker too. This bypasses **all widget-specific restrictions**: widget family, widget and option templates,
+input/option types and multiple selection. Other widget families, radio groups and multiselects may therefore
+pass admission. The shared checks still require full declared-field coverage (including optional/disabled
+fields), exclude hidden/identity/control fields, require nonempty effective labels and compare actual row
+field types, widget types, labels and required state. Classic rendering is unchanged.
+
+The marker is the widget author's promise about the complete integration. It supplies no rendering behavior
+and neither inspects nor validates arbitrary HTML, CSS or JavaScript, nor guarantees equal heights. Authors
+must provide accessible associated row labels or group semantics, shared desktop headings and mobile row
+labels, visible necessary option labels, readable help and errors, correct prefixed IDs/names, and any
+dynamic-row initialization their widget needs. Test focus, invalid redisplay and added/deleted rows at both
+widths. Built-in `CheckboxInput` support and its desktop/mobile label fix are a **separate issue**; marking a
+checkbox alone does not repair its labels. A marked checkbox needs an application-owned adaptation.
 
 Effective form labels, including constructor changes and lazy translation resolved in the current request,
 supply both headings and associated row labels. They must be nonblank and uniform within each formset.
@@ -285,6 +300,31 @@ There is no second label dictionary or global translated-label cache. Compact mo
 `form_show_labels=False`: it always emits associated labels, visually clips them at desktop widths and
 shows them on mobile. Required markers, help text and field errors remain available at every width; row
 non-field errors and formset errors stay with their respective owners.
+
+### Custom widget compatibility recipe
+
+This self-contained widget uses ordinary choice values and preserves Django's option attributes through
+`super().create_option()`. Use `ProductSelect` as your form field's `widget` (including in `Meta.widgets`
+for a model choice). The documentation test copies this exact fence into a compact Book form and renders
+the nonempty `beans` option, including its label and metadata, through an authenticated update request.
+
+```python
+from django import forms
+
+from crud_views.lib.formsets import CompactWidgetCompatible
+
+
+class ProductSelect(CompactWidgetCompatible, forms.Select):
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+        if value == "beans":
+            option["attrs"]["data-beans"] = "1"
+        return option
+```
+
+Keep ordinary option labels and help text as ordinary strings so Django/crispy can escape them. For model
+choices, configure the widget when constructing the field so Django binds its choice iterator. The marker
+does not add choices, initialize JavaScript or certify another widget's output.
 
 ### Metadata and query boundary
 
@@ -330,7 +370,8 @@ requires nor fabricates it. Read-only/edit-only/no-control rows reserve the decl
 
 ### Compact theme surface and exclusions
 
-The additive public surface is `CompactColumn`, `CompactLayout`, `FormSet.compact_layout`, these six CSS hooks
+The additive public surface is `CompactColumn`, `CompactLayout`, `CompactWidgetCompatible`,
+`FormSet.compact_layout`, these six CSS hooks
 and the overridable `crud_views/formsets/compact_headings.html` include:
 
 | Hook | Owner / purpose |

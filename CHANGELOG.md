@@ -589,6 +589,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Explicit compact widget compatibility** ([#349](https://github.com/jacob-consulting/django-crud-views/issues/349)):
+  inherit the public `CompactWidgetCompatible` marker to opt a custom widget into compact formsets while
+  retaining shared schema checks. The developer owns its rendering integration; unmarked stock defaults
+  and classic formsets are unchanged. See the executable
+  [custom widget recipe](docs/reference/formsets.md#custom-widget-compatibility-recipe).
+
 - **Opt-in compact formsets** ([#347](https://github.com/jacob-consulting/django-crud-views/issues/347)):
   `CompactColumn`, `CompactLayout` and `FormSet.compact_layout` provide shared desktop headings and labelled
   mobile cards, with independent nested adoption and preserved classic helpers. See the executed

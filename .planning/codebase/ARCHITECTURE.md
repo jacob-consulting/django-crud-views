@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
+last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
 last_mapped_at: 2026-11-11
 ---
 <!-- refreshed: 2026-11-11 -->
@@ -78,7 +78,7 @@ last_mapped_at: 2026-11-11
 - The core theme is implemented in Django templates and template tags. App-contributed behavior can add static assets through `register_assets()` from an app's `AppConfig.ready()`.
 - Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
 - Optional packages depend on the core public view abstractions and are enabled by installing their app and declaring their specialized views.
-- Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Compact metadata and crispy helpers are derived from request-time bound forms, while `compact_layout=None` preserves the classic helper layout. Custom widgets can inherit the public `CompactWidgetCompatible` marker to accept responsibility for full compact rendering; this skips widget-specific checks only, leaving shared role, label and row-consistency validation in place (`src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`).
+- Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Request-time schema projection validates field coverage, supported widget shape, effective labels and uniform row metadata before crispy renders. The compact helper composes crispy `Layout`/`Row`/`Div`/`Field` objects around the same bound fields and existing formset controls, so the page-owned outer form, CSRF, validation and save flow remain shared; `compact_layout=None` uses the classic helper unchanged. The exact stock `django.forms.widgets.CheckboxInput` class is in the supported widget set. Custom subclasses/templates require the public `CompactWidgetCompatible` marker, which skips widget-specific checks only and transfers responsibility for complete accessible/dynamic rendering to the widget author; shared field coverage, role, label and row-consistency validation remains (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/formset.html`).
 
 ## Layers
 
@@ -236,7 +236,19 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 **FormSet / CompactLayout:**
 - Purpose: Describe recursive formset structure, deletion/order metadata and optional compact field/control grid without embedding markup in consumer views.
 - Examples: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `examples/bootstrap5/formsets/views.py`
-- Pattern: Keep the classic crispy helper on each inline formset class for classic rendering; opt in with `compact_layout=CompactLayout(...)` on only the formset nodes that should use shared headings and row labels. Custom widgets that fully own accessible labels/group semantics, headings, help/errors, prefixed IDs/names and dynamic rows may inherit `CompactWidgetCompatible`; the marker does not implement rendering (`src/crud_views/lib/formsets/compact.py`, `docs/reference/formsets.md`).
+- Pattern: Keep classic crispy helpers on classic inline formsets; opt into compact with `compact_layout=CompactLayout(...)` per node. `_compact_schema()` projects and validates request-bound fields, `_compact_helper()` creates crispy layout objects around the original fields and `FormControl`, and `XForm.helper` chooses this path only for opted-in nodes. The exact stock `django.forms.widgets.CheckboxInput` is supported. A widget subclass or custom template crosses the compatibility boundary only by inheriting `CompactWidgetCompatible`; that marker supplies no renderer, and the author owns labels/groups, headings, help/errors, prefixed IDs/names and dynamic rows (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`).
+
+**Checklist example composition:**
+- Purpose: Exercise compact rendering of an ordinary BooleanField in a separate end-to-end CRUD family.
+- Examples: `examples/bootstrap5/formsets/models.py`, `examples/bootstrap5/formsets/views.py`, `examples/bootstrap5/formsets/migrations/0003_checklist_checklistitem.py`
+- Pattern: `Checklist` and `ChecklistItem` have their own `cv_checklist` ViewSet and create/list/update views. `ChecklistForm` places `Formsets()` in its crispy layout; its compact child declares `label` plus the native `done` checkbox. The demo catalog remains one `formsets` feature in `examples/bootstrap5/project/features.py`; `examples/bootstrap5/project/templatetags/example_tags.py` adds a direct Checklist navigation link by deriving it from that shared feature entry.
+
+### Nested formset request and persistence path
+
+1. The normal create/update view dispatch and permission mixins authorize the endpoint before `FormSetMixin` builds form context; `get_context_data()` clones and initializes the declared tree from the request and parent form (`src/crud_views/lib/formsets/mixins.py`).
+2. Each `XFormSet` and `XForm` node retains its bound Django form/formset and recursive children. Compact nodes lazily project one consistent field schema and select a per-row crispy helper; classic nodes keep the existing formset helper (`src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/compact.py`).
+3. POST validation runs the main form and all formsets, including conditional-formset evaluation. On success, `FormSetMixin.cv_form_valid()` atomically saves the parent form followed by the recursive formset tree using the view's database alias. The compact helper does not own validation or persistence (`src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/formsets.py`).
+4. Dynamic-row requests pass through the same endpoint dispatch/permission boundary, validate declared fragment coordinates against the persisted root/ancestry, then render a single empty-row fragment; they do not build the full editor (`src/crud_views/lib/formsets/mixins.py`).
 
 ## Entry Points
 

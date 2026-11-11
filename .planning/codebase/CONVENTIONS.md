@@ -1,145 +1,94 @@
 ---
-last_mapped_commit: 215ccb8e86c0105c2997ec2e3431b4cdb85b886d
+last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
 last_mapped_at: 2026-11-11
 ---
 # Coding Conventions
 
 **Analysis Date:** 2026-11-11
 
-## Maintainability Constraint
-
-- Keep behavior understandable, explainable, and maintainable by the project developer. Prefer the simplest bounded solution that meets a demonstrated need, preserve proven paths unless a concrete defect or requirement warrants change, and account for runtime and cognitive costs (`CLAUDE.md`).
-- Favor self-contained, opt-in additions that can demonstrate downstream value before wider integration. Passing tests or covering more cases alone does not justify added complexity (`CLAUDE.md`, `superpowers/notes/2026-11-04-opt-in-url-helper-decision.md`).
-
 ## Naming Patterns
 
 **Files:**
-- Python modules use lowercase snake_case; Django test modules use `test_*.py` (`src/crud_views/lib/view/base.py`, `tests/test1/test_crud.py`). Object-detail tests are grouped under `tests/test1/od/`.
-- JavaScript unit and integration files use descriptive names ending in `.test.js` under `tests/js/` and `tests/js-integration/`; Node browser tests use `.test.cjs` under `tests/browser/`.
+- Python modules use lowercase snake_case (`src/crud_views/lib/viewset.py`); tests use `test_<behavior>.py` under `tests/test1/`, `tests/browser/`, or `tests/js/`.
+- Bootstrap demo apps commonly collect Django `TestCase` classes in `tests.py` (`examples/bootstrap5/formsets/tests.py`).
+- JavaScript unit tests use `*.test.js` (`tests/js/toggle.test.js`); Node browser-harness tests use `*.test.cjs` (`tests/browser/presentation-cleanup.test.cjs`).
 
 **Functions:**
-- Python functions, pytest fixtures, and test functions use snake_case; tests begin with `test_` and name an observable behavior.
-- JavaScript functions and variables use camelCase. Workflow transitions use the `wf_` prefix (`tests/test1/app/models.py`).
+- Python functions and pytest fixtures use snake_case; test methods/functions begin `test_` (`tests/test1/test_form_enctype.py`).
+- JavaScript functions and variables use camelCase; Vitest test descriptions use readable behavior statements (`tests/js/toggle.test.js`).
 
 **Variables:**
-- Use descriptive snake_case in Python and camelCase in JavaScript. Fixtures encode model and permission, such as `client_user_author_add` in `tests/test1/conftest.py`.
+- Python locals use snake_case; Django fixture names encode the entity/action, e.g. `cv_<model>` and `client_user_<model>_<permission>` (`tests/test1/conftest.py`).
+- JavaScript locals use camelCase (`tests/js/toggle.test.js`).
 
 **Types:**
-- Python classes use CapWords (`ViewSet`, `CrudView`). Add annotations to public APIs where useful; supported Python begins at 3.12 (`pyproject.toml`).
-- JavaScript helpers use named exports, as in `tests/js/helpers/load.js`.
+- Python classes use CapWords (`CrudView`, `FormsetsTestCase`); Django model/Form/View classes follow domain names (`examples/bootstrap5/formsets/tests.py`).
+- JavaScript constructors/classes use PascalCase where needed; ordinary helpers remain camelCase.
 
 ## Code Style
 
 **Formatting:**
-- Use Ruff formatting: 120-character line length, spaces, and double quotes (`pyproject.toml`).
-- Preserve template and golden HTML formatting when output markup is asserted byte-for-byte (`tests/lib/helper/golden.py`, `tests/test1/golden/`).
+- Ruff formats Python with 120-character lines, spaces, and double quotes (`pyproject.toml`).
+- Ruff is configured to lint `E`, `F`, `I`, `UP`, `B`, `C4`, `SIM`, and `RUF`; it allows the breadcrumb confusable `›` (`pyproject.toml`).
+- `ruff format` runs on Markdown Python fences as well as Python files in CI (`.github/workflows/lint.yml`).
+- Run `task format` to format and `task check` for Ruff fixes; pre-commit runs `ruff-check` and `ruff-format` (`taskfile.yaml`, `.pre-commit-config.yaml`).
+- JavaScript uses four-space indentation, double quotes, and semicolons in the current Vitest suites (`tests/js/toggle.test.js`, `vitest.config.js`).
 
 **Linting:**
-- Ruff selects `E`, `F`, `I`, `UP`, `B`, `C4`, `SIM`, and `RUF`; tests, examples, and migrations ignore `RUF012` (`pyproject.toml`).
-- Pre-commit runs `ruff-check` and `ruff-format` (`.pre-commit-config.yaml`).
+- Ruff is the Python linter/formatter; there is no separate configured JS lint command (`pyproject.toml`, `package.json`).
+- Ruff per-file ignores permit `RUF012` in tests, examples, and migrations (`pyproject.toml`).
 
 ## Import Organization
 
 **Order:**
-1. Python standard library.
-2. Third-party packages, including Django and pytest.
-3. Package imports (`crud_views...`) and test support (`tests...`).
+1. Standard library imports.
+2. Third-party packages such as Django, pytest, and lxml.
+3. Project and test utility imports.
 
-Ruff's `I` rules enforce Python import sorting. JavaScript tests import runner and Node modules before local helpers (for example `tests/js/formset.test.js`).
+Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/test1/test_form_enctype.py` and `examples/bootstrap5/formsets/tests.py`.
 
 **Path Aliases:**
-- No Python import aliases are configured; import from the owning module. JavaScript test loading maps shipped source paths explicitly in `tests/js/helpers/load.js`.
+- No Python package alias is configured. Sources live under `src/`; project commands and explicit cross-runtime commands add `src` to `PYTHONPATH` (`docs/reference/javascript.md`, `noxfile.py`).
+- JS tests import helpers via relative paths (`tests/js/toggle.test.js`).
 
 ## Error Handling
 
 **Patterns:**
-- Raise Django exceptions and validation errors at request or model boundaries; test observable status, redirect, form errors, and persisted state (`tests/test1/test_resource.py`, `tests/test1/test_crud.py`).
-- Keep workflow business validation in the model's `workflow_check_transition(name, *, user)` hook (`src/crud_views_workflow/lib/mixins.py`); it should be inexpensive, side-effect-free, and raise single/list `ValidationError` messages. It supplements django-fsm availability/permission/condition gates and is not an authorization mechanism (`src/crud_views_workflow/lib/execution.py`, `tests/test1/test_workflow_execution.py`).
-- The workflow engine converts expected business/comment refusals into field errors; unrelated `ValidationError` from transition/callback code propagates as a defect. Sanitize user-visible blocker messages into plain text before adding them to forms so a `SafeString` cannot inject markup (`src/crud_views_workflow/lib/execution.py`).
-- Browser event listener errors are collected from `window` error events through `tests/js/helpers/errors.js`; DOM dispatch does not reliably rethrow them synchronously.
-- Ancestor authorization configuration uses strict Pydantic values: `AncestorPermissions` and `AncestorPolicy` set `ConfigDict(strict=True, extra="forbid")`, require complete `nearest`/`higher` pairs and reject whitespace-padded keys (`src/crud_views/lib/ancestor_policy.py`). Keep policy values free of request/user/grant state; the evaluation engine lives in `src/crud_views/lib/ancestors.py`, DB-alias handling in `src/crud_views/lib/ancestor_db.py`, Guardian adapters in `src/crud_views_guardian/lib/ancestors.py`.
-- Invalid ancestor/permission-map configuration raises `ImproperlyConfigured` at request/registration time and is surfaced by system checks in `src/crud_views/checks.py`; unavailable context (no parent, ambiguous M2M) stays unavailable rather than raising (`tests/test1/test_ancestor_helpers.py`).
-- Ancestor authorization order is a tested contract: anonymous/inactive actor and missing parent are decided before any child queryset call (`tests/test1/test_ancestor_authorization.py`).
+- Tests assert explicit response codes, persisted state, errors, and no-mutation conditions rather than treating any response as success (`examples/bootstrap5/formsets/tests.py`).
+- Use `try/finally` for global-state and browser/process cleanup; fixture teardown restores monkeypatched state (`tests/conftest.py`, `tests/browser/presentation-cleanup.test.cjs`).
+- Parameterized edge cases use `subTest`, pytest parametrization, or Vitest `it.each` (`examples/bootstrap5/library/tests.py`, `tests/test1/test_form_enctype.py`, `tests/js/toggle.test.js`).
 
 ## Logging
 
-**Framework:** Python standard logging where needed; no project-wide logging wrapper is configured. Browser scripts use console APIs.
+**Framework:** Django/Python logging and console APIs; no project-wide logging wrapper was detected.
 
 **Patterns:**
-- Avoid noisy normal-operation logging. Browser tests capture expected listener errors and assert on them; `tests/js/helpers/setup.js` silences expected console chatter.
+- Tests silence expected JS console chatter in shared setup and spy on warnings/errors when their behavior is under test (`tests/js/helpers/setup.js`, `tests/js/toggle.test.js`).
+- Browser harnesses print a concise report location and preserve error details in JSON (`tests/browser/presentation.cjs`).
 
 ## Comments
 
 **When to Comment:**
-- Explain non-obvious compatibility constraints, fixture/server synchronization, and harness workarounds (`tests/js/helpers/dom.js`, `tests/js/helpers/load.js`).
+- Explain non-obvious framework/browser behavior and why a regression assertion is necessary, not routine test steps (`tests/test1/test_form_enctype.py`, `tests/browser/presentation-cleanup.test.cjs`).
+- Keep scope/contract comments near specialized coverage, as in the formsets example tests (`examples/bootstrap5/formsets/tests.py`).
 
-**Docstrings:**
-- Use concise docstrings for helpers and fixtures whose setup is not self-evident; let test names carry ordinary behavior descriptions.
+**JSDoc/TSDoc:**
+- No broad JSDoc/TSDoc convention detected. JavaScript test helper intent is documented with short comments where useful (`tests/js/helpers/setup.js`).
 
 ## Function Design
 
-**Size:** Keep helpers focused; factor complex test setup into fixtures or local helpers.
+**Size:** Keep helpers focused on a reusable fixture or assertion; use local helpers such as `form_payload`, `field_key`, and `fragment_params` to keep formset cases readable (`examples/bootstrap5/project/testing.py`, `examples/bootstrap5/formsets/tests.py`).
 
-**Parameters:** Prefer explicit pytest fixture dependencies and small options objects for reusable JavaScript DOM fixtures (`tests/js/helpers/dom.js`).
+**Parameters:** Use pytest fixtures for shared test dependencies and explicit parameters for meaningful case variation (`tests/test1/conftest.py`, `tests/test1/test_form_enctype.py`).
 
-**Return Values:** Return concrete responses or data from helpers; assert observable output, database state, rendered markup, and DOM state.
-
-## Presentation and Published Recipes
-
-- Preserve raw values and expose display metadata separately. Object-detail callbacks and custom templates retain raw `value`; stock leaves consume `display_value` (`src/crud_views_object_detail/lib/resolvers.py`, `src/crud_views_object_detail/templatetags/crud_views_object_detail.py`).
-- Treat booleans as explicit policy instructions only where declared: `PropertyConfig.detail` accepts `StrictBool`, lazy/string text or None. Avoid truthiness/string conversion of lazy help during resolution (`src/crud_views_object_detail/lib/config.py`, `src/crud_views_object_detail/lib/resolvers.py`).
-- Keep rendered empty values exact: None/empty strings differ from zero, False, spaces and collections. Preserve escaping, newline behavior and custom-template ownership.
-- Published examples use unique HTML recipe markers beside fenced snippets, enabling tests to execute the actual documentation (`tests/test1/test_object_detail_value_docs.py`). Format Markdown Python fences with the repository-wide Ruff command.
-- Before 1.0, pair a `### Breaking` changelog entry with `docs/migrating-1.0.md`; document restoration/opt-out recipes for changed defaults (`CLAUDE.md`).
-- Instance snippets receive the `cv` object and a deliberately small, documented context (`view`, `object`, model labels, and `viewset`; child views additionally receive lazy `parent_object`). Keep the metadata key set exact; do not add request/user/ancestor state to this published context (`src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/base.py`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`).
-- When publishing snippet variables, keep `docs/reference/templates.md#snippet-variables` canonical and link other reference pages to it. Tests execute snippet behavior and pin the exact key sets as well as lazy parent resolution and absent-key behavior (`tests/test1/test_snippet_docs.py`, `tests/test1/test_snippet_context.py`).
-- Table behavior should preserve explicit django-tables2 customization: default `actions` placement is last only absent a declared sequence, explicit constructor sequence takes precedence, and `Meta.exclude` can remove it (`src/crud_views/lib/table/table.py`, `tests/test1/test_table_meta.py`).
-- Button data is normalized to an explicit location-specific contract; preserve exact key sets and each leaf's tag/URL/submit-target semantics. Use `tests/test1/test_button_data.py` and golden/render tests when changing button fields or markup.
+**Return Values:** Return concrete values from parsing/setup helpers; test assertions should state the expected response or state change directly (`examples/bootstrap5/project/testing.py`, `examples/bootstrap5/formsets/tests.py`).
 
 ## Module Design
 
-**Exports:** Keep Python imports explicit. JavaScript test helpers use named exports.
+**Exports:** Prefer explicit imports from the module under test; import local helpers where the behavior is shared (`tests/test1/test_form_enctype.py`).
 
-**Barrel Files:** No general barrel-file pattern detected; import from the owning module.
-
-## JavaScript Conventions
-
-- Use ES modules, double-quoted strings, semicolons, and camelCase identifiers in the Vitest harness (`tests/js/formset.test.js`).
-- Import Vitest APIs explicitly (`describe`, `it`, `expect`, lifecycle hooks, and `vi`) and import Node modules via `node:` specifiers (`tests/js/formset.test.js`).
-- Load shipped browser scripts through `tests/js/helpers/load.js`; do not duplicate production logic in test helpers. Build DOM state with focused fixtures from `tests/js/helpers/dom.js` and reset globals/mocks via shared setup and per-test hooks (`tests/js/helpers/setup.js`).
-
-## Test Isolation Conventions
-
-- Treat module registries, warning deduplication sets, URL caches, and Django ContentType caches as shared process state. Snapshot and restore state using fixtures or `monkeypatch`, including teardown paths (`tests/conftest.py`, `tests/test1/test_ancestor_authorization.py`).
-- For temporary ViewSet registration or URLconf replacement, restore registries and Django URL caches in `finally` blocks so randomized test order remains safe (`tests/test1/test_ancestor_authorization.py`).
-- Prefer strict configuration validation and exact output assertions where behavior is public: tests pin complete button data key sets, metadata key sets, and system-check diagnostics (`tests/test1/test_button_data.py`, `tests/test1/test_snippet_context.py`, `tests/test1/test_permission_declarations.py`).
-
-## Lazy Label Configuration (Phase 06.20)
-
-- Preserve unset metadata paths and resolve explicit overrides centrally in `get_meta()` (`src/crud_views/lib/viewset/__init__.py`).
-- Validate only plain blank strings at construction. Avoid stringifying lazy translations during app loading, normalizing padded strings, inferring plurals or using parent display names (`src/crud_views/lib/lazy.py`, `docs/reference/nested.md#labels`).
-- Tests monkeypatch existing shared ViewSets/views; constructor probes remove registry entries under `_REGISTRY_LOCK` in `finally` or teardown (`tests/test1/test_viewset_verbose_name.py`, `tests/test1/test_viewset_verbose_name_render.py`).
-
-## Static permission checks (Phase 06.22)
-
-- Use concrete-model metadata for declared core permission vocabulary and remove only the exact terminal `_<model_name>` suffix. Share `_permission_key` with the runtime map (`src/crud_views/lib/ancestors.py`, `src/crud_views/lib/viewset/__init__.py`).
-- Completion-dependent diagnostics belong behind the existing URLconf barrier; do not read Permission/ContentType rows at startup (`src/crud_views/checks.py`).
-- Keep declaration helpers private and preserve the distinct ownership of existing error codes/provider exclusions. Publish one executable recipe rather than duplicating application examples (`docs/reference/custom_form_view.md`, `tests/test1/test_ancestor_docs.py`).
-
-## Header Icon Values (Phase 06.23)
-
-- `Icon` in `src/crud_views/lib/icons.py` is a plain class of semantic constants, not an enum: `Icon.VIEWSET_DEFAULT` is literally `None`, and `Icon.NONE` is literally `""`. Use these names to make view-header configuration readable (`docs/reference/icons.md`).
-- On `cv_icon_header` only, `None` inherits `ViewSet.icon_header`; every non-None value is the view's explicit choice. Empty string and `Icon.NONE` suppress the header icon. Do not use truthiness fallback for this attribute (`src/crud_views/lib/view/base.py`, `tests/test1/test_heading_icons.py`).
-- Keep this context-specific meaning separate from general icon resolution: `Icon.VIEWSET_DEFAULT` has no ViewSet-fallback meaning in action or object-detail icon slots (`src/crud_views/lib/icons.py`, `docs/reference/icons.md`).
-- Custom heading text/template selection is independent of icon inheritance/suppression. Preserve custom file/code header content while testing icon selection (`tests/test1/test_heading_icons.py`, `tests/test1/test_heading_docs.py`).
+**Barrel Files:** No general JS barrel pattern detected. `tests/js/helpers/load.js` is a test harness that loads shipped static assets, not an application export barrel.
 
 ---
-
-## Compact Formset Declarations and Rendering (Phase 06.24)
-
-- Keep compact layout declarations explicit and immutable: use `CompactColumn(field_name, span=...)` and `CompactLayout(columns, controls_span=...)`; the public API is re-exported from `src/crud_views/lib/formsets/__init__.py`. Constructors reject coercion, positional convenience, duplicate/ambiguous fields, and non-instance `FormSet.compact_layout` values (`src/crud_views/lib/formsets/compact.py`, `tests/test1/test_formsets_compact.py`).
-- Compact rendering is an opt-in projection over the existing recursive formset renderer. Preserve classic custom helper/layout behavior, request-local resolved labels, form-owned field errors and row controls. Keep heading includes independently overridable and headings outside their owning rows (`src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `tests/test1/test_formsets_compact.py`).
-- When declaring nested compact examples, define a separate compact formset tree rather than mutating/reusing the classic tree. Use normal `InlineFormSet` factories and existing CRUD routes/actions so authorization and persistence stay on the proven view path (`examples/bootstrap5/formsets/views.py`, `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-06-SUMMARY.md`).
-- For example navigation, use existing labelled action menus and keep classic/compact labels visible on list rows; mobile layout should be achieved through existing theme behavior rather than a new menu or CSS mechanism (`examples/bootstrap5/formsets/views.py`, `examples/bootstrap5/formsets/tests.py`).
 
 *Convention analysis: 2026-11-11*

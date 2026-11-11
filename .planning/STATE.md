@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: "06.25"
 current_phase_name: "Compact widget compatibility (#349)"
 status: verifying
-stopped_at: Completed 06.25-02-PLAN.md; human visual acceptance and phase verification pending
-last_updated: "2026-11-11T12:32:55.322Z"
+stopped_at: Phase 06.25 verification human_needed; one consolidated visual UAT pending
+last_updated: "2026-11-11T12:57:08.041Z"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.25 execution started
+last_activity_desc: Phase 06.25 verified 12/12 truths; awaiting visual UAT
 state_head: 437df861c1178b75e442db117b2c5528b5a90b31
 progress:
   total_phases: 31
@@ -28,12 +28,19 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 
 ## Current Position
 
-Phase: 06.25 (Compact widget compatibility (#349)) — EXECUTING
+Phase: 06.25 (Compact widget compatibility (#349)) — VERIFYING
 Plan: 2 of 2
-Status: Phase complete — ready for verification
-Last activity: 2026-11-11 — Phase 06.25 execution started
+Status: Human verification needed — 12/12 truths verified; one visual UAT pending
+Last activity: 2026-11-11 — Phase 06.25 audits and canonical verification finished
 
-Next: $gsd-execute-phase 06.25
+Next: $gsd-verify-work 06.25
+
+### Phase 06.25 verification — 2026-11-11
+
+- Both plans executed; canonical verification is `human_needed`, 12/12 truths and 5/5 decisions verified, with no implementation gaps. One consolidated UAT awaits human review of the six committed mobile/desktop captures and recorded focus/error/add/delete observations.
+- Validation covers 4/4 tasks; security closes 7/7 threats; deep code review covers eight changed files with zero findings. UI audit scores 21/24 with inherited advisory observations only.
+- The fresh full suite passed 12,445 tests with four existing warnings; focused tests passed 127 and browser assertions passed 49. Independent verifier spot-checks passed eight cases and matched all 28 source/six capture hashes. Prior-phase regression coverage reuses the unchanged-source full run.
+- No human approval, phase completion, push or merge. Existing config.default.json and untracked phase .gitkeep preserved. Resume the pending visual check with `$gsd-verify-work 06.25`.
 
 ### Phase 06.24 completion — 2026-11-11
 
@@ -1236,6 +1243,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T12:32:51.563Z
-Stopped at: Completed 06.25-02-PLAN.md; human visual acceptance and phase verification pending
+Last session: 2026-11-11T12:57:08.041Z
+Stopped at: Phase 06.25 verification human_needed; one consolidated visual UAT pending
 Resume file: None

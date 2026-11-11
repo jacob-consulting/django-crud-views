@@ -117,6 +117,9 @@ class QuestionnaireCreateView(
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
+    cv_context_actions = ["home", "create", "compact_create"]
+    cv_action_label_template_code = _("Create classic")
+    cv_action_short_label_template_code = _("Create classic")
     cv_message_template_code = _("Created questionnaire “{{ object }}”")
 ```
 
@@ -129,6 +132,13 @@ Set `FormSet.compact_layout` to opt one formset into shared desktop column headi
 cards. Omit it or use `None` to retain the classic helper and `form_show_labels` behavior, without compact
 metadata work. In compact mode, the columns declaration **replaces** `get_helper_layout_fields()`;
 the classic helper is never consulted. Do not duplicate the same row in crispy layout objects.
+
+For a runnable comparison, open **Formsets** from the Bootstrap 5 example home page and sign in as
+`alice` / `alice` or `bob` / `bob`. Use **Create classic** / **Create compact**, then **Edit classic** /
+**Edit compact** on the questionnaire list or detail page. Both presentations edit the same questionnaire,
+questions and choices. The code panel shows `cv_compact_formsets`, with independently declared question
+and choice columns, and factories using ordinary `InlineFormSet` without duplicate crispy row layouts.
+The classic `cv_formsets` tree retains its helper layouts.
 
 ### Standalone compact recipe
 

@@ -169,19 +169,26 @@ FEATURES: list[Feature] = [
         app="formsets",
         group="forms",
         title="Formsets",
-        description="Inline formsets: edit a questionnaire with its questions and choices on one page.",
+        description="Compare classic and compact inline formsets for the same questionnaire, questions and choices.",
         about=(
-            "Editing a record together with its children on one page. A Questionnaire is edited alongside its "
-            "Questions, and each Question alongside its Choices, using Django inline formsets wired through "
-            "crud_views' supported FormSetMixin. Add and remove rows without leaving the form."
+            "Create classic / Create compact and Edit classic / Edit compact use the same questionnaire records. "
+            "Both edit nested Questions and Choices on one page through FormSetMixin, with the existing add, "
+            "delete and order controls. Compact formsets use shared desktop headings and labelled mobile cards; "
+            "questions and their expanded choices each declare their own compact layout independently. "
+            "Sign in as alice/alice or bob/bob to compare both presentations."
         ),
         look_at=(
-            "the QuestionInlineFormSet / ChoiceInlineFormSet definitions and the cv_formsets = FormSets(...) "
-            "tree in views.py, plus FormSetMixin on QuestionnaireCreateView / QuestionnaireUpdateView."
+            "cv_formsets with QuestionInlineFormSet / ChoiceInlineFormSet for classic helper rows; "
+            "cv_compact_formsets with CompactLayout and CompactColumn for the compact declarations. "
+            "CompactQuestionFormSet / CompactChoiceFormSet use InlineFormSet directly, without duplicate "
+            "crispy row layouts; QuestionnaireCompactCreateView / QuestionnaireCompactUpdateView select that tree."
         ),
         url_name="questionnaire-list",
         icon="fa-solid fa-list-check",
-        docs=(DocRef(page="reference/formsets.md", label="Formsets"),),
+        docs=(
+            DocRef(page="reference/formsets.md", label="Formsets"),
+            DocRef(page="reference/formsets.md", label="Formsets — compact layout", anchor="compact-layout"),
+        ),
     ),
     Feature(
         app="workflow",

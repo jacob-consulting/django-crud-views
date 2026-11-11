@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-11T17:40:57.843Z",
+  "date": "2026-11-11T18:11:49.299Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/compact-checkboxes.cjs",
@@ -9,7 +9,7 @@
     ".planning/phases/06.26-issue-351/06.26-browser-floor.json"
   ],
   "variant": "floor",
-  "revision": "2db0e99d6fe0a060d66426ece296cce48c7640af",
+  "revision": "79d92f736d094bece54488a25c30a307ca37aa26",
   "environment": {
     "python": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-4-2/bin/python",
     "playwright": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
@@ -33,7 +33,7 @@
     "src/crud_views/templates/crud_views/formsets/control.html": "eed84cc006d4de94bddf442c366f2faf32d3ab135872e4631fb58f30338d974e",
     "src/crud_views/templates/crud_views/formsets/formset.html": "df0b5a882fd81da7ea077fde73faddaf29eceaced0226bd1e1cc7eb08376e6d4",
     "src/crud_views/templates/crud_views/formsets/formsets.html": "1c6f6e86aff72847f044a62963cfb9fa41489a4d511578d13273c4ade1e83626",
-    "tests/browser/compact-checkboxes.cjs": "e83902f72671ae007f077a184488dfe04f583476677862a496b3269c99cd6940",
+    "tests/browser/compact-checkboxes.cjs": "ef8361f53048c6d792100ca4f52184269faf0a610f66eac0f3a8b6b47727e4d4",
     "tests/browser/conditional_formsets_server.py": "434f8921fe3faab9be27688c25c62f98c1d59331419dc22b54bab8c2541abc61",
     "tests/browser/templates/conditional_formsets/native_control.html": "6163b7168522f909a2e68881ce4315477854fd834b6e8b64a6ff64b6e07bd2a5",
     "tests/browser/templates/conditional_formsets/native_formset.html": "03ae7569f1b7a4ac8f60b7236f99a8f995acdc88d6f6314af81a9f8c4767b46e",
@@ -64,7 +64,7 @@
         "reaped": true,
         "temporaryRemoved": true
       },
-      "temporary": "/tmp/dcv-064-browser-pma7cabi",
+      "temporary": "/tmp/dcv-064-browser-lkdffo7v",
       "authentication": {
         "status": 200,
         "authenticated": true
@@ -96,7 +96,7 @@
         "reaped": true,
         "temporaryRemoved": true
       },
-      "temporary": "/tmp/dcv-064-browser-k5di33r3",
+      "temporary": "/tmp/dcv-064-browser-aq62skq4",
       "authentication": {
         "status": 200,
         "authenticated": true
@@ -2735,7 +2735,7 @@
       "passed": true,
       "detail": {
         "csrfmiddlewaretoken": [
-          "lrTSDjIk1LbU3R1O5bteccySax4so1qs2vj1cWaWjcRKXSe7lguqSCOiXZWOETxj"
+          "kEXnQPDGVRxbLPmlAujklMOh06xhSsT2U33yMyadLqLyZ7A0HmvBNjfnSRdJNM59"
         ],
         "name": [
           "compact-checkbox"
@@ -17921,7 +17921,7 @@
       "passed": true,
       "detail": {
         "csrfmiddlewaretoken": [
-          "RndhwmBylW6ATsJEEj6tqI1EzcRTExfOyrDq5Z3aDnMqNtWXUo7F68h4mEJfUpmF"
+          "xo7givgySXEpwzlkFm8Z62L11dS4BtvS7NdreeN5IwSMKRzZMekgyzc7TYywwNHZ"
         ],
         "name": [
           "compact-checkbox"
@@ -22197,13 +22197,13 @@
             "position": "absolute",
             "label": {
               "x": 671,
-              "y": -4615,
+              "y": -4187,
               "width": 1,
               "height": 1
             },
             "input": {
               "x": 648,
-              "y": -4610,
+              "y": -4182,
               "width": 16,
               "height": 16
             },
@@ -22220,13 +22220,13 @@
             "position": "absolute",
             "label": {
               "x": 671,
-              "y": -3599,
+              "y": -3171,
               "width": 1,
               "height": 1
             },
             "input": {
               "x": 648,
-              "y": -3594,
+              "y": -3166,
               "width": 16,
               "height": 16
             },
@@ -22243,13 +22243,13 @@
             "position": "absolute",
             "label": {
               "x": 671,
-              "y": -2255,
+              "y": -1827,
               "width": 1,
               "height": 1
             },
             "input": {
               "x": 648,
-              "y": -2250,
+              "y": -1822,
               "width": 16,
               "height": 16
             },
@@ -22266,13 +22266,13 @@
             "position": "absolute",
             "label": {
               "x": 671,
-              "y": -911,
+              "y": -483,
               "width": 1,
               "height": 1
             },
             "input": {
               "x": 648,
-              "y": -906,
+              "y": -478,
               "width": 16,
               "height": 16
             },
@@ -22289,13 +22289,13 @@
             "position": "absolute",
             "label": {
               "x": 671,
-              "y": -225,
+              "y": 203,
               "width": 1,
               "height": 1
             },
             "input": {
               "x": 648,
-              "y": -220,
+              "y": 208,
               "width": 16,
               "height": 16
             },
@@ -22312,13 +22312,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -4430,
+              "y": -4002,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -4426,
+              "y": -3998,
               "width": 16,
               "height": 16
             },
@@ -22335,13 +22335,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -4100,
+              "y": -3672,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -4096,
+              "y": -3668,
               "width": 16,
               "height": 16
             },
@@ -22358,13 +22358,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -3726,
+              "y": -3298,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -3722,
+              "y": -3294,
               "width": 16,
               "height": 16
             },
@@ -22381,13 +22381,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -3414,
+              "y": -2986,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -3410,
+              "y": -2982,
               "width": 16,
               "height": 16
             },
@@ -22404,13 +22404,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -3084,
+              "y": -2656,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -3080,
+              "y": -2652,
               "width": 16,
               "height": 16
             },
@@ -22427,13 +22427,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -2710,
+              "y": -2282,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -2706,
+              "y": -2278,
               "width": 16,
               "height": 16
             },
@@ -22450,13 +22450,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -2546,
+              "y": -2118,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -2542,
+              "y": -2114,
               "width": 16,
               "height": 16
             },
@@ -22473,13 +22473,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -2382,
+              "y": -1954,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -2378,
+              "y": -1950,
               "width": 16,
               "height": 16
             },
@@ -22496,13 +22496,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -2070,
+              "y": -1642,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -2066,
+              "y": -1638,
               "width": 16,
               "height": 16
             },
@@ -22519,13 +22519,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -1740,
+              "y": -1312,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -1736,
+              "y": -1308,
               "width": 16,
               "height": 16
             },
@@ -22542,13 +22542,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -1366,
+              "y": -938,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -1362,
+              "y": -934,
               "width": 16,
               "height": 16
             },
@@ -22565,13 +22565,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -1202,
+              "y": -774,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -1198,
+              "y": -770,
               "width": 16,
               "height": 16
             },
@@ -22588,13 +22588,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -1038,
+              "y": -610,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -1034,
+              "y": -606,
               "width": 16,
               "height": 16
             },
@@ -22611,13 +22611,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -726,
+              "y": -298,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -722,
+              "y": -294,
               "width": 16,
               "height": 16
             },
@@ -22634,13 +22634,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -352,
+              "y": 76,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -348,
+              "y": 80,
               "width": 16,
               "height": 16
             },
@@ -22657,13 +22657,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": -40,
+              "y": 388,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": -36,
+              "y": 392,
               "width": 16,
               "height": 16
             },
@@ -22680,13 +22680,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": 290,
+              "y": 718,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": 294,
+              "y": 722,
               "width": 16,
               "height": 16
             },
@@ -22703,13 +22703,13 @@
             "position": "static",
             "label": {
               "x": 215.15625,
-              "y": 664,
+              "y": 1092,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 191.15625,
-              "y": 668,
+              "y": 1096,
               "width": 16,
               "height": 16
             },
@@ -22726,13 +22726,13 @@
             "position": "static",
             "label": {
               "x": 106,
-              "y": 1339,
+              "y": 1767,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 82,
-              "y": 1343,
+              "y": 1771,
               "width": 16,
               "height": 16
             },
@@ -22749,13 +22749,13 @@
             "position": "static",
             "label": {
               "x": 106,
-              "y": 1503,
+              "y": 1931,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 82,
-              "y": 1507,
+              "y": 1935,
               "width": 16,
               "height": 16
             },
@@ -22772,13 +22772,13 @@
             "position": "static",
             "label": {
               "x": 106,
-              "y": 1667,
+              "y": 2095,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 82,
-              "y": 1671,
+              "y": 2099,
               "width": 16,
               "height": 16
             },
@@ -22795,13 +22795,13 @@
             "position": "static",
             "label": {
               "x": 106,
-              "y": 1831,
+              "y": 2259,
               "width": 120,
               "height": 24
             },
             "input": {
               "x": 82,
-              "y": 1835,
+              "y": 2263,
               "width": 16,
               "height": 16
             },
@@ -26445,366 +26445,6 @@
       "status": 200
     },
     {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
       "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
       "status": 200
     },
@@ -26818,326 +26458,6 @@
     },
     {
       "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
       "status": 200
     },
     {
@@ -27285,6 +26605,486 @@
       "status": 200
     },
     {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
       "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
       "status": 200
     },
@@ -27302,6 +27102,286 @@
     },
     {
       "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/jquery.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
       "status": 200
     },
     {
@@ -27458,86 +27538,6 @@
     },
     {
       "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/jquery.js",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
-      "status": 200
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/css/formset.css",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/adapters.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/modal.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/formset.js",
-      "status": 200
-    },
-    {
-      "url": "http://127.0.0.1:8144/static/crud_views/js/toggle.js",
       "status": 200
     },
     {
@@ -27728,12 +27728,12 @@
     },
     {
       "path": ".planning/phases/06.26-issue-351/browser-captures/floor-1280-initial.png",
-      "sha256": "dbc21416538c3858c89f469a1d2e56baa9bb511ac1054b073416f72b8723af93",
+      "sha256": "922829b1165ec454ffd608d3cbeb1606eaf10b8a117e5e81b43d0715b2a3d3e9",
       "trackable": true
     },
     {
       "path": ".planning/phases/06.26-issue-351/browser-captures/floor-1280-invalid.png",
-      "sha256": "edbde7c648653542eed7b46d746adb30eb98ae035b1c21807560b3f2472b7f34",
+      "sha256": "9a2086b9f4aa6955af47718846e65cb5b4ce4e4189ad63d4e2560bc8fa092c6e",
       "trackable": true
     },
     {
@@ -34096,7 +34096,7 @@
       ],
       "post": {
         "csrfmiddlewaretoken": [
-          "lrTSDjIk1LbU3R1O5bteccySax4so1qs2vj1cWaWjcRKXSe7lguqSCOiXZWOETxj"
+          "kEXnQPDGVRxbLPmlAujklMOh06xhSsT2U33yMyadLqLyZ7A0HmvBNjfnSRdJNM59"
         ],
         "name": [
           "compact-checkbox"
@@ -34252,7 +34252,7 @@
       ],
       "post": {
         "csrfmiddlewaretoken": [
-          "RndhwmBylW6ATsJEEj6tqI1EzcRTExfOyrDq5Z3aDnMqNtWXUo7F68h4mEJfUpmF"
+          "xo7givgySXEpwzlkFm8Z62L11dS4BtvS7NdreeN5IwSMKRzZMekgyzc7TYywwNHZ"
         ],
         "name": [
           "compact-checkbox"
@@ -34353,7 +34353,7 @@
       ],
       "post": {
         "csrfmiddlewaretoken": [
-          "MxmEAS5mt5kkGxjCn4pzWUJSBYn4AC0ltBMN9vxYLw0aAywVD9qLCkZioqfqQu7c"
+          "mIiZyRMSL05fBLINjruXeB3Rgp0G0kY7W7oauAjpBzjCP3WsqjGeG8uX8aG8VEae"
         ],
         "name": [
           "compact-checkbox"
@@ -35071,7 +35071,7 @@
       ],
       "post": {
         "csrfmiddlewaretoken": [
-          "KRGAWUwJf0eDbWEAiv7HOavULbxoHfrYrV6JvxYlxrUt5XRTyA8TuALkyDpKX7yP"
+          "4BofCezRmhKv4ArzWQmBAN6Q4cG2cVa9E0uqyX6ocQYSiSFe3IyS2kxWWXmu7fmg"
         ],
         "name": [
           "compact-checkbox"
@@ -35930,7 +35930,7 @@
       ],
       "post": {
         "csrfmiddlewaretoken": [
-          "fTEKq4DvKvLJM5l8RGamXMaFlgP99YI2WX4TZH572WrzG6yr7LbyDcq58IHvpQPT"
+          "qTpVimSleQldk9VPBitUHvBAkr3CWVz60iv6e5pS4pzAyr9uIaFb922GccJ4RfLd"
         ],
         "name": [
           "compact-checkbox"

@@ -1,8 +1,8 @@
 {
-  "revision": "ca16d995c9c6c24598b925a334ae0eb7de3ff0d8",
-  "started": "2026-11-11T21:48:44.982Z",
+  "revision": "6c09417f8f15a93e0e39d8340ec05dba331e82fb",
+  "started": "2026-11-11T22:13:36.014Z",
   "humanReview": "pending",
-  "temporaryRoot": "/tmp/cv-checklist-k9VNy9",
+  "temporaryRoot": "/tmp/cv-checklist-8of8rt",
   "sourceHashes": {
     "examples/bootstrap5/formsets/models.py": "22cbc0f2b1bdc94617c5e764fa4e8bc94a185415f0df1c15acaf3a5b58683448",
     "examples/bootstrap5/formsets/views.py": "a0cf7806a5b195798dd6a222b6effae5a245859ce549452ccbd93eb5c7ab21b2",
@@ -13,7 +13,7 @@
     "examples/bootstrap5/project/features.py": "110de7cf3f601f1ef3861073ad2b1702ee87c14a903f9e24c5929566796ef1fd",
     "examples/bootstrap5/project/tests.py": "a35f1041b58e38ab8b5793132324d9db2f86ffa8240ab9914edd4393217696ef",
     "examples/bootstrap5/project/settings.py": "cfb7855197ca4c978b5d014edbff6d9b6662e05d01e6fcc9a0596beea879c7b8",
-    "docs/reference/formsets.md": "b4340d095e51a22c8a49799dd691f5998934e8fa320093c2a62162f4548f71ad",
+    "docs/reference/formsets.md": "833c06148dbbe2f4fa571dc3fb951765d640dcda71e2ade1a54751b4e4dc61ee",
     "src/crud_views/lib/formsets/compact.py": "01899c7a619457efcfd4b093cb8050aea5a2368736af10c60f8d3854fea06a81",
     "src/crud_views/lib/formsets/render_tree.py": "c90eeb13961690e867fe691c7264f4d0b356ee85881496a6f46119ad7427d893",
     "src/crud_views/static/crud_views/css/formset.css": "4b5fd32545077a17c2bd2a2af4d387256c9039e22dcd765494267587c4d0ba84",
@@ -37,7 +37,7 @@
       "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
       "examples/bootstrap5/manage.py",
       "runserver",
-      "127.0.0.1:46829",
+      "127.0.0.1:41121",
       "--noreload"
     ],
     [
@@ -161,22 +161,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -204,22 +204,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -247,22 +247,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -317,22 +317,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -365,22 +365,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -413,22 +413,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -652,22 +652,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -700,22 +700,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -748,22 +748,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -877,22 +877,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -920,22 +920,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -963,22 +963,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1033,22 +1033,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1081,22 +1081,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1129,22 +1129,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1368,22 +1368,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1416,22 +1416,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1464,22 +1464,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1577,22 +1577,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1625,22 +1625,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1673,22 +1673,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1744,22 +1744,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1792,22 +1792,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1840,22 +1840,22 @@
         "css": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-          "http://127.0.0.1:46829/static/crud_views/css/property.css",
-          "http://127.0.0.1:46829/static/crud_views/css/table.css",
-          "http://127.0.0.1:46829/static/crud_views/css/formset.css",
-          "http://127.0.0.1:46829/static/crud_views/css/icons.css"
+          "http://127.0.0.1:41121/static/crud_views/css/property.css",
+          "http://127.0.0.1:41121/static/crud_views/css/table.css",
+          "http://127.0.0.1:41121/static/crud_views/css/formset.css",
+          "http://127.0.0.1:41121/static/crud_views/css/icons.css"
         ],
         "js": [
           "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
           "https://code.jquery.com/jquery-3.7.1.js",
-          "http://127.0.0.1:46829/static/crud_views/js/adapters.js",
-          "http://127.0.0.1:46829/static/crud_views/js/viewset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/formset.js",
-          "http://127.0.0.1:46829/static/crud_views/js/list.filter.js",
-          "http://127.0.0.1:46829/static/crud_views/js/modal.js",
-          "http://127.0.0.1:46829/static/crud_views/js/toggle.js",
-          "http://127.0.0.1:46829/static/crud_views/js/tooltip.js",
-          "http://127.0.0.1:46829/static/crud_views_object_detail/js/tabs.js"
+          "http://127.0.0.1:41121/static/crud_views/js/adapters.js",
+          "http://127.0.0.1:41121/static/crud_views/js/viewset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/formset.js",
+          "http://127.0.0.1:41121/static/crud_views/js/list.filter.js",
+          "http://127.0.0.1:41121/static/crud_views/js/modal.js",
+          "http://127.0.0.1:41121/static/crud_views/js/toggle.js",
+          "http://127.0.0.1:41121/static/crud_views/js/tooltip.js",
+          "http://127.0.0.1:41121/static/crud_views_object_detail/js/tabs.js"
         ]
       }
     },
@@ -1900,7 +1900,7 @@
   "requests": [
     {
       "kind": "fragment",
-      "url": "http://127.0.0.1:46829/formsets/checklist/create/?template=items&pk=None&num=1&formset_parent_prefix_key=",
+      "url": "http://127.0.0.1:41121/formsets/checklist/create/?template=items&pk=None&num=1&formset_parent_prefix_key=",
       "status": 200,
       "rows": [
         "items-None-0-1"
@@ -1908,8 +1908,8 @@
     },
     {
       "kind": "save",
-      "url": "http://127.0.0.1:46829/formsets/checklist/create/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImNoZWNrbGlzdCJdLCJwYXJlbnRzIjp7fX0%3A96JXUab-AqgZXdw85LTjqUHmVQTrILOWlIFSBxIgm3A",
-      "contentType": "multipart/form-data; boundary=----WebKitFormBoundaryBCY0NTwhGKiYAalM",
+      "url": "http://127.0.0.1:41121/formsets/checklist/create/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImNoZWNrbGlzdCJdLCJwYXJlbnRzIjp7fX0%3A96JXUab-AqgZXdw85LTjqUHmVQTrILOWlIFSBxIgm3A",
+      "contentType": "multipart/form-data; boundary=----WebKitFormBoundarytJHr2Bu0ravDhKbP",
       "fields": [
         "csrfmiddlewaretoken",
         "title",
@@ -1943,12 +1943,12 @@
     },
     {
       "kind": "edit",
-      "url": "http://127.0.0.1:46829/formsets/checklist/2/update/"
+      "url": "http://127.0.0.1:41121/formsets/checklist/2/update/"
     },
     {
       "kind": "save",
-      "url": "http://127.0.0.1:46829/formsets/checklist/2/update/",
-      "contentType": "multipart/form-data; boundary=----WebKitFormBoundaryS0mYdBBm2V5L5SGd",
+      "url": "http://127.0.0.1:41121/formsets/checklist/2/update/",
+      "contentType": "multipart/form-data; boundary=----WebKitFormBoundaryrnWsedlfHSiXAJMo",
       "fields": [
         "csrfmiddlewaretoken",
         "title",
@@ -1991,8 +1991,8 @@
     },
     {
       "kind": "save",
-      "url": "http://127.0.0.1:46829/formsets/checklist/2/update/",
-      "contentType": "multipart/form-data; boundary=----WebKitFormBoundarylYLun6bw0HxNEbAl",
+      "url": "http://127.0.0.1:41121/formsets/checklist/2/update/",
+      "contentType": "multipart/form-data; boundary=----WebKitFormBoundaryHbdAEPQfM7KeZktR",
       "fields": [
         "csrfmiddlewaretoken",
         "title",
@@ -2035,8 +2035,8 @@
     },
     {
       "kind": "save",
-      "url": "http://127.0.0.1:46829/formsets/checklist/2/update/",
-      "contentType": "multipart/form-data; boundary=----WebKitFormBoundaryYznkeQRBBhVQhwbg",
+      "url": "http://127.0.0.1:41121/formsets/checklist/2/update/",
+      "contentType": "multipart/form-data; boundary=----WebKitFormBoundary51xaLd51OmeTh5RZ",
       "fields": [
         "csrfmiddlewaretoken",
         "title",
@@ -2070,7 +2070,7 @@
     },
     {
       "kind": "fragment",
-      "url": "http://127.0.0.1:46829/formsets/checklist/create/?template=items&pk=None&num=1&formset_parent_prefix_key=",
+      "url": "http://127.0.0.1:41121/formsets/checklist/create/?template=items&pk=None&num=1&formset_parent_prefix_key=",
       "status": 200,
       "rows": [
         "items-None-0-1"
@@ -2078,8 +2078,8 @@
     },
     {
       "kind": "save",
-      "url": "http://127.0.0.1:46829/formsets/checklist/create/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImNoZWNrbGlzdCJdLCJwYXJlbnRzIjp7fX0%3A96JXUab-AqgZXdw85LTjqUHmVQTrILOWlIFSBxIgm3A",
-      "contentType": "multipart/form-data; boundary=----WebKitFormBoundaryGspxgmMOY17aEJ3P",
+      "url": "http://127.0.0.1:41121/formsets/checklist/create/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImNoZWNrbGlzdCJdLCJwYXJlbnRzIjp7fX0%3A96JXUab-AqgZXdw85LTjqUHmVQTrILOWlIFSBxIgm3A",
+      "contentType": "multipart/form-data; boundary=----WebKitFormBoundaryPCZLaZIiiIMQCEeJ",
       "fields": [
         "csrfmiddlewaretoken",
         "title",
@@ -2113,12 +2113,12 @@
     },
     {
       "kind": "edit",
-      "url": "http://127.0.0.1:46829/formsets/checklist/3/update/"
+      "url": "http://127.0.0.1:41121/formsets/checklist/3/update/"
     },
     {
       "kind": "save",
-      "url": "http://127.0.0.1:46829/formsets/checklist/3/update/",
-      "contentType": "multipart/form-data; boundary=----WebKitFormBoundarymsYE5ixoPA0Wpibu",
+      "url": "http://127.0.0.1:41121/formsets/checklist/3/update/",
+      "contentType": "multipart/form-data; boundary=----WebKitFormBoundarygTuqcPNILIWzqXB0",
       "fields": [
         "csrfmiddlewaretoken",
         "title",
@@ -2161,8 +2161,8 @@
     },
     {
       "kind": "save",
-      "url": "http://127.0.0.1:46829/formsets/checklist/3/update/",
-      "contentType": "multipart/form-data; boundary=----WebKitFormBoundarySNDmXEVfAkj7r1fP",
+      "url": "http://127.0.0.1:41121/formsets/checklist/3/update/",
+      "contentType": "multipart/form-data; boundary=----WebKitFormBoundaryldDFbD8whjI4z7TI",
       "fields": [
         "csrfmiddlewaretoken",
         "title",
@@ -2205,8 +2205,8 @@
     },
     {
       "kind": "save",
-      "url": "http://127.0.0.1:46829/formsets/checklist/3/update/",
-      "contentType": "multipart/form-data; boundary=----WebKitFormBoundaryXw1IuR3ax8RLT1pq",
+      "url": "http://127.0.0.1:41121/formsets/checklist/3/update/",
+      "contentType": "multipart/form-data; boundary=----WebKitFormBoundarydAAUxza0ENB1m7uU",
       "fields": [
         "csrfmiddlewaretoken",
         "title",
@@ -2246,7 +2246,7 @@
     },
     {
       "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/390-added.png",
-      "sha256": "fe9838f5b1dbe9c49a5b1a3123ae6b57a9422c907c8972b9eac3923f721518d9"
+      "sha256": "7459fa643d947886dcfef39cfc2251b9ff63b8b5b5b129a399ae24d7c0169576"
     },
     {
       "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/390-invalid.png",
@@ -2258,7 +2258,7 @@
     },
     {
       "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/1280-added.png",
-      "sha256": "91316b24bea21269292165f8c0c4b92ad74fd57addb8ef495f3bbc7cb3603a55"
+      "sha256": "23a694ae2334b28cc17af558d981953c9149ae53d0557bd146f48ec0b8a75a4f"
     },
     {
       "path": ".planning/phases/06.26-issue-351/browser-captures/checklist/1280-invalid.png",
@@ -2276,7 +2276,7 @@
   "pageErrors": [],
   "failedAssets": [],
   "developerDbBefore": "59dcf579f0afff63079924d52fe2f31076a127264e1084f4dfb26d98c1fb41e4",
-  "base": "http://127.0.0.1:46829",
+  "base": "http://127.0.0.1:41121",
   "runtime": {
     "node": "v24.21.0",
     "playwright": "1.64.1",
@@ -2292,6 +2292,6 @@
     "serverReaped": true,
     "temporaryRemoved": true
   },
-  "finished": "2026-11-11T21:49:06.373Z",
+  "finished": "2026-11-11T22:13:57.486Z",
   "passed": true
 }

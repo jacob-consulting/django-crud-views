@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.26"
-current_phase_name: "Issue #351 (INSERTED)"
+current_phase_name: Stock checkboxes in compact formsets
 status: executing
-stopped_at: Phase 06.26 planning converged in 3 cycles; ready to execute
-last_updated: "2026-11-11T17:06:10.643Z"
+stopped_at: Completed 06.26-01-PLAN.md
+last_updated: "2026-11-11T17:18:42.497Z"
 last_activity: 2026-11-11
-last_activity_desc: Phase 06.26 plans converged in 3 review cycles
-state_head: 8dfeebc1dd52e9ecc4e7a3172b9047ac28d43823
+last_activity_desc: Phase 06.26 execution started
+state_head: f54325a1a9f0e949e15c1b1adb18307ed72fb1aa
 progress:
   total_phases: 32
   completed_phases: 26
   total_plans: 173
-  completed_plans: 170
+  completed_plans: 171
 milestone_name: milestone
 ---
 
@@ -30,10 +30,10 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 
 ## Current Position
 
-Phase: 06.26 (Issue #351 (INSERTED)) — READY TO EXECUTE
-Plan: Not started
+Phase: 06.26 (Stock checkboxes in compact formsets) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-11-11 — Phase 06.26 plans converged in 3 review cycles
+Last activity: 2026-11-11 — Phase 06.26 execution started
 
 Next: $gsd-execute-phase 06.26
 
@@ -912,6 +912,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.24 P06 | 19min | 3 tasks | 23 files |
 | Phase 06.25 P01 | 7min | 2 tasks | 5 files |
 | Phase 06.25 P02 | 17min | 2 tasks | 15 files |
+| Phase 06.26 P01 | 7min | 2 tasks | 5 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1173,6 +1174,8 @@ Recent decisions affecting current work:
 - [Phase 06.25]: CompactWidgetCompatible is an empty inherited developer promise; only widget-specific checks are bypassed, with actual widget types and shared schema retained.
 - [Phase 06.25]: Plan 01 Task 2 is test-only: its RED control replays pre-guard admission temporarily, then restores the exact Task 1 source.
 - [Phase 06.25]: User requested committing six browser captures; named PNG allowlist and driver trackability checks supersede the original local-ignored policy.
+- [Phase 06.26]: Stock checkboxes reuse crispy input/label siblings and compact-owned CSS; no renderer or widget abstraction.
+- [Phase 06.26]: Use Node's built-in TAP reporter for machine-verifiable browser RED evidence without new dependencies.
 
 ### Pending Todos
 
@@ -1247,6 +1250,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T17:05:39.208Z
-Stopped at: Phase 06.26 planning converged in 3 cycles; ready to execute
-Resume file: .planning/phases/06.26-issue-351/06.26-REVIEWS.md
+Last session: 2026-11-11T17:18:24.337Z
+Stopped at: Completed 06.26-01-PLAN.md
+Resume file: None

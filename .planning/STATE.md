@@ -4,17 +4,16 @@ milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
 status: planning
-stopped_at: Phase 06.26 context gathered
-last_updated: "2026-11-11T15:47:28.547Z"
+stopped_at: Phase 06.25.1 context gathered
+last_updated: "2026-11-11T16:13:59.483Z"
 last_activity: 2026-11-11
 last_activity_desc: "Phase 06.25 shipped as PR #350"
-state_head: 53146fe407db8a20a5a31a9ae3320e24c054823a
+state_head: bfcd383fe130678bc3d5a74f190f084e2ed4472c
 progress:
-  total_phases: 31
+  total_phases: 32
   completed_phases: 26
   total_plans: 170
   completed_plans: 170
-  percent: 84
 milestone_name: milestone
 ---
 
@@ -34,7 +33,7 @@ Plan: Not started
 Status: Ready to plan
 Last activity: 2026-11-11 — Phase 06.25 shipped as PR #350
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.25.1
 
 ### Phase 06.25 completion — 2026-11-11
 
@@ -1236,6 +1235,7 @@ None yet.
 - Phase 06.23 inserted after Phase 06.22: Issue #329: explicit header-icon suppression with plain Icon constants; settled issue decisions are the planning handoff. Independent scope; complete before Phase 7. (URGENT)
 - Phase 06.24 inserted after Phase 06.23: Issue #347: opt-in compact formsets with shared desktop headings and nested mobile cards; approved issue decisions are the GSD handover, classic rendering unchanged. Complete before Phase 7. (URGENT)
 - Phase 06.25 inserted after Phase 6: Issue #349 (URGENT)
+- Phase 06.25.1 inserted after Phase 6.25: Issue #346 (URGENT)
 
 ## Deferred Items
 
@@ -1245,6 +1245,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T15:47:24.902Z
-Stopped at: Phase 06.26 context gathered
-Resume file: .planning/phases/06.26-issue-351/06.26-CONTEXT.md
+Last session: 2026-11-11T16:13:55.770Z
+Stopped at: Phase 06.25.1 context gathered
+Resume file: .planning/phases/06.25.1-issue-346/06.25.1-CONTEXT.md

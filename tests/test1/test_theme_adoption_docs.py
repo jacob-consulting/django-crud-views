@@ -117,6 +117,23 @@ def test_column_registration_and_project_recipes():
         assert rendered_classes(12) == {"col-md-12", "extra"}
 
 
+def test_column_guidance_links_and_additive_release():
+    for path, heading, prefix in (
+        (ROOT / "docs/reference/create_view.md", "### Layout Helpers", ""),
+        (ROOT / "docs/getting_started/tutorial-3-forms.md", "## The form", "../reference/"),
+    ):
+        section = path.read_text().split(heading, 1)[1].split("\n## ", 1)[0]
+        assert f"({prefix}buttons.md#the-class-table)" in section
+        assert f"({prefix}theme.md#themeable-column-helpers)" in section
+        assert "configurable Bootstrap default" in section or "Configurable Bootstrap default" in section
+        assert "`Row`" in section
+    unreleased = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased", 1)[1].split("\n## ", 1)[0]
+    added = unreleased.split("### Added", 1)[1].split("\n### ", 1)[0]
+    assert "**Themeable column helpers** (#356)" in added
+    assert "form:column-1` through `form:column-12" in added
+    assert "docs/reference/theme.md#themeable-column-helpers" in added
+
+
 @pytest.mark.parametrize("strict", [False, True])
 def test_page_owned_form_recipe(strict, monkeypatch):
     form_class = _python("### Computed helper recipe")["ContactForm"]

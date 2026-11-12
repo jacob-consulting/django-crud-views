@@ -85,12 +85,18 @@ class AuthorCreateForm(CrispyModelForm):
 
 ### Layout Helpers
 
-| Helper | Description |
-|--------|-------------|
-| `Column2` | Column spanning 2 of 12 grid units |
-| `Column4` | Column spanning 4 of 12 grid units |
-| `Column8` | Column spanning 8 of 12 grid units |
-| `Column12` | Full-width column |
+| Helper | Configurable Bootstrap default |
+|--------|--------------------------------|
+| `Column2` | `col-md-2` — 2 of 12 grid units at the medium breakpoint and above |
+| `Column4` | `col-md-4` — 4 of 12 grid units at the medium breakpoint and above |
+| `Column8` | `col-md-8` — 8 of 12 grid units at the medium breakpoint and above |
+| `Column12` | `col-md-12` — full width at the medium breakpoint and above |
+
+All twelve helpers, `Column1` through `Column12`, are available from `crud_views.lib.crispy`. Each `col-md-N`
+default can be replaced through its `form:column-N` utility key; caller `css_class` remains additive.
+See the [column utility inventory](buttons.md#the-class-table) and the executed
+[theme/project recipes](theme.md#themeable-column-helpers). The active crispy pack still owns `Row` and the
+surrounding layout; column configuration alone does not supply a complete alternate-framework grid.
 
 ## Messages
 

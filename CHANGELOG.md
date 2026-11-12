@@ -589,6 +589,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Themeable column helpers** (#356): the twelve `form:column-1` through `form:column-12` utility keys
+  configure complete class strings for the existing `Column1`–`Column12` helpers. Theme registration and
+  per-key project overrides resolve on each render, including layouts created before registration.
+  Defaults remain `col-md-N`; caller classes remain additive, including with empty/`None` width suppression.
+  The audited stock Bootstrap wrapper omits its implicit fallback, while authored classes and intentional
+  custom templates keep ownership. See the executed [theme/project recipes](docs/reference/theme.md#themeable-column-helpers).
+
 - **Independent legend class hooks** (#346): `conditional:legend` and `formset:legend` use the existing
   theme/project class registry for ToggleGroup and formset title legends, both empty by default. Full nested
   formsets inherit the hook in classic and compact layouts; row-only fragments keep their existing boundaries.

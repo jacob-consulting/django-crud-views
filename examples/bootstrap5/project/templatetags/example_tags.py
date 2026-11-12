@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path
 
 from django import template
@@ -17,10 +18,21 @@ def get_feature_groups(context):
 
     view = context.get("view")
     feature = _feature_for(view) if view is not None else None
+    groups = feature_groups()
+    # Checklist shares Formsets' catalog/source panels but deserves a direct navigation link.
+    for _, features in groups:
+        for index, item in enumerate(features):
+            if item.app == "formsets":
+                features.insert(index + 1, replace(item, title="Formsets Compact Checklist", url_name="checklist-list"))
+                break
+    active_url_name = feature.url_name if feature else None
+    if feature and feature.app == "formsets" and view.cv_viewset.name == "checklist":
+        active_url_name = "checklist-list"
     return {
-        "groups": feature_groups(),
+        "groups": groups,
         "active_group": feature.group if feature else None,
         "active_app": feature.app if feature else None,
+        "active_url_name": active_url_name,
     }
 
 

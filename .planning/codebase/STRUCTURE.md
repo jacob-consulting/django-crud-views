@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 702469fe04c5d27262391e04a52d78904a93659f
+last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
 last_mapped_at: 2026-11-11
 ---
 # Codebase Structure
@@ -89,6 +89,8 @@ django-crud-views/
 - Key files: `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/static/crud_views/js/formset.js`, `src/crud_views/static/crud_views/css/formset.css`.
 - Guidance: Preserve the existing row/control attributes and JavaScript add/delete/reorder contract when changing markup; compact class hooks are additive and per node.
 
+Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and validates request-time field schemas, then `_compact_helper()` builds crispy layout objects around the existing bound fields and `FormControl`. The exact stock `django.forms.widgets.CheckboxInput` is supported. A custom subclass or custom template requires `CompactWidgetCompatible`; the marker is a compatibility promise, supplies no renderer, and leaves shared role/label/schema validation in force. `src/crud_views/templates/crud_views/formsets/formset.html` continues to own the common row, management form, hidden-field errors, recursion and crispy invocation, preserving the outer form, CSRF, validation and save lifecycle.
+
 **`src/crud_views/templates/crud_views/` and `src/crud_views/static/crud_views/`:**
 - Purpose: Bundled Bootstrap 5 theme and browser-side behavior.
 - Contains: Full view templates and content partials, tag partials, action/button snippets, formsets, modal shell/content, shared CSS/JS hooks, CSS and JavaScript adapters/components.
@@ -124,7 +126,7 @@ django-crud-views/
 **`examples/bootstrap5/`:**
 - Purpose: Consumer-like demo application and integrated examples.
 - Contains: Django project settings/URLs, management commands and feature apps demonstrating list/detail/forms, nested data, resources, formsets, conditional fields, object detail, Guardian, workflow, polymorphic views, action menus and breadcrumbs.
-- Compact formsets are demonstrated beside classic formsets in `examples/bootstrap5/formsets/views.py`: `cv_formsets` remains the classic recursive tree and `cv_compact_formsets` opts questions and choices in independently. The `compact_create` and `compact_update` views provide comparison routes without changing the default create/update flow.
+- Compact formsets are demonstrated beside classic formsets in `examples/bootstrap5/formsets/views.py`: `cv_formsets` remains the classic recursive tree and `cv_compact_formsets` opts questions and choices in independently. The `compact_create` and `compact_update` views provide comparison routes without changing the default create/update flow. A separate Checklist CRUD family (`Checklist` / `ChecklistItem`) in the same feature app demonstrates a stock BooleanField checkbox in compact rows; its schema is in `models.py` and migration `migrations/0003_checklist_checklistitem.py`. `examples/bootstrap5/project/features.py` keeps one shared Formsets catalog/source-panel entry; `examples/bootstrap5/project/templatetags/example_tags.py` derives an additional nav-only Checklist link and active URL state from it.
 - Key files: `examples/bootstrap5/project/settings_demo.py`, `examples/bootstrap5/project/urls.py`, `examples/bootstrap5/project/management/commands/seed.py`.
 
 **`docs/` and `site/`:**
@@ -290,6 +292,15 @@ django-crud-views/
 - `src/crud_views/templatetags/crud_views.py`: `cv_heading_icon` splits selected icon presentation into host classes and inline markup for heading templates. Use the documented page/modal recipes in `docs/reference/templates.md`; a custom getter returning `None` suppresses rather than falling back again.
 - `docs/reference/templates.md#snippet-variables`: canonical snippet variable list and distinctions among page snippets, target action/breadcrumb labels, context-button labels, and `LinkChildColumn` context. Child `parent_object` is lazy and reuses request-authorized ancestor state after dispatch.
 - `tests/test1/test_heading_icons.py`, `tests/test1/test_snippet_docs.py`: header selection/rendering and documented snippet context contracts.
+
+## Compact Checklist example navigation
+
+- `examples/bootstrap5/formsets/models.py`: separate `Checklist` and `ChecklistItem` models, including the ordinary optional `done` BooleanField.
+- `examples/bootstrap5/formsets/migrations/0003_checklist_checklistitem.py`: creates both Checklist tables and the child relationship.
+- `examples/bootstrap5/formsets/views.py`: independent `cv_checklist` ViewSet and list/create/update flow; `ChecklistForm` places `Formsets()` in its crispy layout and the inline child opts in with `CompactLayout` for `label` and `done`.
+- `examples/bootstrap5/formsets/urls.py`: combines the Questionnaire and Checklist ViewSet URL patterns.
+- `examples/bootstrap5/project/features.py`: keep one shared Formsets feature record and source/code panel for both examples.
+- `examples/bootstrap5/project/templatetags/example_tags.py`: derive the direct Checklist navbar entry from the existing Formsets feature and keep active navigation associated with that shared record; do not add a second catalog feature.
 
 ---
 

@@ -593,6 +593,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   theme/project class registry for ToggleGroup and formset title legends, both empty by default. Full nested
   formsets inherit the hook in classic and compact layouts; row-only fragments keep their existing boundaries.
   See [legend classes](docs/reference/buttons.md#legend-classes).
+- **Stock checkboxes in compact formsets** (#351): exact Django `CheckboxInput` works without a compatibility
+  marker, with shared desktop headings and associated responsive row labels. Native checked/omitted, required
+  and disabled semantics are preserved. See the executed [stock checkbox recipe](docs/reference/formsets.md#stock-checkbox-recipe).
 
 - **Explicit compact widget compatibility** ([#349](https://github.com/jacob-consulting/django-crud-views/issues/349)):
   inherit the public `CompactWidgetCompatible` marker to opt a custom widget into compact formsets while

@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-11
-last_mapped_commit: 702469fe04c5d27262391e04a52d78904a93659f
+last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
 ---
 # External Integrations
 
@@ -17,13 +17,16 @@ last_mapped_commit: 702469fe04c5d27262391e04a52d78904a93659f
 - django-crispy-forms and crispy-bootstrap5 render Bootstrap forms; django-tables2 and django-filter integrate list tables and filters (`src/crud_views/lib/crispy/`, `src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`).
   - SDK/Client: `crispy_forms`, `crispy_bootstrap5`, `django_tables2`, `django_filters`
   - Auth: None; these use host Django configuration.
+- Bootstrap is a host-delivered frontend dependency, not a Python runtime dependency. The getting-started guide shows Bootstrap 5.3.3 CSS and JS from jsDelivr; host projects may instead provide local assets and own version/CSP policy (`docs/getting_started/tutorial-1-setup.md`).
+- Compact formsets explicitly support the exact stock Django `CheckboxInput` with standard template and input type, including Bootstrap styling for package-owned crispy markup. A marked subclass may receive that styling incidentally, but custom widgets/templates are not certified and own accessibility and responsive behavior (`docs/reference/formsets.md`).
 - Theme styling for the `ToggleGroup` and formset `<legend>` elements is exposed through the `conditional:legend` and `formset:legend` button-class slots; it adds no dependency or service integration (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/lib/button_classes.py`).
 - Compact formsets add explicit `CompactColumn` and `CompactLayout` presentation metadata on top of Django inline formsets and crispy helpers; they introduce no service or package dependency (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/formsets.py`, `docs/reference/formsets.md`).
 
 **Optional Django extensions:**
-- django-fsm-2 and django-fsm-2-admin provide workflow transitions and admin integration (`src/crud_views_workflow/`). `run_transition()` validates actor, object, and transition state and writes history atomically on the chosen DB alias (`src/crud_views_workflow/lib/execution.py`); direct FSM method calls bypass that helper behavior.
+- Install extras independently as `django-crud-views[workflow]`, `[polymorphic]`, `[guardian]`, or `[ordered]`; `[all]` combines them. The apps are shipped in the distribution, but each optional integration requires its corresponding third-party package and app setup (`pyproject.toml`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`).
+- django-fsm-2 and django-fsm-2-admin provide workflow transitions and admin integration (`src/crud_views_workflow/`). `run_transition()` validates actor, object, and transition state and writes history atomically on the selected DB alias (`src/crud_views_workflow/lib/execution.py`); direct FSM method calls bypass that helper behavior.
 - django-polymorphic supports polymorphic querysets and type-specific creation (`src/crud_views_polymorphic/`).
-- django-guardian adds per-object permission checks and uses the host project's auth backend configuration (`src/crud_views_guardian/`).
+- django-guardian adds per-object permission checks and uses the host project's auth backend configuration (`src/crud_views_guardian/lib/mixins.py`).
 - django-ordered-model supports ordering actions for host models that opt in (`src/crud_views/lib/ordered.py`, `pyproject.toml`).
 
 **Icons and frontend assets:**

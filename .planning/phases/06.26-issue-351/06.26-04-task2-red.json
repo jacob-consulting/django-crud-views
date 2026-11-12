@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src .venv/bin/python examples/bootstrap5/manage.py test formsets.tests.ChecklistDiscoveryTest.test_landing_links_to_checklist_and_back --noinput -v 1",
+  "exitCode": 1,
+  "output": "Creating test database for alias 'default'...\nF\n======================================================================\nFAIL: test_landing_links_to_checklist_and_back (formsets.tests.ChecklistDiscoveryTest.test_landing_links_to_checklist_and_back)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/alex/projects/alex/django-crud-views/examples/bootstrap5/formsets/tests.py\", line 197, in test_landing_links_to_checklist_and_back\n    self.assertTrue(any(\"Checklist example\" in link.text_content() for link in links))\nAssertionError: False is not true\n\n----------------------------------------------------------------------\nRan 1 test in 0.453s\n\nFAILED (failures=1)\nDestroying test database for alias 'default'...\nFound 1 test(s).\nSystem check identified no issues (0 silenced).\n",
+  "targetTest": "formsets.tests.ChecklistDiscoveryTest.test_landing_links_to_checklist_and_back",
+  "targetFile": "examples/bootstrap5/formsets/tests.py",
+  "expected": "Visible Checklist example link on questionnaire landing",
+  "actual": "AssertionError: False is not true",
+  "semanticAssessment": "Executed target failed on the absent labelled navigation link, with test setup and request rendering successful."
+}

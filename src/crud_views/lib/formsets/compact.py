@@ -81,7 +81,7 @@ def _compact_schema(form, declaration):
         if name not in roles and not field.widget.is_hidden and name not in columns:
             invalid(name, "visible field is missing from CompactLayout")
     headings = []
-    supported = (widgets.TextInput, widgets.NumberInput, widgets.DateInput, widgets.Select)
+    supported = (widgets.TextInput, widgets.NumberInput, widgets.DateInput, widgets.Select, widgets.CheckboxInput)
     for column in layout.columns:
         name = column.field
         if name not in form.fields:

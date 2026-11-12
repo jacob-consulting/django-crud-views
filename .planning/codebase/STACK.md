@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-11
-last_mapped_commit: 702469fe04c5d27262391e04a52d78904a93659f
+last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
 ---
 # Technology Stack
 
@@ -18,7 +18,8 @@ last_mapped_commit: 702469fe04c5d27262391e04a52d78904a93659f
 ## Runtime
 
 **Environment:**
-- Python >=3.12; Nox matrix covers Python 3.12–3.15 and Django 4.2, 5.2, and 6.0 (`noxfile.py`); Django 4.2 skips Python 3.14+
+- Python >=3.12 is the package metadata floor (`pyproject.toml`). Nox declares Python 3.12–3.15 against Django 4.2, 5.2, and 6.0, with unsupported combinations skipped (`noxfile.py`).
+- `uv.lock` records one resolved development environment (currently Django 6.1.2); those lock resolutions do not expand the declared Django support matrix or dependency bounds.
 - Node.js >=20 for the dev-only browser test harness (`package.json`)
 
 **Package Manager:**
@@ -47,13 +48,15 @@ last_mapped_commit: 702469fe04c5d27262391e04a52d78904a93659f
 ## Key Dependencies
 
 **Critical:**
-- `django`, `pydantic`, `python-box`, `typing-extensions`, `django-tables2`, `django-filter`, `django-crispy-forms`, and `crispy-bootstrap5` - required runtime dependencies (`pyproject.toml`)
+- Required runtime dependencies and declared minimums: `django>=4.2.0`, `pydantic>=2.2.1`, `python-box>=6.0.2`, `django-tables2>=2.5.3`, `django-filter>=21.1`, `typing-extensions>=4.7.1`, `django-crispy-forms>=2.0`, and `crispy-bootstrap5>=2023.10` (`pyproject.toml`).
+- `uv.lock` contains a current resolution, while `noxfile.py` verifies the crispy minimum floor in dedicated sessions; neither should be read as changing package metadata bounds.
 
 **Infrastructure:**
 - `[workflow]`: `django-fsm-2`, `django-fsm-2-admin`; `[polymorphic]`: `django-polymorphic`; `[ordered]`: `django-ordered-model`; `[guardian]`: `django-guardian` (`pyproject.toml`)
 - `[all]` combines the four extension extras; `[test]` adds test tooling and Django integrations; `[examples]` adds Pygments (`pyproject.toml`)
 - Demo-only dependencies are Gunicorn, WhiteNoise, and django-ratelimit (`requirements/demo.txt`)
 - Formset layouts, including compact layouts, use existing Django forms and crispy APIs; no additional package dependency is introduced (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/layout.py`)
+- Compact formsets support Django's exact stock `CheckboxInput` widget without an opt-in marker. Custom widgets and templates need the documented compatibility marker and remain responsible for their markup (`docs/reference/formsets.md`).
 
 ## Configuration
 

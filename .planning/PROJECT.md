@@ -143,6 +143,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Admit exact stock CheckboxInput through existing compact schema and crispy markup; demonstrate it in a separate Checklist ViewSet | Bounded opt-in support preserves native Django semantics, custom-widget boundaries and existing rendering; navigation-only entry keeps one shared example catalog | Validated (Phase 06.26; 17/17, UAT 2/2) |
 | Header icons inherit only for None; plain Icon constants name inheritance and suppression | A bounded getter change preserves renderers and dynamic overrides while allowing custom headings to omit inherited icons | Validated (Phase 06.23; 13/13) |
 | Resolve optional singular/plural display names only in get_meta; preserve unset metadata and explicit consumer overrides | One bounded opt-in seam reaches existing label consumers without new state, queries or permission changes | Validated (Phase 06.20; 15/15) |
 | Keep raw values separate from choice display metadata; resolve help text without mutating shared config | Preserve existing traversal/query costs and custom-template ownership; stock leaves render exact empty text and unlocalized choice fallbacks | Validated (Phase 06.16; canonical21/21) |
@@ -215,4 +216,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-11 after Phase 06.25.1 completion*
+*Last updated: 2026-11-12 after integrating Phases 06.25.1 and 06.26*

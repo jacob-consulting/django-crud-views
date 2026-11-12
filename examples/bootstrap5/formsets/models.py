@@ -39,3 +39,31 @@ class Choice(OrderedModel):
 
     def __str__(self):
         return self.label
+
+
+class Checklist(models.Model):
+    title = models.CharField(_("title"), max_length=100)
+
+    class Meta:
+        ordering = ["pk"]
+        verbose_name = _("checklist")
+        verbose_name_plural = _("checklists")
+
+    def __str__(self):
+        return self.title
+
+
+class ChecklistItem(models.Model):
+    checklist = models.ForeignKey(
+        Checklist, on_delete=models.CASCADE, related_name="items", verbose_name=_("checklist")
+    )
+    label = models.CharField(_("Item"), max_length=200, help_text=_("Describe the task to complete."))
+    done = models.BooleanField(_("Done"), default=False, help_text=_("Tick when this item is complete."))
+
+    class Meta:
+        ordering = ["pk"]
+        verbose_name = _("checklist item")
+        verbose_name_plural = _("checklist items")
+
+    def __str__(self):
+        return self.label

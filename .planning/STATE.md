@@ -4,19 +4,21 @@ milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
 status: planning
-stopped_at: Phase 06.25.1 complete, ready to plan Phase 7
-last_updated: "2026-11-11T21:51:20.700Z"
+stopped_at: Phase 06.26 complete, ready to plan Phase 7
+last_updated: "2026-11-11T22:09:57.556Z"
 last_activity: 2026-11-11
-last_activity_desc: "Phase 06.25.1 shipped as PR #352"
-state_head: 56b38783de43af2f26a890f929a04743f7ac04c3
+last_activity_desc: "Phase 06.26 shipped as PR #353"
+state_head: 1e193b55b47f1b42bcaa5d64133acfc8f044e415
 progress:
-  total_phases: 32
-  completed_phases: 26
-  total_plans: 171
-  completed_plans: 171
-  percent: 81
+  total_phases: 33
+  completed_phases: 27
+  total_plans: 175
+  completed_plans: 175
+  percent: 82
 milestone_name: milestone
 ---
+
+Total Phases: 32
 
 # Project State
 
@@ -32,7 +34,7 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-11 -- Phase 06.25.1 shipped as PR #352
+Last activity: 2026-11-11 -- Phase 06.26 shipped as PR #353
 
 Next: $gsd-plan-phase 7
 
@@ -42,6 +44,34 @@ Next: $gsd-plan-phase 7
 - Full suite 12,486 passed, one existing skip; focused 934/expanded 961; independent reviewer/verifier 48 each. Scoped Ruff and strict MkDocs pass on Python 3.12.3/Django 5.2.19; other environments not replayed.
 - Canonical verification passed 11/11; validation 1/1, security 3/3 closed, deep review 12 files/zero findings; UI preservation 24/24 source/rendered only. No human checks required.
 - One test-only inventory correction documented. Completion scanner's phase-relative evidence reference exists. Codebase map drift advisory remains for refresh after shipping. Existing untracked PATTERNS/.gitkeep preserved; no push or merge.
+
+### Phase 06.26 completion — 2026-11-11
+
+- All four plans complete. User approved the live review after direct navigation and exact “Formsets Compact Checklist” label feedback, then explicitly requested commit/phase closure. UAT 2/2 passed, zero issues; existing visual observations accepted without inventing runtime-specific human inspection.
+- Navigation committed e0ad7484; final report/captures and independent review committed. Final example/project 70, independent navigation 16, JavaScript 383 and actual browser 90/eight captures pass. Original full core/runtime matrix remains historical; no product core changes in navigation follow-up.
+- Fresh verification passed 17/17 with 93 covered inputs; owner and combined UAT predicate pass without blockers. Security 13/13 closed, validation nine tasks, review zero findings; WR-01..04 resolutions retained. Final reviewer additionally ran three navigation checks.
+- Completion scanner warning misclassifies two shell command strings in Plan 01 SUMMARY as missing file paths; actual runner exists. No unresolved implementation gap, matching todo, handoff or learnings graduation. No push/merge; existing untracked .gitkeep preserved. Review servers 8765/9000 remain running with temporary storage.
+
+### Phase 06.26 example extension executed and re-verified — 2026-11-11
+
+- All four plans/nine tasks complete. Separate Checklist list/create/update example, bounded models/migration, native Done values, seed/demo permissions and navigation are committed; core rendering unchanged by this extension.
+- Example/project 70 and full examples 283 passed with four workers; compact/docs 158; affected formset regression 471; JS 383. Migration consistency, Ruff and strict docs passed. Original full core/matrix evidence remains historical.
+- Actual example browser refreshed after three bounded harness repairs: 90 assertions/eight captures per run, 16 source hashes, eight decoded multipart saves, disposable cleanup and unchanged developer DB. Original current/floor evidence preserved. Twelve runner regressions pass; independent deep re-review clean, WR-01..04 disposition fixed.
+- Validation 9/9 tasks, security 13/13 closed, UI 19/24 with pending readability advisories. Fresh verifier ran 44 targeted cases; canonical human_needed, 16/17 truths, zero implementation gaps, fingerprint 92 inputs. Two pending UAT checks cover original layouts and actual Checklist, including 768px Done-help wrapping/long intro. Phase remains In Progress; no phase completion, push or merge. Existing untracked .gitkeep preserved.
+
+### Phase 06.26 example extension planned — 2026-11-11
+
+- User requested a new ViewSet with a compact formset example. Added Plan 04, Wave 4 after completed Plan 03, with three sequential tasks.
+- Planned Checklist/ChecklistItem models and migration in the existing formsets app; separate cv_checklist routes, native Done checkboxes, idempotent demo seed, catalog links and actual example browser evidence. No core API or renderer change.
+- Structure validation passes with no errors/warnings; plan index reports 04 ready. Roadmap records 3/4 complete. Prior verification is stale after the explicit scope extension; preserve historical results and pending UAT until execution and re-verification. No implementation executed.
+
+### Phase 06.26 execution and verification — 2026-11-11
+
+- All three plans and six tasks committed. Exact stock CheckboxInput admission and owned CSS preserve existing crispy rendering and native semantics; executed recipe and current/floor browser evidence retained.
+- Full suite 12,476 passed with four workers; focused 158 on six cached Python 3.12 environments; affected 471; JS 62/2; strict docs and Ruff passed. Browser current/floor 655 assertions each, 16 tracked captures, 26 matching source hashes. Python 3.13–3.15 and other engines/themes not replayed.
+- Validation 6/6 tasks, security 9/9 closed, UI 21/24 with inherited advisories. Deep review found capture-output isolation warning WR-01; fixed with four regressions and refreshed both browser records, independently re-reviewed clean. Ledger preserves its resolution.
+- Canonical verification human_needed: 12/13 truths, decisions 6/6, no implementation gaps, 64 covered inputs. Fresh verifier 21 Python cases, four output regressions and evidence checker passed. One consolidated visual UAT awaits readability, focus and mixed-layout judgment; phase remains In Progress.
+- Summary commit references normalized so review scope resolves all eight task commits. ROADMAP goal/requirement placeholder disclosed; CONTEXT is approved goal source. Existing untracked .gitkeep preserved. No push or merge.
 
 ### Phase 06.25 completion — 2026-11-11
 
@@ -743,7 +773,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 167
+- Total plans completed: 171
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -781,6 +811,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.24 | 6 | - | - |
 | 06.25 | 2 | - | - |
 | 06.25.1 | 1 | - | - |
+| 06.26 | 4 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -919,6 +950,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.24 P06 | 19min | 3 tasks | 23 files |
 | Phase 06.25 P01 | 7min | 2 tasks | 5 files |
 | Phase 06.25 P02 | 17min | 2 tasks | 15 files |
+| Phase 06.26 P01 | 7min | 2 tasks | 5 files |
+| Phase 06.26 P02 | 14min | 2 tasks | 23 files |
+| Phase 06.26 P03 | 13min | 2 tasks | 5 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1180,6 +1214,10 @@ Recent decisions affecting current work:
 - [Phase 06.25]: CompactWidgetCompatible is an empty inherited developer promise; only widget-specific checks are bypassed, with actual widget types and shared schema retained.
 - [Phase 06.25]: Plan 01 Task 2 is test-only: its RED control replays pre-guard admission temporarily, then restores the exact Task 1 source.
 - [Phase 06.25]: User requested committing six browser captures; named PNG allowlist and driver trackability checks supersede the original local-ignored policy.
+- [Phase 06.26]: Stock checkboxes reuse crispy input/label siblings and compact-owned CSS; no renderer or widget abstraction.
+- [Phase 06.26]: Use Node's built-in TAP reporter for machine-verifiable browser RED evidence without new dependencies.
+- [Phase 06.26]: Plan 02: checkbox fixture preserves composition through same-origin editor Referer for coordinate-only fragments; product routing unchanged.
+- [Phase 06.26]: Plan 02: only opt-in checkbox score columns read stable ScoreForm.base_fields to avoid Django 4.2 shared Meta.fields FK mutation.
 
 ### Pending Todos
 
@@ -1245,6 +1283,7 @@ None yet.
 - Phase 06.24 inserted after Phase 06.23: Issue #347: opt-in compact formsets with shared desktop headings and nested mobile cards; approved issue decisions are the GSD handover, classic rendering unchanged. Complete before Phase 7. (URGENT)
 - Phase 06.25 inserted after Phase 6: Issue #349 (URGENT)
 - Phase 06.25.1 inserted after Phase 6.25: Issue #346 (URGENT)
+- Phase 06.26 inserted after Phase 6: Issue #351 (URGENT)
 
 ## Deferred Items
 
@@ -1254,6 +1293,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T20:40:27.165962+00:00
-Stopped at: Phase 06.25.1 complete, ready to plan Phase 7
+Last session: 2026-11-11T21:58:28.065021+00:00
+Stopped at: Phase 06.26 complete, ready to plan Phase 7
 Resume file: None

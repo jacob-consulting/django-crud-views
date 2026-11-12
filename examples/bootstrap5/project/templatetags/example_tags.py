@@ -25,9 +25,16 @@ def get_feature_groups(context):
             if item.app == "formsets":
                 features.insert(index + 1, replace(item, title="Formsets Compact Checklist", url_name="checklist-list"))
                 break
+        for index, item in enumerate(features):
+            if item.app == "conditional":
+                features[index] = replace(item, title="Conditional simple")
+                features.insert(index + 1, replace(item, title="Conditional complex", url_name="customer-list"))
+                break
     active_url_name = feature.url_name if feature else None
     if feature and feature.app == "formsets" and view.cv_viewset.name == "checklist":
         active_url_name = "checklist-list"
+    if feature and feature.app == "conditional" and view.cv_viewset.name == "customer":
+        active_url_name = "customer-list"
     return {
         "groups": groups,
         "active_group": feature.group if feature else None,

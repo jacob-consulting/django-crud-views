@@ -220,6 +220,9 @@ class ConditionalGroupFormMixin:
                     resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
         cleaned = super().clean()
         if any(isinstance(group.toggle, ValueToggle) for group in self.cv_conditional_groups):
+            # Django keeps the existing mapping when an inherited cleaner returns None.
+            if cleaned is None:
+                cleaned = self.cleaned_data
             # Inherited clean() may replace the mapping, including removing the
             # controller. Value activation must use that returned authoritative data.
             self.cleaned_data = cleaned

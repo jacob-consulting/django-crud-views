@@ -297,13 +297,16 @@ def test_value_group_runtime_controlled_field_added_optional():
     assert form.is_valid(), form.errors
 
 
-def test_value_group_inherited_clean_replaces_cleaned_mapping():
+@pytest.mark.parametrize("empty", [False, True])
+def test_value_group_inherited_clean_replaces_cleaned_mapping(empty):
     class Parent(forms.Form):
         kind = forms.ChoiceField(choices=[("a", "A")])
         detail = forms.CharField()
 
         def clean(self):
             # Django permits returning a replacement mapping, not only mutating it.
+            if empty:
+                return {}
             return {name: value for name, value in super().clean().items() if name != "kind"}
 
     class Child(ConditionalGroupFormMixin, Parent):
@@ -312,3 +315,35 @@ def test_value_group_inherited_clean_replaces_cleaned_mapping():
     form = Child(data={"kind": "a", "detail": "forged"})
     assert form.is_valid(), form.errors
     assert form.cleaned_data == {"detail": ""}
+
+
+@pytest.mark.parametrize("kind", ["a", "b"])
+@pytest.mark.parametrize("detail", ["submitted", ""])
+@pytest.mark.parametrize("parent_error", [False, True])
+def test_value_group_inherited_clean_returns_none(kind, detail, parent_error):
+    class Parent(forms.Form):
+        kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+        detail = forms.CharField()
+        outside = forms.CharField()
+
+        def clean(self):
+            super().clean()
+            self.cleaned_data["outside"] = "parent normalized"
+            if parent_error:
+                self.add_error(None, forms.ValidationError("Parent rejected input", code="parent_error"))
+            # Returning None legally preserves Django's existing cleaned mapping.
+
+    class Child(ConditionalGroupFormMixin, Parent):
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+
+    form = Child(data={"kind": kind, "detail": detail, "outside": "submitted"})
+    missing_required = kind == "a" and not detail
+    assert form.is_valid() is (not parent_error and not missing_required)
+    assert form.cleaned_data["outside"] == "parent normalized"
+    assert form.cleaned_data["kind"] == kind
+    if missing_required:
+        assert form.errors["detail"] == [form.fields["detail"].error_messages["required"]]
+    else:
+        assert form.cleaned_data["detail"] == (detail if kind == "a" else "")
+    if parent_error:
+        assert form.errors.as_data()["__all__"][0].code == "parent_error"

@@ -49,6 +49,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.23: Explicit header-icon suppression with Icon constants (INSERTED)** - #329: readable per-view suppression, preserved default inheritance, and paired breaking-change/migration guidance; 2 plans verified, ready to execute. (completed 2026-11-10)
 - [x] **Phase 06.24: Opt-in compact formsets: shared desktop headings and nested mobile cards (#347) (INSERTED)** - six plans complete; canonical verification and human grouping/focus UAT passed. (completed 2026-11-11)
 - [x] **Phase 06.25: Issue #349** (completed 2026-11-11)
+- [x] **Phase 06.26: Issue #351** (completed 2026-11-11)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1701,6 +1702,26 @@ Plans:
 
 **Wave 2**
 - [x] 06.25-02-PLAN.md
+
+### Phase 06.26: Issue #351 (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 6
+**Plans:** 4/4 plans complete; example extension ready
+
+Plans:
+**Wave 1**
+- [x] 06.26-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.26-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.26-03-PLAN.md
+
+**Wave 4** *(depends on completed Plan 03)*
+- [x] 06.26-04-PLAN.md — Separate Checklist ViewSet with compact checkbox rows, demo integration and browser evidence
 
 ### Phase 7: Theme-surface stability policy
 

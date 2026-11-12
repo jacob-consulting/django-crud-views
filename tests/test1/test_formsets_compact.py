@@ -345,6 +345,368 @@ def test_compact_nested_grandchild_and_authorized_fragments(
             assert not tree.cssselect(".cv-formset-compact-headings")
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("kind", ["stock", "template", "input_type", "subclass", "marked", "inherited"])
+def test_compact_checkbox_admission(kind):
+    from django import forms
+    from django.core.exceptions import ImproperlyConfigured
+
+    from crud_views.lib.formsets import CompactWidgetCompatible
+
+    class MarkedCheckbox(CompactWidgetCompatible, forms.CheckboxInput):
+        pass
+
+    class InheritedCheckbox(MarkedCheckbox):
+        pass
+
+    widget = {
+        "subclass": type("CustomCheckbox", (forms.CheckboxInput,), {}),
+        "marked": MarkedCheckbox,
+        "inherited": InheritedCheckbox,
+    }.get(kind, forms.CheckboxInput)(attrs={"class": "application-owned", "data-purpose": "ordinary"})
+    if kind == "template":
+        widget.template_name = "application_checkbox.html"
+    elif kind == "input_type":
+        widget.input_type = "text"
+    node = _runtime()
+    node.forms[0].form.fields["title"] = forms.BooleanField(label="Active", required=False, widget=widget)
+    if kind in ("template", "input_type", "subclass"):
+        with pytest.raises(ImproperlyConfigured, match=r"books.*title.*widget"):
+            _ = node.compact_columns
+    else:
+        assert node.compact_columns[0].widget_type is type(widget)
+        assert node.compact_columns[0].label == "Active"
+        assert node.forms[0].form.fields["title"].widget.attrs == widget.attrs
+
+
+def _checkbox_tree(parent, data=None, *, required=False, disabled=False, extra=1):
+    from django import forms
+    from django.forms.models import inlineformset_factory
+    from django.test import RequestFactory
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet, FormSets, InlineFormSet
+    from tests.test1.app.models import ConditionalPersistenceRecord, Profile
+
+    class RecordForm(forms.ModelForm):
+        class Meta:
+            model = ConditionalPersistenceRecord
+            fields = ["active", "flag", "number"]
+
+        def __init__(self, *args, cv_view=None, **kwargs):
+            self.cv_view = cv_view
+            super().__init__(*args, **kwargs)
+            self.fields["active"].required = required
+            self.fields["active"].disabled = disabled
+
+    klass = inlineformset_factory(
+        Profile, ConditionalPersistenceRecord, form=RecordForm, formset=InlineFormSet, extra=extra
+    )
+    declaration = FormSet(
+        title="Records",
+        klass=klass,
+        compact_layout=CompactLayout([CompactColumn(name, span=3) for name in RecordForm.Meta.fields], controls_span=3),
+    )
+    trees = FormSets(formsets={"records": declaration})
+    request = RequestFactory().get("/") if data is None else RequestFactory().post("/", data)
+    trees.init(request, forms.modelform_factory(Profile, fields=[])(instance=parent))
+    return trees, trees.x_formsets[0]
+
+
+def _checkbox_payload(node):
+    from django.http import HttpResponse
+    from django.template.loader import render_to_string
+
+    markup = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
+    payload = form_payload(HttpResponse(f"<form>{markup}</form>"))
+    for control in html.fromstring(markup).cssselect("input[disabled]"):
+        payload.pop(control.get("name"), None)
+    return payload
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("required", [False, True])
+@pytest.mark.parametrize("checked", [False, True])
+def test_compact_checkbox_semantics(required, checked):
+    from tests.test1.app.models import ConditionalPersistenceRecord, Profile
+
+    parent = Profile.objects.create(name="Native booleans")
+    record = ConditionalPersistenceRecord.objects.create(parent=parent, active=not checked)
+    _, initial = _checkbox_tree(parent, required=required)
+    payload = _checkbox_payload(initial)
+    retained, extra = [row.form for row in initial.forms]
+    assert retained.cv_view is None and extra.cv_view is None
+    assert payload[extra.add_prefix("flag")] == "on"  # Preserve the model's default-checked extra control.
+    name = retained.add_prefix("active")
+    payload.pop(name, None)
+    if checked:
+        payload[name] = "on"
+    trees, bound = _checkbox_tree(parent, payload, required=required)
+    assert bound.compact_columns[0].required is required
+    assert not bound.forms[1].form.has_changed()
+    assert trees.all_valid() is (checked or not required)
+    if checked or not required:
+        trees.save()
+        record.refresh_from_db()
+        assert record.active is checked
+    else:
+        assert bound.forms[0].form.errors["active"] == ["This field is required."]
+        record.refresh_from_db()
+        assert record.active is True
+    assert ConditionalPersistenceRecord.objects.filter(parent=parent).count() == 1
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("initial_value", [False, True])
+@pytest.mark.parametrize("forged", [False, True])
+def test_compact_checkbox_semantics_disabled(initial_value, forged):
+    from tests.test1.app.models import ConditionalPersistenceRecord, Profile
+
+    parent = Profile.objects.create(name="Disabled booleans")
+    record = ConditionalPersistenceRecord.objects.create(parent=parent, active=initial_value)
+    _, initial = _checkbox_tree(parent, disabled=True)
+    payload = _checkbox_payload(initial)
+    name = initial.forms[0].form.add_prefix("active")
+    assert name not in payload
+    if forged:
+        payload[name] = "false" if initial_value else "on"
+    trees, bound = _checkbox_tree(parent, payload, disabled=True)
+    assert trees.all_valid()
+    assert not bound.forms[1].form.has_changed()
+    assert bound.forms[0].form.cleaned_data["active"] is initial_value
+    trees.save()
+    record.refresh_from_db()
+    assert record.active is initial_value
+    assert ConditionalPersistenceRecord.objects.filter(parent=parent).count() == 1
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("checked", [False, True])
+def test_compact_checkbox_semantics_invalid_redisplay(checked):
+    from django.template.loader import render_to_string
+
+    from tests.test1.app.models import ConditionalPersistenceRecord, Profile
+
+    parent = Profile.objects.create(name="Invalid booleans")
+    record = ConditionalPersistenceRecord.objects.create(parent=parent, active=not checked)
+    _, initial = _checkbox_tree(parent)
+    payload = _checkbox_payload(initial)
+    name = initial.forms[0].form.add_prefix("active")
+    payload.pop(name, None)
+    if checked:
+        payload[name] = "on"
+    payload[initial.forms[0].form.add_prefix("number")] = "not a number"
+    trees, bound = _checkbox_tree(parent, payload)
+    assert not trees.all_valid()
+    assert not bound.forms[1].form.has_changed()
+    document = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": bound}))
+    control = document.xpath(".//input[@name=$name]", name=name)[0]
+    assert (control.get("checked") is not None) is checked
+    row = control.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+    assert "Enter a whole number." in row.text_content()
+    assert not control.getparent().cssselect(".invalid-feedback")
+    record.refresh_from_db()
+    assert record.active is not checked
+    assert ConditionalPersistenceRecord.objects.filter(parent=parent).count() == 1
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("saved", [False, True])
+@pytest.mark.parametrize("empty", [False, True])
+def test_compact_checkbox_metadata(monkeypatch, saved, empty):
+    from django import forms
+    from django.db import connection
+    from django.forms.models import ModelChoiceIterator
+    from django.test.utils import CaptureQueriesContext
+
+    from tests.test1.app.models import Profile
+
+    parent = Profile.objects.create(name="Metadata") if saved else Profile()
+    identity = parent.pk
+    _, node = _checkbox_tree(parent, extra=0 if empty else 2)
+    calls = []
+    original_kwargs = node.instance.get_form_kwargs
+
+    def get_kwargs(index):
+        calls.append(index)
+        return original_kwargs(index)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Checkbox metadata must not render, query choices, validate or augment forms")
+
+    monkeypatch.setattr(node.instance, "get_form_kwargs", get_kwargs)
+    for method in ("add_fields", "_construct_form"):
+        monkeypatch.setattr(node.instance, method, forbidden)
+    for attr in ("empty_form", "helper"):
+        monkeypatch.setattr(type(node.instance), attr, property(forbidden))
+    for method in ("full_clean", "is_valid"):
+        monkeypatch.setattr(node.instance.form, method, forbidden)
+    monkeypatch.setattr(forms.CheckboxInput, "render", forbidden)
+    monkeypatch.setattr(ModelChoiceIterator, "__iter__", forbidden)
+    with CaptureQueriesContext(connection) as queries:
+        columns = node.compact_columns
+        assert node.compact_columns is columns
+    assert not queries
+    assert columns[0].widget_type is forms.CheckboxInput
+    assert calls == ([None] if empty else [])
+    assert parent.pk == identity
+    assert len(node.forms) == (0 if empty else 2)
+    assert all(row.form.cv_view is None for row in node.forms)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("kind", ["missing", "label", "required", "blank", "id", "publisher", "ORDER", "DELETE"])
+def test_compact_checkbox_shared_schema_guards(kind):
+    from django import forms
+    from django.core.exceptions import ImproperlyConfigured
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+
+    node = _runtime(factory_attrs={"extra": 2})
+    for row in node.forms:
+        row.form.fields["title"] = forms.BooleanField(label="Active", required=False)
+    second = node.forms[1].form
+    field = "title"
+    if kind == "missing":
+        del second.fields[field]
+    elif kind == "label":
+        second.fields[field].label = "Different"
+    elif kind == "required":
+        second.fields[field].required = True
+    elif kind == "blank":
+        second.fields[field].label = " \t "
+    else:
+        field = kind
+        for row in node.forms:
+            row.form.fields[field] = forms.BooleanField(label=field, required=False)
+        node.formset.compact_layout = CompactLayout(
+            [CompactColumn("title", span=4), CompactColumn(field, span=4)], controls_span=4
+        )
+    with pytest.raises(ImproperlyConfigured, match=rf"books.*{field}"):
+        _ = node.compact_columns
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_compact_checkbox_rendering(monkeypatch, client_user_publisher_formset, language):
+    from django import forms
+    from django.utils.translation import gettext, gettext_lazy, override
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+    from tests.test1.app.views_formset import BookFormSetForm
+    from tests.test1.test_fragment_authorization import browser_add_row
+
+    class CheckboxBook(BookFormSetForm):
+        active = forms.BooleanField(required=True, help_text="<script>checkbox help</script>")
+        translated = forms.BooleanField(required=False)
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["active"].label = "<script>Constructor label</script>"
+            self.fields["active"].error_messages["required"] = "<script>Check this box</script>"
+            self.fields["translated"].label = gettext_lazy("Yes")
+
+    books = publisher_formsets["books"]
+    monkeypatch.setattr(books.klass, "form", CheckboxBook)
+    monkeypatch.setattr(
+        books,
+        "compact_layout",
+        CompactLayout([CompactColumn(name, span=3) for name in ("title", "active", "translated")], controls_span=3),
+    )
+    publisher = Publisher.objects.create(name="Checkbox HTML")
+    book = Book.objects.create(publisher=publisher, title="Original")
+    retained = Book.objects.create(publisher=publisher, title="Retained")
+    url = f"/publisher-formset/{publisher.pk}/update/"
+
+    def assert_rows(tree):
+        inputs = tree.cssselect('.cv-formset-compact-fields input[type="checkbox"]')
+        assert inputs
+        assert len({control.get("id") for control in inputs}) == len(inputs)
+        assert len({control.get("name") for control in inputs}) == len(inputs)
+        for control in inputs:
+            row = control.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+            own = row.cssselect(".cv-formset-form")[0]
+            prefix = row.get("cv-data-formset-form-prefix")
+            field = "translated" if control.get("name").endswith("-translated") else "active"
+            assert control.get("name") == f"{prefix}-{field}"
+            assert control.get("id") == f"id_{prefix}-{field}"
+            labels = own.xpath(".//label[@for=$id]", id=control.get("id"))
+            assert len(labels) == 1
+            assert labels[0].getparent() is control.getparent()
+            assert "form-check-label" in labels[0].get("class")
+            assert "aria-hidden" not in labels[0].attrib
+            assert not labels[0].cssselect("script")
+            assert not own.cssselect("script")
+            assert "required" not in control.attrib  # Django formsets suppress HTML required.
+            if field == "active":
+                assert "<script>Constructor label</script>" in labels[0].text_content()
+                assert labels[0].cssselect(".asteriskField")
+                assert "<script>checkbox help</script>" in control.getparent().text_content()
+            else:
+                assert labels[0].text_content().strip() == gettext("Yes")
+            for name in ("id", "publisher", "DELETE"):
+                hidden = own.xpath(".//input[@name=$name]", name=f"{prefix}-{name}")
+                assert len(hidden) == 1 and hidden[0].get("type") == "hidden"
+                assert not hidden[0].xpath('ancestor::div[contains(@class,"cv-formset-compact-fields")]')
+        return inputs
+
+    with override(language):
+        initial = client_user_publisher_formset.get(url)
+        assert initial.status_code == 200
+        document = html.fromstring(initial.content)
+        fieldset = document.cssselect('fieldset[cv-data-formset-key="books"]')[0]
+        assert_rows(fieldset)
+        headings = fieldset.cssselect(".cv-formset-compact-headings")
+        assert len(headings) == 1
+        assert "<script>Constructor label</script>" in headings[0].text_content()
+        assert gettext("Yes") in headings[0].text_content()
+        assert not headings[0].cssselect("script")
+        payload = form_payload(initial)
+        first_name = next(k for k, value in payload.items() if k.endswith("-title") and value == "Original")
+        second_name = next(k for k, value in payload.items() if k.endswith("-title") and value == "Retained")
+        first_active = first_name.removesuffix("-title") + "-active"
+        second_active = second_name.removesuffix("-title") + "-active"
+        payload[first_active] = "on"
+        payload[second_name] = ""  # Independent retained-row error alongside its unchecked required checkbox.
+        response = client_user_publisher_formset.post(url, payload)
+        assert response.status_code == 200
+        invalid = html.fromstring(response.content)
+        assert_rows(invalid.cssselect('fieldset[cv-data-formset-key="books"]')[0])
+        checked = invalid.xpath(".//input[@name=$name]", name=first_active)[0]
+        unchecked = invalid.xpath(".//input[@name=$name]", name=second_active)[0]
+        assert checked.get("checked") is not None and unchecked.get("checked") is None
+        assert "Check this box" not in checked.getparent().text_content()
+        assert "<script>Check this box</script>" in unchecked.getparent().text_content()
+        assert unchecked.getparent().cssselect(".invalid-feedback")
+        book.refresh_from_db()
+        retained.refresh_from_db()
+        assert (book.title, retained.title) == ("Original", "Retained")
+        params = browser_add_row(initial.content, fieldset.get("cv-data-formset-prefix"))
+        fragment_response = client_user_publisher_formset.get(url, params)
+        assert fragment_response.status_code == 200
+        fragment = fragment_response.json()
+        added = html.fragment_fromstring(fragment["html"], create_parent=True)
+        controls = assert_rows(added)
+        assert all(control.get("name").startswith(fragment["rows"][0] + "-") for control in controls)
+        assert not (
+            {control.get("id") for control in controls} & {control.get("id") for control in assert_rows(fieldset)}
+        )
+
+
+@pytest.mark.django_db
+def test_compact_checkbox_hidden_order_remains_outside_columns(monkeypatch):
+    from django import forms
+    from django.template.loader import render_to_string
+
+    monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
+    node = _runtime(factory_attrs={"can_order": True})
+    node.forms[0].form.fields["title"] = forms.BooleanField(label="Active", required=False)
+    document = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+    for name in ("id", "publisher", "ORDER", "DELETE"):
+        controls = document.cssselect(f'input[name$="-{name}"]')
+        assert len(controls) == 1 and controls[0].get("type") == "hidden"
+        assert not controls[0].xpath('ancestor::div[contains(@class,"cv-formset-compact-fields")]')
+
+
 def _runtime(*, compact=True, form_class=None, parent=None, factory_attrs=None, **declaration_kwargs):
     from django.test import RequestFactory
 
@@ -847,7 +1209,6 @@ def test_compact_schema_rejects_heterogeneous_rows(kind):
 @pytest.mark.parametrize(
     "kind",
     [
-        "checkbox",
         "radio",
         "multiple",
         "multiwidget",
@@ -867,7 +1228,6 @@ def test_compact_schema_rejects_unsupported_widget_shape(kind):
 
     node = _runtime()
     choices = {
-        "checkbox": forms.CheckboxInput,
         "radio": forms.RadioSelect,
         "multiple": forms.SelectMultiple,
         "multiwidget": forms.SplitDateTimeWidget,

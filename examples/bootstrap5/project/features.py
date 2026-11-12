@@ -177,12 +177,16 @@ FEATURES: list[Feature] = [
             "delete and order controls. Compact formsets use shared desktop headings and labelled mobile cards; "
             "questions and their expanded choices each declare their own compact layout independently. "
             "Sign in as alice/alice or bob/bob to compare both presentations."
+            " Follow Checklist example for a separate Checklist ViewSet: its compact item rows persist ordinary "
+            "Done checkboxes, checked as True and omitted as False, with shared headings and mobile labels."
         ),
         look_at=(
             "cv_formsets with QuestionInlineFormSet / ChoiceInlineFormSet for classic helper rows; "
             "cv_compact_formsets with CompactLayout and CompactColumn for the compact declarations. "
             "CompactQuestionFormSet / CompactChoiceFormSet use InlineFormSet directly, without duplicate "
             "crispy row layouts; QuestionnaireCompactCreateView / QuestionnaireCompactUpdateView select that tree."
+            " cv_checklist and cv_checklist_formsets use ChecklistItemForm's native done field with "
+            "CompactColumn spans 7/2 and controls_span=3; Checklist and ChecklistItem in models.py store the values."
         ),
         url_name="questionnaire-list",
         icon="fa-solid fa-list-check",

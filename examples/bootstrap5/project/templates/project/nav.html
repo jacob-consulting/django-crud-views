@@ -19,7 +19,7 @@
                             <ul class="dropdown-menu" aria-labelledby="nav-group-{{ group.key }}">
                                 {% for feature in features %}
                                     <li>
-                                        <a class="dropdown-item{% if feature.app == nav_groups.active_app %} active{% endif %}"{% if feature.app == nav_groups.active_app %} aria-current="page"{% endif %} href="{% url feature.url_name %}">
+                                        <a class="dropdown-item{% if feature.url_name == nav_groups.active_url_name %} active{% endif %}"{% if feature.url_name == nav_groups.active_url_name %} aria-current="page"{% endif %} href="{% url feature.url_name %}">
                                             <i class="{{ feature.icon }} fa-fw" aria-hidden="true"></i> {{ feature.title }}
                                         </a>
                                     </li>

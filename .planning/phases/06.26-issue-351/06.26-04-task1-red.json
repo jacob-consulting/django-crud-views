@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src .venv/bin/python examples/bootstrap5/manage.py test formsets.tests.ChecklistRegistrationTest --noinput -v 1",
+  "exitCode": 1,
+  "output": "Creating test database for alias 'default'...\nF\n======================================================================\nFAIL: test_checklist_has_distinct_viewset (formsets.tests.ChecklistRegistrationTest.test_checklist_has_distinct_viewset)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/alex/projects/alex/django-crud-views/examples/bootstrap5/formsets/tests.py\", line 17, in test_checklist_has_distinct_viewset\n    self.assertTrue(hasattr(views, \"cv_checklist\"), \"A separate Checklist ViewSet must be registered\")\nAssertionError: False is not true : A separate Checklist ViewSet must be registered\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nFAILED (failures=1)\nDestroying test database for alias 'default'...\nFound 1 test(s).\nSystem check identified no issues (0 silenced).\n",
+  "targetTest": "formsets.tests.ChecklistRegistrationTest.test_checklist_has_distinct_viewset",
+  "targetFile": "examples/bootstrap5/formsets/tests.py",
+  "expected": "Separate Checklist ViewSet registered",
+  "actual": "AssertionError: False is not true : A separate Checklist ViewSet must be registered",
+  "semanticAssessment": "Target executed and failed on the missing distinct registry entry; no discovery, import, fixture or syntax fault."
+}

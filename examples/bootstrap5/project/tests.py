@@ -124,6 +124,33 @@ class FeatureRegistryTest(TestCase):
 
 
 class CompactFormsetsCatalogTest(TestCase):
+    def test_checklist_pages_mark_checklist_navigation_and_keep_shared_about_and_source(self):
+        from django.utils.html import escape
+        from formsets.models import Checklist
+        from lxml import html
+
+        feature = next(feature for feature in FEATURES if feature.app == "formsets")
+        self.assertIn("cv_checklist", feature.look_at)
+        self.assertIn("Done", feature.about)
+        self.assertEqual(len([feature for feature in FEATURES if feature.app == "formsets"]), 1)
+        admin = get_user_model().objects.create_superuser(username="checklist-catalog", password="pw")
+        self.client.force_login(admin)
+        checklist = Checklist.objects.create(title="Catalog checklist")
+        for action in ("list", "create", "update"):
+            url = reverse(f"checklist-{action}", kwargs={"pk": checklist.pk} if action == "update" else None)
+            page = self.client.get(url)
+            self.assertContains(page, escape(feature.about))
+            self.assertContains(page, escape(feature.look_at))
+            self.assertEqual(ACTIVE_NAV_GROUP.findall(navbar_html(page)), ["forms"])
+            self.assertEqual(ACTIVE_NAV_ITEM.findall(navbar_html(page)), [reverse("checklist-list")])
+            document = html.fromstring(page.content)
+            models_code = document.cssselect("#snippet-formsets-models-py")[0].text_content()
+            views_code = document.cssselect("#snippet-formsets-views-py")[0].text_content()
+            for name in ("Checklist", "ChecklistItem", "BooleanField"):
+                self.assertIn(name, models_code)
+            for name in ("cv_checklist", "cv_checklist_formsets", "CompactColumn", '"done"'):
+                self.assertIn(name, views_code)
+
     def test_unique_formsets_catalog_teaches_both_presentations(self):
         features = [feature for feature in FEATURES if feature.app == "formsets"]
         self.assertEqual(len(features), 1)
@@ -410,6 +437,12 @@ class NavGroupsTest(TestCase):
         nav = navbar_html(self.client.get(reverse("home")))
         for feature in FEATURES:
             self.assertIn(f'href="{reverse(feature.url_name)}"', nav, feature.app)
+        from lxml import html
+
+        checklist_link = html.fromstring(nav).xpath("//a[@href=$url]", url=reverse("checklist-list"))
+        self.assertEqual(len(checklist_link), 1)
+        self.assertEqual(checklist_link[0].text_content().strip(), "Formsets Compact Checklist")
+        self.assertEqual(checklist_link[0].getparent().getparent().get("aria-labelledby"), "nav-group-forms")
 
     def test_feature_page_marks_its_group_active(self):
         self.client.force_login(self.admin)

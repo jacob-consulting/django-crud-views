@@ -11,6 +11,7 @@ import signal
 import tempfile
 from contextvars import ContextVar
 from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
 from wsgiref.simple_server import make_server
 
 from tests.test1.conftest import pytest_configure
@@ -65,6 +66,7 @@ from django.forms.models import inlineformset_factory
 from django.http import HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
 from django.urls import path
+from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 
 from crud_views.lib.conditional import (
@@ -87,7 +89,7 @@ from crud_views.lib.formsets import (
 from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.views import UpdateViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
-from tests.test1.app.models import Book, BookNote, Profile, Publisher
+from tests.test1.app.models import Book, BookNote, ConditionalPersistenceRecord, Profile, Publisher
 
 events = []
 observed = []
@@ -286,6 +288,36 @@ class RestrictedBooks(Rows):
 Books = inlineformset_factory(Publisher, Book, form=BookForm, formset=RestrictedBooks, extra=1, can_delete=True)
 Notes = inlineformset_factory(Book, BookNote, form=NoteForm, formset=Rows, extra=1, can_delete=True)
 Memos = inlineformset_factory(Book, BrowserMemo, form=MemoForm, formset=Rows, extra=1, can_delete=True, can_order=True)
+
+
+class CheckboxBookForm(BookForm):
+    acknowledged = forms.BooleanField(required=False)
+
+    def get_layout_fields(self):
+        return [*super().get_layout_fields(), "acknowledged"]
+
+
+class CheckboxNoteForm(NoteForm):
+    acknowledged = forms.BooleanField(required=False)
+
+    def get_layout_fields(self):
+        return [*super().get_layout_fields(), "acknowledged"]
+
+
+class CheckboxMemoForm(MemoForm):
+    acknowledged = forms.BooleanField(required=False)
+
+    def get_layout_fields(self):
+        return [*super().get_layout_fields(), "acknowledged"]
+
+
+CheckboxBooks = inlineformset_factory(
+    Publisher, Book, form=CheckboxBookForm, formset=RestrictedBooks, extra=1, can_delete=True
+)
+CheckboxNotes = inlineformset_factory(Book, BookNote, form=CheckboxNoteForm, formset=Rows, extra=1, can_delete=True)
+CheckboxMemos = inlineformset_factory(
+    Book, BrowserMemo, form=CheckboxMemoForm, formset=Rows, extra=1, can_delete=True, can_order=True
+)
 CapabilityMemos = inlineformset_factory(
     Book, BrowserMemo, form=MemoForm, formset=Rows, extra=1, can_delete=True, can_order=True, can_delete_extra=False
 )
@@ -359,6 +391,32 @@ Records = inlineformset_factory(
 )
 
 
+class CheckboxRecordForm(BrowserRowForm):
+    accepted = forms.BooleanField(
+        required=True,
+        label=_("Bestätigung der ausführlichen Teilnahmebedingungen"),
+        error_messages={"required": _("Bitte bestätigen Sie die ausführlichen Teilnahmebedingungen für diese Zeile.")},
+    )
+
+    class Meta:
+        model = ConditionalPersistenceRecord
+        fields = ["active", "flag", "accepted"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["active"].label = str(_("Aktive Teilnahme mit ausführlicher übersetzter Beschreibung"))
+        self.fields["active"].help_text = _(
+            "AusführlicherHinweisOhneTrennzeichenFürDieTeilnahmeUndBestätigung <em>ordinary help</em>"
+        )
+        self.fields["flag"].disabled = True
+        self.fields["accepted"].initial = bool(self.instance.pk)
+
+
+CheckboxRecords = inlineformset_factory(
+    Profile, ConditionalPersistenceRecord, form=CheckboxRecordForm, formset=Rows, extra=1, can_delete=True
+)
+
+
 class ProfileForm(ConditionalGroupFormMixin, BrowserRowForm):
     cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("with_contact"), ["email", "phone"])]
 
@@ -418,6 +476,12 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
         result = super().cv_get_formsets()
         if self.request.path.startswith("/compact/"):
             composition = self.request.GET.get("composition", "compact-compact")
+            if self.object.pk == compact_checkbox_publisher_pk and self.request.GET.get("template"):
+                # The product fragment URL deliberately carries coordinates only. Recover this host's
+                # presentation-only query from its editor Referer without changing product routing.
+                referer = urlsplit(self.request.headers.get("Referer", ""))
+                if referer.netloc == self.request.get_host() and referer.path == self.request.path:
+                    composition = parse_qs(referer.query).get("composition", [composition])[0]
             books = result.formsets["books"]
             books.form_show_labels = True
             books.conditional = None
@@ -438,10 +502,38 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
                     else Scores
                 ),
                 compact_layout=CompactLayout(
-                    columns=[CompactColumn(name, span=3 if name == "taster" else 1) for name in ScoreForm.Meta.fields],
+                    columns=[
+                        CompactColumn(name, span=3 if name == "taster" else 1)
+                        # Django 4.2 inline instances append their FK to the shared Meta.fields list.
+                        # This multi-request checkbox fixture needs the original visible score schema.
+                        for name in (
+                            ScoreForm.base_fields
+                            if self.object.pk == compact_checkbox_publisher_pk
+                            else ScoreForm.Meta.fields
+                        )
+                    ],
                     controls_span=2,
                 ),
             )
+            if self.object.pk == compact_checkbox_publisher_pk:
+                # Swap only this opt-in case's cloned tree; keep its bound view and refresh cached fields.
+                for declaration, klass, field in (
+                    (books, CheckboxBooks, "title"),
+                    (books.children["notes"], CheckboxNotes, "note"),
+                    (books.children["memos"], CheckboxMemos, "text"),
+                ):
+                    assert declaration.cv_view is self
+                    declaration.klass = klass
+                    declaration.fields = list(declaration.klass.form.base_fields)
+                    if declaration.compact_layout:
+                        declaration.compact_layout = CompactLayout(
+                            columns=[CompactColumn(field, span=6), CompactColumn("acknowledged", span=4)],
+                            controls_span=2,
+                        )
+                # A classic sibling beside compact books, independently of the child composition.
+                result.formsets["classic_books"] = FormSet(
+                    title="Classic sibling books", klass=CheckboxBooks, form_show_labels=True
+                )
             if edge := self.request.GET.get("edge"):
                 books.klass = BookEdges[edge]
                 books.children = OrderedDict()
@@ -494,6 +586,30 @@ class BrowserFiles(BrowserEdit):
     cv_viewset = profile_vs
     form_class = ProfileForm
     cv_formsets = FormSets(formsets=OrderedDict(records=FormSet(title="Records", klass=Records)))
+
+    def cv_get_formsets(self):
+        result = super().cv_get_formsets()
+        if self.object.pk == compact_checkbox_pk:
+            records = result.formsets["records"]
+            assert records.cv_view is self
+            records.klass = CheckboxRecords
+            records.fields = list(records.klass.form.base_fields)
+            records.compact_layout = CompactLayout(
+                columns=[
+                    CompactColumn("active", span=4),
+                    CompactColumn("flag", span=2),
+                    CompactColumn("accepted", span=4),
+                ],
+                controls_span=2,
+            )
+            result.apply_hierarchy()
+        return result
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.object.pk == compact_checkbox_pk:
+            data["compact_fixture"] = True
+        return data
 
 
 actor = User.objects.create_superuser(username="browser", password=None, email="")
@@ -554,6 +670,40 @@ for model in (Publisher, Profile, Book, BookNote, BrowserMemo, BrowserConditiona
 events.clear()
 
 compact_widget_pk = None
+compact_checkbox_pk = None
+compact_checkbox_publisher_pk = None
+if os.environ.get("CV_COMPACT_CHECKBOX_FIXTURE") == "1":
+    profile = Profile.objects.create(name="compact-checkbox")
+    compact_checkbox_pk = profile.pk
+    record = ConditionalPersistenceRecord.objects.create(parent=profile, flag=True)
+    other_record = ConditionalPersistenceRecord.objects.create(parent=profile, active=True, flag=False)
+    checkbox_parent = Publisher.objects.create(name="compact-checkbox")
+    compact_checkbox_publisher_pk = checkbox_parent.pk
+    for index in range(2):
+        checkbox_book = Book.objects.create(publisher=checkbox_parent, title=f"Checkbox book {index}")
+        BookNote.objects.create(book=checkbox_book, note=f"Checkbox note {index}")
+        for memo_index in range(2):
+            BrowserMemo.objects.create(book=checkbox_book, text=f"Checkbox memo {index}/{memo_index}")
+    BrowserScore.objects.create(publisher=checkbox_parent, taster=actor)
+    cases.append(
+        {
+            "theme": "stock",
+            "id": "compact-checkbox",
+            "profile": profile.pk,
+            "record": record.pk,
+            "otherRecord": other_record.pk,
+            "publisher": checkbox_parent.pk,
+            "publisherUrl": f"/compact/stock/{checkbox_parent.pk}/",
+            "nestedFields": {
+                "books": list(CheckboxBookForm.base_fields),
+                "classic_books": list(CheckboxBookForm.base_fields),
+                "notes": list(CheckboxNoteForm.base_fields),
+                "memos": list(CheckboxMemoForm.base_fields),
+            },
+            "url": f"/files/stock/{profile.pk}/",
+            "fields": list(CheckboxRecordForm.base_fields),
+        }
+    )
 compact_cases = ["compact-presentation", "compact-lifecycle"]
 if os.environ.get("CV_COMPACT_WIDGET_FIXTURE") == "1":
     compact_cases.append("compact-widget")
@@ -614,6 +764,9 @@ def state(request):
             "scores": list(BrowserScore.objects.values()),
             "leaves": list(BrowserLeaf.objects.values()),
             "records": records,
+            "checkbox_records": list(
+                ConditionalPersistenceRecord.objects.filter(parent_id=compact_checkbox_pk).values()
+            ),
             "storageContent": {
                 str(p.relative_to(settings.MEDIA_ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in Path(settings.MEDIA_ROOT).rglob("*")

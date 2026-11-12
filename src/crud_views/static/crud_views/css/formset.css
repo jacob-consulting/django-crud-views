@@ -73,11 +73,13 @@
     overflow-wrap: anywhere;
 }
 
-.cv-formset-compact-label {
+.cv-formset-compact-label,
+.cv-formset-compact-fields > div > .mb-3 > div > .form-check > .form-check-label {
     font-weight: 600;
 }
 
-.cv-formset-compact-fields > div > .mb-3 {
+.cv-formset-compact-fields > div > .mb-3,
+.cv-formset-compact-fields > div > .mb-3 > div > .form-check {
     margin-bottom: 0 !important;
 }
 
@@ -119,6 +121,11 @@
     .cv-formset-compact-fields {
         row-gap: 1rem;
     }
+
+    .cv-formset-compact-fields > div > .mb-3 > div > .form-check > .form-check-label {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
 }
 
 @media (min-width: 768px) {
@@ -126,7 +133,8 @@
         display: flex;
     }
 
-    .cv-formset-compact-label {
+    .cv-formset-compact-label,
+    .cv-formset-compact-fields > div > .mb-3 > div > .form-check > .form-check-label {
         position: absolute;
         width: 1px;
         height: 1px;

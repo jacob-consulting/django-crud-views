@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from project.seeding import grant_model_perms
 
-from formsets.models import Choice, Question, Questionnaire
+from formsets.models import Checklist, ChecklistItem, Choice, Question, Questionnaire
 
 QUESTIONNAIRES = {
     "Customer Survey": {
@@ -18,7 +18,7 @@ def seed():
     user_model = get_user_model()
     for username in ("alice", "bob"):
         user = user_model.objects.get(username=username)
-        for model in (Questionnaire, Question, Choice):
+        for model in (Questionnaire, Question, Choice, Checklist, ChecklistItem):
             grant_model_perms(user, model)
     for title, questions in QUESTIONNAIRES.items():
         questionnaire, _ = Questionnaire.objects.get_or_create(title=title)
@@ -26,3 +26,6 @@ def seed():
             question, _ = Question.objects.get_or_create(questionnaire=questionnaire, text=text)
             for label in labels:
                 Choice.objects.get_or_create(question=question, label=label)
+    checklist, _ = Checklist.objects.get_or_create(title="Release checklist")
+    for label, done in (("Review the release notes", True), ("Publish the release", False)):
+        ChecklistItem.objects.get_or_create(checklist=checklist, label=label, defaults={"done": done})

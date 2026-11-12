@@ -27,7 +27,7 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
-from formsets.models import Choice, Question, Questionnaire
+from formsets.models import Checklist, ChecklistItem, Choice, Question, Questionnaire
 
 cv_questionnaire = ViewSet(model=Questionnaire, name="questionnaire", icon_header="fa-solid fa-list-check")
 
@@ -167,6 +167,9 @@ class QuestionnaireListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermiss
     cv_context_actions_inline = []  # labelled menu keeps the comparison readable on narrow screens
     cv_list_actions = ["detail", "update", "compact_update", "delete"]
     cv_list_actions_label_mode = {"update": "label", "compact_update": "label"}
+    cv_paragraph_template_code = _(
+        'Try the <a href="{% url "checklist-list" %}">Checklist example</a> for compact rows with Done checkboxes.'
+    )
 
 
 class QuestionnaireDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
@@ -237,3 +240,77 @@ class QuestionnaireDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, De
     cv_viewset = cv_questionnaire
     form_class = CrispyDeleteForm
     cv_message_template_code = _("Deleted questionnaire “{{ object }}”")
+
+
+cv_checklist = ViewSet(model=Checklist, name="checklist", icon_header="fa-solid fa-list-check")
+
+
+class ChecklistForm(CrispyModelForm):
+    class Meta:
+        model = Checklist
+        fields = ["title"]
+
+    def get_layout_fields(self):
+        return [Row(Column8("title")), Formsets()]
+
+
+class ChecklistItemForm(CrispyModelForm):
+    class Meta:
+        model = ChecklistItem
+        fields = ["label", "done"]
+
+
+ChecklistItemFormSet = inlineformset_factory(
+    Checklist,
+    ChecklistItem,
+    formset=InlineFormSet,
+    form=ChecklistItemForm,
+    fields=["label", "done"],
+    extra=1,
+    can_delete=True,
+    can_delete_extra=True,
+)
+
+cv_checklist_formsets = FormSets(
+    formsets=OrderedDict(
+        items=FormSet(
+            title=_("Items"),
+            klass=ChecklistItemFormSet,
+            fields=["label", "done"],
+            pk_field="id",
+            compact_layout=CompactLayout(
+                columns=[CompactColumn("label", span=7), CompactColumn("done", span=2)], controls_span=3
+            ),
+        )
+    )
+)
+
+
+class ChecklistTable(Table):
+    title = tables.LinkColumn("checklist-update", args=[tables.A("pk")])
+
+
+class ChecklistListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_checklist
+    table_class = ChecklistTable
+    cv_context_actions = ["list", "create"]
+    cv_list_actions = ["update"]
+    cv_paragraph_template_code = _('<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>')
+
+
+class ChecklistCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, CreateViewPermissionRequired):
+    cv_viewset = cv_checklist
+    form_class = ChecklistForm
+    cv_formsets = cv_checklist_formsets
+    cv_context_actions = ["list", "create"]
+    cv_paragraph_template_code = _('<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>')
+    cv_message_template_code = _("Created checklist “{{ object }}”")
+
+
+class ChecklistUpdateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_checklist
+    form_class = ChecklistForm
+    cv_formsets = cv_checklist_formsets
+    cv_context_actions = ["list", "update"]
+    cv_paragraph_template_code = _('<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>')
+    cv_message_template_code = _("Updated checklist “{{ object }}”")

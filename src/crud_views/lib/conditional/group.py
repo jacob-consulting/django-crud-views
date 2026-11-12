@@ -219,6 +219,10 @@ class ConditionalGroupFormMixin:
                 if name in self.fields and not self.fields[name].disabled:
                     resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
         cleaned = super().clean()
+        if any(isinstance(group.toggle, ValueToggle) for group in self.cv_conditional_groups):
+            # Inherited clean() may replace the mapping, including removing the
+            # controller. Value activation must use that returned authoritative data.
+            self.cleaned_data = cleaned
         for group in self.cv_conditional_groups:
             if group.is_on(self):
                 self._cv_enforce_required(group, cleaned)

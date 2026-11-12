@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 0
 waived_count: 9
-fixed_count: 36
-total_count: 45
-last_updated: 2026-11-12T11:29:37.430Z
+fixed_count: 38
+total_count: 47
+last_updated: 2026-11-12T11:44:56.596Z
 ---
 
 # Broken Windows Ledger
@@ -60,6 +60,8 @@ last_updated: 2026-11-12T11:29:37.430Z
 | 43 | 06.18 | deviation | .planning/phases/06.18-ancestor-authorization-for-nested-viewsets/06.18-COSTS.md |  | COSTS.md not refreshed by quick 261109-bf5: plain cold totals pre-fix and Guardian guard/rest split predates WR-01 76fdc7ff; refresh from evidence/261109-bf5/cost-observations (deferred-items.md) | fixed |  | 2026-11-09T08:31:39.895Z | 2026-11-09T08:48:22.336Z |
 | 44 | 06.25.1 | deviation | tests/test1/test_theme_adoption_docs.py | 231 | Fixed additional executed documentation inventory guard from 88/98 to 90/100 after full regression exposed stale expected counts; resolved in plan 06.25.1-01. | fixed |  | 2026-11-11T20:23:28.724Z | 2026-11-11T20:24:02.160Z |
 | 45 | 06.27 | deviation | .planning/STATE.md |  | Plan 01 repaired unreadable Plan: Not started to numeric plan position; SDK advanced to Plan 02. | fixed |  | 2026-11-12T11:29:15.543Z | 2026-11-12T11:29:37.430Z |
+| 46 | 06.27 | deviation | src/crud_views/lib/conditional/group.py |  | Value-group runtime validation moved before native cleaning to reject lazy callable choices and disarm request-added optional fields; fixed in a2609d0d. | fixed |  | 2026-11-12T11:44:56.021Z | 2026-11-12T11:44:56.243Z |
+| 47 | 06.27 | deviation | src/crud_views/lib/conditional/group.py |  | Value activation now honors replacement mappings returned by inherited clean; fixed in e332bf04. | fixed |  | 2026-11-12T11:44:56.405Z | 2026-11-12T11:44:56.596Z |
 
 ````json
 [
@@ -607,6 +609,32 @@ last_updated: 2026-11-12T11:29:37.430Z
     "reason": "",
     "recorded_at": "2026-11-12T11:29:15.543Z",
     "resolved_at": "2026-11-12T11:29:37.430Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 46,
+    "kind": "deviation",
+    "phase": "06.27",
+    "file": "src/crud_views/lib/conditional/group.py",
+    "line": null,
+    "description": "Value-group runtime validation moved before native cleaning to reject lazy callable choices and disarm request-added optional fields; fixed in a2609d0d.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-12T11:44:56.021Z",
+    "resolved_at": "2026-11-12T11:44:56.243Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 47,
+    "kind": "deviation",
+    "phase": "06.27",
+    "file": "src/crud_views/lib/conditional/group.py",
+    "line": null,
+    "description": "Value activation now honors replacement mappings returned by inherited clean; fixed in e332bf04.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-12T11:44:56.405Z",
+    "resolved_at": "2026-11-12T11:44:56.596Z",
     "milestone": "v1.0"
   }
 ]

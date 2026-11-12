@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "started": "2026-11-12T12:21:05.286Z",
+  "started": "2026-11-12T12:47:15.959Z",
   "humanReview": "pending",
   "sourceHashes": {
     ".planning/phases/06.27-choice-driven-conditional-groups-354/evidence/choice-example-browser.cjs": "261e0db22985d6a06cb4d719d3f86cc5b8976235d2250f8cda510178ff7d0271",
@@ -27,7 +27,7 @@
     "src/crud_views/checks.py": "fc440084df16b993a60edb50661f665ffa4b6b83d82856c3cbb52c55c63beac5",
     "src/crud_views/lib/conditional/__init__.py": "9638fcc8287f2ebf09c18fd2a6a484222e821660b63fa76c845126cbb95de0f5",
     "src/crud_views/lib/conditional/formset.py": "e88e631f70fe7b9bdddb3246252b053d03366067662ebd9f07538d2521a47c02",
-    "src/crud_views/lib/conditional/group.py": "459058398e7bc29a1984805dd2f0f37af99333faa05dfa442674d19b401867c2",
+    "src/crud_views/lib/conditional/group.py": "e99fc832e6f74dc9d64f8bfbcf42a94ca74b2fed90e654421e7b33c9acb3258c",
     "src/crud_views/lib/conditional/layout.py": "3b9b437ee4e855c52a8f897b6f89af9c87be914997bcb432ef0c39fcecedff6c",
     "src/crud_views/lib/conditional/toggle.py": "d17a25f28e702b11f0effabc8b5a5d3a7c515f08a2563261691e7027624d81a2",
     "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
@@ -61,7 +61,7 @@
       "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
       "examples/bootstrap5/manage.py",
       "runserver",
-      "127.0.0.1:38523",
+      "127.0.0.1:42729",
       "--noreload"
     ],
     [
@@ -1173,9 +1173,9 @@
     "temporaryRemoved": true,
     "developerDbUnchanged": true
   },
-  "temporaryRoot": "/tmp/cv-choice-example-900HDE",
-  "settings": "from project.settings import *\nDATABASES = {\"default\": {\"ENGINE\": \"django.db.backends.sqlite3\", \"NAME\": \"/tmp/cv-choice-example-900HDE/db.sqlite3\"}}\nMEDIA_ROOT = \"/tmp/cv-choice-example-900HDE/media\"\nALLOWED_HOSTS = [\"127.0.0.1\", \"localhost\"]\n",
-  "revision": "2e3cfcfffc40aa8d2dfd6369cc8dc1c516b3d220",
+  "temporaryRoot": "/tmp/cv-choice-example-eMlX4V",
+  "settings": "from project.settings import *\nDATABASES = {\"default\": {\"ENGINE\": \"django.db.backends.sqlite3\", \"NAME\": \"/tmp/cv-choice-example-eMlX4V/db.sqlite3\"}}\nMEDIA_ROOT = \"/tmp/cv-choice-example-eMlX4V/media\"\nALLOWED_HOSTS = [\"127.0.0.1\", \"localhost\"]\n",
+  "revision": "646404930070996b7f661a1df9e9fa38cb641f78",
   "runtime": {
     "node": "v24.21.0",
     "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
@@ -1189,6 +1189,6 @@
     "crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
     "chromium": "149.0.7827.55"
   },
-  "base": "http://127.0.0.1:38523",
-  "completed": "2026-11-12T12:21:41.913Z"
+  "base": "http://127.0.0.1:42729",
+  "completed": "2026-11-12T12:47:51.791Z"
 }

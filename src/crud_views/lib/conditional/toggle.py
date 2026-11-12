@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from django import forms
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import models
 from django.forms import BaseForm
 
@@ -123,13 +123,19 @@ class ValueToggle(ToggleSource):
                 token = _choice_token(value)
                 try:
                     canonical = _choice_token(coerce(token))
-                except (TypeError, ValueError) as exc:
+                except (TypeError, ValueError, ValidationError) as exc:
                     raise ImproperlyConfigured(f"ValueToggle '{self.name}' requires canonical choice tokens.") from exc
                 if canonical != token or token in tokens:
                     raise ImproperlyConfigured(
                         f"ValueToggle '{self.name}' requires unique canonical choice tokens; invalid key {value!r}."
                     )
                 tokens.add(token)
+        if (
+            type(field) is forms.TypedChoiceField
+            and field.empty_value not in field.empty_values
+            and _choice_token(field.empty_value) in tokens
+        ):
+            raise ImproperlyConfigured(f"ValueToggle '{self.name}' empty_value must not collide with a choice token.")
         if not set(self.values) <= tokens:
             raise ImproperlyConfigured(f"ValueToggle '{self.name}' values must match declared nonempty choices.")
 
@@ -139,6 +145,6 @@ class ValueToggle(ToggleSource):
             raise ImproperlyConfigured(f"ValueToggle controller '{self.name}' is missing from the form.")
         self.validate_field(field)
         value = form.cleaned_data.get(self.name) if hasattr(form, "cleaned_data") else form[self.name].value()
-        if value is None or value == "":
+        if value in field.empty_values or (type(field) is forms.TypedChoiceField and value == field.empty_value):
             return False
         return _choice_token(value) in self.values

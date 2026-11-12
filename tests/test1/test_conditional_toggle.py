@@ -76,7 +76,7 @@ def test_value_toggle_native_integer_blank_option(widget, value):
         kind = native.formfield(widget=widget)
 
     toggle = ValueToggle("kind", values=[value])
-    assert list(ChoiceForm.base_fields["kind"].choices)[0][0] == ""
+    assert next(iter(ChoiceForm.base_fields["kind"].choices))[0] == ""
     toggle.validate_field(ChoiceForm.base_fields["kind"], native)
     empty = ChoiceForm(data={"kind": ""})
     assert not toggle.is_on(empty)

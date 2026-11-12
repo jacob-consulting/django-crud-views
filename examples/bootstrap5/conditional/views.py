@@ -2,11 +2,12 @@ from collections import OrderedDict
 
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from django import forms
 from django.forms.models import inlineformset_factory
 from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
-from conditional.models import Event, Registration, Session, Speaker
+from conditional.models import Customer, Event, Registration, Session, Speaker
 from crud_views.lib.conditional import (
     ConditionalFormSet,
     ConditionalGroup,
@@ -14,6 +15,7 @@ from crud_views.lib.conditional import (
     ModelFieldToggle,
     ToggleGroup,
     UIFieldToggle,
+    ValueToggle,
 )
 from crud_views.lib.crispy import Column6, Column8, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.formsets import FormSet, FormSetMixin, FormSets, Formsets, InlineFormSet
@@ -259,3 +261,166 @@ class EventDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteView
     cv_viewset = cv_event
     form_class = CrispyDeleteForm
     cv_message_template_code = _("Deleted event “{{ object }}”")
+
+
+# ---------------- Kind 3: choice-driven conditional groups ----------------
+
+cv_customer = ViewSet(model=Customer, name="customer", icon_header="fa-solid fa-users")
+
+customer_consumer = ValueToggle("kind", values=["consumer"])
+customer_business = ValueToggle("kind", values=["wholesale", "distributor"])
+customer_wholesale = ValueToggle("kind", values=["wholesale"])
+customer_distributor = ValueToggle("kind", values=["distributor"])
+
+
+class CustomerForm(ConditionalGroupModelForm):
+    cv_conditional_groups = [
+        ConditionalGroup(toggle=customer_consumer, fields=["consumer_note"], required=[]),
+        ConditionalGroup(
+            toggle=customer_business,
+            fields=["company", "price_tier", "payment_terms"],
+            required=["company", "price_tier"],
+            empty_values={"payment_terms": "unset"},
+        ),
+        ConditionalGroup(toggle=customer_wholesale, fields=["wholesale_terms"], required=["wholesale_terms"]),
+        ConditionalGroup(toggle=customer_distributor, fields=["distribution_region"], required=["distribution_region"]),
+    ]
+
+    class Meta:
+        model = Customer
+        fields = [
+            "name",
+            "kind",
+            "consumer_note",
+            "company",
+            "price_tier",
+            "payment_terms",
+            "wholesale_terms",
+            "distribution_region",
+        ]
+
+    def get_layout_fields(self):
+        return [
+            Row(Column6("name"), Column6("kind")),
+            ToggleGroup(customer_consumer, Row(Column8("consumer_note")), legend=_("Consumer preferences")),
+            ToggleGroup(
+                customer_business,
+                Row(Column6("company"), Column6("price_tier")),
+                Row(Column6("payment_terms")),
+                legend=_("Business details"),
+            ),
+            ToggleGroup(customer_wholesale, Row(Column6("wholesale_terms")), legend=_("Wholesale terms")),
+            ToggleGroup(customer_distributor, Row(Column6("distribution_region")), legend=_("Distribution details")),
+        ]
+
+
+class CustomerRadioForm(CustomerForm):
+    class Meta(CustomerForm.Meta):
+        widgets = {"kind": forms.RadioSelect}
+
+
+class CustomerTable(Table):
+    id = LinkDetailColumn()
+    name = tables.Column()
+    kind = tables.Column()
+
+
+class CustomerListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_customer
+    table_class = CustomerTable
+    cv_context_actions = ["list", "create", "radio_create"]
+    cv_context_actions_inline = []
+    cv_list_actions = ["detail", "update", "radio_update", "delete"]
+    cv_list_actions_label_mode = {"update": "label", "radio_update": "label"}
+
+
+class CustomerDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_customer
+    cv_context_actions = ["home", "detail", "update", "radio_update", "delete"]
+    cv_context_actions_inline = []
+    cv_property_display = [
+        {
+            "title": _("Saved customer values"),
+            "properties": [
+                "id",
+                "name",
+                "kind",
+                {"path": "saved_consumer_note", "title": _("Consumer note")},
+                {"path": "saved_company", "title": _("Company")},
+                {"path": "saved_price_tier", "title": _("Price tier")},
+                {"path": "payment_terms", "choices_display": False},
+                {"path": "saved_wholesale_terms", "title": _("Wholesale terms")},
+                {"path": "saved_distribution_region", "title": _("Distribution region")},
+            ],
+        },
+    ]
+
+    @staticmethod
+    def _saved_value(value):
+        # Make the distinction inspectable instead of rendering every empty value as a dash.
+        if value is None:
+            return _("None")
+        return _('"" (blank)') if value == "" else value
+
+    def saved_consumer_note(self, instance):
+        return self._saved_value(instance.consumer_note)
+
+    def saved_company(self, instance):
+        return self._saved_value(instance.company)
+
+    def saved_price_tier(self, instance):
+        return self._saved_value(instance.price_tier)
+
+    def saved_wholesale_terms(self, instance):
+        return self._saved_value(instance.wholesale_terms)
+
+    def saved_distribution_region(self, instance):
+        return self._saved_value(instance.distribution_region)
+
+
+class CustomerCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
+    cv_viewset = cv_customer
+    form_class = CustomerForm
+    cv_context_actions = ["home", "create", "radio_create"]
+    cv_context_actions_inline = []
+    cv_action_label_template_code = _("Create Dropdown")
+    cv_action_short_label_template_code = _("Create Dropdown")
+    cv_message_template_code = _("Created customer “{{ object }}”")
+
+
+class CustomerUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_customer
+    form_class = CustomerForm
+    cv_context_actions = ["home", "detail", "update", "radio_update", "delete"]
+    cv_context_actions_inline = []
+    cv_action_label_template_code = _("Edit Dropdown")
+    cv_action_short_label_template_code = _("Edit Dropdown")
+    cv_message_template_code = _("Updated customer “{{ object }}”")
+
+
+class CustomerRadioCreateView(CustomerCreateView):
+    cv_viewset = cv_customer
+    cv_key = "radio_create"
+    cv_path = "create-radio"
+    cv_permission = "add"
+    cv_cancel_key = "create"
+    form_class = CustomerRadioForm
+    cv_action_label_template_code = _("Create Radio")
+    cv_action_short_label_template_code = _("Create Radio")
+
+
+class CustomerRadioUpdateView(CustomerUpdateView):
+    cv_viewset = cv_customer
+    cv_key = "radio_update"
+    cv_path = "update-radio"
+    cv_permission = "change"
+    cv_cancel_key = "update"
+    form_class = CustomerRadioForm
+    cv_action_label_template_code = _("Edit Radio")
+    cv_action_short_label_template_code = _("Edit Radio")
+
+
+class CustomerDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    cv_viewset = cv_customer
+    form_class = CrispyDeleteForm
+    cv_message_template_code = _("Deleted customer “{{ object }}”")

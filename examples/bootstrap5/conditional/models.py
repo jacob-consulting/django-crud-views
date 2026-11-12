@@ -59,3 +59,40 @@ class Speaker(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Customer(models.Model):
+    name = models.CharField(_("name"), max_length=100)
+    kind = models.CharField(
+        _("customer kind"),
+        max_length=20,
+        choices=[("consumer", _("Consumer")), ("wholesale", _("Wholesale")), ("distributor", _("Distributor"))],
+        default="consumer",
+    )
+    consumer_note = models.TextField(_("consumer note"), null=True, blank=True)  # NOSONAR S6553
+    company = models.CharField(_("company"), max_length=200, null=True, blank=True)  # NOSONAR S6553
+    price_tier = models.CharField(  # NOSONAR S6553 — nullable choices demonstrate automatic None clearing
+        _("price tier"), max_length=1, choices=[("A", _("A")), ("B", _("B"))], null=True, blank=True, default="A"
+    )
+    payment_terms = models.CharField(
+        _("payment terms"),
+        max_length=10,
+        choices=[("unset", _("Unset — no business terms")), ("net30", _("Net 30")), ("net60", _("Net 60"))],
+        default="unset",
+    )
+    wholesale_terms = models.IntegerField(
+        _("wholesale terms"),
+        choices=[(0, _("Prepaid")), (30, _("30 days")), (60, _("60 days"))],
+        null=True,
+        blank=True,
+        default=30,
+    )
+    distribution_region = models.CharField(_("distribution region"), max_length=100, blank=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("customer")
+        verbose_name_plural = _("customers")
+
+    def __str__(self):
+        return self.name

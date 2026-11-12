@@ -275,6 +275,8 @@ class CustomerCrudTest(ConditionalTestCase):
                     self.assertEqual(customer.distribution_region, "North" if kind == "distributor" else "")
 
     def test_shared_retention_then_clearing_persists_and_reopens(self):
+        from lxml import html
+
         from conditional.models import Customer
 
         for editor in ("update", "radio_update"):
@@ -315,8 +317,10 @@ class CustomerCrudTest(ConditionalTestCase):
                 self.assertIsNone(reopened.context["form"]["price_tier"].value())
                 self.assertEqual(reopened.context["form"]["payment_terms"].value(), "unset")
                 detail = self.client.get(reverse("customer-detail", kwargs={"pk": customer.pk}))
+                self.assertEqual(detail.status_code, 200)
+                detail_text = html.fromstring(detail.content).text_content()
                 for visible in (editor, "Keep this", "None", "unset", '"" (blank)'):
-                    self.assertContains(detail, visible, html=False)
+                    self.assertIn(visible, detail_text)
 
     def test_inactive_omitted_and_forged_values_clear_defaults(self):
         from conditional.models import Customer

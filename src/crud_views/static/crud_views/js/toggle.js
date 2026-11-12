@@ -28,6 +28,15 @@
         });
     }
 
+    function findChoiceControls(form, name) {
+        const matches = Array.from(form.elements).filter(el => el.form === form && el.name === name);
+        return matches.length === 1 && matches[0].tagName === "SELECT" && !matches[0].multiple ? matches : [];
+    }
+
+    function bindingIsOn(binding) {
+        return binding.values === null ? binding.controls[0].checked : binding.values.includes(binding.controls[0].value);
+    }
+
     function rememberExternal(records) {
         records.forEach(function ({ target }) {
             if (baselines.has(target)) baselines.set(target, target.hasAttribute("disabled"));
@@ -69,7 +78,7 @@
         for (const group of hidden) {
             for (let node = group; node && node !== state.form; node = node.parentElement) {
                 const binding = bindings.get(node);
-                if (binding && binding.checkbox.form === state.form && focus(binding.checkbox)) return;
+                if (binding && binding.controls.some(control => control.form === state.form && focus(control))) return;
             }
         }
         focus(state.form, true);
@@ -85,7 +94,7 @@
         try {
             state.groups.forEach(function (group) {
                 const binding = bindings.get(group);
-                if (binding) ownedStates.set(group, binding.checkbox.checked);
+                if (binding) ownedStates.set(group, bindingIsOn(binding));
                 if (ownedStates.has(group)) {
                     const enabled = ownedStates.get(group);
                     if (!enabled && group.style.display !== "none" && group.contains(active)) hidden.push(group);
@@ -138,7 +147,7 @@
         state.groups.forEach(function (group) {
             if (!groups.has(group)) {
                 const previous = bindings.get(group);
-                previous?.checkbox.removeEventListener("change", previous.onChange);
+                previous?.controls.forEach(control => control.removeEventListener("change", previous.onChange));
                 bindings.delete(group);
                 ownedStates.delete(group);
             }
@@ -146,14 +155,23 @@
         state.groups = groups;
         groups.forEach(function (group) {
             const name = group.getAttribute("cv-data-toggle-field");
-            const matches = findCheckboxes(form, name);
+            const metadata = group.getAttribute("cv-data-toggle-values");
+            let values = null;
+            let valid = true;
+            if (metadata !== null) {
+                try { values = JSON.parse(metadata); } catch (_) { valid = false; }
+                valid = valid && Array.isArray(values) && values.length > 0 &&
+                    values.every(value => typeof value === "string" && value !== "") && new Set(values).size === values.length;
+            }
+            const matches = !valid ? [] : metadata === null ? findCheckboxes(form, name) : findChoiceControls(form, name);
             const previous = bindings.get(group);
-            const checkbox = matches.length === 1 ? matches[0] : null;
-            if (previous && previous.checkbox !== checkbox) {
-                previous.checkbox.removeEventListener("change", previous.onChange);
+            const controls = matches.length === 1 ? matches : [];
+            if (previous && (previous.controls.length !== controls.length ||
+                previous.controls.some((control, index) => control !== controls[index]) || previous.metadata !== metadata)) {
+                previous.controls.forEach(control => control.removeEventListener("change", previous.onChange));
                 bindings.delete(group);
             }
-            if (!checkbox) {
+            if (!controls.length) {
                 if (matches.length > 1) {
                     console.warn("crud_views: ambiguous conditional toggle", name);
                 }
@@ -161,8 +179,8 @@
             }
             if (!bindings.has(group)) {
                 const onChange = function () { sync(state); };
-                bindings.set(group, { checkbox, onChange });
-                checkbox.addEventListener("change", onChange);
+                bindings.set(group, { controls, values, metadata, onChange });
+                controls.forEach(control => control.addEventListener("change", onChange));
             }
         });
         sync(state);
@@ -205,7 +223,7 @@
             });
             state.groups.forEach(function (group) {
                 const binding = bindings.get(group);
-                binding?.checkbox.removeEventListener("change", binding.onChange);
+                binding?.controls.forEach(control => control.removeEventListener("change", binding.onChange));
                 bindings.delete(group);
                 ownedStates.delete(group);
             });

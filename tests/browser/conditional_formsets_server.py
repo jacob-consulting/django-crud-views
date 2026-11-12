@@ -76,6 +76,7 @@ from crud_views.lib.conditional import (
     ModelFieldToggle,
     ToggleGroup,
 )
+from crud_views.lib.conditional.toggle import ValueToggle
 from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin
 from crud_views.lib.formsets import (
     CompactColumn,
@@ -395,7 +396,7 @@ class ChoiceTracerForm(ConditionalGroupFormMixin, BrowserRowForm):
     blank_text = forms.ChoiceField(
         choices=[(value, value.title()) for value in ("consumer", "wholesale", "distributor")]
     )
-    choice_toggle = ModelFieldToggle("blank_text")
+    choice_toggle = ValueToggle("blank_text", values=["wholesale"])
     cv_conditional_groups = [ConditionalGroup(choice_toggle, ["nullable_text"])]
 
     class Meta:
@@ -410,7 +411,7 @@ class ChoiceTracerForm(ConditionalGroupFormMixin, BrowserRowForm):
         return helper
 
     def get_layout_fields(self):
-        return ["blank_text", ToggleGroup(self.choice_toggle.field_name(), "nullable_text", legend="Wholesale details")]
+        return ["blank_text", ToggleGroup(self.choice_toggle, "nullable_text", legend="Wholesale details")]
 
 
 class CheckboxRecordForm(BrowserRowForm):
@@ -770,7 +771,9 @@ def choice_edit(request, mode, pk):
     if not request.user.is_superuser:
         return HttpResponse(status=403)
     instance = ConditionalPersistenceRecord.objects.get(pk=pk)
-    form = ChoiceTracerForm(request.POST if request.method == "POST" else None, instance=instance, prefix="choice-0")
+    form = ChoiceTracerForm(
+        None, data=request.POST if request.method == "POST" else None, instance=instance, prefix="choice-0"
+    )
     if request.method == "POST" and form.is_valid():
         form.save()
         return JsonResponse({"saved": True})

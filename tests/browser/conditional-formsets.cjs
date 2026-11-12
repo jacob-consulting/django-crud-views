@@ -273,7 +273,7 @@ async function runCase({c, page, context, base, before, result, check, load, sta
         check('prefixed-select', await group.getAttribute('cv-data-toggle-field') === 'choice-0-blank_text');
         await detail.fill('');
         const required = await post();
-        check('active-required', required.status === 422 && required.body.includes('This field is required.') && (await state()).choice_records[0].nullable_text === initial.nullable_text, {status:required.status});
+        check('active-required', required.status === 422 && required.body.includes('This field is required.') && (await state()).choice_records[0].nullable_text === initial.nullable_text, {status:required.status, exception:required.body.match(/<pre class="exception_value">([\s\S]*?)<\/pre>/)?.[1]});
         await detail.fill('Unsaved wholesale detail');
         await controller.selectOption('consumer');
         assert(!await group.isVisible() && await detail.isDisabled());

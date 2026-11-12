@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.27"
 current_phase_name: "Choice-driven conditional groups (#354)"
 current_plan: 5
-status: executing
-stopped_at: Completed 06.27-04-PLAN.md; next plan 05
-last_updated: "2026-11-12T12:11:50.755Z"
+status: verifying
+stopped_at: Completed 06.27-05-PLAN.md; independent audits and human usability review pending
+last_updated: "2026-11-12T12:27:28.817Z"
 last_activity: 2026-11-12
-last_activity_desc: Completed Plan 06.27-04; next plan 05
-state_head: 864d72902ddb7eb2f6dc451024873cdde22b8ae8
+last_activity_desc: Completed Plan 06.27-05; independent audits and human usability review pending
+state_head: ddfe7bf40f167778937c08cbf58bde223a29a806
 progress:
   total_phases: 34
   completed_phases: 26
   total_plans: 180
-  completed_plans: 179
+  completed_plans: 180
 milestone_name: milestone
 ---
 
@@ -34,10 +34,18 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 Phase: 06.27 (Choice-driven conditional groups (#354)) — IN PROGRESS
 Current Plan: 5
 Total Plans in Phase: 5
-Status: Ready to execute
-Last activity: 2026-11-12 -- Completed Plan 06.27-04; persisted Customer example with both editors, seeds and navigation; 77 tests/95 subtests, migration consistency and scoped Ruff pass; final docs/browser/full-suite evidence belongs to Plan 05
+Status: Plans executed — independent verification and human review pending
+Last activity: 2026-11-12 -- Completed Plan 06.27-05; public recipe and reciprocal links, actual Customer browser 56 assertions, final full suite 12,700 passed/1 existing skip, supported-series conditional 355 each, JS420/fragment2, current browser evidence and scoped quality gates pass
 
-Next: Execute 06.27-05-PLAN.md
+Next: Independent verification/security/code review, then consolidated human usability review; phase remains In Progress
+
+### Phase 06.27 execution complete — 2026-11-12
+
+- Five plans/twelve tasks executed. Shared ValueToggle supports native dropdown/radio controllers, four disjoint shared groups, authoritative validation and bounded choice clearing. Real Customer editors retain checkbox examples and reciprocal docs links.
+- Final supported 5.2 full suite: 12,700 passed / 1 existing Django 6-only CSP skip in 352.77s with four workers; conditional: 355 each on Python 3.12.3 / Django 4.2.30, 5.2.19, 6.0.10. Examples: 79 / 95 subtests; JS: 420, real fragment: 2; Ruff: 30 files and strict MkDocs/anchor pass.
+- Actual Customer Chromium evidence: 4 cells / 56 assertions, 30 source hashes, 2 hashed captures and 12 corruption refusals; fixture choice: 128 / modal lifecycle: 20 assertions, 40 hashes each. Temporary DB/media/settings/server cleaned; developer DB unchanged.
+- SUMMARY committed ddfe7bf4 before roadmap/state mutation. Roadmap: 5/5 In Progress, state ready for verification. Known aggregate state.update-progress declined once without repair. Installed JS manifest drift retained explicitly; no dependencies/lockfile change. Other Python versions, engines/themes and crispy floors unrun.
+- Independent audits and consolidated human readability/navigation judgment remain pending. No phase completion, human approval, push or merge. Existing untracked 06.26 .gitkeep preserved.
 
 ### Phase 06.25.1 completion — 2026-11-11
 
@@ -958,6 +966,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.27 P02 | 16min | 3 tasks | 19 files |
 | Phase 06.27 P03 | 10min | 2 tasks | 7 files |
 | Phase 06.27 P04 | 7min | 2 tasks | 10 files |
+| Phase 06.27 P05 | 14min | 3 tasks | 18 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1229,6 +1238,8 @@ Recent decisions affecting current work:
 - [Phase 06.27]: Native radio groups share existing controls arrays and ownership; normalized match sets avoid unnecessary listener replacement.
 - [Phase 06.27]: Keep both Customer editors on one ViewSet; the radio form changes only the controller widget.
 - [Phase 06.27]: Render saved None, blank text and the unset sentinel distinctly using existing object-detail view methods.
+- [Phase 06.27]: Keep existing Feature/DocRef stable destinations; prove local routes and generated anchors without claiming unreleased remote availability.
+- [Phase 06.27]: Retain installed JS version mismatch as an explicit compatibility limit; no dependency or lockfile changes.
 
 ### Pending Todos
 
@@ -1305,6 +1316,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-12T12:11:46.510Z
-Stopped at: Completed 06.27-04-PLAN.md; next plan 05
+Last session: 2026-11-12T12:27:24.406Z
+Stopped at: Completed 06.27-05-PLAN.md; independent audits and human usability review pending
 Resume file: None

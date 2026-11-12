@@ -5,10 +5,10 @@ current_phase: "06.27"
 current_phase_name: "Choice-driven conditional groups (#354)"
 status: planning
 stopped_at: Phase 06.28 complete, ready to plan Phase 06.27
-last_updated: "2026-11-12T13:36:03.559Z"
+last_updated: "2026-11-12T13:49:01.021Z"
 last_activity: 2026-11-12
-last_activity_desc: Phase 06.28 complete, transitioned to Phase 06.27
-state_head: 0cfbccc487573eec22e511eb29b4c61b1296f06f
+last_activity_desc: "Phase 06.28 shipped as PR #358; Python 12519, JS 401, strict docs and Ruff gates passed"
+state_head: 2c17b1b6cb2d8155cabde5091dcba5bf71bcb45a
 progress:
   total_phases: 35
   completed_phases: 27
@@ -34,7 +34,7 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 Phase: 06.27 — Choice-driven conditional groups (#354)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-12 — Phase 06.28 complete, transitioned to Phase 06.27
+Last activity: 2026-11-12 -- Phase 06.28 shipped as PR #358; Python 12519, JS 401, strict docs and Ruff gates passed
 
 Next: Ship/review Phase 06.28; reconcile Phase 06.27 in its own workspace before continuing (its plan artifacts are absent here).
 

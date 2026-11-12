@@ -252,8 +252,10 @@ class CustomerForm(ConditionalGroupModelForm):
     cv_conditional_groups = [
         ConditionalGroup(consumer, ["consumer_note"], required=[]),
         ConditionalGroup(
-            business, ["company", "price_tier", "payment_terms"],
-            required=["company", "price_tier"], empty_values={"payment_terms": "unset"},
+            business,
+            ["company", "price_tier", "payment_terms"],
+            required=["company", "price_tier"],
+            empty_values={"payment_terms": "unset"},
         ),
         ConditionalGroup(wholesale, ["wholesale_terms"]),
         ConditionalGroup(distributor, ["distribution_region"]),
@@ -261,12 +263,21 @@ class CustomerForm(ConditionalGroupModelForm):
 
     class Meta:
         model = Customer
-        fields = ["name", "kind", "consumer_note", "company", "price_tier",
-                  "payment_terms", "wholesale_terms", "distribution_region"]
+        fields = [
+            "name",
+            "kind",
+            "consumer_note",
+            "company",
+            "price_tier",
+            "payment_terms",
+            "wholesale_terms",
+            "distribution_region",
+        ]
 
     def get_layout_fields(self):
         return [
-            "name", "kind",
+            "name",
+            "kind",
             ToggleGroup(consumer, "consumer_note", legend="Consumer preferences"),
             ToggleGroup(business, "company", "price_tier", "payment_terms", legend="Business details"),
             ToggleGroup(wholesale, "wholesale_terms", legend="Wholesale terms"),

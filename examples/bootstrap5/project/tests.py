@@ -263,6 +263,7 @@ class ChoiceConditionalLinksTest(TestCase):
         from pathlib import Path
 
         from conditional.views import CustomerForm, CustomerRadioForm
+
         from crud_views.lib.conditional import ValueToggle
         from project.features import DOCS_BASE
 
@@ -284,6 +285,32 @@ class ChoiceConditionalLinksTest(TestCase):
             [("consumer",), ("wholesale", "distributor"), ("wholesale",), ("distributor",)],
         )
         self.assertTrue(all(isinstance(group.toggle, ValueToggle) for group in CustomerForm.cv_conditional_groups))
+
+    def test_published_recipe_matches_example_rules(self):
+        from pathlib import Path
+
+        from conditional.models import Customer
+        from conditional.views import CustomerForm
+
+        docs = (Path(__file__).resolve().parents[3] / "docs/reference/conditional.md").read_text()
+        section = docs.split("## Choice-driven groups", 1)[1]
+        recipe = section.split("```python\n", 1)[1].split("```", 1)[0]
+        namespace = {"Customer": Customer}
+        exec(compile(recipe, "docs/reference/conditional.md", "exec"), namespace)
+        for documented, actual in zip(
+            namespace["CustomerForm"].cv_conditional_groups, CustomerForm.cv_conditional_groups, strict=True
+        ):
+            self.assertEqual(documented.toggle.values, actual.toggle.values)
+            self.assertEqual(documented.fields, actual.fields)
+            self.assertEqual(documented.required_fields, actual.required_fields)
+            self.assertEqual(documented.empty_values, actual.empty_values)
+        for form_name in ("CustomerForm", "CustomerRadioForm"):
+            form = namespace[form_name](None, data={"name": "Recipe", "kind": "consumer"})
+            self.assertTrue(form.is_valid(), form.errors)
+            customer = form.save()
+            customer.refresh_from_db()
+            self.assertIsNone(customer.price_tier)
+            self.assertEqual(customer.payment_terms, "unset")
 
 
 class DocRefTest(SimpleTestCase):

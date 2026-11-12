@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.962" timestamp="2026-11-12T13:40:24.074959+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_crispy_columns" name="test_column6_theme_tracer" time="0.040"><failure message="AssertionError: assert {'col-md-6', 'extra'} == {'extra', 'span-6'}&#10;  &#10;  Extra items in the left set:&#10;  'col-md-6'&#10;  Extra items in the right set:&#10;  'span-6'&#10;  Use -v to get more diff">def test_column6_theme_tracer():
+        column = Column6("name", css_class="extra")
+        original = deepcopy(vars(column))
+        context = Context({"div": "outer", "fields": "outer-fields", "sentinel": object()})
+        surrounding = context.flatten()
+        bc.register_button_classes({"form:column-6": "span-6"})
+        for _ in range(2):
+            wrapper = html.fromstring(render_column(column, context=context))
+&gt;           assert set(wrapper.classes) == {"span-6", "extra"}
+E           AssertionError: assert {'col-md-6', 'extra'} == {'extra', 'span-6'}
+E             
+E             Extra items in the left set:
+E             'col-md-6'
+E             Extra items in the right set:
+E             'span-6'
+E             Use -v to get more diff
+
+tests/test1/test_crispy_columns.py:46: AssertionError</failure></testcase></testsuite></testsuites>

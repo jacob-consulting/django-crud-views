@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 848ceddd54ff9f2e49313b862927900726d28346
+last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 last_mapped_at: 2026-11-12
 ---
 # Coding Conventions
@@ -97,7 +97,7 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - Registry precedence is defaults → installed theme registrations → `CRUD_VIEWS_BUTTON_CLASSES`; cache invalidation follows theme registration and settings changes. Tests that register theme classes should snapshot/restore `bc._THEME_BUTTON_CLASSES` and reset the cache around each test (`tests/test1/test_button_classes_checks.py`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - Keep legend text as ordinary template-interpolated values and classes in quoted attributes. Test hostile plain strings at both boundaries by asserting escaped source output, exact parsed text/attribute values, and absence of injected nodes (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - Preserve markup ownership: ToggleGroup without a legend remains a `div`; formset row-only fragments omit their own outer fieldset/legend, while nested full formsets retain their own direct legends. Assert direct-child ownership and fragment roots rather than banning all descendant legends (`tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
-- Button-class reference inventories are executable contracts: core has 90 keys and the effective core-plus-workflow inventory has 100. Update the canonical table, reference docs, workflow inventory, and embedded fresh-process guard together (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
+- Button-class reference inventories are executable contracts: the current core inventory has 102 keys and the effective core-plus-workflow inventory has 112. Update the canonical table, reference docs, workflow inventory, and embedded fresh-process guard together (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
 ## Executable Documentation Recipes
 
@@ -111,5 +111,13 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - Keep server activation based on cleaned controller values; raw POST controls presentation only. Preserve existing `ModelFieldToggle` and `UIFieldToggle` behavior when extending choice support (`src/crud_views/lib/conditional/toggle.py`, `tests/test1/test_conditional_toggle.py`).
 - Conditional group field ownership must remain disjoint. Test overlap and clearing conflicts with declarations in both orders (`tests/test1/test_conditional_checks.py`).
 - Cover native `Select` and `RadioSelect` tokens as strings and integers, including zero, with prefixed and unprefixed forms (`tests/test1/test_conditional_toggle.py`, `tests/test1/test_conditional_group.py`).
+
+## Themeable Numbered Column Helpers (Phase 06.29)
+
+- Keep `Column1` through `Column12` as public crispy layout helpers exported from `src/crud_views/lib/crispy/__init__.py`; shared rendering and theme lookup belong in `src/crud_views/lib/crispy/table.py`, with defaults in the existing `src/crud_views/lib/button_classes.py` registry (`form:column-1` through `form:column-12`).
+- Resolve registry classes at render time so already-built layouts observe current theme/settings. Preserve constructor-provided classes additively, but honor explicit subclass or instance class/template ownership; do not infer ownership by comparing class strings (`src/crud_views/lib/crispy/table.py`, `tests/test1/test_crispy_columns.py`).
+- Render through a shallow per-render copy and crispy's existing renderer. Keep caller context and the original layout reusable across nested/sibling renders; avoid mutating shared wrapper state (`tests/test1/test_crispy_columns.py::test_column6_theme_tracer`, `test_column_nested_sibling_context_isolation`).
+- The local Bootstrap leaf is an audited bridge only for the installed stock Bootstrap template. Preserve ordinary crispy `Column` behavior and explicit custom templates/packs; test classes, field output, attributes, and ownership through rendered HTML (`src/crud_views/templates/crud_views/crispy/bootstrap5_column.html`, `tests/test1/test_crispy_columns.py`).
+- Keep the canonical 102 core / 112 core-plus-workflow registry inventories synchronized with registry defaults and documentation (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
 *Convention analysis: 2026-11-12*

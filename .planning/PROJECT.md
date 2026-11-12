@@ -96,6 +96,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ Choice-driven conditional groups with shared native dropdown/radio descriptors, bounded choice clearing and explicit overrides; Customer example with simple/complex navigation and reciprocal documentation — Phase 06.27; 22/22 verified, UAT 2/2.
 
+- ✓ **6.29** Themeable Column1–Column12 via existing registry, render-local complete classes, preserved caller/template ownership and executed recipes — Phase 06.29; canonical 10/10, clean re-review after lazy-extra correction.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -203,6 +205,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Reuse one ValueToggle descriptor in server policy and layout; keep choice inference bounded and explicit overrides authoritative | Maintains one traceable condition with native Django validation and no second engine | Validated (Phase 06.27) |
 
+| Numbered columns resolve complete registry classes on a shallow render copy; bridge only exact installed Bootstrap source | Preserves defaults, caller extras and custom-template ownership without a new grid or cache abstraction | Validated (Phase 06.29) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -221,4 +225,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-12 after Phases 06.27 and 06.28*
+*Last updated: 2026-11-12 after integrating Phases 06.27, 06.28 and 06.29*

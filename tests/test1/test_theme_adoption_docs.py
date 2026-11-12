@@ -12,7 +12,9 @@ from django.test import RequestFactory, override_settings
 from lxml import html
 
 from crud_views.lib import button_classes as bc
+from crud_views.lib.crispy import Column2, Column4, Column6, Column12
 from crud_views.lib.view.label_mode import default_label_mode, register_label_mode_defaults
+from tests.test1.test_crispy_columns import render_column
 from tests.test1.test_form_frame import THEME_FRAME, _theme_templates
 from tests.test1.test_heading_docs import recipe
 from tests.test1.test_theme_action_groups import OrdinaryForm, filter_helper, render_filter, render_group
@@ -82,6 +84,54 @@ def test_theme_registration_recipe():
         pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS"),
     ):
         default_label_mode("form")
+
+
+def test_column_registration_and_project_recipes():
+    columns = {
+        2: Column2("name"),
+        4: Column4("name"),
+        6: Column6("name", css_class="extra"),
+        12: Column12("name", css_class="extra"),
+    }
+
+    def rendered_classes(width):
+        node = html.fromstring(render_column(columns[width]))
+        assert node.cssselect("input[name=name]")[0].get("value") == "Ada"
+        return set(node.classes)
+
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={}):
+        assert rendered_classes(6) == {"col-md-6", "extra"}
+        _python("### Column theme registration")["MyAppThemeConfig"].ready(None)
+        for _ in range(2):
+            assert rendered_classes(6) == {"col-12", "col-lg-6", "extra"}
+            assert rendered_classes(4) == {"col-12", "col-lg-4"}
+            assert rendered_classes(2) == {"col-md-2"}
+        overrides = _python("### Column project overrides")["CRUD_VIEWS_BUTTON_CLASSES"]
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=overrides):
+            assert rendered_classes(4) == {"col-12", "col-xl-4"}
+            assert rendered_classes(6) == {"extra"}
+            assert rendered_classes(12) == {"extra"}
+            assert rendered_classes(2) == {"col-md-2"}
+        assert rendered_classes(6) == {"col-12", "col-lg-6", "extra"}
+        assert rendered_classes(4) == {"col-12", "col-lg-4"}
+        assert rendered_classes(12) == {"col-md-12", "extra"}
+
+
+def test_column_guidance_links_and_additive_release():
+    for path, heading, prefix in (
+        (ROOT / "docs/reference/create_view.md", "### Layout Helpers", ""),
+        (ROOT / "docs/getting_started/tutorial-3-forms.md", "## The form", "../reference/"),
+    ):
+        section = path.read_text().split(heading, 1)[1].split("\n## ", 1)[0]
+        assert f"({prefix}buttons.md#the-class-table)" in section
+        assert f"({prefix}theme.md#themeable-column-helpers)" in section
+        assert "configurable Bootstrap default" in section or "Configurable Bootstrap default" in section
+        assert "`Row`" in section
+    unreleased = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased", 1)[1].split("\n## ", 1)[0]
+    added = unreleased.split("### Added", 1)[1].split("\n### ", 1)[0]
+    assert "**Themeable column helpers** (#356)" in added
+    assert "form:column-1` through `form:column-12" in added
+    assert "docs/reference/theme.md#themeable-column-helpers" in added
 
 
 @pytest.mark.parametrize("strict", [False, True])
@@ -228,9 +278,9 @@ def test_workflow_presentation_docs():
     section = text.split("### Optional workflow defaults\n", 1)[1].split("\n### ", 1)[0]
     documented = dict(re.findall(r"^\| `(workflow:[^`]+)` \| `([^`]+)` \|$", section, re.M))
     assert documented == CrudViewsWorkflowConfig.crud_views_button_class_defaults
-    assert len(bc.DEFAULT_BUTTON_CLASSES) == 90
-    assert len(bc._get_default_button_classes()) == 100
-    assert "100 effective default keys" in section
+    assert len(bc.DEFAULT_BUTTON_CLASSES) == 102
+    assert len(bc._get_default_button_classes()) == 112
+    assert "112 effective default keys" in section
     precedence = text.split("### Precedence\n", 1)[1].split("\n## ", 1)[0]
     assert "core defaults + installed-app defaults + theme registrations + CRUD_VIEWS_BUTTON_CLASSES" in precedence
     assert "collisions with core or another app's defaults are rejected" in precedence

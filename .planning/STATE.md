@@ -5,21 +5,20 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phases 06.27 and 06.28 complete, ready to plan Phase 7
-last_updated: "2026-11-12T13:26:05.878Z"
+stopped_at: Phase 06.29 complete, ready to discuss Phase 7
+last_updated: "2026-11-12T14:32:55.690Z"
 last_activity: 2026-11-12
-last_activity_desc: "Phase 06.27 merged as PR #357; Phase 06.28 awaiting green CI on PR #358"
-state_head: 75732b9e6bc99dfaba8c080bc3bb7a593fea60d0
+last_activity_desc: "Phase 06.29 shipped as PR #359"
+state_head: d4ddb511c1b99e22caaef0e661e5835899a1fd41
 progress:
-  total_phases: 35
-  completed_phases: 34
-  total_plans: 181
-  completed_plans: 181
-  percent: 97
+  total_phases: 36
+  completed_phases: 35
+  total_plans: 183
+  completed_plans: 183
 milestone_name: milestone
 ---
 
-Total Phases: 35
+Total Phases: 36
 
 # Project State
 
@@ -36,9 +35,17 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: Not planned
 Status: Ready to plan
-Last activity: 2026-11-12 -- Phase 06.27 merged as PR #357; Phase 06.28 awaiting green CI on PR #358
+Last activity: 2026-11-12 -- Phase 06.29 shipped as PR #359
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.29 completion — 2026-11-12
+
+- Both plans/five tasks complete: twelve render-time column keys, bounded stock-template bridge, authored customization and executed adoption recipes.
+- Canonical verification passed 10/10 with 239 independent passing cases; validation five tasks covered, security five threats closed, UI preservation 24/24 source/rendered only. No required human checks.
+- Full suite 12,868 passed/one existing skip before review correction; final affected compatibility selection 430 passed on each Django 4.2 floor, 6.0 floor and 5.2/current after one-line lazy-extra coercion. Ruff and strict docs passed. Browser appearance/full Python matrix unverified.
+- Deep review CR-01 fixed with RED/GREEN and independently re-reviewed clean; disposition ledger retained. Completion warning is prose-only roadmap requirements, not missing formal IDs. Codebase maps need the required post-ship refresh.
+- No pending todos, stale handoffs or learnings graduation. All work local on gsd/phase-06.29; no push or merge.
 
 ### Phase 06.28 completion — 2026-11-12
 
@@ -804,7 +811,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 181
+- Total plans completed: 183
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -845,6 +852,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.26 | 4 | - | - |
 | 06.27 | 5 | - | - |
 | 06.28 | 1 | - | - |
+| 06.29 | 2 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1334,6 +1342,7 @@ None yet.
 - Phase 06.26 inserted after Phase 6: Issue #351 (URGENT)
 - Phase 06.27 inserted after Phase 06.26: Issue #354: choice-driven conditional groups; approved gsd-handover includes explicit clearing overrides and a complex example with reciprocal documentation links. Complete before Phase 7. (URGENT)
 - Phase 06.28 inserted after Phase 06.27: Issue #355: tooltip recipe documentation and executable regression tests; approved GSD handover D-01–D-06 governs scope. Restored the existing 06.27 roadmap entry from the source checkout. (URGENT)
+- Phase 06.29 inserted after Phase 06.26: Themeable column helpers (#356); explicitly assigned 06.29, approved decisions D-01–D-07, before the Phase 7 theme-surface freeze (URGENT)
 
 ## Deferred Items
 
@@ -1343,6 +1352,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-12T12:27:24.406Z
-Stopped at: Phases 06.27 and 06.28 complete, ready to plan Phase 7
+Last session: 2026-11-12T14:28:27.198Z
+Stopped at: Phase 06.29 complete, ready to discuss Phase 7
 Resume file: None

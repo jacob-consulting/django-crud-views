@@ -74,6 +74,19 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     # Library action groups add these utilities to the active pack's own wrapper classes.
     "form:actions": "",
     "form:filter-actions": "",
+    # Complete width classes for the numbered crispy column helpers.
+    "form:column-1": "col-md-1",
+    "form:column-2": "col-md-2",
+    "form:column-3": "col-md-3",
+    "form:column-4": "col-md-4",
+    "form:column-5": "col-md-5",
+    "form:column-6": "col-md-6",
+    "form:column-7": "col-md-7",
+    "form:column-8": "col-md-8",
+    "form:column-9": "col-md-9",
+    "form:column-10": "col-md-10",
+    "form:column-11": "col-md-11",
+    "form:column-12": "col-md-12",
     # the element of an eligible cancel (Phase 6.1): "button" or "a" (a native link), None means "button"; a
     # structural value like container-tag, never classes, and without mode keys
     "form:cancel-tag": "button",

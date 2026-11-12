@@ -1,0 +1,12 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-4-2/bin/python -m pytest tests/test1/test_crispy_columns.py::test_column6_theme_tracer -n 2 -q -p no:cacheprovider --junitxml=.planning/phases/06.29-themeable-column-helpers-356/01-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.962\" timestamp=\"2026-11-12T13:40:24.074959+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_crispy_columns\" name=\"test_column6_theme_tracer\" time=\"0.040\"><failure message=\"AssertionError: assert {'col-md-6', 'extra'} == {'extra', 'span-6'}&#10;  &#10;  Extra items in the left set:&#10;  'col-md-6'&#10;  Extra items in the right set:&#10;  'span-6'&#10;  Use -v to get more diff\">def test_column6_theme_tracer():\n        column = Column6(\"name\", css_class=\"extra\")\n        original = deepcopy(vars(column))\n        context = Context({\"div\": \"outer\", \"fields\": \"outer-fields\", \"sentinel\": object()})\n        surrounding = context.flatten()\n        bc.register_button_classes({\"form:column-6\": \"span-6\"})\n        for _ in range(2):\n            wrapper = html.fromstring(render_column(column, context=context))\n&gt;           assert set(wrapper.classes) == {\"span-6\", \"extra\"}\nE           AssertionError: assert {'col-md-6', 'extra'} == {'extra', 'span-6'}\nE             \nE             Extra items in the left set:\nE             'col-md-6'\nE             Extra items in the right set:\nE             'span-6'\nE             Use -v to get more diff\n\ntests/test1/test_crispy_columns.py:46: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_column6_theme_tracer",
+  "targetFile": "tests/test1/test_crispy_columns.py",
+  "expected": "span-6 extra",
+  "actual": "col-md-6 extra",
+  "semanticAssessment": "Target ran and failed on wrapper classes because theme registration is ignored.",
+  "reportPath": ".planning/phases/06.29-themeable-column-helpers-356/01-red.xml",
+  "reportModifiedAt": 1794490825.035549
+}

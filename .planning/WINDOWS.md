@@ -2,8 +2,8 @@
 schema_version: 1
 open_count: 0
 waived_count: 9
-fixed_count: 38
-total_count: 47
+fixed_count: 39
+total_count: 48
 last_updated: 2026-11-12T11:44:56.596Z
 ---
 
@@ -62,6 +62,8 @@ last_updated: 2026-11-12T11:44:56.596Z
 | 45 | 06.27 | deviation | .planning/STATE.md |  | Plan 01 repaired unreadable Plan: Not started to numeric plan position; SDK advanced to Plan 02. | fixed |  | 2026-11-12T11:29:15.543Z | 2026-11-12T11:29:37.430Z |
 | 46 | 06.27 | deviation | src/crud_views/lib/conditional/group.py |  | Value-group runtime validation moved before native cleaning to reject lazy callable choices and disarm request-added optional fields; fixed in a2609d0d. | fixed |  | 2026-11-12T11:44:56.021Z | 2026-11-12T11:44:56.243Z |
 | 47 | 06.27 | deviation | src/crud_views/lib/conditional/group.py |  | Value activation now honors replacement mappings returned by inherited clean; fixed in e332bf04. | fixed |  | 2026-11-12T11:44:56.405Z | 2026-11-12T11:44:56.596Z |
+
+| 48 | 06.29 | deviation | tests/test1/test_crispy_columns.py |  | Task 3 compatibility tests were already green after Task 1; no new behavior implementation or fabricated RED was needed. | fixed |  | 2026-11-12T13:46:50.921Z | 2026-11-12T13:47:36.024Z |
 
 ````json
 [
@@ -635,6 +637,19 @@ last_updated: 2026-11-12T11:44:56.596Z
     "reason": "",
     "recorded_at": "2026-11-12T11:44:56.405Z",
     "resolved_at": "2026-11-12T11:44:56.596Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 48,
+    "kind": "deviation",
+    "phase": "06.29",
+    "file": "tests/test1/test_crispy_columns.py",
+    "line": null,
+    "description": "Task 3 compatibility tests were already green after Task 1; no new behavior implementation or fabricated RED was needed.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-12T13:46:50.921Z",
+    "resolved_at": "2026-11-12T13:47:36.024Z",
     "milestone": "v1.0"
   }
 ]

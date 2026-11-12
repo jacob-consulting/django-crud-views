@@ -6,6 +6,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Numbered column custom renderers:** the default Bootstrap 5 bridge for `Column1`–`Column12`
+  now escapes plain strings from `get_rendered_fields()`. Crispy's standard rendered fields remain unchanged.
+  Custom HTML renderers should use `format_html()` to escape interpolated values; see the
+  [migration guide](docs/migrating-1.0.md#numbered-column-custom-renderers).
+
 - **Explicit header-icon suppression** (#329): `cv_icon_header=""` now suppresses the inherited ViewSet header
   icon; previously it inherited. To keep inheritance, use `None` or `Icon.VIEWSET_DEFAULT`
   (`from crud_views.lib.icons import Icon`). Use `Icon.NONE` for readable intentional suppression. Custom header
@@ -593,6 +598,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   layouts for native dropdown/radio controls, including groups shared by several choices. Standard choice fields
   support bounded automatic clearing and authoritative explicit `empty_values`. The Customer example demonstrates
   both editors and saved values. See [Choice-driven groups](docs/reference/conditional.md#choice-driven-groups).
+
+- **Themeable column helpers** (#356): the twelve `form:column-1` through `form:column-12` utility keys
+  configure complete class strings for the existing `Column1`–`Column12` helpers. Theme registration and
+  per-key project overrides resolve on each render, including layouts created before registration.
+  Defaults remain `col-md-N`; caller classes remain additive, including with empty/`None` width suppression.
+  The audited stock Bootstrap wrapper omits its implicit fallback, while authored classes and intentional
+  custom templates keep ownership. See the executed [theme/project recipes](docs/reference/theme.md#themeable-column-helpers).
 
 - **Independent legend class hooks** (#346): `conditional:legend` and `formset:legend` use the existing
   theme/project class registry for ToggleGroup and formset title legends, both empty by default. Full nested

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 848ceddd54ff9f2e49313b862927900726d28346
+last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 last_mapped_at: 2026-11-12
 ---
 # Codebase Structure
@@ -75,6 +75,7 @@ django-crud-views/
 - Contains: Asset registry/pipeline support, resource abstraction, settings, breadcrumbs, icons, buttons, formsets, conditional fields/layouts, table configuration, crispy integration, messages, ordering and session helpers.
 - Key files: `src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `src/crud_views/lib/resource.py`, `src/crud_views/lib/settings.py`, `src/crud_views/lib/formsets/`, `src/crud_views/lib/conditional/`, `src/crud_views/lib/table/`, `src/crud_views/lib/crispy/`.
 - Theme class customization is centralized in `src/crud_views/lib/button_classes.py`; the independent `conditional:legend` and `formset:legend` slots are consumed by existing templates through `cv_button_class` and default to empty (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
+- Crispy layout helpers are public through `src/crud_views/lib/crispy/__init__.py`; `Column1`–`Column12` in `src/crud_views/lib/crispy/table.py` resolve the numbered `form:column-N` slots at render time. Extend this bounded helper family and registry when adding themed Bootstrap column widths.
 
 **`src/crud_views/lib/formsets/`:**
 - Purpose: Describe, initialize, recursively traverse and adapt nested inline formsets for view context and templates.
@@ -96,6 +97,7 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - Contains: Toggle sources and value-based choice controllers, group validation/cleaning, crispy `ToggleGroup` layout, conditional formset handling, and shared layout helpers.
 - Key files: `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/lib/conditional/formset.py`.
 - Guidance: Put reusable controller and group behavior here. `ValueToggle` supports standard static single-choice fields with select/radio widgets; declarations should keep controlled fields disjoint, and explicit business clear values belong in `ConditionalGroup.empty_values`.
+- Scope: `ValueToggle` activates `ConditionalGroup` fields only. `ConditionalFormSet` rejects it and uses checkbox-style `ModelFieldToggle`/`UIFieldToggle` for whole-formset skip/purge (`src/crud_views/lib/conditional/formset.py`).
 
 **`examples/bootstrap5/conditional/`:**
 - Purpose: Demonstrate checkbox and choice-controlled conditional fields and formsets in a consumer-style app.
@@ -207,6 +209,7 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - `src/crud_views/templatetags/crud_views.py` and `src/crud_views/lib/button_classes.py`: `{% cv_button_class %}` resolves existing theme class slots, including opt-in conditional/formset legend classes used by their current templates.
 - `src/crud_views_object_detail/templates/crud_views_object_detail/`: Object detail layout and field rendering packs.
 - `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`: Object-detail tab lifecycle bridge loaded through asset registration in `src/crud_views_object_detail/apps.py`.
+- `src/crud_views/lib/crispy/table.py` and `src/crud_views/lib/button_classes.py`: numbered `Column1`–`Column12` helpers resolve configurable `form:column-N` grid classes, with the Bootstrap 5 compatibility template at `src/crud_views/templates/crud_views/crispy/bootstrap5_column.html`.
 
 **Testing:**
 - `tests/test1/`: Python/Django tests and test app.

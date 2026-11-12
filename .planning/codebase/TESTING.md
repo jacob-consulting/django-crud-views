@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 848ceddd54ff9f2e49313b862927900726d28346
+last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 last_mapped_at: 2026-11-12
 ---
 # Testing Patterns
@@ -115,7 +115,11 @@ Demo `TestCase` fixture setup uses this pattern (`examples/bootstrap5/library/te
 **View Coverage:**
 ```bash
 pytest tests -n auto --cov --cov-report=term-missing
+nox -s crispy_floor --django=4.2            # Declared crispy dependency floors, Django 4.2
+nox -s crispy_floor --django=6.0            # Declared crispy dependency floors, Django 6.0
 ```
+
+`noxfile.py` defines `crispy_floor` on Python 3.12 with exact `django-crispy-forms==2.0` and `crispy-bootstrap5==2023.10` pins. It checks resolved package versions and audits Django 6 `format_html()` calls before running `CRISPY_FLOOR_TESTS` with `-n auto`. The focused list is intentionally maintained separately from the full suite and includes `tests/test1/test_crispy_columns.py`; its only deselection is `tests/test1/test_form_buttons_golden.py::test_filter_form_baseline`, whose outer crispy wrapper differs at the floor. Keep this floor list and exclusion explicit when adding coverage for the crispy leaf features.
 
 ## Test Types
 
@@ -147,8 +151,8 @@ Vitest loads the real asset into jsdom before cases (`tests/js/toggle.test.js`, 
 - Registry fixtures snapshot `_THEME_BUTTON_CLASSES` and reset the class cache before and after each test. Reuse this isolation when changing registrations or settings; don't rely on pytest-xdist worker lifetime to clear shared module state (`tests/test1/test_button_classes.py`, `tests/test1/test_button_classes_checks.py`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - `tests/test1/test_conditional_layout.py` verifies layered precedence and independence, class escaping, ordinary legend text escaping, and the no-legend `div` path against rendered crispy HTML. `tests/test1/test_formsets_compact.py` parameterizes full, nested, classic/compact, and row-only formsets; it checks direct owner legends, omission on row-only roots, and preservation of full nested child legends.
 - Hostile-value tests must check both raw escaped markup and parsed DOM semantics: exact original text/class, no child injection, and no unexpected script/image/attribute nodes. A row-only fragment assertion should target its own root; nested full descendants are expected to have legends (`tests/test1/test_conditional_layout.py::test_toggle_group_legend_escapes_plain_text_and_classes`, `tests/test1/test_formsets_compact.py::test_formset_legend_escapes_plain_text_and_classes`).
-- `tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs` and `tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table` guard reference inventories: 90 core keys and 100 effective core-plus-workflow keys. Keep embedded fresh-process source and documentation counts synchronized.
-- Button-class registry tests pin the two legend keys and empty defaults. Tests that modify theme registrations snapshot and restore `_THEME_BUTTON_CLASSES` and reset its cache; the default inventory is 100 keys and the core reference table accounts for 90, with workflow adding 10 (`tests/test1/test_button_classes.py`, `tests/test1/test_button_classes_checks.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
+- `tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs` and `tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table` guard reference inventories: 102 core keys and 112 effective core-plus-workflow keys. Keep embedded fresh-process source and documentation counts synchronized.
+- Phase 06.25.1 retained a full-suite result of 12,486 passed and one existing skip on Python 3.12 / Django 5.2; this is one environment, not a run of the supported matrix. Focused legend/registry/documentation selection and the full run used multicore pytest. See `.planning/phases/06.25.1-issue-346/06.25.1-VERIFICATION.md` for exact gate evidence and environment details.
 
 ## Executable Documentation Recipes
 
@@ -176,5 +180,13 @@ PYTHONPATH="$PWD/src:$PWD" npm run test:integration
 - Persistence assertions should query saved model state as well as `cleaned_data`. Cover inactive forged values, explicit falsy values, model-choice inference, nullable and blankable clearing, defaults, and inherited model/form validation (`tests/test1/test_conditional_persistence.py`).
 - Browser checks separate stock/native choice widgets from lifecycle behavior. Generate records with `tests/browser/conditional-formsets.cjs` and validate them with `tests/browser/conditional-formsets-evidence.test.cjs`; assert exact case matrices and observed values.
 - Phase 06.27's pre-fix compatibility pass recorded the full Python suite at **12,700 passed, 1 existing skip**, 420 full JS tests, examples, and fragment integration. These are historical pre-fix results. After review fixes, targeted conditional tests recorded **364 passed on each of Django 4.2, 5.2, and 6.0**, with 92 focused JS toggle tests and targeted evidence/browser/source checks. The full Python suite was not rerun after fixes; do not present its historical count as post-fix verification. See `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-COMPATIBILITY.md` and `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-VERIFICATION.md` for exact provenance and limits.
+
+## Themeable Numbered Column Helpers (Phase 06.29)
+
+- `tests/test1/test_crispy_columns.py` owns rendered behavior for the twelve `ColumnN` helpers: compare default bytes against ordinary crispy `Column`, parameterize all widths and registry values, and verify theme/settings precedence and late lookup. Use its layout/context tracer, custom-template ownership cases, caller attribute and hostile-value assertions, plus built-in delete/formset/workflow consumer checks as patterns for changes to crispy wrapper rendering.
+- Registry acceptance, invalid values, empty/`None`, and utility-mode contracts are tested in `tests/test1/test_button_classes_checks.py`; keep the documented and executable registry inventory checks in `tests/test1/test_button_classes.py` and `tests/test1/test_theme_adoption_docs.py` synchronized.
+- Phase 06.29's verification record reports a full Python suite on Django 5.2/current crispy at **12,868 passed, 1 pre-existing version skip**, and a separate post-merge integration selection at **1,375 passed** with four workers. The floor selection recorded **1,391 passed** on each of Django 4.2 and 6.0. These are phase-recorded results, not checks run during this map refresh; the full-suite count predates ship-time merge integration. See `.planning/phases/06.29-themeable-column-helpers-356/06.29-VERIFICATION.md` for commands, environment, and scope limits.
+
+**Checks run during this map refresh:** None. Test/configuration patterns above were inspected from source and phase records only.
 
 *Testing analysis: 2026-11-12*

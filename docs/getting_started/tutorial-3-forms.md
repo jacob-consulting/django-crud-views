@@ -22,9 +22,13 @@ class AuthorForm(CrispyModelForm):
 The submit button reads "Save" (translated) by default; set `submit_label` on the form to
 change it. `get_layout_fields` returns
 a crispy `Layout` (or, as here, a single `Row`) built from `Column2` /
-`Column4` / `Column6` — these aren't crud_views-specific widgets, just thin
-`Column` subclasses that set a Bootstrap grid CSS class (`col-md-2`,
-`col-md-4`, `col-md-6`), so three `Column4`s side by side fill the row.
+`Column4` / `Column6`. These helpers have configurable Bootstrap defaults
+(`col-md-2`, `col-md-4`, `col-md-6`), so three default `Column4`s fill the row
+at the medium breakpoint and above. All twelve widths use the existing
+[column utility keys](../reference/buttons.md#the-class-table); see the
+[theme/project recipes](../reference/theme.md#themeable-column-helpers) to change them
+without changing the form. The active crispy pack owns `Row` and surrounding layout,
+and the theme supplies the CSS; configuring columns alone does not replace the whole grid.
 
 ## Create/Update views
 

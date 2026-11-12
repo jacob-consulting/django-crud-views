@@ -35,6 +35,7 @@ CRISPY_FLOOR_TESTS = [
     "tests/test1/test_alerts.py",
     "tests/test1/test_button_classes.py",
     "tests/test1/test_crispy_buttons.py",
+    "tests/test1/test_crispy_columns.py",
     "tests/test1/test_form_buttons_golden.py",
     "tests/test1/test_button_data.py",
     "tests/test1/test_icon_host_leaves.py",

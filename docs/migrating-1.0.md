@@ -5,6 +5,26 @@ the route from **0.29.x** to 1.0.0. The [CHANGELOG](https://github.com/jacob-con
 stays the complete record, ordered by release and issue; this page orders the same changes by what you have to
 touch.
 
+## Numbered column custom renderers
+
+The default Bootstrap 5 template bridge for `Column1`–`Column12` now respects Django's autoescaping.
+Normal crispy field rendering already returns safe HTML and is unchanged. If you override
+`get_rendered_fields()` and return a plain HTML string, that string now renders as text.
+Build intended markup with `format_html()` so interpolated values remain escaped:
+
+```python
+from django.utils.html import format_html
+from crud_views.lib.crispy import Column6
+
+
+class SummaryColumn(Column6):
+    def get_rendered_fields(self, form, context, template_pack, **kwargs):
+        return format_html("<span>{}</span>", form["name"].value())
+```
+
+Do not mark untrusted input safe. Explicit custom templates and other template packs retain their own
+escaping behavior; audit those templates separately if they use `fields|safe`.
+
 ## Explicit header-icon suppression
 
 Previously, `cv_icon_header=""` inherited the ViewSet's header icon. It now suppresses that icon, just like

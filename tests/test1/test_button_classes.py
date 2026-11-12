@@ -26,6 +26,7 @@ from crud_views.lib.button_classes import (
 from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
 EXPECTED_KEYS = {
+    *(f"form:column-{width}" for width in range(1, 13)),
     *(f"{loc}:{slot}" for loc in ("context", "list") for slot in ("primary", "secondary", "tertiary", "danger")),
     "card:primary",
     "card:secondary",
@@ -115,7 +116,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 90
+    assert len(EXPECTED_KEYS) == 102
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -124,16 +125,22 @@ def test_default_table_is_complete():
     assert DEFAULT_BUTTON_CLASSES["formset:legend"] == ""
 
 
+@pytest.mark.parametrize("width", range(1, 13))
+def test_numbered_column_defaults(width):
+    assert DEFAULT_BUTTON_CLASSES[f"form:column-{width}"] == f"col-md-{width}"
+    assert get_button_class("form", f"column-{width}") == f"col-md-{width}"
+
+
 def test_workflow_app_defaults_lifecycle(monkeypatch):
     from crud_views.apps import CrudViewsConfig
     from crud_views_workflow.apps import CrudViewsWorkflowConfig
 
     core = dict(DEFAULT_BUTTON_CLASSES)
     workflow = dict(CrudViewsWorkflowConfig.crud_views_button_class_defaults)
-    assert len(core) == 90
+    assert len(core) == 102
     assert len(workflow) == 10
     assert bc._get_default_button_classes() == core | workflow
-    assert len(get_button_classes()) == 100
+    assert len(get_button_classes()) == 112
     register_button_classes({"workflow:badge-purple": "theme-purple"})
     seen = []
     original_ready = CrudViewsConfig.ready
@@ -231,7 +238,7 @@ class ThemeConfig(AppConfig):
     name = "badge_theme_probe"
     path = "."
     def ready(self):
-        assert len(bc._get_default_button_classes()) == 100
+        assert len(bc._get_default_button_classes()) == 112
         bc.register_button_classes({"workflow:badge-info": "theme-info"})
         seen.append(bc.get_button_class("workflow", "badge-info"))
 theme.ThemeConfig = ThemeConfig
@@ -244,11 +251,11 @@ settings.configure(
     CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"},
 )
 from crud_views.lib import button_classes as bc
-assert len(bc.DEFAULT_BUTTON_CLASSES) == 90
+assert len(bc.DEFAULT_BUTTON_CLASSES) == 102
 assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
 django.setup()
 assert seen == ["theme-info"]
-assert len(bc._get_default_button_classes()) == 100
+assert len(bc._get_default_button_classes()) == 112
 assert bc.get_button_class("workflow", "badge-info") == "theme-info"
 assert bc.get_button_class("workflow", "badge-light") == "project-light"
 """

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 848ceddd54ff9f2e49313b862927900726d28346
+last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 last_mapped_at: 2026-11-12
 ---
 <!-- refreshed: 2026-11-12 -->
@@ -61,6 +61,7 @@ last_mapped_at: 2026-11-12
 | Delete preview and protection | Bounded related-object preview, protected-row labels, and deletion lifecycle integration | `src/crud_views/lib/deletion.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/templates/crud_views/snippets/delete/` |
 | Nested formset rendering | Request-local recursive formset tree with per-node classic or compact presentation | `src/crud_views/lib/formsets/`, `src/crud_views/templates/crud_views/formsets/` |
 | Choice-driven conditional groups | Server-side `ValueToggle` validation maps canonical single-choice values to disjoint field groups; inactive fields clear using recognized native empty values or explicit `empty_values` | `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py` |
+| Numbered crispy columns | `Column1` through `Column12` provide numbered Bootstrap grid defaults through the `form:column-N` class registry, using render-local copies and a narrowly audited Bootstrap 5 template bridge | `src/crud_views/lib/crispy/table.py`, `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/crispy/bootstrap5_column.html` |
 
 ## Pattern Overview
 
@@ -83,6 +84,7 @@ last_mapped_at: 2026-11-12
 - Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Request-time schema projection validates field coverage, supported widget shape, effective labels and uniform row metadata before crispy renders. The compact helper composes crispy `Layout`/`Row`/`Div`/`Field` objects around the same bound fields and existing formset controls, so the page-owned outer form, CSRF, validation and save flow remain shared; `compact_layout=None` uses the classic helper unchanged. The exact stock `django.forms.widgets.CheckboxInput` class is in the supported widget set. Custom subclasses/templates require the public `CompactWidgetCompatible` marker, which skips widget-specific checks only and transfers responsibility for complete accessible/dynamic rendering to the widget author; shared field coverage, role, label and row-consistency validation remains (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/formset.html`).
 - Legend class customization is a narrow extension of the existing button-class registry: `conditional:legend` and `formset:legend` are resolved by `{% cv_button_class %}` in the existing conditional-group and formset templates. Each slot remains empty by default and independently configurable; this adds no rendering abstraction (`src/crud_views/lib/button_classes.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
 - Choice-driven field groups use `ValueToggle(field, values)` over a standard static `ChoiceField`/`TypedChoiceField` with `Select` or `RadioSelect`; activation is decided from validated server-side form data, not JavaScript. Configuration checks require canonical choice tokens, disjoint controlled fields, and no group/controller overlap. Off groups clear through bounded native field/model empty values or explicit `empty_values` (`src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py`).
+- `ValueToggle` is supported for `ConditionalGroup` only. Whole-formset activation via `ConditionalFormSet` remains checkbox-based (`ModelFieldToggle` or `UIFieldToggle`), enforced by its Pydantic validator; do not use choice-value controllers to skip or purge entire formsets (`src/crud_views/lib/conditional/formset.py`).
 - The conditional example defines four groups on `CustomerForm`, including shared Wholesale/Distributor business fields, and `CustomerRadioForm` changes only the `kind` widget. The business group explicitly clears `payment_terms` to the persisted `unset` choice, while nullable `price_tier` clears to `None` even though new instances default to `A` (`examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/models.py`).
 
 ## Layers
@@ -107,6 +109,13 @@ last_mapped_at: 2026-11-12
 - Contains: Focused helpers and presentation data models; theme settings are centralized in `src/crud_views/lib/settings.py`.
 - Depends on: View/ViewSet configuration, request/user state, and optional Django presentation packages.
 - Used by: CBVs, template tags and the core theme.
+
+**Crispy numbered column helpers:**
+- Purpose: Provide convenient Bootstrap grid columns in consumer crispy layouts while allowing theme class overrides through the existing registry.
+- Location: `src/crud_views/lib/crispy/table.py`, public exports in `src/crud_views/lib/crispy/__init__.py`.
+- Contains: `Column1` through `Column12`, each defaulting to its matching `col-md-N` class; `_ThemedColumn.render()` resolves `form:column-N` on a render-local copy, preserving the declared helper instance.
+- Depends on: crispy-forms `Column`, the `form:column-N` slots in `src/crud_views/lib/button_classes.py`, and crispy's configured template pack. For the exact installed `crispy-bootstrap5` source, implicit-template helpers use `src/crud_views/templates/crud_views/crispy/bootstrap5_column.html`; explicit templates and other template packs retain their own rendering.
+- Used by: Consumer form layouts and core form layouts (`src/crud_views/lib/crispy/form.py`, `src/crud_views/lib/formsets/inline_formset.py`).
 
 **Nested formset layer:**
 - Purpose: Build and render recursively nested inline formsets with independent classic or compact layout choice per node.
@@ -352,6 +361,12 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - `ConditionalGroup` and `ConditionalGroupFormMixin` in `src/crud_views/lib/conditional/group.py` validate declarations, enforce required fields when active, and clear inactive fields. Keep controlled fields disjoint and never control another group’s controller.
 - Automatic clearing is limited to recognized standard field/model pairs. Use `empty_values` for an explicit business sentinel, as Customer does for `payment_terms="unset"`; nullable `price_tier` demonstrates automatic `None` clearing (`examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/models.py`).
 - `CustomerForm` covers consumer-only, shared business, wholesale-only and distributor-only groups. The shared business group remains active when switching between Wholesale and Distributor; `CustomerRadioForm` reuses its declarations and changes only the controller widget (`examples/bootstrap5/conditional/views.py`).
+
+## Numbered crispy columns
+
+- Public helpers `Column1` through `Column12` are exported by `src/crud_views/lib/crispy/__init__.py` and implemented in `src/crud_views/lib/crispy/table.py`.
+- Their defaults map to `form:column-1` through `form:column-12` in `src/crud_views/lib/button_classes.py`; custom `css_class` values are appended to the resolved class. Direct post-construction assignment of `css_class` disables registry resolution for that instance.
+- Rendering copies the layout object before applying registry classes. The compatibility bridge selects `src/crud_views/templates/crud_views/crispy/bootstrap5_column.html` only when the active pack is Bootstrap 5, the resolved template is the installed crispy-bootstrap5 column, and its source exactly matches the audited template; explicit templates and customized/other packs stay on their configured path (`src/crud_views/lib/crispy/table.py`).
 
 ## Permission declaration diagnostics (Phase 06.22)
 

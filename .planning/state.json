@@ -136,7 +136,7 @@
     {
       "number": "06.29",
       "name": "Themeable column helpers (#356)",
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "number": "7",
@@ -145,9 +145,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-plan-phase 06.29",
-    "label": "Plan themeable column helpers (#356)",
-    "reason": "Phase 06.29 created from the approved issue #356 handover; implementation has not started"
+    "command": "$gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 42 of 43 · executing"
   },
-  "updated_at": "2026-11-12T12:26:57.756843Z"
+  "updated_at": "2026-11-12T12:54:51.598Z"
 }

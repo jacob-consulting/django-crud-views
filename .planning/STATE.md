@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.29"
-current_phase_name: Themeable column helpers
-status: planning
+current_phase_name: "Themeable column helpers (#356)"
+status: executing
 stopped_at: Phase 06.29 context gathered; ready for planning
-last_updated: "2026-11-12T12:30:57.791Z"
+last_updated: "2026-11-12T12:54:51.554Z"
 last_activity: 2026-11-12
 last_activity_desc: "Created Phase 06.29 from the approved issue #356 handover"
-state_head: 4eaea35012496e8981c2c3b4adb29d57a438450a
+state_head: aa3deac9194d29334d783fce15d2a3c261207e7d
 progress:
   total_phases: 34
   completed_phases: 26
-  total_plans: 175
+  total_plans: 177
   completed_plans: 175
 milestone_name: milestone
 ---
@@ -30,9 +30,9 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 
 ## Current Position
 
-Phase: 06.29 — Themeable column helpers (#356)
+Phase: 06.29 (Themeable column helpers (#356)) — READY TO EXECUTE
 Plan: Not started
-Status: Ready to plan
+Status: Ready to execute
 Last activity: 2026-11-12 -- Created Phase 06.29 from the approved issue #356 handover
 
 Next: $gsd-plan-phase 06.29

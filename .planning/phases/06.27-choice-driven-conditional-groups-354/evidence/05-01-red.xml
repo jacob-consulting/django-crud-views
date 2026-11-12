@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.009" timestamp="2026-11-12T12:14:09.225020+00:00" hostname="weaver-dev"><testcase classname="project.tests.ChoiceConditionalLinksTest" name="test_choice_reference_and_actual_routes" time="0.902"><failure message="AssertionError: 'https://django-crud-views.readthedocs.io/en/stable/reference/conditional/#choice-driven-groups' not found in ['https://django-crud-views.readthedocs.io/en/stable/reference/conditional/#kind-1-conditional-field-group-in-a-form', 'https://django-crud-views.readthedocs.io/en/stable/reference/conditional/#kind-2-conditional-formset']">self = &lt;project.tests.ChoiceConditionalLinksTest testMethod=test_choice_reference_and_actual_routes&gt;
+
+    def test_choice_reference_and_actual_routes(self):
+        from pathlib import Path
+    
+        from conditional.views import CustomerForm, CustomerRadioForm
+        from crud_views.lib.conditional import ValueToggle
+        from project.features import DOCS_BASE
+    
+        self.client.force_login(self.admin)
+        feature = next(feature for feature in FEATURES if feature.app == "conditional")
+        expected = f"{DOCS_BASE}/reference/conditional/#choice-driven-groups"
+&gt;       self.assertIn(expected, [ref.url for ref in feature.docs])
+E       AssertionError: 'https://django-crud-views.readthedocs.io/en/stable/reference/conditional/#choice-driven-groups' not found in ['https://django-crud-views.readthedocs.io/en/stable/reference/conditional/#kind-1-conditional-field-group-in-a-form', 'https://django-crud-views.readthedocs.io/en/stable/reference/conditional/#kind-2-conditional-formset']
+
+project/tests.py:272: AssertionError</failure></testcase></testsuite></testsuites>

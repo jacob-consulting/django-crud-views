@@ -1,10 +1,10 @@
 {
   "passed": true,
-  "started": "2026-11-12T12:47:15.959Z",
+  "started": "2026-11-12T13:27:42.211Z",
   "humanReview": "pending",
   "sourceHashes": {
     ".planning/phases/06.27-choice-driven-conditional-groups-354/evidence/choice-example-browser.cjs": "261e0db22985d6a06cb4d719d3f86cc5b8976235d2250f8cda510178ff7d0271",
-    "docs/reference/conditional.md": "759f348db090f2a48cf792aa509c65954b81d8620ae0d342f13fea548761192b",
+    "docs/reference/conditional.md": "75982773d4b8f26e328af2c98b4e8ff26b1b833e3bbb16efa297cb9046d47a5b",
     "docs/reference/javascript.md": "9ec323660eaba997bf20b7f3c288dfb38340eb18a656236cd207f4be00003701",
     "examples/bootstrap5/conditional/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "examples/bootstrap5/conditional/apps.py": "5d81d32b9c6aa22aa662bb623e734e7cc78c88f9bb775880b5b03782582ccd02",
@@ -61,7 +61,7 @@
       "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
       "examples/bootstrap5/manage.py",
       "runserver",
-      "127.0.0.1:42729",
+      "127.0.0.1:37705",
       "--noreload"
     ],
     [
@@ -1173,9 +1173,9 @@
     "temporaryRemoved": true,
     "developerDbUnchanged": true
   },
-  "temporaryRoot": "/tmp/cv-choice-example-eMlX4V",
-  "settings": "from project.settings import *\nDATABASES = {\"default\": {\"ENGINE\": \"django.db.backends.sqlite3\", \"NAME\": \"/tmp/cv-choice-example-eMlX4V/db.sqlite3\"}}\nMEDIA_ROOT = \"/tmp/cv-choice-example-eMlX4V/media\"\nALLOWED_HOSTS = [\"127.0.0.1\", \"localhost\"]\n",
-  "revision": "646404930070996b7f661a1df9e9fa38cb641f78",
+  "temporaryRoot": "/tmp/cv-choice-example-KTXzoV",
+  "settings": "from project.settings import *\nDATABASES = {\"default\": {\"ENGINE\": \"django.db.backends.sqlite3\", \"NAME\": \"/tmp/cv-choice-example-KTXzoV/db.sqlite3\"}}\nMEDIA_ROOT = \"/tmp/cv-choice-example-KTXzoV/media\"\nALLOWED_HOSTS = [\"127.0.0.1\", \"localhost\"]\n",
+  "revision": "7cb23dbc608f56b4669244b9d65811bf302d765a",
   "runtime": {
     "node": "v24.21.0",
     "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
@@ -1189,6 +1189,6 @@
     "crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
     "chromium": "149.0.7827.55"
   },
-  "base": "http://127.0.0.1:42729",
-  "completed": "2026-11-12T12:47:51.791Z"
+  "base": "http://127.0.0.1:37705",
+  "completed": "2026-11-12T13:28:17.662Z"
 }

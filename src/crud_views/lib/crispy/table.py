@@ -40,7 +40,7 @@ class _ThemedColumn(Column):
         super().__init__(*fields, css_class=css_class, template=template, **kwargs)
         owner = next(cls for cls in type(self).__mro__ if "css_class" in vars(cls))
         self._cv_width = _NUMBERED_COLUMNS.index(owner) + 1 if owner in _NUMBERED_COLUMNS else None
-        self._cv_extra_class = css_class
+        self._cv_extra_class = f"{css_class}" if self._cv_width is not None and css_class else css_class
         self._cv_use_registry = self._cv_width is not None
         self._cv_implicit_template = (
             template is None

@@ -109,6 +109,7 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - Purpose: Bundled Bootstrap 5 theme and browser-side behavior.
 - Contains: Full view templates and content partials, tag partials, action/button snippets, formsets, modal shell/content, shared CSS/JS hooks, CSS and JavaScript adapters/components.
 - Key files: `src/crud_views/templates/crud_views/view_list.html`, `src/crud_views/templates/crud_views/view_create.html`, `src/crud_views/templates/crud_views/shared/`, `src/crud_views/templates/crud_views/tags/`, `src/crud_views/static/crud_views/js/`, `src/crud_views/static/crud_views/css/`.
+- Tooltip lifecycle: `src/crud_views/static/crud_views/js/tooltip.js` owns only package triggers marked `data-cv-tooltip`; it initializes on page readiness and modal/formset insertion, hides on click, and disposes modal triggers before replacement. `src/crud_views/static/crud_views/js/adapters.js` supplies the default Bootstrap tooltip adapter and guards queued callbacks after disposal. Keep app-owned `data-bs-toggle="tooltip"` triggers under host control.
 
 **`src/crud_views_object_detail/`:**
 - Purpose: Configurable detail properties and layouts, usable by a core detail view.

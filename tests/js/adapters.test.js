@@ -125,6 +125,92 @@ describe("adapters.js", () => {
             instance.queued[0].callback();
             expect(live).toHaveBeenCalledOnce();
         });
+
+        it("hides and disposes its own instance without creating during cleanup", () => {
+            const el = document.getElementById("t");
+            adapter.init(el, {location: "context"});
+            const instance = instances.get(el);
+            adapter.hide(el);
+            expect(instance.hide).toHaveBeenCalledOnce();
+            expect(instance.hide.mock.contexts[0]).toBe(instance);
+            adapter.dispose(el);
+            expect(instance.dispose).toHaveBeenCalledOnce();
+            expect(instance.dispose.mock.contexts[0]).toBe(instance);
+            expect(instances.has(el)).toBe(false);
+            adapter.hide(el);
+            adapter.dispose(el);
+            expect(instance.hide).toHaveBeenCalledOnce();
+            expect(instance.dispose).toHaveBeenCalledOnce();
+            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+            expect(created).toHaveLength(1);
+        });
+
+        it("suppresses queued callbacks after disposal", () => {
+            const el = document.getElementById("t"), stale = vi.fn();
+            adapter.init(el, {location: "context"});
+            const instance = instances.get(el);
+            instance._queueCallback(stale, el, true);
+            adapter.dispose(el);
+            instance.queued[0].callback();
+            expect(stale.mock.calls.length).toBe(0);
+        });
+
+        it("suppresses old callbacks after direct replacement and runs replacement work", () => {
+            const el = document.getElementById("t"), stale = vi.fn(), live = vi.fn();
+            adapter.init(el, {location: "context"});
+            const first = instances.get(el);
+            first._queueCallback(stale, el, true);
+            // Replace the registered identity without disposing the old instance.
+            instances.delete(el);
+            const replacement = Tooltip.getOrCreateInstance(el);
+            expect(replacement).not.toBe(first);
+            expect(first.dispose).not.toHaveBeenCalled();
+            first.queued[0].callback();
+            expect(stale).not.toHaveBeenCalled();
+            adapter.init(el, {location: "context"});
+            expect(replacement._queueCallback(live, el, false)).toBe("queued");
+            expect(replacement.queued[0].element).toBe(el);
+            expect(replacement.queued[0].animated).toBe(false);
+            replacement.queued[0].callback();
+            first.queued[0].callback();
+            expect(live).toHaveBeenCalledOnce();
+            expect(stale).not.toHaveBeenCalled();
+        });
+
+        it.each(["namespace", "component"])("tolerates missing %s and resolves late availability", missing => {
+            const el = document.getElementById("t");
+            if (missing === "namespace") delete globals.tabler;
+            else delete globals.tabler.Tooltip;
+            expect(() => adapter.init(el, {location: "context"})).not.toThrow();
+            expect(el.getAttribute("data-bs-placement")).toBe("bottom");
+            expect(Tooltip.getOrCreateInstance).not.toHaveBeenCalled();
+            expect(instances.size).toBe(0);
+            expect(created).toHaveLength(0);
+            globals.tabler ??= {};
+            globals.tabler.Tooltip = Tooltip;
+            adapter.init(el, {location: "context"});
+            expect(instances.get(el).placement).toBe("bottom");
+            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+            expect(created).toHaveLength(1);
+        });
+
+        it("installs the guard once and reuses the instance on repeated initialization", () => {
+            const el = document.getElementById("t"), live = vi.fn();
+            adapter.init(el, {location: "context"});
+            const instance = instances.get(el), guardedQueue = instance._queueCallback;
+            expect(guardedQueue).not.toBe(instance.rawQueue);
+            adapter.init(el, {location: "context"});
+            expect(instances.get(el)).toBe(instance);
+            expect(instances.size).toBe(1);
+            expect(created).toHaveLength(1);
+            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledTimes(2);
+            expect(instance._queueCallback).toBe(guardedQueue);
+            expect(instance._queueCallback(live, el, true)).toBe("queued");
+            expect(instance.rawQueue).toHaveBeenCalledOnce();
+            expect(instance.queued).toHaveLength(1);
+            instance.queued[0].callback();
+            expect(live).toHaveBeenCalledOnce();
+        });
     });
 
     it.each(["cv-tab-adapter-namespace", "cv-tab-adapter-complete-map"])("published %s supports tab lifecycle without bootstrap", async marker => {

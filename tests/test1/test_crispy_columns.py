@@ -11,6 +11,7 @@ from django.conf import settings
 from django.template import Context, TemplateDoesNotExist
 from django.template.loader import get_template
 from django.test import override_settings
+from django.utils.translation import gettext_lazy, override
 from lxml import html
 
 from crud_views.lib import button_classes as bc
@@ -54,6 +55,37 @@ def test_column6_theme_tracer():
         assert wrapper.cssselect("input[name=name]")[0].get("value") == "Ada"
         assert vars(column) == original
         assert all(context[key] == value for key, value in surrounding.items())
+
+
+def test_lazy_constructor_extra_survives_registry_changes():
+    column = Column6("name", css_class=gettext_lazy("extra"))
+    for configured, expected in (
+        ("col-md-6", {"col-md-6", "extra"}),
+        ("span-6", {"span-6", "extra"}),
+        ("", {"extra"}),
+        (None, {"extra"}),
+    ):
+        if configured != "col-md-6":
+            bc.register_button_classes({"form:column-6": configured})
+        for _ in range(2):
+            try:
+                markup = render_column(column)
+            except TypeError as error:
+                pytest.fail(f"Lazy constructor classes must remain renderable: {error}")
+            wrapper = html.fromstring(markup)
+            assert set(wrapper.classes) == expected
+            assert wrapper.cssselect("input[name=name]")[0].get("value") == "Ada"
+            assert column.css_class == "col-md-6 extra"
+
+
+def test_lazy_constructor_extra_keeps_construction_language():
+    with override("en"):
+        column = Column6("name", css_class=gettext_lazy("Save"))
+    bc.register_button_classes({"form:column-6": "span-6"})
+    for language in ("de", "en", "de"):
+        with override(language):
+            wrapper = html.fromstring(render_column(column))
+        assert set(wrapper.classes) == {"span-6", "Save"}
 
 
 @pytest.mark.parametrize("width", range(1, 13))

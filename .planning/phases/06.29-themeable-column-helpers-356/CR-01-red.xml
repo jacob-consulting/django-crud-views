@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.933" timestamp="2026-11-12T14:16:36.518918+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_crispy_columns" name="test_lazy_constructor_extra_survives_registry_changes" time="0.002"><failure message="Failed: Lazy constructor classes must remain renderable: sequence item 1: expected str instance, __proxy__ found">def test_lazy_constructor_extra_survives_registry_changes():
+        column = Column6("name", css_class=gettext_lazy("extra"))
+        for configured, expected in (
+            ("col-md-6", {"col-md-6", "extra"}),
+            ("span-6", {"span-6", "extra"}),
+            ("", {"extra"}),
+            (None, {"extra"}),
+        ):
+            if configured != "col-md-6":
+                bc.register_button_classes({"form:column-6": configured})
+            for _ in range(2):
+                try:
+&gt;                   markup = render_column(column)
+                             ^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_crispy_columns.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_crispy_columns.py:39: in render_column
+    return column.render(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;crud_views.lib.crispy.table.Column6 object at 0x7d881e747fb0&gt;
+form = &lt;ExampleForm bound=True, valid=Unknown, fields=(name;other)&gt;
+context = [{'True': True, 'False': False, 'None': None}, {'form_show_errors': True}]
+template_pack = 'bootstrap5', kwargs = {}
+
+    def render(self, form, context, template_pack=TEMPLATE_PACK, **kwargs):
+        rendered = copy(self)
+        if self._cv_use_registry:
+            classes = get_button_class("form", f"column-{self._cv_width}")
+&gt;           rendered.css_class = " ".join(value for value in (classes, self._cv_extra_class) if value)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: sequence item 1: expected str instance, __proxy__ found
+
+src/crud_views/lib/crispy/table.py:63: TypeError
+
+During handling of the above exception, another exception occurred:
+
+    def test_lazy_constructor_extra_survives_registry_changes():
+        column = Column6("name", css_class=gettext_lazy("extra"))
+        for configured, expected in (
+            ("col-md-6", {"col-md-6", "extra"}),
+            ("span-6", {"span-6", "extra"}),
+            ("", {"extra"}),
+            (None, {"extra"}),
+        ):
+            if configured != "col-md-6":
+                bc.register_button_classes({"form:column-6": configured})
+            for _ in range(2):
+                try:
+                    markup = render_column(column)
+                except TypeError as error:
+&gt;                   pytest.fail(f"Lazy constructor classes must remain renderable: {error}")
+E                   Failed: Lazy constructor classes must remain renderable: sequence item 1: expected str instance, __proxy__ found
+
+tests/test1/test_crispy_columns.py:74: Failed</failure></testcase></testsuite></testsuites>

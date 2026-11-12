@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.27"
 current_phase_name: "Choice-driven conditional groups (#354)"
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 06.27-01-PLAN.md; next plan 02
-last_updated: "2026-11-12T11:29:15.271Z"
+stopped_at: Completed 06.27-02-PLAN.md; next plan 03
+last_updated: "2026-11-12T11:49:02.523Z"
 last_activity: 2026-11-12
-last_activity_desc: "Inserted Phase 06.27 for issue #354"
-state_head: afb267fc57051d72be9bc7b1088a4a0849e7574b
+last_activity_desc: "Completed Plan 06.27-02; next plan 03"
+state_head: 3720970b79bbb44844e25654464b7b41fb792937
 progress:
   total_phases: 34
   completed_phases: 26
   total_plans: 180
-  completed_plans: 176
+  completed_plans: 177
 milestone_name: milestone
 ---
 
@@ -32,12 +32,12 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 ## Current Position
 
 Phase: 06.27 (Choice-driven conditional groups (#354)) — IN PROGRESS
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 5
 Status: Ready to execute
-Last activity: 2026-11-12 -- Completed Plan 06.27-01; 231 conditional Python, 55 JavaScript and 14 browser assertions passed
+Last activity: 2026-11-12 -- Completed Plan 06.27-02; 355 final-source conditional tests pass; broad run 12,698 passed/1 skipped with source-change limitation recorded in SUMMARY
 
-Next: Execute 06.27-02-PLAN.md
+Next: Execute 06.27-03-PLAN.md
 
 ### Phase 06.25.1 completion — 2026-11-11
 
@@ -955,6 +955,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.26 P02 | 14min | 2 tasks | 23 files |
 | Phase 06.26 P03 | 13min | 2 tasks | 5 files |
 | Phase 06.27 P01 | 12min | 2 tasks | 10 files |
+| Phase 06.27 P02 | 16min | 3 tasks | 19 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1221,6 +1222,8 @@ Recent decisions affecting current work:
 - [Phase 06.26]: Plan 02: checkbox fixture preserves composition through same-origin editor Referer for coordinate-only fragments; product routing unchanged.
 - [Phase 06.26]: Plan 02: only opt-in checkbox score columns read stable ScoreForm.base_fields to avoid Django 4.2 shared Meta.fields FK mutation.
 - [Phase 06.27]: Use normalized immutable ValueToggle tokens and existing group clearing; reject typed empty sentinels that collide with choice tokens.
+- [Phase 06.27]: Value declarations validate before native field cleaning to reject lazy callable choices and handle request-added optional fields.
+- [Phase 06.27]: Value activation uses the authoritative mapping returned by inherited clean, including replacement dictionaries.
 
 ### Pending Todos
 
@@ -1297,6 +1300,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-12T11:28:37.106Z
-Stopped at: Completed 06.27-01-PLAN.md; next plan 02
+Last session: 2026-11-12T11:48:58.452Z
+Stopped at: Completed 06.27-02-PLAN.md; next plan 03
 Resume file: None

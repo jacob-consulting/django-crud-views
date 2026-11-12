@@ -391,6 +391,28 @@ Records = inlineformset_factory(
 )
 
 
+class ChoiceTracerForm(ConditionalGroupFormMixin, BrowserRowForm):
+    blank_text = forms.ChoiceField(
+        choices=[(value, value.title()) for value in ("consumer", "wholesale", "distributor")]
+    )
+    choice_toggle = ModelFieldToggle("blank_text")
+    cv_conditional_groups = [ConditionalGroup(choice_toggle, ["nullable_text"])]
+
+    class Meta:
+        model = ConditionalPersistenceRecord
+        fields = ["blank_text", "nullable_text"]
+
+    @property
+    def helper(self):
+        helper = super().helper
+        helper.form_tag = False
+        helper.disable_csrf = True
+        return helper
+
+    def get_layout_fields(self):
+        return ["blank_text", ToggleGroup(self.choice_toggle.field_name(), "nullable_text", legend="Wholesale details")]
+
+
 class CheckboxRecordForm(BrowserRowForm):
     accepted = forms.BooleanField(
         required=True,
@@ -614,7 +636,12 @@ class BrowserFiles(BrowserEdit):
 
 actor = User.objects.create_superuser(username="browser", password=None, email="")
 denied_actor = User.objects.create_user(username="browser-denied", password=None)
-cases = []
+choice_record = ConditionalPersistenceRecord.objects.create(
+    parent=Profile.objects.create(name="Choice tracer"),
+    blank_text="wholesale",
+    nullable_text="Existing wholesale detail",
+)
+cases = [{"theme": "stock", "id": "value-tracer", "pk": choice_record.pk, "url": f"/choice/stock/{choice_record.pk}/"}]
 for mode in ("stock", "native"):
     for case in (
         "tracer",
@@ -739,6 +766,22 @@ def edit(request, mode, pk, files=False, capability=None, edge=None):
         theme.reset(token)
 
 
+def choice_edit(request, mode, pk):
+    if not request.user.is_superuser:
+        return HttpResponse(status=403)
+    instance = ConditionalPersistenceRecord.objects.get(pk=pk)
+    form = ChoiceTracerForm(request.POST if request.method == "POST" else None, instance=instance, prefix="choice-0")
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return JsonResponse({"saved": True})
+    return TemplateResponse(
+        request,
+        "conditional_formsets/page.html",
+        {"form": form, "theme": mode, "compact_fixture": True},
+        status=422 if request.method == "POST" else 200,
+    )
+
+
 def signin(request):
     login(
         request,
@@ -764,6 +807,7 @@ def state(request):
             "scores": list(BrowserScore.objects.values()),
             "leaves": list(BrowserLeaf.objects.values()),
             "records": records,
+            "choice_records": list(ConditionalPersistenceRecord.objects.filter(pk=choice_record.pk).values()),
             "checkbox_records": list(
                 ConditionalPersistenceRecord.objects.filter(parent_id=compact_checkbox_pk).values()
             ),
@@ -795,6 +839,7 @@ urlpatterns = [
     path("signin/", signin),
     path("cases/", lambda request: JsonResponse(cases, safe=False)),
     path("state/", state),
+    path("choice/<str:mode>/<int:pk>/", choice_edit),
     path("edit/<str:mode>/<int:pk>/", edit),
     path("compact/<str:mode>/<int:pk>/", edit),
     path("compact/<str:edge>/<str:mode>/<int:pk>/", edit),

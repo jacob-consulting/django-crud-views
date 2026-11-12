@@ -52,6 +52,8 @@ function hashes() {
     return Object.fromEntries(files.filter(f => !f.includes('__pycache__')).sort().map(f => [f, digest(f)])); // NOSONAR S2871: test harness
 }
 const REQUIRED = {
+    'value-tracer': ['rendered-shared-metadata', 'initial-selection-equals-saved', 'reopened-selection-equals-saved',
+        'prefixed-select', 'active-required', 'retain-before-submit', 'forged-inactive-cleared', 'persisted-reopen', 'invalid-controller-blocked'],
     'compact-lifecycle': ['assets', 'pending-preserves-data', 'authorized-parent-fragment', 'nonfirst-child-fragment',
         'heading-ownership', 'delete-unmark-order', 'labels-and-events', 'formdata-once', 'persisted-relationships',
         'unauthorized-no-insertion', 'invalid-390', 'invalid-1280', 'management-error',
@@ -100,7 +102,7 @@ function validateEvidence(r) {
     assert.deepEqual(r.sourceHashes, hashes(), 'Stale source hashes or wrong input set');
     assert(r.scope === 'all' || Object.hasOwn(REQUIRED, r.scope), 'Unknown evidence scope');
     const ids = r.scope === 'all' ? Object.keys(REQUIRED) : [r.scope];
-    const expected = ids.flatMap(id => (r.scope === 'tracer' || id.startsWith('compact-') ? ['stock'] : ['stock', 'native']).map(t => `${t}:${id}`));
+    const expected = ids.flatMap(id => (r.scope === 'tracer' || id === 'value-tracer' || id.startsWith('compact-') ? ['stock'] : ['stock', 'native']).map(t => `${t}:${id}`));
     assert.deepEqual(r.cases.map(c => `${c.theme}:${c.id}`).sort(), expected.sort(), 'Missing/duplicate/extra case'); // NOSONAR S2871: test harness
     assert.equal(r.scope, requested, 'Evidence must match exact requested scope');
     for (const c of r.cases) {
@@ -261,6 +263,33 @@ async function main() {
     checkEvidence(output);
 }
 async function runCase({c, page, context, base, before, result, check, load, state, post, add, delay, rawBalance}) {
+    if (c.id === 'value-tracer') {
+        const controller = page.locator('#editor select[name="choice-0-blank_text"]');
+        const detail = page.locator('#editor [name="choice-0-nullable_text"]');
+        const group = page.locator('#editor [cv-data-toggle-group]');
+        check('rendered-shared-metadata', await group.getAttribute('cv-data-toggle-values') === '["wholesale"]');
+        const initial = before.choice_records.find(row=>row.id===c.pk);
+        check('initial-selection-equals-saved', await controller.inputValue() === initial.blank_text && initial.blank_text === 'wholesale' && await group.isVisible(), {selected:await controller.inputValue(), saved:initial});
+        check('prefixed-select', await group.getAttribute('cv-data-toggle-field') === 'choice-0-blank_text');
+        await detail.fill('');
+        const required = await post();
+        check('active-required', required.status === 422 && required.body.includes('This field is required.') && (await state()).choice_records[0].nullable_text === initial.nullable_text, {status:required.status});
+        await detail.fill('Unsaved wholesale detail');
+        await controller.selectOption('consumer');
+        assert(!await group.isVisible() && await detail.isDisabled());
+        await controller.selectOption('wholesale');
+        check('retain-before-submit', await group.isVisible() && await detail.inputValue() === 'Unsaved wholesale detail');
+        const invalid = await post('#editor', c.url, {'choice-0-blank_text':'invalid'});
+        check('invalid-controller-blocked', invalid.status === 422 && invalid.body.includes('Select a valid choice.') && (await state()).choice_records[0].blank_text === 'wholesale', {status:invalid.status, posted:'invalid'});
+        await controller.selectOption('consumer');
+        const saved = await post('#editor', c.url, {'choice-0-nullable_text':'Forged inactive detail'});
+        const final = (await state()).choice_records.find(row=>row.id===c.pk);
+        check('forged-inactive-cleared', saved.status === 200 && final.nullable_text === null && final.blank_text === 'consumer', {status:saved.status, sent:saved.sent, saved:final});
+        await load();
+        check('reopened-selection-equals-saved', await controller.inputValue() === final.blank_text && final.blank_text === 'consumer', {selected:await controller.inputValue(), saved:final.blank_text});
+        check('persisted-reopen', !await group.isVisible() && await detail.isDisabled() && await detail.inputValue() === '');
+        return;
+    }
     if (c.id === 'compact-lifecycle') {
         result.captures=[]; result.humanReview='pending'; result.edges=[];
         await page.setViewportSize({width:1280,height:900});

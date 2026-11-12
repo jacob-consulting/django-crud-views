@@ -314,3 +314,38 @@ dom.window.close();
 
 
 test_tracer_rendered_conditional_round_trip.__test__ = os.environ.get("CV_CONDITIONAL_TRACER") == "1"
+
+
+@pytest.mark.parametrize("legend", [None, "Choice <details>"])
+@pytest.mark.parametrize("prefix", ["rows-0", 'rows [] <&"'])
+def test_value_toggle_render_metadata(legend, prefix):
+    from crud_views.lib.conditional.toggle import ValueToggle
+
+    tokens = ['value" <script> & []', " spaced ", "0"]
+    descriptor = ValueToggle("kind", values=tokens)
+
+    class ChoiceForm(forms.Form):
+        kind = forms.ChoiceField(choices=[(token, token) for token in tokens])
+        detail = forms.CharField(required=False)
+        active = forms.BooleanField(required=False)
+        legacy_detail = forms.CharField(required=False)
+
+    form = ChoiceForm(prefix=prefix)
+    helper = FormHelper()
+    assert ToggleGroup(toggle_field=descriptor).toggle_field is descriptor
+    helper.layout = Layout(
+        "kind", ToggleGroup(descriptor, "detail", legend=legend), "active", ToggleGroup("active", "legacy_detail")
+    )
+    bc.register_button_classes({"conditional:legend": "choice-legend", "formset:legend": "other-legend"})
+    rendered = render_crispy_form(form, helper=helper)
+    doc = lxml_html.fromstring(rendered)
+    group, legacy = doc.cssselect("[cv-data-toggle-group]")
+    assert json.loads(group.get("cv-data-toggle-values")) == tokens
+    assert group.get("cv-data-toggle-field") == form.add_prefix("kind")
+    assert group.tag == ("fieldset" if legend else "div")
+    if legend:
+        title = group.xpath("./legend")[0]
+        assert title.text_content() == legend and title.get("class") == "choice-legend"
+    assert "cv-data-toggle-values" not in legacy.attrib
+    assert legacy.get("cv-data-toggle-field") == form.add_prefix("active")
+    assert not doc.cssselect("script")

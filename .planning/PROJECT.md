@@ -94,6 +94,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ Independent empty-default conditional/formset legend class hooks, layered overrides and escaped nested fragment rendering — Phase 06.25.1
 
+- ✓ Choice-driven conditional groups with shared native dropdown/radio descriptors, bounded choice clearing and explicit overrides; Customer example with simple/complex navigation and reciprocal documentation — Phase 06.27; 22/22 verified, UAT 2/2.
+
 - ✓ **6.29** Themeable Column1–Column12 via existing registry, render-local complete classes, preserved caller/template ownership and executed recipes — Phase 06.29; canonical 10/10, clean re-review after lazy-extra correction.
 
 ### Active
@@ -199,6 +201,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | CompactWidgetCompatible is an empty inherited developer promise; shared schema checks and rendering remain unchanged | One explicit marker and guard allow application widgets without a registry, renderer abstraction or certification claim | Validated (Phase 06.25) |
 
 | Legend styling reuses two empty class keys and existing template tags | Keeps themes independently overridable without changing runtime machinery | Validated (Phase 06.25.1) |
+
+| Reuse one ValueToggle descriptor in server policy and layout; keep choice inference bounded and explicit overrides authoritative | Maintains one traceable condition with native Django validation and no second engine | Validated (Phase 06.27) |
 
 | Numbered columns resolve complete registry classes on a shallow render copy; bridge only exact installed Bootstrap source | Preserves defaults, caller extras and custom-template ownership without a new grid or cache abstraction | Validated (Phase 06.29) |
 

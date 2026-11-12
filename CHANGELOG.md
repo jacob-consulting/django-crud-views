@@ -589,6 +589,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Choice-driven conditional groups** (#354): share `ValueToggle` descriptors between server groups and crispy
+  layouts for native dropdown/radio controls, including groups shared by several choices. Standard choice fields
+  support bounded automatic clearing and authoritative explicit `empty_values`. The Customer example demonstrates
+  both editors and saved values. See [Choice-driven groups](docs/reference/conditional.md#choice-driven-groups).
+
 - **Themeable column helpers** (#356): the twelve `form:column-1` through `form:column-12` utility keys
   configure complete class strings for the existing `Column1`–`Column12` helpers. Theme registration and
   per-key project overrides resolve on each render, including layouts created before registration.

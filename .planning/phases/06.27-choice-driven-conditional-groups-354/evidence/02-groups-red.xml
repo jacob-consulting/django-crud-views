@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="17" skipped="0" tests="18" time="1.400" timestamp="2026-11-12T11:33:42.199815+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[overlap-False]" time="0.261"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'overlap', reverse = False
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[value-controller-False]" time="0.264"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'value-controller', reverse = False
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[overlap-True]" time="0.002"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'overlap', reverse = True
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[checkbox-controller-False]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'checkbox-controller', reverse = False
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[value-controller-True]" time="0.002"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'value-controller', reverse = True
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[self-False]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'self', reverse = False
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[checkbox-controller-True]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'checkbox-controller', reverse = True
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[self-True]" time="0.002"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'self', reverse = True
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[required-False]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'required', reverse = False
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_value_group_checks_unsupported_without_queries[callable]" time="0.002"><failure message="AssertionError: []&#10;assert (0 == 1)&#10; +  where 0 = len([])">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7949a453b2f0&gt;
+django_assert_num_queries = functools.partial(&lt;function _assert_num_queries at 0x7949a700da80&gt;, &lt;_pytest.config.Config object at 0x7949a7709d30&gt;)
+unsupported = 'callable'
+
+    @pytest.mark.parametrize("unsupported", ["callable", "relation", "widget", "coercion", "token"])
+    @pytest.mark.django_db
+    def test_value_group_checks_unsupported_without_queries(monkeypatch, django_assert_num_queries, unsupported):
+        def no_choices():
+            raise AssertionError("startup must not evaluate callable choices")
+    
+        fields = {
+            "callable": forms.ChoiceField(choices=no_choices),
+            "relation": forms.ModelChoiceField(queryset=Profile.objects.all()),
+            "widget": forms.ChoiceField(choices=[("a", "A")], widget=forms.SelectMultiple),
+            "coercion": forms.TypedChoiceField(choices=[("a", "A")], coerce=lambda value: value),
+            "token": forms.ChoiceField(choices=[("b", "B")]),
+        }
+    
+        class Unsupported(ConditionalGroupFormMixin, forms.Form):
+            kind = fields[unsupported]
+            detail = forms.CharField()
+            cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+    
+            def __init__(self, *args, **kwargs):
+                raise AssertionError("startup must not construct forms")
+    
+        with django_assert_num_queries(0):
+            errors = _run_check_with(monkeypatch, Unsupported)
+&gt;       assert len(errors) == 1 and errors[0].id == "crud_views.E313", errors
+E       AssertionError: []
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests/test1/test_conditional_checks.py:537: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_conflicts[required-True]" time="0.003"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">conflict = 'required', reverse = True
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+    def test_value_group_conflicts(conflict, reverse):
+        value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+        checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+        if conflict == "overlap":
+            checkbox.fields = ["detail"]
+        elif conflict == "value-controller":
+            checkbox.fields = ["kind"]
+            checkbox.empty_values = {"kind": "b"}
+        elif conflict == "checkbox-controller":
+            value.fields = ["enabled"]
+        elif conflict == "self":
+            value.fields = ["kind"]
+            value.empty_values = {"kind": "b"}
+        else:
+            value.required = ["other"]
+    
+        class Invalid(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+            detail = forms.CharField()
+            other = forms.CharField()
+            cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_group.py:205: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_value_group_checks_unsupported_without_queries[relation]" time="0.002"><failure message="AssertionError: []&#10;assert (0 == 1)&#10; +  where 0 = len([])">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7949a45547a0&gt;
+django_assert_num_queries = functools.partial(&lt;function _assert_num_queries at 0x7949a700da80&gt;, &lt;_pytest.config.Config object at 0x7949a7709d30&gt;)
+unsupported = 'relation'
+
+    @pytest.mark.parametrize("unsupported", ["callable", "relation", "widget", "coercion", "token"])
+    @pytest.mark.django_db
+    def test_value_group_checks_unsupported_without_queries(monkeypatch, django_assert_num_queries, unsupported):
+        def no_choices():
+            raise AssertionError("startup must not evaluate callable choices")
+    
+        fields = {
+            "callable": forms.ChoiceField(choices=no_choices),
+            "relation": forms.ModelChoiceField(queryset=Profile.objects.all()),
+            "widget": forms.ChoiceField(choices=[("a", "A")], widget=forms.SelectMultiple),
+            "coercion": forms.TypedChoiceField(choices=[("a", "A")], coerce=lambda value: value),
+            "token": forms.ChoiceField(choices=[("b", "B")]),
+        }
+    
+        class Unsupported(ConditionalGroupFormMixin, forms.Form):
+            kind = fields[unsupported]
+            detail = forms.CharField()
+            cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+    
+            def __init__(self, *args, **kwargs):
+                raise AssertionError("startup must not construct forms")
+    
+        with django_assert_num_queries(0):
+            errors = _run_check_with(monkeypatch, Unsupported)
+&gt;       assert len(errors) == 1 and errors[0].id == "crud_views.E313", errors
+E       AssertionError: []
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests/test1/test_conditional_checks.py:537: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_value_group_checks_unsupported_without_queries[widget]" time="0.004"><failure message="AssertionError: []&#10;assert (0 == 1)&#10; +  where 0 = len([])">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b72b55aed80&gt;
+django_assert_num_queries = functools.partial(&lt;function _assert_num_queries at 0x7b72b7ec1a80&gt;, &lt;_pytest.config.Config object at 0x7b72bc1afaa0&gt;)
+unsupported = 'widget'
+
+    @pytest.mark.parametrize("unsupported", ["callable", "relation", "widget", "coercion", "token"])
+    @pytest.mark.django_db
+    def test_value_group_checks_unsupported_without_queries(monkeypatch, django_assert_num_queries, unsupported):
+        def no_choices():
+            raise AssertionError("startup must not evaluate callable choices")
+    
+        fields = {
+            "callable": forms.ChoiceField(choices=no_choices),
+            "relation": forms.ModelChoiceField(queryset=Profile.objects.all()),
+            "widget": forms.ChoiceField(choices=[("a", "A")], widget=forms.SelectMultiple),
+            "coercion": forms.TypedChoiceField(choices=[("a", "A")], coerce=lambda value: value),
+            "token": forms.ChoiceField(choices=[("b", "B")]),
+        }
+    
+        class Unsupported(ConditionalGroupFormMixin, forms.Form):
+            kind = fields[unsupported]
+            detail = forms.CharField()
+            cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+    
+            def __init__(self, *args, **kwargs):
+                raise AssertionError("startup must not construct forms")
+    
+        with django_assert_num_queries(0):
+            errors = _run_check_with(monkeypatch, Unsupported)
+&gt;       assert len(errors) == 1 and errors[0].id == "crud_views.E313", errors
+E       AssertionError: []
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests/test1/test_conditional_checks.py:537: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_value_group_checks_unsupported_without_queries[coercion]" time="0.001"><failure message="AssertionError: []&#10;assert (0 == 1)&#10; +  where 0 = len([])">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7949a457a4b0&gt;
+django_assert_num_queries = functools.partial(&lt;function _assert_num_queries at 0x7949a700da80&gt;, &lt;_pytest.config.Config object at 0x7949a7709d30&gt;)
+unsupported = 'coercion'
+
+    @pytest.mark.parametrize("unsupported", ["callable", "relation", "widget", "coercion", "token"])
+    @pytest.mark.django_db
+    def test_value_group_checks_unsupported_without_queries(monkeypatch, django_assert_num_queries, unsupported):
+        def no_choices():
+            raise AssertionError("startup must not evaluate callable choices")
+    
+        fields = {
+            "callable": forms.ChoiceField(choices=no_choices),
+            "relation": forms.ModelChoiceField(queryset=Profile.objects.all()),
+            "widget": forms.ChoiceField(choices=[("a", "A")], widget=forms.SelectMultiple),
+            "coercion": forms.TypedChoiceField(choices=[("a", "A")], coerce=lambda value: value),
+            "token": forms.ChoiceField(choices=[("b", "B")]),
+        }
+    
+        class Unsupported(ConditionalGroupFormMixin, forms.Form):
+            kind = fields[unsupported]
+            detail = forms.CharField()
+            cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+    
+            def __init__(self, *args, **kwargs):
+                raise AssertionError("startup must not construct forms")
+    
+        with django_assert_num_queries(0):
+            errors = _run_check_with(monkeypatch, Unsupported)
+&gt;       assert len(errors) == 1 and errors[0].id == "crud_views.E313", errors
+E       AssertionError: []
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests/test1/test_conditional_checks.py:537: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_value_group_checks_conflicts_deduplicated[False]" time="0.001"><failure message="AssertionError: []&#10;assert 0 == 1&#10; +  where 0 = len([])">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7949a4579dc0&gt;
+reverse = False
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    def test_value_group_checks_conflicts_deduplicated(monkeypatch, reverse):
+        class Conflicting(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A")])
+            detail = forms.CharField()
+            cv_conditional_groups = [
+                ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"]),
+                ConditionalGroup(UIFieldToggle("enabled"), ["detail"]),
+            ][:: -1 if reverse else 1]
+    
+            def __init__(self, *args, **kwargs):
+                raise AssertionError("startup must not construct forms")
+    
+        view = SimpleNamespace(form_class=Conflicting, cv_formsets=None)
+        monkeypatch.setattr(checks, "_REGISTRY", {"fake": SimpleNamespace(get_all_views=lambda: {"create": view, "update": view})})
+        messages = check_conditional()
+        errors = [message for message in messages if message.id == "crud_views.E313"]
+&gt;       assert len(errors) == 1, messages
+E       AssertionError: []
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_conditional_checks.py:508: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_value_group_checks_conflicts_deduplicated[True]" time="0.001"><failure message="AssertionError: []&#10;assert 0 == 1&#10; +  where 0 = len([])">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7949a4579970&gt;
+reverse = True
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    def test_value_group_checks_conflicts_deduplicated(monkeypatch, reverse):
+        class Conflicting(ConditionalGroupFormMixin, forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A")])
+            detail = forms.CharField()
+            cv_conditional_groups = [
+                ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"]),
+                ConditionalGroup(UIFieldToggle("enabled"), ["detail"]),
+            ][:: -1 if reverse else 1]
+    
+            def __init__(self, *args, **kwargs):
+                raise AssertionError("startup must not construct forms")
+    
+        view = SimpleNamespace(form_class=Conflicting, cv_formsets=None)
+        monkeypatch.setattr(checks, "_REGISTRY", {"fake": SimpleNamespace(get_all_views=lambda: {"create": view, "update": view})})
+        messages = check_conditional()
+        errors = [message for message in messages if message.id == "crud_views.E313"]
+&gt;       assert len(errors) == 1, messages
+E       AssertionError: []
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_conditional_checks.py:508: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_value_group_checks_unsupported_without_queries[token]" time="0.004"><failure message="AssertionError: []&#10;assert (0 == 1)&#10; +  where 0 = len([])">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b72b54f3590&gt;
+django_assert_num_queries = functools.partial(&lt;function _assert_num_queries at 0x7b72b7ec1a80&gt;, &lt;_pytest.config.Config object at 0x7b72bc1afaa0&gt;)
+unsupported = 'token'
+
+    @pytest.mark.parametrize("unsupported", ["callable", "relation", "widget", "coercion", "token"])
+    @pytest.mark.django_db
+    def test_value_group_checks_unsupported_without_queries(monkeypatch, django_assert_num_queries, unsupported):
+        def no_choices():
+            raise AssertionError("startup must not evaluate callable choices")
+    
+        fields = {
+            "callable": forms.ChoiceField(choices=no_choices),
+            "relation": forms.ModelChoiceField(queryset=Profile.objects.all()),
+            "widget": forms.ChoiceField(choices=[("a", "A")], widget=forms.SelectMultiple),
+            "coercion": forms.TypedChoiceField(choices=[("a", "A")], coerce=lambda value: value),
+            "token": forms.ChoiceField(choices=[("b", "B")]),
+        }
+    
+        class Unsupported(ConditionalGroupFormMixin, forms.Form):
+            kind = fields[unsupported]
+            detail = forms.CharField()
+            cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+    
+            def __init__(self, *args, **kwargs):
+                raise AssertionError("startup must not construct forms")
+    
+        with django_assert_num_queries(0):
+            errors = _run_check_with(monkeypatch, Unsupported)
+&gt;       assert len(errors) == 1 and errors[0].id == "crud_views.E313", errors
+E       AssertionError: []
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests/test1/test_conditional_checks.py:537: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_value_group_checks_missing_dynamic_controller_keeps_e311" time="0.001" /></testsuite></testsuites>

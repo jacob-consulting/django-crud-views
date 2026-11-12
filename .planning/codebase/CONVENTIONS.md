@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
-last_mapped_at: 2026-11-11
+last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
+last_mapped_at: 2026-11-12
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-11
+**Analysis Date:** 2026-11-12
 
 ## Naming Patterns
 
@@ -99,4 +99,11 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - Preserve markup ownership: ToggleGroup without a legend remains a `div`; formset row-only fragments omit their own outer fieldset/legend, while nested full formsets retain their own direct legends. Assert direct-child ownership and fragment roots rather than banning all descendant legends (`tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - Button-class reference inventories are executable contracts: core has 90 keys and the effective core-plus-workflow inventory has 100. Update the canonical table, reference docs, workflow inventory, and embedded fresh-process guard together (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
-*Convention analysis: 2026-11-11*
+## Choice-Driven Conditional Groups (Phase 06.27)
+
+- Declare choice-driven groups with `ConditionalGroup(toggle=ValueToggle(field_name, values=[...]), fields=[...])`. Use explicit `empty_values` for values that cannot be inferred unambiguously from the model field (`src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/toggle.py`, `tests/test1/test_conditional_group.py`, `tests/test1/test_conditional_persistence.py`).
+- Keep server activation based on cleaned controller values; raw POST controls presentation only. Preserve existing `ModelFieldToggle` and `UIFieldToggle` behavior when extending choice support (`src/crud_views/lib/conditional/toggle.py`, `tests/test1/test_conditional_toggle.py`).
+- Conditional group field ownership must remain disjoint. Test overlap and clearing conflicts with declarations in both orders (`tests/test1/test_conditional_checks.py`).
+- Cover native `Select` and `RadioSelect` tokens as strings and integers, including zero, with prefixed and unprefixed forms (`tests/test1/test_conditional_toggle.py`, `tests/test1/test_conditional_group.py`).
+
+*Convention analysis: 2026-11-12*

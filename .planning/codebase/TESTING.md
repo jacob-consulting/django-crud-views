@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
-last_mapped_at: 2026-11-11
+last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
+last_mapped_at: 2026-11-12
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-11
+**Analysis Date:** 2026-11-12
 
 ## Test Framework
 
@@ -150,4 +150,12 @@ Vitest loads the real asset into jsdom before cases (`tests/js/toggle.test.js`, 
 - `tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs` and `tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table` guard reference inventories: 90 core keys and 100 effective core-plus-workflow keys. Keep embedded fresh-process source and documentation counts synchronized.
 - Phase 06.25.1 retained a full-suite result of 12,486 passed and one existing skip on Python 3.12 / Django 5.2; this is one environment, not a run of the supported matrix. Focused legend/registry/documentation selection and the full run used multicore pytest. See `.planning/phases/06.25.1-issue-346/06.25.1-VERIFICATION.md` for exact gate evidence and environment details.
 
-*Testing analysis: 2026-11-11*
+## Choice-Driven Conditional Groups (Phase 06.27)
+
+- Python conditional-group coverage is divided by contract among `tests/test1/test_conditional_toggle.py`, `tests/test1/test_conditional_group.py`, `tests/test1/test_conditional_checks.py`, `tests/test1/test_conditional_persistence.py`, and `tests/test1/test_conditional_layout.py`. Keep toggle parsing, form validation, configuration checks, persistence, and rendering assertions in their corresponding modules.
+- For choice activation, cover native `Select` and `RadioSelect`, string and integer tokens, falsy values such as zero, and prefixed forms. Verify invalid or missing cleaned controller data cannot activate a group (`tests/test1/test_conditional_toggle.py`, `tests/test1/test_conditional_group.py`).
+- Persistence assertions should query saved model state as well as `cleaned_data`. Cover inactive forged values, explicit falsy values, model-choice inference, nullable and blankable clearing, defaults, and inherited model/form validation (`tests/test1/test_conditional_persistence.py`).
+- Browser checks separate stock/native choice widgets from lifecycle behavior. Generate records with `tests/browser/conditional-formsets.cjs` and validate them with `tests/browser/conditional-formsets-evidence.test.cjs`; assert exact case matrices and observed values.
+- Phase 06.27's pre-fix compatibility pass recorded the full Python suite at **12,700 passed, 1 existing skip**, 420 full JS tests, examples, and fragment integration. These are historical pre-fix results. After review fixes, targeted conditional tests recorded **364 passed on each of Django 4.2, 5.2, and 6.0**, with 92 focused JS toggle tests and targeted evidence/browser/source checks. The full Python suite was not rerun after fixes; do not present its historical count as post-fix verification. See `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-COMPATIBILITY.md` and `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-VERIFICATION.md` for exact provenance and limits.
+
+*Testing analysis: 2026-11-12*

@@ -5,7 +5,7 @@ from .group import (
     ConditionalGroupModelForm,
 )
 from .layout import ToggleGroup
-from .toggle import ModelFieldToggle, ToggleSource, UIFieldToggle
+from .toggle import ModelFieldToggle, ToggleSource, UIFieldToggle, ValueToggle
 
 __all__ = [
     "ConditionalFormSet",
@@ -16,4 +16,5 @@ __all__ = [
     "ToggleGroup",
     "ToggleSource",
     "UIFieldToggle",
+    "ValueToggle",
 ]

@@ -51,6 +51,8 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.25: Issue #349** (completed 2026-11-11)
 - [x] **Phase 06.25.1: Issue #346** (completed 2026-11-11)
 - [x] **Phase 06.26: Issue #351** (completed 2026-11-11)
+- [x] **Phase 06.27: Choice-driven conditional groups (#354) (INSERTED)** - approved issue handover; dropdown/radio controllers, shared groups, explicit clearing overrides, and linked documentation/examples. (completed 2026-11-12)
+
 - [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
@@ -1734,6 +1736,31 @@ Plans:
 **Wave 4** *(depends on completed Plan 03)*
 - [x] 06.26-04-PLAN.md — Separate Checklist ViewSet with compact checkbox rows, demo integration and browser evidence
 
+### Phase 06.27: Choice-driven conditional groups (#354) (INSERTED)
+
+**Goal:** An existing choice field activates one or more conditional field groups through a dropdown or radio buttons, with shared value matches, existing inactive-group clearing semantics, bounded automatic choice clearing, and authoritative explicit `empty_values` overrides.
+**Source:** [Issue #354 — gsd-handover](https://github.com/jacob-consulting/django-crud-views/issues/354#gsd-handover). Carry approved decisions D-01–D-10 into planning; implementation recommendations remain planning discretion.
+**Requirements:** Deliver the issue's acceptance criteria, including a complex runnable three-option example with multiple groups and a group shared by two options, updated documentation, and reciprocal documentation/example links. Preserve existing checkbox support and keep finding 20's per-row conditions outside scope.
+**Depends on:** Phase 06.26
+**Ordering:** Settle this public conditional API and its template/JavaScript contracts before Phase 7 freezes the theme surface.
+**Plans:** 5/5 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.27-01-PLAN.md — Shared ValueToggle descriptor and real Select save/reopen tracer
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.27-02-PLAN.md — Deterministic group checks and bounded choice-clearing persistence
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.27-03-PLAN.md — Native dropdown/radio ownership, lifecycle and browser acceptance
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.27-04-PLAN.md — Persisted Customer example with both editors, seeds and navigation
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.27-05-PLAN.md — Reciprocal documentation, actual-example browser journey and compatibility evidence
+
 ### Phase 06.29: Themeable column helpers (#356) (INSERTED)
 
 **Goal:** Theme authors configure `Column1` … `Column12` through the existing class registry, preserving Bootstrap defaults and additive caller classes while supporting complete class replacement at render time.
@@ -1747,7 +1774,6 @@ Plans:
 Plans:
 **Wave 1**
 - [x] 06.29-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 06.29 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.29-02-PLAN.md

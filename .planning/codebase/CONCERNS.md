@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
-last_mapped_at: 2026-11-11
+last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
+last_mapped_at: 2026-11-12
 ---
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-11
+**Analysis Date:** 2026-11-12
 
 ## Tech Debt
 
@@ -21,10 +21,10 @@ last_mapped_at: 2026-11-11
 - Fix approach: implement a bounded ViewSet/URL report or remove the command from the public command surface.
 
 **Large central modules:**
-- Issue: multiple shared modules concentrate substantial behavior: `base.py` (about 1,229 lines), `checks.py` (600), template tags (667), buttons (599), ancestors (607), formsets (546), and ViewSet registration (532).
+- Issue: shared behavior is concentrated in several large modules: `base.py` (1,229 lines), `checks.py` (625), template tags (667), buttons (599), ancestors (607), formsets (546), and ViewSet registration (532).
 - Files: `src/crud_views/lib/view/base.py`, `src/crud_views/checks.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/viewset/__init__.py`
 - Impact: shared changes have broad regression surfaces and require navigating several responsibilities in large files.
-- Fix approach: preserve the public APIs and extract cohesive subsystems only when a concrete maintenance need justifies the extra abstraction. Project decisions are constrained by developer maintainability; see `AGENTS.md` and `superpowers/notes/2026-11-04-opt-in-url-helper-decision.md`.
+- Fix approach: preserve public APIs and extract cohesive subsystems only when a concrete maintenance need justifies the added abstraction. Project decisions are constrained by developer maintainability; see `AGENTS.md` and `superpowers/notes/2026-11-04-opt-in-url-helper-decision.md`.
 
 **Ancestor authorization crosses runtime layers:**
 - Issue: ancestor policy and resolution span query helpers, ViewSet hooks, breadcrumbs, resource loading, deletion/manage views, and Guardian integration; policy can also be shaped by multiple settings maps.
@@ -74,10 +74,9 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 
 **Templates, themes, and header-icon compatibility:**
 - Files: `src/crud_views/lib/button_classes.py`, `src/crud_views/lib/view/button_data.py`, `src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/js/`
-- Why fragile: themes consume class keys, button context, icons, template variables, and JavaScript adapters as a connected contract. The empty `cv_icon_header` value explicitly suppresses inheritance; consumers that previously used it to inherit must use `None` or `Icon.VIEWSET_DEFAULT`, while `Icon.NONE` expresses suppression.
-- Safe modification: preserve custom header content independently of icon choice and update the migration guidance in `CHANGELOG.md` and `docs/migrating-1.0.md` when changing the contract.
-- Test coverage: built-in templates and the example theme are exercised; installed third-party themes are not certified (`docs/development/stability.md`).
-- Phase 06.25.1 adds independently configured empty-default `conditional:legend` and `formset:legend` hooks through the existing registry; rendered precedence, escaping and fragment ownership are covered in `tests/test1/test_conditional_layout.py` and `tests/test1/test_formsets_compact.py`.
+- Why fragile: themes consume class keys, button context, icons, template variables, and JavaScript adapters as a connected contract. An empty `cv_icon_header` explicitly suppresses inheritance; consumers that previously used it to inherit must use `None` or `Icon.VIEWSET_DEFAULT`, while `Icon.NONE` expresses suppression.
+- Safe modification: preserve custom header content independently of icon choice and update migration guidance in `CHANGELOG.md` and `docs/migrating-1.0.md` when changing the contract.
+- Test coverage: built-in templates and the example theme are exercised; installed third-party themes are not certified (`docs/development/stability.md`). Empty-default `conditional:legend` and `formset:legend` hooks are independently configured through the existing registry; precedence, escaping and fragment ownership are covered in `tests/test1/test_conditional_layout.py` and `tests/test1/test_formsets_compact.py`.
 
 **Nested formset rendering and persistence:**
 - Files: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/inline_formset.py`
@@ -88,14 +87,20 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 **Opt-in compact formset projection:**
 - Files: `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/static/crud_views/css/formset.css`, `src/crud_views/static/crud_views/js/formset.js`
 - Why fragile: compact layout derives shared schema from request-time form metadata, projects hidden/control feedback to row owners, and shares geometry rules with nested rendering and dynamic cloning. The mode is opt-in; classic helper dispatch remains separate.
-- Safe modification: keep metadata query-free and index-independent, preserve visible-field/schema validation and hidden-error ownership, and check fragment lifecycle plus nested compact/classic combinations. Phase 06.26 extends support only to exact stock `CheckboxInput` controls; custom widgets/templates retain their documented theme responsibility.
-- Test coverage: `tests/test1/test_formsets_compact.py`, `tests/js/formset.test.js`, `tests/js-integration/formset.test.js`, and `tests/browser/compact-checkboxes.cjs` cover the package paths; Phase 06.26 evidence is recorded in `.planning/phases/06.26-issue-351/06.26-VERIFICATION.md`.
+- Safe modification: keep metadata query-free and index-independent, preserve visible-field/schema validation and hidden-error ownership, and check fragment lifecycle plus nested compact/classic combinations. Compact support extends to exact stock `CheckboxInput` controls; custom widgets/templates retain their documented theme responsibility.
+- Test coverage: `tests/test1/test_formsets_compact.py`, `tests/js/formset.test.js`, `tests/js-integration/formset.test.js`, and `tests/browser/compact-checkboxes.cjs`; see `.planning/phases/06.26-issue-351/06.26-VERIFICATION.md`.
 
 **Compact formset support boundary:**
 - Issue: compact metadata requires constructors and `get_form_kwargs(None)` to be query-free and independent of a live row index; changing compact columns in `add_fields()` is unsupported. Compact polymorphic declarations reject explicitly. Password inputs, textareas, and custom widgets/templates beyond the documented stock set are unsupported.
 - Files: `src/crud_views/lib/formsets/compact.py`, `docs/reference/formsets.md`, `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-COMPATIBILITY.md`
 - Impact: these patterns cannot opt into compact mode; classic rendering remains available. This is a documented product boundary, not a defect.
 - Fix approach: keep the bounded contract explicit and expand only for a demonstrated consumer need with a query-safe metadata design.
+
+**Choice-driven conditional groups (new feature boundary):**
+- Files: `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/formset.py`, `src/crud_views/static/crud_views/js/toggle.js`, `src/crud_views/static/crud_views/js/formset.js`, `docs/reference/conditional.md`
+- Why fragile: server-cleaned choice values govern group activation and clearing, while browser state preserves unsaved inputs across selection changes. The supported native controls are single `Select` and same-name `RadioSelect`; value-driven groups control fields within a form (including a formset row), cannot activate a whole ConditionalFormSet, cannot overlap, and cannot clear their controller. Explicit empty values and bounded model-choice inference control persisted clearing.
+- Safe modification: preserve cleaned-data authority, exact HTML token matching (including zero), native validation, and checkbox-group behavior; keep JavaScript lifecycle ownership aligned to the owning form and confirm persistence as well as browser state.
+- Test coverage: `tests/test1/test_conditional_*.py`, `tests/js/toggle.test.js`, `tests/js/formset.test.js`, `tests/browser/conditional-formsets-evidence.test.cjs`, and the actual Customer example in `examples/bootstrap5/conditional/tests.py`.
 
 **Workflow permission and transition helper boundaries:**
 - Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `docs/reference/workflow_view.md`
@@ -124,6 +129,11 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 
 ## Dependencies at Risk
 
+**JavaScript test environment differs from declared ranges:**
+- Risk: the phase 06.27 checks found installed Vitest 5.0.3 and jsdom 30.1.2 while `package.json` declares `^5.0.5` and `^30.1.3`; the Vite config also emits a CommonJS/ESM advisory under the future native config loader.
+- Impact: local JS test results use versions below the declared minimum and may not represent a clean install; current tests passed on the installed runtime.
+- Migration plan: reconcile lockfile/install state with declared ranges and assess the config advisory during environment maintenance; no production dependency or feature change is required by this evidence.
+
 **Django 4.2 support floor:**
 - Risk: Django 4.2 remains the declared package floor and is included in the supported-version test matrix.
 - Impact: the oldest compatibility line increases maintenance and release-verification work.
@@ -142,7 +152,7 @@ None independently confirmed.
 - Priority: High
 
 **Custom user model without `username` in manage view:**
-- What's not tested: `CRUD_VIEWS_MANAGE_SHOW_USERS=True` with an email-only user model; the query names `username` directly.
+- What's not tested: `CRUD_VIEWS_MANAGE_SHOW_USERS=True` with an email-only user model; the query names `username` directly in `values_list()` and `order_by()`.
 - Files: `src/crud_views/lib/views/manage.py`, `tests/test1/test_manage.py`
 - Risk: Django raises `FieldError` when the configured user model has no `username` field.
 - Priority: Medium
@@ -153,16 +163,10 @@ None independently confirmed.
 - Risk: extension breakage may escape the built-in template suite.
 - Priority: Medium
 
-**Phase 06.26 visual sign-off advisories and environment scope:**
-- What's not tested: browser evidence for checkbox behavior is retained at 390, 767, 768, and 1280px and UAT records acceptance, but that does not certify other browser engines, supported Python/Django combinations, or installed external themes. The actual Checklist example was exercised only on Python 3.12.3 / Django 6.1.2 with the Bootstrap pack.
-- Files: `.planning/phases/06.26-issue-351/06.26-UI-REVIEW.md`, `.planning/phases/06.26-issue-351/06.26-VERIFICATION.md`, `.planning/phases/06.26-issue-351/06.26-UAT.md`
-- Risk: visual/runtime differences outside the recorded environment are not established. The accepted UI review retains cramped Done-help wrapping at 768px and a long shared introduction on checklist pages; these are presentation advisories, not unresolved release blockers.
-- Priority: Low
-
-**Supported-environment replay for recent presentation hooks:**
-- What's not tested: Phase 06.25.1's final suite and independent review ran on Python 3.12.3 / Django 5.2.19. Other supported combinations and downstream theme installations were not replayed. Browser appearance and assistive-technology evaluation were not required or claimed for the empty-default class hooks.
-- Files: `.planning/phases/06.25.1-issue-346/06.25.1-VERIFICATION.md`, `.planning/phases/06.25.1-issue-346/06.25.1-REVIEW.md`, `tests/test1/test_assets.py`
-- Risk: local automated evidence does not establish behavior on every supported Python/Django combination or consumer theme. The existing CSP middleware test skips on Django < 6.0; this is the previously waived WINDOWS entry 3, not a new skip.
+**Cross-environment and browser scope:**
+- What's not tested: phase 06.27 browser captures and the actual example were exercised in recorded runtimes only; they do not certify other browser engines, installed external themes, assistive-technology behavior, or every supported Python/Django combination. The current source has per-series conditional tests, but no claim is made for a full-suite replay on every matrix cell.
+- Files: `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-VERIFICATION.md`, `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-COMPATIBILITY.md`, `tests/browser/conditional-formsets.cjs`
+- Risk: runtime or presentation differences outside the recorded evidence remain unestablished. This is scope of verification, not a confirmed defect.
 - Priority: Low
 
 **Compact formset consumer extension hooks:**
@@ -171,6 +175,10 @@ None independently confirmed.
 - Risk: an application opting into compact mode with unsupported hooks may receive validation errors or behavior outside the contract.
 - Priority: Low; documentation and explicit validation define the boundary.
 
+## Resolved Findings
+
+Phase 06.27's two review findings are closed and should not be treated as open concerns: inherited cleaners returning `None` are normalized in `src/crud_views/lib/conditional/group.py`, and the browser evidence checker now rejects contradictory choice observations in `tests/browser/conditional-formsets.cjs`. The independent review is clean; details and regression evidence are in `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-REVIEW-DISPOSITION.md` and `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-FIXES.md`.
+
 ---
 
-*Concerns audit: 2026-11-11*
+*Concerns audit: 2026-11-12*

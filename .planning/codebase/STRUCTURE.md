@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
-last_mapped_at: 2026-11-11
+last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
+last_mapped_at: 2026-11-12
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-11
+**Analysis Date:** 2026-11-12
 
 ## Directory Layout
 
@@ -90,6 +90,18 @@ django-crud-views/
 - Guidance: Preserve the existing row/control attributes and JavaScript add/delete/reorder contract when changing markup; compact class hooks are additive and per node.
 
 Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and validates request-time field schemas, then `_compact_helper()` builds crispy layout objects around the existing bound fields and `FormControl`. The exact stock `django.forms.widgets.CheckboxInput` is supported. A custom subclass or custom template requires `CompactWidgetCompatible`; the marker is a compatibility promise, supplies no renderer, and leaves shared role/label/schema validation in force. `src/crud_views/templates/crud_views/formsets/formset.html` continues to own the common row, management form, hidden-field errors, recursion and crispy invocation, preserving the outer form, CSRF, validation and save lifecycle.
+
+**`src/crud_views/lib/conditional/`:**
+- Purpose: Declare and render server-enforced conditional form field groups and conditional formsets.
+- Contains: Toggle sources and value-based choice controllers, group validation/cleaning, crispy `ToggleGroup` layout, conditional formset handling, and shared layout helpers.
+- Key files: `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/lib/conditional/formset.py`.
+- Guidance: Put reusable controller and group behavior here. `ValueToggle` supports standard static single-choice fields with select/radio widgets; declarations should keep controlled fields disjoint, and explicit business clear values belong in `ConditionalGroup.empty_values`.
+
+**`examples/bootstrap5/conditional/`:**
+- Purpose: Demonstrate checkbox and choice-controlled conditional fields and formsets in a consumer-style app.
+- Contains: Registration checkbox groups, Event conditional formsets, and Customer choice-driven groups with dropdown and radio editors.
+- Key files: `examples/bootstrap5/conditional/models.py`, `examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/urls.py`, `examples/bootstrap5/project/features.py`.
+- Guidance: Keep the two Customer editors on the same `CustomerForm` declarations/layout; `CustomerRadioForm` overrides only the `kind` widget. The example exercises a shared Wholesale/Distributor business group, nullable automatic clearing for `price_tier`, and explicit `payment_terms="unset"` clearing.
 
 **`src/crud_views/templates/crud_views/` and `src/crud_views/static/crud_views/`:**
 - Purpose: Bundled Bootstrap 5 theme and browser-side behavior.
@@ -304,4 +316,4 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 
 ---
 
-*Structure analysis: 2026-11-11*
+*Structure analysis: 2026-11-12*

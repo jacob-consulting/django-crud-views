@@ -11,7 +11,7 @@ No external API integration: the phase extends local Django forms, templates, na
 - Schema capability listed ORM patterns: no matches. Django remains responsible for the real additive Customer migration, applied in disposable example tests/browser storage.
 - Discovery: existing current RESEARCH.md covers external Django semantics; direct source and PATTERNS.md establish implementation seams. No new dependency or missing research input.
 - No graph exists. Existing map is advisory; direct source wins.
-- Estimate calibration: factor 1, applied=false, sample_count 0, confidence low. Five plans, 12 tasks, four waves; only Plan 01's six-file tracer has an explicitly orchestrator-approved sizing exception.
+- Estimate calibration: factor 1, applied=false, sample_count 0, confidence low. Five plans, 12 tasks, five sequential waves; only Plan 01's six-file tracer has an explicitly orchestrator-approved sizing exception.
 - No product implementation or acceptance tests ran during planning; prior research baselines are not feature evidence.
 
 ## Multi-source audit
@@ -53,9 +53,13 @@ Excluded by approved scope: finding20 product-dependent per-row conditions; new 
 |---|---|---|---|---|
 | 01 | Existing conditional stack/browser host | Shared descriptor + runnable Select tracer | 1 | None; public API already approved D-04 |
 | 02 | 01 descriptor | Conflicts, choice-clear persistence, unsupported boundary | 2 | None |
-| 03 | 01 rendered metadata/tracer | Native radio/shared lifecycle + browser acceptance | 2 | None |
-| 04 | 02 server + 03 browser | Real Customer example/migration/seeds/discovery | 3 | None |
-| 05 | 04 runnable example | Docs, reciprocal links, real-example evidence, compatibility | 4 | End-of-phase human-check only |
+| 03 | 01 metadata/tracer + completed 02 hashed Python/model inputs | Native radio/shared lifecycle + browser acceptance | 3 | None |
+| 04 | 02 server + 03 browser | Real Customer example/migration/seeds/discovery | 4 | None |
+| 05 | 04 runnable example | Docs, reciprocal links, real-example evidence, compatibility | 5 | End-of-phase human-check only |
 
-02 and 03 have disjoint modified files. Within each plan tasks are sequential. Native/browser host Plan 03 deliberately uses existing fixture fields, so it has no hidden dependency on Plan 02's new fixture fields.
+02 and 03 have disjoint writes but shared browser hash inputs. Review R3 therefore serializes Plan 03 after Plan 02; no task-level scheduling or new isolation mechanism is needed. Within each plan tasks remain sequential. R1 adds valid defaults to shared fixture fields so old browser seeds remain compatible.
+
+## Round 1 review incorporation — 66738f9f
+
+R1: required shared-fixture defaults and omitted-field regression (02-02). R2: explicit evidence filename on every existing-runner checker command (01-01, 03-02, 05-03). R3: five sequential waves with stable hash inputs (02→03→04→05). R4: valid persisted wholesale tracer seed and selected-versus-DB assertions initially/reopened (01-01). R5: native blank placeholders remain inactive and excluded from coercion checks, with generated integer-choice regression and docs (01-01/02, 05-01). All five findings are incorporated; no decision or issue acceptance was removed.
 

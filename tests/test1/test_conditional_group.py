@@ -295,3 +295,20 @@ def test_value_group_runtime_controlled_field_added_optional():
 
     form = Dynamic(data={"kind": "a"})
     assert form.is_valid(), form.errors
+
+
+def test_value_group_inherited_clean_replaces_cleaned_mapping():
+    class Parent(forms.Form):
+        kind = forms.ChoiceField(choices=[("a", "A")])
+        detail = forms.CharField()
+
+        def clean(self):
+            # Django permits returning a replacement mapping, not only mutating it.
+            return {name: value for name, value in super().clean().items() if name != "kind"}
+
+    class Child(ConditionalGroupFormMixin, Parent):
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+
+    form = Child(data={"kind": "a", "detail": "forged"})
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data == {"detail": ""}

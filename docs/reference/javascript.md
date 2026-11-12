@@ -166,6 +166,7 @@ Per-location configuration needs no package API: build the adapters, then replac
 merge into `cv.adapters` is per adapter, so the reassignment is the whole customisation. Tooltips below the context
 toolbar, for Tabler:
 
+<!-- cv-tooltip-adapter-location -->
 ```javascript
 Object.assign(cv.adapters, cv.bootstrapAdapters(() => globalThis.tabler));
 cv.adapters.tooltip.init = (el, {location} = {}) =>

@@ -51,6 +51,82 @@ describe("adapters.js", () => {
     beforeEach(() => { document.body.innerHTML = '<div id="m"><div id="d"></div></div><span id="t"></span>'; });
     afterEach(() => { vi.unstubAllGlobals(); delete window.cv; });
 
+    describe("published tooltip placement recipe", () => {
+        let instances, created, globals, Tooltip, adapter;
+
+        beforeEach(async () => {
+            await loadScript("adapters");
+            instances = new Map();
+            created = [];
+            Tooltip = {
+                getOrCreateInstance: vi.fn(el => {
+                    if (!instances.has(el)) {
+                        const queued = [];
+                        const rawQueue = vi.fn((callback, element, animated) => {
+                            queued.push({callback, element, animated});
+                            return "queued";
+                        });
+                        const instance = {
+                            queued, rawQueue, _queueCallback: rawQueue,
+                            placement: el.getAttribute("data-bs-placement"),
+                            hide: vi.fn(),
+                            dispose: vi.fn(() => {
+                                if (instances.get(el) === instance) instances.delete(el);
+                            }),
+                        };
+                        instances.set(el, instance);
+                        created.push(instance);
+                    }
+                    return instances.get(el);
+                }),
+                getInstance: vi.fn(el => instances.get(el)),
+            };
+            globals = {tabler: {Tooltip}};
+            new Function("cv", "globalThis", publishedAdapterRecipe("cv-tooltip-adapter-location"))(
+                window.cv, globals,
+            );
+            adapter = window.cv.adapters.tooltip;
+        });
+
+        it("sets context placement before instance creation", () => {
+            const el = document.getElementById("t");
+            adapter.init(el, {location: "context"});
+            expect(instances.get(el).placement).toBe("bottom");
+            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+        });
+
+        it.each(["right", ""])("preserves explicit placement %j", placement => {
+            const el = document.getElementById("t");
+            el.setAttribute("data-bs-placement", placement);
+            adapter.init(el, {location: "context"});
+            expect(el.hasAttribute("data-bs-placement")).toBe(true);
+            expect(instances.get(el).placement).toBe(placement);
+            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+        });
+
+        it.each(["list", "card", "card-order", "formset", "object-detail", "form", "", undefined])(
+            "leaves library placement unchanged for location %j", location => {
+                const el = document.getElementById("t");
+                if (location === undefined) adapter.init(el);
+                else adapter.init(el, {location});
+                expect(el.hasAttribute("data-bs-placement")).toBe(false);
+                expect(instances.get(el).placement).toBeNull();
+                expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+            },
+        );
+
+        it("runs a live queued callback", () => {
+            const el = document.getElementById("t"), live = vi.fn();
+            adapter.init(el, {location: "context"});
+            const instance = instances.get(el);
+            expect(instance._queueCallback(live, el, true)).toBe("queued");
+            expect(instance.queued[0].element).toBe(el);
+            expect(instance.queued[0].animated).toBe(true);
+            instance.queued[0].callback();
+            expect(live).toHaveBeenCalledOnce();
+        });
+    });
+
     it.each(["cv-tab-adapter-namespace", "cv-tab-adapter-complete-map"])("published %s supports tab lifecycle without bootstrap", async marker => {
         await loadScript("adapters");
         const code = publishedAdapterRecipe(marker);

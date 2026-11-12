@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-12
-last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
+last_mapped_commit: dcea6278e322cec866b8cfdd51bf299bfc2d57c6
 ---
 # External Integrations
 
@@ -78,7 +78,7 @@ last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
 - GitHub Actions cover Python/Django tests, lint, docs, JavaScript tests, release publication, demo deployment, and README examples (`.github/workflows/`).
 - Release publication uses PyPI trusted publishing; coverage uploads to Codecov (`.github/workflows/publish.yml`, `.github/workflows/tests.yml`).
 - The demo workflow deploys release tags through the Render API; credentials are configured in GitHub/Render settings (`.github/workflows/demo.yml`).
-- Optional local tunnel uses Cloudflare Tunnel through Docker Compose (`dev/docker-compose.yaml`); `dev/.env` exists but its contents are not read.
+- Optional local tunnel uses Cloudflare Tunnel through Docker Compose (`dev/docker-compose.yaml`); `dev/.env.example` documents local configuration keys. No populated `dev/.env` file is present.
 
 ## Environment Configuration
 
@@ -86,7 +86,7 @@ last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
 - None for the reusable package. Host Django settings provide project database and secret configuration; demo settings require `SECRET_KEY` and optionally read `RENDER_EXTERNAL_HOSTNAME` (`examples/bootstrap5/project/settings_demo.py`).
 
 **Secrets location:**
-- Host/deployment environment and local env files; secret file contents are not inspected. Deployment secret names are documented in `docs/development/index.md`.
+- Host/deployment environment; `dev/.env.example` is a template only. Secret file contents are not inspected. Deployment secret names are documented in `docs/development/index.md`.
 
 ## Webhooks & Callbacks
 

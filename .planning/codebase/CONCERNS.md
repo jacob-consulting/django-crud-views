@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
+last_mapped_commit: dcea6278e322cec866b8cfdd51bf299bfc2d57c6
 last_mapped_at: 2026-11-12
 ---
 # Codebase Concerns
@@ -178,6 +178,8 @@ None independently confirmed.
 ## Resolved Findings
 
 Phase 06.27's two review findings are closed and should not be treated as open concerns: inherited cleaners returning `None` are normalized in `src/crud_views/lib/conditional/group.py`, and the browser evidence checker now rejects contradictory choice observations in `tests/browser/conditional-formsets.cjs`. The independent review is clean; details and regression evidence are in `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-REVIEW-DISPOSITION.md` and `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-FIXES.md`.
+
+Phase 06.29's critical review finding is also closed: lazy caller classes are coerced when the numbered column helper is constructed, preserving construction-time language and avoiding a render-time crash in `src/crud_views/lib/crispy/table.py`. Regression coverage is in `tests/test1/test_crispy_columns.py`; disposition and independent re-review are recorded in `.planning/phases/06.29-themeable-column-helpers-356/06.29-REVIEW-DISPOSITION.md`. The phase review and verification report record no remaining findings. Per-column registry/template resolution remains an intentional, uncached render-time cost; the phase accepts this bounded overhead and does not claim a measured performance guarantee.
 
 ---
 

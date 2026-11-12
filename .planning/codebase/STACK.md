@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-12
-last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
+last_mapped_commit: dcea6278e322cec866b8cfdd51bf299bfc2d57c6
 ---
 # Technology Stack
 
@@ -19,12 +19,11 @@ last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
 
 **Environment:**
 - Python >=3.12 is the package metadata floor (`pyproject.toml`). Nox declares Python 3.12–3.15 against Django 4.2, 5.2, and 6.0, with unsupported combinations skipped (`noxfile.py`).
-- `uv.lock` records one resolved development environment (currently Django 6.1.2); those lock resolutions do not expand the declared Django support matrix or dependency bounds.
 - Node.js >=20 for the dev-only browser test harness (`package.json`)
 
 **Package Manager:**
 - Python: `uv` for development and Nox environments; standard installs use Python package metadata
-- Lockfile: `uv.lock` present
+- Lockfile: no Python lockfile; `package-lock.json` is present for the JavaScript test harness
 - JavaScript: npm with `package-lock.json`
 
 ## Frameworks
@@ -49,7 +48,7 @@ last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
 
 **Critical:**
 - Required runtime dependencies and declared minimums: `django>=4.2.0`, `pydantic>=2.2.1`, `python-box>=6.0.2`, `django-tables2>=2.5.3`, `django-filter>=21.1`, `typing-extensions>=4.7.1`, `django-crispy-forms>=2.0`, and `crispy-bootstrap5>=2023.10` (`pyproject.toml`).
-- `uv.lock` contains a current resolution, while `noxfile.py` verifies the crispy minimum floor in dedicated sessions; neither should be read as changing package metadata bounds.
+- `noxfile.py` verifies the crispy minimum floor in dedicated sessions; package metadata in `pyproject.toml` defines the supported dependency bounds.
 
 **Infrastructure:**
 - `[workflow]`: `django-fsm-2`, `django-fsm-2-admin`; `[polymorphic]`: `django-polymorphic`; `[ordered]`: `django-ordered-model`; `[guardian]`: `django-guardian` (`pyproject.toml`)
@@ -67,7 +66,6 @@ last_mapped_commit: 7cb23dbc608f56b4669244b9d65811bf302d765a
 
 **Build:**
 - `pyproject.toml` - package metadata, extras, Hatchling, Ruff, pytest, and coverage configuration
-- `uv.lock` - resolved Python environment
 - `noxfile.py` and `taskfile.yaml` - matrix sessions and task shortcuts
 - `package.json` and `package-lock.json` - JavaScript test harness
 - `mkdocs.yml`, `.readthedocs.yaml`, and `settings_i18n.py` - docs and translation tooling

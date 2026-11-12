@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="1.329" timestamp="2026-11-12T11:39:42.394803+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_conditional_group" name="test_value_group_runtime_callable_is_rejected_before_native_clean" time="0.258"><failure message="AssertionError: conditional validation must reject callable choices before field cleaning">tests/test1/test_conditional_group.py:284: in test_value_group_runtime_callable_is_rejected_before_native_clean
+    Dynamic(data={"kind": "a", "detail": "forged"}).is_valid()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:241: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:337: in full_clean
+    self._clean_fields()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:345: in _clean_fields
+    self.cleaned_data[name] = field._clean_bound_field(bf)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/fields.py:272: in _clean_bound_field
+    return self.clean(value)
+           ^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/fields.py:208: in clean
+    self.validate(value)
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/fields.py:911: in validate
+    if value and not self.valid_value(value):
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/fields.py:921: in valid_value
+    for k, v in self.choices:
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/choices.py:60: in __iter__
+    yield from normalize_choices(self.func())
+                                 ^^^^^^^^^^^
+tests/test1/test_conditional_group.py:273: in choices
+    raise AssertionError("conditional validation must reject callable choices before field cleaning")
+E   AssertionError: conditional validation must reject callable choices before field cleaning</failure></testcase><testcase classname="tests.test1.test_conditional_group" name="test_value_group_runtime_controlled_field_added_optional" time="0.263"><failure message="AssertionError: {'detail': ['This field is required.']}&#10;assert False&#10; +  where False = is_valid()&#10; +    where is_valid = &lt;Dynamic bound=True, valid=False, fields=(kind;detail)&gt;.is_valid">tests/test1/test_conditional_group.py:297: in test_value_group_runtime_controlled_field_added_optional
+    assert form.is_valid(), form.errors
+E   AssertionError: {'detail': ['This field is required.']}
+E   assert False
+E    +  where False = is_valid()
+E    +    where is_valid = &lt;Dynamic bound=True, valid=False, fields=(kind;detail)&gt;.is_valid</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_value_group_checks_model_callable_choices_are_not_evaluated" time="0.001"><failure message="AssertionError: checks must not evaluate model callable choices">tests/test1/test_conditional_checks.py:609: in test_value_group_checks_model_callable_choices_are_not_evaluated
+    errors = _run_check_with(monkeypatch, Dynamic)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test1/test_conditional_checks.py:319: in _run_check_with
+    return check_conditional()
+           ^^^^^^^^^^^^^^^^^^^
+src/crud_views/checks.py:404: in check_conditional
+    _collect_view_findings(view, findings)
+src/crud_views/checks.py:386: in _collect_view_findings
+    _collect_form_findings(form_class, findings)
+src/crud_views/checks.py:381: in _collect_form_findings
+    _collect_group_findings(form_class, groups, _form_toggle_names(form_class), findings)
+src/crud_views/checks.py:347: in _collect_group_findings
+    validate_value_groups(groups, form_class.base_fields, model)
+src/crud_views/lib/conditional/group.py:73: in validate_value_groups
+    group.toggle.validate_field(fields[controller], model_field)
+src/crud_views/lib/conditional/toggle.py:126: in validate_field
+    for key, label in field.choices:
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/choices.py:48: in __iter__
+    if not any(value in ("", None) for value, _ in flatten_choices(other)):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/choices.py:48: in &lt;genexpr&gt;
+    if not any(value in ("", None) for value, _ in flatten_choices(other)):
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/choices.py:65: in flatten_choices
+    for value_or_group, label_or_nested in choices or ():
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/utils/choices.py:60: in __iter__
+    yield from normalize_choices(self.func())
+                                 ^^^^^^^^^^^
+tests/test1/test_conditional_checks.py:594: in choices
+    raise AssertionError("checks must not evaluate model callable choices")
+E   AssertionError: checks must not evaluate model callable choices</failure></testcase></testsuite></testsuites>

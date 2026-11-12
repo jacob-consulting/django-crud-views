@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.673" timestamp="2026-11-12T12:08:07.358766+00:00" hostname="weaver-dev"><testcase classname="conditional.tests.CustomerDiscoveryTest" name="test_customer_seeds_are_coherent_idempotent_and_preserve_edits" time="1.564"><failure message="AssertionError: 0 != 3">self = &lt;conditional.tests.CustomerDiscoveryTest testMethod=test_customer_seeds_are_coherent_idempotent_and_preserve_edits&gt;
+
+    def test_customer_seeds_are_coherent_idempotent_and_preserve_edits(self):
+        from django.core.management import call_command
+    
+        from conditional.models import Customer
+    
+        call_command("seed")
+&gt;       self.assertEqual(Customer.objects.count(), 3)
+E       AssertionError: 0 != 3
+
+conditional/tests.py:412: AssertionError</failure></testcase></testsuite></testsuites>

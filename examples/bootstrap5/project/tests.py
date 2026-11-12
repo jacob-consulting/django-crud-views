@@ -254,6 +254,65 @@ class BreadcrumbAdoptionTest(TestCase):
                 self.assertContains(resp, "Home")  # global prefix from settings
 
 
+class ChoiceConditionalLinksTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = get_user_model().objects.create_superuser(username="choice-docs", password="pw")
+
+    def test_choice_reference_and_actual_routes(self):
+        from pathlib import Path
+
+        from conditional.views import CustomerForm, CustomerRadioForm
+
+        from crud_views.lib.conditional import ValueToggle
+        from project.features import DOCS_BASE
+
+        self.client.force_login(self.admin)
+        feature = next(feature for feature in FEATURES if feature.app == "conditional")
+        expected = f"{DOCS_BASE}/reference/conditional/#choice-driven-groups"
+        self.assertIn(expected, [ref.url for ref in feature.docs])
+        docs = (Path(__file__).resolve().parents[3] / "docs/reference/conditional.md").read_text()
+        for route in ("customer-list", "customer-radio_create"):
+            path = reverse(route)
+            self.assertIn(f"https://django-crud-views-demo.onrender.com{path}", docs)
+            response = self.client.get(path)
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, f'href="{expected}"')
+        self.assertIn("## Choice-driven groups", docs)
+        self.assertIs(CustomerRadioForm.cv_conditional_groups, CustomerForm.cv_conditional_groups)
+        self.assertEqual(
+            [group.toggle.values for group in CustomerForm.cv_conditional_groups],
+            [("consumer",), ("wholesale", "distributor"), ("wholesale",), ("distributor",)],
+        )
+        self.assertTrue(all(isinstance(group.toggle, ValueToggle) for group in CustomerForm.cv_conditional_groups))
+
+    def test_published_recipe_matches_example_rules(self):
+        from pathlib import Path
+
+        from conditional.models import Customer
+        from conditional.views import CustomerForm
+
+        docs = (Path(__file__).resolve().parents[3] / "docs/reference/conditional.md").read_text()
+        section = docs.split("## Choice-driven groups", 1)[1]
+        recipe = section.split("```python\n", 1)[1].split("```", 1)[0]
+        namespace = {"Customer": Customer}
+        exec(compile(recipe, "docs/reference/conditional.md", "exec"), namespace)
+        for documented, actual in zip(
+            namespace["CustomerForm"].cv_conditional_groups, CustomerForm.cv_conditional_groups, strict=True
+        ):
+            self.assertEqual(documented.toggle.values, actual.toggle.values)
+            self.assertEqual(documented.fields, actual.fields)
+            self.assertEqual(documented.required_fields, actual.required_fields)
+            self.assertEqual(documented.empty_values, actual.empty_values)
+        for form_name in ("CustomerForm", "CustomerRadioForm"):
+            form = namespace[form_name](None, data={"name": "Recipe", "kind": "consumer"})
+            self.assertTrue(form.is_valid(), form.errors)
+            customer = form.save()
+            customer.refresh_from_db()
+            self.assertIsNone(customer.price_tier)
+            self.assertEqual(customer.payment_terms, "unset")
+
+
 class DocRefTest(SimpleTestCase):
     def test_url_plain_page(self):
         from project.features import DOCS_BASE, DocRef

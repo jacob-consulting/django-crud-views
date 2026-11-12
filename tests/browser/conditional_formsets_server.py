@@ -76,6 +76,7 @@ from crud_views.lib.conditional import (
     ModelFieldToggle,
     ToggleGroup,
 )
+from crud_views.lib.conditional.toggle import ValueToggle
 from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin
 from crud_views.lib.formsets import (
     CompactColumn,
@@ -391,6 +392,71 @@ Records = inlineformset_factory(
 )
 
 
+class ChoiceTracerForm(ConditionalGroupFormMixin, BrowserRowForm):
+    blank_text = forms.ChoiceField(
+        choices=[(value, value.title()) for value in ("consumer", "wholesale", "distributor")]
+    )
+    choice_toggle = ValueToggle("blank_text", values=["wholesale"])
+    cv_conditional_groups = [ConditionalGroup(choice_toggle, ["nullable_text"])]
+
+    class Meta:
+        model = ConditionalPersistenceRecord
+        fields = ["blank_text", "nullable_text", "number", "flag", "active"]
+
+    def __init__(
+        self, *args, widgets=False, widget="select", numeric=False, disabled=False, adversarial=False, **kwargs
+    ):
+        self.widgets = widgets
+        if widgets:
+            tokens = [0, 1, 2] if numeric else ["consumer", "wholesale", "distributor"]
+            if adversarial:
+                tokens = ["consumer", '<img src=x onerror="window.choiceInjected=true">', "distributor"]
+            self.choice_toggles = [
+                ValueToggle("blank_text", values=tokens[1:]),
+                ValueToggle("blank_text", values=[tokens[1]]),
+                ValueToggle("blank_text", values=[tokens[0]]),
+            ]
+            self.cv_conditional_groups = [
+                ConditionalGroup(self.choice_toggles[0], ["nullable_text"]),
+                ConditionalGroup(self.choice_toggles[1], ["number"]),
+                ConditionalGroup(self.choice_toggles[2], ["flag"], required=[], empty_values={"flag": False}),
+            ]
+        super().__init__(*args, **kwargs)
+        if widgets:
+            options = {
+                "choices": [(value, str(value)) for value in tokens],
+                "widget": forms.RadioSelect if widget == "radio" else forms.Select,
+                "disabled": disabled,
+            }
+            self.fields["blank_text"] = (
+                forms.TypedChoiceField(coerce=int, **options)
+                if numeric and not adversarial
+                else forms.ChoiceField(**options)
+            )
+            self.fields["number"].disabled = disabled
+        else:
+            for name in ("number", "flag", "active"):
+                self.fields.pop(name)
+
+    @property
+    def helper(self):
+        helper = super().helper
+        helper.form_tag = False
+        helper.disable_csrf = True
+        return helper
+
+    def get_layout_fields(self):
+        if self.widgets:
+            return [
+                "blank_text",
+                ToggleGroup(self.choice_toggles[0], "nullable_text", legend="Shared business details"),
+                ToggleGroup(self.choice_toggles[1], "number"),
+                ToggleGroup(self.choice_toggles[2], "flag", legend="Consumer details"),
+                "active",
+            ]
+        return ["blank_text", ToggleGroup(self.choice_toggle, "nullable_text", legend="Wholesale details")]
+
+
 class CheckboxRecordForm(BrowserRowForm):
     accepted = forms.BooleanField(
         required=True,
@@ -614,7 +680,35 @@ class BrowserFiles(BrowserEdit):
 
 actor = User.objects.create_superuser(username="browser", password=None, email="")
 denied_actor = User.objects.create_user(username="browser-denied", password=None)
-cases = []
+choice_record = ConditionalPersistenceRecord.objects.create(
+    parent=Profile.objects.create(name="Choice tracer"),
+    blank_text="wholesale",
+    nullable_text="Existing wholesale detail",
+)
+cases = [{"theme": "stock", "id": "value-tracer", "pk": choice_record.pk, "url": f"/choice/stock/{choice_record.pk}/"}]
+choice_records = [choice_record.pk]
+for mode in ("stock", "native"):
+    for widget in ("select", "radio"):
+        for numeric in (False, True):
+            record = ConditionalPersistenceRecord.objects.create(
+                parent=Profile.objects.create(name=f"Choice {mode} {widget} {numeric}"),
+                blank_text="1" if numeric else "wholesale",
+                nullable_text="Saved shared details",
+                number=42,
+                flag=False,
+                active=True,
+            )
+            choice_records.append(record.pk)
+            cases.append(
+                {
+                    "theme": mode,
+                    "id": "choice-widgets",
+                    "widget": widget,
+                    "numeric": numeric,
+                    "pk": record.pk,
+                    "url": f"/choice/{mode}/{record.pk}/?widgets=1&widget={widget}&numeric={int(numeric)}",
+                }
+            )
 for mode in ("stock", "native"):
     for case in (
         "tracer",
@@ -665,7 +759,7 @@ for mode in ("stock", "native"):
                 "filesUrl": f"/files/{mode}/{profile.pk}/",
             }
         )
-for model in (Publisher, Profile, Book, BookNote, BrowserMemo, BrowserConditionalRecord):
+for model in (Publisher, Profile, Book, BookNote, BrowserMemo, BrowserConditionalRecord, ConditionalPersistenceRecord):
     watch(model)
 events.clear()
 
@@ -739,6 +833,54 @@ def edit(request, mode, pk, files=False, capability=None, edge=None):
         theme.reset(token)
 
 
+def choice_edit(request, mode, pk):
+    if not request.user.is_superuser:
+        return HttpResponse(status=403)
+    instance = ConditionalPersistenceRecord.objects.get(pk=pk)
+    widgets = request.GET.get("widgets") == "1"
+    numeric = request.GET.get("numeric") == "1"
+    if request.GET.get("harness"):
+        query = request.GET.copy()
+        query.pop("harness")
+        return TemplateResponse(
+            request,
+            "conditional_formsets/page.html",
+            {
+                "harness": True,
+                "theme": mode,
+                "target": request.path + "?" + query.urlencode(),
+            },
+        )
+    if request.GET.get("create"):
+        instance = ConditionalPersistenceRecord(parent=instance.parent, blank_text="0" if numeric else "consumer")
+    form = ChoiceTracerForm(
+        None,
+        data=request.POST if request.method == "POST" else None,
+        instance=instance,
+        prefix="choice[<]-0" if widgets else "choice-0",
+        widgets=widgets,
+        widget=request.GET.get("widget", "select"),
+        numeric=numeric,
+        disabled=request.GET.get("disabled") == "1",
+        adversarial=request.GET.get("adversarial") == "1",
+    )
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return JsonResponse({"saved": True})
+    token = theme.set(mode)
+    try:
+        response = TemplateResponse(
+            request,
+            "conditional_formsets/page.html",
+            {"form": form, "theme": mode, "compact_fixture": True, "modal": cv_is_modal_request(request)},
+            status=422 if request.method == "POST" else 200,
+        )
+        response.render()
+        return response
+    finally:
+        theme.reset(token)
+
+
 def signin(request):
     login(
         request,
@@ -764,6 +906,7 @@ def state(request):
             "scores": list(BrowserScore.objects.values()),
             "leaves": list(BrowserLeaf.objects.values()),
             "records": records,
+            "choice_records": list(ConditionalPersistenceRecord.objects.filter(pk__in=choice_records).values()),
             "checkbox_records": list(
                 ConditionalPersistenceRecord.objects.filter(parent_id=compact_checkbox_pk).values()
             ),
@@ -795,6 +938,7 @@ urlpatterns = [
     path("signin/", signin),
     path("cases/", lambda request: JsonResponse(cases, safe=False)),
     path("state/", state),
+    path("choice/<str:mode>/<int:pk>/", choice_edit),
     path("edit/<str:mode>/<int:pk>/", edit),
     path("compact/<str:mode>/<int:pk>/", edit),
     path("compact/<str:edge>/<str:mode>/<int:pk>/", edit),

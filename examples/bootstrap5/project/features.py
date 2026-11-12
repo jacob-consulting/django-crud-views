@@ -370,23 +370,31 @@ FEATURES: list[Feature] = [
         app="conditional",
         group="forms",
         title="Conditional",
-        description="A checkbox toggle reveals a field-group or an entire formset, enforced server-side.",
+        description="Checkboxes and native choices reveal field-groups; checkbox formsets remain server-enforced.",
         about=(
             "Two ways a checkbox can govern what's on the form. Registration reveals a fieldset of company "
             "billing details only when 'I represent a company' is ticked, validated and cleared server-side "
             "regardless of JavaScript; a second, transient 'Add a note' checkbox (UIFieldToggle — not a model "
             "field) reveals an optional note. Event gates two formsets: Sessions with on_off='purge', which "
             "deletes existing rows when untoggled, and Speakers with on_off='skip' (the safe default), which "
-            "merely hides them and leaves the rows untouched."
+            "merely hides them and leaves the rows untouched. Customer compares Dropdown and Radio editors for "
+            "Consumer, Wholesale and Distributor. Four groups include business details shared by Wholesale and "
+            "Distributor; save and reopen to inspect automatic None clearing and explicit unset payment terms."
         ),
         look_at=(
             "RegistrationForm.cv_conditional_groups (ModelFieldToggle + UIFieldToggle) and its "
             "ToggleGroup(..., legend=...) layout; cv_event_formsets' two ConditionalFormSet declarations "
-            "contrasting on_off='purge' vs on_off='skip'."
+            "contrasting on_off='purge' vs on_off='skip'. CustomerForm reuses ValueToggle descriptors in its "
+            "ConditionalGroup declarations and ToggleGroup layout; CustomerRadioForm changes only the widget."
         ),
         url_name="registration-list",
         icon="fa-solid fa-toggle-on",
         docs=(
+            DocRef(
+                page="reference/conditional.md",
+                label="Choice-driven groups",
+                anchor="choice-driven-groups",
+            ),
             DocRef(
                 page="reference/conditional.md",
                 label="Conditional field-groups",

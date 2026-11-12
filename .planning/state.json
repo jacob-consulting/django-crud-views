@@ -140,9 +140,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-discuss-phase 7",
-    "label": "Discuss theme-surface stability policy",
-    "reason": "Phase 06.26 complete; canonical verification and UAT passed"
+    "command": "$gsd-progress --next",
+    "label": "Advance to the next step (plan phase 7)",
+    "reason": "Phase 43 of 43 — needs a plan"
   },
-  "updated_at": "2026-11-11T21:58:28.065021+00:00"
+  "updated_at": "2026-11-12T13:19:28.015Z"
 }

@@ -20,7 +20,11 @@ from crud_views.lib.ancestors import (
     _walk_ancestors,
 )
 from crud_views.lib.button_classes import button_class_check_messages
-from crud_views.lib.conditional.group import ConditionalGroupFormMixin, resolve_conditional_empty_value
+from crud_views.lib.conditional.group import (
+    ConditionalGroupFormMixin,
+    resolve_conditional_empty_value,
+    validate_value_groups,
+)
 from crud_views.lib.formsets.formsets import FormSet
 from crud_views.lib.icons import ICON_VALUE_HINT, icon_check_messages, is_icon_value, unregistered_prefix
 from crud_views.lib.settings import crud_views_settings
@@ -235,7 +239,9 @@ def _registry_needs_ordered_model() -> bool:
     return False
 
 
-def _conditional_messages(nested_conditionals, missing_toggles, unsupported_clears, purge_conflicts=()):
+def _conditional_messages(
+    nested_conditionals, missing_toggles, unsupported_clears, purge_conflicts=(), value_errors=()
+):
     """Pure formatter — turns collected findings into Django check messages.
 
     Kept separate from registry traversal so it is unit-testable without the
@@ -270,6 +276,14 @@ def _conditional_messages(nested_conditionals, missing_toggles, unsupported_clea
                 id="crud_views.E312",
             )
         )
+    for form_name, reason in value_errors:
+        messages.append(
+            Error(
+                f"Invalid conditional value group on form '{form_name}': {reason}",
+                hint="Use native single-choice controllers, matching choice values and disjoint controlled fields.",
+                id="crud_views.E313",
+            )
+        )
     for key, reason in purge_conflicts:
         messages.append(
             DjangoWarning(
@@ -289,6 +303,7 @@ class _ConditionalFindings:
     nested_conditionals: list = dataclasses.field(default_factory=list)
     missing_toggles: list = dataclasses.field(default_factory=list)
     unsupported_clears: list = dataclasses.field(default_factory=list)
+    value_errors: list = dataclasses.field(default_factory=list)
     purge_conflicts: list = dataclasses.field(default_factory=list)
     inspected_forms: set = dataclasses.field(default_factory=set)
 
@@ -328,6 +343,10 @@ def _walk_formset(formset, key, is_top, form_class, available_toggles, findings)
 
 def _collect_group_findings(form_class, groups, declared, findings):
     model = getattr(getattr(form_class, "_meta", None), "model", None)
+    try:
+        validate_value_groups(groups, form_class.base_fields, model)
+    except ImproperlyConfigured as exc:
+        findings.value_errors.append((form_class.__name__, str(exc)))
     for group in groups:
         tname = group.toggle.field_name()
         if tname not in declared:
@@ -394,7 +413,13 @@ def check_conditional(app_configs=None, **kwargs):
     unsupported_clears = list(dict.fromkeys(findings.unsupported_clears))
     purge_conflicts = list(dict.fromkeys(findings.purge_conflicts))
 
-    return _conditional_messages(nested_conditionals, missing_toggles, unsupported_clears, purge_conflicts)
+    return _conditional_messages(
+        nested_conditionals,
+        missing_toggles,
+        unsupported_clears,
+        purge_conflicts,
+        list(dict.fromkeys(findings.value_errors)),
+    )
 
 
 @register(TAG)

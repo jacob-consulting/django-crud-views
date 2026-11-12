@@ -1,5 +1,5 @@
 {% if cv_toggle_legend %}
-<fieldset cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"><legend>{{ cv_toggle_legend }}</legend>{{ cv_toggle_inner }}</fieldset>
+<fieldset cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %}><legend>{{ cv_toggle_legend }}</legend>{{ cv_toggle_inner }}</fieldset>
 {% else %}
-<div cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}">{{ cv_toggle_inner }}</div>
+<div cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %}>{{ cv_toggle_inner }}</div>
 {% endif %}

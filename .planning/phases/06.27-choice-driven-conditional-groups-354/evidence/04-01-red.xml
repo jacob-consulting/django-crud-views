@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.052" timestamp="2026-11-12T12:05:28.654016+00:00" hostname="weaver-dev"><testcase classname="conditional.tests.CustomerCrudTest" name="test_create_routes_render_native_widgets" time="0.931"><failure message="AssertionError: False is not true : Both Customer create routes must be registered">self = &lt;conditional.tests.CustomerCrudTest testMethod=test_create_routes_render_native_widgets&gt;
+
+    def test_create_routes_render_native_widgets(self):
+        from django.urls import get_resolver
+        from lxml import html
+    
+&gt;       self.assertTrue(
+            all(f"customer-{key}" in get_resolver().reverse_dict for key in ("create", "radio_create")),
+            "Both Customer create routes must be registered",
+        )
+E       AssertionError: False is not true : Both Customer create routes must be registered
+
+conditional/tests.py:225: AssertionError</failure></testcase></testsuite></testsuites>

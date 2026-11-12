@@ -5,6 +5,11 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import models
 from django.forms import BaseForm
 
+try:
+    from django.utils.choices import CallableChoiceIterator
+except ImportError:  # Django 4.2
+    from django.forms.fields import CallableChoiceIterator
+
 _FALSEY = {"", "false", "0", "off", "none"}
 
 
@@ -87,6 +92,10 @@ class ValueToggle(ToggleSource):
         ):
             raise ImproperlyConfigured(
                 f"ValueToggle '{self.name}' requires a standard ChoiceField/TypedChoiceField and Select/RadioSelect."
+            )
+        if isinstance(field.choices, CallableChoiceIterator):
+            raise ImproperlyConfigured(
+                f"ValueToggle '{self.name}' does not support callable choices; use static choices."
             )
         coerce = str
         if type(field) is forms.TypedChoiceField:

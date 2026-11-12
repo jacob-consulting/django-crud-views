@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from typing import Any, ClassVar
 
 from django import forms
@@ -7,7 +8,43 @@ from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db import models
 from django.forms import BooleanField
 
-from .toggle import ToggleSource
+from .toggle import ToggleSource, ValueToggle
+
+
+def validate_value_groups(groups, fields, model=None):
+    """Validate value-involved declarations without constructing forms or querying.
+
+    ``fields=None`` checks structure before initialization mutates fields. Static
+    callers may omit request-added fields; runtime callers check their presence.
+    """
+    for group in groups:
+        if not isinstance(group.toggle, ValueToggle):
+            continue
+        controller = group.toggle.field_name()
+        controlled = set(group.fields)
+        outside = set(group.required_fields) - controlled
+        if outside:
+            raise ImproperlyConfigured(
+                f"ValueToggle '{controller}' required fields {sorted(outside)} must belong to its controlled fields."
+            )
+        for other in groups:
+            other_controller = other.toggle.field_name()
+            conflicts = controlled & set(other.fields) if other is not group else set()
+            if controller in other.fields:
+                conflicts.add(controller)
+            if other_controller in controlled:
+                conflicts.add(other_controller)
+            if conflicts:
+                raise ImproperlyConfigured(
+                    f"ValueToggle '{controller}' conflicts with group '{other_controller}' on fields "
+                    f"{sorted(conflicts)}; use disjoint controlled fields and never control a group controller."
+                )
+        if fields is not None and controller in fields:
+            model_field = None
+            if model is not None:
+                with suppress(FieldDoesNotExist):
+                    model_field = model._meta.get_field(controller)
+            group.toggle.validate_field(fields[controller], model_field)
 
 
 def resolve_conditional_empty_value(form_field, model_field, group, field_name):
@@ -120,6 +157,7 @@ class ConditionalGroupFormMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        validate_value_groups(self.cv_conditional_groups, None)
         self._cv_conditional_original_values = {}
         for group in self.cv_conditional_groups:
             # Inject transient UI toggle fields that are not model fields.
@@ -135,7 +173,16 @@ class ConditionalGroupFormMixin:
         # Configuration must support switching off even for an active submission.
         # Run here to include fields added by request-dependent subclass __init__
         # methods, without constructing arbitrary forms during startup checks.
+        validate_value_groups(
+            self.cv_conditional_groups, self.fields, getattr(getattr(self, "_meta", None), "model", None)
+        )
         for group in self.cv_conditional_groups:
+            if isinstance(group.toggle, ValueToggle):
+                missing = (set(group.fields) | {group.toggle.field_name()}) - self.fields.keys()
+                if missing:
+                    raise ImproperlyConfigured(
+                        f"ValueToggle '{group.toggle.field_name()}' fields {sorted(missing)} are missing from the form."
+                    )
             for name in group.fields:
                 if name in self.fields and not self.fields[name].disabled:
                     resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)

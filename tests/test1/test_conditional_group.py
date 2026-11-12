@@ -204,7 +204,7 @@ def test_value_group_conflicts(conflict, reverse):
         other = forms.CharField()
         cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
 
-    with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+    with pytest.raises(ImproperlyConfigured, match=r"ValueToggle.*kind"):
         Invalid(data={"kind": "invalid", "detail": "forged"})
     # Class fields were not disarmed while attempting construction.
     assert Invalid.base_fields["detail"].required

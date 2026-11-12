@@ -266,3 +266,32 @@ def test_checkbox_only_overlaps_keep_legacy_behavior():
     form = Legacy(data={"detail": "forged"})
     assert form.is_valid()
     assert form.cleaned_data["detail"] == ""
+
+
+def test_value_group_runtime_callable_is_rejected_before_native_clean():
+    def choices():
+        raise AssertionError("conditional validation must reject callable choices before field cleaning")
+
+    class Dynamic(ConditionalGroupFormMixin, forms.Form):
+        detail = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["kind"] = forms.ChoiceField(choices=choices)
+
+    with pytest.raises(ImproperlyConfigured, match="callable choices"):
+        Dynamic(data={"kind": "a", "detail": "forged"}).is_valid()
+
+
+def test_value_group_runtime_controlled_field_added_optional():
+    class Dynamic(ConditionalGroupFormMixin, forms.Form):
+        kind = forms.ChoiceField(choices=[("a", "A")])
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"], required=[])]
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["detail"] = forms.CharField()
+
+    form = Dynamic(data={"kind": "a"})
+    assert form.is_valid(), form.errors

@@ -585,3 +585,27 @@ def test_choice_clear_plain_form_requires_explicit_value(monkeypatch):
     assert _run_check_with(monkeypatch, ChoiceForm) == []
     form = ChoiceForm(data={"value": "forged"})
     assert form.is_valid() and form.cleaned_data["value"] == ""
+
+
+def test_value_group_checks_model_callable_choices_are_not_evaluated(monkeypatch):
+    from tests.test1.app.models import ConditionalPersistenceRecord
+
+    def choices():
+        raise AssertionError("checks must not evaluate model callable choices")
+
+    # Django 5+ wraps nullable model choices in a lazy blank-option iterator.
+    import django
+
+    if django.VERSION < (5, 0):
+        return  # Model callable choices were introduced in Django 5.0.
+    monkeypatch.setattr(ConditionalPersistenceRecord._meta.get_field("nullable_text_choice"), "choices", choices)
+
+    class Dynamic(ConditionalGroupFormMixin, forms.ModelForm):
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("nullable_text_choice", ["A"]), ["blank_text"])]
+
+        class Meta:
+            model = ConditionalPersistenceRecord
+            fields = ["nullable_text_choice", "blank_text"]
+
+    errors = _run_check_with(monkeypatch, Dynamic)
+    assert [error.id for error in errors] == ["crud_views.E313"]

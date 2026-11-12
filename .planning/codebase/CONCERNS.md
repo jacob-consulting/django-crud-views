@@ -77,6 +77,7 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 - Why fragile: themes consume class keys, button context, icons, template variables, and JavaScript adapters as a connected contract. The empty `cv_icon_header` value explicitly suppresses inheritance; consumers that previously used it to inherit must use `None` or `Icon.VIEWSET_DEFAULT`, while `Icon.NONE` expresses suppression.
 - Safe modification: preserve custom header content independently of icon choice and update the migration guidance in `CHANGELOG.md` and `docs/migrating-1.0.md` when changing the contract.
 - Test coverage: built-in templates and the example theme are exercised; installed third-party themes are not certified (`docs/development/stability.md`).
+- Phase 06.25.1 adds independently configured empty-default `conditional:legend` and `formset:legend` hooks through the existing registry; rendered precedence, escaping and fragment ownership are covered in `tests/test1/test_conditional_layout.py` and `tests/test1/test_formsets_compact.py`.
 
 **Nested formset rendering and persistence:**
 - Files: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/inline_formset.py`
@@ -156,6 +157,12 @@ None independently confirmed.
 - What's not tested: browser evidence for checkbox behavior is retained at 390, 767, 768, and 1280px and UAT records acceptance, but that does not certify other browser engines, supported Python/Django combinations, or installed external themes. The actual Checklist example was exercised only on Python 3.12.3 / Django 6.1.2 with the Bootstrap pack.
 - Files: `.planning/phases/06.26-issue-351/06.26-UI-REVIEW.md`, `.planning/phases/06.26-issue-351/06.26-VERIFICATION.md`, `.planning/phases/06.26-issue-351/06.26-UAT.md`
 - Risk: visual/runtime differences outside the recorded environment are not established. The accepted UI review retains cramped Done-help wrapping at 768px and a long shared introduction on checklist pages; these are presentation advisories, not unresolved release blockers.
+- Priority: Low
+
+**Supported-environment replay for recent presentation hooks:**
+- What's not tested: Phase 06.25.1's final suite and independent review ran on Python 3.12.3 / Django 5.2.19. Other supported combinations and downstream theme installations were not replayed. Browser appearance and assistive-technology evaluation were not required or claimed for the empty-default class hooks.
+- Files: `.planning/phases/06.25.1-issue-346/06.25.1-VERIFICATION.md`, `.planning/phases/06.25.1-issue-346/06.25.1-REVIEW.md`, `tests/test1/test_assets.py`
+- Risk: local automated evidence does not establish behavior on every supported Python/Django combination or consumer theme. The existing CSP middleware test skips on Django < 6.0; this is the previously waived WINDOWS entry 3, not a new skip.
 - Priority: Low
 
 **Compact formset consumer extension hooks:**

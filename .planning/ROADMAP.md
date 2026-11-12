@@ -49,6 +49,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.23: Explicit header-icon suppression with Icon constants (INSERTED)** - #329: readable per-view suppression, preserved default inheritance, and paired breaking-change/migration guidance; 2 plans verified, ready to execute. (completed 2026-11-10)
 - [x] **Phase 06.24: Opt-in compact formsets: shared desktop headings and nested mobile cards (#347) (INSERTED)** - six plans complete; canonical verification and human grouping/focus UAT passed. (completed 2026-11-11)
 - [x] **Phase 06.25: Issue #349** (completed 2026-11-11)
+- [x] **Phase 06.25.1: Issue #346** (completed 2026-11-11)
 - [x] **Phase 06.26: Issue #351** (completed 2026-11-11)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
@@ -1703,6 +1704,15 @@ Plans:
 **Wave 2**
 - [x] 06.25-02-PLAN.md
 
+### Phase 06.25.1: Issue #346 (INSERTED)
+
+**Goal:** Theme authors can independently style conditional and formset legends through empty-default class hooks while preserving rendering, escaping and fragment ownership.
+**Requirements**: Issue #346; approved decisions D-01–D-11 (no assigned requirement IDs)
+**Depends on:** Phase 6.25
+**Plans:** 1/1 plans complete
+
+Plans:
+- [x] 06.25.1-01-PLAN.md — Independent legend class hooks, rendered regression coverage and reference documentation
 ### Phase 06.26: Issue #351 (INSERTED)
 
 **Goal:** [Urgent work - to be planned]

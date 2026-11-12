@@ -19,6 +19,7 @@ last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
   - Auth: None; these use host Django configuration.
 - Bootstrap is a host-delivered frontend dependency, not a Python runtime dependency. The getting-started guide shows Bootstrap 5.3.3 CSS and JS from jsDelivr; host projects may instead provide local assets and own version/CSP policy (`docs/getting_started/tutorial-1-setup.md`).
 - Compact formsets explicitly support the exact stock Django `CheckboxInput` with standard template and input type, including Bootstrap styling for package-owned crispy markup. A marked subclass may receive that styling incidentally, but custom widgets/templates are not certified and own accessibility and responsive behavior (`docs/reference/formsets.md`).
+- Theme styling for the `ToggleGroup` and formset `<legend>` elements is exposed through the `conditional:legend` and `formset:legend` button-class slots; it adds no dependency or service integration (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/lib/button_classes.py`).
 - Compact formsets add explicit `CompactColumn` and `CompactLayout` presentation metadata on top of Django inline formsets and crispy helpers; they introduce no service or package dependency (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/formsets.py`, `docs/reference/formsets.md`).
 
 **Optional Django extensions:**

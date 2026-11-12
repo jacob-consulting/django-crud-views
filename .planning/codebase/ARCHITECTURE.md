@@ -52,6 +52,7 @@ last_mapped_at: 2026-11-11
 | Guardian extension | Object permission-aware ViewSet, view mixins, permission management screens | `src/crud_views_guardian/lib/` |
 | Resource abstraction | Pydantic-backed, non-ORM row contract for read-oriented views | `src/crud_views/lib/resource.py` |
 | Semantic icon contract | Plain-value `Icon` constants, inherited/overridden view header icon selection, registry resolution and template projection | `src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templatetags/crud_views.py` |
+| Legend class hooks | Existing button-class registry supplies the `conditional:legend` and `formset:legend` slots to their respective rendered legends | `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html` |
 | Startup validation | Django checks over registered ViewSets, views, templates, asset declarations and extension configuration | `src/crud_views/checks.py`, `src/crud_views_workflow/checks.py`, `src/crud_views_guardian/checks.py` |
 | Ancestor authorization engine | Request-local guard for nested ViewSets: static ancestry validation, actor admission, outermost-inward ancestor resolution and permission gates, child/parent membership checks | `src/crud_views/lib/ancestors.py` |
 | Ancestor policy values | Strict Pydantic `AncestorPolicy` / `AncestorPermissions` (provider, cascade, read/write/action permission pairs) | `src/crud_views/lib/ancestor_policy.py` |
@@ -79,6 +80,7 @@ last_mapped_at: 2026-11-11
 - Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
 - Optional packages depend on the core public view abstractions and are enabled by installing their app and declaring their specialized views.
 - Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Request-time schema projection validates field coverage, supported widget shape, effective labels and uniform row metadata before crispy renders. The compact helper composes crispy `Layout`/`Row`/`Div`/`Field` objects around the same bound fields and existing formset controls, so the page-owned outer form, CSRF, validation and save flow remain shared; `compact_layout=None` uses the classic helper unchanged. The exact stock `django.forms.widgets.CheckboxInput` class is in the supported widget set. Custom subclasses/templates require the public `CompactWidgetCompatible` marker, which skips widget-specific checks only and transfers responsibility for complete accessible/dynamic rendering to the widget author; shared field coverage, role, label and row-consistency validation remains (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/formset.html`).
+- Legend class customization is a narrow extension of the existing button-class registry: `conditional:legend` and `formset:legend` are resolved by `{% cv_button_class %}` in the existing conditional-group and formset templates. Each slot remains empty by default and independently configurable; this adds no rendering abstraction (`src/crud_views/lib/button_classes.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
 
 ## Layers
 
@@ -324,6 +326,12 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - `ViewSet.verbose_name` and `verbose_name_plural` are independent optional `LazyStr` fields. `get_meta()` resolves explicit overrides per call under the active language; `None` preserves the model/Resource metadata path, including lazy values (`src/crud_views/lib/viewset/__init__.py`).
 - `check_verbose_name()` rejects blank plain strings without stripping stored values or evaluating lazy objects at construction. There is no automatic pluralization or ancestor fallback.
 - Existing `CrudView.cv_get_meta()`, snippets, breadcrumbs, child-column and button consumers receive the resolved names. Explicit labels keep precedence; model-centric deletion/404 text and permission identity are unchanged (`src/crud_views/lib/view/base.py`, `docs/reference/nested.md#labels`). No new queries or consumer state are added.
+
+## Conditional and Formset Legend Classes (Phase 06.25.1)
+
+- The existing `cv_button_class` template tag resolves independent `conditional:legend` and `formset:legend` slots through the existing class registry (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/button_classes.py`).
+- The hook is consumed directly by the existing conditional `ToggleGroup` and formset fieldset templates; defaults are empty, so no class is added unless configured (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
+- Keep future legend customization at these tag/template call sites. No parallel rendering abstraction is needed.
 
 ## Permission declaration diagnostics (Phase 06.22)
 

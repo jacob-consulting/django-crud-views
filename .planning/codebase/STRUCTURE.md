@@ -74,6 +74,7 @@ django-crud-views/
 - Purpose: Reusable domain and presentation services that do not belong to a single CBV.
 - Contains: Asset registry/pipeline support, resource abstraction, settings, breadcrumbs, icons, buttons, formsets, conditional fields/layouts, table configuration, crispy integration, messages, ordering and session helpers.
 - Key files: `src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `src/crud_views/lib/resource.py`, `src/crud_views/lib/settings.py`, `src/crud_views/lib/formsets/`, `src/crud_views/lib/conditional/`, `src/crud_views/lib/table/`, `src/crud_views/lib/crispy/`.
+- Theme class customization is centralized in `src/crud_views/lib/button_classes.py`; the independent `conditional:legend` and `formset:legend` slots are consumed by existing templates through `cv_button_class` and default to empty (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
 
 **`src/crud_views/lib/formsets/`:**
 - Purpose: Describe, initialize, recursively traverse and adapt nested inline formsets for view context and templates.
@@ -190,6 +191,7 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - `src/crud_views/templates/crud_views/`: Core theme templates and reusable partials.
 - `src/crud_views/static/crud_views/`: Core CSS/JavaScript.
 - `src/crud_views/templatetags/crud_views.py`: `{% cv_heading_icon %}` host-class/inline-HTML projection, standalone icon tag, snippet-facing tags and theme API.
+- `src/crud_views/templatetags/crud_views.py` and `src/crud_views/lib/button_classes.py`: `{% cv_button_class %}` resolves existing theme class slots, including opt-in conditional/formset legend classes used by their current templates.
 - `src/crud_views_object_detail/templates/crud_views_object_detail/`: Object detail layout and field rendering packs.
 - `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`: Object-detail tab lifecycle bridge loaded through asset registration in `src/crud_views_object_detail/apps.py`.
 

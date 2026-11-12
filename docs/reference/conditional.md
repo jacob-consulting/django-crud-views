@@ -151,6 +151,9 @@ ConditionalGroup(
 
 `ToggleGroup(toggle_field, *fields, css_class=None, legend=None)` is a Crispy layout element. By default it renders a `<div cv-data-toggle-group cv-data-toggle-field="…">` wrapper. Pass `legend="…"` to render a titled `<fieldset><legend>…</legend>…</fieldset>` instead; the toggle marker sits on the fieldset, so the whole group (legend included) hides when the toggle is off. The bundled `toggle.js` reads the toggle field's current value on page load and on change, and shows or hides the wrapper accordingly. No custom JavaScript is required.
 
+The stock legend uses the independent `conditional:legend` [class-table key](buttons.md#the-class-table),
+which defaults to `""`. See the [theme and project examples](buttons.md#legend-classes).
+
 ### Copied conditional wrapper
 
 In `crud_views/conditional/toggle_group.html`, `cv_toggle_field` is the **exact bound HTML checkbox name**,
@@ -170,6 +173,10 @@ minimal override retains the optional legend and generated inner content:
 </div>
 {% endif %}
 ```
+
+To adopt the class hook in a copied wrapper, load the existing tag library with `{% load crud_views %}`
+and add `class="{% cv_button_class 'conditional' 'legend' %}"` to its legend. The minimal recipe above
+keeps ordinary legend text escaping; copied wrappers opt in to the hook themselves.
 
 Conditional formset wrappers likewise render their `x_formset.cv_toggle_field` directly; it is the parent form's
 bound toggle name. Checkbox lookup uses exact `name` equality and actual owning-form identity, including native

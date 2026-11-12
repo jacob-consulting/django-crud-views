@@ -77,6 +77,8 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     # the element of an eligible cancel (Phase 6.1): "button" or "a" (a native link), None means "button"; a
     # structural value like container-tag, never classes, and without mode keys
     "form:cancel-tag": "button",
+    "conditional:legend": "",
+    "formset:legend": "",
     "formset:control": "btn btn-light",
     "formset:container": "btn-group",
     "formset:control-danger": "btn btn-danger",

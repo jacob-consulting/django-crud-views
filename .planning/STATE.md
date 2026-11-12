@@ -10,11 +10,11 @@ last_activity: 2026-11-11
 last_activity_desc: "Phase 06.26 shipped as PR #353"
 state_head: 1e193b55b47f1b42bcaa5d64133acfc8f044e415
 progress:
-  total_phases: 32
-  completed_phases: 26
-  total_plans: 174
-  completed_plans: 174
-  percent: 81
+  total_phases: 33
+  completed_phases: 27
+  total_plans: 175
+  completed_plans: 175
+  percent: 82
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ Total Phases: 32
 See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.25.1 — Issue #346
 
 ## Current Position
 
@@ -36,7 +36,14 @@ Plan: Not started
 Status: Ready to plan
 Last activity: 2026-11-11 -- Phase 06.26 shipped as PR #353
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 7
+
+### Phase 06.25.1 completion — 2026-11-11
+
+- Independent empty-default conditional:legend and formset:legend hooks use the existing registry; full, nested and row-only ownership and escaping are preserved. One plan complete; production changes confined to three files.
+- Full suite 12,486 passed, one existing skip; focused 934/expanded 961; independent reviewer/verifier 48 each. Scoped Ruff and strict MkDocs pass on Python 3.12.3/Django 5.2.19; other environments not replayed.
+- Canonical verification passed 11/11; validation 1/1, security 3/3 closed, deep review 12 files/zero findings; UI preservation 24/24 source/rendered only. No human checks required.
+- One test-only inventory correction documented. Completion scanner's phase-relative evidence reference exists. Codebase map drift advisory remains for refresh after shipping. Existing untracked PATTERNS/.gitkeep preserved; no push or merge.
 
 ### Phase 06.26 completion — 2026-11-11
 
@@ -766,7 +773,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 170
+- Total plans completed: 171
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -803,6 +810,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.23 | 2 | - | - |
 | 06.24 | 6 | - | - |
 | 06.25 | 2 | - | - |
+| 06.25.1 | 1 | - | - |
 | 06.26 | 4 | - | - |
 
 | 06.15 | 4 | - | - |
@@ -1274,6 +1282,7 @@ None yet.
 - Phase 06.23 inserted after Phase 06.22: Issue #329: explicit header-icon suppression with plain Icon constants; settled issue decisions are the planning handoff. Independent scope; complete before Phase 7. (URGENT)
 - Phase 06.24 inserted after Phase 06.23: Issue #347: opt-in compact formsets with shared desktop headings and nested mobile cards; approved issue decisions are the GSD handover, classic rendering unchanged. Complete before Phase 7. (URGENT)
 - Phase 06.25 inserted after Phase 6: Issue #349 (URGENT)
+- Phase 06.25.1 inserted after Phase 6.25: Issue #346 (URGENT)
 - Phase 06.26 inserted after Phase 6: Issue #351 (URGENT)
 
 ## Deferred Items

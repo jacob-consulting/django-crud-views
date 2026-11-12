@@ -400,3 +400,106 @@ class CustomerCrudTest(ConditionalTestCase):
             kwargs = {"pk": customer.pk} if action == "radio_update" else {}
             response = client.post(reverse(f"customer-{action}", kwargs=kwargs), {"kind": "consumer"})
             self.assertEqual(response.status_code, 403)
+
+
+class CustomerDiscoveryTest(ConditionalTestCase):
+    def test_customer_seeds_are_coherent_idempotent_and_preserve_edits(self):
+        from django.core.management import call_command
+
+        from conditional.models import Customer
+
+        call_command("seed")
+        self.assertEqual(Customer.objects.count(), 3)
+        consumer = Customer.objects.get(name="Consumer Customer")
+        wholesale = Customer.objects.get(name="Wholesale Customer")
+        distributor = Customer.objects.get(name="Distributor Customer")
+        self.assertEqual(consumer.kind, "consumer")
+        self.assertTrue(consumer.consumer_note)
+        self.assertIsNone(consumer.company)
+        self.assertIsNone(consumer.price_tier)
+        self.assertEqual(consumer.payment_terms, "unset")
+        self.assertIsNone(consumer.wholesale_terms)
+        self.assertEqual(consumer.distribution_region, "")
+        for customer in (wholesale, distributor):
+            self.assertIsNone(customer.consumer_note)
+            self.assertTrue(customer.company)
+            self.assertIn(customer.price_tier, ("A", "B"))
+            self.assertIn(customer.payment_terms, ("net30", "net60"))
+        self.assertEqual(wholesale.kind, "wholesale")
+        self.assertIn(wholesale.wholesale_terms, (0, 30, 60))
+        self.assertEqual(wholesale.distribution_region, "")
+        self.assertEqual(distributor.kind, "distributor")
+        self.assertIsNone(distributor.wholesale_terms)
+        self.assertTrue(distributor.distribution_region)
+        consumer.consumer_note = "An existing user edit"
+        consumer.save()
+        before = list(Customer.objects.values())
+        old_counts = (
+            Registration.objects.count(),
+            Event.objects.count(),
+            Session.objects.count(),
+            Speaker.objects.count(),
+        )
+        call_command("seed")
+        self.assertEqual(list(Customer.objects.values()), before)
+        self.assertEqual(
+            (Registration.objects.count(), Event.objects.count(), Session.objects.count(), Speaker.objects.count()),
+            old_counts,
+        )
+
+    def test_landing_and_customer_pages_link_to_real_editors_and_old_examples(self):
+        from lxml import html
+
+        from conditional.models import Customer
+
+        customer = Customer.objects.create(name="Discoverable")
+        landing = self.client.get(reverse("registration-list"))
+        self.assertContains(landing, "Choice-driven customers")
+        self.assertIn(reverse("customer-list"), html.fromstring(landing.content).xpath("//a/@href"))
+        for key in ("list", "detail", "create", "radio_create", "update", "radio_update", "delete"):
+            with self.subTest(page=key):
+                kwargs = {"pk": customer.pk} if key in ("detail", "update", "radio_update", "delete") else {}
+                response = self.client.get(reverse(f"customer-{key}", kwargs=kwargs))
+                self.assertEqual(response.status_code, 200)
+                links = html.fromstring(response.content).xpath("//a/@href")
+                for old_key in ("registration-list", "event-list"):
+                    self.assertIn(reverse(old_key), links)
+                    self.assertEqual(self.client.get(reverse(old_key)).status_code, 200)
+                if key == "delete":
+                    continue
+                actions = ("update", "radio_update") if kwargs else ("create", "radio_create")
+                for action in actions:
+                    target = reverse(f"customer-{action}", kwargs=kwargs)
+                    self.assertIn(target, links)
+                    self.assertEqual(self.client.get(target).status_code, 200)
+                for text in ("Dropdown", "Radio", "shared business details", "before saving", "unset", "None"):
+                    self.assertContains(response, text)
+
+    def test_demo_users_can_read_add_and_change_with_both_editors(self):
+        from django.core.management import call_command
+
+        from conditional.models import Customer
+
+        call_command("seed")
+        for username in ("alice", "bob"):
+            user = get_user_model().objects.get(username=username)
+            self.assertFalse(user.is_superuser)
+            self.assertTrue(
+                user.has_perms(["conditional.view_customer", "conditional.add_customer", "conditional.change_customer"])
+            )
+            self.client.force_login(user)
+            self.assertEqual(self.client.get(reverse("customer-list")).status_code, 200)
+            for create_key, update_key in (("create", "update"), ("radio_create", "radio_update")):
+                with self.subTest(username=username, editor=create_key):
+                    name = f"{username}-{create_key}"
+                    payload = {"name": name, "kind": "consumer", "consumer_note": "Saved"}
+                    self.assertEqual(self.client.post(reverse(f"customer-{create_key}"), payload).status_code, 302)
+                    customer = Customer.objects.get(name=name)
+                    kwargs = {"pk": customer.pk}
+                    self.assertEqual(self.client.get(reverse("customer-detail", kwargs=kwargs)).status_code, 200)
+                    payload["consumer_note"] = "Updated"
+                    self.assertEqual(
+                        self.client.post(reverse(f"customer-{update_key}", kwargs=kwargs), payload).status_code, 302
+                    )
+                    customer.refresh_from_db()
+                    self.assertEqual(customer.consumer_note, "Updated")

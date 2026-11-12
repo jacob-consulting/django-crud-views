@@ -1744,10 +1744,17 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
+**Wave 1**
 - [ ] 06.27-01-PLAN.md — Shared ValueToggle descriptor and real Select save/reopen tracer
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.27-02-PLAN.md — Deterministic group checks and bounded choice-clearing persistence
 - [ ] 06.27-03-PLAN.md — Native dropdown/radio ownership, lifecycle and browser acceptance
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.27-04-PLAN.md — Persisted Customer example with both editors, seeds and navigation
+
+**Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06.27-05-PLAN.md — Reciprocal documentation, actual-example browser journey and compatibility evidence
 
 ### Phase 7: Theme-surface stability policy

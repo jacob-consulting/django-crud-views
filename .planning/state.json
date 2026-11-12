@@ -134,20 +134,15 @@
       "status": "complete"
     },
     {
-      "number": "06.27",
-      "name": "Choice-driven conditional groups (#354)",
-      "status": "pending"
-    },
-    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-plan-phase 06.27",
-    "label": "Plan choice-driven conditional groups (#354)",
-    "reason": "Phase 06.27 inserted after 06.26; approved decisions are in issue #354 gsd-handover"
+    "command": "$gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 42 of 43 · executing"
   },
-  "updated_at": "2026-11-12T09:34:05.313011+00:00"
+  "updated_at": "2026-11-12T10:25:30.551Z"
 }

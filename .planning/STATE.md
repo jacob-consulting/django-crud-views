@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.27"
 current_phase_name: "Choice-driven conditional groups (#354)"
-current_plan: 4
+current_plan: 5
 status: executing
-stopped_at: Completed 06.27-03-PLAN.md; next plan 04
-last_updated: "2026-11-12T12:01:58.719Z"
+stopped_at: Completed 06.27-04-PLAN.md; next plan 05
+last_updated: "2026-11-12T12:11:50.755Z"
 last_activity: 2026-11-12
-last_activity_desc: Completed Plan 06.27-03; next plan 04
-state_head: 5f1d1dfa9da8fcd6969ed3a82474ba23fb645fb5
+last_activity_desc: Completed Plan 06.27-04; next plan 05
+state_head: 864d72902ddb7eb2f6dc451024873cdde22b8ae8
 progress:
   total_phases: 34
   completed_phases: 26
   total_plans: 180
-  completed_plans: 178
+  completed_plans: 179
 milestone_name: milestone
 ---
 
@@ -32,12 +32,12 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 ## Current Position
 
 Phase: 06.27 (Choice-driven conditional groups (#354)) — IN PROGRESS
-Current Plan: 4
+Current Plan: 5
 Total Plans in Phase: 5
 Status: Ready to execute
-Last activity: 2026-11-12 -- Completed Plan 06.27-03; 92 toggle tests and 128 choice/20 lifecycle/9 tracer browser assertions pass; final full-suite/evidence refresh belongs to Plan 05
+Last activity: 2026-11-12 -- Completed Plan 06.27-04; persisted Customer example with both editors, seeds and navigation; 77 tests/95 subtests, migration consistency and scoped Ruff pass; final docs/browser/full-suite evidence belongs to Plan 05
 
-Next: Execute 06.27-04-PLAN.md
+Next: Execute 06.27-05-PLAN.md
 
 ### Phase 06.25.1 completion — 2026-11-11
 
@@ -957,6 +957,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.27 P01 | 12min | 2 tasks | 10 files |
 | Phase 06.27 P02 | 16min | 3 tasks | 19 files |
 | Phase 06.27 P03 | 10min | 2 tasks | 7 files |
+| Phase 06.27 P04 | 7min | 2 tasks | 10 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1226,6 +1227,8 @@ Recent decisions affecting current work:
 - [Phase 06.27]: Value declarations validate before native field cleaning to reject lazy callable choices and handle request-added optional fields.
 - [Phase 06.27]: Value activation uses the authoritative mapping returned by inherited clean, including replacement dictionaries.
 - [Phase 06.27]: Native radio groups share existing controls arrays and ownership; normalized match sets avoid unnecessary listener replacement.
+- [Phase 06.27]: Keep both Customer editors on one ViewSet; the radio form changes only the controller widget.
+- [Phase 06.27]: Render saved None, blank text and the unset sentinel distinctly using existing object-detail view methods.
 
 ### Pending Todos
 
@@ -1302,6 +1305,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-12T12:01:54.391Z
-Stopped at: Completed 06.27-03-PLAN.md; next plan 04
+Last session: 2026-11-12T12:11:46.510Z
+Stopped at: Completed 06.27-04-PLAN.md; next plan 05
 Resume file: None

@@ -1741,7 +1741,7 @@ Plans:
 **Requirements:** Deliver the issue's acceptance criteria, including a complex runnable three-option example with multiple groups and a group shared by two options, updated documentation, and reciprocal documentation/example links. Preserve existing checkbox support and keep finding 20's per-row conditions outside scope.
 **Depends on:** Phase 06.26
 **Ordering:** Settle this public conditional API and its template/JavaScript contracts before Phase 7 freezes the theme surface.
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 
 Plans:
 **Wave 1**
@@ -1754,7 +1754,7 @@ Plans:
 - [x] 06.27-03-PLAN.md — Native dropdown/radio ownership, lifecycle and browser acceptance
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.27-04-PLAN.md — Persisted Customer example with both editors, seeds and navigation
+- [x] 06.27-04-PLAN.md — Persisted Customer example with both editors, seeds and navigation
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06.27-05-PLAN.md — Reciprocal documentation, actual-example browser journey and compatibility evidence

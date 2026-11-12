@@ -643,6 +643,29 @@ choice_record = ConditionalPersistenceRecord.objects.create(
     nullable_text="Existing wholesale detail",
 )
 cases = [{"theme": "stock", "id": "value-tracer", "pk": choice_record.pk, "url": f"/choice/stock/{choice_record.pk}/"}]
+choice_records = [choice_record.pk]
+for mode in ("stock", "native"):
+    for widget in ("select", "radio"):
+        for numeric in (False, True):
+            record = ConditionalPersistenceRecord.objects.create(
+                parent=Profile.objects.create(name=f"Choice {mode} {widget} {numeric}"),
+                blank_text="1" if numeric else "wholesale",
+                nullable_text="Saved shared details",
+                number=42,
+                flag=False,
+                active=True,
+            )
+            choice_records.append(record.pk)
+            cases.append(
+                {
+                    "theme": mode,
+                    "id": "choice-widgets",
+                    "widget": widget,
+                    "numeric": numeric,
+                    "pk": record.pk,
+                    "url": f"/choice/{mode}/{record.pk}/?widgets=1&widget={widget}&numeric={int(numeric)}",
+                }
+            )
 for mode in ("stock", "native"):
     for case in (
         "tracer",
@@ -810,7 +833,7 @@ def state(request):
             "scores": list(BrowserScore.objects.values()),
             "leaves": list(BrowserLeaf.objects.values()),
             "records": records,
-            "choice_records": list(ConditionalPersistenceRecord.objects.filter(pk=choice_record.pk).values()),
+            "choice_records": list(ConditionalPersistenceRecord.objects.filter(pk__in=choice_records).values()),
             "checkbox_records": list(
                 ConditionalPersistenceRecord.objects.filter(parent_id=compact_checkbox_pk).values()
             ),

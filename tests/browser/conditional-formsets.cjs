@@ -52,6 +52,10 @@ function hashes() {
     return Object.fromEntries(files.filter(f => !f.includes('__pycache__')).sort().map(f => [f, digest(f)])); // NOSONAR S2871: test harness
 }
 const REQUIRED = {
+    'choice-widgets': ['initial-create-edit', 'keyboard-change', 'shared-active-kept', 'unsaved-away-back',
+        'final-inactive-cleared', 'invalid-controller-zero-save', 'active-required-redisplay', 'exact-prefix-two-forms',
+        'disabled-trusted', 'independent-disabled', 'native-reset', 'canceled-reset', 'modal-422-rebind',
+        'unload-listener-cleanup', 'usable-radio-focus', 'adversarial-token-inert'],
     'value-tracer': ['rendered-shared-metadata', 'initial-selection-equals-saved', 'reopened-selection-equals-saved',
         'prefixed-select', 'active-required', 'retain-before-submit', 'forged-inactive-cleared', 'persisted-reopen', 'invalid-controller-blocked'],
     'compact-lifecycle': ['assets', 'pending-preserves-data', 'authorized-parent-fragment', 'nonfirst-child-fragment',
@@ -88,7 +92,15 @@ function checkEvidence(file) {
         copy=>copy.sourceHashes[Object.keys(copy.sourceHashes)[0]]='stale',
         copy=>copy.cleanup.reaped=false,
         copy=>copy.command=[],
+        copy=>copy.pageErrors.push('uncaught error'),
+        copy=>copy.cleanup.temporaryRemoved=false,
     ];
+    if (r.scope === 'choice-widgets') corruptions.push(
+        copy=>copy.cases[0].widget='unsupported',
+        copy=>delete copy.cases[0].numeric,
+        copy=>delete copy.cases[0].assertions[0].detail,
+        copy=>copy.cases[0].assertions[0].widget='unsupported',
+    );
     if (r.scope.startsWith('compact-')) corruptions.push(
         copy=>copy.cases[0].captures.pop(),
         copy=>copy.cases[0].captures[0].sha256='stale',
@@ -102,13 +114,22 @@ function validateEvidence(r) {
     assert.deepEqual(r.sourceHashes, hashes(), 'Stale source hashes or wrong input set');
     assert(r.scope === 'all' || Object.hasOwn(REQUIRED, r.scope), 'Unknown evidence scope');
     const ids = r.scope === 'all' ? Object.keys(REQUIRED) : [r.scope];
-    const expected = ids.flatMap(id => (r.scope === 'tracer' || id === 'value-tracer' || id.startsWith('compact-') ? ['stock'] : ['stock', 'native']).map(t => `${t}:${id}`));
-    assert.deepEqual(r.cases.map(c => `${c.theme}:${c.id}`).sort(), expected.sort(), 'Missing/duplicate/extra case'); // NOSONAR S2871: test harness
+    const caseKey = c => `${c.theme}:${c.id}${c.id === 'choice-widgets' ? `:${c.widget}:${c.numeric}` : ''}`;
+    const expected = ids.flatMap(id => id === 'choice-widgets'
+        ? ['stock', 'native'].flatMap(theme => ['select', 'radio'].flatMap(widget => [false, true].map(numeric => caseKey({theme,id,widget,numeric}))))
+        : (r.scope === 'tracer' || id === 'value-tracer' || id.startsWith('compact-') ? ['stock'] : ['stock', 'native']).map(t => `${t}:${id}`));
+    assert.deepEqual(r.cases.map(caseKey).sort(), expected.sort(), 'Missing/duplicate/extra case'); // NOSONAR S2871: test harness
     assert.equal(r.scope, requested, 'Evidence must match exact requested scope');
     for (const c of r.cases) {
         assert(c.passed && !c.skipped, `Case failed/skipped: ${c.id}`);
         assert.deepEqual(c.assertions.map(a => a.id).sort(), REQUIRED[c.id].slice().sort(), `Missing/duplicate assertion ${c.id}`);
         assert(c.assertions.every(a => a.passed === true), `False assertion ${c.id}`);
+        if (c.id === 'choice-widgets') {
+            assert(c.assertions.every(a => a.theme === c.theme && a.widget === c.widget && a.numeric === c.numeric &&
+                a.detail && Object.hasOwn(a.detail, 'observed') && Object.hasOwn(a.detail, 'expected')), 'Missing choice dimensions/observations');
+            assert(c.requests.some(r => r.status === 422) && c.requests.some(r => r.status === 200), 'Missing choice HTTP evidence');
+            assert(c.state?.choice_records?.some(row => row.id === c.pk), 'Missing choice database evidence');
+        }
         if (c.id.startsWith('compact-')) {
             assert(r.cleanup.temporaryRemoved, 'Disposable database/media were not removed');
             assert.equal(c.humanReview, 'pending');
@@ -136,7 +157,7 @@ function validateEvidence(r) {
         }
     }
     for (const key of ['nodePath', 'pythonPath', 'playwrightPath', 'chromiumPath', 'node', 'python', 'django', 'playwright', 'chromium']) assert(r.runtime[key], `Missing runtime ${key}`);
-    assert(r.command.length && r.revision && r.captured && r.cleanup.reaped, 'Missing provenance/cleanup');
+    assert(r.command.length && r.revision && r.captured && r.cleanup.reaped && r.cleanup.temporaryRemoved, 'Missing provenance/cleanup');
 }
 // Strict original wrapper stack, before Chromium can repair malformed div/fieldset nesting.
 function rawBalance(html) {
@@ -189,8 +210,9 @@ async function main() {
         const selected = requested === 'tracer' ? fixtures.filter(c => c.theme === 'stock' && c.id === 'tracer') : requested === 'all' ? fixtures : fixtures.filter(c=>c.id===requested);
         assert(selected.length > 0, 'No selected browser cases');
         for (const c of selected) {
-            const result = {theme:c.theme, id:c.id, assertions:[], requests:[], passed:false}; record.cases.push(result);
-            const check = (id, value, detail) => { result.assertions.push({id, passed:Boolean(value), ...(detail === undefined ? {} : {detail})}); assert(value, `${c.theme}:${c.id}: ${id} ${JSON.stringify(detail)}`); };
+            const dimensions = c.id === 'choice-widgets' ? {widget:c.widget, numeric:c.numeric, pk:c.pk} : {};
+            const result = {theme:c.theme, id:c.id, ...dimensions, assertions:[], requests:[], passed:false}; record.cases.push(result);
+            const check = (id, value, detail) => { result.assertions.push({id, passed:Boolean(value), ...(c.id === 'choice-widgets' ? {theme:c.theme,widget:c.widget,numeric:c.numeric} : {}), ...(detail === undefined ? {} : {detail})}); assert(value, `${c.theme}:${c.id}: ${id} ${JSON.stringify(detail)}`); };
             const page = await context.newPage(); page.setDefaultTimeout(12000);
             result.diagnostics=[];page.on('console',message=>{if(message.type()==='warning')result.diagnostics.push(message.text());});
             page.on('pageerror', e => record.pageErrors.push(e.message));
@@ -263,6 +285,156 @@ async function main() {
     checkEvidence(output);
 }
 async function runCase({c, page, context, base, before, result, check, load, state, post, add, delay, rawBalance}) {
+    if (c.id === 'choice-widgets') {
+        const tokens = c.numeric ? ['0', '1', '2'] : ['consumer', 'wholesale', 'distributor'];
+        const name = 'choice[<]-0-blank_text';
+        const field = key => page.locator(`#editor [name="choice[<]-0-${key}"]`);
+        const controls = () => page.locator(`#editor ${c.widget === 'radio' ? 'input[type=radio]' : 'select'}[name="${name}"]`);
+        async function choose(index) {
+            if (c.widget === 'radio') await controls().nth(index).check();
+            else await controls().selectOption(tokens[index]);
+        }
+        async function snapshot(selector = '#editor') {
+            return page.locator(selector).evaluate((form, {name, widget}) => {
+                const owned = [...form.elements].filter(el => el.name === name && el.form === form);
+                const chosen = widget === 'radio' ? owned.find(el => el.checked) : owned[0];
+                return {value:chosen?.value, controls:owned.length, groups:[...form.querySelectorAll('[cv-data-toggle-group]')].map(group => ({
+                    visible:getComputedStyle(group).display !== 'none', values:JSON.parse(group.getAttribute('cv-data-toggle-values')),
+                    fields:[...group.querySelectorAll('input,select,textarea')].map(el => ({name:el.name,value:el.value,disabled:el.disabled}))})),
+                    data:[...new FormData(form)].filter(([key])=>key !== 'csrfmiddlewaretoken')};
+            }, {name,widget:c.widget});
+        }
+        const evidence = (id, value, observed, expected) => check(id, value, {observed,expected});
+        const savedInitial = before.choice_records.find(row => row.id === c.pk);
+        const initial = await snapshot();
+        // This is the RED boundary: it asserts the real rendered widget and exact prefix, before using it.
+        assert.equal(initial.controls, c.widget === 'radio' ? 3 : 1, 'choice widget must render its exact owning-form controls');
+        assert.equal(initial.value, tokens[1]);
+        await load(c.url + '&create=1');
+        const created = await snapshot();
+        await load();
+        evidence('initial-create-edit', created.value === tokens[0] && initial.value === savedInitial.blank_text &&
+            initial.groups.length === 3 && initial.groups[0].visible && initial.groups[1].visible && !initial.groups[2].visible,
+            {created,initial,savedInitial}, {create:tokens[0],edit:tokens[1],groups:[true,true,false]});
+        // Real keyboard change on both native widgets, not a synthetic change event.
+        await (c.widget === 'radio' ? controls().nth(1) : controls()).focus();
+        await page.keyboard.press('ArrowDown');
+        if (c.widget === 'select') await page.keyboard.press('Enter');
+        const keyboard = await snapshot();
+        evidence('keyboard-change', keyboard.value === tokens[2] && keyboard.groups[0].visible && !keyboard.groups[1].visible,
+            keyboard, {value:tokens[2],groups:[true,false,false]});
+        await field('nullable_text').fill('unsaved shared');
+        await choose(1); await field('number').fill('71');
+        await choose(2);
+        evidence('shared-active-kept', await field('nullable_text').inputValue() === 'unsaved shared' && !await field('nullable_text').isDisabled(),
+            await snapshot(), {shared:'unsaved shared',disabled:false});
+        await choose(0);
+        assert(await field('nullable_text').isDisabled());
+        await choose(1);
+        evidence('unsaved-away-back', await field('nullable_text').inputValue() === 'unsaved shared' && await field('number').inputValue() === '71',
+            await snapshot(), {shared:'unsaved shared',number:'71'});
+        const isolation = await page.evaluate(({name,tokens,widget}) => {
+            const original = document.getElementById('editor'), peer = original.cloneNode(true); peer.id = 'choice-peer';
+            peer.querySelectorAll('[id]').forEach(el => el.id = `peer-${el.id}`); original.after(peer); cv.initConditional(peer);
+            const originalField = original.elements['choice[<]-0-nullable_text'];
+            const own = [...peer.elements].filter(el => el.name === name);
+            const control = widget === 'radio' ? own[0] : own[0];
+            if (widget === 'radio') control.checked = true; else control.value = tokens[0];
+            control.dispatchEvent(new Event('change',{bubbles:true}));
+            const observed = {originalDisabled:originalField.disabled,peerDisabled:peer.elements['choice[<]-0-nullable_text'].disabled,
+                exactName:peer.querySelector('[cv-data-toggle-group]').getAttribute('cv-data-toggle-field')};
+            peer.dispatchEvent(new CustomEvent('cv:modal:unload',{bubbles:true})); peer.remove(); return observed;
+        }, {name,tokens,widget:c.widget});
+        evidence('exact-prefix-two-forms', !isolation.originalDisabled && isolation.peerDisabled && isolation.exactName === name,
+            isolation,{originalDisabled:false,peerDisabled:true,exactName:name});
+        await choose(0);
+        await field('nullable_text').evaluate(el => { el.disabled = true; });
+        await choose(1); const independent = await field('nullable_text').isDisabled();
+        await choose(0); await field('nullable_text').evaluate(el => { el.disabled = false; });
+        assert(await field('nullable_text').isDisabled());
+        await choose(1);
+        evidence('independent-disabled', independent && !await field('nullable_text').isDisabled(),
+            {independent,snapshot:await snapshot()},{independent:true,releasedOnActive:true});
+        await choose(0);
+        await page.locator('#editor .native-reset').click(); await delay(40);
+        evidence('native-reset', (await snapshot()).value === tokens[1] && await field('nullable_text').inputValue() === savedInitial.nullable_text,
+            await snapshot(), {value:tokens[1],shared:savedInitial.nullable_text});
+        await choose(2); await field('nullable_text').fill('canceled retained');
+        await page.evaluate(()=>document.addEventListener('reset',e=>e.preventDefault(),{once:true}));
+        await page.locator('#editor .native-reset').focus(); await page.keyboard.press('Enter'); await delay(40);
+        evidence('canceled-reset', (await snapshot()).value === tokens[2] && await field('nullable_text').inputValue() === 'canceled retained',
+            await snapshot(),{value:tokens[2],shared:'canceled retained'});
+        // Programmatic condition updates can strand focused content; recovery must prefer checked usable radio.
+        const focusResult = await page.evaluate(({name,widget,tokens}) => {
+            const form=document.getElementById('editor'), group=form.querySelector('[cv-data-toggle-group]');
+            form.elements['choice[<]-0-nullable_text'].focus();
+            group.setAttribute('cv-data-toggle-values',JSON.stringify([tokens[0]])); cv.initConditional(form);
+            const active=document.activeElement;
+            const observed={name:active.name,value:active.value,checked:active.checked,usable:!active.disabled&&!!active.getClientRects().length};
+            group.setAttribute('cv-data-toggle-values',JSON.stringify(tokens.slice(1))); cv.initConditional(form); return observed;
+        },{name,widget:c.widget,tokens});
+        evidence('usable-radio-focus', focusResult.name === name && focusResult.value === tokens[2] && focusResult.usable &&
+            (c.widget !== 'radio' || focusResult.checked),focusResult,{name,value:tokens[2],usable:true});
+        const beforeInvalid = await state();
+        const invalid = await post('#editor',c.url,{[name]:'not-a-choice'});
+        const afterInvalid = await state();
+        evidence('invalid-controller-zero-save',invalid.status===422 && invalid.body.includes('Select a valid choice.') &&
+            JSON.stringify(beforeInvalid.choice_records)===JSON.stringify(afterInvalid.choice_records) && beforeInvalid.events.length===afterInvalid.events.length,
+            {status:invalid.status,eventsBefore:beforeInvalid.events.length,eventsAfter:afterInvalid.events.length}, {status:422,saves:0});
+        await field('nullable_text').fill('');
+        const required = await post();
+        const requiredBody = await page.evaluate(html => {
+            const doc=new DOMParser().parseFromString(html,'text/html');
+            return {errors:doc.body.textContent.includes('This field is required.'),groups:doc.querySelectorAll('[cv-data-toggle-group]').length};
+        },required.body);
+        evidence('active-required-redisplay',required.status===422&&requiredBody.errors&&requiredBody.groups===3,
+            {status:required.status,...requiredBody},{status:422,errors:true,groups:3});
+        await load(c.url+'&disabled=1');
+        const trustedBefore=(await state()).choice_records.find(row=>row.id===c.pk);
+        const trusted=await post('#editor',c.url+'&disabled=1',{[name]:tokens[0],'choice[<]-0-number':'999','choice[<]-0-nullable_text':'trusted submission'});
+        const trustedAfter=(await state()).choice_records.find(row=>row.id===c.pk);
+        evidence('disabled-trusted',await controls().first().isDisabled()&&trusted.status===200&&trustedAfter.blank_text===trustedBefore.blank_text&&trustedAfter.number===trustedBefore.number,
+            {status:trusted.status,before:trustedBefore,after:trustedAfter},{controller:trustedBefore.blank_text,number:trustedBefore.number});
+        await load(); await choose(0);
+        await field('flag').uncheck(); await field('active').check();
+        const finalPost=await post('#editor',c.url,{'choice[<]-0-nullable_text':'forged','choice[<]-0-number':'999'});
+        const persisted=(await state()).choice_records.find(row=>row.id===c.pk);
+        await load(); const reopened=await snapshot();
+        evidence('final-inactive-cleared',finalPost.status===200&&persisted.blank_text===tokens[0]&&persisted.nullable_text===null&&persisted.number===null&&
+            persisted.flag===false&&persisted.active===true&&await field('nullable_text').inputValue()===''&&await field('number').inputValue()==='',
+            {status:finalPost.status,persisted,reopened},{value:tokens[0],shared:null,number:null,flag:false,outside:true});
+        // A server-rendered hostile option is inert in both metadata and native controls.
+        await load(c.url+'&adversarial=1');
+        const hostile = await page.evaluate(() => ({executed:!!window.choiceInjected,metadata:JSON.parse(document.querySelector('[cv-data-toggle-values]').getAttribute('cv-data-toggle-values'))}));
+        evidence('adversarial-token-inert',!hostile.executed&&hostile.metadata[0].includes('<img')&&await controls().count()===(c.widget==='radio'?3:1),
+            hostile,{executed:false,escapedMetadata:true});
+        // Exercise the shipped modal transport: real HTTP partial, 422 replacement, unload and rebind.
+        await load(c.url+'&harness=1'); await page.locator('#launch').click();
+        await page.locator('#cv-modal #editor').waitFor(); await delay(c.theme==='stock'?400:60);
+        await choose(2); await field('nullable_text').fill('');
+        await page.evaluate(() => {
+            window.oldChoiceForm=document.getElementById('editor');
+            window.oldChoiceControls=[...oldChoiceForm.elements].filter(el=>el.name==='choice[<]-0-blank_text');
+            document.addEventListener('cv:modal:unload',()=>{window.choiceUnloadedAttached=oldChoiceForm.isConnected;},{once:true});
+        });
+        const response=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().includes('/choice/'));
+        await page.locator('#editor [type=submit]').first().focus(); await page.keyboard.press('Enter');
+        const actual=await response; await actual.finished(); await page.waitForFunction(()=>loadedCount===2);
+        result.requests.push({status:actual.status(),url:actual.url(),body:await actual.text()});
+        const modalFocus=await page.evaluate(()=>({name:document.activeElement.name,usable:!!document.activeElement.getClientRects().length&&!document.activeElement.disabled}));
+        await choose(0); assert(await field('nullable_text').isDisabled()); await choose(2);
+        evidence('modal-422-rebind',actual.status()===422&&modalFocus.usable&&await field('nullable_text').isEnabled()&&await page.evaluate(()=>choiceUnloadedAttached),
+            {status:actual.status(),focus:modalFocus,snapshot:await snapshot()},{status:422,usableFocus:true,rebound:true});
+        const cleanup=await page.evaluate(tokens=>{
+            const groups=[...oldChoiceForm.querySelectorAll('[cv-data-toggle-group]')], displays=groups.map(g=>g.style.display);
+            const field=oldChoiceForm.elements['choice[<]-0-nullable_text'];
+            oldChoiceControls.forEach(el=>{if(el.type==='radio')el.checked=el.value===tokens[0];else el.value=tokens[0];el.dispatchEvent(new Event('change',{bubbles:true}));});
+            return {detached:!oldChoiceForm.isConnected,released:!field.disabled,unchanged:JSON.stringify(displays)===JSON.stringify(groups.map(g=>g.style.display))};
+        },tokens);
+        evidence('unload-listener-cleanup',cleanup.detached&&cleanup.released&&cleanup.unchanged,cleanup,{detached:true,released:true,unchanged:true});
+        result.state=await state();
+        return;
+    }
     if (c.id === 'value-tracer') {
         const controller = page.locator('#editor select[name="choice-0-blank_text"]');
         const detail = page.locator('#editor [name="choice-0-nullable_text"]');

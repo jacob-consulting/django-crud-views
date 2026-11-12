@@ -87,6 +87,10 @@ class RegistrationTable(Table):
 class RegistrationListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_registration
     table_class = RegistrationTable
+    cv_paragraph_template_code = _(
+        '<a href="{% url "customer-list" %}">Choice-driven customers</a> demonstrates Dropdown and Radio editors. '
+        'The checkbox examples remain here and in <a href="{% url "event-list" %}">Events</a>.'
+    )
 
 
 class RegistrationDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
@@ -272,6 +276,17 @@ customer_business = ValueToggle("kind", values=["wholesale", "distributor"])
 customer_wholesale = ValueToggle("kind", values=["wholesale"])
 customer_distributor = ValueToggle("kind", values=["distributor"])
 
+_customer_paragraph = _(
+    "Compare the Dropdown and Radio editors. Consumer-only preferences, shared business details, "
+    "wholesale-only terms and a distributor-only region follow the selected customer kind. "
+    "Wholesale and Distributor keep their shared business details when switching between them. "
+    "Switch away and back before saving to keep unsaved entries; saving clears inactive groups. "
+    "After saving, inspect the detail page: price tier clears to None even though new records default to A; "
+    "payment terms clear to the explicit unset sentinel, meaning no business terms. "
+    '<a href="{% url "registration-list" %}">Registration checkbox example</a> · '
+    '<a href="{% url "event-list" %}">Event checkbox examples</a>.'
+)
+
 
 class CustomerForm(ConditionalGroupModelForm):
     cv_conditional_groups = [
@@ -332,12 +347,14 @@ class CustomerListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRe
     cv_context_actions_inline = []
     cv_list_actions = ["detail", "update", "radio_update", "delete"]
     cv_list_actions_label_mode = {"update": "label", "radio_update": "label"}
+    cv_paragraph_template_code = _customer_paragraph
 
 
 class CustomerDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_customer
     cv_context_actions = ["home", "detail", "update", "radio_update", "delete"]
     cv_context_actions_inline = []
+    cv_paragraph_template_code = _customer_paragraph
     cv_property_display = [
         {
             "title": _("Saved customer values"),
@@ -383,6 +400,7 @@ class CustomerCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateV
     form_class = CustomerForm
     cv_context_actions = ["home", "create", "radio_create"]
     cv_context_actions_inline = []
+    cv_paragraph_template_code = _customer_paragraph
     cv_action_label_template_code = _("Create Dropdown")
     cv_action_short_label_template_code = _("Create Dropdown")
     cv_message_template_code = _("Created customer “{{ object }}”")
@@ -393,6 +411,7 @@ class CustomerUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateV
     form_class = CustomerForm
     cv_context_actions = ["home", "detail", "update", "radio_update", "delete"]
     cv_context_actions_inline = []
+    cv_paragraph_template_code = _customer_paragraph
     cv_action_label_template_code = _("Edit Dropdown")
     cv_action_short_label_template_code = _("Edit Dropdown")
     cv_message_template_code = _("Updated customer “{{ object }}”")
@@ -423,4 +442,5 @@ class CustomerRadioUpdateView(CustomerUpdateView):
 class CustomerDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_customer
     form_class = CrispyDeleteForm
+    cv_paragraph_template_code = _customer_paragraph
     cv_message_template_code = _("Deleted customer “{{ object }}”")

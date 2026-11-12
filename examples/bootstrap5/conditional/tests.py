@@ -448,6 +448,8 @@ class CustomerDiscoveryTest(ConditionalTestCase):
         )
 
     def test_landing_and_customer_pages_link_to_real_editors_and_old_examples(self):
+        from urllib.parse import urlsplit
+
         from lxml import html
 
         from conditional.models import Customer
@@ -470,8 +472,9 @@ class CustomerDiscoveryTest(ConditionalTestCase):
                 actions = ("update", "radio_update") if kwargs else ("create", "radio_create")
                 for action in actions:
                     target = reverse(f"customer-{action}", kwargs=kwargs)
-                    self.assertIn(target, links)
-                    self.assertEqual(self.client.get(target).status_code, 200)
+                    rendered_targets = [link for link in links if urlsplit(link).path == target]
+                    self.assertTrue(rendered_targets, f"No rendered link to {target}")
+                    self.assertEqual(self.client.get(rendered_targets[0]).status_code, 200)
                 for text in ("Dropdown", "Radio", "shared business details", "before saving", "unset", "None"):
                     self.assertContains(response, text)
 

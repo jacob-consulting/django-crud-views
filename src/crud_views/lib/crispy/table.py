@@ -10,13 +10,13 @@ from django.template.loader import get_template
 
 from crud_views.lib.button_classes import get_button_class
 
-_BOOTSTRAP5_COLUMN_SOURCE = """<div {% if div.css_id %}id="{{ div.css_id }}"{% endif %}
-     class="{% if 'col' in div.css_class %}{{ div.css_class|default:'' }}{% else %}col-md {{ div.css_class|default:'' }}{% endif %}" {{ div.flat_attrs }}>
-        {{ fields|safe }}
-</div>
-
-
-"""
+_BOOTSTRAP5_COLUMN_SOURCE = (
+    '<div {% if div.css_id %}id="{{ div.css_id }}"{% endif %}\n'
+    "     class=\"{% if 'col' in div.css_class %}{{ div.css_class|default:'' }}"
+    "{% else %}col-md {{ div.css_class|default:'' }}{% endif %}\" {{ div.flat_attrs }}>\n"
+    "        {{ fields|safe }}\n"
+    "</div>\n\n\n"
+)
 
 
 def _use_bootstrap5_column_bridge(template_pack, resolved_template) -> bool:

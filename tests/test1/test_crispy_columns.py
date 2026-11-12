@@ -11,6 +11,7 @@ from django.conf import settings
 from django.template import Context, TemplateDoesNotExist
 from django.template.loader import get_template
 from django.test import override_settings
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy, override
 from lxml import html
 
@@ -68,10 +69,7 @@ def test_lazy_constructor_extra_survives_registry_changes():
         if configured != "col-md-6":
             bc.register_button_classes({"form:column-6": configured})
         for _ in range(2):
-            try:
-                markup = render_column(column)
-            except TypeError as error:
-                pytest.fail(f"Lazy constructor classes must remain renderable: {error}")
+            markup = render_column(column)
             wrapper = html.fromstring(markup)
             assert set(wrapper.classes) == expected
             assert wrapper.cssselect("input[name=name]")[0].get("value") == "Ada"
@@ -278,6 +276,26 @@ def test_stock_bridge_origin_source_and_pack_boundaries(tmp_path):
 
 def test_plain_crispy_column_keeps_fallback():
     assert set(html.fromstring(render_column(Column("name", css_class="span-6"))).classes) == {"col-md", "span-6"}
+
+
+@pytest.mark.parametrize("origin", [None, SimpleNamespace(name=None)])
+def test_column_bridge_rejects_unusable_origin(origin):
+    candidate = SimpleNamespace(origin=origin)
+    assert not columns._use_bootstrap5_column_bridge("bootstrap5", candidate)
+
+
+@pytest.mark.parametrize("trusted", [False, True])
+def test_custom_field_renderer_preserves_safe_html_boundary(trusted):
+    hostile = '<script data-injected="yes">bad</script>'
+
+    class CustomColumn(Column6):
+        def get_rendered_fields(self, form, context, template_pack, **kwargs):
+            return format_html("<span>{}</span>", hostile) if trusted else hostile
+
+    wrapper = html.fromstring(render_column(CustomColumn("name")))
+    assert not wrapper.cssselect("script, [data-injected]")
+    assert wrapper.text_content().strip() == hostile
+    assert bool(wrapper.cssselect("span")) is trusted
 
 
 def test_column_missing_template_raises():

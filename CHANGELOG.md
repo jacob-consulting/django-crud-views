@@ -6,6 +6,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Numbered column custom renderers:** the default Bootstrap 5 bridge for `Column1`–`Column12`
+  now escapes plain strings from `get_rendered_fields()`. Crispy's standard rendered fields remain unchanged.
+  Custom HTML renderers should use `format_html()` to escape interpolated values; see the
+  [migration guide](docs/migrating-1.0.md#numbered-column-custom-renderers).
+
 - **Explicit header-icon suppression** (#329): `cv_icon_header=""` now suppresses the inherited ViewSet header
   icon; previously it inherited. To keep inheritance, use `None` or `Icon.VIEWSET_DEFAULT`
   (`from crud_views.lib.icons import Icon`). Use `Icon.NONE` for readable intentional suppression. Custom header

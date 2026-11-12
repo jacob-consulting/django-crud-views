@@ -5,11 +5,11 @@ current_phase: "06.27"
 current_phase_name: "Choice-driven conditional groups (#354)"
 current_plan: 5
 status: verifying
-stopped_at: Completed 06.27-05-PLAN.md; independent audits and human usability review pending
-last_updated: "2026-11-12T12:27:28.817Z"
+stopped_at: Phase 06.27 verified 22/22; two human UAT checks pending
+last_updated: "2026-11-12T13:02:36Z"
 last_activity: 2026-11-12
-last_activity_desc: Completed Plan 06.27-05; independent audits and human usability review pending
-state_head: ddfe7bf40f167778937c08cbf58bde223a29a806
+last_activity_desc: Phase 06.27 implementation verified; human UAT pending
+state_head: 43d07ea5039b15b2890fc6bc4a9462ab94ddee8c
 progress:
   total_phases: 34
   completed_phases: 26
@@ -34,10 +34,17 @@ See: .planning/PROJECT.md (updated 2026-11-11)
 Phase: 06.27 (Choice-driven conditional groups (#354)) — IN PROGRESS
 Current Plan: 5
 Total Plans in Phase: 5
-Status: Plans executed — independent verification and human review pending
+Status: Verified implementation — two human UAT checks pending
 Last activity: 2026-11-12 -- Completed Plan 06.27-05; public recipe and reciprocal links, actual Customer browser 56 assertions, final full suite 12,700 passed/1 existing skip, supported-series conditional 355 each, JS420/fragment2, current browser evidence and scoped quality gates pass
 
-Next: Independent verification/security/code review, then consolidated human usability review; phase remains In Progress
+Next: $gsd-verify-work 06.27 — two human UAT checks; phase remains In Progress
+
+### Phase 06.27 verification — 2026-11-12
+
+- All five plans/twelve tasks committed. Canonical verification human_needed: 22/22 functional truths, D-01–D-10 honored, zero implementation gaps; two UAT checks saved for teaching/navigation and narrow-screen/keyboard/error clarity.
+- Security 14/14 closed; validation 12/12 covered; UI 21/24 with three nonblocking observations. Deep review's inherited-clean None and contradictory-evidence defects fixed, independently re-reviewed clean; disposition retains both fixed findings.
+- Fresh post-fix conditional matrix: 364 each on Django 4.2/5.2/6.0; full JS420 passed after fixes; checker28 and browser204 assertions pass. Independent verifier: Python98, example/docs3 (+2 subtests), JS9, checker28 and all evidence validators pass. Earlier full Python12,700/1 skip remains historical before bounded review fixes.
+- Verification fingerprint current. No human approval, phase advancement, push or merge. Existing .gitkeep preserved; installed JS version drift and unrun runtime/theme limits remain documented.
 
 ### Phase 06.27 execution complete — 2026-11-12
 
@@ -1317,5 +1324,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-12T12:27:24.406Z
-Stopped at: Completed 06.27-05-PLAN.md; independent audits and human usability review pending
-Resume file: None
+Stopped at: Phase 06.27 verified 22/22; two human UAT checks pending
+Resume file: .planning/phases/06.27-choice-driven-conditional-groups-354/06.27-UAT.md

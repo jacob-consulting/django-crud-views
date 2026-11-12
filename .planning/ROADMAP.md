@@ -52,7 +52,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.25.1: Issue #346** (completed 2026-11-11)
 - [x] **Phase 06.26: Issue #351** (completed 2026-11-11)
 - [ ] **Phase 06.27: Choice-driven conditional groups (#354) (INSERTED)** - approved issue handover; dropdown/radio controllers, shared groups, explicit clearing overrides, and linked documentation/examples.
-- [ ] **Phase 06.28: Tooltip recipe lifecycle safeguards (#355)**
+- [x] **Phase 06.28: Tooltip recipe lifecycle safeguards (#355)** (completed 2026-11-12)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1767,7 +1767,7 @@ Plans:
 **Requirements:** Documentation and focused JavaScript regression tests only. Wrap the original initializer; default context placement to bottom, preserve explicit placement and other locations' defaults, and retain the transition guard, hide/dispose behavior, missing-Tooltip no-op, and repeat-safe initialization. Execute the actual documentation snippet. Preserve native-tooltip opt-out and custom non-Bootstrap adapter examples. No production JavaScript changes, new configuration hook, lifecycle redesign, or downstream theme migration.
 **Depends on:** Phase 06.27
 **Ordering:** Follows 06.27 in the roadmap and precedes Phase 7's documentation freeze; this documentation/test correction adds no production API dependency on 06.27.
-**Plans:** 1/1 plans executed
+**Plans:** 1/1 plans complete
 
 Plans:
 - [x] 06.28-01-PLAN.md — Correct the published tooltip wrapper and prove placement/lifecycle safety through executable documentation regressions.
@@ -1883,5 +1883,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 06.23. Explicit header-icon suppression with Icon constants | 2/2 | Complete    | 2026-11-10 |
 | 06.24. Opt-in compact formsets | 6/6 | Complete    | 2026-11-11 |
-| 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | In Progress | - |
+| 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

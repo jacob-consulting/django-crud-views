@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.28"
-current_phase_name: "Tooltip recipe lifecycle safeguards (#355)"
-status: verifying
-stopped_at: Completed 06.28-01-PLAN.md; independent phase verification pending
-last_updated: "2026-11-12T13:25:39.073Z"
+current_phase: "06.27"
+current_phase_name: "Choice-driven conditional groups (#354)"
+status: planning
+stopped_at: Phase 06.28 complete, ready to plan Phase 06.27
+last_updated: "2026-11-12T13:36:03.559Z"
 last_activity: 2026-11-12
-last_activity_desc: Phase 06.28 execution started
-state_head: 96d6f9d773f9fb5615d35109f4604155ed0fdf17
+last_activity_desc: Phase 06.28 complete, transitioned to Phase 06.27
+state_head: 0cfbccc487573eec22e511eb29b4c61b1296f06f
 progress:
   total_phases: 35
-  completed_phases: 26
+  completed_phases: 27
   total_plans: 176
   completed_plans: 176
+  percent: 77
 milestone_name: milestone
 ---
 
@@ -23,19 +24,27 @@ Total Phases: 35
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-11)
+See: .planning/PROJECT.md (updated 2026-11-12)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.28 — Tooltip recipe lifecycle safeguards (#355)
+**Current focus:** Phase 06.28 complete; next incomplete roadmap phase is 06.27 — Choice-driven conditional groups (#354)
 
 ## Current Position
 
-Phase: 06.28 (Tooltip recipe lifecycle safeguards (#355)) — VERIFYING
-Plan: 1 of 1
-Status: Plan execution complete — independent phase verification pending
-Last activity: 2026-11-12 — Phase 06.28 plan 01 execution evidence committed
+Phase: 06.27 — Choice-driven conditional groups (#354)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-12 — Phase 06.28 complete, transitioned to Phase 06.27
 
-Next: Independent Phase 06.28 verification
+Next: Ship/review Phase 06.28; reconcile Phase 06.27 in its own workspace before continuing (its plan artifacts are absent here).
+
+### Phase 06.28 completion — 2026-11-12
+
+- One plan/two tasks complete. Published placement recipe delegates to the factory; only docs/reference/javascript.md and tests/js/adapters.test.js changed as product files. Native/custom examples, runtime and dependencies preserved.
+- Verification passed 6/6; independent 18 recipe cases and strict MkDocs pass. Full JS 401/401, focused 86/86, deep review zero findings, validation no gaps, security 3/3 closed. UI audit N/A: no rendered UI changes or browser claims.
+- Behavioral RED controls demonstrate old-recipe placement/stale-work failures; temporary mutations restored byte-for-byte. Python/Ruff pre-push checks remain unrun; no push or merge.
+- Completion scanner mistakes two test commands for file paths and warns about deliberately prose-only requirements (no IDs assigned). Both are bookkeeping warnings, not missing acceptance evidence. Codebase map drift remains advisory; refresh after shipping per repository instructions.
+- No matching pending todos, stale handoffs or learnings graduation candidates. Next-incomplete phase 06.27 is recorded by CLI; its artifacts are absent in this worktree, so no subsequent phase work was started.
 
 ### Phase 06.25.1 completion — 2026-11-11
 
@@ -772,7 +781,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 171
+- Total plans completed: 172
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -811,6 +820,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.25 | 2 | - | - |
 | 06.25.1 | 1 | - | - |
 | 06.26 | 4 | - | - |
+| 06.28 | 1 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1295,6 +1305,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-12T13:25:35.162Z
-Stopped at: Completed 06.28-01-PLAN.md; independent phase verification pending
+Last session: 2026-11-12T13:36:40+00:00
+Stopped at: Phase 06.28 complete, ready to plan Phase 06.27
 Resume file: None

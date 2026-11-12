@@ -136,7 +136,7 @@
     {
       "number": "06.28",
       "name": "Tooltip recipe lifecycle safeguards (#355)",
-      "status": "in_progress"
+      "status": "complete"
     },
     {
       "number": "7",
@@ -146,8 +146,8 @@
   ],
   "next": {
     "command": "$gsd-progress --next",
-    "label": "Advance to the next step (verify)",
-    "reason": "Phase 43 of 44 · ready to verify"
+    "label": "Advance to the next step (plan phase 06.27)",
+    "reason": "Phase 42 of 44 — needs a plan"
   },
-  "updated_at": "2026-11-12T13:25:26.389Z"
+  "updated_at": "2026-11-12T13:36:03.589Z"
 }

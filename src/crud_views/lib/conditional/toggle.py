@@ -93,7 +93,10 @@ class ValueToggle(ToggleSource):
             raise ImproperlyConfigured(
                 f"ValueToggle '{self.name}' requires a standard ChoiceField/TypedChoiceField and Select/RadioSelect."
             )
-        if isinstance(field.choices, CallableChoiceIterator):
+        if any(
+            isinstance(choices, CallableChoiceIterator)
+            for choices in (field.choices, getattr(field.choices, "choices", None))
+        ):
             raise ImproperlyConfigured(
                 f"ValueToggle '{self.name}' does not support callable choices; use static choices."
             )

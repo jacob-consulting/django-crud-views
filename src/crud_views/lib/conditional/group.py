@@ -214,16 +214,7 @@ class ConditionalGroupFormMixin:
         # Configuration must support switching off even for an active submission.
         # Run here to include fields added by request-dependent subclass __init__
         # methods, without constructing arbitrary forms during startup checks.
-        validate_value_groups(
-            self.cv_conditional_groups, self.fields, getattr(getattr(self, "_meta", None), "model", None)
-        )
         for group in self.cv_conditional_groups:
-            if isinstance(group.toggle, ValueToggle):
-                missing = (set(group.fields) | {group.toggle.field_name()}) - self.fields.keys()
-                if missing:
-                    raise ImproperlyConfigured(
-                        f"ValueToggle '{group.toggle.field_name()}' fields {sorted(missing)} are missing from the form."
-                    )
             for name in group.fields:
                 if name in self.fields and not self.fields[name].disabled:
                     resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
@@ -236,6 +227,23 @@ class ConditionalGroupFormMixin:
         return cleaned
 
     def full_clean(self):
+        # Request-added fields now exist. Check before Django invokes callable
+        # choices or enforces required on a newly added controlled field.
+        validate_value_groups(
+            self.cv_conditional_groups, self.fields, getattr(getattr(self, "_meta", None), "model", None)
+        )
+        for group in self.cv_conditional_groups:
+            if isinstance(group.toggle, ValueToggle):
+                missing = (set(group.fields) | {group.toggle.field_name()}) - self.fields.keys()
+                if missing:
+                    raise ImproperlyConfigured(
+                        f"ValueToggle '{group.toggle.field_name()}' fields {sorted(missing)} are missing from the form."
+                    )
+        for group in self.cv_conditional_groups:
+            if isinstance(group.toggle, ValueToggle):
+                for name in group.fields:
+                    if not self.fields[name].disabled:
+                        self.fields[name].required = False
         self._cv_conditional_values = {}
         self._cv_conditional_requires_save = False
         return super().full_clean()

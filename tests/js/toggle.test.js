@@ -41,6 +41,180 @@ function nestedFixture() {
     return Object.fromEntries(["outer", "inner", "value", "baseline"].map(name => [name, document.getElementsByName(name)[0]]));
 }
 
+function choiceFixture(widget, tokens = ["consumer", "wholesale", "distributor"]) {
+    document.body.innerHTML = '<form id="choice-owner"></form><form id="other-owner"></form>';
+    const form = document.getElementById("choice-owner");
+    const name = 'rows["<&]-0-kind';
+    const controls = widget === "select" ? [document.createElement("select")] : tokens.map(() => document.createElement("input"));
+    controls.forEach((control, index) => {
+        control.name = name;
+        if (widget === "select") tokens.forEach(token => control.add(new Option(token, token)));
+        else { control.type = "radio"; control.value = tokens[index]; control.defaultChecked = index === 0; }
+        form.append(control);
+    });
+    const groups = [[tokens[0]], tokens.slice(1)].map((values, index) => {
+        const group = document.createElement("fieldset");
+        group.setAttribute("cv-data-toggle-group", "");
+        group.setAttribute("cv-data-toggle-field", name);
+        group.setAttribute("cv-data-toggle-values", JSON.stringify(values));
+        group.innerHTML = `<input name="value-${index}" value="initial-${index}"><input name="baseline-${index}" disabled>`;
+        form.append(group);
+        return group;
+    });
+    const choose = token => {
+        const control = widget === "select" ? controls[0] : controls.find(input => input.value === token);
+        if (widget === "select") control.value = token;
+        else control.checked = true;
+        control.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+    return { form, controls, groups, choose, name, tokens, value: groups[1].querySelector("input") };
+}
+
+describe("choice conditional lifecycle", () => {
+    beforeAll(async () => { await loadScript("toggle"); });
+    afterEach(() => {
+        document.querySelectorAll("form").forEach(form => form.dispatchEvent(new CustomEvent("cv:modal:unload", { bubbles: true })));
+        vi.useRealTimers(); vi.restoreAllMocks();
+    });
+
+    it.each(["select", "radio"].flatMap(widget => [[widget, ["consumer", "wholesale", "distributor"]], [widget, ["0", "1", "2"]]]))(
+        "choice membership retains shared and disjoint data for %s %j", (widget, tokens) => {
+            const { form, groups, choose, value } = choiceFixture(widget, tokens);
+            wire();
+            expect(groups.map(group => group.style.display)).toEqual(["", "none"]);
+            expect(new FormData(form).has("value-1")).toBe(false);
+            choose(tokens[1]); value.value = "unsaved";
+            expect(groups.map(group => group.style.display)).toEqual(["none", ""]);
+            choose(tokens[2]);
+            expect(value.disabled).toBe(false);
+            expect(new FormData(form).get("value-1")).toBe("unsaved");
+            choose(tokens[0]);
+            expect(value.value).toBe("unsaved");
+            expect(new FormData(form).has("value-1")).toBe(false);
+            choose(tokens[1]);
+            expect(new FormData(form).get("value-1")).toBe("unsaved");
+            expect(form.querySelector("[name=baseline-1]").disabled).toBe(true);
+        });
+
+    it.each(["select", "radio"])("choice ownership includes external %s controls and excludes foreign peers", widget => {
+        const { form, controls, groups, choose, name } = choiceFixture(widget);
+        const other = document.getElementById("other-owner");
+        controls.forEach(control => { control.setAttribute("form", form.id); document.body.append(control); });
+        const foreign = controls[0].cloneNode(true); foreign.removeAttribute("form"); other.append(foreign);
+        const reassigned = foreign.cloneNode(true); reassigned.setAttribute("form", other.id); form.append(reassigned);
+        const suffix = foreign.cloneNode(true); suffix.name = `other-${name}`; form.append(suffix);
+        wire(); choose("wholesale");
+        expect(groups[1].style.display).toBe("");
+        foreign.value = "consumer"; foreign.dispatchEvent(new Event("change", { bubbles: true }));
+        expect(groups[1].style.display).toBe("");
+    });
+
+    it("radio ownership treats no checked peer as inactive and malformed multiple checked peers as unresolved", () => {
+        const { controls, groups } = choiceFixture("radio");
+        controls.forEach(control => { control.checked = false; }); wire();
+        expect(groups.map(group => group.style.display)).toEqual(["none", "none"]);
+        controls.slice(0, 2).forEach(control => Object.defineProperty(control, "checked", { configurable: true, value: true }));
+        globalThis.cv.initConditional(document);
+        expect(groups.map(group => group.style.display)).toEqual(["none", "none"]);
+    });
+
+    it("radio listener rebind compares all members, normalizes matches and releases all old peers", () => {
+        const { form, controls, groups, choose, value } = choiceFixture("radio");
+        const added = controls.map(control => vi.spyOn(control, "addEventListener"));
+        const removed = controls.map(control => vi.spyOn(control, "removeEventListener"));
+        wire(); globalThis.cv.initConditional(form);
+        groups[1].setAttribute("cv-data-toggle-values", '[ "distributor", "wholesale" ]');
+        globalThis.cv.initConditional(form);
+        added.forEach(spy => expect(spy.mock.calls.filter(([type]) => type === "change")).toHaveLength(2));
+        const replacement = controls[2].cloneNode(); controls[2].replaceWith(replacement);
+        globalThis.cv.initConditional(form);
+        removed.forEach(spy => expect(spy.mock.calls.filter(([type]) => type === "change")).toHaveLength(2));
+        replacement.checked = true; replacement.dispatchEvent(new Event("change", { bubbles: true }));
+        expect(value.disabled).toBe(false);
+        choose("consumer");
+        replacement.checked = true;
+        controls[2].dispatchEvent(new Event("change", { bubbles: true }));
+        expect(value.disabled).toBe(true); // Detached peer must not resync live controls.
+        form.dispatchEvent(new CustomEvent("cv:modal:unload", { bubbles: true }));
+        replacement.dispatchEvent(new Event("change", { bubbles: true }));
+        expect(groups[1].style.display).toBe("none");
+        expect(value.disabled).toBe(false);
+        form.dispatchEvent(new CustomEvent("cv:modal:loaded", { bubbles: true }));
+        expect(value.disabled).toBe(false);
+        expect(groups[1].style.display).toBe("");
+    });
+
+    it.each(["select", "radio"])("choice disabled baseline and inactive ancestors compose for %s", widget => {
+        const { form, controls, groups, choose, value } = choiceFixture(widget);
+        const ancestor = document.createElement("div");
+        ancestor.setAttribute("cv-data-toggle-group", ""); ancestor.setAttribute("cv-data-toggle-field", "outer");
+        form.insertAdjacentHTML("afterbegin", '<input type="checkbox" name="outer" checked>');
+        const outer = form.querySelector("[name=outer]");
+        form.append(ancestor); ancestor.append(...groups);
+        wire(); value.disabled = true; choose("wholesale"); expect(value.disabled).toBe(true);
+        choose("consumer"); value.disabled = false; globalThis.cv.initConditional(form);
+        expect(value.disabled).toBe(true);
+        controls.forEach(control => { control.disabled = true; });
+        choose("wholesale"); expect(value.disabled).toBe(false); // Disabled is not a different value.
+        change(outer, false); expect(value.disabled).toBe(true);
+        groups[1].setAttribute("cv-data-toggle-values", "bad json"); globalThis.cv.initConditional(form);
+        change(outer, true); expect(value.disabled).toBe(false);
+        expect(controls.every(control => control.disabled)).toBe(true);
+    });
+
+    it.each(["select", "radio"].flatMap(widget => ["form", "document"].map(where => [widget, where])))(
+        "choice native reset and later canceled reset for %s at %s", async (widget, where) => {
+            vi.useFakeTimers();
+            const { form, choose, groups, value } = choiceFixture(widget);
+            const other = document.getElementById("other-owner");
+            other.innerHTML = '<input type="checkbox" name="active" checked><div cv-data-toggle-group cv-data-toggle-field="active"><input name="other"></div>';
+            wire(); choose("wholesale"); value.value = "unsaved";
+            other.querySelector("input").checked = false;
+            (where === "form" ? form : document).addEventListener("reset", event => event.preventDefault(), { once: true });
+            form.reset(); await vi.runAllTimersAsync();
+            expect(value.value).toBe("unsaved"); expect(value.disabled).toBe(false);
+            form.reset(); expect(groups[1].style.display).toBe("");
+            await vi.runAllTimersAsync();
+            expect(value.value).toBe("initial-1"); expect(value.disabled).toBe(true);
+            expect(other.querySelector("[name=other]").disabled).toBe(false);
+        });
+
+    it.each(["select", "radio"].flatMap(widget => ["[]", "{}", "null", "[0]", '[""]', '["a","a"]', "broken"].map(metadata => [widget, metadata])))(
+        "malformed choice metadata %s %s preserves last state", (widget, metadata) => {
+            const { form, groups, choose, value } = choiceFixture(widget);
+            wire(); expect(value.disabled).toBe(true);
+            groups[1].setAttribute("cv-data-toggle-values", metadata); globalThis.cv.initConditional(form);
+            choose("wholesale"); expect(value.disabled).toBe(true);
+            groups[1].setAttribute("cv-data-toggle-values", '["wholesale"]'); globalThis.cv.initConditional(form);
+            expect(value.disabled).toBe(false);
+        });
+
+    it.each(["select", "radio"].flatMap(widget => ["select", "text", "multiple"].map(invalid => [widget, invalid])))(
+        "rejects mixed or duplicate choice controls %s with %s and recovers", (widget, invalid) => {
+            const { form, name, choose, value } = choiceFixture(widget);
+            wire();
+            const extra = document.createElement(invalid === "text" ? "input" : "select");
+            extra.name = name; if (invalid === "multiple") extra.multiple = true;
+            form.append(extra); globalThis.cv.initConditional(form); choose("wholesale");
+            expect(value.disabled).toBe(true);
+            extra.remove(); globalThis.cv.initConditional(form); expect(value.disabled).toBe(false);
+        });
+
+    it.each(["checked", "peer", "form"])("choice focus recovery chooses usable %s radio target", target => {
+        vi.spyOn(HTMLElement.prototype, "getClientRects").mockReturnValue([{}]);
+        const { form, controls, groups, choose, value } = choiceFixture("radio");
+        wire(); choose("wholesale");
+        // Hide the shared group by changing its matches, leaving a checked non-first radio.
+        value.focus(); groups[1].setAttribute("cv-data-toggle-values", '["consumer"]');
+        if (target !== "checked") controls[1].disabled = true;
+        if (target === "form") controls.forEach(control => { control.disabled = true; });
+        globalThis.cv.initConditional(form);
+        expect(document.activeElement).toBe(target === "checked" ? controls[1] : target === "peer" ? controls[0] : form);
+        const outside = document.createElement("button"); document.body.append(outside); outside.focus();
+        choose("consumer"); choose("distributor"); expect(document.activeElement).toBe(outside);
+    });
+});
+
 describe("conditional disabled ownership", () => {
     beforeAll(async () => { await loadScript("toggle"); });
 

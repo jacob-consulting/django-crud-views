@@ -1750,7 +1750,7 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.27-02-PLAN.md — Deterministic group checks and bounded choice-clearing persistence
 
-**Wave 3** *(blocked on Wave 2 completion; browser evidence hashes Plan 02 inputs)*
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.27-03-PLAN.md — Native dropdown/radio ownership, lifecycle and browser acceptance
 
 **Wave 4** *(blocked on Wave 3 completion)*

@@ -51,6 +51,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.25: Issue #349** (completed 2026-11-11)
 - [x] **Phase 06.25.1: Issue #346** (completed 2026-11-11)
 - [x] **Phase 06.26: Issue #351** (completed 2026-11-11)
+- [ ] **Phase 06.27: Choice-driven conditional groups (#354) (INSERTED)** - approved issue handover; dropdown/radio controllers, shared groups, explicit clearing overrides, and linked documentation/examples.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1732,6 +1733,18 @@ Plans:
 
 **Wave 4** *(depends on completed Plan 03)*
 - [x] 06.26-04-PLAN.md — Separate Checklist ViewSet with compact checkbox rows, demo integration and browser evidence
+
+### Phase 06.27: Choice-driven conditional groups (#354) (INSERTED)
+
+**Goal:** An existing choice field activates one or more conditional field groups through a dropdown or radio buttons, with shared value matches, existing inactive-group clearing semantics, bounded automatic choice clearing, and authoritative explicit `empty_values` overrides.
+**Source:** [Issue #354 — gsd-handover](https://github.com/jacob-consulting/django-crud-views/issues/354#gsd-handover). Carry approved decisions D-01–D-10 into planning; implementation recommendations remain planning discretion.
+**Requirements:** Deliver the issue's acceptance criteria, including a complex runnable three-option example with multiple groups and a group shared by two options, updated documentation, and reciprocal documentation/example links. Preserve existing checkbox support and keep finding 20's per-row conditions outside scope.
+**Depends on:** Phase 06.26
+**Ordering:** Settle this public conditional API and its template/JavaScript contracts before Phase 7 freezes the theme surface.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run $gsd-plan-phase 06.27 to break down)
 
 ### Phase 7: Theme-surface stability policy
 

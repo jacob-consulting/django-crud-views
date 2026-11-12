@@ -547,3 +547,41 @@ def test_value_group_checks_missing_dynamic_controller_keeps_e311(monkeypatch):
 
     errors = _run_check_with(monkeypatch, Dynamic)
     assert [error.id for error in errors] == ["crud_views.E311"]
+
+
+@pytest.mark.parametrize(
+    "name,supported",
+    [
+        ("nullable_text_choice", True),
+        ("blank_text_choice", True),
+        ("nullable_integer_choice", True),
+        ("required_text_choice", False),
+        ("required_integer_choice", False),
+    ],
+)
+def test_choice_clear_matrix_static_admission(monkeypatch, name, supported):
+    from tests.test1.app.models import ConditionalPersistenceRecord
+
+    class ChoiceForm(ConditionalGroupFormMixin, forms.ModelForm):
+        cv_conditional_groups = [ConditionalGroup(UIFieldToggle("enabled"), [name])]
+
+        class Meta:
+            model = ConditionalPersistenceRecord
+            fields = [name]
+
+    errors = _run_check_with(monkeypatch, ChoiceForm)
+    assert [error.id for error in errors] == ([] if supported else ["crud_views.E312"])
+    ChoiceForm.cv_conditional_groups[0].empty_values[name] = None
+    assert _run_check_with(monkeypatch, ChoiceForm) == []
+
+
+def test_choice_clear_plain_form_requires_explicit_value(monkeypatch):
+    class ChoiceForm(ConditionalGroupFormMixin, forms.Form):
+        value = forms.ChoiceField(choices=[("A", "A")])
+        cv_conditional_groups = [ConditionalGroup(UIFieldToggle("enabled"), ["value"])]
+
+    assert [error.id for error in _run_check_with(monkeypatch, ChoiceForm)] == ["crud_views.E312"]
+    ChoiceForm.cv_conditional_groups[0].empty_values["value"] = ""
+    assert _run_check_with(monkeypatch, ChoiceForm) == []
+    form = ChoiceForm(data={"value": "forged"})
+    assert form.is_valid() and form.cleaned_data["value"] == ""

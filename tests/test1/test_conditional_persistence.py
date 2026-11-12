@@ -6,6 +6,7 @@ from decimal import Decimal
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import django
 import pytest
 from django import forms
 from django.core.exceptions import ImproperlyConfigured, ValidationError
@@ -18,8 +19,12 @@ from django.test import RequestFactory, override_settings
 from django.test.utils import isolate_apps
 
 from crud_views import checks
-from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
-from crud_views.lib.conditional.toggle import ModelFieldToggle
+from crud_views.lib.conditional.group import (
+    ConditionalGroup,
+    ConditionalGroupFormMixin,
+    resolve_conditional_empty_value,
+)
+from crud_views.lib.conditional.toggle import ModelFieldToggle, ValueToggle
 from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
 from tests.test1.app.models import ConditionalPersistenceRecord as Record
 from tests.test1.app.models import Profile, Publisher
@@ -586,3 +591,201 @@ def test_suppressed_field_error_does_not_suppress_inherited_nonfield_invariant(r
         save.assert_not_called()
     row.refresh_from_db()
     assert row.blank_text == "default text"
+
+
+def choice_record_form(names, *, empty_values=None, required=None, disabled=()):
+    class ChoiceRecordForm(record_form(names, disabled=disabled)):
+        kind = forms.ChoiceField(choices=[("on", "On"), ("off", "Off")])
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["on"]), list(names), required, empty_values)]
+
+    return ChoiceRecordForm
+
+
+def test_choice_fixture_omitted_fields_defaults():
+    saved = Record.objects.create(parent=Profile.objects.create(name="choice defaults"))
+    saved.refresh_from_db()
+    assert saved.required_text_choice == "A"
+    assert saved.required_integer_choice == 1
+
+
+@pytest.mark.parametrize(
+    "name,expected", [("nullable_text_choice", None), ("blank_text_choice", ""), ("nullable_integer_choice", None)]
+)
+@pytest.mark.parametrize("posted", ["omitted", "empty", "forged"])
+@pytest.mark.parametrize("blank", [False, True])
+def test_choice_clear_matrix(row, monkeypatch, name, expected, posted, blank):
+    field = Record._meta.get_field(name)
+    # Nonnullable text is admitted only when blank; nullable fields prefer None in either case.
+    monkeypatch.setattr(field, "blank", blank if field.null else True)
+    form_class = choice_record_form([name])
+    data = {"kind": "off"}
+    if posted != "omitted":
+        data[name] = "" if posted == "empty" else "forged"
+    form = form_class(instance=row, data=data)
+    assert form.is_valid(), form.errors
+    form.save()
+    row.refresh_from_db()
+    assert getattr(row, name) == expected
+    assert form_class(instance=row).initial[name] == expected
+    assert row.blank_text == "default text"
+    assert row.required_text_choice == "A" and row.required_integer_choice == 1
+
+
+@pytest.mark.parametrize("name", ["required_text_choice", "required_integer_choice"])
+@pytest.mark.parametrize("active", [False, True])
+def test_choice_clear_matrix_required_needs_explicit_even_with_default(row, name, active):
+    with pytest.raises(ImproperlyConfigured, match=rf"kind.*{name}.*empty_values"):
+        choice_record_form([name])(instance=row, data={"kind": "on" if active else "off", name: "A"}).is_valid()
+    row.refresh_from_db()
+    assert row.required_text_choice == "A" and row.required_integer_choice == 1
+
+
+@pytest.mark.parametrize(
+    "name,empty,stored",
+    [
+        ("nullable_text_choice", None, None),
+        ("nullable_text_choice", "", ""),
+        ("required_text_choice", "B", "B"),
+        ("required_integer_choice", False, 0),
+        ("required_integer_choice", 0, 0),
+    ],
+)
+def test_choice_clear_matrix_explicit_native_values(row, name, empty, stored):
+    form_class = choice_record_form([name], empty_values={name: empty})
+    form = form_class(instance=row, data={"kind": "off", name: "forged"})
+    assert form.is_valid(), form.errors
+    # Model cleaning may normalize False to the native integer 0.
+    assert form._cv_conditional_values[name] is empty
+    form.save()
+    row.refresh_from_db()
+    assert getattr(row, name) == stored
+    assert form_class(instance=row).initial[name] == stored
+
+
+@pytest.mark.parametrize(
+    "name,initial,override", [("required_text_choice", "A", "B"), ("required_integer_choice", 1, 0)]
+)
+def test_choice_clear_matrix_disabled_field_wins(row, name, initial, override):
+    form_class = choice_record_form([name], empty_values={name: override}, disabled=[name])
+    form = form_class(instance=row, data={"kind": "off", name: "forged"})
+    assert form.is_valid(), form.errors
+    form.save()
+    row.refresh_from_db()
+    assert getattr(row, name) == initial
+    assert form_class(instance=row).initial[name] == initial
+
+
+@pytest.mark.parametrize("initial,expected", [("on", "B"), ("off", None)])
+def test_choice_clear_matrix_disabled_controller(row, initial, expected):
+    form_class = choice_record_form(["nullable_text_choice"], disabled=["kind"])
+    form = form_class(
+        instance=row,
+        initial={"kind": initial},
+        data={"kind": "off" if initial == "on" else "on", "nullable_text_choice": "B"},
+    )
+    assert form.is_valid(), form.errors
+    form.save()
+    row.refresh_from_db()
+    assert row.nullable_text_choice == expected
+    assert form_class(instance=row).initial["nullable_text_choice"] == expected
+
+
+@pytest.mark.parametrize("required", [None, []])
+@pytest.mark.parametrize("posted", ["", "B", "invalid"])
+def test_choice_clear_native_validation_active(row, required, posted):
+    name = "nullable_text_choice"
+    form_class = choice_record_form([name], required=required)
+    form = form_class(instance=row, data={"kind": "on", name: posted})
+    valid = posted == "B" or (posted == "" and required == [])
+    assert form.is_valid() is valid
+    if valid:
+        form.save()
+        row.refresh_from_db()
+        assert row.nullable_text_choice == (posted or None)
+        assert form_class(instance=row).initial[name] == (posted or None)
+    else:
+        assert form.errors.as_data()[name][0].code == ("required" if not posted else "invalid_choice")
+        with pytest.raises(ValueError):
+            form.save()
+        row.refresh_from_db()
+        assert row.nullable_text_choice == "A"
+
+
+@pytest.mark.parametrize("kind", ["model-clean", "form-clean", "invalid-sentinel", "unique", "constraint"])
+def test_choice_clear_native_validation_invariants(row, monkeypatch, kind):
+    name = "unique_text" if kind == "unique" else "nullable_text_choice"
+    if kind == "unique":
+        monkeypatch.setattr(Record._meta.get_field(name), "choices", [("B", "B")])
+        Record.objects.create(parent=row.parent, unique_text="B")
+    if kind == "model-clean":
+
+        def clean(instance):
+            assert instance.nullable_text_choice == "B"
+            raise ValidationError("choice invariant")
+
+        monkeypatch.setattr(Record, "clean", clean)
+    if kind == "constraint":
+        condition_key = "condition" if django.VERSION >= (5, 1) else "check"
+        constraint = models.CheckConstraint(**{condition_key: ~models.Q(nullable_text_choice="B")}, name="choice_not_b")
+        monkeypatch.setattr(Record._meta, "constraints", [constraint])
+    parent = choice_record_form([name], empty_values={name: "invalid" if kind == "invalid-sentinel" else "B"})
+
+    class Invariant(parent):
+        def clean(self):
+            cleaned = super().clean()
+            if kind == "form-clean":
+                self.add_error(None, "choice invariant")
+            return cleaned
+
+    form = Invariant(instance=row, data={"kind": "off", name: "forged"})
+    assert not form.is_valid()
+    assert form.errors
+    with pytest.raises(ValueError):
+        form.save()
+    row.refresh_from_db()
+    assert getattr(row, name) == (None if kind == "unique" else "A")
+
+
+@pytest.mark.parametrize("custom", ["form", "model", "conversion", "save", "coerce", "scalar"])
+def test_choice_clear_custom_pairs_explicit_only(custom):
+    model_field = models.CharField(max_length=20, choices=[("A", "A")], null=True, blank=True)
+    if custom == "model":
+        model_field = type("CustomText", (models.CharField,), {})(max_length=20, choices=[("A", "A")], null=True)
+    if custom == "conversion":
+        model_field.to_python = lambda value: value
+    if custom == "save":
+        model_field.save_form_data = lambda instance, value: None
+    if custom == "scalar":
+        model_field.choices = [(1.5, "Float")]
+    form_field = model_field.formfield()
+    if custom == "form":
+        form_field = type("CustomChoice", (forms.TypedChoiceField,), {})(choices=[("A", "A")], coerce=str)
+    if custom == "coerce":
+        form_field.coerce = lambda value: value
+    group = ConditionalGroup(ValueToggle("kind", ["on"]), ["value"])
+    with pytest.raises(ImproperlyConfigured, match="empty_values"):
+        resolve_conditional_empty_value(form_field, model_field, group, "value")
+    group.empty_values["value"] = None
+    assert resolve_conditional_empty_value(form_field, model_field, group, "value") is None
+
+
+@pytest.mark.parametrize("hook", ["conversion", "save"])
+def test_choice_clear_custom_hooks_explicit_persist(row, monkeypatch, hook):
+    name = "nullable_text_choice"
+    field = Record._meta.get_field(name)
+    if hook == "conversion":
+        native = field.to_python
+        monkeypatch.setattr(field, "to_python", lambda value: native(value))
+    else:
+        native = field.save_form_data
+        monkeypatch.setattr(field, "save_form_data", lambda instance, value: native(instance, value))
+    form_class = choice_record_form([name])
+    with pytest.raises(ImproperlyConfigured, match="empty_values"):
+        form_class(instance=row, data={"kind": "off"}).is_valid()
+    form_class.cv_conditional_groups[0].empty_values[name] = "B"
+    form = form_class(instance=row, data={"kind": "off"})
+    assert form.is_valid(), form.errors
+    form.save()
+    row.refresh_from_db()
+    assert getattr(row, name) == "B"
+    assert form_class(instance=row).initial[name] == "B"

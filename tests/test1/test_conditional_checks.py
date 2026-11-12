@@ -9,7 +9,7 @@ from crud_views import checks
 from crud_views.checks import _conditional_messages, check_conditional
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
-from crud_views.lib.conditional.toggle import ModelFieldToggle, UIFieldToggle
+from crud_views.lib.conditional.toggle import ModelFieldToggle, UIFieldToggle, ValueToggle
 from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
 from crud_views.lib.views import CreateViewPermissionRequired, UpdateViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
@@ -486,3 +486,64 @@ def test_unsupported_model_pair_uses_shared_resolver(monkeypatch, name):
         Unsupported.base_fields[name] = CustomModelField()
     messages = _run_check_with(monkeypatch, Unsupported)
     assert len([m for m in messages if m.id == "crud_views.E312" and name in m.msg]) == 1
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def test_value_group_checks_conflicts_deduplicated(monkeypatch, reverse):
+    class Conflicting(ConditionalGroupFormMixin, forms.Form):
+        kind = forms.ChoiceField(choices=[("a", "A")])
+        detail = forms.CharField()
+        cv_conditional_groups = [
+            ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"]),
+            ConditionalGroup(UIFieldToggle("enabled"), ["detail"]),
+        ][:: -1 if reverse else 1]
+
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("startup must not construct forms")
+
+    view = SimpleNamespace(form_class=Conflicting, cv_formsets=None)
+    monkeypatch.setattr(
+        checks, "_REGISTRY", {"fake": SimpleNamespace(get_all_views=lambda: {"create": view, "update": view})}
+    )
+    messages = check_conditional()
+    errors = [message for message in messages if message.id == "crud_views.E313"]
+    assert len(errors) == 1, messages
+    assert all(name in errors[0].msg for name in ("Conflicting", "kind", "detail"))
+    assert errors[0].hint
+
+
+@pytest.mark.parametrize("unsupported", ["callable", "relation", "widget", "coercion", "token"])
+@pytest.mark.django_db
+def test_value_group_checks_unsupported_without_queries(monkeypatch, django_assert_num_queries, unsupported):
+    def no_choices():
+        raise AssertionError("startup must not evaluate callable choices")
+
+    fields = {
+        "callable": forms.ChoiceField(choices=no_choices),
+        "relation": forms.ModelChoiceField(queryset=Profile.objects.all()),
+        "widget": forms.ChoiceField(choices=[("a", "A")], widget=forms.SelectMultiple),
+        "coercion": forms.TypedChoiceField(choices=[("a", "A")], coerce=lambda value: value),
+        "token": forms.ChoiceField(choices=[("b", "B")]),
+    }
+
+    class Unsupported(ConditionalGroupFormMixin, forms.Form):
+        kind = fields[unsupported]
+        detail = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("startup must not construct forms")
+
+    with django_assert_num_queries(0):
+        errors = _run_check_with(monkeypatch, Unsupported)
+    assert len(errors) == 1 and errors[0].id == "crud_views.E313", errors
+    assert "kind" in errors[0].msg
+
+
+def test_value_group_checks_missing_dynamic_controller_keeps_e311(monkeypatch):
+    class Dynamic(ConditionalGroupFormMixin, forms.Form):
+        detail = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+
+    errors = _run_check_with(monkeypatch, Dynamic)
+    assert [error.id for error in errors] == ["crud_views.E311"]

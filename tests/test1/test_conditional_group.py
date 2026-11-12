@@ -4,7 +4,7 @@ from django import forms
 from django.core.exceptions import ImproperlyConfigured
 
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
-from crud_views.lib.conditional.toggle import ModelFieldToggle, UIFieldToggle
+from crud_views.lib.conditional.toggle import ModelFieldToggle, UIFieldToggle, ValueToggle
 from tests.test1.app.models import Profile
 
 pytestmark = pytest.mark.django_db
@@ -146,3 +146,123 @@ def test_plain_form_custom_field_accepts_explicit_native_falsy_values(empty):
     form = Plain(data={"value": "forged"})
     assert form.is_valid(), form.errors
     assert form.cleaned_data["value"] is empty
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("kind", ["consumer", "wholesale", "distributor"])
+def test_value_groups_disjoint(kind, reverse):
+    matrix = {
+        "preferences": ["consumer"],
+        "business": ["wholesale", "distributor"],
+        "terms": ["wholesale"],
+        "distribution": ["distributor"],
+    }
+
+    class Multi(ConditionalGroupFormMixin, forms.Form):
+        kind = forms.ChoiceField(choices=[(value, value) for value in ("consumer", "wholesale", "distributor")])
+        preferences = forms.CharField()
+        business = forms.CharField()
+        terms = forms.CharField()
+        distribution = forms.CharField()
+        outside = forms.CharField()
+        cv_conditional_groups = [
+            ConditionalGroup(ValueToggle("kind", values), [name]) for name, values in matrix.items()
+        ]
+
+    if reverse:
+        Multi.cv_conditional_groups.reverse()
+    form = Multi(data={"kind": kind, "outside": "unchanged", **dict.fromkeys(matrix, "provided")})
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data == {
+        "kind": kind,
+        "outside": "unchanged",
+        **{name: "provided" if kind in values else "" for name, values in matrix.items()},
+    }
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("conflict", ["overlap", "value-controller", "checkbox-controller", "self", "required"])
+def test_value_group_conflicts(conflict, reverse):
+    value = ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])
+    checkbox = ConditionalGroup(UIFieldToggle("enabled"), ["other"])
+    if conflict == "overlap":
+        checkbox.fields = ["detail"]
+    elif conflict == "value-controller":
+        checkbox.fields = ["kind"]
+        checkbox.empty_values = {"kind": "b"}
+    elif conflict == "checkbox-controller":
+        value.fields = ["enabled"]
+    elif conflict == "self":
+        value.fields = ["kind"]
+        value.empty_values = {"kind": "b"}
+    else:
+        value.required = ["other"]
+
+    class Invalid(ConditionalGroupFormMixin, forms.Form):
+        kind = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+        detail = forms.CharField()
+        other = forms.CharField()
+        cv_conditional_groups = [value, checkbox][:: -1 if reverse else 1]
+
+    with pytest.raises(ImproperlyConfigured, match="ValueToggle.*kind"):
+        Invalid(data={"kind": "invalid", "detail": "forged"})
+    # Class fields were not disarmed while attempting construction.
+    assert Invalid.base_fields["detail"].required
+
+
+@pytest.mark.parametrize("missing", ["kind", "detail"])
+def test_value_group_runtime_fields_missing(missing):
+    class Dynamic(ConditionalGroupFormMixin, forms.Form):
+        kind = forms.ChoiceField(choices=[("a", "A")])
+        detail = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            del self.fields[missing]
+
+    with pytest.raises(ImproperlyConfigured, match=missing):
+        Dynamic(data={"kind": "a"}).is_valid()
+
+
+@pytest.mark.parametrize("kind", ["a", "b", "invalid"])
+def test_value_group_runtime_fields_added_and_optional(kind):
+    class Dynamic(ConditionalGroupFormMixin, forms.Form):
+        detail = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"], required=[])]
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["kind"] = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
+
+    form = Dynamic(data={"kind": kind, "detail": ""})
+    assert form.is_valid() is (kind != "invalid")
+    assert form.cleaned_data["detail"] == ""
+    if kind == "invalid":
+        assert form.errors.as_data()["kind"][0].code == "invalid_choice"
+
+
+def test_value_group_runtime_fields_wrong_kind():
+    class Dynamic(ConditionalGroupFormMixin, forms.Form):
+        detail = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["kind"] = forms.CharField()
+
+    with pytest.raises(ImproperlyConfigured, match="ChoiceField"):
+        Dynamic(data={"kind": "a"}).is_valid()
+
+
+def test_checkbox_only_overlaps_keep_legacy_behavior():
+    class Legacy(ConditionalGroupFormMixin, forms.Form):
+        detail = forms.CharField()
+        cv_conditional_groups = [
+            ConditionalGroup(UIFieldToggle("one"), ["detail"]),
+            ConditionalGroup(UIFieldToggle("two"), ["detail", "absent"]),
+        ]
+
+    form = Legacy(data={"detail": "forged"})
+    assert form.is_valid()
+    assert form.cleaned_data["detail"] == ""

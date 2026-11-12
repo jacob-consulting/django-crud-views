@@ -1,20 +1,21 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.27"
-current_phase_name: "Choice-driven conditional groups (#354)"
-current_plan: 5
-status: verifying
-stopped_at: Phase 06.27 verified 22/22; two human UAT checks pending
-last_updated: "2026-11-12T13:02:36Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.27 complete, ready to plan Phase 7
+last_updated: "2026-11-12T13:19:27.990Z"
 last_activity: 2026-11-12
-last_activity_desc: Phase 06.27 implementation verified; human UAT pending
-state_head: 43d07ea5039b15b2890fc6bc4a9462ab94ddee8c
+last_activity_desc: Phase 06.27 complete, transitioned to Phase 7
+state_head: 923e7bc5437a1a9d40272250035adb6ec0e39892
 progress:
   total_phases: 34
   completed_phases: 26
   total_plans: 180
   completed_plans: 180
+  percent: 76
 milestone_name: milestone
 ---
 
@@ -24,20 +25,26 @@ Total Phases: 34
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-11)
+See: .planning/PROJECT.md (updated 2026-11-12)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.27 — Choice-driven conditional groups (#354)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.27 (Choice-driven conditional groups (#354)) — IN PROGRESS
-Current Plan: 5
-Total Plans in Phase: 5
-Status: Verified implementation — two human UAT checks pending
-Last activity: 2026-11-12 -- Completed Plan 06.27-05; public recipe and reciprocal links, actual Customer browser 56 assertions, final full suite 12,700 passed/1 existing skip, supported-series conditional 355 each, JS420/fragment2, current browser evidence and scoped quality gates pass
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: Not planned
+Status: Ready to plan
+Last activity: 2026-11-12 — Phase 06.27 complete, transitioned to Phase 7
 
-Next: $gsd-verify-work 06.27 — two human UAT checks; phase remains In Progress
+Next: $gsd-discuss-phase 7
+
+### Phase 06.27 completion — 2026-11-12
+
+- User passed both human checks. Requested adjacent “Conditional simple” and “Conditional complex” navigation implemented (923e7bc5), tested across four routes and independently verified. All five plans complete; canonical verification passed22/22 and combined UAT predicate passes without blockers.
+- Fresh navigation tests10 plus live browser assertions; independent follow-up2 tests/20subtests. Previous core/runtime evidence and limitations retained. Public review server remains on port9000, temporary database, https://cv.jacob-consulting.org.
+- Completion scanner warnings misclassify command strings and one existing phase-relative evidence path; prose issue acceptance deliberately has no global REQ-IDs. No implementation gap. No learnings/handoffs to graduate, no push or merge; unrelated .gitkeep preserved.
 
 ### Phase 06.27 verification — 2026-11-12
 
@@ -789,7 +796,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 171
+- Total plans completed: 176
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -828,6 +835,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.25 | 2 | - | - |
 | 06.25.1 | 1 | - | - |
 | 06.26 | 4 | - | - |
+| 06.27 | 5 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1324,5 +1332,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-12T12:27:24.406Z
-Stopped at: Phase 06.27 verified 22/22; two human UAT checks pending
-Resume file: .planning/phases/06.27-choice-driven-conditional-groups-354/06.27-UAT.md
+Stopped at: Phase 06.27 complete, ready to plan Phase 7
+Resume file: None

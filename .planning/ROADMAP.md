@@ -51,7 +51,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.25: Issue #349** (completed 2026-11-11)
 - [x] **Phase 06.25.1: Issue #346** (completed 2026-11-11)
 - [x] **Phase 06.26: Issue #351** (completed 2026-11-11)
-- [ ] **Phase 06.27: Choice-driven conditional groups (#354) (INSERTED)** - approved issue handover; dropdown/radio controllers, shared groups, explicit clearing overrides, and linked documentation/examples.
+- [x] **Phase 06.27: Choice-driven conditional groups (#354) (INSERTED)** - approved issue handover; dropdown/radio controllers, shared groups, explicit clearing overrides, and linked documentation/examples. (completed 2026-11-12)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1741,7 +1741,7 @@ Plans:
 **Requirements:** Deliver the issue's acceptance criteria, including a complex runnable three-option example with multiple groups and a group shared by two options, updated documentation, and reciprocal documentation/example links. Preserve existing checkbox support and keep finding 20's per-row conditions outside scope.
 **Depends on:** Phase 06.26
 **Ordering:** Settle this public conditional API and its template/JavaScript contracts before Phase 7 freezes the theme surface.
-**Plans:** 5/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 **Wave 1**

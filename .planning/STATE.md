@@ -1,24 +1,23 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.29"
+current_phase_name: Themeable column helpers
 status: planning
-stopped_at: Phase 06.26 complete, ready to plan Phase 7
-last_updated: "2026-11-11T22:09:57.556Z"
-last_activity: 2026-11-11
-last_activity_desc: "Phase 06.26 shipped as PR #353"
-state_head: 1e193b55b47f1b42bcaa5d64133acfc8f044e415
+stopped_at: Phase 06.29 context gathered; ready for planning
+last_updated: "2026-11-12T12:30:57.791Z"
+last_activity: 2026-11-12
+last_activity_desc: "Created Phase 06.29 from the approved issue #356 handover"
+state_head: 4eaea35012496e8981c2c3b4adb29d57a438450a
 progress:
-  total_phases: 33
-  completed_phases: 27
+  total_phases: 34
+  completed_phases: 26
   total_plans: 175
   completed_plans: 175
-  percent: 82
 milestone_name: milestone
 ---
 
-Total Phases: 32
+Total Phases: 34
 
 # Project State
 
@@ -27,16 +26,16 @@ Total Phases: 32
 See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.25.1 — Issue #346
+**Current focus:** Phase 06.29 — Themeable column helpers (#356)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.29 — Themeable column helpers (#356)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-11 -- Phase 06.26 shipped as PR #353
+Last activity: 2026-11-12 -- Created Phase 06.29 from the approved issue #356 handover
 
-Next: $gsd-plan-phase 7
+Next: $gsd-plan-phase 06.29
 
 ### Phase 06.25.1 completion — 2026-11-11
 
@@ -1284,6 +1283,7 @@ None yet.
 - Phase 06.25 inserted after Phase 6: Issue #349 (URGENT)
 - Phase 06.25.1 inserted after Phase 6.25: Issue #346 (URGENT)
 - Phase 06.26 inserted after Phase 6: Issue #351 (URGENT)
+- Phase 06.29 inserted after Phase 06.26: Themeable column helpers (#356); explicitly assigned 06.29, approved decisions D-01–D-07, before the Phase 7 theme-surface freeze (URGENT)
 
 ## Deferred Items
 
@@ -1293,6 +1293,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T21:58:28.065021+00:00
-Stopped at: Phase 06.26 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-12T12:30:53.756Z
+Stopped at: Phase 06.29 context gathered; ready for planning
+Resume file: .planning/phases/06.29-themeable-column-helpers-356/06.29-CONTEXT.md

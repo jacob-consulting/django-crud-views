@@ -401,7 +401,42 @@ class ChoiceTracerForm(ConditionalGroupFormMixin, BrowserRowForm):
 
     class Meta:
         model = ConditionalPersistenceRecord
-        fields = ["blank_text", "nullable_text"]
+        fields = ["blank_text", "nullable_text", "number", "flag", "active"]
+
+    def __init__(
+        self, *args, widgets=False, widget="select", numeric=False, disabled=False, adversarial=False, **kwargs
+    ):
+        self.widgets = widgets
+        if widgets:
+            tokens = [0, 1, 2] if numeric else ["consumer", "wholesale", "distributor"]
+            if adversarial:
+                tokens = ["consumer", '<img src=x onerror="window.choiceInjected=true">', "distributor"]
+            self.choice_toggles = [
+                ValueToggle("blank_text", values=tokens[1:]),
+                ValueToggle("blank_text", values=[tokens[1]]),
+                ValueToggle("blank_text", values=[tokens[0]]),
+            ]
+            self.cv_conditional_groups = [
+                ConditionalGroup(self.choice_toggles[0], ["nullable_text"]),
+                ConditionalGroup(self.choice_toggles[1], ["number"]),
+                ConditionalGroup(self.choice_toggles[2], ["flag"], required=[], empty_values={"flag": False}),
+            ]
+        super().__init__(*args, **kwargs)
+        if widgets:
+            options = {
+                "choices": [(value, str(value)) for value in tokens],
+                "widget": forms.RadioSelect if widget == "radio" else forms.Select,
+                "disabled": disabled,
+            }
+            self.fields["blank_text"] = (
+                forms.TypedChoiceField(coerce=int, **options)
+                if numeric and not adversarial
+                else forms.ChoiceField(**options)
+            )
+            self.fields["number"].disabled = disabled
+        else:
+            for name in ("number", "flag", "active"):
+                self.fields.pop(name)
 
     @property
     def helper(self):
@@ -411,6 +446,14 @@ class ChoiceTracerForm(ConditionalGroupFormMixin, BrowserRowForm):
         return helper
 
     def get_layout_fields(self):
+        if self.widgets:
+            return [
+                "blank_text",
+                ToggleGroup(self.choice_toggles[0], "nullable_text", legend="Shared business details"),
+                ToggleGroup(self.choice_toggles[1], "number"),
+                ToggleGroup(self.choice_toggles[2], "flag", legend="Consumer details"),
+                "active",
+            ]
         return ["blank_text", ToggleGroup(self.choice_toggle, "nullable_text", legend="Wholesale details")]
 
 
@@ -716,7 +759,7 @@ for mode in ("stock", "native"):
                 "filesUrl": f"/files/{mode}/{profile.pk}/",
             }
         )
-for model in (Publisher, Profile, Book, BookNote, BrowserMemo, BrowserConditionalRecord):
+for model in (Publisher, Profile, Book, BookNote, BrowserMemo, BrowserConditionalRecord, ConditionalPersistenceRecord):
     watch(model)
 events.clear()
 
@@ -794,18 +837,48 @@ def choice_edit(request, mode, pk):
     if not request.user.is_superuser:
         return HttpResponse(status=403)
     instance = ConditionalPersistenceRecord.objects.get(pk=pk)
+    widgets = request.GET.get("widgets") == "1"
+    numeric = request.GET.get("numeric") == "1"
+    if request.GET.get("harness"):
+        query = request.GET.copy()
+        query.pop("harness")
+        return TemplateResponse(
+            request,
+            "conditional_formsets/page.html",
+            {
+                "harness": True,
+                "theme": mode,
+                "target": request.path + "?" + query.urlencode(),
+            },
+        )
+    if request.GET.get("create"):
+        instance = ConditionalPersistenceRecord(parent=instance.parent, blank_text="0" if numeric else "consumer")
     form = ChoiceTracerForm(
-        None, data=request.POST if request.method == "POST" else None, instance=instance, prefix="choice-0"
+        None,
+        data=request.POST if request.method == "POST" else None,
+        instance=instance,
+        prefix="choice[<]-0" if widgets else "choice-0",
+        widgets=widgets,
+        widget=request.GET.get("widget", "select"),
+        numeric=numeric,
+        disabled=request.GET.get("disabled") == "1",
+        adversarial=request.GET.get("adversarial") == "1",
     )
     if request.method == "POST" and form.is_valid():
         form.save()
         return JsonResponse({"saved": True})
-    return TemplateResponse(
-        request,
-        "conditional_formsets/page.html",
-        {"form": form, "theme": mode, "compact_fixture": True},
-        status=422 if request.method == "POST" else 200,
-    )
+    token = theme.set(mode)
+    try:
+        response = TemplateResponse(
+            request,
+            "conditional_formsets/page.html",
+            {"form": form, "theme": mode, "compact_fixture": True, "modal": cv_is_modal_request(request)},
+            status=422 if request.method == "POST" else 200,
+        )
+        response.render()
+        return response
+    finally:
+        theme.reset(token)
 
 
 def signin(request):

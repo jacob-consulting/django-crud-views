@@ -215,3 +215,184 @@ class ConditionalSeedTest(TestCase):
         )
         self.assertGreater(Registration.objects.count(), 0)
         self.assertGreater(Speaker.objects.count(), 0)
+
+
+class CustomerCrudTest(ConditionalTestCase):
+    def test_create_routes_render_native_widgets(self):
+        from django.urls import get_resolver
+        from lxml import html
+
+        self.assertTrue(
+            all(f"customer-{key}" in get_resolver().reverse_dict for key in ("create", "radio_create")),
+            "Both Customer create routes must be registered",
+        )
+        for key, selector in (("create", "select[name=kind]"), ("radio_create", "input[type=radio][name=kind]")):
+            with self.subTest(editor=key):
+                response = self.client.get(reverse(f"customer-{key}"))
+                self.assertEqual(response.status_code, 200)
+                document = html.fromstring(response.content)
+                controls = document.cssselect(selector)
+                self.assertEqual(len(controls), 1 if key == "create" else 3)
+                self.assertEqual(len(document.cssselect("[cv-data-toggle-group]")), 4)
+                for legend in ("Consumer preferences", "Business details", "Wholesale terms", "Distribution details"):
+                    self.assertContains(response, legend)
+
+    def test_editors_share_declarations_and_layout(self):
+        from conditional.views import CustomerForm, CustomerRadioForm
+
+        self.assertIs(CustomerForm.cv_conditional_groups, CustomerRadioForm.cv_conditional_groups)
+        self.assertIs(CustomerForm.get_layout_fields, CustomerRadioForm.get_layout_fields)
+        self.assertEqual(len(CustomerForm.cv_conditional_groups), 4)
+
+    def test_both_editors_create_all_three_options(self):
+        from conditional.models import Customer
+
+        for editor in ("create", "radio_create"):
+            for kind in ("consumer", "wholesale", "distributor"):
+                with self.subTest(editor=editor, kind=kind):
+                    url = reverse(f"customer-{editor}")
+                    payload = form_payload(self.client.get(url))
+                    name = f"{editor}-{kind}"
+                    payload.update(
+                        name=name,
+                        kind=kind,
+                        consumer_note="Preference",
+                        company="Shared Co",
+                        price_tier="B",
+                        payment_terms="net60",
+                        wholesale_terms="0",
+                        distribution_region="North",
+                    )
+                    response = self.client.post(url, payload)
+                    self.assertEqual(response.status_code, 302)
+                    customer = Customer.objects.get(name=name)
+                    self.assertEqual(customer.kind, kind)
+                    self.assertEqual(customer.consumer_note, "Preference" if kind == "consumer" else None)
+                    self.assertEqual(customer.company, None if kind == "consumer" else "Shared Co")
+                    self.assertEqual(customer.price_tier, None if kind == "consumer" else "B")
+                    self.assertEqual(customer.payment_terms, "unset" if kind == "consumer" else "net60")
+                    self.assertEqual(customer.wholesale_terms, 0 if kind == "wholesale" else None)
+                    self.assertEqual(customer.distribution_region, "North" if kind == "distributor" else "")
+
+    def test_shared_retention_then_clearing_persists_and_reopens(self):
+        from conditional.models import Customer
+
+        for editor in ("update", "radio_update"):
+            with self.subTest(editor=editor):
+                customer = Customer.objects.create(
+                    name=editor,
+                    kind="wholesale",
+                    company="Shared Co",
+                    price_tier="B",
+                    payment_terms="net30",
+                    wholesale_terms=60,
+                )
+                url = reverse(f"customer-{editor}", kwargs={"pk": customer.pk})
+                payload = form_payload(self.client.get(url))
+                payload.update(kind="distributor", distribution_region="West", wholesale_terms="forged")
+                self.assertEqual(self.client.post(url, payload).status_code, 302)
+                customer.refresh_from_db()
+                self.assertEqual(
+                    (customer.company, customer.price_tier, customer.payment_terms), ("Shared Co", "B", "net30")
+                )
+                self.assertIsNone(customer.wholesale_terms)
+                self.assertEqual(customer.distribution_region, "West")
+                reopened = self.client.get(url)
+                self.assertEqual(reopened.context["form"]["kind"].value(), "distributor")
+                self.assertIsNone(reopened.context["form"]["wholesale_terms"].value())
+                payload = form_payload(reopened)
+                payload.update(kind="consumer", consumer_note="Keep this")
+                self.assertEqual(self.client.post(url, payload).status_code, 302)
+                customer.refresh_from_db()
+                self.assertEqual(customer.name, editor)
+                self.assertEqual(customer.consumer_note, "Keep this")
+                self.assertIsNone(customer.company)
+                self.assertIsNone(customer.price_tier)
+                self.assertEqual(customer.payment_terms, "unset")
+                self.assertIsNone(customer.wholesale_terms)
+                self.assertEqual(customer.distribution_region, "")
+                reopened = self.client.get(url)
+                self.assertIsNone(reopened.context["form"]["price_tier"].value())
+                self.assertEqual(reopened.context["form"]["payment_terms"].value(), "unset")
+                detail = self.client.get(reverse("customer-detail", kwargs={"pk": customer.pk}))
+                for visible in (editor, "Keep this", "None", "unset", '"" (blank)'):
+                    self.assertContains(detail, visible, html=False)
+
+    def test_inactive_omitted_and_forged_values_clear_defaults(self):
+        from conditional.models import Customer
+
+        for editor in ("create", "radio_create"):
+            for forged in (False, True):
+                with self.subTest(editor=editor, forged=forged):
+                    name = f"{editor}-{forged}"
+                    payload = {"name": name, "kind": "consumer"}
+                    if forged:
+                        payload.update(
+                            company="forged",
+                            price_tier="forged",
+                            payment_terms="forged",
+                            wholesale_terms="forged",
+                            distribution_region="forged",
+                        )
+                    self.assertEqual(self.client.post(reverse(f"customer-{editor}"), payload).status_code, 302)
+                    customer = Customer.objects.get(name=name)
+                    self.assertIsNone(customer.company)
+                    self.assertIsNone(customer.price_tier)
+                    self.assertIsNone(customer.wholesale_terms)
+                    self.assertEqual(customer.payment_terms, "unset")
+                    self.assertEqual(customer.distribution_region, "")
+
+    def test_invalid_active_fields_and_controller_never_save(self):
+        from conditional.models import Customer
+
+        for editor in ("update", "radio_update"):
+            customer = Customer.objects.create(name=editor, kind="consumer", consumer_note="Saved")
+            url = reverse(f"customer-{editor}", kwargs={"pk": customer.pk})
+            before = Customer.objects.values().get(pk=customer.pk)
+            for kind, required in (
+                ("wholesale", {"company", "price_tier", "wholesale_terms"}),
+                ("distributor", {"company", "price_tier", "distribution_region"}),
+                ("invalid", {"kind"}),
+                ("", {"kind"}),
+            ):
+                with self.subTest(editor=editor, kind=kind):
+                    response = self.client.post(url, {"name": "Changed", "kind": kind, "payment_terms": "unset"})
+                    self.assertEqual(response.status_code, 200)
+                    self.assertTrue(required <= response.context["form"].errors.keys())
+                    self.assertEqual(Customer.objects.values().get(pk=customer.pk), before)
+
+    def test_permission_checks_cover_both_editors(self):
+        from project.seeding import grant_model_perms
+
+        from conditional.models import Customer
+
+        customer = Customer.objects.create(name="Protected")
+        user = get_user_model().objects.create_user(username="ordinary")
+        self.client.force_login(user)
+        for action in ("create", "radio_create", "update", "radio_update"):
+            kwargs = {"pk": customer.pk} if "update" in action else {}
+            url = reverse(f"customer-{action}", kwargs=kwargs)
+            self.assertEqual(self.client.get(url).status_code, 403)
+            self.assertEqual(self.client.post(url, {"name": "Forged", "kind": "consumer"}).status_code, 403)
+        self.assertEqual(Customer.objects.count(), 1)
+        customer.refresh_from_db()
+        self.assertEqual(customer.name, "Protected")
+        grant_model_perms(user, Customer)
+        for action in ("create", "radio_create", "update", "radio_update"):
+            kwargs = {"pk": customer.pk} if "update" in action else {}
+            url = reverse(f"customer-{action}", kwargs=kwargs)
+            self.assertEqual(self.client.get(url).status_code, 200)
+            self.assertEqual(self.client.post(url, {"name": "Granted", "kind": "consumer"}).status_code, 302)
+
+    def test_radio_posts_retain_csrf_protection(self):
+        from django.test import Client
+
+        from conditional.models import Customer
+
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(self.admin)
+        customer = Customer.objects.create(name="Protected")
+        for action in ("radio_create", "radio_update"):
+            kwargs = {"pk": customer.pk} if action == "radio_update" else {}
+            response = client.post(reverse(f"customer-{action}", kwargs=kwargs), {"kind": "consumer"})
+            self.assertEqual(response.status_code, 403)

@@ -34,6 +34,11 @@
       "status": "complete"
     },
     {
+      "number": "06.14",
+      "name": "Card template insertion blocks and cards-first ViewSets (#325)",
+      "status": "complete"
+    },
+    {
       "number": "6.1",
       "name": "Cancel form button as a link",
       "status": "complete"
@@ -44,63 +49,68 @@
       "status": "complete"
     },
     {
-      "number": "6.3",
-      "name": "Delete protection and write-boundary integrity",
+      "number": "06.3",
+      "name": "Delete protection and write-boundary integrity \u2014 issue #282",
       "status": "complete"
     },
     {
-      "number": "6.4",
+      "number": "06.4",
       "name": "Conditional and formset correctness/lifecycle",
       "status": "complete"
     },
     {
-      "number": "6.5",
+      "number": "06.5",
       "name": "Remaining presentation contracts and decided cleanup",
       "status": "complete"
     },
     {
-      "number": "6.6",
+      "number": "06.6",
       "name": "Theme-adoption seams from the Tabler sync",
       "status": "complete"
     },
     {
-      "number": "6.7",
+      "number": "06.7",
       "name": "Dynamic cancel navigation and origin query state",
       "status": "complete"
     },
     {
-      "number": "6.8",
-      "name": "Action tooltips: short captions and visible-label suppression",
+      "number": "06.8",
+      "name": "Action tooltips: short captions and visible-label suppression (#304)",
       "status": "complete"
     },
     {
-      "number": "6.9",
+      "number": "06.9",
       "name": "Protected delete-preview object links",
       "status": "complete"
     },
     {
-      "number": "6.10",
+      "number": "06.10",
       "name": "Simplify protected-object previews and cap total displayed objects",
       "status": "complete"
     },
     {
-      "number": "6.13",
-      "name": "Workflow permissions: opt-in per-transition access",
+      "number": "06.13",
+      "name": "Workflow permissions: document and test opt-in per-transition access (#320)",
       "status": "complete"
     },
     {
-      "number": "6.13.1",
-      "name": "Workflow validation and execution",
+      "number": "06.13.1",
+      "name": "Workflow validation and execution: business blockers, transition buttons, and reusable helper (#322)",
       "status": "complete"
     },
     {
-      "number": "6.14",
-      "name": "Card template insertion blocks and cards-first ViewSets",
+      "number": "06.15",
+      "name": "Polymorphic: capitalize type labels and validate per-model detail groups; update tabler-test (#326)",
       "status": "complete"
     },
     {
-      "number": "6.15",
-      "name": "Polymorphic labels and per-model detail groups",
+      "number": "06.16",
+      "name": "Object detail: choice labels, help-text policy, empty values, and composition guidance (#327)",
+      "status": "complete"
+    },
+    {
+      "number": "06.17",
+      "name": "Object detail: open the first accordion group and initialize tabs through theme adapters (#328)",
       "status": "complete"
     },
     {
@@ -110,27 +120,52 @@
     },
     {
       "number": "06.19",
-      "name": "Table honours Meta.sequence and omits the Actions column for None",
+      "name": "Table honours Meta.sequence and omits the Actions column for `cv_list_actions = None` (#337)",
       "status": "complete"
     },
     {
       "number": "06.20",
-      "name": "ViewSet verbose_name override that every default label follows",
+      "name": "ViewSet `verbose_name` / `verbose_name_plural` override that every default label follows (#338)",
       "status": "complete"
     },
     {
       "number": "06.21",
-      "name": "Snippet context exposes view and parent_object",
+      "name": "Snippet context exposes `view` and `parent_object` (#339)",
+      "status": "complete"
+    },
+    {
+      "number": "06.22",
+      "name": "Custom permissions: `Meta.permissions` recipe and startup check for `cv_permission` and ancestor pair keys (#341)",
       "status": "complete"
     },
     {
       "number": "06.23",
-      "name": "Explicit header-icon suppression with Icon constants",
+      "name": "Explicit header-icon suppression with Icon constants (#329)",
       "status": "complete"
     },
     {
       "number": "06.24",
-      "name": "Opt-in compact formsets",
+      "name": "Opt-in compact formsets: shared desktop headings and nested mobile cards (#347)",
+      "status": "complete"
+    },
+    {
+      "number": "06.25",
+      "name": "Issue #349",
+      "status": "complete"
+    },
+    {
+      "number": "06.25.1",
+      "name": "Issue #346",
+      "status": "complete"
+    },
+    {
+      "number": "06.26",
+      "name": "Issue #351",
+      "status": "complete"
+    },
+    {
+      "number": "06.27",
+      "name": "Choice-driven conditional groups (#354)",
       "status": "complete"
     },
     {
@@ -146,8 +181,8 @@
   ],
   "next": {
     "command": "$gsd-progress --next",
-    "label": "Advance to the next step (plan phase 06.27)",
-    "reason": "Phase 42 of 44 — needs a plan"
+    "label": "Advance to the next step (plan phase 7)",
+    "reason": "Phase 7 \u2014 needs a plan"
   },
-  "updated_at": "2026-11-12T13:36:03.589Z"
+  "updated_at": "2026-11-12T14:14:02.994487+00:00"
 }

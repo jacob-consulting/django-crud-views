@@ -4,9 +4,10 @@ import pytest
 from crispy_forms.layout import Row
 from django.forms.models import inlineformset_factory
 from django.test import RequestFactory
+from pydantic import ValidationError
 
 from crud_views.lib.conditional.formset import ConditionalFormSet
-from crud_views.lib.conditional.toggle import ModelFieldToggle
+from crud_views.lib.conditional.toggle import ModelFieldToggle, UIFieldToggle, ValueToggle
 from crud_views.lib.crispy import Column8, CrispyModelForm
 from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
 from tests.test1.app.models import Profile, ProfileItem
@@ -17,6 +18,27 @@ pytestmark = pytest.mark.django_db
 def test_conditional_formset_defaults_to_skip():
     cond = ConditionalFormSet(toggle=ModelFieldToggle("with_items"))
     assert cond.on_off == "skip"
+
+
+@pytest.mark.parametrize("on_off", ["skip", "purge"])
+def test_value_formset_rejected(on_off):
+    with pytest.raises(ValidationError, match=r"ValueToggle.*ConditionalGroup.*checkbox"):
+        ConditionalFormSet(toggle=ValueToggle("kind", ["a"]), on_off=on_off)
+
+
+@pytest.mark.parametrize("toggle_class", [ModelFieldToggle, UIFieldToggle])
+@pytest.mark.parametrize("on_off", ["skip", "purge"])
+@pytest.mark.parametrize("commit", [False, True])
+def test_checkbox_formset_skip_purge_commit_contract(toggle_class, on_off, commit):
+    profile = Profile.objects.create(name="checkbox contract")
+    item = ProfileItem.objects.create(profile=profile, label="preserved unless purged")
+    formsets, main, _ = _make(on_off, "", profile=profile)
+    declaration = ConditionalFormSet(toggle=toggle_class("with_items"), on_off=on_off)
+    formsets.x_formsets[0].formset.conditional = declaration
+    formsets.apply_conditional(main)
+    assert formsets.all_valid()
+    formsets.save(commit=commit)
+    assert ProfileItem.objects.filter(pk=item.pk).exists() is (not commit or on_off == "skip")
 
 
 def test_apply_conditional_marks_top_level_inactive_when_off(profile_formsets_off):

@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="29" skipped="0" tests="57" time="1.795" timestamp="2026-11-12T11:36:52.445254+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_fixture_omitted_fields_defaults" time="0.313" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[False-omitted-nullable_text_choice-None]" time="0.003"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[False-forged-nullable_text_choice-None]" time="0.315"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[False-forged-blank_text_choice-]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[False-omitted-blank_text_choice-]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[False-forged-nullable_integer_choice-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[False-omitted-nullable_integer_choice-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[True-omitted-nullable_text_choice-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[False-empty-nullable_text_choice-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[False-empty-blank_text_choice-]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[True-omitted-blank_text_choice-]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[False-empty-nullable_integer_choice-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[True-omitted-nullable_integer_choice-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[True-empty-blank_text_choice-]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[True-empty-nullable_text_choice-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[True-empty-nullable_integer_choice-None]" time="0.003"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_required_needs_explicit_even_with_default[False-required_integer_choice]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_required_needs_explicit_even_with_default[True-required_text_choice]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_required_needs_explicit_even_with_default[True-required_integer_choice]" time="0.002" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_explicit_native_values[nullable_text_choice-None-None]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_explicit_native_values[nullable_text_choice--]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_explicit_native_values[required_text_choice-B-B]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[True-forged-nullable_text_choice-None]" time="0.003"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_explicit_native_values[required_integer_choice-False-0]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_explicit_native_values[required_integer_choice-0-0]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_disabled_field_wins[required_text_choice-A-B]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_disabled_field_wins[required_integer_choice-1-0]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_disabled_controller[on-B]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:686: in test_choice_clear_matrix_disabled_controller
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[True-forged-blank_text_choice-]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'blank_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_disabled_controller[off-None]" time="0.003"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:686: in test_choice_clear_matrix_disabled_controller
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix[True-forged-nullable_integer_choice-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:625: in test_choice_clear_matrix
+    assert form.is_valid(), form.errors
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_integer_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_matrix_required_needs_explicit_even_with_default[False-required_text_choice]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_active[-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:700: in test_choice_clear_native_validation_active
+    assert form.is_valid() is valid
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_active[B-required1]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:700: in test_choice_clear_native_validation_active
+    assert form.is_valid() is valid
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_active[-required1]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:700: in test_choice_clear_native_validation_active
+    assert form.is_valid() is valid
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_active[invalid-None]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:700: in test_choice_clear_native_validation_active
+    assert form.is_valid() is valid
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_active[invalid-required1]" time="0.002"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:700: in test_choice_clear_native_validation_active
+    assert form.is_valid() is valid
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_active[B-None]" time="0.005"><failure message="django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.">tests/test1/test_conditional_persistence.py:700: in test_choice_clear_native_validation_active
+    assert form.is_valid() is valid
+           ^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:206: in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:201: in errors
+    self.full_clean()
+src/crud_views/lib/conditional/group.py:200: in full_clean
+    return super().full_clean()
+           ^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:338: in full_clean
+    self._clean_form()
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/forms/forms.py:354: in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+src/crud_views/lib/conditional/group.py:188: in clean
+    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
+src/crud_views/lib/conditional/group.py:111: in resolve_conditional_empty_value
+    raise ImproperlyConfigured(
+E   django.core.exceptions.ImproperlyConfigured: Conditional group 'kind' field 'nullable_text_choice' has no supported automatic empty value; configure empty_values explicitly.</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_invariants[model-clean]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_invariants[constraint]" time="0.004" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_custom_pairs_explicit_only[form]" time="0.002" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_custom_pairs_explicit_only[model]" time="0.001" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_custom_pairs_explicit_only[conversion]" time="0.001" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_custom_pairs_explicit_only[save]" time="0.001" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_custom_pairs_explicit_only[coerce]" time="0.001" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_custom_pairs_explicit_only[scalar]" time="0.001" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_custom_hooks_explicit_persist[conversion]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_custom_hooks_explicit_persist[save]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_invariants[form-clean]" time="0.003" /><testcase classname="tests.test1.test_conditional_checks" name="test_choice_clear_matrix_static_admission[nullable_text_choice-True]" time="0.001"><failure message="AssertionError: assert ['crud_views.E312'] == []&#10;  &#10;  Left contains one more item: 'crud_views.E312'&#10;  Use -v to get more diff">tests/test1/test_conditional_checks.py:573: in test_choice_clear_matrix_static_admission
+    assert [error.id for error in errors] == ([] if supported else ["crud_views.E312"])
+E   AssertionError: assert ['crud_views.E312'] == []
+E     
+E     Left contains one more item: 'crud_views.E312'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_invariants[invalid-sentinel]" time="0.003" /><testcase classname="tests.test1.test_conditional_persistence" name="test_choice_clear_native_validation_invariants[unique]" time="0.003" /><testcase classname="tests.test1.test_conditional_checks" name="test_choice_clear_matrix_static_admission[nullable_integer_choice-True]" time="0.001"><failure message="AssertionError: assert ['crud_views.E312'] == []&#10;  &#10;  Left contains one more item: 'crud_views.E312'&#10;  Use -v to get more diff">tests/test1/test_conditional_checks.py:573: in test_choice_clear_matrix_static_admission
+    assert [error.id for error in errors] == ([] if supported else ["crud_views.E312"])
+E   AssertionError: assert ['crud_views.E312'] == []
+E     
+E     Left contains one more item: 'crud_views.E312'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_choice_clear_matrix_static_admission[blank_text_choice-True]" time="0.001"><failure message="AssertionError: assert ['crud_views.E312'] == []&#10;  &#10;  Left contains one more item: 'crud_views.E312'&#10;  Use -v to get more diff">tests/test1/test_conditional_checks.py:573: in test_choice_clear_matrix_static_admission
+    assert [error.id for error in errors] == ([] if supported else ["crud_views.E312"])
+E   AssertionError: assert ['crud_views.E312'] == []
+E     
+E     Left contains one more item: 'crud_views.E312'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test1.test_conditional_checks" name="test_choice_clear_matrix_static_admission[required_integer_choice-False]" time="0.001" /><testcase classname="tests.test1.test_conditional_checks" name="test_choice_clear_plain_form_requires_explicit_value" time="0.001" /><testcase classname="tests.test1.test_conditional_checks" name="test_choice_clear_matrix_static_admission[required_text_choice-False]" time="0.001" /></testsuite></testsuites>

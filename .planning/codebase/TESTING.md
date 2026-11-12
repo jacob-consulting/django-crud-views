@@ -163,8 +163,18 @@ PYTHONPATH="$PWD/src:$PWD" npm run test:integration
 
 `CV_FRAGMENT_PYTHON` must be an executable Python with Django test dependencies; select the appropriate prepared runtime when its path differs. The harness validates that interpreter and fails on missing or unusable values; it does not install packages or silently skip the Django bridge (`docs/reference/javascript.md`, `tests/js-integration/formset.test.js`).
 
-## Latest Ship Gate Evidence
+## Ship Gate Evidence
 
-- Phase 06.28 ship verification passed 12,519 Python tests using `-n 4` on Python 3.12.3 / Django 6.1.2, and 401 JavaScript tests. `mkdocs build --strict`, `ruff check`, and `ruff format --check` passed. This is the recorded ship environment only; it does not establish that the supported Python/Django Nox matrix was run.
+- Before integrating Phase 06.27, Phase 06.28 ship verification passed 12,519 Python tests using `-n 4` on Python 3.12.3 / Django 6.1.2, and 401 JavaScript tests. `mkdocs build --strict`, `ruff check`, and `ruff format --check` passed. This predates integration of Phase 06.27 and is the recorded ship environment only; it does not establish that the supported Python/Django Nox matrix was run.
+
+- After integrating Phase 06.27 for PR #358, the combined tree passed 12,710 Python tests with four workers (Python 3.12.3 / Django 6.1.2), 438 JavaScript tests, strict MkDocs and Ruff. The phase06.28 verifier independently reran all 18 recipe cases; browser and full supported-runtime matrix evidence remain separate.
+
+## Choice-Driven Conditional Groups (Phase 06.27)
+
+- Python conditional-group coverage is divided by contract among `tests/test1/test_conditional_toggle.py`, `tests/test1/test_conditional_group.py`, `tests/test1/test_conditional_checks.py`, `tests/test1/test_conditional_persistence.py`, and `tests/test1/test_conditional_layout.py`. Keep toggle parsing, form validation, configuration checks, persistence, and rendering assertions in their corresponding modules.
+- For choice activation, cover native `Select` and `RadioSelect`, string and integer tokens, falsy values such as zero, and prefixed forms. Verify invalid or missing cleaned controller data cannot activate a group (`tests/test1/test_conditional_toggle.py`, `tests/test1/test_conditional_group.py`).
+- Persistence assertions should query saved model state as well as `cleaned_data`. Cover inactive forged values, explicit falsy values, model-choice inference, nullable and blankable clearing, defaults, and inherited model/form validation (`tests/test1/test_conditional_persistence.py`).
+- Browser checks separate stock/native choice widgets from lifecycle behavior. Generate records with `tests/browser/conditional-formsets.cjs` and validate them with `tests/browser/conditional-formsets-evidence.test.cjs`; assert exact case matrices and observed values.
+- Phase 06.27's pre-fix compatibility pass recorded the full Python suite at **12,700 passed, 1 existing skip**, 420 full JS tests, examples, and fragment integration. These are historical pre-fix results. After review fixes, targeted conditional tests recorded **364 passed on each of Django 4.2, 5.2, and 6.0**, with 92 focused JS toggle tests and targeted evidence/browser/source checks. The full Python suite was not rerun after fixes; do not present its historical count as post-fix verification. See `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-COMPATIBILITY.md` and `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-VERIFICATION.md` for exact provenance and limits.
 
 *Testing analysis: 2026-11-12*

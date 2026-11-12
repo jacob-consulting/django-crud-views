@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
-from .toggle import ToggleSource
+from .toggle import ToggleSource, ValueToggle
 
 
 class ConditionalFormSet(BaseModel, arbitrary_types_allowed=True):
@@ -17,3 +17,13 @@ class ConditionalFormSet(BaseModel, arbitrary_types_allowed=True):
 
     toggle: ToggleSource
     on_off: Literal["skip", "purge"] = "skip"
+
+    @field_validator("toggle")
+    @classmethod
+    def reject_value_toggle(cls, toggle):
+        if isinstance(toggle, ValueToggle):
+            raise ValueError(
+                "ValueToggle supports ConditionalGroup only; whole-formset activation requires "
+                "a checkbox ModelFieldToggle or UIFieldToggle."
+            )
+        return toggle

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.442" timestamp="2026-11-12T11:44:02.942236+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_conditional_group" name="test_value_group_inherited_clean_replaces_cleaned_mapping" time="0.330"><failure message="AssertionError: assert {'detail': 'forged'} == {'detail': ''}&#10;  &#10;  Differing items:&#10;  {'detail': 'forged'} != {'detail': ''}&#10;  Use -v to get more diff">def test_value_group_inherited_clean_replaces_cleaned_mapping():
+        class Parent(forms.Form):
+            kind = forms.ChoiceField(choices=[("a", "A")])
+            detail = forms.CharField()
+    
+            def clean(self):
+                # Django permits returning a replacement mapping, not only mutating it.
+                return {name: value for name, value in super().clean().items() if name != "kind"}
+    
+        class Child(ConditionalGroupFormMixin, Parent):
+            cv_conditional_groups = [ConditionalGroup(ValueToggle("kind", ["a"]), ["detail"])]
+    
+        form = Child(data={"kind": "a", "detail": "forged"})
+        assert form.is_valid(), form.errors
+&gt;       assert form.cleaned_data == {"detail": ""}
+E       AssertionError: assert {'detail': 'forged'} == {'detail': ''}
+E         
+E         Differing items:
+E         {'detail': 'forged'} != {'detail': ''}
+E         Use -v to get more diff
+
+tests/test1/test_conditional_group.py:314: AssertionError</failure></testcase></testsuite></testsuites>

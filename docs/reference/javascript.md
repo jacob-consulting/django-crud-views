@@ -305,12 +305,21 @@ All three are bubbling `CustomEvent`s you can listen for on `document`:
 ## Conditional and formset initialization
 
 `cv.initConditional(root=document)` and `cv.initFormsets(root=document)` are public, repeat-safe initializers.
-Accepted roots are a `Document`, an `Element` (including the form, group or checkbox itself), or a `DocumentFragment`.
+Accepted roots are a `Document`, an `Element` (including the form, group or controller itself), or a `DocumentFragment`.
 They discover the root/descendant/owning forms; formset controllers are scoped to each actual form. Calling again
 does not duplicate handlers and conditional initialization synchronizes current state. An initially unresolved
 conditional group leaves its own presentation unmanaged; a formerly bound group retains its last owned state while
 missing or ambiguous. Ancestor and external disabled ownership still compose. Restore exactly one checkbox before
 retrying to apply its current checked state. A late-loaded script also initializes an already-ready document.
+
+Value groups carry escaped JSON `cv-data-toggle-values`. They resolve one native single select or the complete
+same-name native radio set through actual owning-form identity, including `form=` controls. Mixed kinds or duplicate
+selects are ambiguous and unmanaged; separate forms remain independent. An unchecked radio set is inactive.
+Every peer participates in rebinding and unload cleanup. Exact string membership includes numeric `"0"`; changing
+between two matching choices retains shared fields and their disabled ownership. Native reset resynchronizes after
+defaults are restored; canceled resets leave state untouched. Hiding focused content returns focus to the usable
+controller (checked radio first, then a usable peer), then an ancestor controller or the owning form. Existing modal
+Cancel/focus behavior remains in place. This adds no events; use the same initializers and lifecycle hooks below.
 
 For markup inserted by your own code, run this from an external script after both package scripts are loaded, with
 `root` referring to your inserted element or its owning form:

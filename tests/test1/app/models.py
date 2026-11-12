@@ -275,6 +275,13 @@ class ConditionalPersistenceRecord(models.Model):
     nullable_text = models.CharField(max_length=100, null=True, blank=True, default="default text")
     blank_text = models.CharField(max_length=100, blank=True, default="default text")
     unique_text = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    nullable_text_choice = models.CharField(
+        max_length=20, choices=[("A", "A"), ("B", "B")], null=True, blank=True, default="A"
+    )
+    blank_text_choice = models.CharField(max_length=20, choices=[("A", "A"), ("B", "B")], blank=True, default="A")
+    required_text_choice = models.CharField(max_length=20, choices=[("A", "A"), ("B", "B")], default="A")
+    nullable_integer_choice = models.IntegerField(choices=[(0, "Zero"), (1, "One")], null=True, blank=True, default=1)
+    required_integer_choice = models.IntegerField(choices=[(0, "Zero"), (1, "One")], default=1)
     flag = models.BooleanField(default=True)
     nullable_flag = models.BooleanField(null=True, blank=True, default=True)
     number = models.IntegerField(null=True, blank=True, default=42)

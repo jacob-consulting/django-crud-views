@@ -94,6 +94,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ Independent empty-default conditional/formset legend class hooks, layered overrides and escaped nested fragment rendering — Phase 06.25.1
 
+- ✓ Choice-driven conditional groups with shared native dropdown/radio descriptors, bounded choice clearing and explicit overrides; Customer example with simple/complex navigation and reciprocal documentation — Phase 06.27; 22/22 verified, UAT 2/2.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -199,6 +201,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Legend styling reuses two empty class keys and existing template tags | Keeps themes independently overridable without changing runtime machinery | Validated (Phase 06.25.1) |
 
+| Reuse one ValueToggle descriptor in server policy and layout; keep choice inference bounded and explicit overrides authoritative | Maintains one traceable condition with native Django validation and no second engine | Validated (Phase 06.27) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -217,4 +221,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-12 after Phase 06.28*
+*Last updated: 2026-11-12 after Phases 06.27 and 06.28*

@@ -105,4 +105,11 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - Keep recipe wrappers delegating to the public adapter/factory. For the tooltip placement recipe, install factory adapters first, capture the existing `init`, apply only the context default when placement is absent, then delegate with the original options. Tests cover explicit and empty placement, non-context locations, cleanup, stale callbacks, replacement identity, missing components, and repeat initialization (`docs/reference/javascript.md`, `tests/js/adapters.test.js`).
 - Document both script-loading paths for recipes that initialize immediately: install before `DOMContentLoaded` while loading, or after adapter/factory wiring but before evaluating the initializer once the document is ready. State which changes affect future instances versus already-created instances (`docs/reference/javascript.md`).
 
+## Choice-Driven Conditional Groups (Phase 06.27)
+
+- Declare choice-driven groups with `ConditionalGroup(toggle=ValueToggle(field_name, values=[...]), fields=[...])`. Use explicit `empty_values` for values that cannot be inferred unambiguously from the model field (`src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/toggle.py`, `tests/test1/test_conditional_group.py`, `tests/test1/test_conditional_persistence.py`).
+- Keep server activation based on cleaned controller values; raw POST controls presentation only. Preserve existing `ModelFieldToggle` and `UIFieldToggle` behavior when extending choice support (`src/crud_views/lib/conditional/toggle.py`, `tests/test1/test_conditional_toggle.py`).
+- Conditional group field ownership must remain disjoint. Test overlap and clearing conflicts with declarations in both orders (`tests/test1/test_conditional_checks.py`).
+- Cover native `Select` and `RadioSelect` tokens as strings and integers, including zero, with prefixed and unprefixed forms (`tests/test1/test_conditional_toggle.py`, `tests/test1/test_conditional_group.py`).
+
 *Convention analysis: 2026-11-12*

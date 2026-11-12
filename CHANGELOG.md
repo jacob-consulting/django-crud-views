@@ -589,6 +589,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Choice-driven conditional groups** (#354): share `ValueToggle` descriptors between server groups and crispy
+  layouts for native dropdown/radio controls, including groups shared by several choices. Standard choice fields
+  support bounded automatic clearing and authoritative explicit `empty_values`. The Customer example demonstrates
+  both editors and saved values. See [Choice-driven groups](docs/reference/conditional.md#choice-driven-groups).
+
 - **Independent legend class hooks** (#346): `conditional:legend` and `formset:legend` use the existing
   theme/project class registry for ToggleGroup and formset title legends, both empty by default. Full nested
   formsets inherit the hook in classic and compact layouts; row-only fragments keep their existing boundaries.

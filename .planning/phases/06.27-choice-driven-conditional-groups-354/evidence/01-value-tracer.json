@@ -1,0 +1,248 @@
+{
+  "captured": "2026-11-12T11:25:50.009Z",
+  "revision": "61f4eb4821913515c05f67cc42a77faae69a7e68",
+  "sourceHashes": {
+    ".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/.gitignore": "88d1099650ee449edf68179321b1fbfb215d89a5170e36a4d6371141027bc9dd",
+    "package-lock.json": "f3ea8ff7293a09b93ef84305a784ed1a13760aed26b140940a606218cc6462af",
+    "src/crud_views/lib/conditional/__init__.py": "9638fcc8287f2ebf09c18fd2a6a484222e821660b63fa76c845126cbb95de0f5",
+    "src/crud_views/lib/conditional/formset.py": "c900b5994c2492c5d3a5b3284d7517ea21eb2a7655ed2d0bf3d7ade98e81afa6",
+    "src/crud_views/lib/conditional/group.py": "e233775a91b1037feea36a96820b8b3766d557ca0369120076515655e2817ea2",
+    "src/crud_views/lib/conditional/layout.py": "3b9b437ee4e855c52a8f897b6f89af9c87be914997bcb432ef0c39fcecedff6c",
+    "src/crud_views/lib/conditional/toggle.py": "a313ddbf70fbaf58e23532fa267fba31e86f23b49c3f2704833bebf7f6a34fce",
+    "src/crud_views/lib/formsets/__init__.py": "2fdf0da93267781d818af1dc00344083d2d2579508390c6a682ad86c92a26e72",
+    "src/crud_views/lib/formsets/compact.py": "01899c7a619457efcfd4b093cb8050aea5a2368736af10c60f8d3854fea06a81",
+    "src/crud_views/lib/formsets/formsets.py": "d4cdee62b1edbe58794b4bf671cd93ccf756603e4e2e50f3162288fd93242cd7",
+    "src/crud_views/lib/formsets/inline_formset.py": "55f5866844e04df5efe2ec5b550ae1252e970220b0901dc6631e8be0fb024195",
+    "src/crud_views/lib/formsets/layout.py": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937",
+    "src/crud_views/lib/formsets/mixins.py": "a7c424b9e86a9aef3cecd094c2680fe9dcd47607257e5fef1e9742f2e6f0985c",
+    "src/crud_views/lib/formsets/render_tree.py": "c90eeb13961690e867fe691c7264f4d0b356ee85881496a6f46119ad7427d893",
+    "src/crud_views/lib/view/base.py": "0d532a392a284cea68045488e680610f0528ca940d3bc7eb258ca8e9327ddc0d",
+    "src/crud_views/lib/views/mixins.py": "2c4ad51e4d3e097053306b3234c09546541128ea2312ae9d34b6f1fc96dd8e50",
+    "src/crud_views/lib/views/update.py": "bd9b274bc616f25c40f1d7ac964f48666f4d860a6d1f039c6f0798f7090a1dc7",
+    "src/crud_views/static/crud_views/css/formset.css": "4b5fd32545077a17c2bd2a2af4d387256c9039e22dcd765494267587c4d0ba84",
+    "src/crud_views/static/crud_views/js/adapters.js": "06eed642fdf55daa7aa6afea2099f25c69ac153062d926c707e34c74316eaf2b",
+    "src/crud_views/static/crud_views/js/formset.js": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
+    "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+    "src/crud_views/static/crud_views/js/toggle.js": "410cf04bc779042b246fb4a92254aaca10999ede060e67a88c483c255c75a84b",
+    "src/crud_views/templates/crud_views/conditional/toggle_group.html": "9c5b4f658aef178add0e5ef8bf3ee32fb4e07805d8e15469e490f1327ffa3fc7",
+    "src/crud_views/templates/crud_views/formsets/compact_headings.html": "2f4b3b5133ee315a8c25c99e20bb6c4ad034c2d7a223d5daccdd7d55fe6ccfd0",
+    "src/crud_views/templates/crud_views/formsets/control.html": "eed84cc006d4de94bddf442c366f2faf32d3ab135872e4631fb58f30338d974e",
+    "src/crud_views/templates/crud_views/formsets/formset.html": "a35d1279de5b43109e82082689c647922d1e3653346155454f875c8ddcdfe96c",
+    "src/crud_views/templates/crud_views/formsets/formsets.html": "1c6f6e86aff72847f044a62963cfb9fa41489a4d511578d13273c4ade1e83626",
+    "tests/browser/conditional-formsets.cjs": "4854c2ce4bb2b0087f36de2595cc6af437a516f32c50eb4a4ae5421e2396b02a",
+    "tests/browser/conditional_formsets_server.py": "2f0dcbc441e4eed8689353007e4b718f1075aa44f83a82bd5ae3ad8ddd57bcbc",
+    "tests/browser/templates/conditional_formsets/native_control.html": "6163b7168522f909a2e68881ce4315477854fd834b6e8b64a6ff64b6e07bd2a5",
+    "tests/browser/templates/conditional_formsets/native_formset.html": "03ae7569f1b7a4ac8f60b7236f99a8f995acdc88d6f6314af81a9f8c4767b46e",
+    "tests/browser/templates/conditional_formsets/native_formsets.html": "2bd6207e5acc6591c2d530755fd8950e36eb583376150c22a98d0b54dd6abafa",
+    "tests/browser/templates/conditional_formsets/native_toggle_group.html": "95c26b5476faf74611921ea876442c45373fec4dd21e9d74bcec6c2ccdbac527",
+    "tests/browser/templates/conditional_formsets/page.html": "1f5fb43557d64fe2b50bd7af7e5725227159fea6a67cd3d42c74d5fe298b6814",
+    "tests/js-integration/formset.test.js": "1430e77a7f57d267066263cb270b9b58544490b7b028b0a91773325ca43b832a",
+    "tests/js/formset.test.js": "3d37b1bb77f02cbb587e7c371ec21c141358dfb65ccc9666e14180fcedfa0981",
+    "tests/test1/app/models.py": "d048d49717f5891975d810f8d132f0acf6fad5e951f036bd63b30325538c3758",
+    "tests/test1/app/templates/app/base.html": "e0454744d18b92ca4ccd86da19f8378e54c9602ea816c1a062fcda07f238c17b",
+    "tests/test1/conftest.py": "f636780fba0963e423ff50bb9dd1d76996d561a46ccc02477b0777039ed35863",
+    "tests/test1/test_fragment_authorization.py": "5b5dada3994696b056b8ba1ef706ad613ead7020f71dd3c966089c281dca1440"
+  },
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs",
+    "--case",
+    "value-tracer",
+    "--output",
+    "/tmp/06.27-value-tracer.json"
+  ],
+  "scope": "value-tracer",
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+    "pythonRealPath": "/usr/bin/python3.12",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "django": "5.2.19",
+    "playwright": "1.64.1",
+    "chromium": "149.0.7827.55"
+  },
+  "cases": [
+    {
+      "theme": "stock",
+      "id": "value-tracer",
+      "assertions": [
+        {
+          "id": "rendered-shared-metadata",
+          "passed": true
+        },
+        {
+          "id": "initial-selection-equals-saved",
+          "passed": true,
+          "detail": {
+            "selected": "wholesale",
+            "saved": {
+              "id": 1,
+              "parent_id": 1,
+              "active": false,
+              "nullable_text": "Existing wholesale detail",
+              "blank_text": "wholesale",
+              "unique_text": null,
+              "flag": true,
+              "nullable_flag": true,
+              "number": 42,
+              "decimal": null,
+              "date": null,
+              "time": null,
+              "timestamp": null,
+              "duration": null,
+              "token": null,
+              "reference_id": null,
+              "attachment": "",
+              "image": ""
+            }
+          }
+        },
+        {
+          "id": "prefixed-select",
+          "passed": true
+        },
+        {
+          "id": "active-required",
+          "passed": true,
+          "detail": {
+            "status": 422
+          }
+        },
+        {
+          "id": "retain-before-submit",
+          "passed": true
+        },
+        {
+          "id": "invalid-controller-blocked",
+          "passed": true,
+          "detail": {
+            "status": 422,
+            "posted": "invalid"
+          }
+        },
+        {
+          "id": "forged-inactive-cleared",
+          "passed": true,
+          "detail": {
+            "status": 200,
+            "sent": [
+              [
+                "csrfmiddlewaretoken",
+                "YbS6wY8t1jjCtNU7pPW3F0RvRO3CsIsfLoiBMtdZNBqi2vQLdYpDGibneR4Ue8mK"
+              ],
+              [
+                "choice-0-blank_text",
+                "consumer"
+              ],
+              [
+                "choice-0-nullable_text",
+                "Forged inactive detail"
+              ]
+            ],
+            "saved": {
+              "id": 1,
+              "parent_id": 1,
+              "active": false,
+              "nullable_text": null,
+              "blank_text": "consumer",
+              "unique_text": null,
+              "flag": true,
+              "nullable_flag": true,
+              "number": 42,
+              "decimal": null,
+              "date": null,
+              "time": null,
+              "timestamp": null,
+              "duration": null,
+              "token": null,
+              "reference_id": null,
+              "attachment": "",
+              "image": ""
+            }
+          }
+        },
+        {
+          "id": "reopened-selection-equals-saved",
+          "passed": true,
+          "detail": {
+            "selected": "consumer",
+            "saved": "consumer"
+          }
+        },
+        {
+          "id": "persisted-reopen",
+          "passed": true
+        }
+      ],
+      "requests": [
+        {
+          "status": 422,
+          "sent": [
+            [
+              "csrfmiddlewaretoken",
+              "YbS6wY8t1jjCtNU7pPW3F0RvRO3CsIsfLoiBMtdZNBqi2vQLdYpDGibneR4Ue8mK"
+            ],
+            [
+              "choice-0-blank_text",
+              "wholesale"
+            ],
+            [
+              "choice-0-nullable_text",
+              ""
+            ]
+          ],
+          "body": "\n\n<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>Conditional formsets browser fixture</title>\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css\"\n integrity=\"sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==\"\n crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\">\n\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\"><!-- NOSONAR S5725: test-only page -->\n<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\"></script><!-- NOSONAR S5725: test-only page -->\n\n<link rel=\"stylesheet\" href=\"/static/crud_views/css/formset.css\">\n<script src=\"/jquery.js\"></script>\n<script src=\"/static/crud_views/js/adapters.js\"></script>\n<script>globalThis.cv.config = {modalShellId: \"cv-modal\", modalContentId: \"cv-modal-content\"};</script>\n<script src=\"/static/crud_views/js/toggle.js\"></script>\n<script src=\"/static/crud_views/js/formset.js\"></script>\n<script src=\"/static/crud_views/js/modal.js\"></script>\n<script>\nwindow.widgetEvents = [];\nconst widgets = new WeakSet();\ndocument.addEventListener(\"cv:formset:row-added\", e => {\n  const controls = [...e.target.querySelectorAll(\"input:not([type=hidden]),textarea\")];\n  widgetEvents.push({prefix:e.detail.prefix, rows:e.detail.rows, count:controls.length, duplicate:controls.some(c=>widgets.has(c))});\n  controls.forEach(c=>widgets.add(c));\n});\ndocument.addEventListener(\"cv:modal:loaded\", e => { window.loadedCount = (window.loadedCount || 0) + 1; });\ndocument.addEventListener(\"cv:modal:unload\", e => { window.unloadAttached = e.target.isConnected; });\n\n</script></head><body><main class=\"container\">\n\n\n\n\n\n<form id=\"editor\" class=\"cv-form\" aria-label=\"Browser test-host editor\" method=\"post\" action=\"/choice/stock/1/\" enctype=\"multipart/form-data\" novalidate>\n<input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\"fTyXAb71DS7HtHRlBpfpoleFrYdMsoUQ26YsQGcxpaen2pNZpyIZpDyxO1e4eOOl\">\n\n<div id=\"div_id_choice-0-blank_text\" class=\"mb-3\"> <label\n                for=\"id_choice-0-blank_text\" class=\"form-label requiredField\">\n                Blank text<span class=\"asteriskField\">*</span> </label> <select name=\"choice-0-blank_text\" class=\"select form-select\" id=\"id_choice-0-blank_text\"> <option value=\"consumer\">Consumer</option> <option value=\"wholesale\" selected>Wholesale</option> <option value=\"distributor\">Distributor</option>\n\n</select> </div> <fieldset class=\"cv-toggle-group \" cv-data-toggle-group cv-data-toggle-field=\"choice-0-blank_text\" cv-data-toggle-values=\"[&quot;wholesale&quot;]\"> <legend class=\"\">Wholesale details</legend> <div id=\"div_id_choice-0-nullable_text\" class=\"mb-3\"> <label\n                for=\"id_choice-0-nullable_text\" class=\"form-label\">\n                Nullable text\n            </label> <input type=\"text\" name=\"choice-0-nullable_text\" maxlength=\"100\" class=\"textinput form-control is-invalid\" aria-invalid=\"true\" aria-describedby=\"id_choice-0-nullable_text_error\" id=\"id_choice-0-nullable_text\"> <div id=\"id_choice-0-nullable_text_error\" class=\"invalid-feedback\"> <span id=\"error_1_id_choice-0-nullable_text\"><strong>This field is required.</strong></span> </div> </div> </fieldset>\n\n<div\n     \n    class=\"mb-3  \" \n    > <div class=\"\"> <button type=\"submit\" name=\"submit\" value=\"Save\" id=\"submit-id-submit\"\n    class=\"btn btn-primary\"><span>Save</span></button>\n<button type=\"button\" name=\"cancel\" value=\"Cancel\" id=\"button-id-cancel\"\n    class=\"btn btn-secondary\" data-cv-modal-dismiss=\"\"><span>Cancel</span></button> </div>\n</div>\n\n<button type=\"reset\" class=\"native-reset\" data-fixture-only=\"native-reset\" title=\"Test-host native reset\">Reset fields</button>\n<button type=\"submit\" class=\"fixture-save\" data-fixture-only=\"submit\" title=\"Test-host submit\">Save</button>\n</form>\n\n\n\n</main>\n<div class=\"modal fade\" id=\"cv-modal\" tabindex=\"-1\" aria-hidden=\"true\">\n    <div class=\"modal-dialog\" id=\"cv-modal-dialog\">\n        <div class=\"modal-content\" id=\"cv-modal-content\"></div>\n    </div>\n</div>\n\n\n</body></html>\n\n"
+        },
+        {
+          "status": 422,
+          "sent": [
+            [
+              "csrfmiddlewaretoken",
+              "YbS6wY8t1jjCtNU7pPW3F0RvRO3CsIsfLoiBMtdZNBqi2vQLdYpDGibneR4Ue8mK"
+            ],
+            [
+              "choice-0-blank_text",
+              "invalid"
+            ],
+            [
+              "choice-0-nullable_text",
+              "Unsaved wholesale detail"
+            ]
+          ],
+          "body": "\n\n<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>Conditional formsets browser fixture</title>\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css\"\n integrity=\"sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==\"\n crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\">\n\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\"><!-- NOSONAR S5725: test-only page -->\n<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\"></script><!-- NOSONAR S5725: test-only page -->\n\n<link rel=\"stylesheet\" href=\"/static/crud_views/css/formset.css\">\n<script src=\"/jquery.js\"></script>\n<script src=\"/static/crud_views/js/adapters.js\"></script>\n<script>globalThis.cv.config = {modalShellId: \"cv-modal\", modalContentId: \"cv-modal-content\"};</script>\n<script src=\"/static/crud_views/js/toggle.js\"></script>\n<script src=\"/static/crud_views/js/formset.js\"></script>\n<script src=\"/static/crud_views/js/modal.js\"></script>\n<script>\nwindow.widgetEvents = [];\nconst widgets = new WeakSet();\ndocument.addEventListener(\"cv:formset:row-added\", e => {\n  const controls = [...e.target.querySelectorAll(\"input:not([type=hidden]),textarea\")];\n  widgetEvents.push({prefix:e.detail.prefix, rows:e.detail.rows, count:controls.length, duplicate:controls.some(c=>widgets.has(c))});\n  controls.forEach(c=>widgets.add(c));\n});\ndocument.addEventListener(\"cv:modal:loaded\", e => { window.loadedCount = (window.loadedCount || 0) + 1; });\ndocument.addEventListener(\"cv:modal:unload\", e => { window.unloadAttached = e.target.isConnected; });\n\n</script></head><body><main class=\"container\">\n\n\n\n\n\n<form id=\"editor\" class=\"cv-form\" aria-label=\"Browser test-host editor\" method=\"post\" action=\"/choice/stock/1/\" enctype=\"multipart/form-data\" novalidate>\n<input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\"oOqc1kT66Wo3rXRRGvPAV4vFeEgK3OnJb1QHhPYCSevJ0FNvuEiaWmPxBHh2Pehe\">\n\n<div id=\"div_id_choice-0-blank_text\" class=\"mb-3\"> <label\n                for=\"id_choice-0-blank_text\" class=\"form-label requiredField\">\n                Blank text<span class=\"asteriskField\">*</span> </label> <select name=\"choice-0-blank_text\" class=\"select form-select is-invalid\" aria-invalid=\"true\" aria-describedby=\"id_choice-0-blank_text_error\" id=\"id_choice-0-blank_text\"> <option value=\"consumer\">Consumer</option> <option value=\"wholesale\">Wholesale</option> <option value=\"distributor\">Distributor</option>\n\n</select> <div id=\"id_choice-0-blank_text_error\" class=\"invalid-feedback\"> <span id=\"error_1_id_choice-0-blank_text\"><strong>Select a valid choice. invalid is not one of the available choices.</strong></span> </div> </div> <fieldset class=\"cv-toggle-group \" cv-data-toggle-group cv-data-toggle-field=\"choice-0-blank_text\" cv-data-toggle-values=\"[&quot;wholesale&quot;]\"> <legend class=\"\">Wholesale details</legend> <div id=\"div_id_choice-0-nullable_text\" class=\"mb-3\"> <label\n                for=\"id_choice-0-nullable_text\" class=\"form-label\">\n                Nullable text\n            </label> <input type=\"text\" name=\"choice-0-nullable_text\" value=\"Unsaved wholesale detail\" maxlength=\"100\" class=\"textinput form-control\" id=\"id_choice-0-nullable_text\"> </div> </fieldset>\n\n<div\n     \n    class=\"mb-3  \" \n    > <div class=\"\"> <button type=\"submit\" name=\"submit\" value=\"Save\" id=\"submit-id-submit\"\n    class=\"btn btn-primary\"><span>Save</span></button>\n<button type=\"button\" name=\"cancel\" value=\"Cancel\" id=\"button-id-cancel\"\n    class=\"btn btn-secondary\" data-cv-modal-dismiss=\"\"><span>Cancel</span></button> </div>\n</div>\n\n<button type=\"reset\" class=\"native-reset\" data-fixture-only=\"native-reset\" title=\"Test-host native reset\">Reset fields</button>\n<button type=\"submit\" class=\"fixture-save\" data-fixture-only=\"submit\" title=\"Test-host submit\">Save</button>\n</form>\n\n\n\n</main>\n<div class=\"modal fade\" id=\"cv-modal\" tabindex=\"-1\" aria-hidden=\"true\">\n    <div class=\"modal-dialog\" id=\"cv-modal-dialog\">\n        <div class=\"modal-content\" id=\"cv-modal-content\"></div>\n    </div>\n</div>\n\n\n</body></html>\n\n"
+        },
+        {
+          "status": 200,
+          "sent": [
+            [
+              "csrfmiddlewaretoken",
+              "YbS6wY8t1jjCtNU7pPW3F0RvRO3CsIsfLoiBMtdZNBqi2vQLdYpDGibneR4Ue8mK"
+            ],
+            [
+              "choice-0-blank_text",
+              "consumer"
+            ],
+            [
+              "choice-0-nullable_text",
+              "Forged inactive detail"
+            ]
+          ],
+          "body": "{\"saved\": true}"
+        }
+      ],
+      "passed": true,
+      "diagnostics": []
+    }
+  ],
+  "pageErrors": [],
+  "cleanup": {
+    "reaped": true,
+    "temporaryPath": "/tmp/dcv-064-browser-d6krij9d",
+    "temporaryRemoved": true
+  },
+  "completed": true,
+  "passed": true
+}

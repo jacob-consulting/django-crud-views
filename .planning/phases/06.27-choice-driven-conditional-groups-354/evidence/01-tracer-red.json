@@ -1,0 +1,10 @@
+{
+  "command": "node tests/browser/conditional-formsets.cjs --case value-tracer --output /tmp/06.27-value-tracer-red.json",
+  "exitCode": 1,
+  "output": "test_rendered_shared_metadata (__main__.ValueTracer.test_rendered_shared_metadata) ... FAIL\n\n======================================================================\nFAIL: test_rendered_shared_metadata (__main__.ValueTracer.test_rendered_shared_metadata)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"<string>\", line 6, in test_rendered_shared_metadata\nAssertionError: 1 != 0 : AssertionError [ERR_ASSERTION]: stock:value-tracer: rendered-shared-metadata undefined\n    at check (/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:193:148)\n    at runCase (/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:270:9)\n    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs:239:17) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\n\n----------------------------------------------------------------------\nRan 1 test in 6.111s\n\nFAILED (failures=1)\n",
+  "targetTest": "test_rendered_shared_metadata",
+  "targetFile": "tests/browser/conditional-formsets.cjs",
+  "expected": "Rendered shared value metadata",
+  "actual": "rendered-shared-metadata assertion failed",
+  "semanticAssessment": "Real Chromium loaded the seeded prefixed Select; shared metadata assertion failed because legacy rendering emits no choice metadata."
+}

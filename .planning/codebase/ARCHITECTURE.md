@@ -60,6 +60,7 @@ last_mapped_at: 2026-11-12
 | Guardian ancestor provider | Object-permission gate for a `GuardianViewSet` used as an ancestor | `src/crud_views_guardian/lib/ancestors.py` |
 | Delete preview and protection | Bounded related-object preview, protected-row labels, and deletion lifecycle integration | `src/crud_views/lib/deletion.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/templates/crud_views/snippets/delete/` |
 | Nested formset rendering | Request-local recursive formset tree with per-node classic or compact presentation | `src/crud_views/lib/formsets/`, `src/crud_views/templates/crud_views/formsets/` |
+| Choice-driven conditional groups | Server-side `ValueToggle` validation maps canonical single-choice values to disjoint field groups; inactive fields clear using recognized native empty values or explicit `empty_values` | `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py` |
 
 ## Pattern Overview
 
@@ -81,6 +82,8 @@ last_mapped_at: 2026-11-12
 - Optional packages depend on the core public view abstractions and are enabled by installing their app and declaring their specialized views.
 - Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Request-time schema projection validates field coverage, supported widget shape, effective labels and uniform row metadata before crispy renders. The compact helper composes crispy `Layout`/`Row`/`Div`/`Field` objects around the same bound fields and existing formset controls, so the page-owned outer form, CSRF, validation and save flow remain shared; `compact_layout=None` uses the classic helper unchanged. The exact stock `django.forms.widgets.CheckboxInput` class is in the supported widget set. Custom subclasses/templates require the public `CompactWidgetCompatible` marker, which skips widget-specific checks only and transfers responsibility for complete accessible/dynamic rendering to the widget author; shared field coverage, role, label and row-consistency validation remains (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/formset.html`).
 - Legend class customization is a narrow extension of the existing button-class registry: `conditional:legend` and `formset:legend` are resolved by `{% cv_button_class %}` in the existing conditional-group and formset templates. Each slot remains empty by default and independently configurable; this adds no rendering abstraction (`src/crud_views/lib/button_classes.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
+- Choice-driven field groups use `ValueToggle(field, values)` over a standard static `ChoiceField`/`TypedChoiceField` with `Select` or `RadioSelect`; activation is decided from validated server-side form data, not JavaScript. Configuration checks require canonical choice tokens, disjoint controlled fields, and no group/controller overlap. Off groups clear through bounded native field/model empty values or explicit `empty_values` (`src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py`).
+- The conditional example defines four groups on `CustomerForm`, including shared Wholesale/Distributor business fields, and `CustomerRadioForm` changes only the `kind` widget. The business group explicitly clears `payment_terms` to the persisted `unset` choice, while nullable `price_tier` clears to `None` even though new instances default to `A` (`examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/models.py`).
 
 ## Layers
 
@@ -253,6 +256,14 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 3. POST validation runs the main form and all formsets, including conditional-formset evaluation. On success, `FormSetMixin.cv_form_valid()` atomically saves the parent form followed by the recursive formset tree using the view's database alias. The compact helper does not own validation or persistence (`src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/formsets.py`).
 4. Dynamic-row requests pass through the same endpoint dispatch/permission boundary, validate declared fragment coordinates against the persisted root/ancestry, then render a single empty-row fragment; they do not build the full editor (`src/crud_views/lib/formsets/mixins.py`).
 
+### Choice-driven conditional group flow
+
+1. `ConditionalGroupModelForm` initializes group declarations and injects any transient `UIFieldToggle` fields; `ValueToggle` controllers reference an existing single-choice field (`src/crud_views/lib/conditional/group.py`).
+2. During full cleaning, configuration validation checks field/widget shape, canonical choices, group overlap and controller presence before Django validates submitted fields (`src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/toggle.py`).
+3. `ValueToggle.is_on()` reads the cleaned selected choice; each group is then required or cleared server-side. Persistence uses native empty values only for recognized form/model pairs, with explicit `empty_values` for business sentinels or unsupported pairs (`src/crud_views/lib/conditional/group.py`).
+4. `ToggleGroup` connects the same controller to the rendered fieldset. Browser JavaScript controls visibility as progressive enhancement; it does not decide validation or persistence (`src/crud_views/lib/conditional/layout.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`).
+5. `CustomerRadioForm` inherits the same conditional groups and layout as `CustomerForm` and overrides only the `kind` widget, so the dropdown and radio routes exercise identical server behavior (`examples/bootstrap5/conditional/views.py`).
+
 ## Entry Points
 
 **Django app initialization:**
@@ -334,6 +345,13 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - The existing `cv_button_class` template tag resolves independent `conditional:legend` and `formset:legend` slots through the existing class registry (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/button_classes.py`).
 - The hook is consumed directly by the existing conditional `ToggleGroup` and formset fieldset templates; defaults are empty, so no class is added unless configured (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
 - Keep future legend customization at these tag/template call sites. No parallel rendering abstraction is needed.
+
+## Choice-driven conditional groups
+
+- `ValueToggle` is the choice-value controller in `src/crud_views/lib/conditional/toggle.py`; it accepts string/integer tokens against a static native `ChoiceField`/`TypedChoiceField` with `Select`/`RadioSelect`.
+- `ConditionalGroup` and `ConditionalGroupFormMixin` in `src/crud_views/lib/conditional/group.py` validate declarations, enforce required fields when active, and clear inactive fields. Keep controlled fields disjoint and never control another group’s controller.
+- Automatic clearing is limited to recognized standard field/model pairs. Use `empty_values` for an explicit business sentinel, as Customer does for `payment_terms="unset"`; nullable `price_tier` demonstrates automatic `None` clearing (`examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/models.py`).
+- `CustomerForm` covers consumer-only, shared business, wholesale-only and distributor-only groups. The shared business group remains active when switching between Wholesale and Distributor; `CustomerRadioForm` reuses its declarations and changes only the controller widget (`examples/bootstrap5/conditional/views.py`).
 
 ## Permission declaration diagnostics (Phase 06.22)
 

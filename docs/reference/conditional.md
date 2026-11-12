@@ -1,6 +1,7 @@
 # Conditional Field-Groups & Conditional FormSets
 
-A checkbox toggle can hide a group of fields or an entire **first-level** formset. An off field-group clears
+A checkbox toggle can hide a group of fields or an entire **first-level** formset. A native single-choice dropdown
+or radio set can also activate [choice-driven groups](#choice-driven-groups). An off field-group clears
 editable fields using the [clearing matrix](#clearing-matrix); an off formset skips its rows by default, or
 purges its managed queryset when explicitly configured. JavaScript provides immediate native visibility and
 disabled controls; server validation and persistence remain authoritative, including for tampered or JS-off POSTs.
@@ -10,6 +11,11 @@ disabled controls; server validation and persistence remain authoritative, inclu
     [Formsets + Conditional example](https://django-crud-views-demo.onrender.com/formsets-conditional/conference/)
     in the live demo show this in action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md)
     for data resets and wake-up time.
+
+    For three choices and four groups, open [Customers](https://django-crud-views-demo.onrender.com/conditional/customer/)
+    or [Create Radio](https://django-crud-views-demo.onrender.com/conditional/customer/create-radio/).
+    Both editors save the same model; its detail page distinguishes `None`, blank text and `unset`.
+    These are the deployment destinations; availability follows deployment of this release.
 
 `toggle.js` ships automatically via the `cv_js` asset registry (`crud_views_settings.javascript()`); no template changes are needed. It also re-initializes inside Bootstrap modals (`cv_modal = True` views) via the `cv:modal:loaded` event.
 
@@ -26,6 +32,7 @@ Import everything from `crud_views.lib.conditional`.
 | `ToggleSource` | Base class for toggle descriptors |
 | `ModelFieldToggle(name)` | Toggle backed by a real model/form field |
 | `UIFieldToggle(name)` | Toggle backed by a transient checkbox injected by the mixin |
+| `ValueToggle(name, values=[...])` | Match explicit values of an existing native single-choice field; no injected field |
 | `ConditionalGroup(toggle, fields, required, empty_values)` | Declares one toggled group of fields |
 | `ConditionalGroupFormMixin` | Server-side authority mixin (mix in before the form base) |
 | `ConditionalGroupModelForm` | `CrispyModelForm` with `ConditionalGroupFormMixin` pre-applied |
@@ -156,19 +163,19 @@ which defaults to `""`. See the [theme and project examples](buttons.md#legend-c
 
 ### Copied conditional wrapper
 
-In `crud_views/conditional/toggle_group.html`, `cv_toggle_field` is the **exact bound HTML checkbox name**,
+In `crud_views/conditional/toggle_group.html`, `cv_toggle_field` is the **exact bound HTML controller name**,
 already computed with `form.add_prefix(...)`. For a form prefix `editor-0`, toggle `active` means `editor-0-active`.
 Render it directly with ordinary escaping; do not prepend another prefix or use suffix matching. This complete
 minimal override retains the optional legend and generated inner content:
 
 ```django
 {% if cv_toggle_legend %}
-<fieldset cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}" class="{{ cv_toggle_css }}">
+<fieldset cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %} class="{{ cv_toggle_css }}">
     <legend>{{ cv_toggle_legend }}</legend>
     {{ cv_toggle_inner }}
 </fieldset>
 {% else %}
-<div cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}" class="{{ cv_toggle_css }}">
+<div cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %} class="{{ cv_toggle_css }}">
     {{ cv_toggle_inner }}
 </div>
 {% endif %}
@@ -177,6 +184,10 @@ minimal override retains the optional legend and generated inner content:
 To adopt the class hook in a copied wrapper, load the existing tag library with `{% load crud_views %}`
 and add `class="{% cv_button_class 'conditional' 'legend' %}"` to its legend. The minimal recipe above
 keeps ordinary legend text escaping; copied wrappers opt in to the hook themselves.
+
+`cv_toggle_values` is serialized JSON for a ValueToggle, otherwise `None`. Render with ordinary attribute escaping
+in **both** wrapper branches: never add `safe`, interpolate executable code or serialize it again. Omitting this
+attribute keeps the existing checkbox contract. Radio peers share the same exact bound name and owning form.
 
 Conditional formset wrappers likewise render their `x_formset.cv_toggle_field` directly; it is the parent form's
 bound toggle name. Checkbox lookup uses exact `name` equality and actual owning-form identity, including native
@@ -208,6 +219,131 @@ reset listeners, preserves presentation. Only that form is synchronized; dynamic
 This does not define a new final reset policy for dynamically added formset rows (A8 remains deferred).
 
 ---
+
+## Choice-driven groups
+
+Use one `ValueToggle` descriptor in both `ConditionalGroup(toggle=...)` and `ToggleGroup(...)` so browser and
+server share the condition. Several groups can follow the same controller, and several can be active together.
+Each group's controlled fields must be disjoint. No group may control its own or another group's controller.
+These checks apply to declarations involving value groups; existing checkbox-only configurations retain their behavior.
+
+The runnable Customer example uses this matrix:
+
+| Group | Consumer | Wholesale | Distributor |
+|---|---|---|---|
+| Consumer preferences: `consumer_note` | Active | Inactive | Inactive |
+| Business details: `company`, `price_tier`, `payment_terms` | Inactive | Active | Active |
+| Wholesale terms: `wholesale_terms` | Inactive | Active | Inactive |
+| Distribution details: `distribution_region` | Inactive | Inactive | Active |
+
+For the `Customer` model in `examples/bootstrap5/conditional/models.py`, both presentations share these rules:
+
+```python
+from django import forms
+from crud_views.lib.conditional import ConditionalGroup, ConditionalGroupModelForm, ToggleGroup, ValueToggle
+
+consumer = ValueToggle("kind", values=["consumer"])
+business = ValueToggle("kind", values=["wholesale", "distributor"])
+wholesale = ValueToggle("kind", values=["wholesale"])
+distributor = ValueToggle("kind", values=["distributor"])
+
+
+class CustomerForm(ConditionalGroupModelForm):
+    cv_conditional_groups = [
+        ConditionalGroup(consumer, ["consumer_note"], required=[]),
+        ConditionalGroup(
+            business,
+            ["company", "price_tier", "payment_terms"],
+            required=["company", "price_tier"],
+            empty_values={"payment_terms": "unset"},
+        ),
+        ConditionalGroup(wholesale, ["wholesale_terms"]),
+        ConditionalGroup(distributor, ["distribution_region"]),
+    ]
+
+    class Meta:
+        model = Customer
+        fields = [
+            "name",
+            "kind",
+            "consumer_note",
+            "company",
+            "price_tier",
+            "payment_terms",
+            "wholesale_terms",
+            "distribution_region",
+        ]
+
+    def get_layout_fields(self):
+        return [
+            "name",
+            "kind",
+            ToggleGroup(consumer, "consumer_note", legend="Consumer preferences"),
+            ToggleGroup(business, "company", "price_tier", "payment_terms", legend="Business details"),
+            ToggleGroup(wholesale, "wholesale_terms", legend="Wholesale terms"),
+            ToggleGroup(distributor, "distribution_region", legend="Distribution details"),
+        ]
+
+
+class CustomerRadioForm(CustomerForm):
+    class Meta(CustomerForm.Meta):
+        widgets = {"kind": forms.RadioSelect}
+```
+
+`required=None` (or omitted) requires all controlled fields while active. An explicit subset requires only those
+fields and must belong to the group. `required=[]` makes them optional while active; it does **not** retain them
+while inactive. Native validation still rejects invalid active choices.
+
+Switching away and back **before submitting** retains unsaved entries. Wholesale → Distributor leaves Business
+details active, retaining company/price/payment data; saving clears wholesale-only terms. Switching to Consumer
+and saving clears both business and distributor data, while the outside `name` stays intact. Reopen the saved
+detail or either editor to inspect this: `price_tier` is `None`, despite its model default `"A"`, and
+`payment_terms` is the explicit `"unset"` sentinel (no business terms). After save/reopen there is no history from
+which to restore cleared values.
+
+### Matching and supported controllers
+
+Controllers are exact stock `forms.ChoiceField` or `forms.TypedChoiceField` instances with exact native
+`forms.Select` (single select) or `forms.RadioSelect` widgets. Use static choices, including ordinary optgroups.
+Match values are a nonempty collection of nonempty strings or integers, including zero. Tokens match exactly:
+integer `0` and HTML `"0"` agree; whitespace/case are not normalized. Duplicate normalized tokens are rejected,
+and every configured match must belong to the declared nonempty choices. Booleans and `None` are not match values.
+
+Typed controllers support `str`, `int`, or native text/integer model-field conversion only. Every nonempty choice
+must round-trip to the same HTML token: e.g. integer coercion of `"01"` to `1` is refused. Standard text models are
+Char/Text/Email/URL/Slug; standard integer models include Integer/Small/Big and their Positive variants. An empty
+sentinel must not collide with a declared choice. Native empty choice placeholders (`""`/`None`) are admitted but
+inactive and excluded from integer coercion checks; explicitly configured **empty match values** are rejected.
+
+Callable choices, custom subclasses/widgets, arbitrary or token-changing coercion, relation-backed selectors and
+multiselect controllers are unsupported. Each group has one controller and explicit membership only: no arbitrary
+predicates, multiple-controller expressions or dependency graph. Whole-formset `ValueToggle` activation is explicitly
+refused by `ConditionalFormSet`; use its existing checkbox descriptors. Product-dependent per-row conditions
+(finding 20), expanded compact-radio admission and downstream theme adoption are outside this contract.
+
+### Choice clearing
+
+For controlled standard choice fields, exact native ChoiceField/TypedChoiceField and text/integer model pairs with
+native conversion and persistence hooks support this automatic matrix:
+
+| Model field with choices | Inactive value |
+|---|---|
+| Nullable text, including `blank=True` | `None` |
+| Nonnullable text with `blank=True` | `""` |
+| Nullable integer | `None` |
+| Nonnullable integer | Explicit `empty_values` required |
+| Nonnullable text with `blank=False` | Explicit `empty_values` required |
+
+The order is **server-disabled field > explicit dictionary membership > inference**. For editable fields, entries
+including `None`, `""`, `False`, `0` and application sentinels are authoritative; native conversion and model/database
+constraints still apply. Defaults are not clearing instructions. Plain-form controlled choice fields and nonstandard
+form/model pairs require explicit native-compatible `empty_values`; no database nullability is guessed.
+
+The server discards forged inactive editable data and applies clearing even without JavaScript. Only a successful
+save persists it. Invalid controller errors are retained; raw submitted data cannot reactivate a group after native
+or inherited cleaning rejected/removed the controller. Server-disabled controls use trusted initial values.
+Missing controllers retain E311, unsupported automatic clearing retains E312, and value declaration conflicts or
+unsupported controller shapes produce E313 where statically inspectable and `ImproperlyConfigured` at runtime.
 
 ## Kind 2 — Conditional formset
 
@@ -268,6 +404,7 @@ The parent form must expose the toggle field. **`ConditionalFormSet` toggles are
 | `crud_views.E310` | Error | `conditional=` placed on a nested (non-first-level) formset |
 | `crud_views.E311` | Error | Toggle field named in a `ConditionalGroup` or `ConditionalFormSet.toggle` is absent from the parent form (and not injected by a group on that form) |
 | `crud_views.E312` | Error | No supported automatic clearing value for the inspected editable form/model field pair; configure `empty_values` explicitly (replaces W320) |
+| `crud_views.E313` | Error | Invalid value-group controller, match values, overlapping controlled fields, controlled controller or required subset |
 | `crud_views.W321` | Warning | `on_off="purge"` combined with a formset that forbids row deletion (`can_delete=False` / `edit_only=True`) — the toggle bulk-deletes rows anyway |
 
 ---
@@ -278,3 +415,5 @@ The `examples/bootstrap5/conditional/` app (`conditional/views.py`) shows both k
 
 - `cv_registration` — two field-groups on one form: a `ModelFieldToggle` group (`with_company` → `company_name`, `vat_id`) rendered as a titled `<fieldset>` via `ToggleGroup(..., legend="Company details")`, and a transient `UIFieldToggle` group (`add_note` → `note`), including the pattern of deriving the transient toggle's `initial` from the instance in `__init__`
 - `cv_event` — two conditional first-level formsets contrasting the `on_off` modes: `with_sessions` → the `sessions` formset with `"purge"` (rows deleted on save when off), and `with_speakers` → the `speakers` formset with `"skip"` (rows kept)
+- `cv_customer` — Dropdown and Radio editors share four value-driven groups and a saved detail view; follow
+  **Choice-driven customers** from Registration, then **Choice-driven groups** in the documentation panel.

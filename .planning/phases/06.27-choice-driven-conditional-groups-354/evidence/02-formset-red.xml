@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="10" time="1.331" timestamp="2026-11-12T11:40:35.335665+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_conditional_formset" name="test_value_formset_rejected[skip]" time="0.253"><failure message="Failed: DID NOT RAISE ValidationError">on_off = 'skip'
+
+    @pytest.mark.parametrize("on_off", ["skip", "purge"])
+    def test_value_formset_rejected(on_off):
+&gt;       with pytest.raises(ValidationError, match=r"ValueToggle.*ConditionalGroup.*checkbox"):
+E       Failed: DID NOT RAISE ValidationError
+
+tests/test1/test_conditional_formset.py:25: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_formset" name="test_checkbox_formset_skip_purge_commit_contract[False-skip-ModelFieldToggle]" time="0.269" /><testcase classname="tests.test1.test_conditional_formset" name="test_checkbox_formset_skip_purge_commit_contract[False-skip-UIFieldToggle]" time="0.008" /><testcase classname="tests.test1.test_conditional_formset" name="test_checkbox_formset_skip_purge_commit_contract[False-purge-ModelFieldToggle]" time="0.008" /><testcase classname="tests.test1.test_conditional_formset" name="test_checkbox_formset_skip_purge_commit_contract[False-purge-UIFieldToggle]" time="0.007" /><testcase classname="tests.test1.test_conditional_formset" name="test_checkbox_formset_skip_purge_commit_contract[True-skip-ModelFieldToggle]" time="0.007" /><testcase classname="tests.test1.test_conditional_formset" name="test_value_formset_rejected[purge]" time="0.002"><failure message="Failed: DID NOT RAISE ValidationError">on_off = 'purge'
+
+    @pytest.mark.parametrize("on_off", ["skip", "purge"])
+    def test_value_formset_rejected(on_off):
+&gt;       with pytest.raises(ValidationError, match=r"ValueToggle.*ConditionalGroup.*checkbox"):
+E       Failed: DID NOT RAISE ValidationError
+
+tests/test1/test_conditional_formset.py:25: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_formset" name="test_checkbox_formset_skip_purge_commit_contract[True-skip-UIFieldToggle]" time="0.006" /><testcase classname="tests.test1.test_conditional_formset" name="test_checkbox_formset_skip_purge_commit_contract[True-purge-ModelFieldToggle]" time="0.005" /><testcase classname="tests.test1.test_conditional_formset" name="test_checkbox_formset_skip_purge_commit_contract[True-purge-UIFieldToggle]" time="0.006" /></testsuite></testsuites>

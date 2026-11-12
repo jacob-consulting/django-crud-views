@@ -30,11 +30,16 @@
 
     function findChoiceControls(form, name) {
         const matches = Array.from(form.elements).filter(el => el.form === form && el.name === name);
-        return matches.length === 1 && matches[0].tagName === "SELECT" && !matches[0].multiple ? matches : [];
+        if (matches.length === 1 && matches[0].tagName === "SELECT" && !matches[0].multiple) return matches;
+        return matches.every(el => el.tagName === "INPUT" && el.type === "radio") &&
+            matches.filter(el => el.checked).length <= 1 ? matches : [];
     }
 
     function bindingIsOn(binding) {
-        return binding.values === null ? binding.controls[0].checked : binding.values.includes(binding.controls[0].value);
+        if (binding.values === null) return binding.controls[0].checked;
+        const selected = binding.controls[0].tagName === "SELECT" ? binding.controls : binding.controls.filter(el => el.checked);
+        if (selected.length > 1) return null; // Malformed radio state retains the last resolved ownership.
+        return selected.length === 1 && binding.values.includes(selected[0].value);
     }
 
     function rememberExternal(records) {
@@ -78,7 +83,11 @@
         for (const group of hidden) {
             for (let node = group; node && node !== state.form; node = node.parentElement) {
                 const binding = bindings.get(node);
-                if (binding && binding.controls.some(control => control.form === state.form && focus(control))) return;
+                if (binding) {
+                    const candidates = binding.controls.filter(control => control.checked)
+                        .concat(binding.controls.filter(control => !control.checked));
+                    if (candidates.some(control => control.form === state.form && focus(control))) return;
+                }
             }
         }
         focus(state.form, true);
@@ -94,7 +103,10 @@
         try {
             state.groups.forEach(function (group) {
                 const binding = bindings.get(group);
-                if (binding) ownedStates.set(group, bindingIsOn(binding));
+                if (binding) {
+                    const enabled = bindingIsOn(binding);
+                    if (enabled !== null) ownedStates.set(group, enabled);
+                }
                 if (ownedStates.has(group)) {
                     const enabled = ownedStates.get(group);
                     if (!enabled && group.style.display !== "none" && group.contains(active)) hidden.push(group);
@@ -164,10 +176,11 @@
                     values.every(value => typeof value === "string" && value !== "") && new Set(values).size === values.length;
             }
             const matches = !valid ? [] : metadata === null ? findCheckboxes(form, name) : findChoiceControls(form, name);
+            const normalized = valid && values !== null ? JSON.stringify(values.slice().sort()) : null;
             const previous = bindings.get(group);
-            const controls = matches.length === 1 ? matches : [];
+            const controls = metadata !== null || matches.length === 1 ? matches : [];
             if (previous && (previous.controls.length !== controls.length ||
-                previous.controls.some((control, index) => control !== controls[index]) || previous.metadata !== metadata)) {
+                previous.controls.some((control, index) => control !== controls[index]) || previous.metadata !== normalized)) {
                 previous.controls.forEach(control => control.removeEventListener("change", previous.onChange));
                 bindings.delete(group);
             }
@@ -179,7 +192,7 @@
             }
             if (!bindings.has(group)) {
                 const onChange = function () { sync(state); };
-                bindings.set(group, { controls, values, metadata, onChange });
+                bindings.set(group, { controls, values, metadata: normalized, onChange });
                 controls.forEach(control => control.addEventListener("change", onChange));
             }
         });

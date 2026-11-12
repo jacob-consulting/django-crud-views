@@ -134,15 +134,20 @@
       "status": "complete"
     },
     {
+      "number": "06.28",
+      "name": "Tooltip recipe lifecycle safeguards (#355)",
+      "status": "pending"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-discuss-phase 7",
-    "label": "Discuss theme-surface stability policy",
-    "reason": "Phase 06.26 complete; canonical verification and UAT passed"
+    "command": "$gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 43 of 44 · executing"
   },
-  "updated_at": "2026-11-11T21:58:28.065021+00:00"
+  "updated_at": "2026-11-12T12:31:49.646Z"
 }

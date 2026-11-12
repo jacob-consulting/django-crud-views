@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.29"
-current_phase_name: "Themeable column helpers (#356)"
-status: executing
-stopped_at: Phase 06.29 plan review converged; ready for execution
-last_updated: "2026-11-12T13:37:02.504Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.29 complete, ready to discuss Phase 7
+last_updated: "2026-11-12T14:28:31.281Z"
 last_activity: 2026-11-12
-last_activity_desc: Phase 06.29 converged in two review cycles; two plans ready for execution
-state_head: 7af9259ade6115922f1e2d18ab1d766e185bc0c3
+last_activity_desc: Phase 06.29 complete, transitioned to Phase 7
+state_head: 10a675d70f3ccc618a66219d6a94da9517deb15a
 progress:
   total_phases: 34
-  completed_phases: 26
+  completed_phases: 27
   total_plans: 177
-  completed_plans: 175
+  completed_plans: 177
 milestone_name: milestone
 ---
 
@@ -23,19 +23,27 @@ Total Phases: 34
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-11)
+See: .planning/PROJECT.md (updated 2026-11-12)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.29 — Themeable column helpers (#356)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.29 (Themeable column helpers (#356)) — READY TO EXECUTE
+Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-11-12 -- Phase 06.29 converged in two review cycles; two plans ready for execution
+Status: Ready to plan
+Last activity: 2026-11-12 — Phase 06.29 complete, transitioned to Phase 7
 
-Next: $gsd-execute-phase 06.29
+Next: $gsd-discuss-phase 7
+
+### Phase 06.29 completion — 2026-11-12
+
+- Both plans/five tasks complete: twelve render-time column keys, bounded stock-template bridge, authored customization and executed adoption recipes.
+- Canonical verification passed 10/10 with 239 independent passing cases; validation five tasks covered, security five threats closed, UI preservation 24/24 source/rendered only. No required human checks.
+- Full suite 12,868 passed/one existing skip before review correction; final affected compatibility selection 430 passed on each Django 4.2 floor, 6.0 floor and 5.2/current after one-line lazy-extra coercion. Ruff and strict docs passed. Browser appearance/full Python matrix unverified.
+- Deep review CR-01 fixed with RED/GREEN and independently re-reviewed clean; disposition ledger retained. Completion warning is prose-only roadmap requirements, not missing formal IDs. Codebase maps need the required post-ship refresh.
+- No pending todos, stale handoffs or learnings graduation. All work local on gsd/phase-06.29; no push or merge.
 
 ### Phase 06.25.1 completion — 2026-11-11
 
@@ -772,7 +780,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 171
+- Total plans completed: 173
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -811,6 +819,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.25 | 2 | - | - |
 | 06.25.1 | 1 | - | - |
 | 06.26 | 4 | - | - |
+| 06.29 | 2 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1293,6 +1302,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-12T13:36:58.607Z
-Stopped at: Phase 06.29 plan review converged; ready for execution
-Resume file: .planning/phases/06.29-themeable-column-helpers-356/06.29-REVIEWS.md
+Last session: 2026-11-12T14:28:27.198Z
+Stopped at: Phase 06.29 complete, ready to discuss Phase 7
+Resume file: None

@@ -94,6 +94,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ Independent empty-default conditional/formset legend class hooks, layered overrides and escaped nested fragment rendering — Phase 06.25.1
 
+- ✓ **6.29** Themeable Column1–Column12 via existing registry, render-local complete classes, preserved caller/template ownership and executed recipes — Phase 06.29; canonical 10/10, clean re-review after lazy-extra correction.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -198,6 +200,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Legend styling reuses two empty class keys and existing template tags | Keeps themes independently overridable without changing runtime machinery | Validated (Phase 06.25.1) |
 
+| Numbered columns resolve complete registry classes on a shallow render copy; bridge only exact installed Bootstrap source | Preserves defaults, caller extras and custom-template ownership without a new grid or cache abstraction | Validated (Phase 06.29) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -216,4 +220,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-12 after integrating Phases 06.25.1 and 06.26*
+*Last updated: 2026-11-12 after Phase 06.29 completion*

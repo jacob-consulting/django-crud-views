@@ -51,7 +51,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.25: Issue #349** (completed 2026-11-11)
 - [x] **Phase 06.25.1: Issue #346** (completed 2026-11-11)
 - [x] **Phase 06.26: Issue #351** (completed 2026-11-11)
-- [ ] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage.
+- [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1742,15 +1742,15 @@ Plans:
 **Depends on:** Phase 6 (existing class-registry and crispy integration contracts).
 **Ordering:** Complete before Phase 7 freezes the public theme surface. The maintainer explicitly assigned 06.29 to this worktree; phases 06.27 and 06.28 are being handled in other worktrees and are not implementation dependencies of this issue.
 **Scope exclusions:** Row keys, plain crispy `Column`, compact-formset grid redesign, a new registry or breakpoint setting, and broader template-pack changes. Internal rendering mechanics and test organization remain planning choices; preserve explicit authored classes and template overrides.
-**Plans:** 0/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 **Wave 1**
-- [ ] 06.29-01-PLAN.md
+- [x] 06.29-01-PLAN.md
 - [ ] TBD (run $gsd-plan-phase 06.29 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.29-02-PLAN.md
+- [x] 06.29-02-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1863,5 +1863,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 06.23. Explicit header-icon suppression with Icon constants | 2/2 | Complete    | 2026-11-10 |
 | 06.24. Opt-in compact formsets | 6/6 | Complete    | 2026-11-11 |
-| 06.29. Themeable column helpers (#356) | 0/2 | Planned     | - |
+| 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

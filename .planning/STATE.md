@@ -1,24 +1,23 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.27"
+current_phase_name: Choice-driven conditional groups
 status: planning
-stopped_at: Phase 06.26 complete, ready to plan Phase 7
-last_updated: "2026-11-11T22:09:57.556Z"
-last_activity: 2026-11-11
-last_activity_desc: "Phase 06.26 shipped as PR #353"
-state_head: 1e193b55b47f1b42bcaa5d64133acfc8f044e415
+stopped_at: Phase 06.27 context gathered
+last_updated: "2026-11-12T09:44:41.790Z"
+last_activity: 2026-11-12
+last_activity_desc: "Inserted Phase 06.27 for issue #354"
+state_head: af51e0e54d10a00a3535b4fe12452e7accc3f1d9
 progress:
-  total_phases: 33
-  completed_phases: 27
+  total_phases: 34
+  completed_phases: 26
   total_plans: 175
   completed_plans: 175
-  percent: 82
 milestone_name: milestone
 ---
 
-Total Phases: 32
+Total Phases: 34
 
 # Project State
 
@@ -27,16 +26,16 @@ Total Phases: 32
 See: .planning/PROJECT.md (updated 2026-11-11)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.25.1 — Issue #346
+**Current focus:** Phase 06.27 — Choice-driven conditional groups (#354)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.27 — Choice-driven conditional groups (#354)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-11 -- Phase 06.26 shipped as PR #353
+Last activity: 2026-11-12 -- Inserted Phase 06.27 for issue #354
 
-Next: $gsd-plan-phase 7
+Next: $gsd-plan-phase 06.27
 
 ### Phase 06.25.1 completion — 2026-11-11
 
@@ -1284,6 +1283,7 @@ None yet.
 - Phase 06.25 inserted after Phase 6: Issue #349 (URGENT)
 - Phase 06.25.1 inserted after Phase 6.25: Issue #346 (URGENT)
 - Phase 06.26 inserted after Phase 6: Issue #351 (URGENT)
+- Phase 06.27 inserted after Phase 06.26: Issue #354: choice-driven conditional groups; approved gsd-handover includes explicit clearing overrides and a complex example with reciprocal documentation links. Complete before Phase 7. (URGENT)
 
 ## Deferred Items
 
@@ -1293,6 +1293,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-11T21:58:28.065021+00:00
-Stopped at: Phase 06.26 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-12T09:44:37.576Z
+Stopped at: Phase 06.27 context gathered
+Resume file: .planning/phases/06.27-choice-driven-conditional-groups-354/06.27-CONTEXT.md

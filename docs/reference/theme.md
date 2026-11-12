@@ -125,6 +125,75 @@ register_button_classes(
 
 See [Button row as a list](buttons.md#button-row-as-a-list).
 
+## Themeable column helpers
+
+`Column1` through `Column12` keep their existing imports and field/layout API. Their Bootstrap defaults are
+`col-md-N`; themes and projects can replace each width's **complete class string**, including responsive strings,
+through the existing class registry. See the canonical [column utility inventory](buttons.md#the-class-table)
+and [column contract](buttons.md#numbered-column-classes). These utility keys have no label-mode suffix.
+
+### Column theme registration
+
+Register only the widths your theme changes in its `AppConfig.ready()`:
+
+```python
+from django.apps import AppConfig
+
+
+class MyAppThemeConfig(AppConfig):
+    name = "myapp_theme"
+
+    def ready(self):
+        from crud_views.lib.button_classes import register_button_classes
+
+        register_button_classes(
+            {
+                "form:column-6": "col-12 col-lg-6",
+                "form:column-4": "col-12 col-lg-4",
+            }
+        )
+```
+
+With this app installed, `Column6("name", css_class="extra")` renders `col-12 col-lg-6 extra`, while an
+unconfigured `Column2` keeps `col-md-2`. Classes resolve at each render, so layouts constructed before
+registration also use the theme. Repeated rendering reads current configuration without accumulating classes
+or mutating the layout. Later registration calls replace earlier values per key.
+
+### Column project overrides
+
+In project settings, override just the selected keys; all other widths retain their theme or package defaults:
+
+```python
+CRUD_VIEWS_BUTTON_CLASSES = {
+    "form:column-4": "col-12 col-xl-4",
+    "form:column-6": "",
+    "form:column-12": None,
+}
+```
+
+Precedence is package defaults → theme registration → project settings, independently for each key.
+Here `Column4` uses `col-12 col-xl-4` instead of the theme string. Both `""` and `None` suppress the configured
+width classes: `Column6("name", css_class="extra")` and `Column12("name", css_class="extra")` each retain only
+`extra`. Constructor `css_class` adds caller classes to the resolved width; it does not replace that width.
+
+### Column ownership boundaries
+
+An explicitly authored subclass `css_class` default takes precedence over registry defaults, including inherited
+custom defaults and explicit empty/`None` values. Direct instance assignment to `css_class` owns the whole class
+string, replacing any previously assembled caller extras. These ordinary customization paths remain supported;
+arbitrary metaprogramming is outside this contract.
+
+For the audited installed Bootstrap 5 column template, the numbered helpers suppress its implicit `col-md`
+fallback, so empty values and non-Bootstrap class strings stay intact. Current crispy 2.7 / crispy-bootstrap5
+2026.9 and the declared crispy 2.0 / crispy-bootstrap5 2023.10 floor are tested. Intentional custom templates,
+subclass templates, template-name hooks, same-name project overrides, alternate packs and changed stock source
+retain ownership of their markup and any classes they emit. They must consume the column's `css_class` to show
+the configured value; future pack compatibility is not assumed. Plain crispy `Column` is unchanged.
+
+The active crispy pack's `Row`, surrounding layout templates and the theme's CSS/assets still determine the rest
+of the grid. These twelve keys configure column classes; they do not provide a complete alternate-framework grid
+or guarantee its visual layout.
+
 ## Theme label defaults
 
 Themes may set per-location label floors without a project setting. Effective defaults merge **package → theme →

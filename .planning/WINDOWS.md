@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 0
 waived_count: 9
-fixed_count: 35
-total_count: 44
-last_updated: 2026-11-11T20:24:02.160Z
+fixed_count: 36
+total_count: 45
+last_updated: 2026-11-12T13:47:36.024Z
 ---
 
 # Broken Windows Ledger
@@ -59,6 +59,7 @@ last_updated: 2026-11-11T20:24:02.160Z
 | 42 | 06.18 | deviation | tests/test1/test_ancestor_databases.py |  | 06.18-12: Django 4.2 AdminEmailHandler error report read the refused queryset after the refusal; module no-ops the handler so no-shard-SQL captures measure package work (5829cae7) | fixed |  | 2026-11-08T23:03:55.439Z | 2026-11-08T23:04:01.260Z |
 | 43 | 06.18 | deviation | .planning/phases/06.18-ancestor-authorization-for-nested-viewsets/06.18-COSTS.md |  | COSTS.md not refreshed by quick 261109-bf5: plain cold totals pre-fix and Guardian guard/rest split predates WR-01 76fdc7ff; refresh from evidence/261109-bf5/cost-observations (deferred-items.md) | fixed |  | 2026-11-09T08:31:39.895Z | 2026-11-09T08:48:22.336Z |
 | 44 | 06.25.1 | deviation | tests/test1/test_theme_adoption_docs.py | 231 | Fixed additional executed documentation inventory guard from 88/98 to 90/100 after full regression exposed stale expected counts; resolved in plan 06.25.1-01. | fixed |  | 2026-11-11T20:23:28.724Z | 2026-11-11T20:24:02.160Z |
+| 45 | 06.29 | deviation | tests/test1/test_crispy_columns.py |  | Task 3 compatibility tests were already green after Task 1; no new behavior implementation or fabricated RED was needed. | fixed |  | 2026-11-12T13:46:50.921Z | 2026-11-12T13:47:36.024Z |
 
 ````json
 [
@@ -593,6 +594,19 @@ last_updated: 2026-11-11T20:24:02.160Z
     "reason": "",
     "recorded_at": "2026-11-11T20:23:28.724Z",
     "resolved_at": "2026-11-11T20:24:02.160Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 45,
+    "kind": "deviation",
+    "phase": "06.29",
+    "file": "tests/test1/test_crispy_columns.py",
+    "line": null,
+    "description": "Task 3 compatibility tests were already green after Task 1; no new behavior implementation or fabricated RED was needed.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-12T13:46:50.921Z",
+    "resolved_at": "2026-11-12T13:47:36.024Z",
     "milestone": "v1.0"
   }
 ]

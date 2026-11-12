@@ -1741,11 +1741,11 @@ Plans:
 **Requirements:** Deliver the issue's acceptance criteria, including a complex runnable three-option example with multiple groups and a group shared by two options, updated documentation, and reciprocal documentation/example links. Preserve existing checkbox support and keep finding 20's per-row conditions outside scope.
 **Depends on:** Phase 06.26
 **Ordering:** Settle this public conditional API and its template/JavaScript contracts before Phase 7 freezes the theme surface.
-**Plans:** 5 plans
+**Plans:** 1/5 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.27-01-PLAN.md — Shared ValueToggle descriptor and real Select save/reopen tracer
+- [x] 06.27-01-PLAN.md — Shared ValueToggle descriptor and real Select save/reopen tracer
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.27-02-PLAN.md — Deterministic group checks and bounded choice-clearing persistence

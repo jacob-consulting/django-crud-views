@@ -1,6 +1,6 @@
 # Phase 06.27 — Source Coverage
 
-No external API integration: the phase extends local Django forms, templates, native browser controls and the existing example app. The API detector ran against the complete five-plan body plus the roadmap phase section and returned detected=false, signals=[].
+No external API integration: this phase extends local Django forms, templates, native controls and the example app. The complete plan/roadmap detector returned detected=false.
 
 ## Planning decisions and evidence
 

@@ -3,12 +3,15 @@
 from copy import deepcopy
 
 import pytest
+from crispy_forms.layout import Column
 from django import forms
 from django.template import Context
+from django.test import override_settings
 from lxml import html
 
 from crud_views.lib import button_classes as bc
 from crud_views.lib.crispy import Column6
+from crud_views.lib.crispy import table as columns
 
 
 @pytest.fixture(autouse=True)
@@ -47,3 +50,37 @@ def test_column6_theme_tracer():
         assert wrapper.cssselect("input[name=name]")[0].get("value") == "Ada"
         assert vars(column) == original
         assert all(context[key] == value for key, value in surrounding.items())
+
+
+@pytest.mark.parametrize("width", range(1, 13))
+def test_default_column_bytes(width):
+    helper = getattr(columns, f"Column{width}")
+    assert helper.css_class == f"col-md-{width}"
+    kwargs = {"css_id": "wrapper", "data_test": "column", "css_class": "extra"}
+    assert render_column(helper("name", **kwargs)) == render_column(
+        Column("name", css_class=f"col-md-{width} extra", css_id="wrapper", data_test="column")
+    )
+
+
+@pytest.mark.parametrize("width", range(1, 13))
+@pytest.mark.parametrize("value", ["span-6", "col-12 col-lg-6", "", None])
+@pytest.mark.parametrize("extra", [None, "extra"])
+def test_column_theme_and_project_layers(width, value, extra):
+    column = getattr(columns, f"Column{width}")("name", css_class=extra)
+    original = deepcopy(vars(column))
+    key = f"form:column-{width}"
+    bc.register_button_classes({key: value})
+    expected = set((value or "").split()) | ({extra} if extra else set())
+    assert set(html.fromstring(render_column(column)).classes) == expected
+    other_width = width % 12 + 1
+    other = getattr(columns, f"Column{other_width}")("name")
+    assert set(html.fromstring(render_column(other)).classes) == {f"col-md-{other_width}"}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "project"}):
+        assert set(html.fromstring(render_column(column)).classes) == {"project"} | ({extra} if extra else set())
+    assert set(html.fromstring(render_column(column)).classes) == expected
+    bc.register_button_classes({key: "new-theme"})
+    assert set(html.fromstring(render_column(column)).classes) == {"new-theme"} | ({extra} if extra else set())
+    for suppressed in ("", None):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: suppressed}):
+            assert set(html.fromstring(render_column(column)).classes) == ({extra} if extra else set())
+    assert vars(column) == original

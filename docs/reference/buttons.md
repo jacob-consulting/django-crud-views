@@ -127,6 +127,18 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `form:filter-submit` | `btn btn-primary` |
 | `form:filter-reset` | `btn btn-secondary` |
 | `form:actions` / `form:filter-actions` | `""` |
+| `form:column-1` | `col-md-1` |
+| `form:column-2` | `col-md-2` |
+| `form:column-3` | `col-md-3` |
+| `form:column-4` | `col-md-4` |
+| `form:column-5` | `col-md-5` |
+| `form:column-6` | `col-md-6` |
+| `form:column-7` | `col-md-7` |
+| `form:column-8` | `col-md-8` |
+| `form:column-9` | `col-md-9` |
+| `form:column-10` | `col-md-10` |
+| `form:column-11` | `col-md-11` |
+| `form:column-12` | `col-md-12` |
 | `form:cancel-tag` | `"button"` (`"a"`: an eligible cancel renders as a native link, see [Forms](#forms)) |
 | `conditional:legend` | `""` |
 | `formset:legend` | `""` |
@@ -159,18 +171,38 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `heading:icon-inline` | `me-2` |
 | `heading-page:icon-inline` / `heading-modal:icon-inline` | `""` |
 
-The default table has 90 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 102 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
-keys and two dismissal utilities; the two form-group utilities each contribute one key. The `context` and `list`
+keys and two dismissal utilities; the two form-group utilities each contribute one key, and numbered columns contribute twelve width keys. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
 
+### Numbered column classes
+
+`Column1` through `Column12` read `form:column-1` through `form:column-12` at each render, including layouts
+constructed before theme registration. Each value replaces the complete default class string: responsive strings
+such as `col-12 col-lg-6` and other vocabularies such as `span-6` are supported. Theme values registered with
+`register_button_classes()` override defaults; `CRUD_VIEWS_BUTTON_CLASSES` overrides the theme per key.
+Unconfigured widths retain `col-md-N`. These utility keys do not accept label-mode suffixes.
+
+`Column6("name", css_class="extra")` adds `extra` to the resolved classes. An empty string or `None` suppresses
+the configured width classes while retaining caller extras. Repeated renders resolve the current configuration
+without accumulating classes or mutating the layout. Explicit subclass `css_class` defaults remain authored
+defaults; direct instance assignment to `css_class` replaces the assembled string, including prior extras.
+
+The helpers preserve field rendering, IDs and additional attributes. For the audited installed Bootstrap 5 column
+template, their local wrapper omits the pack's implicit `col-md` fallback. Explicit templates (including subclass
+and template-name hooks), project overrides of the same template name, alternate packs and changed stock source
+retain their own markup and any classes they deliberately emit. Plain crispy `Column` is unchanged. Rows and
+the rest of a theme's grid remain the active template pack's responsibility; these keys alone do not implement
+an alternate framework's grid.
+
 ### Optional workflow defaults
 
-The 90-key table above is core-only. Installing `crud_views_workflow` adds these ten app-owned defaults,
-for 100 effective default keys with only that contribution. Other installed extensions may add more.
+The 102-key table above is core-only. Installing `crud_views_workflow` adds these ten app-owned defaults,
+for 112 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|

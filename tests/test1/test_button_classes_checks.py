@@ -28,6 +28,22 @@ def test_default_config_has_no_messages():
 
 
 @pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("width", range(1, 13))
+@pytest.mark.parametrize("value", ["span-6", "", None, 42])
+def test_column_utility_checks(source, width, value):
+    key = f"form:column-{width}"
+    assert ids(messages_for({key: value}, source)) == (["crud_views.E361"] if value == 42 else [])
+    assert f"column-{width}" not in bc.FORM_KINDS
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("width", range(1, 13))
+@pytest.mark.parametrize("mode", ["icon", "text", "both"])
+def test_column_utility_modes_warn(source, width, mode):
+    assert ids(messages_for({f"form:column-{width}:{mode}": "span"}, source)) == ["crud_views.W362"]
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
 @pytest.mark.parametrize("key", ["conditional:legend", "formset:legend"])
 @pytest.mark.parametrize("value", ["theme-section-legend", ""])
 def test_legend_keys_are_recognized(source, key, value):

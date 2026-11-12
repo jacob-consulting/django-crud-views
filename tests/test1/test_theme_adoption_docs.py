@@ -228,9 +228,9 @@ def test_workflow_presentation_docs():
     section = text.split("### Optional workflow defaults\n", 1)[1].split("\n### ", 1)[0]
     documented = dict(re.findall(r"^\| `(workflow:[^`]+)` \| `([^`]+)` \|$", section, re.M))
     assert documented == CrudViewsWorkflowConfig.crud_views_button_class_defaults
-    assert len(bc.DEFAULT_BUTTON_CLASSES) == 90
-    assert len(bc._get_default_button_classes()) == 100
-    assert "100 effective default keys" in section
+    assert len(bc.DEFAULT_BUTTON_CLASSES) == 102
+    assert len(bc._get_default_button_classes()) == 112
+    assert "112 effective default keys" in section
     precedence = text.split("### Precedence\n", 1)[1].split("\n## ", 1)[0]
     assert "core defaults + installed-app defaults + theme registrations + CRUD_VIEWS_BUTTON_CLASSES" in precedence
     assert "collisions with core or another app's defaults are rejected" in precedence

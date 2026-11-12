@@ -613,11 +613,14 @@ def test_choice_fixture_omitted_fields_defaults():
 )
 @pytest.mark.parametrize("posted", ["omitted", "empty", "forged"])
 @pytest.mark.parametrize("blank", [False, True])
-def test_choice_clear_matrix(row, monkeypatch, name, expected, posted, blank):
+@pytest.mark.parametrize("stock_choice", [False, True])
+def test_choice_clear_matrix(row, monkeypatch, name, expected, posted, blank, stock_choice):
     field = Record._meta.get_field(name)
     # Nonnullable text is admitted only when blank; nullable fields prefer None in either case.
     monkeypatch.setattr(field, "blank", blank if field.null else True)
     form_class = choice_record_form([name])
+    if stock_choice:
+        form_class.base_fields[name] = forms.ChoiceField(choices=field.choices)
     data = {"kind": "off"}
     if posted != "omitted":
         data[name] = "" if posted == "empty" else "forged"
@@ -633,7 +636,10 @@ def test_choice_clear_matrix(row, monkeypatch, name, expected, posted, blank):
 
 @pytest.mark.parametrize("name", ["required_text_choice", "required_integer_choice"])
 @pytest.mark.parametrize("active", [False, True])
-def test_choice_clear_matrix_required_needs_explicit_even_with_default(row, name, active):
+@pytest.mark.parametrize("blank", [False, True])
+def test_choice_clear_matrix_required_needs_explicit_even_with_default(row, monkeypatch, name, active, blank):
+    if name == "required_integer_choice":
+        monkeypatch.setattr(Record._meta.get_field(name), "blank", blank)
     with pytest.raises(ImproperlyConfigured, match=rf"kind.*{name}.*empty_values"):
         choice_record_form([name])(instance=row, data={"kind": "on" if active else "off", name: "A"}).is_valid()
     row.refresh_from_db()
@@ -704,7 +710,10 @@ def test_choice_clear_native_validation_active(row, required, posted):
         assert row.nullable_text_choice == (posted or None)
         assert form_class(instance=row).initial[name] == (posted or None)
     else:
-        assert form.errors.as_data()[name][0].code == ("required" if not posted else "invalid_choice")
+        if posted:
+            assert form.errors.as_data()[name][0].code == "invalid_choice"
+        else:
+            assert form.errors[name] == [form.fields[name].error_messages["required"]]
         with pytest.raises(ValueError):
             form.save()
         row.refresh_from_db()

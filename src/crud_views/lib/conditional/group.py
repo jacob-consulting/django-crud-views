@@ -4,11 +4,37 @@ from contextlib import suppress
 from typing import Any, ClassVar
 
 from django import forms
-from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
+from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured, ValidationError
 from django.db import models
 from django.forms import BooleanField
 
-from .toggle import ToggleSource, ValueToggle
+from .toggle import CallableChoiceIterator, ToggleSource, ValueToggle, _choice_token
+
+
+def _native_choice_conversion(form_field, model_field):
+    """Recognize static scalar choices and unchanged conversion hooks only."""
+    if (
+        type(form_field) not in (forms.ChoiceField, forms.TypedChoiceField)
+        or not isinstance(model_field.choices, (list, tuple))
+        or not model_field.choices
+        or isinstance(form_field.choices, CallableChoiceIterator)
+        or getattr(model_field.to_python, "__func__", None) is not type(model_field).to_python
+        or getattr(form_field.to_python, "__func__", None) is not type(form_field).to_python
+    ):
+        return False
+    if type(form_field) is forms.TypedChoiceField and form_field.coerce not in (str, int, model_field.to_python):
+        return False
+    try:
+        # Reject unusual scalar keys rather than guessing their native empty state.
+        for value, _label in model_field.flatchoices:
+            if value in ("", None):
+                continue
+            token = _choice_token(value)
+            if _choice_token(model_field.to_python(token)) != token:
+                return False
+    except (ImproperlyConfigured, TypeError, ValueError, ValidationError):
+        return False
+    return True
 
 
 def validate_value_groups(groups, fields, model=None):
@@ -58,6 +84,14 @@ def resolve_conditional_empty_value(form_field, model_field, group, field_name):
 
     text_forms = (forms.CharField, forms.EmailField, forms.URLField, forms.SlugField, forms.RegexField)
     text_models = (models.CharField, models.TextField, models.EmailField, models.URLField, models.SlugField)
+    integer_models = (
+        models.IntegerField,
+        models.SmallIntegerField,
+        models.BigIntegerField,
+        models.PositiveIntegerField,
+        models.PositiveSmallIntegerField,
+        models.PositiveBigIntegerField,
+    )
     scalar_pairs = {
         models.IntegerField: forms.IntegerField,
         models.SmallIntegerField: forms.IntegerField,
@@ -88,6 +122,13 @@ def resolve_conditional_empty_value(form_field, model_field, group, field_name):
         native_hook = getattr(type(model_field), "save_form_data", None)
         hook = getattr(model_field.save_form_data, "__func__", None)
         if hook is native_hook:
+            if type(model_field) in (*text_models, *integer_models) and _native_choice_conversion(
+                form_field, model_field
+            ):
+                if model_field.null:
+                    return None
+                if type(model_field) in text_models and model_field.blank:
+                    return ""
             if type(model_field) in text_models and type(form_field) in text_forms:
                 if model_field.null:
                     return None

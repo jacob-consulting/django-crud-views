@@ -145,9 +145,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 42 of 43 · executing"
+    "command": "$gsd-execute-phase 06.29",
+    "label": "Execute Phase 06.29",
+    "reason": "Two plans converged after two review cycles; implementation not started"
   },
-  "updated_at": "2026-11-12T12:54:51.598Z"
+  "updated_at": "2026-11-12T13:36:17.374Z"
 }

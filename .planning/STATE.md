@@ -5,21 +5,21 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.27 complete, ready to plan Phase 7
+stopped_at: Phases 06.27 and 06.28 complete, ready to plan Phase 7
 last_updated: "2026-11-12T13:26:05.878Z"
 last_activity: 2026-11-12
-last_activity_desc: "Phase 06.27 shipped as PR #357"
+last_activity_desc: "Phase 06.27 merged as PR #357; Phase 06.28 awaiting green CI on PR #358"
 state_head: 75732b9e6bc99dfaba8c080bc3bb7a593fea60d0
 progress:
-  total_phases: 34
-  completed_phases: 26
-  total_plans: 180
-  completed_plans: 180
-  percent: 76
+  total_phases: 35
+  completed_phases: 34
+  total_plans: 181
+  completed_plans: 181
+  percent: 97
 milestone_name: milestone
 ---
 
-Total Phases: 34
+Total Phases: 35
 
 # Project State
 
@@ -36,9 +36,17 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: Not planned
 Status: Ready to plan
-Last activity: 2026-11-12 -- Phase 06.27 shipped as PR #357
+Last activity: 2026-11-12 -- Phase 06.27 merged as PR #357; Phase 06.28 awaiting green CI on PR #358
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.28 completion — 2026-11-12
+
+- One plan/two tasks complete. Published placement recipe delegates to the factory; only docs/reference/javascript.md and tests/js/adapters.test.js changed as product files. Native/custom examples, runtime and dependencies preserved.
+- Verification passed 6/6; independent 18 recipe cases and strict MkDocs pass. Full JS 401/401, focused 86/86, deep review zero findings, validation no gaps, security 3/3 closed. UI audit N/A: no rendered UI changes or browser claims.
+- Behavioral RED controls demonstrate old-recipe placement/stale-work failures; temporary mutations restored byte-for-byte. Ship checks subsequently passed: Python 12,519, Ruff and formatting; PR #358 is open. Combined-main checks passed: Python 12,710 with four workers, JavaScript 438, strict docs and Ruff; independent verification refreshed 6/6.
+- Completion scanner mistakes two test commands for file paths and warns about deliberately prose-only requirements (no IDs assigned). Both are bookkeeping warnings, not missing acceptance evidence. Codebase maps refreshed after shipping, then reconciled with Phase 06.27 maps.
+- No matching pending todos, stale handoffs or learnings graduation candidates. Phase 06.27 merged via PR #357; both phases now complete and Phase 7 is next.
 
 ### Phase 06.27 completion — 2026-11-12
 
@@ -796,7 +804,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 176
+- Total plans completed: 181
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -836,6 +844,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.25.1 | 1 | - | - |
 | 06.26 | 4 | - | - |
 | 06.27 | 5 | - | - |
+| 06.28 | 1 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -982,6 +991,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.27 P03 | 10min | 2 tasks | 7 files |
 | Phase 06.27 P04 | 7min | 2 tasks | 10 files |
 | Phase 06.27 P05 | 14min | 3 tasks | 18 files |
+| Phase 06.28 P01 | 11min | 2 tasks | 2 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1255,6 +1265,7 @@ Recent decisions affecting current work:
 - [Phase 06.27]: Render saved None, blank text and the unset sentinel distinctly using existing object-detail view methods.
 - [Phase 06.27]: Keep existing Feature/DocRef stable destinations; prove local routes and generated anchors without claiming unreleased remote availability.
 - [Phase 06.27]: Retain installed JS version mismatch as an explicit compatibility limit; no dependency or lockfile changes.
+- [Phase 06.28]: Plan 01: published tooltip placement wrapper delegates to factory init; runtime/API unchanged; exact-fence placement and lifecycle regressions cover issue 355; no assigned requirement IDs.
 
 ### Pending Todos
 
@@ -1322,6 +1333,7 @@ None yet.
 - Phase 06.25.1 inserted after Phase 6.25: Issue #346 (URGENT)
 - Phase 06.26 inserted after Phase 6: Issue #351 (URGENT)
 - Phase 06.27 inserted after Phase 06.26: Issue #354: choice-driven conditional groups; approved gsd-handover includes explicit clearing overrides and a complex example with reciprocal documentation links. Complete before Phase 7. (URGENT)
+- Phase 06.28 inserted after Phase 06.27: Issue #355: tooltip recipe documentation and executable regression tests; approved GSD handover D-01–D-06 governs scope. Restored the existing 06.27 roadmap entry from the source checkout. (URGENT)
 
 ## Deferred Items
 
@@ -1332,5 +1344,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-12T12:27:24.406Z
-Stopped at: Phase 06.27 complete, ready to plan Phase 7
+Stopped at: Phases 06.27 and 06.28 complete, ready to plan Phase 7
 Resume file: None

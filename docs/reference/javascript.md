@@ -159,17 +159,30 @@ focused one) calls `hide(el)`, and the tooltip stays hidden until the next hover
 the tooltip up for as long as the clicked button has focus. Before the modal's content is replaced, `cv:modal:unload`
 calls `dispose(el)` on every marker under `#cv-modal`, so Bootstrap's per-tooltip modal handlers and instances do not
 accumulate over repeated opens. An adapter without `hide` or `dispose` is simply not called for that step: the
-native-tooltip opt-out above stays a no-op throughout, and the per-location recipe below keeps both Bootstrap defaults
-because it replaces only `init`. For marked markup you remove yourself, call `cv.adapters.tooltip.dispose?.(el)` first.
+native-tooltip opt-out above stays a no-op throughout. The per-location recipe below keeps both factory cleanup methods
+and delegates to the original initializer: keeping `hide` and `dispose` alone is not enough to retain initialization-time
+safeguards against stale transition callbacks. For marked markup you remove yourself, call
+`cv.adapters.tooltip.dispose?.(el)` first.
 
-Per-location configuration needs no package API: build the adapters, then replace `init` on the tooltip adapter. The
-merge into `cv.adapters` is per adapter, so the reassignment is the whole customisation. Tooltips below the context
-toolbar, for Tabler:
+Per-location configuration needs no package API: wire the factory adapters, then wrap the tooltip initializer before
+tooltips are first initialized. While the document is loading, install the wrapper before `DOMContentLoaded`. If the
+document is already ready, `tooltip.js` initializes immediately on evaluation: install the wrapper after `adapters.js`
+and factory wiring but before evaluating `tooltip.js` or calling `cv.initTooltips`. This recipe defaults context-toolbar
+tooltips to `bottom` only when `data-bs-placement` is absent; an explicit attribute wins, and other locations retain
+the library default. Installing it after the first initialization does not reconfigure existing instances. For Tabler:
 
+<!-- cv-tooltip-adapter-location -->
 ```javascript
 Object.assign(cv.adapters, cv.bootstrapAdapters(() => globalThis.tabler));
-cv.adapters.tooltip.init = (el, {location} = {}) =>
-    globalThis.tabler.Tooltip.getOrCreateInstance(el, {placement: location === "context" ? "bottom" : "top"});
+{
+    const init = cv.adapters.tooltip.init;
+    cv.adapters.tooltip.init = (el, options = {}) => {
+        if (options.location === "context" && !el.hasAttribute("data-bs-placement")) {
+            el.setAttribute("data-bs-placement", "bottom");
+        }
+        init(el, options);
+    };
+}
 ```
 
 An adapter written as `init(el)` keeps working; the context is an extra argument.

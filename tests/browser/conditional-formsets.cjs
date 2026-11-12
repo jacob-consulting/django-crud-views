@@ -109,6 +109,78 @@ function checkEvidence(file) {
     for (const corrupt of corruptions) {const copy=structuredClone(r);corrupt(copy);assert.throws(()=>validateEvidence(copy));}
     console.log(`CONDITIONAL_EVIDENCE_OK ${r.cases.length} cases`);
 }
+function validateChoiceAssertion(a, c) {
+    const {observed: o, expected: e} = a.detail;
+    const tokens = c.numeric ? ['0', '1', '2'] : ['consumer', 'wholesale', 'distributor'];
+    const controlCount = c.widget === 'radio' ? 3 : 1;
+    const field = (snapshot, name) => snapshot.groups.flatMap(g => g.fields).find(f => f.name === `choice[<]-0-${name}`);
+    let actual;
+    switch (a.id) {
+    case 'initial-create-edit':
+        assert.equal(o.initial.controls, controlCount);
+        assert.equal(o.created.controls, controlCount);
+        assert.equal(o.initial.value, o.savedInitial.blank_text);
+        actual = {create:o.created.value, edit:o.initial.value, groups:o.initial.groups.map(g => g.visible)};
+        break;
+    case 'keyboard-change':
+        actual = {value:o.value, groups:o.groups.map(g => g.visible)};
+        break;
+    case 'shared-active-kept':
+        actual = {shared:field(o, 'nullable_text').value, disabled:field(o, 'nullable_text').disabled};
+        break;
+    case 'unsaved-away-back':
+        actual = {shared:field(o, 'nullable_text').value, number:field(o, 'number').value};
+        break;
+    case 'final-inactive-cleared':
+        assert.equal(o.status, 200);
+        assert.equal(o.reopened.value, tokens[0]);
+        assert.equal(field(o.reopened, 'nullable_text').value, '');
+        assert.equal(field(o.reopened, 'number').value, '');
+        actual = {value:o.persisted.blank_text, shared:o.persisted.nullable_text, number:o.persisted.number,
+            flag:o.persisted.flag, outside:o.persisted.active};
+        break;
+    case 'invalid-controller-zero-save':
+        assert.equal(o.invalidChoice, true);
+        assert.deepEqual(o.recordsAfter, o.recordsBefore, 'Invalid controller changed saved records');
+        assert(Array.isArray(o.recordsBefore) && o.recordsBefore.length > 0);
+        actual = {status:o.status, saves:o.eventsAfter - o.eventsBefore};
+        break;
+    case 'disabled-trusted':
+        assert.equal(o.status, 200);
+        assert.equal(o.controllerDisabled, true);
+        assert.equal(o.after.blank_text, o.before.blank_text);
+        assert.equal(o.after.number, o.before.number);
+        actual = {controller:o.after.blank_text, number:o.after.number};
+        break;
+    case 'independent-disabled':
+        actual = {independent:o.independent, releasedOnActive:field(o.snapshot, 'nullable_text').disabled === false};
+        break;
+    case 'native-reset':
+    case 'canceled-reset':
+        actual = {value:o.value, shared:field(o, 'nullable_text').value};
+        break;
+    case 'modal-422-rebind':
+        assert.equal(o.unloadedAttached, true);
+        actual = {status:o.status, usableFocus:o.focus.usable, rebound:field(o.snapshot, 'nullable_text').disabled === false};
+        break;
+    case 'usable-radio-focus':
+        if (c.widget === 'radio') assert.equal(o.checked, true);
+        actual = {name:o.name, value:o.value, usable:o.usable};
+        break;
+    case 'adversarial-token-inert':
+        assert.equal(o.controls, controlCount);
+        actual = {executed:o.executed, escapedMetadata:typeof o.metadata[0] === 'string' && o.metadata[0].includes('<img')};
+        break;
+    case 'active-required-redisplay':
+    case 'exact-prefix-two-forms':
+    case 'unload-listener-cleanup':
+        actual = o;
+        break;
+    default:
+        assert.fail(`Unchecked choice assertion: ${a.id}`);
+    }
+    assert.deepEqual(actual, e, `Contradictory choice observation: ${a.id}`);
+}
 function validateEvidence(r) {
     assert(r.completed && r.passed && !r.error && r.pageErrors.length === 0, 'Incomplete/failed browser record');
     assert.deepEqual(r.sourceHashes, hashes(), 'Stale source hashes or wrong input set');
@@ -127,6 +199,7 @@ function validateEvidence(r) {
         if (c.id === 'choice-widgets') {
             assert(c.assertions.every(a => a.theme === c.theme && a.widget === c.widget && a.numeric === c.numeric &&
                 a.detail && Object.hasOwn(a.detail, 'observed') && Object.hasOwn(a.detail, 'expected')), 'Missing choice dimensions/observations');
+            for (const assertion of c.assertions) validateChoiceAssertion(assertion, c);
             assert(c.requests.some(r => r.status === 422) && c.requests.some(r => r.status === 200), 'Missing choice HTTP evidence');
             assert(c.state?.choice_records?.some(row => row.id === c.pk), 'Missing choice database evidence');
         }
@@ -380,7 +453,9 @@ async function runCase({c, page, context, base, before, result, check, load, sta
         const afterInvalid = await state();
         evidence('invalid-controller-zero-save',invalid.status===422 && invalid.body.includes('Select a valid choice.') &&
             JSON.stringify(beforeInvalid.choice_records)===JSON.stringify(afterInvalid.choice_records) && beforeInvalid.events.length===afterInvalid.events.length,
-            {status:invalid.status,eventsBefore:beforeInvalid.events.length,eventsAfter:afterInvalid.events.length}, {status:422,saves:0});
+            {status:invalid.status,invalidChoice:invalid.body.includes('Select a valid choice.'),
+                recordsBefore:beforeInvalid.choice_records,recordsAfter:afterInvalid.choice_records,
+                eventsBefore:beforeInvalid.events.length,eventsAfter:afterInvalid.events.length}, {status:422,saves:0});
         await field('nullable_text').fill('');
         const required = await post();
         const requiredBody = await page.evaluate(html => {
@@ -394,7 +469,8 @@ async function runCase({c, page, context, base, before, result, check, load, sta
         const trusted=await post('#editor',c.url+'&disabled=1',{[name]:tokens[0],'choice[<]-0-number':'999','choice[<]-0-nullable_text':'trusted submission'});
         const trustedAfter=(await state()).choice_records.find(row=>row.id===c.pk);
         evidence('disabled-trusted',await controls().first().isDisabled()&&trusted.status===200&&trustedAfter.blank_text===trustedBefore.blank_text&&trustedAfter.number===trustedBefore.number,
-            {status:trusted.status,before:trustedBefore,after:trustedAfter},{controller:trustedBefore.blank_text,number:trustedBefore.number});
+            {status:trusted.status,controllerDisabled:await controls().first().isDisabled(),before:trustedBefore,after:trustedAfter},
+            {controller:trustedBefore.blank_text,number:trustedBefore.number});
         await load(); await choose(0);
         await field('flag').uncheck(); await field('active').check();
         const finalPost=await post('#editor',c.url,{'choice[<]-0-nullable_text':'forged','choice[<]-0-number':'999'});
@@ -407,7 +483,7 @@ async function runCase({c, page, context, base, before, result, check, load, sta
         await load(c.url+'&adversarial=1');
         const hostile = await page.evaluate(() => ({executed:!!window.choiceInjected,metadata:JSON.parse(document.querySelector('[cv-data-toggle-values]').getAttribute('cv-data-toggle-values'))}));
         evidence('adversarial-token-inert',!hostile.executed&&hostile.metadata[0].includes('<img')&&await controls().count()===(c.widget==='radio'?3:1),
-            hostile,{executed:false,escapedMetadata:true});
+            {...hostile,controls:await controls().count()},{executed:false,escapedMetadata:true});
         // Exercise the shipped modal transport: real HTTP partial, 422 replacement, unload and rebind.
         await load(c.url+'&harness=1'); await page.locator('#launch').click();
         await page.locator('#cv-modal #editor').waitFor(); await delay(c.theme==='stock'?400:60);
@@ -424,7 +500,8 @@ async function runCase({c, page, context, base, before, result, check, load, sta
         const modalFocus=await page.evaluate(()=>({name:document.activeElement.name,usable:!!document.activeElement.getClientRects().length&&!document.activeElement.disabled}));
         await choose(0); assert(await field('nullable_text').isDisabled()); await choose(2);
         evidence('modal-422-rebind',actual.status()===422&&modalFocus.usable&&await field('nullable_text').isEnabled()&&await page.evaluate(()=>choiceUnloadedAttached),
-            {status:actual.status(),focus:modalFocus,snapshot:await snapshot()},{status:422,usableFocus:true,rebound:true});
+            {status:actual.status(),focus:modalFocus,snapshot:await snapshot(),unloadedAttached:await page.evaluate(()=>choiceUnloadedAttached)},
+            {status:422,usableFocus:true,rebound:true});
         const cleanup=await page.evaluate(tokens=>{
             const groups=[...oldChoiceForm.querySelectorAll('[cv-data-toggle-group]')], displays=groups.map(g=>g.style.display);
             const field=oldChoiceForm.elements['choice[<]-0-nullable_text'];

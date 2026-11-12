@@ -145,9 +145,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 43 of 44 · executing"
+    "command": "$gsd-execute-phase 06.28",
+    "label": "Execute Phase 06.28",
+    "reason": "One plan in one wave; cross-AI review converged in two cycles with no unresolved findings."
   },
-  "updated_at": "2026-11-12T12:31:49.646Z"
+  "updated_at": "2026-11-12T13:02:53.269Z"
 }

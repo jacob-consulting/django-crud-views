@@ -1883,5 +1883,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 06.23. Explicit header-icon suppression with Icon constants | 2/2 | Complete    | 2026-11-10 |
 | 06.24. Opt-in compact formsets | 6/6 | Complete    | 2026-11-11 |
-| 06.28. Tooltip recipe lifecycle safeguards (#355) | 0/TBD | Not started | - |
+| 06.28. Tooltip recipe lifecycle safeguards (#355) | 0/1 | Planned | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

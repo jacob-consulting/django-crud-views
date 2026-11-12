@@ -134,15 +134,20 @@
       "status": "complete"
     },
     {
+      "number": "06.29",
+      "name": "Themeable column helpers (#356)",
+      "status": "pending"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-discuss-phase 7",
-    "label": "Discuss theme-surface stability policy",
-    "reason": "Phase 06.26 complete; canonical verification and UAT passed"
+    "command": "$gsd-plan-phase 06.29",
+    "label": "Plan themeable column helpers (#356)",
+    "reason": "Phase 06.29 created from the approved issue #356 handover; implementation has not started"
   },
-  "updated_at": "2026-11-11T21:58:28.065021+00:00"
+  "updated_at": "2026-11-12T12:26:57.756843Z"
 }

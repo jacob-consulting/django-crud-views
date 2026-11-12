@@ -51,6 +51,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.25: Issue #349** (completed 2026-11-11)
 - [x] **Phase 06.25.1: Issue #346** (completed 2026-11-11)
 - [x] **Phase 06.26: Issue #351** (completed 2026-11-11)
+- [ ] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1733,6 +1734,19 @@ Plans:
 **Wave 4** *(depends on completed Plan 03)*
 - [x] 06.26-04-PLAN.md — Separate Checklist ViewSet with compact checkbox rows, demo integration and browser evidence
 
+### Phase 06.29: Themeable column helpers (#356) (INSERTED)
+
+**Goal:** Theme authors configure `Column1` … `Column12` through the existing class registry, preserving Bootstrap defaults and additive caller classes while supporting complete class replacement at render time.
+**Source:** [Issue #356 — GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/356#gsd-handover--decisions-and-context). Carry approved decisions D-01–D-07 and the issue's acceptance criteria into planning.
+**Requirements:** Add `form:column-1` … `form:column-12` with `col-md-N` defaults and existing project-over-theme precedence, including empty/None suppression. Resolve classes at render time without mutating reusable layouts; retain caller extras, crispy attributes, template customization, and built-in delete/formset consumers. Prevent the stock helper rendering from reintroducing crispy-bootstrap5's implicit `col-md` fallback for non-Bootstrap or empty classes. Include focused rendered-output regression coverage and theme/project configuration documentation.
+**Depends on:** Phase 6 (existing class-registry and crispy integration contracts).
+**Ordering:** Complete before Phase 7 freezes the public theme surface. The maintainer explicitly assigned 06.29 to this worktree; phases 06.27 and 06.28 are being handled in other worktrees and are not implementation dependencies of this issue.
+**Scope exclusions:** Row keys, plain crispy `Column`, compact-formset grid redesign, a new registry or breakpoint setting, and broader template-pack changes. Internal rendering mechanics and test organization remain planning choices; preserve explicit authored classes and template overrides.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run $gsd-plan-phase 06.29 to break down)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1844,4 +1858,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.21. Snippet context exposes view and parent_object | 2/2 | Complete    | 2026-11-10 |
 | 06.23. Explicit header-icon suppression with Icon constants | 2/2 | Complete    | 2026-11-10 |
 | 06.24. Opt-in compact formsets | 6/6 | Complete    | 2026-11-11 |
+| 06.29. Themeable column helpers (#356) | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

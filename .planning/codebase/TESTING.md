@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
-last_mapped_at: 2026-11-11
+last_mapped_commit: 848ceddd54ff9f2e49313b862927900726d28346
+last_mapped_at: 2026-11-12
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-11
+**Analysis Date:** 2026-11-12
 
 ## Test Framework
 
@@ -141,13 +141,30 @@ Vitest loads the real asset into jsdom before cases (`tests/js/toggle.test.js`, 
 
 ---
 
-## Independent Legend Hooks (Phase 06.25.1)
+## Registry and Rendering Contract Tests
 
 - `tests/test1/test_button_classes.py` pins both new registry keys, empty defaults, and the documented core count. `tests/test1/test_button_classes_checks.py::test_legend_keys_are_recognized` parameterizes the two keys across theme registration and project settings, including explicit empty values.
 - Registry fixtures snapshot `_THEME_BUTTON_CLASSES` and reset the class cache before and after each test. Reuse this isolation when changing registrations or settings; don't rely on pytest-xdist worker lifetime to clear shared module state (`tests/test1/test_button_classes.py`, `tests/test1/test_button_classes_checks.py`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - `tests/test1/test_conditional_layout.py` verifies layered precedence and independence, class escaping, ordinary legend text escaping, and the no-legend `div` path against rendered crispy HTML. `tests/test1/test_formsets_compact.py` parameterizes full, nested, classic/compact, and row-only formsets; it checks direct owner legends, omission on row-only roots, and preservation of full nested child legends.
 - Hostile-value tests must check both raw escaped markup and parsed DOM semantics: exact original text/class, no child injection, and no unexpected script/image/attribute nodes. A row-only fragment assertion should target its own root; nested full descendants are expected to have legends (`tests/test1/test_conditional_layout.py::test_toggle_group_legend_escapes_plain_text_and_classes`, `tests/test1/test_formsets_compact.py::test_formset_legend_escapes_plain_text_and_classes`).
 - `tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs` and `tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table` guard reference inventories: 90 core keys and 100 effective core-plus-workflow keys. Keep embedded fresh-process source and documentation counts synchronized.
-- Phase 06.25.1 retained a full-suite result of 12,486 passed and one existing skip on Python 3.12 / Django 5.2; this is one environment, not a run of the supported matrix. Focused legend/registry/documentation selection and the full run used multicore pytest. See `.planning/phases/06.25.1-issue-346/06.25.1-VERIFICATION.md` for exact gate evidence and environment details.
+- Button-class registry tests pin the two legend keys and empty defaults. Tests that modify theme registrations snapshot and restore `_THEME_BUTTON_CLASSES` and reset its cache; the default inventory is 100 keys and the core reference table accounts for 90, with workflow adding 10 (`tests/test1/test_button_classes.py`, `tests/test1/test_button_classes_checks.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
-*Testing analysis: 2026-11-11*
+## Executable Documentation Recipes
+
+**Published JavaScript fences:** Mark a public recipe with a unique HTML comment and extract the actual fence in the test. `tests/js/adapters.test.js` loads the shipped adapter factory and executes the `cv-tooltip-adapter-location` fence from `docs/reference/javascript.md`; do not duplicate the recipe in test code. Keep assertions tied to production factory behavior, including option precedence, instance identity, disposal, stale callback suppression, absent components, late availability, and repeated initialization.
+
+**Cross-runtime formset integration:** `npm test` is Node/jsdom-only. The required `npm run test:integration` command executes real Django-rendered fragments and submits the DOM's actual `FormData`. Run it from the repository root with an explicit already-prepared interpreter and source checkout path:
+
+```bash
+CV_FRAGMENT_PYTHON="$PWD/.nox/crispy_floor-3-12-django-6-0/bin/python" \
+PYTHONPATH="$PWD/src:$PWD" npm run test:integration
+```
+
+`CV_FRAGMENT_PYTHON` must be an executable Python with Django test dependencies; select the appropriate prepared runtime when its path differs. The harness validates that interpreter and fails on missing or unusable values; it does not install packages or silently skip the Django bridge (`docs/reference/javascript.md`, `tests/js-integration/formset.test.js`).
+
+## Latest Ship Gate Evidence
+
+- Phase 06.28 ship verification passed 12,519 Python tests using `-n 4` on Python 3.12.3 / Django 6.1.2, and 401 JavaScript tests. `mkdocs build --strict`, `ruff check`, and `ruff format --check` passed. This is the recorded ship environment only; it does not establish that the supported Python/Django Nox matrix was run.
+
+*Testing analysis: 2026-11-12*

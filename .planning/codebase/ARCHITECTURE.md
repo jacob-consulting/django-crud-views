@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
-last_mapped_at: 2026-11-11
+last_mapped_commit: 848ceddd54ff9f2e49313b862927900726d28346
+last_mapped_at: 2026-11-12
 ---
-<!-- refreshed: 2026-11-11 -->
+<!-- refreshed: 2026-11-12 -->
 
 # Architecture
 
-**Analysis Date:** 2026-11-11
+**Analysis Date:** 2026-11-12
 
 ## System Overview
 
@@ -175,6 +175,7 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 2. `{% cv_css %}` and `{% cv_js %}` render enabled bundle entries; optional django-pipeline integration consumes lazy sources from `src/crud_views/lib/pipeline.py`.
 3. The theme's shared templates and JavaScript adapters initialize configured behavior such as modals, tooltips, list filters, formsets and action controls (`src/crud_views/templates/crud_views/shared/`, `src/crud_views/static/crud_views/js/`).
 4. `src/crud_views_object_detail/apps.py` registers the object-detail script bundle; `tabs.js` initializes/disposes marked tab triggers on document readiness and modal load/unload. Accordion `presentation.selected` determines initial expanded/collapsed classes and `aria-expanded`; Bootstrap's data API handles later trigger clicks and parent-scoped collapse behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`).
+5. Core tooltips are opt-in on package-owned `[data-cv-tooltip]` triggers. `tooltip.js` initializes them on document readiness, modal content load, and added formset rows; it hides the clicked trigger's tooltip and disposes modal-contained instances before replacement. App-owned Bootstrap tooltip markers are left to the host (`src/crud_views/static/crud_views/js/tooltip.js`). The default adapter uses `Tooltip.getInstance()` for hide/dispose and guards Bootstrap's queued transition callbacks after disposal so stale completion work cannot act on a replacement instance (`src/crud_views/static/crud_views/js/adapters.js`).
 
 ### Extension Flow
 
@@ -283,6 +284,7 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - **Import-time registration:** View class declarations require their ViewSet to exist first and can fail on duplicate keys/names; keep declaration/import order explicit (`src/crud_views/lib/view/meta.py`, `src/crud_views/lib/viewset/__init__.py`).
 - **Theme coupling:** The bundled presentation targets Bootstrap 5 and Django templates; theme-facing changes should update the matching template, Python context/tag contract, and browser behavior where relevant (`src/crud_views/templates/crud_views/`, `src/crud_views/lib/view/`, `src/crud_views/static/crud_views/`).
 - **Adapter boundary:** Package-owned browser modules should use semantic methods on `cv.adapters` when they implement behavior through a UI library. Object-detail tabs are explicitly marked and disposed on modal unload; accordion markup relies on Bootstrap's declarative Collapse data API instead (`src/crud_views/static/crud_views/js/adapters.js`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
+- **Tooltip lifecycle:** Only `[data-cv-tooltip]` is owned by core initialization. Keep its init, hide, and dispose behavior behind `cv.adapters.tooltip`; modal unload must occur while old content is attached, and late Bootstrap transition callbacks must be guarded after disposal (`src/crud_views/static/crud_views/js/tooltip.js`, `src/crud_views/static/crud_views/js/adapters.js`).
 - **Optional dependencies:** Keep integrations in their dedicated extension packages or guarded core integration modules, and use the public core classes where supported (`src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`, `src/crud_views/lib/crispy/`).
 
 ## Anti-Patterns
@@ -343,4 +345,4 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 
 ---
 
-*Architecture analysis: 2026-11-11*
+*Architecture analysis: 2026-11-12*

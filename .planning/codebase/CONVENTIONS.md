@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 6c09417f8f15a93e0e39d8340ec05dba331e82fb
-last_mapped_at: 2026-11-11
+last_mapped_commit: 848ceddd54ff9f2e49313b862927900726d28346
+last_mapped_at: 2026-11-12
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-11
+**Analysis Date:** 2026-11-12
 
 ## Naming Patterns
 
@@ -91,7 +91,7 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 
 ---
 
-## Independent Legend Class Hooks (Phase 06.25.1)
+## Registry and Template Contracts
 
 - Add presentation hooks through the existing layered button-class registry, with separate keys for independent consumers (`conditional:legend`, `formset:legend`). Both keys default to `""`; keep empty overrides meaningful and preserve the existing default rendering (`src/crud_views/lib/button_classes.py`, `tests/test1/test_button_classes.py`).
 - Registry precedence is defaults → installed theme registrations → `CRUD_VIEWS_BUTTON_CLASSES`; cache invalidation follows theme registration and settings changes. Tests that register theme classes should snapshot/restore `bc._THEME_BUTTON_CLASSES` and reset the cache around each test (`tests/test1/test_button_classes_checks.py`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
@@ -99,4 +99,10 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - Preserve markup ownership: ToggleGroup without a legend remains a `div`; formset row-only fragments omit their own outer fieldset/legend, while nested full formsets retain their own direct legends. Assert direct-child ownership and fragment roots rather than banning all descendant legends (`tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - Button-class reference inventories are executable contracts: core has 90 keys and the effective core-plus-workflow inventory has 100. Update the canonical table, reference docs, workflow inventory, and embedded fresh-process guard together (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
-*Convention analysis: 2026-11-11*
+## Executable Documentation Recipes
+
+- Mark public JavaScript recipe fences with stable HTML comments and extract the published fence in tests instead of copying its text into a test-only fixture. The per-location tooltip recipe uses `<!-- cv-tooltip-adapter-location -->`; `tests/js/adapters.test.js` runs the exact fence against the shipped factory loaded by its test harness. Preserve the marker when editing that recipe and update its behavioral assertions alongside the public code (`docs/reference/javascript.md`, `tests/js/adapters.test.js`).
+- Keep recipe wrappers delegating to the public adapter/factory. For the tooltip placement recipe, install factory adapters first, capture the existing `init`, apply only the context default when placement is absent, then delegate with the original options. Tests cover explicit and empty placement, non-context locations, cleanup, stale callbacks, replacement identity, missing components, and repeat initialization (`docs/reference/javascript.md`, `tests/js/adapters.test.js`).
+- Document both script-loading paths for recipes that initialize immediately: install before `DOMContentLoaded` while loading, or after adapter/factory wiring but before evaluating the initializer once the document is ready. State which changes affect future instances versus already-created instances (`docs/reference/javascript.md`).
+
+*Convention analysis: 2026-11-12*

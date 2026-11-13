@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-12
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
+last_mapped_at: 2026-11-13
+last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## Languages
 
@@ -56,6 +56,7 @@ last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 - Demo-only dependencies are Gunicorn, WhiteNoise, and django-ratelimit (`requirements/demo.txt`)
 - Formset layouts, including compact layouts, use existing Django forms and crispy APIs; no additional package dependency is introduced (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/layout.py`)
 - Compact formsets support Django's exact stock `CheckboxInput` widget without an opt-in marker. Custom widgets and templates need the documented compatibility marker and remain responsible for their markup (`docs/reference/formsets.md`).
+- Workflow transition button presentation reads optional `variant` and `icon` metadata from django-fsm transition `custom` data; the fixed supported Bootstrap variants resolve through workflow button-class keys, while icons use the shared icon renderer and form icon host (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`). This adds no dependency.
 
 ## Configuration
 
@@ -82,4 +83,4 @@ last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 
 ---
 
-*Stack analysis: 2026-11-12*
+*Stack analysis: 2026-11-13*

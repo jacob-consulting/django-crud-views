@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-12
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
+last_mapped_at: 2026-11-13
+last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## APIs & External Services
 
@@ -25,6 +25,7 @@ last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 **Optional Django extensions:**
 - Install extras independently as `django-crud-views[workflow]`, `[polymorphic]`, `[guardian]`, or `[ordered]`; `[all]` combines them. The apps are shipped in the distribution, but each optional integration requires its corresponding third-party package and app setup (`pyproject.toml`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`).
 - django-fsm-2 and django-fsm-2-admin provide workflow transitions and admin integration (`src/crud_views_workflow/`). `run_transition()` validates actor, object, and transition state and writes history atomically on the selected DB alias (`src/crud_views_workflow/lib/execution.py`); direct FSM method calls bypass that helper behavior.
+- django-fsm transition `custom` metadata may supply `variant` and `icon` presentation values. Button variants are limited to `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`; each maps to a workflow button-class key with defaults registered by `src/crud_views_workflow/apps.py`. Icons resolve through the shared semantic icon registry and are placed according to `form:icon-host`; absent or unavailable icons leave text controls. These values only affect button presentation, not transition eligibility or radio rendering (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `docs/reference/workflow_view.md`).
 - django-polymorphic supports polymorphic querysets and type-specific creation (`src/crud_views_polymorphic/`).
 - django-guardian adds per-object permission checks and uses the host project's auth backend configuration (`src/crud_views_guardian/lib/mixins.py`).
 - django-ordered-model supports ordering actions for host models that opt in (`src/crud_views/lib/ordered.py`, `pyproject.toml`).
@@ -98,4 +99,4 @@ last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 
 ---
 
-*Integration audit: 2026-11-12*
+*Integration audit: 2026-11-13*

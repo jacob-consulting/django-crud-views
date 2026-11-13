@@ -1945,5 +1945,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
 | 06.30. Queryset-driven conditional fields (#360) | 0/TBD | Not started | - |
-| 06.31. Developer-only manage diagnostics (#361) | 0/TBD | Not started | - |
+| 06.31. Developer-only manage diagnostics (#361) | 0/6 | Planned | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

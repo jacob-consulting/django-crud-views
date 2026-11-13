@@ -1,7 +1,7 @@
 from io import StringIO
 from unittest.mock import patch
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core.management import CommandError, call_command
 from django.test import TestCase, override_settings
@@ -101,6 +101,94 @@ class DeveloperSeedTest(TestCase):
             self.assertFalse(hasattr(user, attr))
         self.assertTrue(user.has_perm("library.view_author"))
         self.assertTrue(user.has_perm("resources.view_s3file"))
+
+    def test_seed_model_conflict_preserves_private_credentials_and_memberships(self):
+        user = get_user_model().objects.create_user(username="developer", password="private-password")
+        original_password = user.password
+        group = Group.objects.create(name="Existing readers")
+        user.groups.add(group)
+        perm = Permission.objects.get(content_type__app_label="library", codename="change_author")
+        user.user_permissions.add(perm)
+
+        with self.assertRaisesRegex(CommandError, "developer.*library.change_author"):
+            call_command("seed", stdout=StringIO())
+
+        self.assertIsNone(authenticate(username="developer", password="developer"))
+        self.assertIsNotNone(authenticate(username="developer", password="private-password"))
+        user.refresh_from_db()
+        self.assertEqual(user.password, original_password)
+        self.assertEqual(list(user.groups.all()), [group])
+        self.assertEqual(list(user.user_permissions.all()), [perm])
+        self.assertTrue(user.has_perm("library.change_author"))
+        self.assertFalse(Group.objects.filter(name=crud_views_settings.manage_group).exists())
+        self.assertFalse(get_user_model().objects.filter(username__in=("alice", "bob")).exists())
+
+    def test_seed_group_object_conflict_leaves_no_new_public_account(self):
+        from guardian.shortcuts import assign_perm, get_perms
+        from guardian_demo.models import Document
+        from library.models import Author
+
+        owner = get_user_model().objects.create_user(username="alice", password="private-alice")
+        original_password = owner.password
+        document = Document.objects.create(title="Roadmap 2027", body="Operator content", owner=owner)
+        group = Group.objects.create(name="Example developers")
+        owner.groups.add(group)
+        assign_perm("guardian_demo.change_document", group, document)
+
+        with patch.object(crud_views_settings, "manage_group", group.name):
+            with self.assertRaisesRegex(CommandError, "guardian_demo.Document.*change_document"):
+                call_command("seed", stdout=StringIO())
+
+        self.assertIsNone(authenticate(username="developer", password="developer"))
+        self.assertFalse(get_user_model().objects.filter(username="developer").exists())
+        self.assertFalse(get_user_model().objects.filter(username="bob").exists())
+        self.assertEqual(list(group.user_set.all()), [owner])
+        self.assertEqual(set(get_perms(group, document)), {"change_document"})
+        self.assertTrue(get_user_model().objects.get(pk=owner.pk).has_perm("guardian_demo.change_document", document))
+        owner.refresh_from_db()
+        self.assertEqual(owner.password, original_password)
+        self.assertFalse(owner.user_permissions.exists())
+        self.assertFalse(Author.objects.exists())
+        document.refresh_from_db()
+        self.assertEqual(document.body, "Operator content")
+        self.assertEqual(document.owner_id, owner.pk)
+        self.assertEqual(Document.objects.count(), 1)
+
+    def test_seed_late_object_conflict_rolls_back_earlier_feature_changes(self):
+        from delete_demo.models import Milestone, Project, Task
+        from guardian.shortcuts import assign_perm, get_perms
+        from guardian_demo.models import Document
+        from library.models import Author
+        from workflow.models import Campaign
+
+        owner = get_user_model().objects.create_user(username="alice", password="private-alice")
+        user = get_user_model().objects.create_user(username="developer", password="private-password")
+        original_passwords = {actor.pk: actor.password for actor in (owner, user)}
+        group = Group.objects.create(name="Existing readers")
+        user.groups.add(group)
+        project = Project.objects.create(title="Old prototype", owner=owner)
+        milestone = Milestone.objects.create(project=project, title="Clickable mockup")
+        assign_perm("delete_demo.change_milestone", user, milestone)
+
+        with self.assertRaisesRegex(CommandError, "delete_demo.Milestone.*change_milestone"):
+            call_command("seed", stdout=StringIO())
+
+        self.assertIsNone(authenticate(username="developer", password="developer"))
+        self.assertIsNotNone(authenticate(username="developer", password="private-password"))
+        for actor in (owner, user):
+            actor.refresh_from_db()
+            self.assertEqual(actor.password, original_passwords[actor.pk])
+            self.assertFalse(actor.user_permissions.exists())
+        self.assertEqual(list(user.groups.all()), [group])
+        self.assertFalse(Group.objects.filter(name=crud_views_settings.manage_group).exists())
+        self.assertFalse(get_user_model().objects.filter(username="bob").exists())
+        self.assertEqual(set(get_perms(user, milestone)), {"change_milestone"})
+        self.assertTrue(user.has_perm("delete_demo.change_milestone", milestone))
+        self.assertEqual(list(Project.objects.all()), [project])
+        self.assertEqual(list(Milestone.objects.all()), [milestone])
+        for model in (Author, Campaign, Document, Task):
+            with self.subTest(model=model.__name__):
+                self.assertFalse(model.objects.exists())
 
     def test_prefetched_relations_do_not_hide_later_conflicts(self):
         user = get_user_model().objects.create_user(username="developer")

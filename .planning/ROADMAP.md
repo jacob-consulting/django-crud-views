@@ -1799,7 +1799,7 @@ Plans:
 **Requirements:** Deliver upstream support, the verified tabler-test roastery upgrade, and one separate example app with its own models, focused standalone/inline source modules, ordinary/compact variants, and reciprocal documentation links. Strict matching is the default; check offered options on rendering and the validated selection on POST, permit explicit no-fields categories and an opt-in unmatched policy, and do not scan unused categories. Preserve browser values until save; hide inactive ordinary groups and keep compact cells visible but disabled. Preserve existing conditional behavior and bounded query costs.
 **Depends on:** Phase 06.29 (roadmap sequence); builds on Phase 06.27's conditional groups and Phases 06.24–06.26's compact formset contracts.
 **Ordering:** Complete before Phase 7 freezes the public theme surface; include the settled queryset/inline conditional template and JavaScript contracts in that inventory.
-**Plans:** 12/13 plans executed; consistent leaf frames and final acceptance planned; remaining UAT pending
+**Plans:** 13/13 plans executed; consistent leaf frames and current final acceptance verified; owner audits and remaining UAT pending
 
 Plans:
 **Wave 1**
@@ -1837,7 +1837,7 @@ Plans:
 - [x] 06.30-12-PLAN.md — Shared per-level frame opt-out and Checklist/Choices/Referenten examples
 
 **Wave 12 — Final-source acceptance** *(depends on 06.30-12)*
-- [ ] 06.30-13-PLAN.md — Documentation, then one final browser/release refresh and canonical audit handoff
+- [x] 06.30-13-PLAN.md — Documentation, then one final browser/release refresh and canonical audit handoff
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1953,5 +1953,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
-| 06.30. Queryset-driven conditional fields (#360) | 12/13 | In Progress — leaf frames implemented; final acceptance and UAT pending | - |
+| 06.30. Queryset-driven conditional fields (#360) | 13/13 | In Progress — current acceptance passes; owner audits and UAT pending | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

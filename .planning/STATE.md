@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 13
-status: executing
-stopped_at: Completed 06.30-12; plan 13 documentation and final acceptance next; H1/rest-H2 pending
-last_updated: "2026-11-13T17:16:09.751Z"
+status: verifying
+stopped_at: Completed 06.30-13; owner audits and H1/rest-H2 pending
+last_updated: "2026-11-13T17:35:21.765Z"
 last_activity: 2026-11-13
-last_activity_desc: Plan 12 executed; plan 13 documentation and final acceptance next; H1/rest-H2 pending
-state_head: aa26c1e6efabdc663162a96a80076bbbaafb60d2
+last_activity_desc: Plan 13 executed; complete current acceptance passes; owner audits and H1/rest-H2 pending
+state_head: 2f75ea4ebcdf0a32e3f80c11261c48f5502960a1
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 196
-  completed_plans: 195
+  completed_plans: 196
 milestone_name: milestone
 ---
 
@@ -34,10 +34,17 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN VERIFICATION
 Current Plan: 13
 Total Plans in Phase: 13
-Status: Ready to execute
-Last activity: 2026-11-13 — Plan 12 committed with 193 browser assertions; plan 13 remains pending
+Status: Awaiting owner audits and human verification
+Last activity: 2026-11-13 — Plan 13 committed with complete current acceptance; owner audits and H1/rest-H2 pending
 
-Next: Execute plan 13: publish reference/migration/release documentation, then refresh final cross-repository acceptance. Plan 12 implementation passes focused checks; G-06.30-2 still awaits final acceptance and owner audits. Prior canonical verification describes the pre-change baseline; H1/rest-H2 remain pending and Phase 7 does not advance.
+Next: Validation, security and UI owners reconcile plan 12/13, then independent phase verification updates canonical G-06.30-2 status and its CLI fingerprint. All thirteen plans are executed with current acceptance. H1/rest-H2 remain pending and Phase 7 does not advance.
+
+### Phase 06.30 plan 13 final acceptance — 2026-11-13
+
+- Thirteen of thirteen plans executed. Reference/migration/release documentation agrees with explicit per-level ordinary/compact suppression and Checklist/Choices/Speakers examples. Docs/link tests149 and strict build pass before acceptance and at the tracer replay.
+- Original Chromium targets pass upstream6/87 and downstream4/47 with ten current captures. Complete fresh18-command matrix passes: core13,310 plus exact known CSPskip; four compatibility/floor selections712 each; CSP1; JS447/2; examples506+183subtests; docs149; downstream238/83. Release41checks and independent EVIDENCE_OK pass.
+- Focused plan12 record remains current:556 source hashes and26 capture hashes verified,193 assertions. Fresh preservation comparisons match developer data, active downstream main and original dirty state.json; port9000 untouched.
+- Task commits2eb31ad5,d83bf077,2f75ea4e. G1 stays closed; G2 execution/acceptance delivered for canonical owner reconciliation. H1/rest-H2 remain pending, including ordinary Speaker individual-label usability. No phase completion, push, merge or deployment.
 
 ### Phase 06.30 plan 12 leaf frames — 2026-11-13
 
@@ -1094,6 +1101,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P10 | 11min | 3 tasks | 14 files |
 | Phase 06.30 P11 | 21min | 3 tasks | 12 files |
 | Phase 06.30 P12 | 8min | 2 tasks | 9 files |
+| Phase 06.30 P13 | 15min | 3 tasks | 11 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1387,6 +1395,7 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Plan 10 resolves only G-06.30-1; plan 08/09 evidence is stale until regenerated and H1 plus remaining H2 stay pending.
 - [Phase 06.30]: Plan 11 binds isolated downstream workflow-source checks with CV_WORKFLOW_UPSTREAM_SRC, preserves failed evidence and reruns the full matrix; H1/rest-H2 remain pending.
 - [Phase 06.30]: D-14: explicit False/empty suppresses compact frames; preserve per-level defaults and existing conference label policy.
+- [Phase 06.30]: Final plan 13 acceptance passes all 18 commands; canonical audits and H1/rest-H2 remain pending, so do not complete phase or advance Phase 7.
 
 ### Pending Todos
 
@@ -1466,6 +1475,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T17:16:04.638Z
-Stopped at: Completed 06.30-12; plan 13 documentation and final acceptance next; H1/rest-H2 pending
+Last session: 2026-11-13T17:35:16.365Z
+Stopped at: Completed 06.30-13; owner audits and H1/rest-H2 pending
 Resume file: None

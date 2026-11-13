@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 8
+current_plan: 9
 status: executing
-stopped_at: Completed 06.30-06-PLAN.md; next 06.30-08-PLAN.md
-last_updated: "2026-11-13T10:36:54.251Z"
+stopped_at: Completed 06.30-08-PLAN.md; next 06.30-09-PLAN.md
+last_updated: "2026-11-13T10:53:58.847Z"
 last_activity: 2026-11-13
 last_activity_desc: Phase 06.30 execution started
-state_head: 0f4da3d498efc2591f4390aa2ff1d6fb885a52a4
+state_head: aea6fcb4c50ea28ee49852b8d7a6f1a45acb7186
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 192
-  completed_plans: 190
+  completed_plans: 191
 milestone_name: milestone
 ---
 
@@ -32,12 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 ## Current Position
 
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — EXECUTING
-Current Plan: 8
+Current Plan: 9
 Total Plans in Phase: 9
 Status: Ready to execute
 Last activity: 2026-11-13 — Phase 06.30 execution started
 
-Next: Execute 06.30-08-PLAN.md (approved order: 01, 02, 03, 04, 07, 05, 06, 08, 09).
+Next: Execute 06.30-09-PLAN.md (approved order: 01, 02, 03, 04, 07, 05, 06, 08, 09).
+
+### Phase 06.30 plan 08 execution — 2026-11-13
+
+- Eight of nine plans complete; phase remains executing. Plan 09 is next.
+- Real Chromium acceptance: upstream six scenarios/87 assertions and downstream four scenarios/47 assertions, with ten captures, actual current toggle.js bytes, domain SQL zero-write rejection proof and disposable DB persistence. Summary committed as aea6fcb4 before progress updates.
+- Offline checks: 20 upstream and 26 downstream assertions; exception-path child/temp cleanup, exact scenario dimensions, source/runtime/static identity and untouched acceptance JSON verified. Both RED reports classified RED_EVIDENCE_OK.
+- Existing upstream Python 3.12.3 and downstream Python 3.14.7 both report Django 6.1.2; Chromium 149.0.7827.55 and Playwright 1.64.1. Plan 09 owns supported-version matrix, release freshness and findings reconciliation. No downstream edits or developer data writes.
+- SDK advanced to plan 09 and ROADMAP section to 8/9; corrected its unchanged table row. Global progress recalculation declined because phase scope is unscoped, not complete; phase completion was not asserted. Initial dirty state.json and unrelated .gitkeep files remain outside scoped commits.
 
 ### Phase 06.30 plan 06 execution — 2026-11-13
 
@@ -1028,6 +1036,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P07 | 10min | 2 tasks | 5 files |
 | Phase 06.30 P05 | 11min | 3 tasks | 9 files |
 | Phase 06.30 P06 | 7min | 2 tasks | 8 files |
+| Phase 06.30 P08 | 13min | 2 tasks | 17 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1314,6 +1323,7 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Batch ViewSets use service_batch/service_batch_compact registry names with service-batch/service-batch-compact URL prefixes, following plan 04 name validation.
 - [Phase 06.30]: Plan 05 brings forward the minimal conditional-guide demo backlink because Feature.docs registration immediately activates reciprocal-link tests; full queryset documentation remains plan 06.
 - [Phase 06.30]: Plan 06 executes named documentation recipes against real example models; cv-sync verifies running-app excerpts and real routes/anchors remain separate from stable deployment.
+- [Phase 06.30]: Browser acceptance uses real project hosts with disposable SQLite, exact imported upstream identity and byte-for-byte actually served toggle.js checks.
 
 ### Pending Todos
 
@@ -1393,6 +1403,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T10:36:49.624Z
-Stopped at: Completed 06.30-06-PLAN.md; next 06.30-08-PLAN.md
+Last session: 2026-11-13T10:53:53.955Z
+Stopped at: Completed 06.30-08-PLAN.md; next 06.30-09-PLAN.md
 Resume file: None

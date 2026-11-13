@@ -5,6 +5,30 @@ const {PassThrough} = require('node:stream');
 const {test} = require('node:test');
 const {waitForReady} = require('./formset-row-cards.cjs');
 
+test('compact styles distinguish borders from complete suppression', () => {
+    const {validateCompactStyle} = require('./formset-row-cards.cjs');
+    assert.equal(typeof validateCompactStyle, 'function');
+    const style = {borders: Array(4).fill('1px'), padding: Array(4).fill('8px'),
+        radius: '4px', background: 'rgb(255, 255, 255)', margins: Array(4).fill('0px'),
+        compact: true, bordered: true, plain: false, cards: 0, legends: 0};
+    validateCompactStyle(style, 'bordered');
+    validateCompactStyle({...style, borders: Array(4).fill('0px'), bordered: false}, 'borderless');
+    validateCompactStyle({...style, borders: Array(4).fill('0px'), padding: Array(4).fill('0px'),
+        radius: '0px', background: 'rgba(0, 0, 0, 0)', bordered: false, plain: true}, 'plain');
+    for (let side = 0; side < 4; side++) {
+        const borders = [...style.borders]; borders[side] = '0px';
+        assert.throws(() => validateCompactStyle({...style, borders}, 'bordered'));
+        const padding = [...style.padding]; padding[side] = '0px';
+        assert.throws(() => validateCompactStyle({...style, padding}, 'bordered'));
+    }
+    for (const change of [{plain: true}, {bordered: false}, {cards: 1}, {legends: 1},
+        {background: 'rgba(0, 0, 0, 0)'}, {radius: '0px'}, {compact: false}]) {
+        assert.throws(() => validateCompactStyle({...style, ...change}, 'bordered'));
+    }
+    assert.throws(() => validateCompactStyle(style, 'borderless'));
+    assert.throws(() => validateCompactStyle(style, 'plain'));
+});
+
 function host() {
     const child = new EventEmitter();
     child.stdout = new PassThrough();

@@ -294,7 +294,8 @@ def test_formset_plain_row_only_has_no_outer_legend(compact):
     doc = html.fragment_fromstring(
         render_to_string("crud_views/formsets/formset.html", {"x_formset": node}), create_parent="div"
     )
-    assert not doc.cssselect("legend, fieldset.cv-formset-fieldset")
+    assert not doc.cssselect("fieldset.cv-formset-fieldset, legend.theme-formset")
+    assert len(doc.cssselect("legend.cv-formset-row-legend")) == (0 if compact else len(node.forms))
     roots = [element for element in doc if isinstance(element.tag, str)]
     assert [row.get("cv-data-formset-form-prefix") for row in roots] == [row.prefix for row in node.forms]
 

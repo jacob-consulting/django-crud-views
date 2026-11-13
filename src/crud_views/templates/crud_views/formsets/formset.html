@@ -41,6 +41,11 @@
          cv-data-formset-prefix="{{ x_formset.prefix }}"
          cv-data-formset-form-prefix="{{ x_form.prefix }}">
 
+        {% if not x_formset.formset.compact_layout and x_form.row_title %}
+            <fieldset class="cv-formset-row-card">
+                <legend class="cv-formset-row-legend">{{ x_form.row_title }}</legend>
+        {% endif %}
+
         <!-- crispy form: start {{ x_form.prefix }} -->
         <div class="cv-formset-form">
             {% crispy x_form.form x_form.helper %}
@@ -59,6 +64,10 @@
             {% cv_x_formset x_formset_child %}
         {% endfor %}
         <!-- x_form.formsets: end {{ x_form.prefix }} -->
+
+        {% if not x_formset.formset.compact_layout and x_form.row_title %}
+            </fieldset>
+        {% endif %}
 
     </div>
 

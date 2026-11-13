@@ -5,14 +5,15 @@ from collections import OrderedDict
 from collections import OrderedDict as OrderedDictType
 from collections.abc import Iterable
 from enum import Enum
-from typing import Any, Self
+from typing import Any, Literal, Self
 
 from django.core.exceptions import BadRequest, ValidationError
 from django.forms.forms import BaseForm
 from django.forms.models import BaseInlineFormSet, ModelForm
 from django.http.request import HttpRequest
 from django.template.loader import render_to_string
-from pydantic import BaseModel, Field, InstanceOf, PrivateAttr, model_validator
+from django.utils.functional import Promise
+from pydantic import BaseModel, Field, InstanceOf, PrivateAttr, field_validator, model_validator
 
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.lazy import LazyStr
@@ -54,6 +55,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
     key: str | None = None
     original_key: str | None = None
     title: LazyStr | None = None
+    row_legend: LazyStr | Literal[False] | None = None
     fields: list[str] | None = None
     pk_field: str | None = None
     cv_view: CrudView | None = None
@@ -70,6 +72,14 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
         return f"FormSet({self.title})"
 
     __repr__ = __str__
+
+    @field_validator("row_legend", mode="before")
+    @classmethod
+    def validate_row_legend(cls, value):
+        # Literal[False] also accepts numeric zero; this presentation option must be explicit.
+        if value is None or value is False or isinstance(value, (str, Promise)):
+            return value
+        raise ValueError("row_legend must be a string, lazy string, False, or None")
 
     @model_validator(mode="after")
     def validate_formset(self) -> Self:

@@ -27,6 +27,7 @@ from typing import Any
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.forms.forms import BaseForm
 from django.forms.formsets import BaseFormSet
+from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 from pydantic import BaseModel, Field
 
@@ -61,6 +62,17 @@ class XForm(BaseModel, arbitrary_types_allowed=True):
     def prefix(self) -> str:
         """return the form prefix"""
         return self.form.prefix
+
+    @property
+    def row_title(self):
+        """Preserve custom (possibly lazy) labels; capitalize only the default model label."""
+        legend = self.parent.formset.row_legend
+        if legend is False:
+            return ""
+        if legend is not None:
+            return legend
+        instance = getattr(self.form, "instance", None)
+        return capfirst(instance._meta.verbose_name) if instance is not None else self.parent.title
 
     @property
     def data(self) -> dict:

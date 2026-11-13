@@ -2,6 +2,7 @@
 
 from unittest.mock import patch
 
+import django
 import pytest
 from django import forms
 from django.db import connection, models
@@ -83,7 +84,10 @@ def test_queryset_clearing_keeps_model_validation(kind, monkeypatch):
             ConditionalGroup(source_for().when("active"), ["unique_text"], empty_values={"unique_text": "reserved"})
         ]
     else:
-        constraint = models.CheckConstraint(condition=~models.Q(blank_text=""), name="nonempty_conditional_detail")
+        condition_arg = "condition" if django.VERSION >= (5, 1) else "check"
+        constraint = models.CheckConstraint(
+            **{condition_arg: ~models.Q(blank_text="")}, name="nonempty_conditional_detail"
+        )
         monkeypatch.setattr(Record._meta, "constraints", [constraint])
     form = klass(instance=row, data={"reference": str(option.pk)})
     assert not form.is_valid()

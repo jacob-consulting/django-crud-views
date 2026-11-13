@@ -55,6 +55,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.28: Tooltip recipe lifecycle safeguards (#355)** (completed 2026-11-12)
 
 - [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
+- [ ] **Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)** - approved handover; base forms and inline rows, strict category matching, tabler-test adoption, and a focused example app with linked documentation.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1791,6 +1792,42 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.29-02-PLAN.md
 
+### Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)
+
+**Goal:** Model-choice selections activate conditional fields through a declared category attribute or queryset annotation, consistently on base forms and independent ordinary/compact inline rows, with strict coverage checks and authoritative server-side clearing.
+**Source:** [Issue #360 — gsd-handover](https://github.com/jacob-consulting/django-crud-views/issues/360#gsd-handover) and [approved design](../superpowers/specs/2026-11-13-queryset-conditional-fields-design.md). Carry approved decisions D-01–D-13, accepted design defaults, and the issue's acceptance criteria into planning; provisional API names remain builder choices.
+**Requirements:** Deliver upstream support, the verified tabler-test roastery upgrade, and one separate example app with its own models, focused standalone/inline source modules, ordinary/compact variants, and reciprocal documentation links. Strict matching is the default; check offered options on rendering and the validated selection on POST, permit explicit no-fields categories and an opt-in unmatched policy, and do not scan unused categories. Preserve browser values until save; hide inactive ordinary groups and keep compact cells visible but disabled. Preserve existing conditional behavior and bounded query costs.
+**Depends on:** Phase 06.29 (roadmap sequence); builds on Phase 06.27's conditional groups and Phases 06.24–06.26's compact formset contracts.
+**Ordering:** Complete before Phase 7 freezes the public theme surface; include the settled queryset/inline conditional template and JavaScript contracts in that inventory.
+**Plans:** 0/9 plans executed
+
+Plans:
+**Wave 1**
+- [ ] 06.30-01-PLAN.md
+- [ ] TBD (run $gsd-plan-phase 06.30 to break down)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.30-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.30-03-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.30-04-PLAN.md
+- [ ] 06.30-07-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.30-05-PLAN.md
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 06.30-06-PLAN.md
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [ ] 06.30-08-PLAN.md
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [ ] 06.30-09-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1905,4 +1942,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
+| 06.30. Queryset-driven conditional fields (#360) | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

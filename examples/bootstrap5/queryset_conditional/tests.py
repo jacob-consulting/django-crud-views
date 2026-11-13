@@ -40,6 +40,53 @@ class RestrictedRequestForm(RequestForm):
         self.fields["service"].queryset = self.fields["service"].queryset.filter(category__code="on_site")
 
 
+class FeatureSeedTests(TestCase):
+    def test_feature_is_registered_and_seed_is_idempotent(self):
+        from importlib import import_module
+
+        from project.features import FEATURES
+
+        features = [feature for feature in FEATURES if feature.app == "queryset_conditional"]
+        self.assertEqual(len(features), 1)
+        feature = features[0]
+        self.assertEqual(feature.url_name, "service_request-list")
+        self.assertEqual(feature.group, "forms")
+        self.assertEqual(feature.docs[0].anchor, "kind-1-conditional-field-group-in-a-form")
+        for username in ("alice", "bob"):
+            get_user_model().objects.create_user(username=username)
+        seed = import_module(f"{feature.app}.seed").seed
+        seed()
+        seed()
+        self.assertEqual(ServiceCategory.objects.count(), 3)
+        self.assertEqual(Service.objects.count(), 4)
+        self.assertEqual(Service.objects.filter(category__code="on_site").count(), 2)
+        self.assertEqual(set(ServiceCategory.objects.values_list("code", flat=True)), {"on_site", "remote", "general"})
+        self.assertEqual(RequestBatch.objects.count(), 1)
+        self.assertEqual(ServiceRequest.objects.filter(batch__isnull=True).count(), 1)
+        self.assertEqual(ServiceRequest.objects.filter(batch__isnull=False).count(), 3)
+        self.assertEqual(
+            set(ServiceRequest.objects.filter(batch__isnull=False).values_list("service__category__code", flat=True)),
+            {"on_site", "remote", "general"},
+        )
+        for username in ("alice", "bob"):
+            user = get_user_model().objects.get(username=username)
+            self.assertTrue(user.has_perm("queryset_conditional.add_servicerequest"))
+            self.assertTrue(user.has_perm("queryset_conditional.change_requestbatch"))
+            self.client.force_login(user)
+            self.assertEqual(self.client.get(reverse(feature.url_name)).status_code, 200)
+            for request in ServiceRequest.objects.all():
+                form = RequestForm(
+                    data={
+                        "service": request.service_id,
+                        "visit_address": request.visit_address,
+                        "meeting_url": request.meeting_url,
+                    },
+                    instance=request,
+                    cv_view=None,
+                )
+                self.assertTrue(form.is_valid(), form.errors)
+
+
 class StandaloneRequestTests(TestCase):
     @classmethod
     def setUpTestData(cls):

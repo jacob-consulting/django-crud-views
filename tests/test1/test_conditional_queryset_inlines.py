@@ -104,9 +104,11 @@ def test_queryset_clearing_keeps_model_validation(kind, monkeypatch):
 
 @pytest.fixture
 def editor_urls(monkeypatch):
-    from crud_views.lib.viewset import _REGISTRY
+    from crud_views.lib import viewset as viewsets
 
-    monkeypatch.delitem(_REGISTRY, "queryset_contract_editor", raising=False)
+    # Registration mutates the registry directly; isolate it even when the key was absent.
+    monkeypatch.setattr(viewsets, "_REGISTRY", dict(viewsets._REGISTRY))
+    viewsets._REGISTRY.pop("queryset_contract_editor", None)
     rows = inlineformset_factory(Profile, Record, form=row_form(), formset=InlineFormSet, extra=1)
     declarations = FormSets(formsets={"records": FormSet(title="Records", klass=rows)})
     viewset = ViewSet(model=Profile, name="queryset_contract_editor")

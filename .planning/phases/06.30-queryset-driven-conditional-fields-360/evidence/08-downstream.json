@@ -4,14 +4,14 @@
     "upstream": "/home/alex/projects/alex/django-crud-views",
     "downstream": "/home/alex/projects/alex/tabler-test"
   },
-  "started": "2026-11-13T10:50:03.044Z",
+  "started": "2026-11-13T11:17:33.700Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/queryset-conditional.cjs",
     "--target",
     "downstream",
     "--output",
-    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream.json"
+    "/home/alex/projects/alex/django-crud-views/.planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream.json"
   ],
   "sourceHashes": {
     "downstream/example/catalog/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -849,6 +849,7 @@
     "upstream/tests/browser/theme_adoption_sources.py": "c5aa6a78fadf7ef219c680ef419d4494fb45f8e2570139849d199e16f797be9c",
     "upstream/tests/browser/theme-adoption-config.test.cjs": "60ed998a204447545a948ecf8ea9da0ad389328c153a976d96cdce906c6ad5f2",
     "upstream/tests/browser/theme-adoption.cjs": "9c8f9c7a8545c9f2935744a7f2f44b547ee4e0af29b468472bc91b80b3876168",
+    "upstream/tests/browser/verify_queryset_release.py": "dd25fb678066282e08471e385830fea3e08958aacc8d43d38925687be48b10ec",
     "upstream/tests/browser/workflow_presentation_server.py": "5bd1452b2f4096c99a4c73617854a81ad20a6dd08beadd0adac7396288194aa6",
     "upstream/tests/browser/workflow_validation_server.py": "1190fe8878ee3fbd696087c9aa91e6dd64ce72cee22be41d3352618e68997633",
     "upstream/tests/browser/workflow-presentation.cjs": "810ac97bcb303b2e5f8534da5f71b0134def6f1700a18da26274d3a12958e5b4",
@@ -1032,7 +1033,7 @@
     "upstream/tests/test1/test_conditional_persistence.py": "92cbe24b092866ec10c12213561ea04b3b2bed7b6a4d07a00be90e2472578d17",
     "upstream/tests/test1/test_conditional_queryset_compact.py": "61d7f7ca883cffbc5746f85a946cc89437844edf1064188aacd22f9d1cbdca9d",
     "upstream/tests/test1/test_conditional_queryset_contract.py": "4cc2287733faf1c5c35360736e9f5d5f915052d7ae1f45792b911a4c338aa3e3",
-    "upstream/tests/test1/test_conditional_queryset_inlines.py": "238d7f9b002d076e19a27cd18039aad6ec07f26317a2152b04464613779ac85d",
+    "upstream/tests/test1/test_conditional_queryset_inlines.py": "eebcbd5541bff7cfc4ff77913013602c213b5390428e2fe22a381ed60f2ecc15",
     "upstream/tests/test1/test_conditional_queryset.py": "8bef625dc325395513efe0d36568c293b6e74ba1f50279c19829d773743fc63d",
     "upstream/tests/test1/test_conditional_toggle.py": "948f7831b390a0ba0c2d8692ba15323f199dd3ce311930ae55656d87ad01244f",
     "upstream/tests/test1/test_context_action_label_mode.py": "52a9cc4207949cfae7cb18969bd78494f002bd36316e9451b1d57d56bf13dab7",
@@ -1596,7 +1597,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.639Z",
+              "created_at": "2026-11-13T11:17:35.512Z",
               "shipped_at": null
             },
             {
@@ -1607,7 +1608,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.651Z",
+              "created_at": "2026-11-13T11:17:35.530Z",
               "shipped_at": null
             },
             {
@@ -1618,7 +1619,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.663Z",
+              "created_at": "2026-11-13T11:17:35.547Z",
               "shipped_at": null
             },
             {
@@ -1629,7 +1630,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.674Z",
+              "created_at": "2026-11-13T11:17:35.565Z",
               "shipped_at": null
             }
           ],
@@ -1642,7 +1643,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.639Z",
+              "created_at": "2026-11-13T11:17:35.512Z",
               "shipped_at": null
             },
             {
@@ -1653,7 +1654,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.651Z",
+              "created_at": "2026-11-13T11:17:35.530Z",
               "shipped_at": null
             },
             {
@@ -1664,7 +1665,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.663Z",
+              "created_at": "2026-11-13T11:17:35.547Z",
               "shipped_at": null
             },
             {
@@ -1675,7 +1676,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.674Z",
+              "created_at": "2026-11-13T11:17:35.565Z",
               "shipped_at": null
             }
           ]
@@ -2176,7 +2177,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.639Z",
+              "created_at": "2026-11-13T11:17:35.512Z",
               "shipped_at": null
             },
             {
@@ -2187,7 +2188,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.651Z",
+              "created_at": "2026-11-13T11:17:35.530Z",
               "shipped_at": null
             },
             {
@@ -2198,7 +2199,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.663Z",
+              "created_at": "2026-11-13T11:17:35.547Z",
               "shipped_at": null
             },
             {
@@ -2209,7 +2210,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.674Z",
+              "created_at": "2026-11-13T11:17:35.565Z",
               "shipped_at": null
             },
             {
@@ -2220,7 +2221,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:08.245Z",
+              "created_at": "2026-11-13T11:17:39.352Z",
               "shipped_at": null
             }
           ],
@@ -2233,7 +2234,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.639Z",
+              "created_at": "2026-11-13T11:17:35.512Z",
               "shipped_at": null
             },
             {
@@ -2244,7 +2245,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.651Z",
+              "created_at": "2026-11-13T11:17:35.530Z",
               "shipped_at": null
             },
             {
@@ -2255,7 +2256,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.663Z",
+              "created_at": "2026-11-13T11:17:35.547Z",
               "shipped_at": null
             },
             {
@@ -2266,7 +2267,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:04.674Z",
+              "created_at": "2026-11-13T11:17:35.565Z",
               "shipped_at": null
             },
             {
@@ -2277,7 +2278,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T10:50:08.245Z",
+              "created_at": "2026-11-13T11:17:39.352Z",
               "shipped_at": null
             }
           ]
@@ -2574,70 +2575,70 @@
   ],
   "pages": [
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:33675/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 75097,
-      "sha256": "a44c08e453100f117f998b483af0849aa925477fc3988f1af55bb3720854bad9"
+      "sha256": "106fa6d7526255eb18e6fcbad2ef70027874a5633914d9c09f265e31c847aa30"
     },
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:33675/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 75097,
-      "sha256": "ab3518e8e5c93237f1b734a8228db196aeb694ab69e3198918f528800dedf1da"
+      "sha256": "2964157402e484b6b4ece73673c01276c07fcb64a9b81b452117d70c4988c3a7"
     },
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:33675/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 75097,
-      "sha256": "88ddc368d31493f0a355f6f50a01982e438812fc17163bfdaf5d07155ed5a73e"
+      "sha256": "132f2e8dc4673905f3138adb0ee717041aae9c6f7a97020d8a3be8324530d366"
     },
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:33675/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 75097,
-      "sha256": "126dcc493aa6e9513bacf9d3922b053c0c22ac53135ab94ce50ea1937b733860"
+      "sha256": "6cba61f12e36a1b076856745f8795a0107a422b7605d124db240ddd9ba8cc345"
     },
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:33675/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 80000,
-      "sha256": "24c77bb21efe7f71aa1ef705ccd31a8a5a297263e73e8c0d68ed25c0a04728ed"
+      "sha256": "df6b37d03c516cfcaf59199c5d0e178e549179b75a059d6bc34052f61419fd36"
     },
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/create/",
+      "url": "http://127.0.0.1:33675/customer/1/order/create/",
       "status": 200,
       "htmlBytes": 62881,
-      "sha256": "0bbe6d6a2905252dbc724dc311a43bc88229b4a03b43e5b2562a66ed3a2f98a2"
+      "sha256": "17570601487730ebd4c97bbd2cc07bace6bd79a9d9126517c98437f091198280"
     },
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/2/update/",
+      "url": "http://127.0.0.1:33675/customer/1/order/2/update/",
       "status": 200,
       "htmlBytes": 75737,
-      "sha256": "10d3b38b854792b5f1ec6a2f76eaac6585fa76741359e96899764e57bd988bdf"
+      "sha256": "84b2ded1a684d584288447fe3df23370feaec0bacfa53190f2c84f42e6b911d9"
     },
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/2/update/",
+      "url": "http://127.0.0.1:33675/customer/1/order/2/update/",
       "status": 200,
       "htmlBytes": 75737,
-      "sha256": "fcb40985d6a90ee314e772ed3b6bb8f5dd55213784cd3b31e393001fe2b48bd1"
+      "sha256": "8c5c90bd0fa09d1b255e442e8d03485f981a16769a38e11d1103b6154860a005"
     },
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/3/update/",
+      "url": "http://127.0.0.1:33675/customer/1/order/3/update/",
       "status": 200,
       "htmlBytes": 75097,
-      "sha256": "1d05bb21baab4580f47dd41fce5cdaf8a64498d077473d4e22384312e5746653"
+      "sha256": "e238362a8e5f28f8c33b3a9088492f699a0b389a56a941ab55df60410a7a0e46"
     },
     {
-      "url": "http://127.0.0.1:37337/customer/1/order/4/update/",
+      "url": "http://127.0.0.1:33675/customer/1/order/4/update/",
       "status": 200,
       "htmlBytes": 75161,
-      "sha256": "b806d9ac6895960f74fa9e52cade0fcfd620310e9b8d9bb5fa11c94e97bcd713"
+      "sha256": "7cb4d4b236f4fa6dc766654f150607bc8ab9783919c40eff8e50b81a7902e5c8"
     }
   ],
   "provenance": {
     "upstream": {
-      "head": "90745befdecab84af971fa9d0a1f196e92e08a0a",
-      "status": " M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/compact-1280.png\n M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream.json\n M .planning/state.json\n M tests/browser/queryset-conditional.cjs\n M tests/browser/queryset_conditional_server.py\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream-captures/\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream.json\n?? tests/browser/queryset_downstream_server.py\n"
+      "head": "8f557235173ac4691a033b39a51681404cc64e20",
+      "status": " M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/standalone-error-390.png\n M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream.json\n M .planning/state.json\n M tests/browser/verify_queryset_release.py\n M tests/test1/test_conditional_queryset_inlines.py\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-EVIDENCE.md\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-acceptance.json\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-initial-core-failure.json\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-integration-prerequisite-failure.json\n"
     },
     "downstream": {
       "head": "044c5114e60ffacc7cee77f74d4624c8959b91f2",
@@ -2662,13 +2663,13 @@
   "failedRequests": [],
   "isolation": {
     "bind": "127.0.0.1",
-    "port": 37337,
-    "temporary": "/tmp/cv-queryset-pwZyAM",
-    "database": "/tmp/cv-queryset-pwZyAM/db.sqlite3",
-    "media": "/tmp/cv-queryset-pwZyAM/media"
+    "port": 33675,
+    "temporary": "/tmp/cv-queryset-piMJXt",
+    "database": "/tmp/cv-queryset-piMJXt/db.sqlite3",
+    "media": "/tmp/cv-queryset-piMJXt/media"
   },
   "servedToggle": {
-    "url": "http://127.0.0.1:37337/static/crud_views/js/toggle.js",
+    "url": "http://127.0.0.1:33675/static/crud_views/js/toggle.js",
     "expectedHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
     "actualHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a"
   },
@@ -2676,5 +2677,5 @@
     "reaped": true,
     "temporaryRemoved": true
   },
-  "completed": "2026-11-13T10:50:09.547Z"
+  "completed": "2026-11-13T11:17:40.582Z"
 }

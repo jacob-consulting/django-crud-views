@@ -4,7 +4,7 @@
     "upstream": "/home/alex/projects/alex/django-crud-views",
     "downstream": "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test"
   },
-  "started": "2026-11-13T15:56:40.286Z",
+  "started": "2026-11-13T15:57:51.879Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/queryset-conditional.cjs",
@@ -1600,7 +1600,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.089Z",
+              "created_at": "2026-11-13T15:57:53.555Z",
               "shipped_at": null
             },
             {
@@ -1611,7 +1611,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.104Z",
+              "created_at": "2026-11-13T15:57:53.573Z",
               "shipped_at": null
             },
             {
@@ -1622,7 +1622,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.120Z",
+              "created_at": "2026-11-13T15:57:53.590Z",
               "shipped_at": null
             },
             {
@@ -1633,7 +1633,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.137Z",
+              "created_at": "2026-11-13T15:57:53.607Z",
               "shipped_at": null
             }
           ],
@@ -1646,7 +1646,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.089Z",
+              "created_at": "2026-11-13T15:57:53.555Z",
               "shipped_at": null
             },
             {
@@ -1657,7 +1657,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.104Z",
+              "created_at": "2026-11-13T15:57:53.573Z",
               "shipped_at": null
             },
             {
@@ -1668,7 +1668,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.120Z",
+              "created_at": "2026-11-13T15:57:53.590Z",
               "shipped_at": null
             },
             {
@@ -1679,7 +1679,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.137Z",
+              "created_at": "2026-11-13T15:57:53.607Z",
               "shipped_at": null
             }
           ]
@@ -2180,7 +2180,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.089Z",
+              "created_at": "2026-11-13T15:57:53.555Z",
               "shipped_at": null
             },
             {
@@ -2191,7 +2191,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.104Z",
+              "created_at": "2026-11-13T15:57:53.573Z",
               "shipped_at": null
             },
             {
@@ -2202,7 +2202,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.120Z",
+              "created_at": "2026-11-13T15:57:53.590Z",
               "shipped_at": null
             },
             {
@@ -2213,7 +2213,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.137Z",
+              "created_at": "2026-11-13T15:57:53.607Z",
               "shipped_at": null
             },
             {
@@ -2224,7 +2224,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:45.328Z",
+              "created_at": "2026-11-13T15:57:56.944Z",
               "shipped_at": null
             }
           ],
@@ -2237,7 +2237,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.089Z",
+              "created_at": "2026-11-13T15:57:53.555Z",
               "shipped_at": null
             },
             {
@@ -2248,7 +2248,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.104Z",
+              "created_at": "2026-11-13T15:57:53.573Z",
               "shipped_at": null
             },
             {
@@ -2259,7 +2259,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.120Z",
+              "created_at": "2026-11-13T15:57:53.590Z",
               "shipped_at": null
             },
             {
@@ -2270,7 +2270,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:42.137Z",
+              "created_at": "2026-11-13T15:57:53.607Z",
               "shipped_at": null
             },
             {
@@ -2281,7 +2281,7 @@
               "ship_to_id": null,
               "requested_roast_date": null,
               "notes": "",
-              "created_at": "2026-11-13T15:56:45.328Z",
+              "created_at": "2026-11-13T15:57:56.944Z",
               "shipped_at": null
             }
           ]
@@ -2565,7 +2565,7 @@
   "captures": [
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream-captures/orders-1280.png",
-      "sha256": "975821d572722fabb0e908d1c765039b4dcf21e4ec47965af6449518835fde30"
+      "sha256": "b550b67f8e11c5e6b2a09cc3908789c686a6bc0dff2a9e322c5cdb83fd2cbea0"
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream-captures/orders-390.png",
@@ -2578,70 +2578,70 @@
   ],
   "pages": [
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:42891/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 75098,
-      "sha256": "aea811dc30963c64cd30074a985ac441ff38cdf74967bae28094099f07ea6252"
+      "sha256": "5402d193b7156ee7b1fa5630c3dce371eafc902f6f417f7da2ff494737564ba0"
     },
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:42891/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 75098,
-      "sha256": "3384f561e000da1b06a504dbc7ef58f12f99df8f41daf9800257921259c389c1"
+      "sha256": "c3d2d7c83cc7e81556ca7cea2c10fde70e6410372e073e6f8d7ec1413472ea94"
     },
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:42891/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 75098,
-      "sha256": "1d16bc75274574ef9311a5e9524b33eda97a64c56aa32a349d563104f759230a"
+      "sha256": "528af40739af107511c797cad9bf22b14076d2066a2a30a6d7b505f8b4be1d8b"
     },
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:42891/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 75098,
-      "sha256": "5e54ad85af466c70685f79ac7aa422bddac51309da7ad500761cbbba8f2d30da"
+      "sha256": "a4da1a4e58b72851e4be9e8192cf8dc348b8cf2807fb46f044bd144d959671ee"
     },
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/1/update/",
+      "url": "http://127.0.0.1:42891/customer/1/order/1/update/",
       "status": 200,
       "htmlBytes": 80001,
-      "sha256": "022deb7dcc0429a9e8cbdeb301c738037c9487bb55abd87a56446581123c8b63"
+      "sha256": "4629ceb6b2276ad7d615b338d1f66ab065afd47e1943d4d64238b262d06f5440"
     },
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/create/",
+      "url": "http://127.0.0.1:42891/customer/1/order/create/",
       "status": 200,
       "htmlBytes": 62882,
-      "sha256": "4bb786be345b79892fd6364f601f4eb85116f58b6d46f582bf8cedf0e183df47"
+      "sha256": "9d0ba09dde557aeef2905dbb07241f4291b32bf2139f69919c22313cd9e14172"
     },
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/2/update/",
+      "url": "http://127.0.0.1:42891/customer/1/order/2/update/",
       "status": 200,
       "htmlBytes": 75738,
-      "sha256": "27e068dc73340ea53639d1f4643bc3df6fb4fad66d89e56eced65cb3c4412349"
+      "sha256": "23d831c01dff9b8252e010a065ef3cf3f042de1ef55c15924cd052dfaa8603df"
     },
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/2/update/",
+      "url": "http://127.0.0.1:42891/customer/1/order/2/update/",
       "status": 200,
       "htmlBytes": 75738,
-      "sha256": "d7ff816b18116722e682ffa1114d3e7f04877ef964b0a8c7b3255027f2d95a8a"
+      "sha256": "c117d7f4114ed53400a54e3009d35326416d5dc5fd289e19c31d6a4a2f8578b9"
     },
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/3/update/",
+      "url": "http://127.0.0.1:42891/customer/1/order/3/update/",
       "status": 200,
       "htmlBytes": 75098,
-      "sha256": "f224128e41b71870b7d5397507dda1d2f2496c898eb6fc1fd93075f66763052b"
+      "sha256": "c993ac0730dc7b7ab2f79a2c5c0ac6917da1058dc6727fedcb7dadf6bf26a2a1"
     },
     {
-      "url": "http://127.0.0.1:46647/customer/1/order/4/update/",
+      "url": "http://127.0.0.1:42891/customer/1/order/4/update/",
       "status": 200,
       "htmlBytes": 75162,
-      "sha256": "7ba7eabb904578aa04abd10e454468dee5640226eb0fdec6634c9bfdf2f68ecf"
+      "sha256": "4261acd9d830dd38f5e91e2319c97dce1325ec327696a9059027efed77531b0c"
     }
   ],
   "provenance": {
     "upstream": {
-      "head": "eec7c8c710d28aac1da771d4ffb52f4780839b2a",
-      "status": " M .planning/state.json\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/11-baseline-stale-20261113T1555.log\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/11-preservation-baseline.json\n"
+      "head": "b23930f21a4ba6e5592dd1f5174068303c8495bb",
+      "status": " M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/compact-1280.png\n M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/compact-390.png\n M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/standalone-error-390.png\n M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream.json\n M .planning/state.json\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n"
     },
     "downstream": {
       "head": "9ca0675353d43791672cf57063ecfadc4c745fd4",
@@ -2666,13 +2666,13 @@
   "failedRequests": [],
   "isolation": {
     "bind": "127.0.0.1",
-    "port": 46647,
-    "temporary": "/tmp/cv-queryset-cpubDs",
-    "database": "/tmp/cv-queryset-cpubDs/db.sqlite3",
-    "media": "/tmp/cv-queryset-cpubDs/media"
+    "port": 42891,
+    "temporary": "/tmp/cv-queryset-jaJIvo",
+    "database": "/tmp/cv-queryset-jaJIvo/db.sqlite3",
+    "media": "/tmp/cv-queryset-jaJIvo/media"
   },
   "servedToggle": {
-    "url": "http://127.0.0.1:46647/static/crud_views/js/toggle.js",
+    "url": "http://127.0.0.1:42891/static/crud_views/js/toggle.js",
     "expectedHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
     "actualHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a"
   },
@@ -2680,5 +2680,5 @@
     "reaped": true,
     "temporaryRemoved": true
   },
-  "completed": "2026-11-13T15:56:46.471Z"
+  "completed": "2026-11-13T15:57:58.161Z"
 }

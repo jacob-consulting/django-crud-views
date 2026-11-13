@@ -4,7 +4,7 @@
     "upstream": "/home/alex/projects/alex/django-crud-views",
     "downstream": null
   },
-  "started": "2026-11-13T15:56:40.279Z",
+  "started": "2026-11-13T15:57:42.783Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/queryset-conditional.cjs",
@@ -2320,7 +2320,7 @@
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/standalone-error-390.png",
-      "sha256": "59ab8864380e7e9c64862ef471947ee7d795157e208962f5c8a99426335499bb"
+      "sha256": "14c716eaa5c0ea30b86f53836c7cb66ea7ed583529e4414c22e78f3acf76b8b1"
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/ordinary-1280.png",
@@ -2332,97 +2332,97 @@
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/compact-1280.png",
-      "sha256": "82d6ca98d62df6aa5d7fcc5cea79160dc00ec33a856455deb65250b5fd67364b"
+      "sha256": "3991b21d7a72a949627fc819243e56e538ab46b458ee54a7b9b1d04a93d705eb"
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/compact-390.png",
-      "sha256": "61d3f2447011aab5f9e2c96db59fc0245fe131a40e9798950f4471c72490e4fb"
+      "sha256": "edc6fa51207d3795351ae713d1f9b1aaee52204507ca499e7286af5266b4c340"
     }
   ],
   "pages": [
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-request/1/update/",
       "status": 200,
       "htmlBytes": 47413,
-      "sha256": "3887cffa9f84371d3fa8aa5d34f235795e2bb01d75fbc73e5a0ea6674a273540"
+      "sha256": "5c292097c392adbb618643a0967d75eb5f39f1c49639f95428092f8c3ac3a9ff"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-request/1/update/",
       "status": 200,
       "htmlBytes": 47413,
-      "sha256": "89ff073bcd46a86581a8cb39d4df9c3942b701d24713e77907a5e9ce4299ca1c"
+      "sha256": "8fa7ea814ab0cbddbd2a5f8c5cf3e33de3e4c7f8596ccf6d33786aa215afa082"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-request/1/update/",
       "status": 200,
       "htmlBytes": 47720,
-      "sha256": "eddcb0e6f3b6d00273c452fe4df97fe5ddc48ec6cd5ad1e30fae426e12391987"
+      "sha256": "679f374537276e47e19c48cfc16d01bf3907ca6522f06fc6b4cd30bcfcb0df3f"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch/2/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-batch/2/update/",
       "status": 200,
       "htmlBytes": 63410,
-      "sha256": "7f5a4f83cd004c90046b1ca31bf100362472c02447a081342cc29cd01d82e28a"
+      "sha256": "68019b8261b6447230856d01db4d583e88aa86b36efb1a9b7865e3fac8d5a447"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch/2/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-batch/2/update/",
       "status": 200,
       "htmlBytes": 67012,
-      "sha256": "16be6082ae25cb5481861cc3b4c99f9d6a3e2f634e33d567b150201879cf9b97"
+      "sha256": "4d6fec01d613b26074ad12fe484bbcb0c2cafbaf5f1067cc76a71974043b6fdb"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/3/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-batch-compact/3/update/",
       "status": 200,
       "htmlBytes": 64263,
-      "sha256": "ec19f54a3bf7b9ed984bb2010c28b0f7e3e0bee6ca4b89535a834f53eb03271b"
+      "sha256": "47fe696205d9962cd2fff75fdeacb45c756a2f5b701bf9ba51d74e6d7d02951b"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/3/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-batch-compact/3/update/",
       "status": 200,
       "htmlBytes": 68020,
-      "sha256": "cc0cbba9613d1033f916512c3e14d329b6d8a9692e4ca8a61b4d511d17722cd2"
+      "sha256": "a27fbda6da8dcb8c232f5c538088a66fa00bf55aac1418235ef83c9541e867e9"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/create/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-request/create/",
       "status": 200,
       "htmlBytes": 47195,
-      "sha256": "dc52bc7c0c930dc9ff19bb339073f9a5f0e40c0b6dbebf59a353a15ecd7821a5"
+      "sha256": "5d15d416e9b8f307b3230d18ca24b4d6b9f27a7889e8225771757524212a9d30"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/4/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-batch-compact/4/update/",
       "status": 200,
       "htmlBytes": 64268,
-      "sha256": "e9097cf93cd946a24c2333238e1f8caea8abac3f9084d6a42fa0db5cbec01c69"
+      "sha256": "7b352617a9d155489448b9322bcf9ae4455827c332fb6b341c1eb6d8bff2fb94"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/5/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-batch-compact/5/update/",
       "status": 200,
       "htmlBytes": 64331,
-      "sha256": "bf6dfa4958dc2cf92a8985e343073f202e9cda701282ed1b201785968542f996"
+      "sha256": "91b8efb841d123633dde78ccfb7a7fa83bc0cf2832adbe97e362b148edcfa762"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-request/1/update/",
       "status": 200,
       "htmlBytes": 47718,
-      "sha256": "8cab4b587fcf9f9d3e80a326e724151c240c9056355bbd460a1a066c0ea2fa96"
+      "sha256": "f53f5216f17fd303596a1520abfbd8f63ad10cbd1a40a836cd2f1c03fbda174a"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch/2/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-batch/2/update/",
       "status": 200,
       "htmlBytes": 66717,
-      "sha256": "4456d1b213f098c4fb3f5eff6bcb3651061db27594173f1bbe95a4b1e75ba794"
+      "sha256": "f30c150cc90616083d410410db836a22cb18341aab4de5621bf9db1d0c1c45d9"
     },
     {
-      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/3/update/",
+      "url": "http://127.0.0.1:38317/queryset-conditional/service-batch-compact/3/update/",
       "status": 200,
       "htmlBytes": 67726,
-      "sha256": "b5703c704805ffade0e515b7197a349034b00a50b2bfba36d902320d419c80c1"
+      "sha256": "8a50f204417fdd305f29a3cd85c07debf2c27a86466e80cda2759346dac16d4b"
     }
   ],
   "provenance": {
     "upstream": {
-      "head": "eec7c8c710d28aac1da771d4ffb52f4780839b2a",
-      "status": " M .planning/state.json\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/11-baseline-stale-20261113T1555.log\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/11-preservation-baseline.json\n"
+      "head": "b23930f21a4ba6e5592dd1f5174068303c8495bb",
+      "status": " M .planning/state.json\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n"
     }
   },
   "runtime": {
@@ -2443,13 +2443,13 @@
   "failedRequests": [],
   "isolation": {
     "bind": "127.0.0.1",
-    "port": 38945,
-    "temporary": "/tmp/cv-queryset-cGvCF1",
-    "database": "/tmp/cv-queryset-cGvCF1/db.sqlite3",
-    "media": "/tmp/cv-queryset-cGvCF1/media"
+    "port": 38317,
+    "temporary": "/tmp/cv-queryset-QDWyDp",
+    "database": "/tmp/cv-queryset-QDWyDp/db.sqlite3",
+    "media": "/tmp/cv-queryset-QDWyDp/media"
   },
   "servedToggle": {
-    "url": "http://127.0.0.1:38945/static/crud_views/js/toggle.js",
+    "url": "http://127.0.0.1:38317/static/crud_views/js/toggle.js",
     "expectedHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
     "actualHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a"
   },
@@ -2457,5 +2457,5 @@
     "reaped": true,
     "temporaryRemoved": true
   },
-  "completed": "2026-11-13T15:56:48.470Z"
+  "completed": "2026-11-13T15:57:51.799Z"
 }

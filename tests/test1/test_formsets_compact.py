@@ -1148,6 +1148,33 @@ def compact_books(monkeypatch):
 
 
 @pytest.mark.django_db
+def test_compact_border_opt_in_full_page_and_fragment(monkeypatch, client_user_publisher_formset):
+    from inspect import signature
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+    from tests.test1.test_fragment_authorization import browser_add_row
+
+    assert "row_border" in signature(CompactLayout).parameters
+    layout = CompactLayout([CompactColumn("title", span=8)], controls_span=4, row_border=True)
+    monkeypatch.setattr(publisher_formsets["books"], "compact_layout", layout)
+    publisher = Publisher.objects.create(name="Bordered publisher")
+    Book.objects.create(publisher=publisher, title="Original")
+    url = f"/publisher-formset/{publisher.pk}/update/"
+    response = client_user_publisher_formset.get(url)
+    assert response.status_code == 200
+    document = html.fromstring(response.content)
+    fieldset = document.cssselect("fieldset.cv-formset-compact")[0]
+    params = browser_add_row(response.content, fieldset.get("cv-data-formset-prefix"))
+    fragment = client_user_publisher_formset.get(url, params)
+    assert fragment.status_code == 200
+    for tree in (document, html.fragment_fromstring(fragment.json()["html"], create_parent="div")):
+        rows = tree.cssselect(".cv-formset-row-compact")
+        assert rows
+        assert all("cv-formset-row-bordered" in row.classes for row in rows)
+        assert not tree.cssselect(".cv-formset-row-plain")
+
+
+@pytest.mark.django_db
 def test_compact_tracer_get_post(compact_books, client_user_publisher_formset):
     publisher = Publisher.objects.create(name="Compact publisher")
     book = Book.objects.create(publisher=publisher, title="Original")

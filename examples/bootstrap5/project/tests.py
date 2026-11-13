@@ -432,7 +432,7 @@ class FeatureGroupsTest(SimpleTestCase):
             grouped,
             {
                 "basics": ["library", "card_view", "nested", "resources", "delete_demo"],
-                "forms": ["formsets", "conditional", "formsets_conditional", "custom_form"],
+                "forms": ["formsets", "queryset_conditional", "conditional", "formsets_conditional", "custom_form"],
                 "ui": [
                     "breadcrumbs",
                     "context_buttons",

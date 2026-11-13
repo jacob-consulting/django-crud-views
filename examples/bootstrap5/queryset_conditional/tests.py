@@ -500,3 +500,114 @@ class BatchRequestTests(TestCase):
         self.assertEqual(
             list(ServiceRequest.objects.values_list("pk", "service_id", "visit_address", "meeting_url")), before
         )
+
+
+class SourceAndNavigationTests(TestCase):
+    def setUp(self):
+        self.client.force_login(get_user_model().objects.create_superuser(username="source-admin", password="pw"))
+
+    def test_standalone_source_has_shared_definitions_and_own_editor(self):
+        page = self.client.get(reverse("service_request-create"))
+        self.assertContains(page, "queryset_conditional/conditions.py")
+        self.assertContains(page, "queryset_conditional/standalone.py")
+        self.assertNotContains(page, "queryset_conditional/inlines.py")
+
+    def test_all_pages_show_only_relevant_source_and_active_navigation(self):
+        from project.tests import ACTIVE_NAV_GROUP, ACTIVE_NAV_ITEM, navbar_html
+
+        category = ServiceCategory.objects.create(code="general")
+        service = Service.objects.create(name="General", category=category)
+        request = ServiceRequest.objects.create(service=service)
+        batch = RequestBatch.objects.create(title="Source example")
+        for variant, obj, module in (
+            ("service_request", request, "standalone.py"),
+            ("service_batch", batch, "inlines.py"),
+            ("service_batch_compact", batch, "inlines.py"),
+        ):
+            for action in ("list", "create", "update"):
+                with self.subTest(variant=variant, action=action):
+                    page = self.client.get(
+                        reverse(f"{variant}-{action}", kwargs={"pk": obj.pk} if action == "update" else None)
+                    )
+                    self.assertEqual(page.status_code, 200)
+                    document = html.fromstring(page.content)
+                    panels = document.cssselect('[id^="snippet-queryset_conditional-"]')
+                    self.assertEqual(
+                        [panel.get("id") for panel in panels],
+                        [
+                            f"snippet-queryset_conditional-{name.replace('.', '-')}"
+                            for name in ("models.py", "conditions.py", module)
+                        ],
+                    )
+                    sources = "\n".join(panel.text_content() for panel in panels)
+                    self.assertIn("SERVICE_CONDITIONS", sources)
+                    self.assertIn("class RequestForm" if module == "standalone.py" else "class RequestRowForm", sources)
+                    for unrelated in ("Conference", "Questionnaire", "Customer", "formsets_conditional"):
+                        self.assertNotIn(unrelated, sources)
+                    nav = navbar_html(page)
+                    self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), ["forms"])
+                    self.assertEqual(ACTIVE_NAV_ITEM.findall(nav), [reverse(f"{variant}-list")])
+                    for name in ("service_request", "service_batch", "service_batch_compact"):
+                        self.assertIn(reverse(f"{name}-list"), nav)
+
+    def test_explicit_selection_rejects_absolute_and_traversal_paths(self):
+        from project.templatetags.example_tags import snippet_panels
+
+        view = RequestCreateView()
+        for path in ("../project/settings.py", "/etc/passwd", "nested/../../project/settings.py"):
+            with self.subTest(path=path), patch.object(view, "example_source_files", (path,), create=True):
+                with self.assertRaisesMessage(ValueError, "example_source_files"):
+                    snippet_panels({"view": view})
+
+    def test_explicit_selection_rejects_symlink_escape(self):
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+
+        from project.templatetags.example_tags import snippet_panels
+
+        view = RequestCreateView()
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            app = root / "queryset_conditional"
+            app.mkdir()
+            outside = root / "private.py"
+            outside.write_text("private secret")
+            (app / "escape.py").symlink_to(outside)
+            with self.settings(BASE_DIR=root), patch.object(view, "example_source_files", ("escape.py",), create=True):
+                with self.assertRaisesMessage(ValueError, "example_source_files"):
+                    snippet_panels({"view": view})
+
+    def test_explicit_selection_is_complete_and_does_not_append_templates(self):
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+
+        from project.templatetags.example_tags import snippet_panels
+
+        view = RequestCreateView()
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            app = root / "queryset_conditional"
+            (app / "templates").mkdir(parents=True)
+            (app / "models.py").write_text("class Relevant: pass")
+            (app / "views.py").write_text("class Unrelated: pass")
+            (app / "templates" / "other.html").write_text("Unrelated template")
+            with self.settings(BASE_DIR=root), patch.object(view, "example_source_files", ("models.py",), create=True):
+                result = snippet_panels({"view": view})
+            self.assertEqual([panel["title"] for panel in result["panels"]], ["queryset_conditional/models.py"])
+
+    def test_default_source_selection_retains_python_and_template_panels(self):
+        from pathlib import Path
+
+        from django.conf import settings
+        from project.templatetags.example_tags import SNIPPET_FILES, snippet_panels
+        from theming.views import ThemeIndexView
+
+        view = ThemeIndexView()
+        result = snippet_panels({"view": view})
+        app = Path(settings.BASE_DIR) / "theming"
+        expected = [f"theming/{name}" for name in SNIPPET_FILES]
+        expected += [
+            f"theming/{path.relative_to(app).as_posix()}" for path in sorted((app / "templates").rglob("*.html"))
+        ]
+        self.assertGreater(len(expected), len(SNIPPET_FILES))
+        self.assertEqual([panel["title"] for panel in result["panels"]], expected)

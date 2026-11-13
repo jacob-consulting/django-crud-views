@@ -1961,5 +1961,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
-| 06.30. Queryset-driven conditional fields (#360) | 15/15 | In Progress — automated acceptance passed; final verification and UAT pending | - |
+| 06.30. Queryset-driven conditional fields (#360) | 15/15 | In Progress — automated acceptance passed; human verification pending | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

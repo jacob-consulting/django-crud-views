@@ -4,11 +4,11 @@ milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 15
-status: awaiting verification
-stopped_at: Plans 06.30-14/15 executed; final verification and H1/rest-H2 pending
-last_updated: "2026-11-13T18:23:59.988Z"
+status: awaiting human verification
+stopped_at: Completed 06.30-15; verified 53/54, H1/rest-H2 pending
+last_updated: "2026-11-13T19:13:03.442861+00:00"
 last_activity: 2026-11-13
-last_activity_desc: Plans 14/15 executed; acceptance and audits pass; final verification pending
+last_activity_desc: All 15 plans executed; current verification 53/54; H1/rest-H2 pending
 state_head: f3e9aa37679025b46190ebcfe2a4322a6a276274
 progress:
   total_phases: 37
@@ -31,20 +31,20 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING VERIFICATION
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN VERIFICATION
 Current Plan: 15
 Total Plans in Phase: 15
-Status: Awaiting final verification; H1/rest-H2 remain pending
-Last activity: 2026-11-13 — Plans 14/15 revised from reviews; independent checker passed; implementation pending
+Status: Awaiting human verification; H1/rest-H2 remain pending
+Last activity: 2026-11-13 — All15 plans executed; current verification53/54, automated checks pass; H1/rest-H2 pending
 
-Next: independent final verification, then $gsd-verify-work 06.30 for H1/rest-H2. All fifteen plans executed. No phase-complete claim or Phase7 advance.
+Next: $gsd-verify-work 06.30 for H1/rest-H2. All15 plans executed; canonical verification human_needed,53/54 truths,0 automated gaps. Validation37/37,security31closed/0open,UI24/24,deepreview0findings. Phase7 does not advance.
 
 ### Phase 06.30 plans 14/15 execution — 2026-11-13
 
 - CompactLayout.row_border defaults False; Checklist opts in; compact Request Batches remains borderless; descriptions and reference/migration/changelog synchronized. Ordinary and complete-frame suppression semantics preserved.
 - Focused browser391 assertions/36 captures; original upstream87/downstream47. All18 release commands pass: core13,390, four compatibility744 each, examples507+186subtests, docs149, JS447/2, downstream238/83. Independent EVIDENCE_OK; all556 source/36 capture hashes current.
 - Validation37/37; security31closed/0open; D15-scopedUI24/24; deep code review15files/0findings. HumanH1/restH2 still pending. Earlier interrupted matrix attempt143 preserved; fresh detached full retry passed.
-- Original state.json bytes, untracked .gitkeep, developer data, downstream main and pinned adoption preserved. No push/merge/deployment. Final verifier owns canonical truth/UAT supersession and fingerprint.
+- Original state.json bytes, untracked .gitkeep, developer data, downstream main and pinned adoption preserved. No push/merge/deployment. Final verifier reconciled truth38/39 and UAT test3/G2 with D15, preserving history; fresh135-file fingerprint and owner status confirm human_needed,53/54,not stale.
 
 ### Phase 06.30 border follow-up planning — 2026-11-13
 
@@ -1489,5 +1489,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-13T17:35:16.365Z
-Stopped at: Plans 06.30-14/15 reviewed and ready; H1/rest-H2 pending
+Stopped at: Completed 06.30-15; verified53/54, H1/rest-H2 pending
 Resume file: None

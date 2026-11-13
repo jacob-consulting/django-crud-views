@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from crud_views.lib.settings import crud_views_settings
@@ -123,6 +123,7 @@ class NoteAncestorTest(GuardianTestCase):
         self.assertEqual(self.client.get(reverse("note-detail", kwargs=kwargs)).status_code, 200)
         self.assertEqual(self.client.get(reverse("note-update", kwargs=kwargs)).status_code, 200)
 
+    @override_settings(DEBUG=False)
     def test_manage_pages_report_ancestor_policy(self):
         from guardian_demo.views import cv_document
 

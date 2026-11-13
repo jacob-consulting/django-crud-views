@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
-from django.core.management import call_command, CommandError
+from django.core.management import CommandError, call_command
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -23,10 +23,27 @@ class DeveloperSeedTest(TestCase):
         self.assertFalse(developer.is_superuser)
         self.assertTrue(self.client.login(username="developer", password="developer"))
         self.assertEqual(developer.groups.get().name, crud_views_settings.manage_group)
-        self.assertFalse(Group.objects.get(name=crud_views_settings.manage_group).user_set.exclude(pk=developer.pk).exists())
+        self.assertFalse(
+            Group.objects.get(name=crud_views_settings.manage_group).user_set.exclude(pk=developer.pk).exists()
+        )
         self.assertIn("developer/developer", output.getvalue())
         perms = developer.get_all_permissions()
-        self.assertEqual(len(perms), 47)
+        expected = """
+            library.view_author library.view_book library.view_contract
+            nested.view_company nested.view_department nested.view_employee nested.view_office
+            formsets.view_questionnaire formsets.view_question formsets.view_choice
+            formsets.view_checklist formsets.view_checklistitem workflow.view_campaign
+            polymorphic_demo.view_vehicle polymorphic_demo.view_car polymorphic_demo.view_truck
+            polymorphic_demo.view_motorcycle guardian_demo.view_document guardian_demo.view_note
+            object_detail.view_supplier object_detail.view_warehouse object_detail.view_tag object_detail.view_product
+            breadcrumbs.view_workspace breadcrumbs.view_board conditional.view_registration conditional.view_event
+            conditional.view_session conditional.view_speaker conditional.view_customer
+            formsets_conditional.view_conference formsets_conditional.view_session formsets_conditional.view_speaker
+            custom_form.view_contact context_buttons.view_ticket action_menus.view_chore action_menus.view_step
+            label_modes.view_gadget flash_messages.view_notice disabled_actions.view_ticket
+            delete_demo.view_project delete_demo.view_task delete_demo.view_milestone resources.view_s3file
+        """
+        self.assertEqual(perms, set(expected.split()))
         self.assertTrue(all(perm.split(".")[1].startswith("view_") for perm in perms))
         self.assertIn("resources.view_s3file", perms)
 
@@ -85,6 +102,17 @@ class DeveloperSeedTest(TestCase):
         self.assertTrue(user.has_perm("library.view_author"))
         self.assertTrue(user.has_perm("resources.view_s3file"))
 
+    def test_prefetched_relations_do_not_hide_later_conflicts(self):
+        user = get_user_model().objects.create_user(username="developer")
+        group = Group.objects.create(name="writers")
+        user.groups.add(group)
+        user = get_user_model().objects.prefetch_related("user_permissions", "groups__permissions").get(pk=user.pk)
+        perm = Permission.objects.get(content_type__app_label="library", codename="delete_author")
+        group.permissions.add(perm)
+        with self.assertRaisesRegex(CommandError, "writers.*library.delete_author"):
+            seeding.ensure_developer_read_access(user)
+        self.assertTrue(group.permissions.filter(pk=perm.pk).exists())
+
 
 @override_settings(DEBUG=False)
 class DeveloperAccessTest(TestCase):
@@ -102,8 +130,10 @@ class DeveloperAccessTest(TestCase):
         company = Company.objects.first()
         department = Department.objects.filter(company=company).first()
         urls = [
-            reverse("author-list"), reverse("author-detail", kwargs={"pk": Author.objects.first().pk}),
-            reverse("author-manage"), reverse("department-list", kwargs={"company_pk": company.pk}),
+            reverse("author-list"),
+            reverse("author-detail", kwargs={"pk": Author.objects.first().pk}),
+            reverse("author-manage"),
+            reverse("department-list", kwargs={"company_pk": company.pk}),
             reverse("employee-list", kwargs={"company_pk": company.pk, "department_pk": department.pk}),
             reverse("department-manage", kwargs={"company_pk": company.pk}),
         ]
@@ -127,10 +157,10 @@ class DeveloperAccessTest(TestCase):
 
     def test_application_writes_denied_without_effects(self):
         from custom_form.models import Contact
-        from formsets.models import Questionnaire, Question, Choice
+        from flash_messages.views import NoticeComposeView
+        from formsets.models import Choice, Question, Questionnaire
         from library.models import Author
         from workflow.models import Campaign
-        from flash_messages.views import NoticeComposeView
 
         models = (Author, Questionnaire, Question, Choice, Contact, Campaign)
         before = {model: list(model.objects.order_by("pk").values()) for model in models}

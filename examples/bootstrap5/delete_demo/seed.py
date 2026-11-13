@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import assign_perm
-from project.seeding import grant_model_perms
+from project.seeding import check_developer_object_permissions, grant_model_perms
 
 from delete_demo.models import Milestone, Project, Task
 from delete_demo.views import cv_project, cv_task
@@ -25,20 +25,27 @@ PROJECTS = {
 def seed():
     user_model = get_user_model()
     users = {name: user_model.objects.get(username=name) for name in ("alice", "bob")}
+    developer = user_model.objects.get(username="developer")
     for user in users.values():
         grant_model_perms(user, Project, actions=("add",))
 
     for title, (owner_name, is_shared, milestones, tasks) in PROJECTS.items():
         owner = users[owner_name]
         project, _ = Project.objects.get_or_create(title=title, defaults={"owner": owner, "is_shared": is_shared})
+        check_developer_object_permissions(developer, project)
+        cv_project.assign_perm("view", developer, project)
         for action in OBJECT_ACTIONS:
             cv_project.assign_perm(action, owner, project)
         for milestone_title in milestones:
             milestone, _ = Milestone.objects.get_or_create(project=project, title=milestone_title)
+            check_developer_object_permissions(developer, milestone)
+            assign_perm("delete_demo.view_milestone", developer, milestone)
             # Milestone has no ViewSet; the grant lets the delete preview show its title
             assign_perm("delete_demo.view_milestone", owner, milestone)
         for task_title, task_owner_name in tasks:
             task_owner = users[task_owner_name]
             task, _ = Task.objects.get_or_create(project=project, title=task_title, defaults={"owner": task_owner})
+            check_developer_object_permissions(developer, task)
+            cv_task.assign_perm("view", developer, task)
             for action in OBJECT_ACTIONS:
                 cv_task.assign_perm(action, task_owner, task)

@@ -18,6 +18,7 @@ const chromium = process.env.CV_QUERYSET_CHROMIUM || '/home/alex/.cache/ms-playw
 // Reuse real example views, settings and seeds. The two mixed routes change only their declarations.
 const host = String.raw`
 import importlib, json, os, platform, sys
+from dataclasses import replace
 from pathlib import Path
 from wsgiref.simple_server import make_server
 import django
@@ -37,6 +38,7 @@ from django.core.management import call_command
 from django.core.wsgi import get_wsgi_application
 from django.http import HttpResponse
 from django.urls import include, path, reverse
+from django.utils.functional import lazy
 from formsets.seed import seed as seed_formsets
 from formsets_conditional.seed import seed as seed_conferences
 from formsets_conditional.models import Conference
@@ -68,6 +70,19 @@ plain_classic_parent['questions'].children['choices'].row_legend = None
 plain_compact_parent = reverse_mixed.model_copy(deep=True)
 plain_compact_parent['questions'].row_legend = False
 plain_compact_parent['questions'].children['choices'].row_legend = None
+variants = {}
+for name, parent_border, child_border, legend in [
+    ('border-parent', True, False, None), ('border-child', False, True, None),
+    ('border-false', True, True, False), ('border-empty', True, True, ''),
+    ('border-lazy-empty', True, True, lazy(lambda: '', str)()),
+]:
+    tree = cv_compact_formsets.model_copy(deep=True)
+    parent = tree['questions']
+    child = parent.children['choices']
+    parent.compact_layout = replace(parent.compact_layout, row_border=parent_border)
+    child.compact_layout = replace(child.compact_layout, row_border=child_border)
+    parent.row_legend = child.row_legend = legend
+    variants[name] = tree
 urlpatterns = [
     path('favicon.ico', lambda request: HttpResponse(status=204)),
     path('__mixed/classic-compact/<int:pk>/', QuestionnaireUpdateView.as_view(cv_formsets=mixed)),
@@ -78,6 +93,8 @@ urlpatterns = [
     path('__mixed/plain-compact-parent/<int:pk>/', QuestionnaireUpdateView.as_view(cv_formsets=plain_compact_parent)),
     path('', include('project.urls')),
 ]
+urlpatterns[0:0] = [path(f'__mixed/{name}/<int:pk>/', QuestionnaireUpdateView.as_view(cv_formsets=tree))
+    for name, tree in variants.items()]
 pk = Questionnaire.objects.get(title='Customer Survey').pk
 batch = RequestBatch.objects.get(title='Weekly service requests').pk
 checklist = Checklist.objects.get(title='Release checklist').pk
@@ -95,6 +112,7 @@ urls = {
     'ordinary': reverse('service_batch-update', kwargs={'pk': batch}),
     'service-compact': reverse('service_batch_compact-update', kwargs={'pk': batch}),
 }
+urls.update({name: f'/__mixed/{name}/{pk}/' for name in variants})
 with make_server('127.0.0.1', 0, StaticFilesHandler(get_wsgi_application())) as server:
     print(json.dumps({'port': server.server_port, 'login': reverse('login'), 'urls': urls,
         'runtime': {'python': platform.python_version(), 'django': django.get_version(),
@@ -138,6 +156,25 @@ function waitForReady(child, hostLog, timeout = 60000) {
         child.once('exit', onExit);
         child.stdout.on('data', onData);
     });
+}
+
+function validateCompactStyle(style, kind) {
+    assert(['bordered', 'borderless', 'plain'].includes(kind));
+    assert.equal(style.compact, true);
+    assert.equal(style.plain, kind === 'plain');
+    assert.equal(style.bordered, kind === 'bordered');
+    assert.equal(style.cards, 0);
+    assert.equal(style.legends, 0);
+    for (const key of ['borders', 'padding', 'margins']) assert.equal(style[key].length, 4);
+    assert(style.borders.every(value => kind === 'bordered' ? parseFloat(value) > 0 : value === '0px'));
+    assert(style.padding.every(value => kind === 'plain' ? value === '0px' : parseFloat(value) > 0));
+    if (kind === 'plain') {
+        assert.equal(style.radius, '0px');
+        assert.equal(style.background, 'rgba(0, 0, 0, 0)');
+    } else {
+        assert(parseFloat(style.radius) > 0);
+        assert.notEqual(style.background, 'rgba(0, 0, 0, 0)');
+    }
 }
 
 async function run() {
@@ -217,6 +254,24 @@ async function run() {
             check(s, id, actual, {borders: ['0px', '0px', '0px', '0px'], padding: ['0px', '0px', '0px', '0px'],
                 radius: '0px', background: 'rgba(0, 0, 0, 0)', cards: 0, legends: 0});
         };
+        const compactRow = async (s, id, row, kind) => {
+            await row.evaluate(async el => {await Promise.all(el.getAnimations().map(a => a.finished.catch(() => {})));});
+            const actual = await row.evaluate(el => {
+                const css = getComputedStyle(el), sides = ['Top', 'Right', 'Bottom', 'Left'];
+                return {borders: sides.map(side => css[`border${side}Width`]),
+                    padding: sides.map(side => css[`padding${side}`]), margins: sides.map(side => css[`margin${side}`]),
+                    radius: css.borderRadius, background: css.backgroundColor,
+                    compact: el.classList.contains('cv-formset-row-compact'),
+                    bordered: el.classList.contains('cv-formset-row-bordered'), plain: el.classList.contains('cv-formset-row-plain'),
+                    cards: el.querySelectorAll(':scope > .cv-formset-row-card').length,
+                    legends: el.querySelectorAll(':scope > legend, :scope > .cv-formset-row-card > legend').length};
+            });
+            validateCompactStyle(actual, kind);
+            check(s, id, {kind, ...actual}, {kind, ...actual});
+            return actual;
+        };
+        const borderedCompactRow = (s, id, row) => compactRow(s, id, row, 'bordered');
+        const borderlessCompactRow = (s, id, row) => compactRow(s, id, row, 'borderless');
         const framedRow = async (s, id, row) => check(s, id, await row.evaluate(el => {
             const frame = el.querySelector(':scope > .cv-formset-row-card') || el;
             const css = getComputedStyle(frame);
@@ -227,7 +282,16 @@ async function run() {
         for (const width of [1280, 390]) {
             await page.setViewportSize({width, height: 900});
             await visit('checklist');
-            await plainRow(checklist, `initial-${width}`, rows('items').first());
+            check(checklist, `note-${width}`, await page.getByText('Compact rows explicitly enable borders with row_border=True.', {exact: false}).first().isVisible());
+            check(checklist, `questionnaire-link-${width}`, await page.getByRole('link', {name: 'Questionnaire examples', exact: true}).first().getAttribute('href'), '/formsets/questionnaire/');
+            await borderedCompactRow(checklist, `initial-${width}`, rows('items').first());
+            // A real computed-style mutation must fail the same predicate used for acceptance.
+            const firstItem = rows('items').first();
+            await firstItem.evaluate(el => el.classList.remove('cv-formset-row-bordered'));
+            try {
+                await assert.rejects(() => borderedCompactRow(checklist, `removed-hook-${width}`, firstItem));
+                check(checklist, `removed-border-hook-rejected-${width}`, true);
+            } finally {await firstItem.evaluate(el => el.classList.add('cv-formset-row-bordered'));}
             check(checklist, `headings-${width}`, await page.locator('.cv-formset-compact-headings').isVisible(), width > 768);
             check(checklist, `mobile-label-${width}`, await input(rows('items').first(), 'label').evaluate(el => {
                 const label = el.labels[0];
@@ -239,19 +303,20 @@ async function run() {
             const added = rows('items').nth(1);
             await input(added, 'label').fill(`Added item ${width}`);
             await added.locator('input[type="checkbox"][name$="-done"]').check();
-            await plainRow(checklist, `inserted-${width}`, added);
+            await borderedCompactRow(checklist, `inserted-${width}`, added);
             await input(rows('items').first(), 'label').fill('');
             await submit();
-            await plainRow(checklist, `invalid-${width}`, rows('items').first());
+            await borderedCompactRow(checklist, `invalid-${width}`, rows('items').first());
             check(checklist, `required-error-${width}`, await input(rows('items').first(), 'label').evaluate(el =>
                 el.getAttribute('aria-invalid') === 'true' && el.closest('.cv-formset-row').textContent.includes('required')));
             await input(rows('items').first(), 'label').fill(`Corrected item ${width}`);
+            await borderedCompactRow(checklist, `corrected-${width}`, rows('items').first());
             await rows('items').first().locator('input[type="checkbox"][name$="-done"]').uncheck();
             await capture(`checklist-invalid-corrected-${width}`);
             await submit();
             check(checklist, `save-redirect-${width}`, new URL(page.url()).pathname !== ready.urls.checklist);
             await visit('checklist');
-            await plainRow(checklist, `reopened-${width}`, rows('items').first());
+            await borderedCompactRow(checklist, `reopened-${width}`, rows('items').first());
             const values = await rows('items').evaluateAll(els => els.map(el => ({label: el.querySelector('input[name$="-label"]').value,
                 done: el.querySelector('input[type="checkbox"][name$="-done"]').checked})));
             check(checklist, `saved-checked-${width}`, values.some(v => v.label === `Added item ${width}` && v.done));
@@ -413,7 +478,7 @@ async function run() {
                     return r.compact === compact && r.cards === (!compact && r.key === 'questions' ? 1 : 0);
                 }));
                 await plainRow(presentation, `${kind}-child-styles-${width}`, rows('choices').first());
-                await framedRow(presentation, `${kind}-parent-styles-${width}`, rows('questions').first());
+                await (kind === "classic-compact" ? framedRow : borderlessCompactRow)(presentation, `${kind}-parent-styles-${width}`, rows('questions').first());
                 const count = await rows('choices').count();
                 await ownButton(rows('choices').first(), 'add').click();
                 await page.waitForFunction(n => [...document.querySelectorAll('.cv-formset-row')].filter(el =>
@@ -439,20 +504,66 @@ async function run() {
             for (const kind of ['plain-parent', 'plain-classic-parent', 'plain-compact-parent']) {
                 await visit(kind);
                 await plainRow(presentation, `${kind}-parent-${width}`, rows('questions').first());
-                await framedRow(presentation, `${kind}-child-${width}`, rows('choices').first());
+                await (kind === "plain-compact-parent" ? framedRow : borderlessCompactRow)(presentation, `${kind}-child-${width}`, rows('choices').first());
                 const count = await rows('choices').count();
                 await ownButton(rows('choices').first(), 'add').click();
                 await page.waitForFunction(n => [...document.querySelectorAll('.cv-formset-row')].filter(el =>
                     JSON.parse(el.getAttribute('cv-data-formset-form')).key === 'questions-choices').length === n + 1, count);
                 const added = rows('questions').first().locator('.cv-formset-row').nth(1);
                 await input(added, 'label').fill('Mixed inserted answer');
-                await framedRow(presentation, `${kind}-inserted-child-${width}`, added);
+                await (kind === "plain-compact-parent" ? framedRow : borderlessCompactRow)(presentation, `${kind}-inserted-child-${width}`, added);
                 await input(rows('choices').first(), 'label').fill('');
                 await submit();
                 await plainRow(presentation, `${kind}-invalid-parent-${width}`, rows('questions').first());
-                await framedRow(presentation, `${kind}-invalid-child-${width}`, rows('choices').first());
+                await (kind === "plain-compact-parent" ? framedRow : borderlessCompactRow)(presentation, `${kind}-invalid-child-${width}`, rows('choices').first());
                 check(presentation, `${kind}-invalid-error-${width}`, await input(rows('choices').first(), 'label').getAttribute('aria-invalid'), 'true');
                 await capture(`${kind}-${width}`);
+            }
+        }
+        const borders = scenario('compact-border-precedence');
+        for (const width of [1280, 390]) {
+            await page.setViewportSize({width, height: 900});
+            const observed = {};
+            for (const kind of ['border-parent', 'border-child', 'border-false', 'border-empty', 'border-lazy-empty']) {
+                await visit(kind);
+                const suppressed = !['border-parent', 'border-child'].includes(kind);
+                const inspect = async state => {
+                    const parent = await compactRow(borders, `${kind}-${state}-parent-${width}`, rows('questions').first(),
+                        suppressed ? 'plain' : kind === 'border-parent' ? 'bordered' : 'borderless');
+                    const child = await compactRow(borders, `${kind}-${state}-child-${width}`, rows('choices').first(),
+                        suppressed ? 'plain' : kind === 'border-child' ? 'bordered' : 'borderless');
+                    check(borders, `${kind}-${state}-section-${width}`, await rows('choices').first().evaluate(el => {
+                        const section = el.closest('.cv-formset-fieldset'), css = getComputedStyle(section);
+                        return section.querySelector(':scope > legend').textContent.trim() === 'Choices'
+                            && ['Top', 'Right', 'Bottom', 'Left'].every(side => parseFloat(css[`border${side}Width`]) > 0);
+                    }));
+                    return {parent, child};
+                };
+                observed[kind] = await inspect('initial');
+                const count = await rows('choices').count();
+                await ownButton(rows('choices').first(), 'add').click();
+                await page.waitForFunction(n => [...document.querySelectorAll('.cv-formset-row')].filter(el =>
+                    JSON.parse(el.getAttribute('cv-data-formset-form')).key === 'questions-choices').length === n + 1, count);
+                const added = rows('questions').first().locator('.cv-formset-row').nth(1);
+                await input(added, 'label').fill(`Border ${kind} ${width}`);
+                await compactRow(borders, `${kind}-inserted-${width}`, added,
+                    suppressed ? 'plain' : kind === 'border-child' ? 'bordered' : 'borderless');
+                const original = await input(rows('choices').first(), 'label').inputValue();
+                await input(rows('choices').first(), 'label').fill('');
+                await submit();
+                await inspect('invalid');
+                check(borders, `${kind}-error-${width}`, await input(rows('choices').first(), 'label').getAttribute('aria-invalid'), 'true');
+                await input(rows('choices').first(), 'label').fill(original);
+                await inspect('corrected');
+                await submit();
+                check(borders, `${kind}-saved-${width}`, new URL(page.url()).pathname !== ready.urls[kind]);
+                await visit(kind);
+                await inspect('reopened');
+                await capture(`${kind}-${width}`);
+            }
+            for (const level of ['parent', 'child']) for (const property of ['padding', 'margins', 'radius', 'background']) {
+                check(borders, `border-only-${level}-${property}-${width}`, observed['border-parent'][level][property],
+                    observed['border-child'][level][property]);
             }
         }
         const service = scenario('conditional-and-compact');
@@ -460,10 +571,15 @@ async function run() {
             await page.setViewportSize({width, height: 900});
             for (const kind of ['ordinary', 'service-compact']) {
                 await visit(kind);
+                check(service, `${kind}-note-${width}`, await page.locator('body').evaluate(el => {
+                    const visible = el.cloneNode(true);
+                    visible.querySelectorAll('pre, code, script, style').forEach(node => node.remove());
+                    return visible.textContent.includes('Compact rows are borderless by default (row_border=False).');
+                }), kind !== 'ordinary');
                 const shape = await shapes();
                 check(service, `${kind}-frames-${width}`, shape.length > 0 && shape.every(r => kind === 'ordinary' ? r.cards === 1 && r.legend === 'Service request' : r.cards === 0 && r.compact));
                 const first = page.locator('.cv-formset-row').first();
-                await framedRow(service, `${kind}-default-frame-styles-${width}`, first);
+                await (kind === "ordinary" ? framedRow : borderlessCompactRow)(service, `${kind}-default-frame-styles-${width}`, first);
                 const address = first.locator('input[name$="-visit_address"]');
                 const saved = await address.inputValue();
                 const selector = first.locator('select[name$="-service"]');
@@ -473,13 +589,27 @@ async function run() {
                 check(service, `${kind}-inactive-visibility-${width}`, await address.isVisible(), kind !== 'ordinary');
                 await selector.selectOption(original);
                 check(service, `${kind}-away-back-${width}`, await address.inputValue(), saved);
+                const rowStyle = kind === 'ordinary' ? framedRow : borderlessCompactRow;
+                const originalAddress = await address.inputValue();
+                await address.fill('');
+                await submit();
+                await rowStyle(service, `${kind}-invalid-${width}`, page.locator('.cv-formset-row').first());
+                check(service, `${kind}-error-${width}`, await page.locator('input[name$="-visit_address"]').first().getAttribute('aria-invalid'), 'true');
+                await page.locator('input[name$="-visit_address"]').first().fill(originalAddress);
+                await rowStyle(service, `${kind}-corrected-${width}`, page.locator('.cv-formset-row').first());
+                await submit();
+                check(service, `${kind}-saved-${width}`, new URL(page.url()).pathname !== ready.urls[kind]);
+                await visit(kind);
+                await rowStyle(service, `${kind}-reopened-${width}`, page.locator('.cv-formset-row').first());
                 await capture(`${kind}-${width}`);
             }
         }
         assert.deepEqual(record.pageErrors, []);
         assert.deepEqual(record.failedRequests, []);
+        assert(record.screenshots.length > 0);
+        for (const capture of record.screenshots) assert.equal(digest(fs.readFileSync(capture.path)), capture.sha256);
         assert.deepEqual(fingerprints(), record.sourceHashes, 'Source changed during run');
-        assert.deepEqual(record.scenarios.map(s => s.id), ['checklist-lifecycle', 'conference-leaf-lifecycle', 'assets', 'nested-lifecycle', 'presentation', 'conditional-and-compact']);
+        assert.deepEqual(record.scenarios.map(s => s.id), ['checklist-lifecycle', 'conference-leaf-lifecycle', 'assets', 'nested-lifecycle', 'presentation', 'compact-border-precedence', 'conditional-and-compact']);
         assert(record.scenarios.every(s => s.assertions.length > 0));
     } catch (error) {failure = error; record.failure = String(error); console.error(hostLog.slice(-3000));}
     finally {
@@ -502,5 +632,5 @@ async function run() {
     assert(record.passed);
     console.log(`ROW_CARDS_OK ${record.scenarios.reduce((n, s) => n + s.assertions.length, 0)} assertions; ${output}`);
 }
-module.exports = {waitForReady};
+module.exports = {waitForReady, validateCompactStyle};
 if (require.main === module) run().catch(error => {console.error(error); process.exitCode = 1;});

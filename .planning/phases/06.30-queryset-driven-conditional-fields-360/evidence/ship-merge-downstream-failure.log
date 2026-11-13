@@ -1,0 +1,33 @@
+RUN tests-3-12-django-5-2
+RESULT tests-3-12-django-5-2: exit=0 tests=13602 seconds=380.63
+RUN tests-3-12-django-4-2
+RESULT tests-3-12-django-4-2: exit=0 tests=744 seconds=6.98
+RUN tests-3-12-django-6-0
+RESULT tests-3-12-django-6-0: exit=0 tests=744 seconds=10.53
+RUN crispy_floor-3-12-django-4-2
+RESULT crispy_floor-3-12-django-4-2: exit=0 tests=744 seconds=7.98
+RUN crispy_floor-3-12-django-6-0
+RESULT crispy_floor-3-12-django-6-0: exit=0 tests=744 seconds=10.55
+RUN django6-csp
+RESULT django6-csp: exit=0 tests=1 seconds=0.68
+RUN npm-tree
+RESULT npm-tree: exit=0 tests=None seconds=0.44
+RUN javascript-unit
+RESULT javascript-unit: exit=0 tests=447 seconds=12.04
+RUN javascript-integration
+RESULT javascript-integration: exit=0 tests=2 seconds=17.51
+RUN examples
+RESULT examples: exit=0 tests=541 seconds=91.12
+RUN docs-links
+RESULT docs-links: exit=0 tests=149 seconds=1.91
+RUN mkdocs-strict
+RESULT mkdocs-strict: exit=0 tests=None seconds=1.93
+RUN migrations
+RESULT migrations: exit=0 tests=None seconds=0.56
+RUN ruff
+RESULT ruff: exit=0 tests=None seconds=0.08
+RUN ruff-format
+RESULT ruff-format: exit=0 tests=None seconds=0.03
+RUN downstream-apps
+RESULT downstream-apps: exit=1 tests=0 seconds=3.22
+ACCEPTANCE_FAILED: Failed command: downstream-apps: exit 1

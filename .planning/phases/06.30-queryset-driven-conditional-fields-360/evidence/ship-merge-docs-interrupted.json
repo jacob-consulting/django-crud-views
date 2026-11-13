@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-11-13T19:51:40.665594+00:00",
+  "owned_process_group": 2102527,
+  "signal_sent": "SIGINT",
+  "reason": "Parent requested immediate stop before costly full-core completion to apply CI-required docs/reference/conditional.md formatting. Runtime source unchanged; release docs snapshot requires a complete fresh run.",
+  "completed_command_results": 0,
+  "log": "ship-merge-docs-interrupted.log",
+  "recovery": "Repeat all 18 unchanged command_specs after parent confirms documentation stable; no resume or hash patching."
+}

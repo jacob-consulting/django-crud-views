@@ -1,0 +1,78 @@
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Found 1 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: crispy_forms, crud_views_tabler, crud_views_widget_datetimepicker, crud_views_widget_typeahead, cvg, cvod, cvp, django_filters, django_fsm, django_tabler, django_tables2, humanize, messages, ordered_model, polymorphic, shipping, staticfiles
+  Apply all migrations: admin, auth, catalog, contenttypes, cvw, guardian, roastery, sales, sessions, showcase
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying sales.0001_initial... OK
+  Applying catalog.0001_initial... OK
+  Applying sales.0002_orders... OK
+  Applying sales.0003_subscriptions... OK
+  Applying roastery.0001_initial... OK
+  Applying catalog.0002_beans_green_lot... OK
+  Applying cvw.0001_initial... OK
+  Applying cvw.0002_rename_workflow_object_id_to_pk... OK
+  Applying guardian.0001_initial... OK
+  Applying guardian.0002_generic_permissions_index... OK
+  Applying guardian.0003_remove_groupobjectpermission_guardian_gr_content_ae6aec_idx_and_more... OK
+  Applying sales.0004_owner_help_text... OK
+  Applying sales.0005_country_help_text... OK
+  Applying sessions.0001_initial... OK
+  Applying showcase.0001_initial...test_no_closes_the_manage_pages_even_under_debug (dashboard.tests.ManageViewsTests.test_no_closes_the_manage_pages_even_under_debug) ... Forbidden (Permission denied): /customer/manage/
+Traceback (most recent call last):
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/core/handlers/exception.py", line 56, in inner
+    response = get_response(request)
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/core/handlers/base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 37, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/contrib/auth/mixins.py", line 49, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+FAIL
+
+======================================================================
+FAIL: test_no_closes_the_manage_pages_even_under_debug (dashboard.tests.ManageViewsTests.test_no_closes_the_manage_pages_even_under_debug)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/test/utils.py", line 471, in inner
+    return func(*args, **kwargs)
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/example/dashboard/tests.py", line 676, in test_no_closes_the_manage_pages_even_under_debug
+    self.assertEqual(self.client.get("/customer/manage/").status_code, 200)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 403 != 200
+
+----------------------------------------------------------------------
+Ran 1 test in 0.214s
+
+FAILED (failures=1)
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+ OK
+System check identified no issues (0 silenced).

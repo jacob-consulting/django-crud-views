@@ -1,0 +1,53 @@
+Creating test database for alias 'default'...
+Cloning test database for alias 'default'...
+Cloning test database for alias 'default'...
+Found 238 test(s).
+System check identified no issues (0 silenced).
+....................Forbidden (Permission denied): /customer/manage/
+Traceback (most recent call last):
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/core/handlers/exception.py", line 56, in inner
+    response = get_response(request)
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/core/handlers/base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 37, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/contrib/auth/mixins.py", line 49, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+Forbidden (Permission denied): /customer/manage/
+Traceback (most recent call last):
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/core/handlers/exception.py", line 56, in inner
+    response = get_response(request)
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/core/handlers/base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 37, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test/.venv/lib/python3.14/site-packages/django/contrib/auth/mixins.py", line 49, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+..........................................................................................................................................................................................................................QUERYSET_COST rows=1 options=2 native=3 conditional=6 label_queries=0
+QUERYSET_COST rows=20 options=2 native=60 conditional=120 label_queries=0
+QUERYSET_COST rows=1 options=20 native=3 conditional=6 label_queries=0
+QUERYSET_COST rows=20 options=20 native=60 conditional=120 label_queries=0
+
+----------------------------------------------------------------------
+Ran 238 tests in 42.911s
+
+OK
+Destroying test database for alias 'default'...
+Destroying test database for alias 'default'...
+Destroying test database for alias 'default'...

@@ -1,0 +1,10 @@
+{
+  "observed_at": "2026-11-13T20:06:42.510825+00:00",
+  "owned_process_group": 2127887,
+  "signal_sent": "SIGINT",
+  "reason": "Parent requested stop for CI-discovered source-checkout assertion incompatible with normal nox wheel installs; parent owns test-only correction.",
+  "elapsed_seconds_approximately": 5,
+  "completed_command_results": 0,
+  "log": "ship-merge-wheel-test-interrupted.log",
+  "recovery": "Wait for stable upstream test source; regenerate original browser manifests affected by test-file fingerprints and repeat all 18 unchanged command_specs. No resume, source-hash patch or editable-install workaround."
+}

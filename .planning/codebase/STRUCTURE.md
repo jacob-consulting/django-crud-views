@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
-last_mapped_at: 2026-11-12
+last_mapped_commit: e646846213bc2b8b39ccf694c5696bc55165e9f9
+last_mapped_at: 2026-11-13
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## Directory Layout
 
@@ -83,6 +83,7 @@ django-crud-views/
 - Key files: `src/crud_views/lib/formsets/__init__.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`.
 - Guidance: Add opt-in compact behavior to this package and its formset templates; declare it with `compact_layout` per `FormSet` node. Keep consumer declarations and comparison UI in the example app.
 - Custom widgets may inherit the publicly exported `CompactWidgetCompatible` marker alongside their Django widget class to promise complete compact rendering support; this bypasses widget-specific checks only and supplies no rendering behavior. Shared field coverage, roles, effective labels and row consistency are still validated (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/__init__.py`, `docs/reference/formsets.md`).
+- `CompactLayout.row_border` defaults to false; set it true per formset node to render the compact border hook on rows with visible legends. A false or empty row legend selects the plain compact row styling, suppressing border, padding, radius and card background. Borderless compact rows with legends keep the same non-border geometry as bordered rows (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/static/crud_views/css/formset.css`).
 
 **`src/crud_views/templates/crud_views/formsets/`:**
 - Purpose: Render the recursive formset tree and its browser controls.
@@ -94,16 +95,17 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 
 **`src/crud_views/lib/conditional/`:**
 - Purpose: Declare and render server-enforced conditional form field groups and conditional formsets.
-- Contains: Toggle sources and value-based choice controllers, group validation/cleaning, crispy `ToggleGroup` layout, conditional formset handling, and shared layout helpers.
-- Key files: `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/lib/conditional/formset.py`.
-- Guidance: Put reusable controller and group behavior here. `ValueToggle` supports standard static single-choice fields with select/radio widgets; declarations should keep controlled fields disjoint, and explicit business clear values belong in `ConditionalGroup.empty_values`.
+- Contains: Checkbox and value-choice toggle sources, queryset-category toggle declarations, group validation/cleaning, crispy `ToggleGroup` layout, conditional formset handling, and shared layout helpers.
+- Key files: `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/lib/conditional/formset.py`.
+- Guidance: Put reusable controller and group behavior here. `ValueToggle` supports static single-choice fields with select/radio widgets. `QuerysetConditions` supports a native single `ModelChoiceField`, categories from a direct object attribute or annotation, and the final cleaned object as server authority. Keep controlled fields disjoint and explicit business clear values in `ConditionalGroup.empty_values`.
 - Scope: `ValueToggle` activates `ConditionalGroup` fields only. `ConditionalFormSet` rejects it and uses checkbox-style `ModelFieldToggle`/`UIFieldToggle` for whole-formset skip/purge (`src/crud_views/lib/conditional/formset.py`).
+- `QuerysetConditions` also activates conditional groups only; its render projection reads offered objects from the field queryset and should remain request/render-local. Categories with no fields still require the server group plus an explicit empty crispy `ToggleGroup` declaration (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/layout.py`).
 
 **`examples/bootstrap5/conditional/`:**
 - Purpose: Demonstrate checkbox and choice-controlled conditional fields and formsets in a consumer-style app.
-- Contains: Registration checkbox groups, Event conditional formsets, and Customer choice-driven groups with dropdown and radio editors.
-- Key files: `examples/bootstrap5/conditional/models.py`, `examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/urls.py`, `examples/bootstrap5/project/features.py`.
-- Guidance: Keep the two Customer editors on the same `CustomerForm` declarations/layout; `CustomerRadioForm` overrides only the `kind` widget. The example exercises a shared Wholesale/Distributor business group, nullable automatic clearing for `price_tier`, and explicit `payment_terms="unset"` clearing.
+- Contains: Registration checkbox groups, Event conditional formsets, Customer choice-driven groups with dropdown/radio editors, and the separate queryset-backed conditional selection demo.
+- Key files: `examples/bootstrap5/conditional/models.py`, `examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/urls.py`, `examples/bootstrap5/queryset_conditional/`, `examples/bootstrap5/project/features.py`.
+- Guidance: Keep the two Customer editors on the same `CustomerForm` declarations/layout; `CustomerRadioForm` overrides only the `kind` widget. The queryset example demonstrates `QuerysetConditions` without coupling the opt-in API to the existing Customer form flow.
 
 **`src/crud_views/templates/crud_views/` and `src/crud_views/static/crud_views/`:**
 - Purpose: Bundled Bootstrap 5 theme and browser-side behavior.
@@ -141,7 +143,7 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 **`examples/bootstrap5/`:**
 - Purpose: Consumer-like demo application and integrated examples.
 - Contains: Django project settings/URLs, management commands and feature apps demonstrating list/detail/forms, nested data, resources, formsets, conditional fields, object detail, Guardian, workflow, polymorphic views, action menus and breadcrumbs.
-- Compact formsets are demonstrated beside classic formsets in `examples/bootstrap5/formsets/views.py`: `cv_formsets` remains the classic recursive tree and `cv_compact_formsets` opts questions and choices in independently. The `compact_create` and `compact_update` views provide comparison routes without changing the default create/update flow. A separate Checklist CRUD family (`Checklist` / `ChecklistItem`) in the same feature app demonstrates a stock BooleanField checkbox in compact rows; its schema is in `models.py` and migration `migrations/0003_checklist_checklistitem.py`. `examples/bootstrap5/project/features.py` keeps one shared Formsets catalog/source-panel entry; `examples/bootstrap5/project/templatetags/example_tags.py` derives an additional nav-only Checklist link and active URL state from it.
+- Compact formsets are demonstrated beside classic formsets in `examples/bootstrap5/formsets/views.py`: `cv_formsets` remains the classic recursive tree and `cv_compact_formsets` opts questions and choices in independently. `CompactLayout.row_border` opts each compact node into bordered rows; the default is borderless but keeps padding, radius, background and margins. A false/empty `row_legend` selects the plain compact row treatment and suppresses those card decorations. The `compact_create` and `compact_update` views provide comparison routes without changing the default create/update flow. A separate Checklist CRUD family (`Checklist` / `ChecklistItem`) demonstrates the stock BooleanField checkbox in compact rows; its schema is in `models.py` and migration `migrations/0003_checklist_checklistitem.py`. `examples/bootstrap5/project/features.py` keeps one shared Formsets catalog/source-panel entry; `examples/bootstrap5/project/templatetags/example_tags.py` derives an additional nav-only Checklist link and active URL state from it.
 - Key files: `examples/bootstrap5/project/settings_demo.py`, `examples/bootstrap5/project/urls.py`, `examples/bootstrap5/project/management/commands/seed.py`.
 
 **`docs/` and `site/`:**
@@ -320,4 +322,4 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 
 ---
 
-*Structure analysis: 2026-11-12*
+*Structure analysis: 2026-11-13*

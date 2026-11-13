@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
-last_mapped_at: 2026-11-12
+last_mapped_commit: e646846213bc2b8b39ccf694c5696bc55165e9f9
+last_mapped_at: 2026-11-13
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## Test Framework
 
@@ -187,6 +187,15 @@ PYTHONPATH="$PWD/src:$PWD" npm run test:integration
 - Registry acceptance, invalid values, empty/`None`, and utility-mode contracts are tested in `tests/test1/test_button_classes_checks.py`; keep the documented and executable registry inventory checks in `tests/test1/test_button_classes.py` and `tests/test1/test_theme_adoption_docs.py` synchronized.
 - Phase 06.29's verification record reports a full Python suite on Django 5.2/current crispy at **12,868 passed, 1 pre-existing version skip**, and a separate post-merge integration selection at **1,375 passed** with four workers. The floor selection recorded **1,391 passed** on each of Django 4.2 and 6.0. These are phase-recorded results, not checks run during this map refresh; the full-suite count predates ship-time merge integration. See `.planning/phases/06.29-themeable-column-helpers-356/06.29-VERIFICATION.md` for commands, environment, and scope limits.
 
+## Queryset-Driven Conditional Fields (Phase 06.30)
+
+- Focus native model-choice admission, declared category projection, queryset coverage, strict/permissive behavior and authoritative cleaning in `tests/test1/test_conditional_queryset.py` and `tests/test1/test_conditional_queryset_contract.py`. Use `tests/test1/test_conditional_queryset_inlines.py` and `tests/test1/test_conditional_queryset_compact.py` for independent ordinary and compact row coverage.
+- Measure query counts explicitly at differing option and row cardinalities with `CaptureQueriesContext`; test lazy queryset behavior and verify the native scalar model-choice path avoids evaluation. Include an all-no-fields registered source so coverage checks cannot disappear as a side effect of rendering no conditional field (`tests/test1/test_conditional_queryset_contract.py`).
+- Treat render-and-save behavior as an integration contract: exercise category switching, clearing of inactive editable values, invalid/forged/deleted options, persistence after reload, unchanged database state on rejected submissions and atomic handling across parent and inline rows (`tests/test1/test_conditional_queryset.py`, `tests/test1/test_conditional_queryset_inlines.py`).
+- Browser tests use target-specific Django servers and Playwright Chromium. `tests/browser/queryset-conditional.cjs` captures upstream and pinned downstream behavior at 1280px and 390px, checks exact scenario/assertion matrices and database state, fingerprints source/runtime/assets, and verifies process/temp-directory cleanup. Use `tests/browser/verify_queryset_release.py` to validate the release evidence and its negative controls.
+- Phase 06.30 acceptance records 7 focused upstream scenarios with 391 assertions and 36 captures, plus original upstream (6 scenarios/87 assertions/7 captures) and pinned downstream (4 scenarios/47 assertions/3 captures) browser records. Final release evidence reports 13,390 Python tests passed with the exact known Django-6-only CSP skip on Python 3.12.3/Django 5.2.19 using four workers; JavaScript 447 unit and 2 integration tests; 507 examples tests; and the remaining matrix, docs, lint and release checks. These are recorded phase results, not checks run during this map refresh (`.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md`).
+- Human acceptance is separately recorded: H1 and all H2 portions, including downstream Orders, have explicit user passes. Do not treat screenshots or automated keyboard/style checks as a substitute for those responses; consult `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-UAT.md` for scope and `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md` for acceptance limits.
+
 **Checks run during this map refresh:** None. Test/configuration patterns above were inspected from source and phase records only.
 
-*Testing analysis: 2026-11-12*
+*Testing analysis: 2026-11-13*

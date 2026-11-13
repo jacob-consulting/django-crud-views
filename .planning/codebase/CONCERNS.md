@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
-last_mapped_at: 2026-11-12
+last_mapped_commit: e646846213bc2b8b39ccf694c5696bc55165e9f9
+last_mapped_at: 2026-11-13
 ---
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## Tech Debt
 
@@ -102,6 +102,12 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 - Safe modification: preserve cleaned-data authority, exact HTML token matching (including zero), native validation, and checkbox-group behavior; keep JavaScript lifecycle ownership aligned to the owning form and confirm persistence as well as browser state.
 - Test coverage: `tests/test1/test_conditional_*.py`, `tests/js/toggle.test.js`, `tests/js/formset.test.js`, `tests/browser/conditional-formsets-evidence.test.cjs`, and the actual Customer example in `examples/bootstrap5/conditional/tests.py`.
 
+**Queryset-driven conditional fields:**
+- Files: `src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/formset.py`, `src/crud_views/lib/conditional/group.py`, `docs/reference/conditional.md`
+- Why fragile: conditional categories come from a declared source over a model-choice queryset, while Django's native choice validation and cleaned selection remain authoritative. Coverage inspection checks offered options during rendering; selected-object validation is a separate bounded check. Source/field ownership conflicts are rejected, and metadata inspection is deliberately query-free.
+- Safe modification: preserve the separation between render-time offered coverage and POST-time selected-object validation; do not inspect `field.choices` or raw POST to discover authority. Keep source inference explicit and query-free, and update the contract before admitting custom sources or widgets.
+- Test coverage: `tests/test1/test_conditional_queryset*.py`, `tests/test1/test_conditional_group.py`, `tests/test1/test_conditional_formset.py`, and `tests/browser/queryset-conditional.cjs`. Phase 06.30 verification passed 54/54 must-haves; its review disposition records zero active findings. The documented restrictions on native model-choice fields, scalar keys, and explicit category sources are product bounds, not unresolved defects.
+
 **Workflow permission and transition helper boundaries:**
 - Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `docs/reference/workflow_view.md`
 - Why fragile: `run_transition()` requires a persisted actor/object on the selected write alias; direct django-fsm calls bypass helper validation/history, and `workflow_check_transition()` is business validation rather than authorization. Page access and transition permissions are separate.
@@ -181,6 +187,8 @@ Phase 06.27's two review findings are closed and should not be treated as open c
 
 Phase 06.29's critical review finding is also closed: lazy caller classes are coerced when the numbered column helper is constructed, preserving construction-time language and avoiding a render-time crash in `src/crud_views/lib/crispy/table.py`. Regression coverage is in `tests/test1/test_crispy_columns.py`; disposition and independent re-review are recorded in `.planning/phases/06.29-themeable-column-helpers-356/06.29-REVIEW-DISPOSITION.md`. The phase review and verification report record no remaining findings. Per-column registry/template resolution remains an intentional, uncached render-time cost; the phase accepts this bounded overhead and does not claim a measured performance guarantee.
 
+Phase 06.30 is verified at 54/54 must-haves in `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md`; its final review disposition records zero active findings. Earlier defects and failed release attempts retained in the phase reports are historical and have documented fixes/fresh passing acceptance. They are not current concerns. Qualitative UI recommendations and verification scope boundaries in the phase reports describe residual uncertainty, not confirmed implementation defects.
+
 ---
 
-*Concerns audit: 2026-11-12*
+*Concerns audit: 2026-11-13*

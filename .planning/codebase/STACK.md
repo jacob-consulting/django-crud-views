@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-12
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
+last_mapped_at: 2026-11-13
+last_mapped_commit: e646846213bc2b8b39ccf694c5696bc55165e9f9
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## Languages
 
@@ -23,7 +23,7 @@ last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 
 **Package Manager:**
 - Python: `uv` for development and Nox environments; standard installs use Python package metadata
-- Lockfile: no Python lockfile; `package-lock.json` is present for the JavaScript test harness
+- Lockfiles: `uv.lock` for Python development environments and `package-lock.json` for the JavaScript test harness
 - JavaScript: npm with `package-lock.json`
 
 ## Frameworks
@@ -53,6 +53,8 @@ last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 **Infrastructure:**
 - `[workflow]`: `django-fsm-2`, `django-fsm-2-admin`; `[polymorphic]`: `django-polymorphic`; `[ordered]`: `django-ordered-model`; `[guardian]`: `django-guardian` (`pyproject.toml`)
 - `[all]` combines the four extension extras; `[test]` adds test tooling and Django integrations; `[examples]` adds Pygments (`pyproject.toml`)
+- Phase 06.30 conditional form fields add the opt-in `QuerysetConditions` API for native single-select `ModelChoiceField` controllers. It declares category keys on the field queryset and uses the selected, field-cleaned model object for server-side validation (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`).
+- Compact formsets expose the strict boolean `CompactLayout.row_border` option; it is presentation metadata and adds no dependency (`src/crud_views/lib/formsets/compact.py`).
 - Demo-only dependencies are Gunicorn, WhiteNoise, and django-ratelimit (`requirements/demo.txt`)
 - Formset layouts, including compact layouts, use existing Django forms and crispy APIs; no additional package dependency is introduced (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/layout.py`)
 - Compact formsets support Django's exact stock `CheckboxInput` widget without an opt-in marker. Custom widgets and templates need the documented compatibility marker and remain responsible for their markup (`docs/reference/formsets.md`).
@@ -82,4 +84,4 @@ last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 
 ---
 
-*Stack analysis: 2026-11-12*
+*Stack analysis: 2026-11-13*

@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
-last_mapped_at: 2026-11-12
+last_mapped_commit: e646846213bc2b8b39ccf694c5696bc55165e9f9
+last_mapped_at: 2026-11-13
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## Naming Patterns
 
@@ -120,4 +120,13 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - The local Bootstrap leaf is an audited bridge only for the installed stock Bootstrap template. Preserve ordinary crispy `Column` behavior and explicit custom templates/packs; test classes, field output, attributes, and ownership through rendered HTML (`src/crud_views/templates/crud_views/crispy/bootstrap5_column.html`, `tests/test1/test_crispy_columns.py`).
 - Keep the canonical 102 core / 112 core-plus-workflow registry inventories synchronized with registry defaults and documentation (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
-*Convention analysis: 2026-11-12*
+## Queryset-Driven Conditional Fields (Phase 06.30)
+
+- Describe option activation with `QuerysetConditions(field_name, conditional_key=..., keys=...)`; keep native option keys/labels intact while mapping selected model instances to declared categories (`src/crud_views/lib/conditional/queryset.py`, `tests/test1/test_conditional_queryset.py`).
+- Keep offered-option coverage validation separate from selected-object validation. Exercise rendering of every offered option (including sources whose groups contain no fields), then submit selected/forged/deleted options through Django's normal `ModelChoiceField` validation and assert no writes on invalid submissions (`tests/test1/test_conditional_queryset_contract.py`, `tests/test1/test_conditional_queryset.py`).
+- Assert query budgets with `CaptureQueriesContext` at multiple option counts and row counts. Native scalar admission must remain query-free; category inspection, render costs and labels should have explicit bounded expectations rather than only asserting eventual output (`tests/test1/test_conditional_queryset_contract.py`, `tests/test1/test_conditional_queryset_inlines.py`).
+- Cover base forms and independent ordinary/compact inline rows, including category switching, stale/inactive values, errors, save/reopen, empty or retired selections and atomic rejection (`tests/test1/test_conditional_queryset.py`, `tests/test1/test_conditional_queryset_inlines.py`, `tests/test1/test_conditional_queryset_compact.py`).
+- Browser acceptance uses real Django servers, Playwright Chromium, source/runtime fingerprints, exact assertion inventories, database-confirmed scenarios, served-script hash checks and cleanup evidence. Keep upstream and pinned downstream targets distinct (`tests/browser/queryset-conditional.cjs`, `tests/browser/queryset_conditional_server.py`, `tests/browser/queryset_downstream_server.py`, `tests/browser/verify_queryset_release.py`).
+- Preserve honest separation between automated acceptance and human UAT. Phase 06.30's final UAT records explicit H1 and all H2 responses; browser captures and computed-style assertions alone do not count as human approval (`.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-UAT.md`, `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md`).
+
+*Convention analysis: 2026-11-13*

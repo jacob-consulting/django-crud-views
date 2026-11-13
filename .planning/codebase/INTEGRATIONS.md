@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-12
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
+last_mapped_at: 2026-11-13
+last_mapped_commit: e646846213bc2b8b39ccf694c5696bc55165e9f9
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## APIs & External Services
 
@@ -21,6 +21,8 @@ last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 - Compact formsets explicitly support the exact stock Django `CheckboxInput` with standard template and input type, including Bootstrap styling for package-owned crispy markup. A marked subclass may receive that styling incidentally, but custom widgets/templates are not certified and own accessibility and responsive behavior (`docs/reference/formsets.md`).
 - Theme styling for the `ToggleGroup` and formset `<legend>` elements is exposed through the `conditional:legend` and `formset:legend` button-class slots; it adds no dependency or service integration (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/lib/button_classes.py`).
 - Compact formsets add explicit `CompactColumn` and `CompactLayout` presentation metadata on top of Django inline formsets and crispy helpers; they introduce no service or package dependency (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/formsets.py`, `docs/reference/formsets.md`).
+- Phase 06.30 adds queryset-driven conditional groups through `QuerysetConditions` (`src/crud_views/lib/conditional/queryset.py`). It binds to a native single-select `ModelChoiceField`, reads a direct category attribute or queryset annotation, and validates against the selected object after ordinary field cleaning. This is an internal Django ORM/forms integration; it does not fetch through an external service or broaden controller support to arbitrary widgets (`src/crud_views/lib/conditional/group.py`, `docs/reference/conditional.md`).
+- Compact row borders are opt-in presentation metadata via `CompactLayout.row_border` (default `False`); legend suppression still takes precedence, and no external styling package is added (`src/crud_views/lib/formsets/compact.py`, `docs/reference/formsets.md`).
 
 **Optional Django extensions:**
 - Install extras independently as `django-crud-views[workflow]`, `[polymorphic]`, `[guardian]`, or `[ordered]`; `[all]` combines them. The apps are shipped in the distribution, but each optional integration requires its corresponding third-party package and app setup (`pyproject.toml`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`).
@@ -98,4 +100,4 @@ last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
 
 ---
 
-*Integration audit: 2026-11-12*
+*Integration audit: 2026-11-13*

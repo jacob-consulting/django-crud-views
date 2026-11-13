@@ -3,6 +3,7 @@
 import json
 from decimal import Decimal
 from types import SimpleNamespace
+from unittest.mock import patch
 from uuid import UUID
 
 import pytest
@@ -11,8 +12,10 @@ from crispy_forms.layout import Layout
 from crispy_forms.utils import render_crispy_form
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
-from django.db import models
+from django.db import connection, models
 from django.forms.models import ModelChoiceIterator
+from django.template import Context
+from django.test.utils import CaptureQueriesContext, isolate_apps
 from lxml import html
 
 from crud_views.lib.conditional import ConditionalGroup, ConditionalGroupFormMixin, QuerysetConditions, ToggleGroup
@@ -211,3 +214,213 @@ def test_unique_text_native_options_metadata_and_post():
         bound = Form(data={"choice": token, "detail": "kept"})
         assert bound.is_valid(), bound.errors
         assert bound.cleaned_data["choice"] == option
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("mode", ["none", "replacement", "removed", "invalid", "disabled"])
+def test_final_inherited_mapping_controls_activation(mode):
+    option = Publisher.objects.create(name="active")
+
+    class Parent(forms.Form):
+        choice = forms.ModelChoiceField(queryset=Publisher.objects.annotate(category=models.F("name")))
+        detail = forms.CharField()
+
+        def clean(self):
+            cleaned = super().clean()
+            if mode == "none":
+                return None
+            if mode == "replacement":
+                return {**cleaned, "detail": "replacement"}
+            if mode == "removed":
+                return {"detail": "must clear"}
+            return cleaned
+
+    class Form(ConditionalGroupFormMixin, Parent):
+        cv_conditional_groups = [ConditionalGroup(source().when("active"), ["detail"])]
+
+    form = Form(
+        data={"choice": "999999" if mode in ("invalid", "disabled") else str(option.pk), "detail": "kept"},
+        initial={"choice": option.pk},
+    )
+    form.fields["choice"].disabled = mode == "disabled"
+    assert form.is_valid() is (mode != "invalid")
+    assert form.cleaned_data["detail"] == {"replacement": "replacement", "removed": "", "invalid": ""}.get(mode, "kept")
+    if mode == "invalid":
+        assert form.errors.as_data()["choice"][0].code == "invalid_choice"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("scenario", ["changed", "restricted", "stale", "forged", "blank", "required"])
+def test_post_uses_current_queryset_and_category(scenario):
+    from tests.test1.test_conditional_queryset import record_form, source_for
+
+    option = Publisher.objects.create(name="active")
+    klass = record_form(source_for())
+    render_crispy_form(klass())
+    if scenario == "changed":
+        Publisher.objects.filter(pk=option.pk).update(name="general")
+    if scenario == "stale":
+        option.delete()
+    value = "" if scenario in ("blank", "required") else str(option.pk)
+    form = klass(data={"reference": "999999" if scenario == "forged" else value, "blank_text": "discard"})
+    if scenario == "restricted":
+        form.fields["reference"].queryset = form.fields["reference"].queryset.none()
+    form.fields["reference"].required = scenario == "required"
+    assert form.is_valid() is (scenario in ("changed", "blank"))
+    assert form.cleaned_data["blank_text"] == ""
+    if scenario not in ("changed", "blank"):
+        assert form.errors.as_data()["reference"][0].code == (
+            "required" if scenario == "required" else "invalid_choice"
+        )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("category", ["active", "other", "unknown"])
+@pytest.mark.parametrize("empty", [False, None, "", [], 0])
+def test_shared_membership_explicit_empty_and_independent_source(category, empty):
+    option = Publisher.objects.create(name=category)
+    conditions = source(allow_unmatched=True)
+    strict = QuerysetConditions("second", conditional_key="category", keys=["active"])
+
+    class Form(ConditionalGroupFormMixin, forms.Form):
+        choice = forms.ModelChoiceField(queryset=Publisher.objects.annotate(category=models.F("name")))
+        second = forms.ModelChoiceField(queryset=Publisher.objects.annotate(category=models.Value("active")))
+        detail = forms.JSONField()
+        protected = forms.CharField(disabled=True, initial="trusted")
+        independent = forms.CharField()
+        cv_conditional_groups = [
+            ConditionalGroup(
+                conditions.when("active", "other"), ["detail", "protected"], empty_values={"detail": empty}
+            ),
+            ConditionalGroup(strict.when("active"), ["independent"]),
+        ]
+
+    form = Form(
+        data={
+            "choice": str(option.pk),
+            "second": str(option.pk),
+            "detail": '"kept"' if category != "unknown" else "invalid json",
+            "protected": "forged",
+            "independent": "kept",
+        }
+    )
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data["detail"] == (empty if category == "unknown" else "kept")
+    assert form.cleaned_data["protected"] == "trusted"
+    assert form.cleaned_data["independent"] == "kept"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("options", [2, 20])
+@pytest.mark.parametrize("rows", [1, 20])
+def test_render_query_budget_options_and_rows(options, rows):
+    from tests.test1.test_conditional_queryset import record_form, source_for
+
+    Publisher.objects.bulk_create([Publisher(name="active" if index % 2 else "other") for index in range(options)])
+    conditions = source_for()
+    from django.forms.models import inlineformset_factory
+
+    from crud_views.lib.formsets import FormSet, InlineFormSet
+
+    factory = inlineformset_factory(Profile, Record, form=record_form(conditions), formset=InlineFormSet, extra=rows)
+    formset = factory(instance=Profile(), formset=FormSet(title="Rows", klass=factory), prefix="records")
+    forms_to_render = formset.forms
+    with CaptureQueriesContext(connection) as baseline:
+        for form in forms_to_render:
+            str(form["reference"])
+    labels = []
+    original = forms.ModelChoiceField.label_from_instance
+
+    def label(field, obj):
+        labels.append(obj.pk)
+        return original(field, obj)
+
+    with patch.object(forms.ModelChoiceField, "label_from_instance", label), CaptureQueriesContext(connection) as total:
+        for form in forms_to_render:
+            context = Context()
+            str(form["reference"])
+            for _ in range(2):
+                ToggleGroup(conditions.when("active")).render(form, context)
+                ToggleGroup(conditions.when("other")).render(form, context)
+    assert len(baseline) == rows
+    assert len(total) == rows * 2
+    assert len(labels) == rows * options
+
+
+@pytest.mark.django_db
+def test_post_category_property_cost_is_application_owned(monkeypatch, django_assert_num_queries):
+    calls = []
+
+    def category(obj):
+        calls.append(obj.pk)
+        return obj.name
+
+    monkeypatch.setattr(Publisher, "category", property(category), raising=False)
+    option = Publisher.objects.create(name="active")
+    conditions = source()
+
+    class Form(ConditionalGroupFormMixin, forms.Form):
+        choice = forms.ModelChoiceField(queryset=Publisher.objects.all())
+        one = forms.CharField()
+        two = forms.CharField()
+        cv_conditional_groups = [
+            ConditionalGroup(conditions.when("active"), ["one"]),
+            ConditionalGroup(source().when("other"), ["two"]),
+        ]
+
+    with django_assert_num_queries(1):
+        form = Form(data={"choice": str(option.pk), "one": "kept", "two": "discard"})
+        assert form.is_valid(), form.errors
+    assert calls == [option.pk]
+    calls.clear()
+    with django_assert_num_queries(1):
+        context = Context()
+        ToggleGroup(conditions.when("active")).render(form, context)
+        ToggleGroup(source().when("other")).render(form, context)
+    assert calls == [option.pk]
+
+
+@isolate_apps()
+@pytest.mark.parametrize(
+    "kind,accepted",
+    [
+        (models.CharField, True),
+        (models.TextField, True),
+        (models.IntegerField, True),
+        (models.UUIDField, True),
+        (models.FloatField, False),
+        (models.BooleanField, False),
+        (models.DecimalField, False),
+        (models.JSONField, False),
+    ],
+)
+def test_native_pk_families_from_metadata(kind, accepted):
+    class Option(models.Model):
+        id = kind(primary_key=True)
+
+        class Meta:
+            app_label = "queryset_contract"
+
+    field = forms.ModelChoiceField(queryset=Option.objects.all())
+    if accepted:
+        source().when("active").validate_field(field)
+    else:
+        with pytest.raises(ImproperlyConfigured, match="scalar"):
+            source().when("active").validate_field(field)
+
+
+@isolate_apps()
+def test_composite_identity_is_rejected_when_supported():
+    if not hasattr(models, "CompositePrimaryKey"):
+        return  # Django 4.2 has no composite model metadata to admit.
+
+    class Option(models.Model):
+        first = models.IntegerField()
+        second = models.IntegerField()
+        pk = models.CompositePrimaryKey("first", "second")
+
+        class Meta:
+            app_label = "queryset_contract"
+
+    with pytest.raises(ImproperlyConfigured, match="scalar"):
+        source().when("active").validate_field(forms.ModelChoiceField(queryset=Option.objects.all()))

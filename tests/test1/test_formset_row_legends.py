@@ -78,3 +78,32 @@ def test_row_title_uses_each_polymorphic_instance_and_plain_form_fallback():
         assert row.row_title == model._meta.verbose_name.capitalize()
     row.form = Form()
     assert row.row_title == "Books"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("label", [None, False, "", "Unused custom legend", gettext_lazy("Yes")])
+@pytest.mark.parametrize("fragment", [False, True])
+def test_compact_rows_ignore_row_legends_in_initial_and_fragment_rendering(label, fragment):
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+
+    declaration = FormSet(
+        klass=BookFormSet,
+        key="books",
+        title="Book section",
+        row_legend=label,
+        compact_layout=CompactLayout([CompactColumn("title", span=8)], controls_span=4),
+    )
+    node = next(
+        declaration.template(pk=None, index=0, force_form_index=3)
+        if fragment
+        else declaration.init(RequestFactory().get("/"), [PublisherFormSetForm(cv_view=None)])
+    )
+    rendered = render_to_string("crud_views/formsets/formset.html", {"x_formset": node})
+    doc = html.fragment_fromstring(rendered, create_parent="div")
+    rows = doc.cssselect(".cv-formset-row-compact")
+    assert len(rows) == len(node.forms) > 0
+    assert all(row.cssselect("input[name$='-title']") for row in rows)
+    assert not doc.cssselect(".cv-formset-row-card, .cv-formset-row-legend")
+
+    node.formset.row_legend = None
+    assert rendered == render_to_string("crud_views/formsets/formset.html", {"x_formset": node})

@@ -62,7 +62,7 @@ class StandaloneRequestTests(TestCase):
         self.assertContains(response, 'cv-data-toggle-kind="queryset"', count=2)
 
     def test_native_option_labels_and_real_navbar_render(self):
-        response = self.client.get(reverse("service-request-create"))
+        response = self.client.get(reverse("service_request-create"))
         for service in (self.boiler, self.appliance, self.consultation, self.review):
             self.assertContains(response, f'value="{service.pk}">{service.name}</option>')
         for name in ("home", "logout", "set_language", "conference-list", "customer-list"):
@@ -71,7 +71,7 @@ class StandaloneRequestTests(TestCase):
     def test_on_site_choices_save_and_reopen(self):
         for service in (self.boiler, self.appliance):
             with self.subTest(service=service.name):
-                create_url = reverse("service-request-create")
+                create_url = reverse("service_request-create")
                 payload = form_payload(self.client.get(create_url))
                 payload.update(
                     service=service.pk, visit_address="12 Example Street", meeting_url="invalid inactive URL"
@@ -82,13 +82,13 @@ class StandaloneRequestTests(TestCase):
                 self.assertIsNone(saved.batch_id)
                 self.assertEqual(saved.visit_address, "12 Example Street")
                 self.assertEqual(saved.meeting_url, "")
-                reopened = self.client.get(reverse("service-request-update", kwargs={"pk": saved.pk}))
+                reopened = self.client.get(reverse("service_request-update", kwargs={"pk": saved.pk}))
                 self.assertEqual(reopened.status_code, 200)
                 self.assertEqual(form_payload(reopened)["visit_address"], "12 Example Street")
 
     def test_switch_remote_then_general_clears_saved_fields(self):
         saved = ServiceRequest.objects.create(service=self.boiler, visit_address="Old address")
-        url = reverse("service-request-update", kwargs={"pk": saved.pk})
+        url = reverse("service_request-update", kwargs={"pk": saved.pk})
         payload = form_payload(self.client.get(url))
         payload.update(service=self.consultation.pk, meeting_url="https://example.com/meeting")
         self.assertEqual(self.client.post(url, payload).status_code, 302)
@@ -116,7 +116,7 @@ class StandaloneRequestTests(TestCase):
         )
         for service, field, value in cases:
             with self.subTest(service=service.name, value=value):
-                response = self.client.post(reverse("service-request-create"), {"service": service.pk, field: value})
+                response = self.client.post(reverse("service_request-create"), {"service": service.pk, field: value})
                 self.assertEqual(response.status_code, 200)
                 self.assertIn(field, response.context["form"].errors)
         self.assertEqual(ServiceRequest.objects.count(), 0)
@@ -125,7 +125,7 @@ class StandaloneRequestTests(TestCase):
         for value in ("", "not-a-key", 999999):
             with self.subTest(value=value):
                 response = self.client.post(
-                    reverse("service-request-create"), {"service": value, "conditional_category": "general"}
+                    reverse("service_request-create"), {"service": value, "conditional_category": "general"}
                 )
                 self.assertEqual(response.status_code, 200)
                 self.assertIn("service", response.context["form"].errors)
@@ -134,7 +134,7 @@ class StandaloneRequestTests(TestCase):
     def test_strict_unmatched_render_and_post_are_diagnosable(self):
         unknown = ServiceCategory.objects.create(code="unknown")
         service = Service.objects.create(name="Unknown service", category=unknown)
-        url = reverse("service-request-create")
+        url = reverse("service_request-create")
         with self.assertRaisesMessage(ImproperlyConfigured, "unmatched category 'unknown'"):
             self.client.get(url)
         response = self.client.post(url, {"service": service.pk, "visit_address": "Forged"})
@@ -144,7 +144,7 @@ class StandaloneRequestTests(TestCase):
         self.assertEqual(ServiceRequest.objects.count(), 0)
 
     def test_category_change_after_get_is_checked_on_post(self):
-        url = reverse("service-request-create")
+        url = reverse("service_request-create")
         payload = form_payload(self.client.get(url))
         self.on_site.code = "changed"
         self.on_site.save()
@@ -158,7 +158,7 @@ class StandaloneRequestTests(TestCase):
         unknown = ServiceCategory.objects.create(code="unknown")
         service = Service.objects.create(name="Unknown service", category=unknown)
         with patch.object(RequestCreateView, "form_class", PermissiveRequestForm):
-            url = reverse("service-request-create")
+            url = reverse("service_request-create")
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
             payload = form_payload(response)
@@ -167,14 +167,14 @@ class StandaloneRequestTests(TestCase):
         saved = ServiceRequest.objects.get()
         self.assertEqual((saved.service_id, saved.visit_address, saved.meeting_url), (service.pk, "", ""))
         with patch.object(RequestUpdateView, "form_class", PermissiveRequestForm):
-            reopened = self.client.get(reverse("service-request-update", kwargs={"pk": saved.pk}))
+            reopened = self.client.get(reverse("service_request-update", kwargs={"pk": saved.pk}))
             self.assertEqual(reopened.status_code, 200)
             self.assertEqual(form_payload(reopened)["visit_address"], "")
             self.assertEqual(form_payload(reopened)["meeting_url"], "")
 
     def test_restricted_queryset_rejects_forged_selection(self):
         with patch.object(RequestCreateView, "form_class", RestrictedRequestForm):
-            url = reverse("service-request-create")
+            url = reverse("service_request-create")
             response = self.client.get(url)
             self.assertNotContains(response, self.consultation.name)
             response = self.client.post(url, {"service": self.consultation.pk, "meeting_url": "https://example.com"})
@@ -184,9 +184,9 @@ class StandaloneRequestTests(TestCase):
 
     def test_unused_and_unoffered_categories_do_not_block_render(self):
         ServiceCategory.objects.create(code="unused")
-        self.assertEqual(self.client.get(reverse("service-request-create")).status_code, 200)
+        self.assertEqual(self.client.get(reverse("service_request-create")).status_code, 200)
         Service.objects.filter(category=self.remote).delete()
-        self.assertEqual(self.client.get(reverse("service-request-create")).status_code, 200)
+        self.assertEqual(self.client.get(reverse("service_request-create")).status_code, 200)
 
     def test_native_labels_have_constant_query_cost(self):
         for count in (2, 20):
@@ -205,7 +205,7 @@ class StandaloneRequestTests(TestCase):
 
     def test_list_renders_saved_requests(self):
         ServiceRequest.objects.create(service=self.boiler, visit_address="12 Example Street")
-        response = self.client.get(reverse("service-request-list"))
+        response = self.client.get(reverse("service_request-list"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Boiler inspection")
         self.assertContains(response, "12 Example Street")
@@ -230,9 +230,9 @@ class StandaloneRequestTests(TestCase):
     def test_anonymous_and_unprivileged_users_cannot_access_views(self):
         saved = ServiceRequest.objects.create(service=self.boiler, visit_address="Original")
         urls = [
-            reverse("service-request-list"),
-            reverse("service-request-create"),
-            reverse("service-request-update", kwargs={"pk": saved.pk}),
+            reverse("service_request-list"),
+            reverse("service_request-create"),
+            reverse("service_request-update", kwargs={"pk": saved.pk}),
         ]
         self.client.logout()
         for url in urls:
@@ -256,11 +256,11 @@ class StandaloneRequestTests(TestCase):
             )
         )
         self.client.force_login(user)
-        url = reverse("service-request-create")
+        url = reverse("service_request-create")
         self.assertEqual(self.client.get(url).status_code, 200)
         self.assertEqual(self.client.post(url, {"service": self.review.pk}).status_code, 302)
         saved = ServiceRequest.objects.get()
-        url = reverse("service-request-update", kwargs={"pk": saved.pk})
+        url = reverse("service_request-update", kwargs={"pk": saved.pk})
         self.assertEqual(self.client.get(url).status_code, 200)
         self.assertEqual(
             self.client.post(url, {"service": self.boiler.pk, "visit_address": "Allowed"}).status_code, 302

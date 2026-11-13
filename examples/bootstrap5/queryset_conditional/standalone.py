@@ -19,7 +19,9 @@ from crud_views.lib.viewset import ViewSet
 from queryset_conditional.conditions import REMOTE_CONDITION, VISIT_CONDITION
 from queryset_conditional.models import Service, ServiceRequest
 
-cv_service_request = ViewSet(model=ServiceRequest, name="service-request", icon_header="fa-solid fa-toolbox")
+cv_service_request = ViewSet(
+    model=ServiceRequest, name="service_request", prefix="service-request", icon_header="fa-solid fa-toolbox"
+)
 
 
 class RequestForm(ConditionalGroupModelForm):

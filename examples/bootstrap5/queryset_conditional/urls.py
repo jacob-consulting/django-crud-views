@@ -1,0 +1,3 @@
+from queryset_conditional.standalone import cv_service_request
+
+urlpatterns = cv_service_request.urlpatterns

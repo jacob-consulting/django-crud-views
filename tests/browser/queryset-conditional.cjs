@@ -5,7 +5,8 @@ const path = require('node:path');
 const os = require('node:os');
 const cp = require('node:child_process');
 const crypto = require('node:crypto');
-const REQUIRED = {upstream: ['standalone', 'ordinary', 'compact', 'lifecycle', 'mutation', 'navigation']};
+const REQUIRED = {upstream: ['standalone', 'ordinary', 'compact', 'lifecycle', 'mutation', 'navigation'],
+    downstream:['orders','retained-products','mutation','printing']};
 function parseArgs(args) {
     const result = {};
     for (let i = 0; i < args.length; i++) {
@@ -78,7 +79,16 @@ async function selfTest(target) {
     const valid = {target, sources, sourceHashes: {'upstream/src/example.py': 'abc'},
         scenarios: REQUIRED[target].map(id => ({id, assertions: [{id: 'observed', passed: true}], dbConfirmed: true})),
         cleanup: {reaped: true, temporaryRemoved: true}};
+    if(target==='downstream') valid.scenarios[0].assertions.push(...['retained-product','print-handler','row-insertion','persisted-clearing'].map(id=>({id,passed:true})));
     test('accept complete target', () => validateEvidence(valid, target, sources, valid.sourceHashes));
+    if(target==='downstream') {
+        for(const id of ['retained-product','print-handler','row-insertion','persisted-clearing']) test(`missing ${id}`,()=>{
+            const r=structuredClone(valid);r.scenarios[0].assertions=r.scenarios[0].assertions.filter(a=>a.id!==id);
+            assert.throws(()=>validateEvidence(r,target,sources,valid.sourceHashes));
+        });
+        test('reject substituted upstream',()=>{const r=structuredClone(valid);r.target='upstream';assert.throws(()=>validateEvidence(r,target,sources,valid.sourceHashes));});
+        test('reject wrong downstream source',()=>{const r=structuredClone(valid);r.sources.downstream='/wrong';assert.throws(()=>validateEvidence(r,target,sources,valid.sourceHashes));});
+    }
     for (const [name, corrupt] of [
         ['zero scenarios', r => r.scenarios = []],
         ['missing scenario', r => r.scenarios.pop()],

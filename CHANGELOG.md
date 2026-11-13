@@ -9,8 +9,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - **Ordinary formset row cards:** ordinary rows now have a bordered fieldset and a singular
   model-name legend by default, including conditional and AJAX-added rows. `FormSet.row_legend`
   accepts custom text or a lazy translation; `False` (or `""`) removes the entire frame and
-  padding at that nesting level. Section titles and compact layouts retain their existing
-  behavior. Projects expecting unframed rows or overriding formset templates/CSS should follow
+  background and padding at that nesting level in both ordinary and compact layouts. Each
+  level opts out independently; section titles/frames remain. Compact defaults and non-empty
+  custom labels retain shared headings and frames without individual legends. Checklist items,
+  Questionnaire Choices and conference Speakers/Referenten demonstrate leaf suppression.
+  Projects expecting unframed rows or overriding the shared row marker/template/CSS should follow
   the [migration guide](docs/migrating-1.0.md#ordinary-formset-row-cards).
 
 - **Numbered column custom renderers:** the default Bootstrap 5 bridge for `Column1`–`Column12`

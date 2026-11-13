@@ -9,7 +9,8 @@ touch.
 
 Ordinary formset rows now have a card-style fieldset and a singular model-name legend by
 default, whether or not the form uses conditional fields. Previously these rows were
-unframed. Compact formsets retain their existing presentation.
+unframed. Compact formsets retain their existing frames by default, but now share the same
+explicit per-level suppression option.
 
 To retain plain rows, add `row_legend=False` to **each affected `FormSet` declaration**, including
 each child level you want to suppress. For example, with your existing inline formset classes:
@@ -27,10 +28,18 @@ questions = FormSet(
 )
 ```
 
-`False` and `""` remove the **whole row frame, legend, border and card padding**, not just its
-caption. They preserve fields, validation, controls and saving. A parent's choice does not
-propagate to its children. `title` remains the section heading; custom `row_legend` strings
-retain their capitalization and lazy translations resolve when rendered.
+`False` and `""` remove the **whole row frame, legend, border, background and card padding**
+in ordinary and compact layouts, including nested compact padding. They preserve fields,
+validation, controls and saving. A parent's choice does not propagate to its children, and
+leaf rows require an explicit declaration. `title` and the section frame remain. Ordinary
+custom strings retain their capitalization; lazy translations resolve when rendered, with
+empty translations suppressing the frame. Compact `None` and non-empty custom/lazy strings
+keep the existing frames and shared headings without adding individual legends.
+
+The examples explicitly suppress compact Checklist items, ordinary/compact Questionnaire
+Choices and ordinary conference Speakers (localized as Referenten). Questions and Sessions
+keep their frames. The conference's `on_off="purge"` policy is unchanged. See the
+[Checklist and Sessions/Speakers recipes](reference/formsets.md#row-cards-and-legends).
 
 If you override `crud_views/formsets/formset.html`, review the optional
 `fieldset.cv-formset-row-card` and `legend.cv-formset-row-legend` inside the existing
@@ -38,7 +47,11 @@ If you override `crud_views/formsets/formset.html`, review the optional
 child formsets inside the owning row, and apply the same condition to opening and closing
 fieldsets. CSS selectors that assumed `.cv-formset-form` was always an immediate child of the
 row may need to account for the new fieldset. Do not apply ordinary card rules to compact
-rows. Check initial, invalid and AJAX fragment rendering in your theme.
+rows. Compact overrides must retain `cv-formset-row-plain` on the functional row wrapper
+for explicit `False`/empty suppression. Their shared CSS must clear border, radius,
+background and all padding, including nested `.cv-formset-compact-child` padding, while
+preserving headings, grid alignment, labels, focus indicators and controls. Check initial,
+invalid and AJAX fragment rendering in your theme.
 
 No database migration is required. See the complete
 [row legend API and synchronized nested example](reference/formsets.md#row-cards-and-legends).

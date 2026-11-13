@@ -56,6 +56,8 @@ def sources_from(downstream=None):
 def environment(sources):
     return {
         **os.environ,
+        # Command specs own test selection; shell defaults must not narrow a release gate.
+        "PYTEST_ADDOPTS": "",
         "PYTHONDONTWRITEBYTECODE": "1",
         "NO_COLOR": "1",
         "CV_QUERYSET_UPSTREAM": sources["upstream"],
@@ -232,6 +234,8 @@ def counts(output, kind):
 
 
 def validate_result(result):
+    if result.get("environment", {}).get("PYTEST_ADDOPTS") != "":
+        raise ValueError("Missing or unsafe effective PYTEST_ADDOPTS policy")
     if result["exit"] != 0:
         raise ValueError(f"Failed command: {result.get('id')}: exit {result['exit']}")
     if result["kind"]:
@@ -303,6 +307,7 @@ def run_command(spec, sources):
             k: env[k]
             for k in (
                 "PYTHONPATH",
+                "PYTEST_ADDOPTS",
                 "PYTHONDONTWRITEBYTECODE",
                 "CV_QUERYSET_UPSTREAM",
                 "CV_QUERYSET_DOWNSTREAM",
@@ -337,6 +342,9 @@ def check_resume(previous, current):
     }
     if changed - {"upstream/tests/browser/verify_queryset_release.py"}:
         raise ValueError("Cannot reuse results after product/test/asset changes")
+    for result in previous.get("commands", []):
+        if result.get("environment", {}).get("PYTEST_ADDOPTS") != "":
+            raise ValueError("Cannot resume results without safe effective PYTEST_ADDOPTS policy")
     return sorted(changed)
 
 
@@ -535,7 +543,7 @@ def self_test(sources=None):
     fixture = {"sources": sources, "docsHashes": {}, "sourceHashes": {"upstream/src/a.py": "old"}}
     for env in ({}, {"PYTEST_ADDOPTS": "-m selected"}):
         previous = {**fixture, "commands": [{**valid, "environment": env}]}
-        rejects(lambda: check_resume(previous, fixture), "resume unverified pytest policy")
+        rejects(lambda previous=previous: check_resume(previous, fixture), "resume unverified pytest policy")
     rejects(
         lambda: check_resume(fixture, {**fixture, "sourceHashes": {"upstream/src/a.py": "new"}}),
         "resume product change",

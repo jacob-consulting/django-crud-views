@@ -1,24 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.31"
+current_phase_name: Developer-only manage diagnostics
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.29 complete, ready to discuss Phase 7
-last_updated: "2026-11-12T14:32:55.690Z"
-last_activity: 2026-11-12
-last_activity_desc: "Phase 06.29 shipped as PR #359"
-state_head: d4ddb511c1b99e22caaef0e661e5835899a1fd41
+stopped_at: Phase 06.31 context gathered
+last_updated: "2026-11-13T07:38:06.198Z"
+last_activity: 2026-11-13
+last_activity_desc: "Phase 06.31 context gathered; issue #361 handover updated with D-08–D-10"
+state_head: 25f41033e062925279c0f20ef7b25093eee09f0b
 progress:
-  total_phases: 36
+  total_phases: 38
   completed_phases: 35
   total_plans: 183
   completed_plans: 183
 milestone_name: milestone
 ---
 
-Total Phases: 36
+Total Phases: 38
 
 # Project State
 
@@ -27,17 +27,17 @@ Total Phases: 36
 See: .planning/PROJECT.md (updated 2026-11-12)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.31 — Developer-only manage diagnostics (#361)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.31 — Developer-only manage diagnostics (#361)
 Current Plan: Not started
 Total Plans in Phase: Not planned
 Status: Ready to plan
-Last activity: 2026-11-12 -- Phase 06.29 shipped as PR #359
+Last activity: 2026-11-13 -- Phase 06.31 context gathered; issue #361 handover updated with D-08–D-10
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.31
 
 ### Phase 06.29 completion — 2026-11-12
 
@@ -1343,6 +1343,7 @@ None yet.
 - Phase 06.27 inserted after Phase 06.26: Issue #354: choice-driven conditional groups; approved gsd-handover includes explicit clearing overrides and a complex example with reciprocal documentation links. Complete before Phase 7. (URGENT)
 - Phase 06.28 inserted after Phase 06.27: Issue #355: tooltip recipe documentation and executable regression tests; approved GSD handover D-01–D-06 governs scope. Restored the existing 06.27 roadmap entry from the source checkout. (URGENT)
 - Phase 06.29 inserted after Phase 06.26: Themeable column helpers (#356); explicitly assigned 06.29, approved decisions D-01–D-07, before the Phase 7 theme-surface freeze (URGENT)
+- Phase 06.31 inserted after Phase 06.30: Issue #361: developer-only manage diagnostics and explicit group setup; carry approved D-01–D-07 from the issue handover. Complete before Phase 7. (URGENT)
 
 ## Deferred Items
 
@@ -1352,6 +1353,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-12T14:28:27.198Z
-Stopped at: Phase 06.29 complete, ready to discuss Phase 7
-Resume file: None
+Last session: 2026-11-13T07:37:25.740Z
+Stopped at: Phase 06.31 context gathered
+Resume file: .planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-CONTEXT.md

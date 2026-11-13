@@ -88,3 +88,18 @@ def ensure_developer_read_access(user) -> None:
     for model in models:
         grant_model_perms(user, model, actions=("view",))
     user.user_permissions.add(resource_perm)
+
+
+def check_developer_object_permissions(user, obj) -> None:
+    """Refuse customized writes on a concrete seed result without removing any grants."""
+    from django.core.management.base import CommandError
+    from guardian.shortcuts import get_group_perms, get_user_perms
+
+    actor = get_user_model().objects.get(pk=user.pk)
+    permissions = set(get_user_perms(actor, obj)) | set(get_group_perms(actor, obj))
+    conflicts = permissions - {f"view_{obj._meta.model_name}"}
+    if conflicts:
+        raise CommandError(
+            f"developer {actor.username} on {obj._meta.label} pk={obj.pk} has conflicting object permission "
+            f"{', '.join(sorted(conflicts))}; leaving the grant unchanged."
+        )

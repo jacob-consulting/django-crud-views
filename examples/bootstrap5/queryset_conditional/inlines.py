@@ -139,13 +139,16 @@ class BatchUpdateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMix
 
 class CompactBatchListView(BatchListView):
     cv_viewset = cv_service_batch_compact
+    cv_paragraph_template_code = _("Compact rows are borderless by default (row_border=False).")
 
 
 class CompactBatchCreateView(BatchCreateView):
     cv_viewset = cv_service_batch_compact
+    cv_paragraph_template_code = _("Compact rows are borderless by default (row_border=False).")
     cv_formsets = COMPACT_FORMSETS
 
 
 class CompactBatchUpdateView(BatchUpdateView):
     cv_viewset = cv_service_batch_compact
+    cv_paragraph_template_code = _("Compact rows are borderless by default (row_border=False).")
     cv_formsets = COMPACT_FORMSETS

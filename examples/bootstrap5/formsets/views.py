@@ -278,11 +278,12 @@ cv_checklist_formsets = FormSets(
         items=FormSet(
             title=_("Items"),
             klass=ChecklistItemFormSet,
-            row_legend=False,
             fields=["label", "done"],
             pk_field="id",
             compact_layout=CompactLayout(
-                columns=[CompactColumn("label", span=7), CompactColumn("done", span=2)], controls_span=3
+                columns=[CompactColumn("label", span=7), CompactColumn("done", span=2)],
+                controls_span=3,
+                row_border=True,
             ),
         )
     )
@@ -298,7 +299,10 @@ class ChecklistListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionR
     table_class = ChecklistTable
     cv_context_actions = ["list", "create"]
     cv_list_actions = ["update"]
-    cv_paragraph_template_code = _('<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>')
+    cv_paragraph_template_code = _(
+        "Compact rows explicitly enable borders with row_border=True. "
+        '<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>'
+    )
 
 
 class ChecklistCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, CreateViewPermissionRequired):
@@ -306,7 +310,10 @@ class ChecklistCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, Messag
     form_class = ChecklistForm
     cv_formsets = cv_checklist_formsets
     cv_context_actions = ["list", "create"]
-    cv_paragraph_template_code = _('<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>')
+    cv_paragraph_template_code = _(
+        "Compact rows explicitly enable borders with row_border=True. "
+        '<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>'
+    )
     cv_message_template_code = _("Created checklist “{{ object }}”")
 
 
@@ -315,5 +322,8 @@ class ChecklistUpdateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, Messag
     form_class = ChecklistForm
     cv_formsets = cv_checklist_formsets
     cv_context_actions = ["list", "update"]
-    cv_paragraph_template_code = _('<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>')
+    cv_paragraph_template_code = _(
+        "Compact rows explicitly enable borders with row_border=True. "
+        '<a href="{% url "questionnaire-list" %}">Questionnaire examples</a>'
+    )
     cv_message_template_code = _("Updated checklist “{{ object }}”")

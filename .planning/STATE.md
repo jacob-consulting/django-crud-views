@@ -4,11 +4,11 @@ milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 11
-status: ready for verification
-stopped_at: Completed 06.30-11-PLAN.md; validation, canonical verification and H1/rest-H2 pending
+status: awaiting human verification
+stopped_at: Completed 06.30-11; automated verification passed, H1/rest-H2 pending
 last_updated: "2026-11-13T16:20:12.212Z"
 last_activity: 2026-11-13
-last_activity_desc: Plan 11 acceptance refreshed; owner verification and remaining UAT pending
+last_activity_desc: Plan 11 verified; human_needed, 35/36 truths; H1/rest-H2 pending
 state_head: 53fec48240b98edf58a1cdef2794cb967ada5d76
 progress:
   total_phases: 37
@@ -31,13 +31,13 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — READY FOR VERIFICATION
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN VERIFICATION
 Current Plan: 11
 Total Plans in Phase: 11
-Status: ready for verification
+Status: awaiting human verification
 Last activity: 2026-11-13 — Plan 11 full acceptance and final freshness checks passed
 
-Next: Validation-owner update and independent phase re-verification, then remaining H1/rest-H2 human UAT. Phase remains pending; no Phase 7 advancement.
+Next: $gsd-verify-work 06.30 for remaining H1/rest-H2 human UAT. Canonical verification is human_needed (35/36 truths); all automated gaps closed. Phase remains pending; no Phase 7 advancement.
 
 ### Phase 06.30 plan 11 acceptance refresh — 2026-11-13
 
@@ -1457,5 +1457,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-13T16:20:07.354Z
-Stopped at: Completed 06.30-11-PLAN.md; validation, canonical verification and H1/rest-H2 pending
+Stopped at: Completed 06.30-11; automated verification passed, H1/rest-H2 pending
 Resume file: None

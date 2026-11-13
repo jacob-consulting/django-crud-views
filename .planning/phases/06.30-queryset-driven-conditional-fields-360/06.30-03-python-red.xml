@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="12" skipped="0" tests="13" time="1.747" timestamp="2026-11-13T09:47:53.524918+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_projection_query_budget[False-1-2]" time="0.333"><failure message="assert 1 == (1 * 2)&#10; +  where 1 = len([{'sql': 'SELECT &quot;app_publisher&quot;.&quot;id&quot;, &quot;app_publisher&quot;.&quot;name&quot;, &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publisher&quot; ORDER BY &quot;app_publisher&quot;.&quot;name&quot; ASC', 'time': '0.000'}])">rows = 1, options = 2, guard_only = False
+
+    @pytest.mark.parametrize("rows,options", [(1, 2), (20, 2), (1, 20), (20, 20)])
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_projection_query_budget(rows, options, guard_only):
+        Publisher.objects.bulk_create([Publisher(name="active") for _ in range(options)])
+        _, node = compact_tree(guard_only=guard_only, extra=rows)
+        native = []
+        conditional = []
+        for row in node.forms:
+            # Compare identical native controller rendering, without condition registration.
+            form = row.form
+            helper = _compact_helper(row)
+            groups = form.cv_conditional_groups
+            form.cv_conditional_groups = []
+            baseline_helper = _compact_helper(row)
+            form.cv_conditional_groups = groups
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=baseline_helper)
+            native.extend(queries.captured_queries)
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=helper)
+            conditional.extend(queries.captured_queries)
+        assert len(native) == rows
+&gt;       assert len(conditional) == rows * 2
+E       assert 1 == (1 * 2)
+E        +  where 1 = len([{'sql': 'SELECT "app_publisher"."id", "app_publisher"."name", "app_publisher"."name" AS "category" FROM "app_publisher" ORDER BY "app_publisher"."name" ASC', 'time': '0.000'}])
+
+tests/test1/test_conditional_queryset_compact.py:153: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_projection_query_budget[False-1-20]" time="0.341"><failure message="assert 1 == (1 * 2)&#10; +  where 1 = len([{'sql': 'SELECT &quot;app_publisher&quot;.&quot;id&quot;, &quot;app_publisher&quot;.&quot;name&quot;, &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publisher&quot; ORDER BY &quot;app_publisher&quot;.&quot;name&quot; ASC', 'time': '0.000'}])">rows = 1, options = 20, guard_only = False
+
+    @pytest.mark.parametrize("rows,options", [(1, 2), (20, 2), (1, 20), (20, 20)])
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_projection_query_budget(rows, options, guard_only):
+        Publisher.objects.bulk_create([Publisher(name="active") for _ in range(options)])
+        _, node = compact_tree(guard_only=guard_only, extra=rows)
+        native = []
+        conditional = []
+        for row in node.forms:
+            # Compare identical native controller rendering, without condition registration.
+            form = row.form
+            helper = _compact_helper(row)
+            groups = form.cv_conditional_groups
+            form.cv_conditional_groups = []
+            baseline_helper = _compact_helper(row)
+            form.cv_conditional_groups = groups
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=baseline_helper)
+            native.extend(queries.captured_queries)
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=helper)
+            conditional.extend(queries.captured_queries)
+        assert len(native) == rows
+&gt;       assert len(conditional) == rows * 2
+E       assert 1 == (1 * 2)
+E        +  where 1 = len([{'sql': 'SELECT "app_publisher"."id", "app_publisher"."name", "app_publisher"."name" AS "category" FROM "app_publisher" ORDER BY "app_publisher"."name" ASC', 'time': '0.000'}])
+
+tests/test1/test_conditional_queryset_compact.py:153: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_queryset_cells_keep_geometry_and_row_ownership" time="0.355"><failure message="assert 0 == 2&#10; +  where 0 = len([])">django_assert_num_queries = functools.partial(&lt;function _assert_num_queries at 0x7727f9c0cb80&gt;, &lt;_pytest.config.Config object at 0x7727f9e02180&gt;)
+
+    def test_compact_queryset_cells_keep_geometry_and_row_ownership(django_assert_num_queries):
+        active = Publisher.objects.create(name="active")
+        other = Publisher.objects.create(name="other")
+        _, node = compact_tree()
+        first, second = [row.form for row in node.forms]
+        first.initial["reference"] = active.pk
+        second.initial["reference"] = other.pk
+        first.fields["reference"].queryset = first.fields["reference"].queryset.filter(pk=active.pk)
+        first.fields["blank_text"].help_text = "&lt;script&gt;plain help&lt;/script&gt;"
+        with django_assert_num_queries(0):
+            _compact_schema(first, node.formset)
+            _compact_projection(node)
+            _compact_helper(node.forms[0])
+        doc = render(node)
+        rows = doc.cssselect(".cv-formset-row-compact")
+        for index, row in enumerate(rows):
+            cells = row.cssselect(".cv-formset-compact-fields &gt; div")
+            assert len(cells) == 4
+            assert all("col-md-3" in cell.get("class") for cell in cells)
+            controlled = row.cssselect("[cv-data-toggle-group]")
+&gt;           assert len(controlled) == 2
+E           assert 0 == 2
+E            +  where 0 = len([])
+
+tests/test1/test_conditional_queryset_compact.py:66: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_no_fields_render_coverage[True]" time="0.362"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">guard_only = True
+django_assert_num_queries = functools.partial(&lt;function _assert_num_queries at 0x7ef4fd564b80&gt;, &lt;_pytest.config.Config object at 0x7ef4fd5eb170&gt;)
+
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_no_fields_render_coverage(guard_only, django_assert_num_queries):
+        Publisher.objects.create(name="general")
+        _, node = compact_tree(guard_only=guard_only)
+        with django_assert_num_queries(0):
+            for row in node.forms:
+                _compact_schema(row.form, node.formset)
+                _compact_helper(row)
+            _compact_projection(node)
+        doc = render(node)
+        assert len(doc.cssselect("select")) == 2
+        assert not doc.cssselect(".cv-queryset-condition-error")
+        if guard_only:
+            assert not doc.cssselect("[cv-data-toggle-group]")
+        else:
+            assert all(json.loads(cell.get("cv-data-toggle-values")) == [] for cell in doc.cssselect("[cv-data-toggle-group]"))
+        Publisher.objects.create(name="unknown&lt;script&gt;")
+&gt;       with pytest.raises(ImproperlyConfigured, match="reference.*unknown"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_queryset_compact.py:101: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_projection_query_budget[False-20-2]" time="0.140"><failure message="assert 20 == (20 * 2)&#10; +  where 20 = len([{'sql': 'SELECT &quot;app_publisher&quot;.&quot;id&quot;, &quot;app_publisher&quot;.&quot;name&quot;, &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publishe... &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publisher&quot; ORDER BY &quot;app_publisher&quot;.&quot;name&quot; ASC', 'time': '0.000'}, ...])">rows = 20, options = 2, guard_only = False
+
+    @pytest.mark.parametrize("rows,options", [(1, 2), (20, 2), (1, 20), (20, 20)])
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_projection_query_budget(rows, options, guard_only):
+        Publisher.objects.bulk_create([Publisher(name="active") for _ in range(options)])
+        _, node = compact_tree(guard_only=guard_only, extra=rows)
+        native = []
+        conditional = []
+        for row in node.forms:
+            # Compare identical native controller rendering, without condition registration.
+            form = row.form
+            helper = _compact_helper(row)
+            groups = form.cv_conditional_groups
+            form.cv_conditional_groups = []
+            baseline_helper = _compact_helper(row)
+            form.cv_conditional_groups = groups
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=baseline_helper)
+            native.extend(queries.captured_queries)
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=helper)
+            conditional.extend(queries.captured_queries)
+        assert len(native) == rows
+&gt;       assert len(conditional) == rows * 2
+E       assert 20 == (20 * 2)
+E        +  where 20 = len([{'sql': 'SELECT "app_publisher"."id", "app_publisher"."name", "app_publisher"."name" AS "category" FROM "app_publishe... "app_publisher"."name" AS "category" FROM "app_publisher" ORDER BY "app_publisher"."name" ASC', 'time': '0.000'}, ...])
+
+tests/test1/test_conditional_queryset_compact.py:153: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_projection_query_budget[False-20-20]" time="0.202"><failure message="assert 20 == (20 * 2)&#10; +  where 20 = len([{'sql': 'SELECT &quot;app_publisher&quot;.&quot;id&quot;, &quot;app_publisher&quot;.&quot;name&quot;, &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publishe... &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publisher&quot; ORDER BY &quot;app_publisher&quot;.&quot;name&quot; ASC', 'time': '0.000'}, ...])">rows = 20, options = 20, guard_only = False
+
+    @pytest.mark.parametrize("rows,options", [(1, 2), (20, 2), (1, 20), (20, 20)])
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_projection_query_budget(rows, options, guard_only):
+        Publisher.objects.bulk_create([Publisher(name="active") for _ in range(options)])
+        _, node = compact_tree(guard_only=guard_only, extra=rows)
+        native = []
+        conditional = []
+        for row in node.forms:
+            # Compare identical native controller rendering, without condition registration.
+            form = row.form
+            helper = _compact_helper(row)
+            groups = form.cv_conditional_groups
+            form.cv_conditional_groups = []
+            baseline_helper = _compact_helper(row)
+            form.cv_conditional_groups = groups
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=baseline_helper)
+            native.extend(queries.captured_queries)
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=helper)
+            conditional.extend(queries.captured_queries)
+        assert len(native) == rows
+&gt;       assert len(conditional) == rows * 2
+E       assert 20 == (20 * 2)
+E        +  where 20 = len([{'sql': 'SELECT "app_publisher"."id", "app_publisher"."name", "app_publisher"."name" AS "category" FROM "app_publishe... "app_publisher"."name" AS "category" FROM "app_publisher" ORDER BY "app_publisher"."name" ASC', 'time': '0.000'}, ...])
+
+tests/test1/test_conditional_queryset_compact.py:153: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_no_fields_render_coverage[False]" time="0.022"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">guard_only = False
+django_assert_num_queries = functools.partial(&lt;function _assert_num_queries at 0x7727f9c0cb80&gt;, &lt;_pytest.config.Config object at 0x7727f9e02180&gt;)
+
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_no_fields_render_coverage(guard_only, django_assert_num_queries):
+        Publisher.objects.create(name="general")
+        _, node = compact_tree(guard_only=guard_only)
+        with django_assert_num_queries(0):
+            for row in node.forms:
+                _compact_schema(row.form, node.formset)
+                _compact_helper(row)
+            _compact_projection(node)
+        doc = render(node)
+        assert len(doc.cssselect("select")) == 2
+        assert not doc.cssselect(".cv-queryset-condition-error")
+        if guard_only:
+            assert not doc.cssselect("[cv-data-toggle-group]")
+        else:
+            assert all(json.loads(cell.get("cv-data-toggle-values")) == [] for cell in doc.cssselect("[cv-data-toggle-group]"))
+        Publisher.objects.create(name="unknown&lt;script&gt;")
+&gt;       with pytest.raises(ImproperlyConfigured, match="reference.*unknown"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/test_conditional_queryset_compact.py:101: Failed</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_empty_compact_queryset_schema_does_not_evaluate_options" time="0.004" /><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_projection_query_budget[True-20-20]" time="0.152"><failure message="assert 20 == (20 * 2)&#10; +  where 20 = len([{'sql': 'SELECT &quot;app_publisher&quot;.&quot;id&quot;, &quot;app_publisher&quot;.&quot;name&quot;, &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publishe... &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publisher&quot; ORDER BY &quot;app_publisher&quot;.&quot;name&quot; ASC', 'time': '0.000'}, ...])">rows = 20, options = 20, guard_only = True
+
+    @pytest.mark.parametrize("rows,options", [(1, 2), (20, 2), (1, 20), (20, 20)])
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_projection_query_budget(rows, options, guard_only):
+        Publisher.objects.bulk_create([Publisher(name="active") for _ in range(options)])
+        _, node = compact_tree(guard_only=guard_only, extra=rows)
+        native = []
+        conditional = []
+        for row in node.forms:
+            # Compare identical native controller rendering, without condition registration.
+            form = row.form
+            helper = _compact_helper(row)
+            groups = form.cv_conditional_groups
+            form.cv_conditional_groups = []
+            baseline_helper = _compact_helper(row)
+            form.cv_conditional_groups = groups
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=baseline_helper)
+            native.extend(queries.captured_queries)
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=helper)
+            conditional.extend(queries.captured_queries)
+        assert len(native) == rows
+&gt;       assert len(conditional) == rows * 2
+E       assert 20 == (20 * 2)
+E        +  where 20 = len([{'sql': 'SELECT "app_publisher"."id", "app_publisher"."name", "app_publisher"."name" AS "category" FROM "app_publishe... "app_publisher"."name" AS "category" FROM "app_publisher" ORDER BY "app_publisher"."name" ASC', 'time': '0.000'}, ...])
+
+tests/test1/test_conditional_queryset_compact.py:153: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_projection_query_budget[True-1-20]" time="0.012"><failure message="assert 1 == (1 * 2)&#10; +  where 1 = len([{'sql': 'SELECT &quot;app_publisher&quot;.&quot;id&quot;, &quot;app_publisher&quot;.&quot;name&quot;, &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publisher&quot; ORDER BY &quot;app_publisher&quot;.&quot;name&quot; ASC', 'time': '0.000'}])">rows = 1, options = 20, guard_only = True
+
+    @pytest.mark.parametrize("rows,options", [(1, 2), (20, 2), (1, 20), (20, 20)])
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_projection_query_budget(rows, options, guard_only):
+        Publisher.objects.bulk_create([Publisher(name="active") for _ in range(options)])
+        _, node = compact_tree(guard_only=guard_only, extra=rows)
+        native = []
+        conditional = []
+        for row in node.forms:
+            # Compare identical native controller rendering, without condition registration.
+            form = row.form
+            helper = _compact_helper(row)
+            groups = form.cv_conditional_groups
+            form.cv_conditional_groups = []
+            baseline_helper = _compact_helper(row)
+            form.cv_conditional_groups = groups
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=baseline_helper)
+            native.extend(queries.captured_queries)
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=helper)
+            conditional.extend(queries.captured_queries)
+        assert len(native) == rows
+&gt;       assert len(conditional) == rows * 2
+E       assert 1 == (1 * 2)
+E        +  where 1 = len([{'sql': 'SELECT "app_publisher"."id", "app_publisher"."name", "app_publisher"."name" AS "category" FROM "app_publisher" ORDER BY "app_publisher"."name" ASC', 'time': '0.000'}])
+
+tests/test1/test_conditional_queryset_compact.py:153: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_projection_query_budget[True-1-2]" time="0.007"><failure message="assert 1 == (1 * 2)&#10; +  where 1 = len([{'sql': 'SELECT &quot;app_publisher&quot;.&quot;id&quot;, &quot;app_publisher&quot;.&quot;name&quot;, &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publisher&quot; ORDER BY &quot;app_publisher&quot;.&quot;name&quot; ASC', 'time': '0.000'}])">rows = 1, options = 2, guard_only = True
+
+    @pytest.mark.parametrize("rows,options", [(1, 2), (20, 2), (1, 20), (20, 20)])
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_projection_query_budget(rows, options, guard_only):
+        Publisher.objects.bulk_create([Publisher(name="active") for _ in range(options)])
+        _, node = compact_tree(guard_only=guard_only, extra=rows)
+        native = []
+        conditional = []
+        for row in node.forms:
+            # Compare identical native controller rendering, without condition registration.
+            form = row.form
+            helper = _compact_helper(row)
+            groups = form.cv_conditional_groups
+            form.cv_conditional_groups = []
+            baseline_helper = _compact_helper(row)
+            form.cv_conditional_groups = groups
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=baseline_helper)
+            native.extend(queries.captured_queries)
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=helper)
+            conditional.extend(queries.captured_queries)
+        assert len(native) == rows
+&gt;       assert len(conditional) == rows * 2
+E       assert 1 == (1 * 2)
+E        +  where 1 = len([{'sql': 'SELECT "app_publisher"."id", "app_publisher"."name", "app_publisher"."name" AS "category" FROM "app_publisher" ORDER BY "app_publisher"."name" ASC', 'time': '0.000'}])
+
+tests/test1/test_conditional_queryset_compact.py:153: AssertionError</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_bound_cell_preserves_field_errors_and_labels" time="0.009"><failure message="IndexError: list index out of range">def test_compact_bound_cell_preserves_field_errors_and_labels():
+        active = Publisher.objects.create(name="active")
+        _, node = compact_tree(extra=1)
+        form = node.forms[0].form
+        form.is_bound = True
+        form.data = {form.add_prefix("reference"): str(active.pk), form.add_prefix("blank_text"): ""}
+        form.add_error(None, "Row error")
+        doc = render(node)
+&gt;       cell = doc.cssselect("[cv-data-toggle-group]")[0]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_conditional_queryset_compact.py:164: IndexError</failure></testcase><testcase classname="tests.test1.test_conditional_queryset_compact" name="test_compact_projection_query_budget[True-20-2]" time="0.120"><failure message="assert 20 == (20 * 2)&#10; +  where 20 = len([{'sql': 'SELECT &quot;app_publisher&quot;.&quot;id&quot;, &quot;app_publisher&quot;.&quot;name&quot;, &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publishe... &quot;app_publisher&quot;.&quot;name&quot; AS &quot;category&quot; FROM &quot;app_publisher&quot; ORDER BY &quot;app_publisher&quot;.&quot;name&quot; ASC', 'time': '0.000'}, ...])">rows = 20, options = 2, guard_only = True
+
+    @pytest.mark.parametrize("rows,options", [(1, 2), (20, 2), (1, 20), (20, 20)])
+    @pytest.mark.parametrize("guard_only", [False, True])
+    def test_compact_projection_query_budget(rows, options, guard_only):
+        Publisher.objects.bulk_create([Publisher(name="active") for _ in range(options)])
+        _, node = compact_tree(guard_only=guard_only, extra=rows)
+        native = []
+        conditional = []
+        for row in node.forms:
+            # Compare identical native controller rendering, without condition registration.
+            form = row.form
+            helper = _compact_helper(row)
+            groups = form.cv_conditional_groups
+            form.cv_conditional_groups = []
+            baseline_helper = _compact_helper(row)
+            form.cv_conditional_groups = groups
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=baseline_helper)
+            native.extend(queries.captured_queries)
+            with CaptureQueriesContext(connection) as queries:
+                render_crispy_form(form, helper=helper)
+            conditional.extend(queries.captured_queries)
+        assert len(native) == rows
+&gt;       assert len(conditional) == rows * 2
+E       assert 20 == (20 * 2)
+E        +  where 20 = len([{'sql': 'SELECT "app_publisher"."id", "app_publisher"."name", "app_publisher"."name" AS "category" FROM "app_publishe... "app_publisher"."name" AS "category" FROM "app_publisher" ORDER BY "app_publisher"."name" ASC', 'time': '0.000'}, ...])
+
+tests/test1/test_conditional_queryset_compact.py:153: AssertionError</failure></testcase></testsuite></testsuites>

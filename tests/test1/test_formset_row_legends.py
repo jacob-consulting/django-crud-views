@@ -85,7 +85,8 @@ def test_row_title_uses_each_polymorphic_instance_and_plain_form_fallback():
 @pytest.mark.django_db
 @pytest.mark.parametrize("label", [None, False, "", gettext_lazy(""), "Unused custom legend", gettext_lazy("Yes")])
 @pytest.mark.parametrize("fragment", [False, True])
-def test_compact_rows_explicitly_suppress_frames_in_initial_and_fragment_rendering(label, fragment):
+@pytest.mark.parametrize("row_border", [False, True])
+def test_compact_rows_explicitly_suppress_frames_in_initial_and_fragment_rendering(label, fragment, row_border):
     from crud_views.lib.formsets import CompactColumn, CompactLayout
 
     declaration = FormSet(
@@ -93,7 +94,7 @@ def test_compact_rows_explicitly_suppress_frames_in_initial_and_fragment_renderi
         key="books",
         title="Book section",
         row_legend=label,
-        compact_layout=CompactLayout([CompactColumn("title", span=8)], controls_span=4),
+        compact_layout=CompactLayout([CompactColumn("title", span=8)], controls_span=4, row_border=row_border),
     )
     node = next(
         declaration.template(pk=None, index=0, force_form_index=3)
@@ -109,6 +110,7 @@ def test_compact_rows_explicitly_suppress_frames_in_initial_and_fragment_renderi
 
     suppressed = label is False or label == ""
     assert all(("cv-formset-row-plain" in row.classes) is suppressed for row in rows)
+    assert all(("cv-formset-row-bordered" in row.classes) is (row_border and not suppressed) for row in rows)
     if not fragment:
         assert doc.cssselect(".cv-formset-compact-headings")
 
@@ -117,7 +119,10 @@ def test_compact_rows_explicitly_suppress_frames_in_initial_and_fragment_renderi
 @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True)])
 @pytest.mark.parametrize("parent_plain,child_plain", [(False, True), (True, False)])
 @pytest.mark.parametrize("fragment", [False, True])
-def test_mixed_layout_frame_policy_is_independent(parent_compact, child_compact, parent_plain, child_plain, fragment):
+@pytest.mark.parametrize("parent_border,child_border", [(False, True), (True, False), (True, True), (False, False)])
+def test_mixed_layout_frame_policy_is_independent(
+    parent_compact, child_compact, parent_plain, child_plain, fragment, parent_border, child_border
+):
     from crud_views.lib.formsets import CompactColumn, CompactLayout
 
     books = publisher_formsets.model_copy(deep=True)["books"]
@@ -125,9 +130,11 @@ def test_mixed_layout_frame_policy_is_independent(parent_compact, child_compact,
     books.row_legend = False if parent_plain else None
     notes.row_legend = False if child_plain else None
     if parent_compact:
-        books.compact_layout = CompactLayout([CompactColumn("title", span=8)], controls_span=4)
+        books.compact_layout = CompactLayout(
+            [CompactColumn("title", span=8)], controls_span=4, row_border=parent_border
+        )
     if child_compact:
-        notes.compact_layout = CompactLayout([CompactColumn("note", span=8)], controls_span=4)
+        notes.compact_layout = CompactLayout([CompactColumn("note", span=8)], controls_span=4, row_border=child_border)
     node = next(
         books.template(pk=None, index=0, force_form_index=3)
         if fragment
@@ -136,6 +143,10 @@ def test_mixed_layout_frame_policy_is_independent(parent_compact, child_compact,
     doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
     parent = doc.cssselect(".cv-formset-row")[0]
     child = doc.cssselect(".cv-formset-row .cv-formset-row")[0]
-    for row, compact, plain in [(parent, parent_compact, parent_plain), (child, child_compact, child_plain)]:
+    for row, compact, plain, border in [
+        (parent, parent_compact, parent_plain, parent_border),
+        (child, child_compact, child_plain, child_border),
+    ]:
         assert ("cv-formset-row-plain" in row.classes) is (compact and plain)
+        assert ("cv-formset-row-bordered" in row.classes) is (compact and border and not plain)
         assert bool(row.cssselect(":scope > .cv-formset-row-card")) is (not compact and not plain)

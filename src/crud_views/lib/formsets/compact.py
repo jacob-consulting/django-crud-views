@@ -46,6 +46,7 @@ class CompactLayout:
     columns: tuple[CompactColumn, ...]
     _: KW_ONLY
     controls_span: int
+    row_border: bool = False
 
     def __post_init__(self):
         if not isinstance(self.columns, (list, tuple)) or not self.columns:
@@ -57,6 +58,8 @@ class CompactLayout:
         if len(set(names)) != len(names):
             raise ValueError("CompactLayout.columns must not contain duplicate field names")
         _validate_span(self.controls_span, "CompactLayout.controls_span")
+        if type(self.row_border) is not bool:
+            raise ValueError("CompactLayout.row_border must be a boolean")
         if sum(column.span for column in self.columns) + self.controls_span > 12:
             raise ValueError("CompactLayout field and controls spans must total at most 12")
 

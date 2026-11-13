@@ -36,6 +36,37 @@ def _render(form):
     return Template("{% load crud_views %}{% cv_render_form %}").render(Context({"form": form, "view": form.cv_view}))
 
 
+@pytest.mark.parametrize("modal", [False, True])
+def test_transition_metadata_tracer(client_user_campaign_change, campaign_new, monkeypatch, settings, modal):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+    settings.CRUD_VIEWS_ICON_LIBRARIES = {"tabler": {"renderer": "font", "class": "ti ti-{name}"}}
+    step = next(t for t in campaign_new.get_all_state_transitions() if t.name == "wf_activate")
+    monkeypatch.setitem(step.custom, "label", "Confirm")
+    monkeypatch.setitem(step.custom, "variant", "success")
+    monkeypatch.setitem(step.custom, "icon", "tabler:check")
+    response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/", headers=_headers(modal))
+    document = _document(response)
+    first, second = _buttons(document)
+    assert {"btn", "btn-success"} <= set(first.get("class").split())
+    assert len(first.cssselect(".ti.ti-check")) == 1
+    assert first.text_content().strip() == "Confirm"
+    assert first.get("value") == "wf_activate"
+    assert first.get("id") == "id_transition-action-0"
+    assert second.get("value") == "wf_cancel_new"
+    assert document.cssselect("[data-cv-cancel-url], a#button-id-cancel")
+    _assert_descriptions(document)
+    monkeypatch.delitem(step.custom, "variant")
+    monkeypatch.delitem(step.custom, "icon")
+    document = _document(
+        client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/", headers=_headers(modal))
+    )
+    first = _buttons(document)[0]
+    assert set(first.get("class").split()) == {"btn", "btn-primary", "text-wrap"}
+    assert not first.cssselect("i, svg")
+    assert first.text_content().strip() == "Confirm"
+
+
 @pytest.mark.parametrize("late", [False, True])
 @pytest.mark.parametrize("presentation", ["radio", "buttons"])
 @pytest.mark.parametrize("modal", [False, True])

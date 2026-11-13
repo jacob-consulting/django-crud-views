@@ -146,6 +146,7 @@ cv_compact_formsets = FormSets(
                 choices=FormSet(
                     title=_("Choices"),
                     klass=CompactChoiceFormSet,
+                    row_legend=False,
                     fields=["label"],
                     pk_field="id",
                     compact_layout=CompactLayout(columns=[CompactColumn("label", span=8)], controls_span=4),
@@ -277,6 +278,7 @@ cv_checklist_formsets = FormSets(
         items=FormSet(
             title=_("Items"),
             klass=ChecklistItemFormSet,
+            row_legend=False,
             fields=["label", "done"],
             pk_field="id",
             compact_layout=CompactLayout(

@@ -134,6 +134,14 @@
     padding: .5rem;
 }
 
+.cv-formset-row-compact.cv-formset-row-plain,
+.cv-formset-compact-child > .cv-formset-content > .cv-formset-row-compact.cv-formset-row-plain {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+}
+
 .cv-formset-compact-child > .cv-formset-content > .cv-formset-compact-headings {
     padding-right: 0;
     padding-left: 0;

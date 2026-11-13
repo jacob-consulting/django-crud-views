@@ -6,7 +6,11 @@ const os = require('node:os');
 const cp = require('node:child_process');
 const crypto = require('node:crypto');
 const root = path.resolve(__dirname, '../..');
-const output = path.join(root, '.planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/10-row-cards.json');
+const outputIndex = process.argv.indexOf('--output');
+if (outputIndex !== -1) assert(process.argv[outputIndex + 1], '--output requires a path');
+const output = path.resolve(root, outputIndex === -1
+    ? '.planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/10-row-cards.json'
+    : process.argv[outputIndex + 1]);
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const python = process.env.CV_QUERYSET_PYTHON || path.join(root, '.venv/bin/python');
 const playwright = process.env.CV_QUERYSET_PLAYWRIGHT || '/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright';
@@ -35,7 +39,7 @@ from django.http import HttpResponse
 from django.urls import include, path, reverse
 from formsets.seed import seed as seed_formsets
 from queryset_conditional.seed import seed as seed_services
-from formsets.models import Questionnaire
+from formsets.models import Checklist, Questionnaire
 from queryset_conditional.models import RequestBatch
 from formsets.views import cv_formsets, cv_compact_formsets, QuestionnaireUpdateView
 import crud_views
@@ -61,7 +65,9 @@ urlpatterns = [
 ]
 pk = Questionnaire.objects.get(title='Customer Survey').pk
 batch = RequestBatch.objects.get(title='Weekly service requests').pk
+checklist = Checklist.objects.get(title='Release checklist').pk
 urls = {
+    'checklist': reverse('checklist-update', kwargs={'pk': checklist}),
     'questionnaire': reverse('questionnaire-update', kwargs={'pk': pk}),
     'compact': reverse('questionnaire-compact_update', kwargs={'pk': pk}),
     'classic-compact': f'/__mixed/classic-compact/{pk}/',
@@ -120,7 +126,7 @@ async function run() {
     const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'cv-row-cards-'));
     // Captures survive resource cleanup for review, outside the repository's tracked source.
     const captures = fs.mkdtempSync(path.join(os.tmpdir(), 'cv-row-card-captures-'));
-    const record = {scope: 'G-06.30-1 only', started: new Date().toISOString(), command: process.argv,
+    const record = {scope: 'G-06.30-2 focused frames; prior ordinary scenarios retained', started: new Date().toISOString(), command: process.argv,
         sourceRoot: root, sourceHashes: fingerprints(), scenarios: [], screenshots: [], pageErrors: [], failedRequests: [],
         runtime: {node: process.version, nodePath: process.execPath, pythonPath: python, playwrightPath: playwright,
             playwright: require(path.join(playwright, 'package.json')).version, chromiumPath: chromium},
@@ -178,6 +184,53 @@ async function run() {
             // Force server validation even for required-field failures covered below.
             await Promise.all([page.waitForNavigation(), form.evaluate(el => {el.noValidate = true; el.requestSubmit();})]);
         };
+        const plainRow = async (s, id, row) => {
+            const actual = await row.evaluate(el => {
+                const css = getComputedStyle(el);
+                return {borders: ['Top', 'Right', 'Bottom', 'Left'].map(side => css[`border${side}Width`]),
+                    padding: ['Top', 'Right', 'Bottom', 'Left'].map(side => css[`padding${side}`]),
+                    radius: css.borderRadius, background: css.backgroundColor,
+                    cards: el.querySelectorAll(':scope > .cv-formset-row-card').length,
+                    legends: el.querySelectorAll(':scope > legend, :scope > .cv-formset-row-card > legend').length};
+            });
+            check(s, id, actual, {borders: ['0px', '0px', '0px', '0px'], padding: ['0px', '0px', '0px', '0px'],
+                radius: '0px', background: 'rgba(0, 0, 0, 0)', cards: 0, legends: 0});
+        };
+        const checklist = scenario('checklist-lifecycle');
+        for (const width of [1280, 390]) {
+            await page.setViewportSize({width, height: 900});
+            await visit('checklist');
+            await plainRow(checklist, `initial-${width}`, rows('items').first());
+            check(checklist, `headings-${width}`, await page.locator('.cv-formset-compact-headings').isVisible(), width > 768);
+            check(checklist, `mobile-label-${width}`, await input(rows('items').first(), 'label').evaluate(el => {
+                const label = el.labels[0];
+                return label.textContent.trim().length > 0 && (innerWidth > 768 || label.getBoundingClientRect().height > 1);
+            }));
+            const count = await rows('items').count();
+            await ownButton(rows('items').first(), 'add').click();
+            await page.waitForFunction(n => document.querySelectorAll('.cv-formset-row').length === n + 1, count);
+            const added = rows('items').nth(1);
+            await input(added, 'label').fill(`Added item ${width}`);
+            await added.locator('input[type="checkbox"][name$="-done"]').check();
+            await plainRow(checklist, `inserted-${width}`, added);
+            await input(rows('items').first(), 'label').fill('');
+            await submit();
+            await plainRow(checklist, `invalid-${width}`, rows('items').first());
+            check(checklist, `required-error-${width}`, await input(rows('items').first(), 'label').evaluate(el =>
+                el.getAttribute('aria-invalid') === 'true' && el.closest('.cv-formset-row').textContent.includes('required')));
+            await input(rows('items').first(), 'label').fill(`Corrected item ${width}`);
+            await rows('items').first().locator('input[type="checkbox"][name$="-done"]').uncheck();
+            await capture(`checklist-invalid-corrected-${width}`);
+            await submit();
+            check(checklist, `save-redirect-${width}`, new URL(page.url()).pathname !== ready.urls.checklist);
+            await visit('checklist');
+            await plainRow(checklist, `reopened-${width}`, rows('items').first());
+            const values = await rows('items').evaluateAll(els => els.map(el => ({label: el.querySelector('input[name$="-label"]').value,
+                done: el.querySelector('input[type="checkbox"][name$="-done"]').checked})));
+            check(checklist, `saved-checked-${width}`, values.some(v => v.label === `Added item ${width}` && v.done));
+            check(checklist, `saved-omitted-${width}`, values.some(v => v.label === `Corrected item ${width}` && !v.done));
+            await capture(`checklist-reopened-${width}`);
+        }
         await visit('questionnaire');
         const asset = scenario('assets');
         const stylesheet = await page.locator('link[href*="/formset.css"]').getAttribute('href');
@@ -273,6 +326,7 @@ async function run() {
                     const compact = kind === 'compact' || (kind === 'classic-compact' ? r.key === 'choices' : r.key === 'questions');
                     return r.compact === compact && r.cards === (!compact && r.key === 'questions' ? 1 : 0);
                 }));
+                await plainRow(presentation, `${kind}-child-styles-${width}`, rows('choices').first());
                 await capture(`${kind}-${width}`);
             }
         }
@@ -299,7 +353,7 @@ async function run() {
         assert.deepEqual(record.pageErrors, []);
         assert.deepEqual(record.failedRequests, []);
         assert.deepEqual(fingerprints(), record.sourceHashes, 'Source changed during run');
-        assert.deepEqual(record.scenarios.map(s => s.id), ['assets', 'nested-lifecycle', 'presentation', 'conditional-and-compact']);
+        assert.deepEqual(record.scenarios.map(s => s.id), ['checklist-lifecycle', 'assets', 'nested-lifecycle', 'presentation', 'conditional-and-compact']);
         assert(record.scenarios.every(s => s.assertions.length > 0));
     } catch (error) {failure = error; record.failure = String(error); console.error(hostLog.slice(-3000));}
     finally {

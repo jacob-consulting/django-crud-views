@@ -1799,7 +1799,7 @@ Plans:
 **Requirements:** Deliver upstream support, the verified tabler-test roastery upgrade, and one separate example app with its own models, focused standalone/inline source modules, ordinary/compact variants, and reciprocal documentation links. Strict matching is the default; check offered options on rendering and the validated selection on POST, permit explicit no-fields categories and an opt-in unmatched policy, and do not scan unused categories. Preserve browser values until save; hide inactive ordinary groups and keep compact cells visible but disabled. Preserve existing conditional behavior and bounded query costs.
 **Depends on:** Phase 06.29 (roadmap sequence); builds on Phase 06.27's conditional groups and Phases 06.24–06.26's compact formset contracts.
 **Ordering:** Complete before Phase 7 freezes the public theme surface; include the settled queryset/inline conditional template and JavaScript contracts in that inventory.
-**Plans:** 4/9 plans executed
+**Plans:** 5/9 plans executed
 
 Plans:
 **Wave 1**
@@ -1814,7 +1814,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [x] 06.30-04-PLAN.md
-- [ ] 06.30-07-PLAN.md
+- [x] 06.30-07-PLAN.md
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06.30-05-PLAN.md
@@ -1942,5 +1942,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
-| 06.30. Queryset-driven conditional fields (#360) | 2/9 | In Progress | - |
+| 06.30. Queryset-driven conditional fields (#360) | 5/9 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

@@ -5,16 +5,16 @@ current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 5
 status: executing
-stopped_at: Completed 06.30-04-PLAN.md
-last_updated: "2026-11-13T10:04:50.672Z"
+stopped_at: Completed 06.30-07-PLAN.md; next 06.30-05-PLAN.md
+last_updated: "2026-11-13T10:15:03.494Z"
 last_activity: 2026-11-13
 last_activity_desc: Phase 06.30 execution started
-state_head: 01ac27bc75c120f0bb23f906ce13a9948336a692
+state_head: d1ab13fcaeb565f1c660c7524f73b2f45fe7f1af
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 192
-  completed_plans: 187
+  completed_plans: 188
 milestone_name: milestone
 ---
 
@@ -37,7 +37,14 @@ Total Plans in Phase: 9
 Status: Ready to execute
 Last activity: 2026-11-13 — Phase 06.30 execution started
 
-Next: $gsd-plan-phase 06.30
+Next: Execute 06.30-05-PLAN.md (approved order: 01, 02, 03, 04, 07, 05, 06, 08, 09).
+
+### Phase 06.30 plan 07 execution — 2026-11-13
+
+- Five of nine plans complete; phase remains executing. Plan 05 is next.
+- Downstream order lines adopt QuerysetConditions, preserving restricted/current product choices, optional coffee fields, compact columns and the model-save safeguard. Three local downstream commits end at 044c511; upstream summary committed d1ab13fc before progress updates.
+- Source-bound orders 32, focused 47 and full downstream application 238 tests passed with two workers; ordinary imports also pass all 15 new tests without skips. Native/conditional SQL is 3/6 per row, stable at 2 versus 20 options; annotation survives polymorphic iteration and cleaning.
+- Browser acceptance remains plan 09. No push/deployment or developer database modification. Existing state.json and unrelated .gitkeep files remain outside scoped commits.
 
 ### Phase 06.29 completion — 2026-11-12
 
@@ -1004,6 +1011,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P02 | 10min | 3 tasks | 12 files |
 | Phase 06.30 P03 | 9min | 2 tasks | 5 files |
 | Phase 06.30 P04 | 7min | 2 tasks | 11 files |
+| Phase 06.30 P07 | 10min | 2 tasks | 5 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1286,6 +1294,7 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Plan 03: compact row guards and cells share one render-local projection per controller; schema/helper construction stays query-free.
 - [Phase 06.30]: Plan 03: disable-only cells preserve their display and reuse existing focus recovery only when a focused control becomes inactive.
 - [Phase 06.30]: Standalone ViewSet uses name service_request and prefix service-request because hyphenated registry names fail viewset.E002; reverse names are service_request-list/create/update.
+- [Phase 06.30]: Roastery keeps restricted active-type OR retained-current product choices with native subtype annotation; downstream local commits stay separate from upstream metadata.
 
 ### Pending Todos
 
@@ -1365,6 +1374,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T10:04:46.263Z
-Stopped at: Completed 06.30-04-PLAN.md
+Last session: 2026-11-13T10:14:59.278Z
+Stopped at: Completed 06.30-07-PLAN.md; next 06.30-05-PLAN.md
 Resume file: None

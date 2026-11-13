@@ -55,10 +55,10 @@ This is planned coverage, not implementation acceptance. The roadmap Requirement
 | AC-4 | Blank/required/invalid/disabled controller; no raw fallback | 01-01/02, 02-01/03 | COVERED |
 | AC-5 | Active required and inactive invalid clearing, empty overrides, disabled/model constraints | 02-03, 04-01 | COVERED |
 | AC-6 | Exact row scope on initial/change/redisplay/reset/insertion/modal | 03-01/02, 05-02, 08 | COVERED |
-| AC-7 | Ordinary hide, compact alignment/disabled, labels/errors/control identities | 03, 05-02, 08 | COVERED |
+| AC-7 | Ordinary hide, compact alignment/disabled and focused-control recovery, labels/errors/control identities | 03, 05-02, 08 | COVERED |
 | AC-8 | Away/back preserve and actual save/reopen/no-JS/unchanged cleanup | 01-01, 02-03, 03-02, 05-02, 07–08 | COVERED |
 | AC-9 | Empty/deleted/atomic rows; static/checkbox/whole-formset regressions | 02-02/03, 03-02, 05-02, 07-02, 09-01 | COVERED |
-| AC-10 | Zero schema/check queries; 2-vs-20 annotated options and no category scan | 01-02, 02, 03-01 | COVERED |
+| AC-10 | Zero schema/check queries; 2-vs-20 annotated options, 1-vs-20 ordinary/compact/downstream rows with native baseline/total SQL, and no category scan | 01-02, 02, 03-01 | COVERED |
 | AC-11 | Own app, all three demos and required seed categories | 04–05, 08-01 | COVERED |
 | AC-12 | Navigation/relevant source panels/reciprocal links/executable recipes | 05-03, 06, 08-01, 09 | COVERED |
 | AC-13 | Verified roastery migration, retained products, optional coffee, print/model preservation | 07, 08-02, 09-02 | COVERED |
@@ -77,11 +77,33 @@ This is planned coverage, not implementation acceptance. The roadmap Requirement
 | 7 | 08 | 05+06+07 → focused harness self-tests, then complete browser evidence |
 | 8 | 09 | 06+08 → final source-bound acceptance and reconciled findings |
 
-Same-wave files_modified intersections are empty. All 20 tasks have an automated command followed immediately by fails_when; each task modifies at most five files. The first executable task is the single tracer. Later plans expand that proven path; they do not invent independent tracers.
+Same-wave files_modified intersections are empty. All 20 tasks have an automated command followed immediately by fails_when; all tasks except 04-01 modify at most five files. Task 04-01 includes two trivial package/AppConfig scaffold files alongside its five behavior files, a bounded seven-file exception for runnable first-use imports. The first executable task is the single tracer. Later plans expand that proven path; they do not invent independent tracers.
 
-Plan 08 explicitly depends on 06 so documentation anchors and Feature DocRefs exist before browser link acceptance. Final 09 still refreshes any browser target whose recorded runtime/config/source hashes changed. Plan 04 has nine files/two tasks; the complete seed/navigation integration moves to 05-01, leaving plan 05 at ten files/three tasks. No task or scope obligation is removed.
+Plan 08 explicitly depends on 06 so documentation anchors and Feature DocRefs exist before browser link acceptance. Final 09 still refreshes any browser target whose recorded runtime/config/source hashes changed. Plan 04 has eleven files/two tasks with package/AppConfig scaffold before app installation; complete seed/navigation integration stays in 05-01, leaving plan 05 at eight files/three tasks. No task or scope obligation is removed.
 
 Focused browser feedback is node tests/browser/queryset-conditional.cjs --self-test --target upstream in 08-01 and the downstream target in 08-02. These run the runner's actual positive/negative evidence checks and exception-path cleanup offline, reject zero assertions, and never create acceptance JSON. Complete browser/HTTP/DB acceptance commands remain mandatory in both tasks.
+
+## Review round 1 coverage — 2b09a61c
+
+| Finding | Executable task coverage | Disposition |
+|---|---|---|
+| H1 | 01-01, 02-01/02/03 | Category-aware is_on plus all five ValueToggle-gated seams explicitly named/tested |
+| R1 | 01-02, 03-01, 06-01 | No-fields declaration/guard retained; rejection alternative explicitly rejected |
+| R2 | 01-02, 02-01 | Native prepared values converted to HTML text; UUID regression |
+| R3 | 02-03, 03-01, 06-01, 07-02 | Baseline/total row and option costs measured/documented; cross-form cache rejected |
+| R4 | 02-02 | E313 hint covers both static/queryset admission |
+| R5 | 02-01 | Mixed-kind ownership conflicts in both orders |
+| R6 | 03-02, 08-01 | Visible disabled compact focus recovery tested in unit/browser layers |
+| R7 | 04-01 | Name-only Service labels and query slope |
+| R8 | 05-03 | One bounded navigation case with rationale/default preservation |
+| R9 | 04-01, 05-02 | URLField validation preserved; row widget is admitted exact TextInput |
+| R10 | 06-01 | Separate formsets compact exclusion explicitly rewritten |
+| R11 | 07-02, 09-01 | Normal behavior tests run without binding; acceptance always requires binding |
+| R12 | 08-01/02 | Focused negative/cleanup proof retained with finite local-helper scope |
+| R13 | 08-01/02 | Explicit target interpreter/import paths and startup checks |
+| R14 | 08-01, 09-01/02 | Runtime hashes and docs/link hashes distinguished; explicit reconciliation exclusions |
+
+Raw-review advisories are also dispositioned in affected PLAN ledgers: first-use app scaffolding, historical JS provenance, compact marker location, standalone mixin order, source override ownership, adoption wording timing, polymorphic retention/SQL, static serving and extra crispy-floor selections. No implementation or runtime pass is claimed. Waves and task IDs are unchanged; source authority remains the approved context/design.
 
 ## Discovery and exclusions
 

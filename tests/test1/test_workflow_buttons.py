@@ -9,9 +9,11 @@ from django import forms
 from django.contrib.messages import get_messages
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.template import Context, Template
+from django.test import override_settings
 from django.utils.safestring import mark_safe
 from lxml import html
 
+from crud_views.lib import button_classes as bc
 from crud_views_workflow.lib.enums import WorkflowComment
 from crud_views_workflow.models import WorkflowInfo
 from tests.test1.app.models import Campaign, CampaignState
@@ -34,6 +36,254 @@ def _buttons(document):
 
 def _render(form):
     return Template("{% load crud_views %}{% cv_render_form %}").render(Context({"form": form, "view": form.cv_view}))
+
+
+@pytest.fixture
+def transition_metadata(campaign_new, monkeypatch, settings):
+    """Decorate existing Campaign steps; no alternate workflow or renderer pipeline."""
+    settings.CRUD_VIEWS_ICON_LIBRARIES = {"tabler": {"renderer": "font", "class": "ti ti-{name}"}}
+    steps = {step.name: step for step in campaign_new.get_all_state_transitions()}
+    for name, label, variant, icon in (
+        ("wf_activate", "Confirm", "success", "tabler:check"),
+        ("wf_cancel_new", "Cancel order", "danger", "tabler:circle-x"),
+    ):
+        for key, value in {"label": label, "variant": variant, "icon": icon}.items():
+            monkeypatch.setitem(steps[name].custom, key, value)
+    return steps
+
+
+@pytest.mark.parametrize(
+    "variant",
+    [
+        "primary",
+        "secondary",
+        "success",
+        "danger",
+        "warning",
+        "info",
+        "light",
+        "dark",
+        None,
+        "",
+        "purple",
+        "Success",
+        'success" onclick="bad',
+        1,
+        True,
+        [],
+        {},
+    ],
+)
+def test_transition_metadata_variants(
+    client_user_campaign_change, campaign_new, monkeypatch, transition_metadata, variant
+):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    monkeypatch.setitem(transition_metadata["wf_activate"].custom, "variant", variant)
+    first, second = _buttons(_document(client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/")))
+    selected = (
+        variant
+        if variant in ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark")
+        else "primary"
+    )
+    assert set(first.get("class").split()) == {"btn", f"btn-{selected}", "text-wrap"}
+    assert first.text_content().strip() == "Confirm"
+    assert not first.get("onclick")
+    assert set(second.get("class").split()) == {"btn", "btn-danger", "text-wrap"}
+    assert len(second.cssselect(".ti-circle-x")) == 1
+    assert second.text_content().strip().startswith("Cancel order")
+
+
+@pytest.mark.parametrize("variant", ["success", "unsupported"])
+@pytest.mark.parametrize(
+    "layer,value",
+    [
+        ("app", ""),
+        ("theme", "theme"),
+        ("theme", ""),
+        ("theme", None),
+        ("project", "project"),
+        ("project", ""),
+        ("project", None),
+    ],
+)
+def test_transition_metadata_class_precedence(
+    client_user_campaign_change, campaign_new, monkeypatch, settings, transition_metadata, variant, layer, value
+):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    monkeypatch.setitem(transition_metadata["wf_activate"].custom, "variant", variant)
+    monkeypatch.setattr(CampaignWorkflowView, "cv_form_actions_label_mode", {"submit": "icon"})
+    key = "workflow:transition-success" if variant == "success" else "form:submit:label"
+    snapshot = dict(bc._THEME_BUTTON_CLASSES)
+    try:
+        bc.register_button_classes({key: value if layer == "theme" else "theme"} if layer != "app" else {})
+        overrides = {"form:submit:both": "wrong-both", "form:submit:icon": "wrong-icon"}
+        if layer == "project":
+            overrides[key] = value
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=overrides):
+            button = _buttons(_document(client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/")))[0]
+        expected = ("btn btn-success" if variant == "success" else "btn btn-primary") if layer == "app" else value
+        assert set(button.get("class").split()) == set((expected or "").split()) | {"text-wrap"}
+        assert button.text_content().strip() == "Confirm"
+        assert not button.cssselect(".visually-hidden")
+        assert len(button.cssselect("i")) == 1
+    finally:
+        bc._THEME_BUTTON_CLASSES.clear()
+        bc._THEME_BUTTON_CLASSES.update(snapshot)
+        bc.reset_button_classes_cache()
+
+
+@pytest.mark.parametrize(
+    "icon,classes",
+    [
+        ("tabler:check", "ti ti-check"),
+        ("raw css-icon", "raw css-icon"),
+        ("confirm", "ti ti-check"),
+        ("suppressed", None),
+        (None, None),
+        ("", None),
+        ("  ", None),
+        (42, None),
+        (True, None),
+        ([], None),
+        ({"icon": "check"}, None),
+        ("missing:check", None),
+        ("broken:check", None),
+    ],
+)
+def test_transition_metadata_icons(
+    client_user_campaign_change, campaign_new, monkeypatch, settings, transition_metadata, icon, classes
+):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    monkeypatch.setitem(transition_metadata["wf_activate"].custom, "icon", icon)
+    settings.CRUD_VIEWS_ICONS = {"confirm": "tabler:check", "suppressed": None}
+    settings.CRUD_VIEWS_ICON_LIBRARIES = {
+        "tabler": {"renderer": "font", "class": "ti ti-{name}"},
+        "broken": {"renderer": "font"},
+    }
+    button = _buttons(_document(client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/")))[0]
+    assert [node.get("class") for node in button.cssselect("i")] == ([classes] if classes else [])
+    assert button.text_content().strip() == "Confirm"
+
+
+@pytest.mark.parametrize("slot", ["icon {name_class}", "", None])
+def test_transition_metadata_host_icons(
+    client_user_campaign_change, campaign_new, monkeypatch, settings, transition_metadata, slot
+):
+    from tests.lib.helper.icons import HOST_LIBRARY
+
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    monkeypatch.setitem(transition_metadata["wf_activate"].custom, "icon", "ui:check")
+    settings.CRUD_VIEWS_ICON_LIBRARIES = HOST_LIBRARY
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {"form:icon-host": slot}
+    button = _buttons(_document(client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/")))[0]
+    expected = {"btn", "btn-success", "text-wrap"} | ({"icon", "icon-check"} if slot else set())
+    assert set(button.get("class").split()) == expected
+    assert not button.cssselect("i, svg")
+    assert button.text_content().strip() == "Confirm"
+
+
+def test_transition_metadata_renderer_exception(
+    client_user_campaign_change, campaign_new, monkeypatch, settings, transition_metadata
+):
+    def broken(name, *, css, config):
+        raise RuntimeError("Declared renderer failed")
+
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    settings.CRUD_VIEWS_ICON_LIBRARIES = {"tabler": {"renderer": broken}}
+    with pytest.raises(RuntimeError, match="Declared renderer failed"):
+        client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/")
+
+
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("policy", [WorkflowComment.NONE, WorkflowComment.OPTIONAL, WorkflowComment.REQUIRED])
+def test_transition_metadata_literal_comments(
+    client_user_campaign_change, campaign_new, monkeypatch, transition_metadata, modal, policy
+):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+    caption = mark_safe('<em data-hostile="label">Full & caption</em>')
+    help_text = '<b data-hostile="help">Action & help</b>'
+    blocker = mark_safe('<script data-hostile="blocker">bad()</script>')
+    for step in transition_metadata.values():
+        monkeypatch.setitem(step.custom, "comment", policy)
+        monkeypatch.setitem(step.custom, "label", caption)
+        monkeypatch.setitem(step.custom, "help_text", help_text)
+
+    def check(obj, name, *, user):
+        if name == "wf_activate":
+            raise ValidationError(blocker)
+
+    monkeypatch.setattr(Campaign, "workflow_check_transition", check)
+    response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/", headers=_headers(modal))
+    document = _document(response)
+    assert not document.cssselect("[data-hostile]")
+    for button in _buttons(document):
+        assert str(caption) in button.text_content()
+        assert help_text in button.getparent().text_content()
+        assert len(button.cssselect("i")) == 1
+        markers = button.xpath('./span[@aria-hidden="true" and text()="*"]')
+        assert len(markers) == int(policy == WorkflowComment.REQUIRED)
+        assert button.text_content().count("Comment required") == int(policy == WorkflowComment.REQUIRED)
+    assert str(blocker) in _buttons(document)[0].getparent().text_content()
+    assert "disabled" in _buttons(document)[0].attrib
+    assert "disabled" not in _buttons(document)[1].attrib
+    assert len(document.xpath('//*[normalize-space(text())="* Comment required"]')) == int(
+        policy == WorkflowComment.REQUIRED
+    )
+    _assert_descriptions(document)
+    form = response.context["form"]
+    form.fields["transition"].disabled = True
+    disabled = html.fragment_fromstring(_render(form), create_parent="main")
+    assert all("disabled" in button.attrib for button in _buttons(disabled))
+
+
+@pytest.mark.parametrize("modal", [False, True])
+def test_transition_metadata_redisplay_refresh(
+    client_user_campaign_change, campaign_new, monkeypatch, transition_metadata, modal
+):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
+    monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+    monkeypatch.setattr(CampaignWorkflowView, "form_class", CustomWorkflowForm)
+    monkeypatch.setattr(CampaignWorkflowView, "prefix", "custom")
+    payload = {"custom-transition": "wf_cancel_new", "custom-comment": "", "custom-extra": "  "}
+    response = client_user_campaign_change.post(
+        f"/campaign/{campaign_new.pk}/workflow/", payload, headers=_headers(modal)
+    )
+    form = response.context["form"]
+    assert set(form.errors) == {"comment", "extra"}
+    assert dict(form.data) == {key: [value] for key, value in payload.items()}
+    ids = {name: form[name].auto_id for name in form.fields}
+    widget = form.fields["transition"].widget
+    original_actions = [dict(action) for action in widget.actions]
+    for _ in range(2):
+        context = widget.get_context("custom-transition", "wf_cancel_new", {"id": ids["transition"]})
+        assert context["widget"]["actions"][0]["button_class"] == "btn btn-success"
+        assert widget.actions == original_actions
+    monkeypatch.setitem(transition_metadata["wf_activate"].custom, "variant", "warning")
+    monkeypatch.setitem(transition_metadata["wf_activate"].custom, "icon", "tabler:alert")
+    form._workflow_refresh()
+    document = html.fragment_fromstring(_render(form), create_parent="main")
+    buttons = document.cssselect('button[name="custom-transition"]')
+    assert [button.get("value") for button in buttons] == ["wf_activate", "wf_cancel_new"]
+    assert "btn-warning" in buttons[0].get("class").split()
+    assert len(buttons[0].cssselect(".ti-alert")) == 1
+    assert {name: form[name].auto_id for name in form.fields} == ids
+    assert set(form.errors) == {"comment", "extra"}
+    assert not document.cssselect('button[name="submit"], input[name="custom-transition"]')
+    _assert_descriptions(document, [form])
+    assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
+    assert not WorkflowInfo.objects.exists()
+
+
+def test_transition_metadata_radio_ignored(client_user_campaign_change, campaign_new, monkeypatch, transition_metadata):
+    monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "radio")
+    document = _document(client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/"))
+    assert not _buttons(document)
+    assert [node.get("value") for node in document.cssselect('input[type="radio"][name="transition"]')] == [
+        "wf_activate",
+        "wf_cancel_new",
+    ]
+    assert not document.cssselect(".ti-check, .ti-circle-x, .btn-success, .btn-danger")
 
 
 @pytest.mark.parametrize("modal", [False, True])
@@ -284,7 +534,9 @@ class TestTransitionButtons:
         assert calls == ["wf_activate", "wf_cancel_new"]
 
     @pytest.mark.parametrize("gate", ["permission", "condition"])
-    def test_unavailable_choice_has_no_preview(self, client_user_campaign_change, campaign_new, monkeypatch, gate):
+    def test_unavailable_choice_has_no_preview(
+        self, client_user_campaign_change, campaign_new, monkeypatch, gate, transition_metadata
+    ):
         calls = []
         step = next(t for t in campaign_new.get_all_state_transitions() if t.name == "wf_activate")
         if gate == "permission":
@@ -420,7 +672,7 @@ class TestWorkflowDescriptions:
     @pytest.mark.parametrize("presentation", ["radio", "buttons"])
     @pytest.mark.parametrize("text", [None, "", "Plain & complete", mark_safe("<b>Literal & {{ value }}</b>")])
     def test_literal_and_absent_help(
-        self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation, text
+        self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation, text, transition_metadata
     ):
         raw = {
             key: (mark_safe(f"{key} {text}") if hasattr(text, "__html__") else f"{key} {text}") if text else text
@@ -578,7 +830,9 @@ class TestWorkflowCustomForms:
 
     @pytest.mark.parametrize("modal", [False, True])
     @pytest.mark.parametrize("presentation", ["radio", "buttons"])
-    def test_ordinary_custom_errors(self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation):
+    def test_ordinary_custom_errors(
+        self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation, transition_metadata
+    ):
         monkeypatch.setattr(CampaignWorkflowView, "form_class", CustomWorkflowForm)
         monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
         monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
@@ -603,7 +857,7 @@ class TestWorkflowCustomForms:
     @pytest.mark.parametrize("presentation", ["radio", "buttons"])
     @pytest.mark.parametrize("kind", ["business", "comment", "changed_choices"])
     def test_late_refusal_preserves_form(
-        self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation, kind
+        self, client_user_campaign_change, campaign_new, monkeypatch, modal, presentation, kind, transition_metadata
     ):
         monkeypatch.setattr(CampaignWorkflowView, "form_class", CustomWorkflowForm)
         monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", presentation)
@@ -614,6 +868,8 @@ class TestWorkflowCustomForms:
 
         def process(view, context):
             seen.update(form=context["form"], object=view.object, ids=dict(context["form"].constructor_ids))
+            monkeypatch.setitem(transition_metadata["wf_activate"].custom, "variant", "warning")
+            monkeypatch.setitem(transition_metadata["wf_activate"].custom, "icon", "tabler:alert")
             context["stale_history"] = "discard"
             if kind == "comment":
                 step = next(t for t in view.object.get_all_state_transitions() if t.name == "wf_activate")
@@ -683,6 +939,10 @@ class TestWorkflowCustomForms:
             assert [button.get("value") for button in _buttons(document)] == expected_names
             if kind == "changed_choices":
                 assert "wf_activate" not in expected_names
+            else:
+                first = _buttons(document)[0]
+                assert "btn-warning" in first.get("class").split()
+                assert len(first.cssselect(".ti-alert")) == 1
             if kind == "comment":
                 assert "Comment required" in _buttons(document)[0].text_content()
             _assert_descriptions(document, [form])

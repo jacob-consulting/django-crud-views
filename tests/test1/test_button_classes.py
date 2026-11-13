@@ -187,14 +187,29 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
 
 
 @pytest.mark.parametrize("source", ["theme", "settings"])
-@pytest.mark.parametrize("slot", ["transition-success", "transition-purple", "transition-success:icon"])
+@pytest.mark.parametrize(
+    "slot",
+    [
+        "transition-primary",
+        "transition-secondary",
+        "transition-success",
+        "transition-danger",
+        "transition-warning",
+        "transition-info",
+        "transition-light",
+        "transition-dark",
+        "transition-purple",
+        "transition-success:icon",
+    ],
+)
 def test_workflow_transition_key_checks(source, slot):
     values = {f"workflow:{slot}": "custom"}
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES=values if source == "settings" else {}):
         if source == "theme":
             register_button_classes(values)
         messages = button_class_check_messages()
-    assert [message.id for message in messages] == ([] if slot == "transition-success" else ["crud_views.W362"])
+    unsupported = slot in ("transition-purple", "transition-success:icon")
+    assert [message.id for message in messages] == (["crud_views.W362"] if unsupported else [])
 
 
 @pytest.mark.parametrize(

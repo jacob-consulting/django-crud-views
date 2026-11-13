@@ -4,19 +4,15 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.core.exceptions import ImproperlyConfigured
-from django.test import TestCase, override_settings
-from django.urls import include, path, reverse
+from django.db import connection
+from django.db.migrations.loader import MigrationLoader
+from django.test import TestCase
+from django.urls import reverse
 from project.testing import form_payload
-from project.urls import urlpatterns as project_patterns
 
 from crud_views.lib.conditional import ConditionalGroup, QuerysetConditions, ToggleGroup
 from queryset_conditional.models import RequestBatch, Service, ServiceCategory, ServiceRequest
-from queryset_conditional.standalone import RequestCreateView, RequestForm, RequestUpdateView, cv_service_request
-
-# Preserve the real navbar, home, authentication and every existing feature route.
-# The app URL module arrives with the migration in the next task.
-urlpatterns = [*project_patterns, path("queryset-conditional/", include(cv_service_request.urlpatterns))]
-
+from queryset_conditional.standalone import RequestCreateView, RequestForm, RequestUpdateView
 
 # Deliberately unmatched data belongs to test fixtures, never the seeded live demo.
 PERMISSIVE = QuerysetConditions(
@@ -44,7 +40,6 @@ class RestrictedRequestForm(RequestForm):
         self.fields["service"].queryset = self.fields["service"].queryset.filter(category__code="on_site")
 
 
-@override_settings(ROOT_URLCONF=__name__)
 class StandaloneRequestTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -221,6 +216,16 @@ class StandaloneRequestTests(TestCase):
         batch = RequestBatch.objects.create(title="Weekly visits")
         request = ServiceRequest.objects.create(batch=batch, service=self.boiler)
         self.assertEqual(list(batch.requests.all()), [request])
+
+    def test_initial_migration_creates_all_owned_models(self):
+        loader = MigrationLoader(connection)
+        migration = ("queryset_conditional", "0001_initial")
+        self.assertIn(migration, loader.applied_migrations)
+        state = loader.project_state([migration])
+        self.assertEqual(
+            {name for app, name in state.models if app == "queryset_conditional"},
+            {"servicecategory", "service", "requestbatch", "servicerequest"},
+        )
 
     def test_anonymous_and_unprivileged_users_cannot_access_views(self):
         saved = ServiceRequest.objects.create(service=self.boiler, visit_address="Original")

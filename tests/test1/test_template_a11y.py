@@ -24,9 +24,19 @@ def _assert_icon_action_named(el, expected_full, expected_title):
 
 @pytest.mark.django_db
 def test_context_actions_are_labelled_links_without_button_role(
-    client_user_author_view, cv_author, author_douglas_adams
+    client_user_author_view, user_author_view, cv_author, author_douglas_adams
 ):
+    from django.contrib.auth.models import Group
+    from django.urls import reverse
+
+    from crud_views.lib.settings import crud_views_settings
+
+    user_author_view.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
     doc = _doc(client_user_author_view.get(f"/author/{author_douglas_adams.pk}/detail/"))
+    (manage,) = doc.cssselect('[cv-context-container] [cv-key="manage"]')
+    assert manage.tag == "a"
+    assert manage.get("href") == reverse(cv_author.get_router_name("manage"))
+    assert manage.cssselect("i"), "manage must render its decorative icon"
     actions = doc.cssselect("[cv-context-container] a[cv-key]")
     assert actions
     captions = {
@@ -38,6 +48,12 @@ def test_context_actions_are_labelled_links_without_button_role(
         assert a.get("href")
         assert a.get("role") is None
         _assert_icon_action_named(a, *captions[a.get("cv-key")])
+
+
+@pytest.mark.django_db
+def test_nonmember_context_actions_omit_manage(client_user_author_view, author_douglas_adams):
+    doc = _doc(client_user_author_view.get(f"/author/{author_douglas_adams.pk}/detail/"))
+    assert not doc.cssselect('[cv-context-container] [cv-key="manage"]')
 
 
 @pytest.mark.django_db

@@ -6,7 +6,9 @@ pages, wires up every URL, and cross-links the views — using *your* templates 
 permissions, right inside your own app.
 
 **Try it live:** the [public demo](https://django-crud-views-demo.onrender.com/) runs the example project —
-log in as `alice` / `alice` or `bob` / `bob` ([what to expect](getting_started/demo.md)).
+the current seed offers `alice` / `alice`, `bob` / `bob`, and `developer/developer` for read access and developer
+diagnostics without write permissions. See [the full demo account guide](getting_started/demo.md), including the
+hosted-version caveat.
 
 ## This is all you write
 

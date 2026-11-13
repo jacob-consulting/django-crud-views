@@ -55,6 +55,8 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.28: Tooltip recipe lifecycle safeguards (#355)** (completed 2026-11-12)
 
 - [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
+- [ ] **Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)** - approved handover; base forms and inline rows, strict category matching, tabler-test adoption, and a focused example app with linked documentation.
+- [x] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance. (completed 2026-11-13)
 - [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
@@ -1792,6 +1794,41 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.29-02-PLAN.md
 
+### Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)
+
+**Goal:** Model-choice selections activate conditional fields through a declared category attribute or queryset annotation, consistently on base forms and independent ordinary/compact inline rows, with strict coverage checks and authoritative server-side clearing.
+**Source:** [Issue #360 — gsd-handover](https://github.com/jacob-consulting/django-crud-views/issues/360#gsd-handover) and [approved design](../superpowers/specs/2026-11-13-queryset-conditional-fields-design.md). Carry approved decisions D-01–D-13, accepted design defaults, and the issue's acceptance criteria into planning; provisional API names remain builder choices.
+**Requirements:** Deliver upstream support, the verified tabler-test roastery upgrade, and one separate example app with its own models, focused standalone/inline source modules, ordinary/compact variants, and reciprocal documentation links. Strict matching is the default; check offered options on rendering and the validated selection on POST, permit explicit no-fields categories and an opt-in unmatched policy, and do not scan unused categories. Preserve browser values until save; hide inactive ordinary groups and keep compact cells visible but disabled. Preserve existing conditional behavior and bounded query costs.
+**Depends on:** Phase 06.29 (roadmap sequence); builds on Phase 06.27's conditional groups and Phases 06.24–06.26's compact formset contracts.
+**Ordering:** Complete before Phase 7 freezes the public theme surface; include the settled queryset/inline conditional template and JavaScript contracts in that inventory.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run $gsd-plan-phase 06.30 to break down)
+
+### Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)
+
+**Goal:** Core and Guardian manage pages are available only to explicitly authorized developers, including in production with `DEBUG=False`, while ordinary users cannot see the manage action or open its URL.
+**Source:** [Issue #361 — gsd-handover](https://github.com/jacob-consulting/django-crud-views/issues/361#gsd-handover). Carry approved decisions D-01–D-11 and the issue's acceptance criteria into planning, including the active-user rule and seeded developer read access explicitly covering Guardian.
+**Requirements:** Require an active, authenticated user with membership in the configured `CRUD_VIEWS_MANAGE_GROUP`, including for staff and superusers. Make `"yes"` the default and require membership regardless of DEBUG; `"no"` denies everyone; `"debug_only"` requires membership and DEBUG=True. Keep existing nested ancestor restrictions and ordinary CRUD permissions. Add the idempotent `cv_manage_group` command, respecting custom group names and preserving existing memberships and permissions. Seed and show a regular developer account alongside Alice/Bob; ensure its configured-group membership and read permissions across examples, including Guardian object/ancestor grants, without write privileges. Preserve Alice/Bob scenarios. Correct the affected custom-form/flash example actions to require appropriate write permissions so read access does not authorize mutation or execution (D-11). Cover direct access, hidden manage actions, production diagnostics, command behavior, example setup/read access, and paired breaking-change/migration documentation. No impersonation, membership-management CLI, automatic startup group creation, broader authorization redesign, or responsive-table work.
+**Depends on:** Phase 06.30 (roadmap sequence only); no implementation dependency on its conditional-field work.
+**Ordering:** Complete before Phase 7 freezes the public surface; include the settled manage settings, group setup command, visibility rules, and migration contract in that inventory.
+**Plans:** 6/6 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.31-01-PLAN.md — Active group-only manage gate, hidden actions and nested authorization/cost attribution preservation
+- [x] 06.31-02-PLAN.md — Idempotent group-only command and configuration/diagnostic references
+- [x] 06.31-04-PLAN.md — Explicit write permissions for reminder, invitation and flash example actions
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.31-06-PLAN.md — Policy/example regressions, toolbar goldens, accessible diagnostics and full core/example pytest prerequisites
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.31-03-PLAN.md — Seeded developer model/resource and Guardian object reads with denied writes
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.31-05-PLAN.md — Account guidance with preserved German chrome, README and paired breaking migration contract
 ### Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)
 
 **Goal:** Workflow transition buttons honor their declared variant and icon through the existing theme registries, while retaining visible labels, current fallbacks, and workflow behavior.
@@ -1819,6 +1856,7 @@ Plans:
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
+**Additional ordering:** Phases 06.30 and 06.31 must settle before this freeze; inventory their final conditional-field and developer-diagnostic contracts.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -1931,5 +1969,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
+| 06.30. Queryset-driven conditional fields (#360) | 0/TBD | Not started | - |
+| 06.31. Developer-only manage diagnostics (#361) | 6/6 | Complete | 2026-11-13 |
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

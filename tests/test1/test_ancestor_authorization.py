@@ -398,6 +398,10 @@ def _build_chain(sfx, models_chain, guardian: bool, fk_names):
         (CreateViewParentMixin, create_base),
         {"cv_viewset": leaf_vs, "cv_context_actions": [], "fields": [leaf_field]},
     )
+    # Registration appends manage even to declared empty lists. These observation cells measure ancestry
+    # only; manage projection has its own membership-query contract in test_manage.py.
+    for key in ("list", "detail", "create"):
+        leaf_vs.get_view_class(key).cv_context_actions = []
     return viewsets
 
 

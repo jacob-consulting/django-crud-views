@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from guardian.models import UserObjectPermission
 from lxml import html
@@ -12,6 +12,85 @@ from lxml import html
 from delete_demo.models import Milestone, Project, Task
 
 MODAL = {"HTTP_X_CV_MODAL": "true"}
+
+
+@override_settings(DEBUG=False)
+class DeveloperDeleteDemoTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from io import StringIO
+
+        call_command("seed", stdout=StringIO())
+
+    def setUp(self):
+        self.developer = get_user_model().objects.get(username="developer")
+        self.client.force_login(self.developer)
+
+    def test_seeded_projects_tasks_and_milestones_have_only_object_reads(self):
+        from guardian.shortcuts import get_perms
+
+        self.assertTrue(self.developer.has_perm("delete_demo.view_project", Project.objects.first()))
+        for model in (Project, Task, Milestone):
+            for obj in model.objects.all():
+                with self.subTest(model=model.__name__, pk=obj.pk):
+                    self.assertEqual(set(get_perms(self.developer, obj)), {f"view_{model._meta.model_name}"})
+                    self.assertTrue(self.developer.has_perm(f"delete_demo.view_{model._meta.model_name}", obj))
+        for model in (Project, Task):
+            name = model._meta.model_name
+            self.assertEqual(self.client.get(reverse(f"{name}-manage")).status_code, 200)
+            listing = self.client.get(reverse(f"{name}-list"))
+            for obj in model.objects.all():
+                self.assertContains(listing, obj.title)
+                self.assertEqual(self.client.get(reverse(f"{name}-detail", kwargs={"pk": obj.pk})).status_code, 200)
+
+    def test_registered_project_mutations_are_denied_without_effects(self):
+        models = (Project, Task, Milestone, UserObjectPermission)
+        before = {model: list(model.objects.order_by("pk").values()) for model in models}
+        project = Project.objects.get(title="Old prototype")
+        for key in ("create", "update", "delete"):
+            with self.subTest(key=key):
+                kwargs = {} if key == "create" else {"pk": project.pk}
+                response = self.client.post(reverse(f"project-{key}", kwargs=kwargs), {"title": "Forbidden"})
+                self.assertEqual(response.status_code, 403)
+        self.assertEqual({model: list(model.objects.order_by("pk").values()) for model in models}, before)
+
+    def test_repeat_seed_preserves_owners_grants_and_excludes_nonseeded_objects(self):
+        from guardian.shortcuts import get_perms
+
+        from delete_demo.seed import seed
+
+        project = Project.objects.create(title="Unseeded project", owner=Project.objects.first().owner)
+        seeded = Project.objects.get(title="Old prototype")
+        task = Task.objects.create(title="Unseeded task", project=seeded, owner=seeded.owner)
+        milestone = Milestone.objects.create(title="Unseeded milestone", project=seeded)
+        models = (Project, Task, Milestone, UserObjectPermission)
+        before = {model: list(model.objects.order_by("pk").values()) for model in models}
+        seed()
+        self.assertEqual({model: list(model.objects.order_by("pk").values()) for model in models}, before)
+        actor = get_user_model().objects.get(pk=self.developer.pk)
+        for obj in (project, task, milestone):
+            self.assertEqual(get_perms(actor, obj), [])
+        for obj in (project, task):
+            self.assertEqual(
+                self.client.get(reverse(f"{obj._meta.model_name}-detail", kwargs={"pk": obj.pk})).status_code, 403
+            )
+
+    def test_existing_user_and_group_object_writes_are_preserved_and_reported(self):
+        from django.core.management import CommandError
+        from guardian.shortcuts import assign_perm, get_perms, remove_perm
+
+        from delete_demo.seed import seed
+
+        group = self.developer.groups.get()
+        for obj in (Project.objects.first(), Task.objects.first(), Milestone.objects.first()):
+            perm = f"delete_{obj._meta.model_name}"
+            for recipient in (self.developer, group):
+                with self.subTest(model=obj._meta.label, recipient=str(recipient)):
+                    assign_perm(perm, recipient, obj)
+                    with self.assertRaisesRegex(CommandError, f"{obj._meta.label}.*{obj.pk}.*{perm}"):
+                        seed()
+                    self.assertIn(perm, get_perms(recipient, obj))
+                    remove_perm(perm, recipient, obj)
 
 
 class DeleteDemoTestCase(TestCase):

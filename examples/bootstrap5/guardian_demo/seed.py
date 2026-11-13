@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from project.seeding import grant_model_perms
+from project.seeding import check_developer_object_permissions, grant_model_perms
 
 from guardian_demo.models import Document, Note
 from guardian_demo.views import cv_document, cv_note
@@ -29,6 +29,7 @@ NOTES = {
 def seed():
     user_model = get_user_model()
     users = {name: user_model.objects.get(username=name) for name in ("alice", "bob")}
+    developer = user_model.objects.get(username="developer")
     for user in users.values():
         grant_model_perms(user, Document, actions=("add",))
 
@@ -37,6 +38,8 @@ def seed():
         owner = users[username]
         for title, body in documents:
             doc, _ = Document.objects.get_or_create(title=title, defaults={"body": body, "owner": owner})
+            check_developer_object_permissions(developer, doc)
+            cv_document.assign_perm("view", developer, doc)
             docs[title] = doc
             for action in ("view", "change", "delete"):
                 cv_document.assign_perm(action, owner, doc)
@@ -52,6 +55,8 @@ def seed():
         doc = docs[title]
         for username, text in notes:
             note, _ = Note.objects.get_or_create(document=doc, author=users[username], text=text)
+            check_developer_object_permissions(developer, note)
+            cv_note.assign_perm("view", developer, note)
             for user in {note.author, doc.owner}:
                 for action in ("view", "change", "delete"):
                     cv_note.assign_perm(action, user, note)

@@ -519,7 +519,7 @@ def test_child_page_toolbar_create_and_alias_through_action_leaf(
     response = client.get(_u(tp.book_vs, page, child.pk, world.a.pk))
     assert response.status_code == 200
     content = response.content.decode()
-    assert "MX-ACTION" in content  # the toolbar renders through the overridden leaf
+    assert ("MX-ACTION" in content) is allowed  # denied manage is no longer a public fallback action
     assert content.count(f'href="{create_url}"') == (2 if allowed else 0)  # the create key and its alias
     assert ("MX-ACTION Another book" in content) is allowed  # the alias keeps its own label
     assert "Child Page Book" in content  # the page's own child context is unchanged
@@ -567,12 +567,14 @@ def manage_mode(monkeypatch):
 @pytest.mark.parametrize(
     ("mode", "debug", "actor", "status"),
     [
-        ("no", False, "group", 200),
+        ("no", False, "group", 403),
+        ("yes", False, "group", 200),
         ("no", False, "nongroup", 403),
         ("no", False, "anonymous", 302),
-        ("debug_only", False, "group", 200),
+        ("debug_only", False, "group", 403),
+        ("debug_only", True, "group", 200),
         ("debug_only", False, "nongroup", 403),
-        ("debug_only", True, "nongroup", 200),
+        ("debug_only", True, "nongroup", 403),
     ],
 )
 @pytest.mark.django_db

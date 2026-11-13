@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Notice(models.Model):
-    """Never stored: the ViewSet needs a model, and its "view" permission guards the compose page."""
+    """Never stored: the ViewSet needs a model, and its "add" permission guards the compose page."""
 
     text = models.CharField(_("text"), max_length=200)
 

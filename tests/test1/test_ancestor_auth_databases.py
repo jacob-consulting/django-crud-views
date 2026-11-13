@@ -486,10 +486,12 @@ def test_actor_bound_to_shard_is_refused_at_the_gate(adb, world, routes, kind):
     _assert_refused_without_auth_reads(sql)
 
 
-def test_nearest_only_never_touches_the_unselected_higher_gate(adb, world, routes, events):
+def test_nearest_only_never_touches_the_unselected_higher_gate(adb, world, routes, events, monkeypatch):
     """Nearest-only: only the nearest gate (core Book) reads auth records; the higher Guardian gate gets no route
     check, map or provider call, so its shard grant route is never reached."""
     routes.read[UserObjectPermission] = routes.read[GroupObjectPermission] = "shard"
+    # Exact ancestor-event comparison: exclude the independent manage projection auth consumer.
+    monkeypatch.setattr(adb.notes[False].vs.get_view_class("detail"), "cv_context_actions", [])
     client = _client(_actor("aa_near", superuser=True))
     events.clear()
     response = client.get(_note_url(adb.notes[False].vs, adb.gchain, adb.cbook))
@@ -653,10 +655,10 @@ def _manage_mode(monkeypatch, mode):
     monkeypatch.setattr(crud_views_settings, "manage_views_enabled", mode)
 
 
-def _manage_member(username):
+def _manage_member(username, **kwargs):
     from crud_views.lib.settings import crud_views_settings
 
-    user = _actor(username)
+    user = _actor(username, **kwargs)
     user.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
     return user
 
@@ -665,7 +667,7 @@ def _manage_member(username):
 def test_nested_group_manage_gate_refuses_shard_auth_records(adb, world, routes, events, monkeypatch, table):
     """The nested manage group gate validates its group route before the membership query; the holder
     diagnostics are never reached."""
-    _manage_mode(monkeypatch, "no")
+    _manage_mode(monkeypatch, "yes")
     client = _client(_manage_member("aa_mg"))
     assert client.get(_manage_url(adb, adb.cloc)).status_code == 200
     routes.read[TABLES[table]] = "shard"
@@ -684,12 +686,35 @@ def test_nested_group_manage_anonymous_does_no_auth_route_work(adb, world, route
     assert _auth_events(events) == []
 
 
+@pytest.mark.parametrize(
+    "actor,mode,debug",
+    [("anonymous", "yes", True), ("inactive", "yes", True), ("member", "no", True), ("member", "debug_only", False)],
+)
 @pytest.mark.parametrize("vs", ["cloc", "gloc"])
-def test_public_nested_manage_admits_without_auth_work_then_guards_its_context(adb, world, routes, events, vs):
-    """Public manage settings admit without any auth work; the page's own permission rows and holder queries
-    are reached auth consumers and refuse a shard route before ``get_permission_holders`` runs."""
+def test_manage_denied_evaluations_skip_routing_and_membership(
+    adb, world, routes, events, monkeypatch, settings, actor, mode, debug, vs
+):
+    from django.contrib.auth.models import AnonymousUser
+
+    user = AnonymousUser() if actor == "anonymous" else _manage_member("aa_short", active=actor != "inactive")
+    _manage_mode(monkeypatch, mode)
+    settings.DEBUG = debug
+    routes.read[Group] = "shard"
+    events.clear()
+    routes.calls.clear()
+    target = getattr(adb, vs).get_view_class("manage")
+    with captured() as sql:
+        assert target.cv_has_access(user) is False
+    assert _auth_events(events) == []
+    assert routes.calls == []
+    assert _sql(sql.default) == _sql(sql.shard) == []
+
+
+@pytest.mark.parametrize("vs", ["cloc", "gloc"])
+def test_nested_manage_member_reaches_context_and_rejects_auth_routing(adb, world, routes, events, vs):
+    """An admitted member reaches diagnostics; a later shard route fails before any auth query."""
     viewset = getattr(adb, vs)
-    client = _client(_actor("aa_pm"))
+    client = _client(_manage_member("aa_pm"))
     events.clear()
     assert client.get(_manage_url(adb, viewset)).status_code == 200
     auth_at = [index for index, event in enumerate(events) if event[0] == "auth"]
@@ -705,7 +730,7 @@ def test_public_nested_manage_admits_without_auth_work_then_guards_its_context(a
 def test_guardian_manage_holders_refuse_a_shard_grant_route(adb, world, routes, events):
     """The Guardian holder diagnostics validate the grant tables before their first query, also when called
     directly."""
-    client = _client(_actor("aa_gm", superuser=True))
+    client = _client(_manage_member("aa_gm", superuser=True))
     routes.read[GroupObjectPermission] = "shard"
     events.clear()
     with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
@@ -726,14 +751,14 @@ def test_guardian_manage_holders_refuse_a_shard_grant_route(adb, world, routes, 
 def test_top_level_guardian_and_manage_keep_their_routing(adb, world, routes, monkeypatch):
     """Top-level ViewSets: Guardian list/detail gates, the strict ViewSet helper and the manage page keep their
     routed behaviour (no default-database boundary)."""
-    user = _actor("aa_top", superuser=True)
+    user = _manage_member("aa_top", superuser=True)
     client = _client(user)
     routes.read[Permission] = routes.read[UserObjectPermission] = routes.read[GroupObjectPermission] = "shard"
     assert client.get(_url(adb.gtop, "list")).status_code == 200
     assert client.get(_url(adb.gtop, "detail", pk=71)).status_code == 200
     assert client.get(_url(adb.gtop, "manage")).status_code == 200
     adb.gtop.get_objects_for_user(user, "view").count()
-    _manage_mode(monkeypatch, "no")
+    _manage_mode(monkeypatch, "yes")
     routes.read[Group] = "shard"
     assert client.get(_url(adb.ctop, "manage")).status_code == 403  # the shard copy is no manage member
 

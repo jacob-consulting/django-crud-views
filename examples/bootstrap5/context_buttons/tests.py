@@ -78,8 +78,10 @@ class TicketDetailEditorTest(ContextButtonsTestCase):
 
     def test_custom_loop_wraps_each_button(self):
         resp = self.detail(self.editor)
-        # home, edit_big, delete + manage (appended by CRUD_VIEWS_MANAGE_VIEWS_ENABLED)
-        self.assertEqual(self.rendered(resp).count('class="cv-demo-loop-item"'), 4)
+        # home, edit_big, delete; ordinary editors have no diagnostic action.
+        self.assertEqual(self.rendered(resp).count('class="cv-demo-loop-item"'), 3)
+        self.assertNotIn('cv-key="manage"', self.rendered(resp))
+        self.assertNotIn(reverse("ticket-manage"), self.rendered(resp))
 
 
 class TicketDetailViewerTest(ContextButtonsTestCase):
@@ -102,9 +104,12 @@ class TicketDetailViewerTest(ContextButtonsTestCase):
         self.assertNotIn('id="gated-section"', self.rendered(self.detail(self.viewer)))
 
     def test_custom_loop_lists_accessible_and_disabled_buttons(self):
-        # home + delete (disabled: TicketDeleteView.cv_inaccessible_actions = "disable") + manage;
+        # home + delete (disabled: TicketDeleteView.cv_inaccessible_actions = "disable");
         # edit_big targets update, which stays hidden
-        self.assertEqual(self.rendered(self.detail(self.viewer)).count('class="cv-demo-loop-item"'), 3)
+        markup = self.rendered(self.detail(self.viewer))
+        self.assertEqual(markup.count('class="cv-demo-loop-item"'), 2)
+        self.assertNotIn('cv-key="manage"', markup)
+        self.assertNotIn(reverse("ticket-manage"), markup)
 
     def test_delete_shown_disabled_in_toolbar(self):
         doc = lxml_html.fromstring(self.rendered(self.detail(self.viewer)))

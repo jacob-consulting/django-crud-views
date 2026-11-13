@@ -5,7 +5,7 @@ from flash_messages.models import Notice
 
 
 def seed():
-    # nothing to store: the compose page only needs Notice's "view" permission
+    # Nothing to store: Notice's "add" permission authorizes composing messages; retain read access too.
     user_model = get_user_model()
     for username in ("alice", "bob"):
-        grant_model_perms(user_model.objects.get(username=username), Notice, actions=("view",))
+        grant_model_perms(user_model.objects.get(username=username), Notice, actions=("view", "add"))

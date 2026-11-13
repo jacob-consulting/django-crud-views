@@ -1,25 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.30"
+current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.32 complete, ready to plan Phase 7
-last_updated: "2026-11-13T11:01:49.312Z"
+stopped_at: Phase 06.31 complete; UAT passed; next roadmap phase 06.30
+last_updated: "2026-11-13T12:25:28.697Z"
 last_activity: 2026-11-13
-last_activity_desc: "Phase 06.32 shipped as PR #364"
-state_head: ccd3150cd67957cffa2da7401cae38d0d4d761de
+last_activity_desc: "Phase 06.31 PR #365 updated with merged Phase 06.32 from main"
+state_head: dfd5a3e947896b48ec66135044f67e32fe6f0776
 progress:
-  total_phases: 37
+  total_phases: 39
   completed_phases: 36
-  total_plans: 184
-  completed_plans: 184
-  percent: 97
+  total_plans: 190
+  completed_plans: 190
 milestone_name: milestone
 ---
 
-Total Phases: 37
+Total Phases: 39
 
 # Project State
 
@@ -28,17 +27,30 @@ Total Phases: 37
 See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.31 — Developer-only manage diagnostics
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.30 — Queryset-driven conditional fields (#360)
 Current Plan: Not started
-Total Plans in Phase: 1
+Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-13 -- Phase 06.32 shipped as PR #364
+Last activity: 2026-11-13 -- Phase 06.31 PR #365 updated with merged Phase 06.32 from main
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-progress
+
+### Phase 06.31 completion — 2026-11-13
+
+- User passed the bounded visual check on the isolated port9000 demo; UAT1/1 passed, canonical verification passed21/21, combined completion predicate passed without blockers. All six plans complete.
+- Completion scanner warnings are two example-relative path references (actual files exist under examples/bootstrap5/project/) and intentionally prose-only requirements; no missing implementation. No stale handoffs or learnings graduation candidates. No push or merge.
+
+### Phase 06.31 execution and verification — 2026-11-13
+
+- Six plans/16 tasks complete and committed: active-member manage policy, explicit group command, bounded read-only developer seed, example write gates, preserved regressions and paired migration docs.
+- Final core 13,193 passed/one existing Django-version skip; final pre-review app runner320; post-fix full examples491 plus219 subtests; JS438, strict MkDocs and Ruff passed. Python3.12.3/Django5.2.19 behavioral evidence; other runtimes and browser visuals unverified.
+- Deep review found CR-01 failed seeding could expose a public developer credential with writes; fixed with atomic command and three RED/GREEN rollback tests, independently re-reviewed clean (52 tests/78 subtests and standalone reproductions). Security15/15 closed; validation16/16 covered. UI18/24 with inherited/deferred advisories.
+- Canonical verification human_needed:21/21 truths,11/11 decisions, zero implementation gaps; fresh72 tests/50 subtests,83-file fingerprint current. One bounded visual UAT saved for notices and manage-link focus/tooltips.
+- Phase remains pending; no human approval, phase advancement, push or merge. Existing invitation success-message issue recorded in deferred-items.md. Next: $gsd-verify-work 06.31.
 
 ### Phase 06.32 completion — 2026-11-13
 
@@ -819,7 +831,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 180
+- Total plans completed: 186
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -861,6 +873,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.27 | 5 | - | - |
 | 06.28 | 1 | - | - |
 | 06.29 | 2 | - | - |
+| 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
 
 | 06.15 | 4 | - | - |
@@ -1356,6 +1369,7 @@ None yet.
 - Phase 06.27 inserted after Phase 06.26: Issue #354: choice-driven conditional groups; approved gsd-handover includes explicit clearing overrides and a complex example with reciprocal documentation links. Complete before Phase 7. (URGENT)
 - Phase 06.28 inserted after Phase 06.27: Issue #355: tooltip recipe documentation and executable regression tests; approved GSD handover D-01–D-06 governs scope. Restored the existing 06.27 roadmap entry from the source checkout. (URGENT)
 - Phase 06.29 inserted after Phase 06.26: Themeable column helpers (#356); explicitly assigned 06.29, approved decisions D-01–D-07, before the Phase 7 theme-surface freeze (URGENT)
+- Phase 06.31 inserted after Phase 06.30: Issue #361: developer-only manage diagnostics and explicit group setup; carry approved D-01–D-07 from the issue handover. Complete before Phase 7. (URGENT)
 - Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
 
 ## Deferred Items
@@ -1366,6 +1380,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T09:41:49.495652+00:00
-Stopped at: Phase 06.32 complete, ready to plan Phase 7
+Last session: 2026-11-13T12:19:02.687Z
+Stopped at: Phase 06.31 complete; UAT passed; next roadmap phase 06.30
 Resume file: None

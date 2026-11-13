@@ -179,6 +179,10 @@ def test_configured_content_type_manage_policy(ct_routes, client, monkeypatch):
 
     routes = ct_routes()
     monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "yes")
+    assert client.get(_url(routes, "manage")).status_code == 302
+    member = User.objects.create_user(username="ct_manager")
+    member.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    client.force_login(member)
     response = client.get(_url(routes, "manage"))
     assert response.status_code == 200
     helper = {"policy": "strict", "accept_global_perms": False, "use_groups": True}

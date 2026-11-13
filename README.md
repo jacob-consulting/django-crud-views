@@ -96,7 +96,10 @@ pip install django-crud-views
 
 Optional extras: `django-crud-views[guardian]` (per-object permissions), `django-crud-views[ordered]` (up/down ordering), `django-crud-views[all]` (everything).
 
-**Try it online:** the [live demo](https://django-crud-views-demo.onrender.com/) runs the example project (log in as `alice` / `alice` or `bob` / `bob`; data resets daily).
+**Try it online:** the [live demo](https://django-crud-views-demo.onrender.com/) runs the example project; data resets daily.
+The current seed provides `alice` / `alice`, `bob` / `bob`, and `developer/developer` for read access and developer
+diagnostics without write permissions. See the [demo account guide](docs/getting_started/demo.md) for the roles and
+deployment caveat; this describes the seed contract, not confirmation of a hosted upgrade.
 
 ## Run the example project
 
@@ -115,7 +118,9 @@ python manage.py seed
 python manage.py runserver
 ```
 
-Browse <http://127.0.0.1:8000/> and log in with `alice` / `alice`.
+Browse <http://127.0.0.1:8000/> and log in with `alice` / `alice` for the tutorial, `bob` / `bob` for the existing
+restricted scenarios, or `developer/developer` for read access and developer diagnostics without write permissions.
+The [demo account guide](docs/getting_started/demo.md) explains seeded reads and diagnostic access.
 These instructions are CI-tested on Linux, macOS and Windows.
 
 If you use [uv](https://docs.astral.sh/uv/) and [task](https://taskfile.dev/), the shortcut

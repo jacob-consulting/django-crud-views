@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src:examples/bootstrap5 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python examples/bootstrap5/manage.py test flash_messages.tests.ComposePermissionsTest --parallel 4",
+  "exitCode": 1,
+  "output": "Creating test database for alias 'default'...\nFF\n======================================================================\nFAIL: test_view_only_user_cannot_open_or_submit_composer (flash_messages.tests.ComposePermissionsTest.test_view_only_user_cannot_open_or_submit_composer) (method='get')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/alex/projects/workspaces/cv-phase-06-31/django-crud-views/examples/bootstrap5/flash_messages/tests.py\", line 114, in test_view_only_user_cannot_open_or_submit_composer\n    self.assertEqual(response.status_code, 403)\nAssertionError: 200 != 403\n\n======================================================================\nFAIL: test_view_only_user_cannot_open_or_submit_composer (flash_messages.tests.ComposePermissionsTest.test_view_only_user_cannot_open_or_submit_composer) (method='post')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/alex/projects/workspaces/cv-phase-06-31/django-crud-views/examples/bootstrap5/flash_messages/tests.py\", line 114, in test_view_only_user_cannot_open_or_submit_composer\n    self.assertEqual(response.status_code, 403)\nAssertionError: 302 != 403\n\n----------------------------------------------------------------------\nRan 1 test in 0.093s\n\nFAILED (failures=2)\nDestroying test database for alias 'default'...\nFound 1 test(s).\nSystem check identified no issues (0 silenced).\n",
+  "targetTest": "test_view_only_user_cannot_open_or_submit_composer",
+  "targetFile": "examples/bootstrap5/flash_messages/tests.py",
+  "expected": "403 on composer GET and POST",
+  "actual": "200 on GET and 302 on POST",
+  "semanticAssessment": "The view-only actor reaches the real composer and fails the denial assertions. No import or fixture errors."
+}

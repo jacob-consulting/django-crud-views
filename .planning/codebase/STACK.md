@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-13
-last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
+last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
 ---
 # Technology Stack
 
@@ -19,7 +19,7 @@ last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
 
 **Environment:**
 - Python >=3.12 is the package metadata floor (`pyproject.toml`). Nox declares Python 3.12–3.15 against Django 4.2, 5.2, and 6.0, with unsupported combinations skipped (`noxfile.py`).
-- Node.js >=20 for the dev-only browser test harness (`package.json`)
+- Node.js >=20 is declared for the dev-only browser test harness (`package.json`); CI and the development guide use Node.js 22 because jsdom does not start on Node 20 (`.github/workflows/js.yml`, `docs/development/index.md`)
 
 **Package Manager:**
 - Python: `uv` for development and Nox environments; standard installs use Python package metadata
@@ -56,7 +56,6 @@ last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
 - Demo-only dependencies are Gunicorn, WhiteNoise, and django-ratelimit (`requirements/demo.txt`)
 - Formset layouts, including compact layouts, use existing Django forms and crispy APIs; no additional package dependency is introduced (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/layout.py`)
 - Compact formsets support Django's exact stock `CheckboxInput` widget without an opt-in marker. Custom widgets and templates need the documented compatibility marker and remain responsible for their markup (`docs/reference/formsets.md`).
-- Workflow transition button presentation reads optional `variant` and `icon` metadata from django-fsm transition `custom` data; the fixed supported Bootstrap variants resolve through workflow button-class keys, while icons use the shared icon renderer and form icon host (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`). This adds no dependency.
 
 ## Configuration
 

@@ -691,6 +691,29 @@ def test_top_level_create_unchanged_by_key_target_fix(user_guardian, cv_guardian
     assert granted["cv_access"] is True
 
 
+@pytest.fixture
+def client_guardian_developer(client_guardian, user_guardian):
+    from django.contrib.auth.models import Group
+
+    from crud_views.lib.settings import crud_views_settings
+
+    user_guardian.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    return client_guardian
+
+
+@pytest.mark.django_db
+def test_guardian_manage_revocation_on_fresh_request(client_guardian_developer, user_guardian, cv_guardian_author):
+    from django.contrib.auth.models import Group
+
+    from crud_views.lib.settings import crud_views_settings
+
+    assert client_guardian_developer.get("/guardian_author/manage/").status_code == 200
+    assert b"/guardian_author/manage/" in client_guardian_developer.get("/guardian_author/").content
+    user_guardian.groups.remove(Group.objects.get(name=crud_views_settings.manage_group))
+    assert client_guardian_developer.get("/guardian_author/manage/").status_code == 403
+    assert b"/guardian_author/manage/" not in client_guardian_developer.get("/guardian_author/").content
+
+
 # ── GuardianManageView ────────────────────────────────────────────────────────
 
 
@@ -704,9 +727,9 @@ def test_guardian_manage_view_registered(cv_guardian_author):
 
 
 @pytest.mark.django_db
-def test_guardian_manage_context_has_guardian_config(client_guardian, cv_guardian_author):
+def test_guardian_manage_context_has_guardian_config(client_guardian_developer, cv_guardian_author):
     """GuardianManageView context includes guardian_config dict."""
-    response = client_guardian.get("/guardian_author/manage/")
+    response = client_guardian_developer.get("/guardian_author/manage/")
     assert response.status_code == 200
     assert "guardian_config" in response.context
     config = response.context["guardian_config"]
@@ -732,9 +755,9 @@ def test_guardian_manage_context_has_guardian_config(client_guardian, cv_guardia
 
 
 @pytest.mark.django_db
-def test_guardian_manage_config_renders_in_an_alert(client_guardian, cv_guardian_author):
+def test_guardian_manage_config_renders_in_an_alert(client_guardian_developer, cv_guardian_author):
     """#250: the guardian config table is the body of a warning alert from tags/alert.html."""
-    content = re.sub(r"\s+", " ", client_guardian.get("/guardian_author/manage/").content.decode())
+    content = re.sub(r"\s+", " ", client_guardian_developer.get("/guardian_author/manage/").content.decode())
     match = re.search(
         r'class="alert alert-warning" role="alert">.*?(<table class="table table-striped mb-0">.*?</table>)', content
     )
@@ -757,7 +780,7 @@ def test_guardian_manage_config_renders_in_an_alert(client_guardian, cv_guardian
 
 
 @pytest.mark.django_db
-def test_guardian_manage_permission_holders_has_object_count(client_guardian, cv_guardian_author):
+def test_guardian_manage_permission_holders_has_object_count(client_guardian_developer, cv_guardian_author):
     """Permission holders includes guardian object count after assigning per-object group perm."""
     from django.contrib.auth.models import Group
     from guardian.shortcuts import assign_perm
@@ -768,7 +791,7 @@ def test_guardian_manage_permission_holders_has_object_count(client_guardian, cv
     author = Author.objects.create(first_name="Test", last_name="Author")
     assign_perm("app.change_author", group, author)
 
-    response = client_guardian.get("/guardian_author/manage/")
+    response = client_guardian_developer.get("/guardian_author/manage/")
     holders = response.context["permission_holders"]
 
     editor_rows = [r for r in holders if r["group"] == "editors" and r["permission"] == "change"]
@@ -778,9 +801,9 @@ def test_guardian_manage_permission_holders_has_object_count(client_guardian, cv
 
 
 @pytest.mark.django_db
-def test_guardian_manage_views_have_mixin_info(client_guardian, cv_guardian_author):
+def test_guardian_manage_views_have_mixin_info(client_guardian_developer, cv_guardian_author):
     """Each view in context includes guardian_mixin info derived from MRO."""
-    response = client_guardian.get("/guardian_author/manage/")
+    response = client_guardian_developer.get("/guardian_author/manage/")
     views = response.context["views"]
     assert "list" in views
     assert "guardian_mixin" in views["list"]["base"]

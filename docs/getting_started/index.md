@@ -29,4 +29,6 @@ task dev   # create the venv (requires uv and task)
 task run   # migrate, seed and serve http://localhost:9000/
 ```
 
-Log in with `alice` / `alice` and explore.
+Log in with `alice` / `alice` and follow the tutorial, or use `bob` / `bob` to compare the existing restricted
+scenarios. The seed also creates `developer/developer` for read access and developer diagnostics without write
+permissions. See the [full demo account guide](demo.md#developer-account-and-seeded-reads).

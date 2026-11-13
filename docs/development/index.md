@@ -36,9 +36,25 @@ Now let's run the example application with the `bootstrap5` theme:
 cd examples/bootstrap5
 task run
 ```
-> **Note:** This will run the migrations, seed demo data, and start the dev server. It creates the demo users `alice` / `alice` and `bob` / `bob` (see `project/seeding.py`). To use the Django admin at `/admin/`, create a superuser first: `python manage.py createsuperuser`.
+> **Note:** This runs migrations, seeds demo data, and starts the dev server. It creates `alice` / `alice`,
+> `bob` / `bob`, and `developer/developer` (read access and developer diagnostics; active, nonstaff and nonsuperuser).
+> See [the demo account guide](../getting_started/demo.md#developer-account-and-seeded-reads) for bounded model,
+> resource and Guardian reads, repeat seeding and conflict resolution. To use `/admin/`, create a superuser with
+> `python manage.py createsuperuser`; superusers still need explicit manage-group membership for diagnostics.
 
 [Then open the app in your browser at http://localhost:9000](http://localhost:9000)
+
+In a consumer application, run `python manage.py cv_manage_group` after `python manage.py migrate`, then add
+your chosen active developer users to that configured group through Django admin or application setup. This
+group-only command preserves existing memberships and permissions. Public demo credentials belong only to the
+example seed; no deployed consumer is provisioned automatically. Follow the
+[manage settings](../reference/settings.md#manage-diagnostics) and
+[migration steps](../migrating-1.0.md#developer-only-manage-diagnostics).
+
+Diagnostics describe the signed-in account. To inspect Alice's results, temporarily add Alice to the group,
+sign in as Alice, inspect, and remove the membership; developer cannot impersonate her. Example reminder,
+invitation and notification-composer forms require Contact change, Contact add and Notice add respectively.
+Alice/Bob keep these grants; developer cannot execute them.
 
 ## Deploying the demo
 

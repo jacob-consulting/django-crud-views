@@ -20,6 +20,14 @@ The `CustomFormView` provides a custom form attached to an existing model object
 
 `CustomFormNoObjectView` is the same but does not load a model object. Use it for forms that are not tied to a specific instance.
 
+The reusable `*PermissionRequired` defaults remain `cv_permission = "view"`. Choose an appropriate write or
+execution permission explicitly when a form changes data or performs an action. In the seeded examples,
+`ContactRemindView` sets `cv_permission = "change"` (`custom_form.change_contact`), `ContactInviteView` sets
+`cv_permission = "add"` (`custom_form.add_contact`), and the flash notification composer sets
+`cv_permission = "add"` (`flash_messages.add_notice`). These gates cover both opening and submitting the form.
+Alice and Bob retain these grants; `developer/developer` has reads and diagnostics only and cannot execute them.
+See the [demo account guide](../getting_started/demo.md#developer-account-and-seeded-reads).
+
 ## Basic Usage
 
 Define a form, then a view with `cv_key` and `cv_path` set:

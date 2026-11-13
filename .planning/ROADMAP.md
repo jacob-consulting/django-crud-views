@@ -1799,7 +1799,7 @@ Plans:
 **Requirements:** Deliver upstream support, the verified tabler-test roastery upgrade, and one separate example app with its own models, focused standalone/inline source modules, ordinary/compact variants, and reciprocal documentation links. Strict matching is the default; check offered options on rendering and the validated selection on POST, permit explicit no-fields categories and an opt-in unmatched policy, and do not scan unused categories. Preserve browser values until save; hide inactive ordinary groups and keep compact cells visible but disabled. Preserve existing conditional behavior and bounded query costs.
 **Depends on:** Phase 06.29 (roadmap sequence); builds on Phase 06.27's conditional groups and Phases 06.24–06.26's compact formset contracts.
 **Ordering:** Complete before Phase 7 freezes the public theme surface; include the settled queryset/inline conditional template and JavaScript contracts in that inventory.
-**Plans:** 13/13 plans executed; consistent leaf frames and current final acceptance verified; owner audits and remaining UAT pending
+**Plans:** 15 plans; 13 executed. Plan 14 adds configurable compact-row borders, example descriptions and documentation; plan 15 proves browser presentation and refreshes final-source acceptance. Canonical owner audits and remaining UAT are required before closure.
 
 Plans:
 **Wave 1**
@@ -1838,6 +1838,14 @@ Plans:
 
 **Wave 12 — Final-source acceptance** *(depends on 06.30-12)*
 - [x] 06.30-13-PLAN.md — Documentation, then one final browser/release refresh and canonical audit handoff
+
+**Wave 13 — Configurable compact-row borders** *(depends on 06.30-13)*
+- [ ] 06.30-14-PLAN.md — Borders default off; Checklist opts in; compact Request Batches stays borderless; visible descriptions and synchronized documentation
+
+**Wave 14 — Border presentation and final-source acceptance** *(depends on 06.30-14)*
+- [ ] 06.30-15-PLAN.md — Three-state browser proof, one complete source-bound acceptance refresh, then named canonical audit/UAT reconciliation
+
+Plans 14/15 preserve completed plans 01–13 as history. D-15 supersedes only the old compact border default and Checklist choice; UAT test 3/G-06.30-2 and verification truth 39 require explicit owner reconciliation. H1/rest-H2 remain pending; no new approval of the already-authorized border choice is required.
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1953,5 +1961,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
-| 06.30. Queryset-driven conditional fields (#360) | 13/13 | In Progress — current acceptance passes; owner audits and UAT pending | - |
+| 06.30. Queryset-driven conditional fields (#360) | 13/15 | In Progress — border implementation and final-source acceptance planned; owner audits and UAT pending | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 13
-status: awaiting human verification
-stopped_at: Completed 06.30-13; verified 43/44, H1/rest-H2 pending
-last_updated: "2026-11-13T17:35:21.765Z"
+current_plan: 14
+status: ready to execute
+stopped_at: Plans 06.30-14/15 reviewed and ready; H1/rest-H2 pending
+last_updated: "2026-11-13T18:23:59.988Z"
 last_activity: 2026-11-13
-last_activity_desc: Plan 13 executed; complete current acceptance passes; owner audits and H1/rest-H2 pending
-state_head: 2f75ea4ebcdf0a32e3f80c11261c48f5502960a1
+last_activity_desc: Plans 14/15 revised from reviews; independent checker passed; implementation pending
+state_head: f3e9aa37679025b46190ebcfe2a4322a6a276274
 progress:
   total_phases: 37
   completed_phases: 27
-  total_plans: 196
+  total_plans: 198
   completed_plans: 196
 milestone_name: milestone
 ---
@@ -31,13 +31,19 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN VERIFICATION
-Current Plan: 13
-Total Plans in Phase: 13
-Status: Awaiting human verification
-Last activity: 2026-11-13 — Plan 13 committed with complete current acceptance; owner audits and H1/rest-H2 pending
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — READY TO EXECUTE
+Current Plan: 14
+Total Plans in Phase: 15
+Status: Ready to execute plans 14/15; existing H1/rest-H2 remain pending
+Last activity: 2026-11-13 — Plans 14/15 revised from reviews; independent checker passed; implementation pending
 
 Next: $gsd-verify-work 06.30 for H1/rest-H2 human judgment. All thirteen plans are executed; canonical verification is human_needed, 43/44 truths verified. G1/G2 automated gaps are closed. Validation31/31, security27closed/0open, scopedUI24/24 and clean code review are current. Phase 7 does not advance.
+
+### Phase 06.30 border follow-up planning — 2026-11-13
+
+- Plans 14/15 ready: configurable compact borders default off, bordered Checklist and borderless compact Request Batches with notes, documentation, then focused browser proof and one full acceptance refresh.
+- Independent checker passed after bounded sizing rationale and roadmap correction: zero blockers/warnings. Automated decision/post-plan checks cover 13/13 parsed decisions; D-14/D-15 explicitly mapped in COVERAGE and independently checked. No formal requirement IDs exist.
+- Plans 01–13 and their observed history preserved. No implementation or new acceptance claimed; H1/rest-H2 and owner reconciliation remain pending. Existing user-modified state.json bytes preserved outside this planning commit.
 
 ### Phase 06.30 plan 13 final acceptance — 2026-11-13
 
@@ -1476,5 +1482,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-13T17:35:16.365Z
-Stopped at: Completed 06.30-13; verified 43/44, H1/rest-H2 pending
+Stopped at: Plans 06.30-14/15 reviewed and ready; H1/rest-H2 pending
 Resume file: None

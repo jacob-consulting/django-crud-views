@@ -2,7 +2,7 @@
 
 No external API integration: this phase extends local Django form/render/JavaScript behavior and adopts it in a sibling Django application; no remote API/SDK capability is integrated.
 
-This is planned coverage, not implementation acceptance. The roadmap Requirements field is prose; no formal phase requirement IDs exist, so all PLAN frontmatter intentionally uses requirements: []. AC-1–AC-14 are the ordered acceptance bullets from CONTEXT, not invented global IDs. API-SURFACE.md has zero symbols/stale=true and was not used as proof of absence.
+This is planned coverage, not implementation acceptance. The roadmap Requirements field is prose; no formal phase requirement IDs exist, so all PLAN frontmatter intentionally uses requirements: []. AC-1–AC-14 are the ordered acceptance bullets from CONTEXT, not invented global IDs. API-SURFACE.md has zero symbols/stale=true and was not used as proof of absence. Reviews-mode plans14/15 retain this ID policy; their D-15 coverage and final acceptance dependency are recorded below.
 
 ## Multi-source audit
 
@@ -129,4 +129,36 @@ Assumption-delta detected=false; no identity decision checkpoint. Schema-push co
 Excluded exactly as approved: AJAX/autocomplete, dynamic radios, multiselect, arbitrary widget adapters, predicate engine, queryset whole-formset toggles, general source browser and new concurrency guarantees. No category-dimension scan, new business requirement for coffee fields, real-data bulk migration, push or deploy is planned. D-13 handoff is historical.
 
 No unplanned source item remains. This audit does not claim implementation, tests or browser acceptance has already passed.
+
+## D-15 reviews-mode revision — 2026-11-13
+
+The preceding nine-plan audit describes the original implementation schedule. Completed plans01–13 and their observations remain historical; this addendum covers the authorized border follow-up reviewed in REVIEWS commit `f3e9aa37`. The current schedule contains15 plans (13 executed).
+
+| Source | ID/item | Obligation | Plan/task | Status |
+| --- | --- | --- | --- | --- |
+| GOAL | Phase06.30 goal | Preserve strict category activation, independent layouts and server clearing | Completed01–13;14-01/02 preservation;15-02 original acceptance | COVERED |
+| REQ | Roadmap prose, AC-1–AC-14 | Upstream/examples/adoption/docs, retained browser/save semantics and bounded costs | Original individual rows above;14-01/02/03 and15-02 | COVERED; no formal IDs |
+| CONTEXT | D-01–D-13 | Retain every approved original requirement and historical handoff | Individual rows above;15-02 regression refresh | COVERED |
+| CONTEXT | D-14 | Complete-frame suppression, ordinary rows, Choices/Speakers and section frames | 14-01/03,15-01; only default/Checklist clauses superseded | COVERED |
+| CONTEXT | D-15 | Strict local default-off option and bordered Checklist/borderless Request Batches with visible notes/docs | 14-01/02/03,15-01 | COVERED |
+| RESEARCH | All original research rows | Native authority, query-free inspection, lifecycle, support floors, isolation, safe output and reproducibility | Existing rows retain completed owners;14 preserves seams;15-02 renews evidence | COVERED |
+| REVIEW | Current actionable concerns | Exact hooks, three-state predicates, old assertions/docs, copied-template migration and evidence refresh | Ledgers in14/15 anchored to f3e9aa37 | COVERED |
+| UAT | Test3/G2, verifier truth39 | Explicit D-15 supersession with original quotes/observations retained, no inferred human approval | CONTEXT clarification now;15-03 names canonical owners | COVERED |
+
+Wave13/plan14 owns core rendering, four example files and documentation. Wave14/plan15 depends on14 and owns the browser harness and source-bound evidence. Each has three tasks, no task modifies more than five named files; planned files do not overlap across these two plans. Plan15's single original18-command matrix follows final production/docs/harness changes;14 does not duplicate it. Generated capture outputs use the existing evidence directories/conventions. Canonical VALIDATION/SECURITY/UI-REVIEW/REVIEW/VERIFICATION/UAT artifacts remain owned by their workflows;15-03 explicitly schedules those after SUMMARY, before phase closure. H1/rest-H2 remain pending.
+
+### Current preflight observations
+
+- Discovery Level0: no new library/package/integration; inspected actual compact dataclass, shared template/CSS, six description hooks, assertion helpers and docs contradictions. Existing research/patterns reused for completed scope.
+- Context-drift returned advisory `block=false`: RESEARCH/PATTERNS/VALIDATION predate D-15. Codebase-drift returned directive `warn` for36 structural elements. These findings are not freshness passes; canonical validation is reconciled by15-03's owner. No broad re-research or map regeneration was performed during this bounded revision.
+- Graph absent. Regenerated API-SURFACE reports zero symbols and stale=true, not proof that APIs are absent. API detector finds historical local-API adoption language; the existing reasoned no-external-API declaration remains applicable.
+- Assumption-delta detects configurable presentation; D-15 and the existing CompactLayout node already settle ownership, so no new identity question. UI gate supplied by orchestrator: frontend=false/block=false; no UI-SPEC needed. No AI system or applicable non-Django schema push.
+- SPEC edge/prohibition sections absent; default-on spec-less fallback visibly skipped because this phase has no formal requirement IDs. No synthetic IDs or probe predicates were invented. Concrete accepted edges (strict bool, lazy empty suppression, nested precedence, full/fragment/error lifecycle, copied themes) are in executable14/15 tasks.
+- Calibration factor1, sample_count0, confidence low;14 raw/calibrated24000 tokens and15 raw/calibrated27000 tokens.
+
+Broader radius/background removal and automatic downstream border opt-in were explicitly rejected in14's review ledger as outside D-15's border-only request. No current source obligation is left unplanned. Planning checks are not implementation acceptance.
+
+### Planning validation
+
+Both new/revised plans pass frontmatter and plan-structure validation (three tasks each, zero errors/warnings), end in `</output>` and contain no continuation sentinel. The decision-coverage checker passes13/13 trackable decisions; its parser does not count the later D-14/D-15 heading-form decisions, which are explicitly mapped above and cited throughout14/15. All12 automated commands in14/15 have failure-direction statements. The command-path probe reports `not_applicable` for these Python/Node command forms, not a resolved-target pass; the referenced executables/test files were checked on disk separately. Unique numeric threat IDs continue27–30 after existing26; no duplicates. `git diff --check` passes. No implementation test suite was run by planning.
 

@@ -6,10 +6,10 @@ current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: Not started
 status: planning
 stopped_at: Phase 06.31 complete; UAT passed; next roadmap phase 06.30
-last_updated: "2026-11-13T12:19:07.326Z"
+last_updated: "2026-11-13T12:22:27.610Z"
 last_activity: 2026-11-13
-last_activity_desc: Phase 06.31 complete, transitioned to Phase 06.30
-state_head: d81a89f501e5f245a2a1b95ec3686db9b3a2f11e
+last_activity_desc: "Phase 06.31 shipped as PR #365"
+state_head: 23507235438e14338a571f54df0045dbc478f6ac
 progress:
   total_phases: 38
   completed_phases: 35
@@ -35,7 +35,7 @@ Phase: 06.30 — Queryset-driven conditional fields (#360)
 Current Plan: Not started
 Total Plans in Phase: 6
 Status: Ready to plan
-Last activity: 2026-11-13 — Phase 06.31 complete, transitioned to Phase 06.30
+Last activity: 2026-11-13 -- Phase 06.31 shipped as PR #365
 
 Next: $gsd-progress
 

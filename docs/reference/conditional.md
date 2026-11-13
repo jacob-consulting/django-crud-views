@@ -15,6 +15,8 @@ disabled controls; server validation and persistence remain authoritative, inclu
     For three choices and four groups, open [Customers](https://django-crud-views-demo.onrender.com/conditional/customer/)
     or [Create Radio](https://django-crud-views-demo.onrender.com/conditional/customer/create-radio/).
     Both editors save the same model; its detail page distinguishes `None`, blank text and `unset`.
+    The [Queryset conditional example](https://django-crud-views-demo.onrender.com/queryset-conditional/service-request/)
+    compares service-category fields in standalone, ordinary inline and compact inline forms.
     These are the deployment destinations; availability follows deployment of this release.
 
 `toggle.js` ships automatically via the `cv_js` asset registry (`crud_views_settings.javascript()`); no template changes are needed. It also re-initializes inside Bootstrap modals (`cv_modal = True` views) via the `cv:modal:loaded` event.

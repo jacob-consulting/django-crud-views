@@ -5,6 +5,7 @@ import json
 from crispy_forms.layout import Layout, LayoutObject
 from django.template.loader import render_to_string
 
+from .queryset import _QuerysetToggle
 from .toggle import ToggleSource, ValueToggle
 
 
@@ -34,7 +35,9 @@ class ToggleGroup(LayoutObject):
         context.update(
             {
                 "cv_toggle_field": form.add_prefix(name),
-                "cv_toggle_values": json.dumps(self.toggle_field.values)
+                "cv_toggle_values": json.dumps(self.toggle_field.render_values(form, context))
+                if isinstance(self.toggle_field, _QuerysetToggle)
+                else json.dumps(self.toggle_field.values)
                 if isinstance(self.toggle_field, ValueToggle)
                 else None,
                 "cv_toggle_css": self.css_class or "",

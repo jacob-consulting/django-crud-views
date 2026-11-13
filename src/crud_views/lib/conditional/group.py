@@ -8,6 +8,7 @@ from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured, Vali
 from django.db import models
 from django.forms import BooleanField
 
+from .queryset import QuerysetConditionCoverageError, _QuerysetToggle
 from .toggle import CallableChoiceIterator, ToggleSource, ValueToggle, _choice_token
 
 
@@ -44,7 +45,7 @@ def validate_value_groups(groups, fields, model=None):
     callers may omit request-added fields; runtime callers check their presence.
     """
     for group in groups:
-        if not isinstance(group.toggle, ValueToggle):
+        if not isinstance(group.toggle, (ValueToggle, _QuerysetToggle)):
             continue
         controller = group.toggle.field_name()
         controlled = set(group.fields)
@@ -219,13 +220,27 @@ class ConditionalGroupFormMixin:
                 if name in self.fields and not self.fields[name].disabled:
                     resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
         cleaned = super().clean()
-        if any(isinstance(group.toggle, ValueToggle) for group in self.cv_conditional_groups):
+        if any(isinstance(group.toggle, (ValueToggle, _QuerysetToggle)) for group in self.cv_conditional_groups):
             # Django keeps the existing mapping when an inherited cleaner returns None.
             if cleaned is None:
                 cleaned = self.cleaned_data
             # Inherited clean() may replace the mapping, including removing the
             # controller. Value activation must use that returned authoritative data.
             self.cleaned_data = cleaned
+        self._cv_queryset_categories = {}
+        for group in self.cv_conditional_groups:
+            if isinstance(group.toggle, _QuerysetToggle):
+                source = group.toggle.source
+                if source in self._cv_queryset_categories:
+                    continue
+                obj = cleaned.get(source.controller)
+                category = None
+                if obj is not None:
+                    try:
+                        category = source.category_for(obj)
+                    except QuerysetConditionCoverageError as exc:
+                        self.add_error(source.controller, ValidationError(str(exc), code="unmatched_category"))
+                self._cv_queryset_categories[source] = category
         for group in self.cv_conditional_groups:
             if group.is_on(self):
                 self._cv_enforce_required(group, cleaned)
@@ -240,14 +255,14 @@ class ConditionalGroupFormMixin:
             self.cv_conditional_groups, self.fields, getattr(getattr(self, "_meta", None), "model", None)
         )
         for group in self.cv_conditional_groups:
-            if isinstance(group.toggle, ValueToggle):
+            if isinstance(group.toggle, (ValueToggle, _QuerysetToggle)):
                 missing = (set(group.fields) | {group.toggle.field_name()}) - self.fields.keys()
                 if missing:
                     raise ImproperlyConfigured(
                         f"ValueToggle '{group.toggle.field_name()}' fields {sorted(missing)} are missing from the form."
                     )
         for group in self.cv_conditional_groups:
-            if isinstance(group.toggle, ValueToggle):
+            if isinstance(group.toggle, (ValueToggle, _QuerysetToggle)):
                 for name in group.fields:
                     if not self.fields[name].disabled:
                         self.fields[name].required = False

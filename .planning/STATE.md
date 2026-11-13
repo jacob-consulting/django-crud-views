@@ -4,9 +4,9 @@ milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 10
-status: awaiting verification
-stopped_at: Completed 06.30-10-PLAN.md; independent review, fresh acceptance and remaining UAT pending
-last_updated: "2026-11-13T15:22:56.169Z"
+status: gaps found
+stopped_at: Plan 10 verified; acceptance refresh and remaining UAT pending
+last_updated: "2026-11-13T15:41:10.572897+00:00"
 last_activity: 2026-11-13
 last_activity_desc: Plan 10 presentation gap closed; fresh acceptance and remaining UAT pending
 state_head: a83834989eb4bcde8fdcc0a5f84504821a930a9d
@@ -34,10 +34,17 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING RE-VERIFICATION AND HUMAN UAT
 Current Plan: 10
 Total Plans in Phase: 10
-Status: awaiting verification
+Status: gaps found
 Last activity: 2026-11-13 — Plan 10 row-card gap implementation, browser evidence and documentation committed
 
-Next: independent plan 10 review and phase re-verification, then remaining H1/H2 human UAT. Phase remains pending.
+Next: $gsd-plan-phase 06.30 --gaps — refresh source-bound acceptance against the preserved downstream adoption branch, then remaining H1/H2 human UAT. Phase remains pending.
+
+### Phase 06.30 gap execution verification — 2026-11-13
+
+- Plan 10 and G-06.30-1 verified. Canonical report: gaps_found, 28/32 must-haves; grouped remaining blocker is stale plan08/09 cross-repository acceptance. No implementation blockers in the row-card follow-up.
+- Independent code review clean after WR-02 startup-parser fix c0ba4502; three negative harness tests and refreshed 56-assertion browser evidence pass. Focused coverage now231 tests. UI audit24/24; security20closed/0open.
+- Current-source Django5.2 broad regression:13292 passed, one known Django6-only CSP skip. Docs149, strict build, scoped lint/checks passed.
+- Downstream adoption remains on gsd/phase-06.30-queryset-conditions; current downstream main is not the adoption acceptance target. No checkout switch was made. H1/restH2 remain pending. No phase completion, push or merge.
 
 ### Phase 06.30 plan 10 execution — 2026-11-13
 
@@ -1435,5 +1442,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-13T15:22:50.939Z
-Stopped at: Completed 06.30-10-PLAN.md; independent review, fresh acceptance and remaining UAT pending
+Stopped at: Plan 10 verified; acceptance refresh and remaining UAT pending
 Resume file: None

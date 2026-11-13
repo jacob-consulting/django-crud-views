@@ -40,6 +40,14 @@ Last activity: 2026-11-13 -- Phase 06.30 shipped as PR #367
 
 Next: $gsd-plan-phase 7. Phase06.30 complete:15/15 plans,54/54 truths, explicit human UAT passed and historical G1/G2 resolved. Tabler UAT preview remains on9000 with isolated demo data.
 
+### Phase 06.30 shipping integration — 2026-11-13
+
+- PR #367 created; merged completed phases 06.31/06.32 from main and preserved all three phases' records. Seven codebase maps refreshed.
+- CI fixes: formatted one documentation recipe, redacted a disposable CSRF token from archived failure output, and removed an editable-install-only assumption from the save/reopen test. All23 queryset tests pass against a real wheel install; browser source-identity checks remain unchanged.
+- Isolated downstream test-only commit6f25da9 now proves manage denial without group membership, admission after configured-group enrollment and hard-off denial. Original9ca0675 adoption branch and active downstream main remain unchanged.
+- Final18-command acceptance passed: core13602, four affected/floor selections744 each, examples541, docs149, JavaScript447/2, downstream238/83, and41 validator checks. Refreshed browsers87/47 and focused391 assertions pass. Original human UAT remains accepted.
+- GitHub Python CI is still running; lint, docs, JavaScript, Sonar and README checks pass. PR remains open and unmerged; optional review choice is pending.
+
 ### Phase 06.30 human UAT complete — 2026-11-13
 
 - Explicit user passes: example clarity/source navigation, ordinary batches, compact batches, standalone Service Requests, Speakers and pinned downstream Orders. G2 remains resolved/superseded by D15; no historical observation erased.

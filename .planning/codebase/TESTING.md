@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 6b7f35c4334a0a47982ee6cdfb3c1f379cd596c6
+last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
 last_mapped_at: 2026-11-13
 ---
 # Testing Patterns
@@ -193,7 +193,7 @@ PYTHONPATH="$PWD/src:$PWD" npm run test:integration
 - Measure query counts explicitly at differing option and row cardinalities with `CaptureQueriesContext`; test lazy queryset behavior and verify the native scalar model-choice path avoids evaluation. Include an all-no-fields registered source so coverage checks cannot disappear as a side effect of rendering no conditional field (`tests/test1/test_conditional_queryset_contract.py`).
 - Treat render-and-save behavior as an integration contract: exercise category switching, clearing of inactive editable values, invalid/forged/deleted options, persistence after reload, unchanged database state on rejected submissions and atomic handling across parent and inline rows (`tests/test1/test_conditional_queryset.py`, `tests/test1/test_conditional_queryset_inlines.py`).
 - Browser tests use target-specific Django servers and Playwright Chromium. `tests/browser/queryset-conditional.cjs` captures upstream and pinned downstream behavior at 1280px and 390px, checks exact scenario/assertion matrices and database state, fingerprints source/runtime/assets, and verifies process/temp-directory cleanup. Use `tests/browser/verify_queryset_release.py` to validate the release evidence and its negative controls.
-- Phase 06.30 acceptance records 7 focused upstream scenarios with 391 assertions and 36 captures, plus original upstream (6 scenarios/87 assertions/7 captures) and pinned downstream (4 scenarios/47 assertions/3 captures) browser records. Final release evidence reports 13,390 Python tests passed with the exact known Django-6-only CSP skip on Python 3.12.3/Django 5.2.19 using four workers; JavaScript 447 unit and 2 integration tests; 507 examples tests; and the remaining matrix, docs, lint and release checks. These are recorded phase results, not checks run during this map refresh (`.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md`).
+- Phase 06.30 acceptance records 7 focused upstream scenarios with 391 assertions and 36 captures, plus original upstream (6 scenarios/87 assertions/7 captures) and pinned downstream (4 scenarios/47 assertions/3 captures) browser records. Final release evidence reports 13,602 Python tests passed with the exact known Django-6-only CSP skip on Python 3.12.3/Django 5.2.19 using four workers; JavaScript 447 unit and 2 integration tests; 541 examples tests; and the remaining matrix, docs, lint and release checks. These are recorded phase results, not checks run during this map refresh (`.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md`).
 - Human acceptance is separately recorded: H1 and all H2 portions, including downstream Orders, have explicit user passes. Do not treat screenshots or automated keyboard/style checks as a substitute for those responses; consult `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-UAT.md` for scope and `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md` for acceptance limits.
 
 ## Developer-Only Manage Diagnostics (Phase 06.31)
@@ -214,3 +214,5 @@ PYTHONPATH="$PWD/src:$PWD" npm run test:integration
 **Checks run during this map refresh:** None. Test/configuration patterns above were inspected from source and phase records only.
 
 *Testing analysis: 2026-11-13*
+
+- Wheel-installed nox sessions must exercise the same behavioral tests as editable checkouts; do not require package imports to live beneath `src/`. Browser acceptance separately checks source identity. The ship integration fixture explicitly tests manage denial without group membership, admission after enrollment and hard-off denial in the isolated downstream checkout.

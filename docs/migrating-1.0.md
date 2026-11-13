@@ -46,8 +46,9 @@ The example seed now publishes `developer/developer` alongside Alice/Bob. It cre
 nonsuperuser member with explicit model/resource reads and Guardian object reads for the seeded Documents,
 Notes, Projects, Tasks and Milestones, including protected ancestors. These are bounded seeded grants, not
 automatic permissions for future production objects. Repeated seeds reuse accounts/data and restore demo
-passwords. Conflicting customized developer flags or user/group/object grants raise an actionable error and
-preserve existing grants for deliberate operator resolution; see the
+passwords. Conflicting customized developer flags or user/group/object grants raise an actionable error. The full
+seed command rolls back its database changes, including new accounts, password resets, memberships, and grants,
+while preserving pre-existing credentials and grants for deliberate operator resolution; see the
 [full seed/conflict contract](getting_started/demo.md#developer-account-and-seeded-reads).
 Public demo credentials belong only to the examples. Consumer membership setup is separate; no deployed
 application has been automatically upgraded or provisioned by this change.

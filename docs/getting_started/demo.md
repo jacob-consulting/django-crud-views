@@ -56,8 +56,12 @@ the configured group, membership and bounded reads without duplicating seed data
 restricted scenarios remain intact; neither is automatically added to the manage group. If an existing developer
 has conflicting active/staff/superuser flags, direct/group permissions, or object grants on seeded Guardian objects,
 or the configured group carries conflicting privileges, the command raises an actionable `CommandError` naming
-the conflict. It preserves existing grants rather than silently removing them. Resolve the named account/group
-customization deliberately, then rerun the seed; it is not an atomic rollback of earlier seed work.
+the conflict. The full command runs in one transaction on the example's default database: failure rolls back
+account creation, password resets, group creation and membership, permission grants, and earlier seeded data.
+Pre-existing credentials, memberships, and grants remain unchanged. Progress lines may already have been printed;
+they do not indicate committed changes if the command fails. Resolve the named account/group customization
+deliberately, then rerun the seed. Calling individual seed helpers directly does not provide this command-wide
+rollback boundary.
 
 ## Diagnose the signed-in account
 

@@ -135,9 +135,11 @@ class DeveloperSeedTest(TestCase):
         owner.groups.add(group)
         assign_perm("guardian_demo.change_document", group, document)
 
-        with patch.object(crud_views_settings, "manage_group", group.name):
-            with self.assertRaisesRegex(CommandError, "guardian_demo.Document.*change_document"):
-                call_command("seed", stdout=StringIO())
+        with (
+            patch.object(crud_views_settings, "manage_group", group.name),
+            self.assertRaisesRegex(CommandError, "guardian_demo.Document.*change_document"),
+        ):
+            call_command("seed", stdout=StringIO())
 
         self.assertIsNone(authenticate(username="developer", password="developer"))
         self.assertFalse(get_user_model().objects.filter(username="developer").exists())

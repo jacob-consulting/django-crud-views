@@ -81,7 +81,38 @@ function fingerprints() {
     const files = cp.execFileSync('git', ['ls-files', '-co', '--exclude-standard', '-z'], {cwd: root})
         .toString().split('\0');
     return Object.fromEntries([...new Set(files)].filter(f => /^(src\/|examples\/bootstrap5\/|package(-lock)?\.json$)/.test(f)
-        || f === 'tests/browser/formset-row-cards.cjs').sort().map(f => [f, digest(fs.readFileSync(path.join(root, f)))]));
+        || f.startsWith('tests/browser/formset-row-cards.')).sort().map(f => [f, digest(fs.readFileSync(path.join(root, f)))]));
+}
+
+function waitForReady(child, hostLog, timeout = 60000) {
+    return new Promise((resolve, reject) => {
+        let stdout = '';
+        const finish = (error, ready) => {
+            clearTimeout(timer);
+            child.stdout.off('data', onData);
+            child.off('error', onError);
+            child.off('exit', onExit);
+            if (error) reject(error);
+            else resolve(ready);
+        };
+        const onError = error => finish(error);
+        const onExit = code => finish(Error(`Host exited ${code}: ${hostLog()}`));
+        const onData = data => {
+            stdout += data;
+            const lines = stdout.split('\n');
+            stdout = lines.pop(); // A chunk boundary is not a record boundary.
+            for (const line of lines) if (line.startsWith('{"port":')) {
+                try {finish(null, JSON.parse(line));}
+                catch (error) {finish(error);}
+                return;
+            }
+        };
+        const timer = setTimeout(() => finish(Error(`Host startup timeout: ${hostLog()}`)), timeout);
+        child.stdout.setEncoding('utf8');
+        child.once('error', onError);
+        child.once('exit', onExit);
+        child.stdout.on('data', onData);
+    });
 }
 
 async function run() {
@@ -104,18 +135,7 @@ async function run() {
         child = cp.spawn(python, ['-c', host], {cwd: root, env: {...process.env, PYTHONDONTWRITEBYTECODE: '1',
             PYTHONPATH: `${root}/src:${root}/examples/bootstrap5`, CV_ROW_ROOT: root, CV_ROW_TEMP: temporary}});
         child.stderr.on('data', data => {hostLog += data;});
-        const ready = await new Promise((resolve, reject) => {
-            let stdout = '';
-            const timer = setTimeout(() => reject(Error(`Host startup timeout: ${hostLog}`)), 60000);
-            child.once('error', error => {clearTimeout(timer); reject(error);});
-            child.once('exit', code => {clearTimeout(timer); reject(Error(`Host exited ${code}: ${hostLog}`));});
-            child.stdout.on('data', data => {
-                stdout += data;
-                for (const line of stdout.split('\n')) if (line.startsWith('{"port":')) {
-                    clearTimeout(timer); resolve(JSON.parse(line)); return;
-                }
-            });
-        });
+        const ready = await waitForReady(child, () => hostLog);
         assert.notEqual(ready.port, 9000);
         Object.assign(record.runtime, ready.runtime);
         record.isolation.port = ready.port;
@@ -302,4 +322,5 @@ async function run() {
     assert(record.passed);
     console.log(`ROW_CARDS_OK ${record.scenarios.reduce((n, s) => n + s.assertions.length, 0)} assertions; ${output}`);
 }
-run().catch(error => {console.error(error); process.exitCode = 1;});
+module.exports = {waitForReady};
+if (require.main === module) run().catch(error => {console.error(error); process.exitCode = 1;});

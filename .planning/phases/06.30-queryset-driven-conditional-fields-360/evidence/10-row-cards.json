@@ -1,6 +1,6 @@
 {
   "scope": "G-06.30-1 only",
-  "started": "2026-11-13T15:19:14.718Z",
+  "started": "2026-11-13T15:27:24.104Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/formset-row-cards.cjs"
@@ -561,7 +561,8 @@
     "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html": "def44591ed9355a58e8460b71bc48d7fbfb54d339a1c714a80464c868a2f4c30",
     "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.html": "c6fd1100ee76519e2195545f6c4216ea2c1fe89fe5c7fa8037bf7fa1f909ab69",
     "src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html": "4510c4331b37528a19f116f4ce7f29b5d7df95aa2186a87dcf6fc022a65ca8ef",
-    "tests/browser/formset-row-cards.cjs": "413a41ae00e67ed79859fe62f54cc95166e153ce3c4885aece96e250f3dd39c7"
+    "tests/browser/formset-row-cards.cjs": "43479f0f254734cd58efa850109542d26101a9357ce7a2bc158df63bb47d184a",
+    "tests/browser/formset-row-cards.test.cjs": "5023467b0826671c47b8686cab3397927436a8748ef88444ade9c24382d891e8"
   },
   "scenarios": [
     {
@@ -923,51 +924,51 @@
   ],
   "screenshots": [
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/questionnaire-1280.png",
-      "sha256": "b30e2a8dac848594ee7d1fd8838dfa598e85a5f82dcbbdd1f730537716ca10a6"
+      "path": "/tmp/cv-row-card-captures-9aq6W6/questionnaire-1280.png",
+      "sha256": "533f98d3d808a9862d97d4dcadf0b9358df77dd7348067e83f04f04aaa786fdf"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/compact-1280.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/compact-1280.png",
       "sha256": "f953c59669e8cb5f4169d9d3f3eb8ebe3b66dfb07f70d62cb9a13fbb7bc238c6"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/classic-compact-1280.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/classic-compact-1280.png",
       "sha256": "3683a6b3c96ddb5aa27ff99bc13c93aac469a81157221b29b2e3a276e4faeb3e"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/compact-classic-1280.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/compact-classic-1280.png",
       "sha256": "04d597886ae22f5c66dcd317590440bb689b5056bb63bafcb3e7e18fdc74199f"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/questionnaire-390.png",
-      "sha256": "25bab7dbbede08c2b9fb73277530b095daa19fe64dd326b5a634de9dc59591e2"
+      "path": "/tmp/cv-row-card-captures-9aq6W6/questionnaire-390.png",
+      "sha256": "dd0f4daaacf54d124caff0b7d2fa72bf69cb15ba9158c0213afea23622025ee0"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/compact-390.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/compact-390.png",
       "sha256": "5fa80281a0a448e75a5778b572c5f2852c2c23425c00ad24fc99983d0c9757fa"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/classic-compact-390.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/classic-compact-390.png",
       "sha256": "887d89adb7e3afe6aab5fd76123b02838c1310590c810927c83c2a4493223a1b"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/compact-classic-390.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/compact-classic-390.png",
       "sha256": "9cb729a3c75c730c1e33325231c827815abcf1a57e605c04f4050f7bbefbb011"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/ordinary-1280.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/ordinary-1280.png",
       "sha256": "f1b5633d8f04f78ef5e17ec5102369036b02afc7fd1abd8d9cf41c7fc7dded75"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/service-compact-1280.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/service-compact-1280.png",
       "sha256": "4ad1c9a84011586a228b81428ca63c60914895fa35ec68a0e22e0cb18aa5c23b"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/ordinary-390.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/ordinary-390.png",
       "sha256": "eb441742bb772260eac7f17b263c88bb04eafc6079d0cee0883fc3423a1028e3"
     },
     {
-      "path": "/tmp/cv-row-card-captures-HDZeHm/service-compact-390.png",
+      "path": "/tmp/cv-row-card-captures-9aq6W6/service-compact-390.png",
       "sha256": "94169c650c76e0f77bdfa8e939da19a6050fad6d2600e2720372abe34a10144b"
     }
   ],
@@ -987,10 +988,10 @@
     "chromium": "149.0.7827.55"
   },
   "isolation": {
-    "temporary": "/tmp/cv-row-cards-OqBLcR",
-    "database": "/tmp/cv-row-cards-OqBLcR/db.sqlite3",
-    "media": "/tmp/cv-row-cards-OqBLcR/media",
-    "port": 46713
+    "temporary": "/tmp/cv-row-cards-NLqIOf",
+    "database": "/tmp/cv-row-cards-NLqIOf/db.sqlite3",
+    "media": "/tmp/cv-row-cards-NLqIOf/media",
+    "port": 39331
   },
   "servedStylesheet": {
     "url": "/static/crud_views/css/formset.css",
@@ -1001,6 +1002,6 @@
     "reaped": true,
     "temporaryRemoved": true
   },
-  "completed": "2026-11-13T15:19:25.192Z",
+  "completed": "2026-11-13T15:27:33.693Z",
   "passed": true
 }

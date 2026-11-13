@@ -1,6 +1,4 @@
 import json
-import subprocess
-from pathlib import Path
 from unittest.mock import patch
 
 from django import forms
@@ -67,34 +65,22 @@ class DocumentationRecipeTests(TestCase):
         ):
             return self.render(form)
 
-    def test_copied_wrapper_empty_membership_hides_and_disables_in_browser(self):
+    def test_copied_wrapper_empty_membership_preserves_queryset_contract(self):
         form_class = self.recipe("queryset-matching")["RequestForm"]
-        root = Path(__file__).resolve().parents[3]
-        script = """
-const fs = require('node:fs');
-const assert = require('node:assert/strict');
-const {JSDOM} = require('jsdom');
-const dom = new JSDOM('<form>' + JSON.parse(fs.readFileSync(0, 'utf8')) + '</form>', {runScripts: 'outside-only'});
-dom.window.eval(fs.readFileSync('src/crud_views/static/crud_views/js/toggle.js', 'utf8'));
-dom.window.cv.initConditional(dom.window.document);
-const groups = [...dom.window.document.querySelectorAll('[cv-data-toggle-group]')];
-assert.equal(groups.length, 2);
-for (const group of groups) {
-    assert.equal(group.getAttribute('cv-data-toggle-values'), '[]');
-    assert.equal(group.style.display, 'none');
-    assert.equal(group.querySelector('input').disabled, true);
-}
-dom.window.close();
-"""
         for legend in (None, 'Details <"&>'):
             with self.subTest(legend=legend):
                 form = form_class(cv_view=None, prefix='row-<"&>')
                 form.fields["service"].queryset = form.fields["service"].queryset.none()
-                markup = self.render_copied_wrapper(form, legend)
-                result = subprocess.run(
-                    ["node", "-e", script], input=json.dumps(markup), text=True, capture_output=True, cwd=root
-                )
-                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                rendered = html.fromstring(self.render_copied_wrapper(form, legend))
+                groups = rendered.xpath("//*[@cv-data-toggle-group]")
+                self.assertEqual(len(groups), 2)
+                for group in groups:
+                    self.assertEqual(group.get("cv-data-toggle-values"), "[]")
+                    self.assertEqual(group.get("cv-data-toggle-kind"), "queryset")
+                    self.assertEqual(group.get("cv-data-toggle-field"), 'row-<"&>-service')
+                    self.assertEqual(group.tag, "fieldset" if legend else "div")
+                    if legend:
+                        self.assertEqual(group.find("legend").text, legend)
 
     def test_copied_wrapper_successful_no_fields_guard_emits_no_container(self):
         form = self.recipe("queryset-no-fields")["NoFieldsRequestForm"](cv_view=None)

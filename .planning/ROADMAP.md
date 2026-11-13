@@ -1816,18 +1816,18 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 06.31-01-PLAN.md — Active group-only manage gate, hidden actions and nested authorization preservation
+- [ ] 06.31-01-PLAN.md — Active group-only manage gate, hidden actions and nested authorization/cost attribution preservation
 - [ ] 06.31-02-PLAN.md — Idempotent group-only command and configuration/diagnostic references
 - [ ] 06.31-04-PLAN.md — Explicit write permissions for reminder, invitation and flash example actions
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.31-06-PLAN.md — Policy/example regressions, toolbar goldens, accessible diagnostics and full prerequisite gates
+- [ ] 06.31-06-PLAN.md — Policy/example regressions, toolbar goldens, accessible diagnostics and full core/example pytest prerequisites
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.31-03-PLAN.md — Seeded developer model/resource and Guardian object reads with denied writes
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.31-05-PLAN.md — Account guidance, example documentation and paired breaking migration contract
+- [ ] 06.31-05-PLAN.md — Account guidance with preserved German chrome, README and paired breaking migration contract
 
 ### Phase 7: Theme-surface stability policy
 

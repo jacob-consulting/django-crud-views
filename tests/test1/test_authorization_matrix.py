@@ -1160,40 +1160,67 @@ def manage_mode(monkeypatch):
     return set_mode
 
 
+@pytest.mark.parametrize("mode", ["yes", "no", "debug_only"])
+@pytest.mark.parametrize("debug", [False, True])
 @pytest.mark.parametrize(
-    ("mode", "debug", "actor", "status"),
+    "actor",
     [
-        ("yes", False, "anonymous", 200),
-        ("yes", False, "nongroup", 200),
-        ("yes", False, "group", 200),
-        ("debug_only", True, "anonymous", 200),
-        ("debug_only", True, "nongroup", 200),
-        ("debug_only", False, "anonymous", 302),
-        ("debug_only", False, "nongroup", 403),
-        ("debug_only", False, "group", 200),
-        ("no", False, "anonymous", 302),
-        ("no", False, "nongroup", 403),
-        ("no", False, "group", 200),
+        "anonymous",
+        "nonmember",
+        "member",
+        "inactive_member",
+        "staff_nonmember",
+        "staff_member",
+        "superuser_nonmember",
+        "superuser_member",
     ],
 )
 @pytest.mark.parametrize("family", ["core", "strict"])
 @pytest.mark.django_db
-def test_manage_gate_modes(mx, client, manage_mode, world, family, mode, debug, actor, status):
-    from django.contrib.auth.models import Group
+def test_manage_gate_modes(mx, client, manage_mode, world, family, mode, debug, actor):
+    from django.contrib.auth.models import AnonymousUser, Group
+
+    from crud_views.lib.view.visibility import cv_resolve_action
 
     manage_mode(mode)
+    member = actor in {"member", "inactive_member", "staff_member", "superuser_member"}
+    allowed = member and actor != "inactive_member" and (mode == "yes" or (mode == "debug_only" and debug))
+    status = 200 if allowed else (302 if actor == "anonymous" else 403)
+    user = AnonymousUser()
     if actor != "anonymous":
-        user = _make_actor("none", name=f"manage_{actor}")
-        if actor == "group":
+        user = _make_actor(
+            "superuser" if actor.startswith("superuser") else "none",
+            active=actor != "inactive_member",
+            name=f"manage_{actor}",
+        )
+        if actor.startswith("staff"):
+            user.is_staff = True
+            user.save()
+        if member:
             user.groups.add(Group.objects.get_or_create(name=MANAGE_GROUP)[0])
-        client.force_login(user)
     before = _snapshot()
-    with override_settings(DEBUG=debug):
-        response = client.get(_u(_fam(mx, family).vs, "manage"))
+    vs = _fam(mx, family).vs
+    with override_settings(DEBUG=debug, AUTHENTICATION_BACKENDS=INACTIVE_BACKENDS):
+        if actor != "anonymous":
+            client.force_login(user, backend=ALLOW_INACTIVE)
+        response = client.get(_u(vs, "manage"))
+        target = vs.get_view_class("manage")
+        assert target.cv_has_access(user) is allowed
+        action = cv_resolve_action(
+            {
+                "cv_access": target.cv_has_access(user),
+                "cv_inaccessible_actions": target.cv_get_inaccessible_actions(),
+                "cv_url": _u(vs, "manage"),
+            }
+        )
+        assert (action is not None) is allowed
 
     assert response.status_code == status
     if status == 302:
         assert response["Location"].startswith(LOGIN)
     if status == 200:
         assert "views" in response.context
+    else:
+        assert b"permission_holders" not in response.content
+        assert b"<table" not in response.content
     _assert_no_write(mx, before)

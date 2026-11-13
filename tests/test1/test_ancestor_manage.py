@@ -2,14 +2,14 @@
 Phase 06.18 plan 09 Task 1 — nested manage admission and policy diagnostics.
 
 Admission (D-45, A20): a nested manage request needs its ancestry (a Read endpoint: the selected ancestors'
-``view``) AND the unchanged local manage gate (public settings, or the manage group). Neither replaces the other:
+``view``) AND the active configured-group gate in an enabled mode. Neither replaces the other:
 
-* public settings (``yes``, ``debug_only`` with DEBUG on) and manage-group membership never bypass a selected
+* enabled settings (``yes``, ``debug_only`` with DEBUG on) and manage-group membership never bypass a selected
   ancestor, and the local gate is not even reached when an ancestor denies;
 * after ancestor success the local group gate still denies a non-member;
 * a reached missing or mismatched ancestor is 404;
 * both cascade modes select their own ancestors, all-none ancestry keeps the local gate and relationships, and
-  top-level manage is unchanged.
+  top-level manage requires the same active membership.
 
 Diagnostics (D-19, D-27, D-34, D-41): the manage page shows the ViewSet's *declared* ancestor policy in its two
 scopes — as an ancestor of nested requests (provider, ancestor fallback) and for requests to this ViewSet (cascade,
@@ -185,10 +185,10 @@ def _grant_chain(kind, user, world, *, grand=True, mid=True):
 
 @pytest.fixture
 def mode(monkeypatch):
-    """Patch the import-time settings singleton; ``group`` = debug_only with DEBUG off (the group gate)."""
+    """Patch the singleton: group/yes enable membership access; debug_on selects debug_only."""
 
     def set_mode(value):
-        monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "yes" if value == "yes" else "debug_only")
+        monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "debug_only" if value == "debug_on" else "yes")
 
     return set_mode
 
@@ -235,16 +235,16 @@ def test_public_manage_settings_do_not_bypass_selected_ancestors(routes, world, 
     chain = routes.chains[(kind, "protected")]
     mode(public)
     stranger = _actor(f"am_pub_stranger_{kind}_{public}")
-    reader = _grant_chain(kind, _actor(f"am_pub_reader_{kind}_{public}"), world)
+    reader = _grant_chain(kind, _actor(f"am_pub_reader_{kind}_{public}", member=True), world)
     with _debug(public):
         assert _client(stranger).get(_leaf_manage(chain, world.penguin.pk, world.book.pk)).status_code == 403
         assert _gate_events(manage_events) == []  # the local gate is never reached on ancestor denial
         anonymous = _client(None).get(_leaf_manage(chain, world.penguin.pk, world.book.pk))
         assert anonymous.status_code == 302 and "/accounts/login/" in anonymous["Location"]
         assert _client(reader).get(_leaf_manage(chain, world.penguin.pk, world.book.pk)).status_code == 200
-        # top-level manage stays public without any grant
-        assert _client(stranger).get(_top_manage(chain)).status_code == 200
-        assert _client(None).get(_top_manage(chain)).status_code == 200
+        # Top-level manage also requires membership, independently of ancestor grants.
+        assert _client(stranger).get(_top_manage(chain)).status_code == 403
+        assert _client(None).get(_top_manage(chain)).status_code == 302
 
 
 @pytest.mark.django_db
@@ -318,12 +318,12 @@ def test_all_none_manage_keeps_local_gate_and_relationships(routes, world, mode,
     assert _client(member).get(_leaf_manage(chain, world.penguin.pk, MISSING)).status_code == 404
     assert _client(member).get(_leaf_manage(chain, world.penguin.pk, world.foreign.pk)).status_code == 404
     mode("yes")
-    assert _client(None).get(url).status_code == 200  # public settings stay public without protected ancestry
+    assert _client(None).get(url).status_code == 302  # all-none ancestry does not waive membership
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("kind", KINDS)
-def test_top_level_manage_gate_is_unchanged(routes, world, mode, manage_events, kind):
+def test_top_level_manage_requires_membership(routes, world, mode, manage_events, kind):
     chain = routes.chains[(kind, "protected")]
     mode("group")
     anonymous = _client(None).get(_top_manage(chain))
@@ -391,7 +391,7 @@ def test_manage_effective_defaults_follow_the_global_settings_while_declared_sta
     strict = AncestorPermissions(nearest="change", higher="change")
     monkeypatch.setattr(crud_views_settings, "ancestor_permission_cascade", False)
     monkeypatch.setattr(crud_views_settings, "ancestor_write_permissions", strict)
-    response = _client(_grant_chain("core", _actor("am_diag_global"), world, grand=False)).get(
+    response = _client(_grant_chain("core", _actor("am_diag_global", member=True), world, grand=False)).get(
         _leaf_manage(chain, world.penguin.pk, world.book.pk)
     )
     assert response.status_code == 200
@@ -408,7 +408,7 @@ def test_manage_effective_defaults_follow_the_global_settings_while_declared_sta
 def test_manage_reports_explicit_request_declarations(routes, world, mode):
     chain = routes.chains[("core", "protected")]
     mode("yes")
-    user = _actor("am_diag_declared")
+    user = _actor("am_diag_declared", member=True)
     for model in (Publisher, Book):
         _auth_add_model_perm(user, model)
     from django.contrib.auth.models import Permission
@@ -440,7 +440,7 @@ def test_manage_reports_explicit_request_declarations(routes, world, mode):
 def test_top_level_manage_reports_request_scope_not_applicable(routes, world, mode, kind):
     chain = routes.chains[(kind, "protected")]
     mode("yes")
-    response = _client(_actor(f"am_diag_top_{kind}")).get(_top_manage(chain))
+    response = _client(_actor(f"am_diag_top_{kind}", member=True)).get(_top_manage(chain))
     assert response.status_code == 200
     provider = "guardian" if kind == "guardian" else "model"
     assert response.context["ancestor_policy"] == {

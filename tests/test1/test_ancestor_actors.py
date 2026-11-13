@@ -489,15 +489,16 @@ def test_protected_public_manage_still_denies_anonymous_and_inactive(routes, wor
 
 
 @pytest.mark.django_db
-def test_all_none_public_manage_stays_public(routes, world, manage_events, monkeypatch):
+def test_all_none_manage_denies_anonymous_before_lookup(routes, world, manage_events, monkeypatch):
     _manage_mode(monkeypatch, "yes")
-    assert _client(None).get(_manage_url(routes, "none", world.penguin.pk)).status_code == 200
-    assert _client(None).get(_manage_url(routes, "none", 987654)).status_code == 404  # relationships still apply
+    assert _client(None).get(_manage_url(routes, "none", world.penguin.pk)).status_code == 302
+    assert _client(None).get(_manage_url(routes, "none", 987654)).status_code == 302
+    assert _querysets(manage_events) == []
 
 
 @pytest.mark.django_db
 def test_all_none_group_manage_denies_anonymous_identically_without_lookup(routes, world, manage_events, monkeypatch):
-    _manage_mode(monkeypatch, "debug_only")  # DEBUG is off under pytest: the group gate applies
+    _manage_mode(monkeypatch, "yes")
     for publisher_pk in (world.penguin.pk, 987654):
         _login_target(_client(None).get(_manage_url(routes, "none", publisher_pk)))
     assert _querysets(manage_events) == []
@@ -505,7 +506,7 @@ def test_all_none_group_manage_denies_anonymous_identically_without_lookup(route
 
 @pytest.mark.django_db
 def test_all_none_group_manage_gate_runs_after_relationships(routes, world, manage_events, monkeypatch):
-    _manage_mode(monkeypatch, "debug_only")
+    _manage_mode(monkeypatch, "yes")
     stranger = _user("aa_mg_stranger")
     assert _client(stranger).get(_manage_url(routes, "none", 987654)).status_code == 404
     assert ("manage_gate", routes.children[("none", "plain")].name) not in manage_events
@@ -517,22 +518,26 @@ def test_all_none_group_manage_gate_runs_after_relationships(routes, world, mana
 
 
 @pytest.mark.django_db
-def test_all_none_group_manage_keeps_admitting_an_inactive_member(routes, world, monkeypatch):
-    # the existing manage gate never checked is_active; all-none ancestry adds no inactivity restriction
-    _manage_mode(monkeypatch, "debug_only")
+@pytest.mark.parametrize("chain", ["none", "protected"])
+@pytest.mark.parametrize("ckind", ["plain", "guardian"])
+def test_manage_denies_inactive_member_before_lookup(routes, world, manage_events, monkeypatch, chain, ckind):
+    # Even a backend that retains inactive sessions cannot admit an inactive developer.
+    _manage_mode(monkeypatch, "yes")
     member = _manage_member("aa_mg_inactive_member")
     member.is_active = False
     member.save()
     with override_settings(AUTHENTICATION_BACKENDS=[ALLOW_INACTIVE]):
         client = _client(None)
         client.force_login(member, backend=ALLOW_INACTIVE)
-        assert client.get(_manage_url(routes, "none", world.penguin.pk)).status_code == 200
+        for pk in (world.penguin.pk, 987654):
+            assert client.get(_manage_url(routes, chain, pk, ckind)).status_code == 403
+    assert _querysets(manage_events) == []
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("ckind", ["plain", "guardian"])
 def test_protected_manage_group_membership_does_not_bypass_ancestry(routes, world, manage_events, monkeypatch, ckind):
-    _manage_mode(monkeypatch, "debug_only")
+    _manage_mode(monkeypatch, "yes")
     member = _manage_member(f"aa_mg_noparent_{ckind}")
     assert _client(member).get(_manage_url(routes, "protected", world.penguin.pk, ckind)).status_code == 403
     assert [event for event in manage_events if event[0] == "manage_gate"] == []

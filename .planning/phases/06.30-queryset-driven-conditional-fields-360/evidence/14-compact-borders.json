@@ -1,6 +1,6 @@
 {
   "scope": "G-06.30-2 focused frames; prior ordinary scenarios retained",
-  "started": "2026-11-13T18:38:33.299Z",
+  "started": "2026-11-13T18:39:41.755Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/formset-row-cards.cjs",
@@ -11249,147 +11249,147 @@
   ],
   "screenshots": [
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/checklist-invalid-corrected-1280.png",
-      "sha256": "9dc0ea6cb676bacc736ba5bf71064c3782d6d21b2ac1d4ae4b50a683a3ac3e89"
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/checklist-invalid-corrected-1280.png",
+      "sha256": "e5ce13e7520569ddac32a4e4a34a8422cd16fac80f024f6203aa3dde1f484c10"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/checklist-reopened-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/checklist-reopened-1280.png",
       "sha256": "dfefd3c7a7e012524e1baea704f60dbe51343d70560a719591aa4cf6606631c0"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/checklist-invalid-corrected-390.png",
-      "sha256": "11e12d1046e665a42eac8d224d01eec4cef5e156c11847a9586e5ae3de163d63"
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/checklist-invalid-corrected-390.png",
+      "sha256": "60218208bb05ad77da2ed3c0dfc9fe6db4f09a34e15478f728901c58c3b13a37"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/checklist-reopened-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/checklist-reopened-390.png",
       "sha256": "ec200312d8a80e023ef1180a7d701574a9e7012009036531863df28191897ddc"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/conference-corrected-1280.png",
-      "sha256": "160a486c47a8cd52bdbe3f66b4fb093510764d3dccc047d894232e48437ff89b"
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/conference-corrected-1280.png",
+      "sha256": "08fce9e3e71bc295fe3fbca11c37f2e0002cbd16d244104a2f3f44e4f13872fe"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/conference-reopened-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/conference-reopened-1280.png",
       "sha256": "a9097bb4ba470cd8c88d4c7c7cf571e33ea228a059af16594e0bef38d8ce2204"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/conference-corrected-390.png",
-      "sha256": "0162105bb5d19d378251133fc5bc07326ebbcf9664017fac011113670cbd68e7"
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/conference-corrected-390.png",
+      "sha256": "c48c76b338920c678b952cfabcf0b885c52b4f7f2cca1eb657f6475046f0b3a8"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/conference-reopened-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/conference-reopened-390.png",
       "sha256": "6162fe86072f20342c2b63044c3baf0d48884de1882a224e283e21ccfccfe1b4"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/questionnaire-1280.png",
-      "sha256": "4d5fd4fffa8bf3f53c18e72f0fd89649b2dac98c6ae207ee4592b019844816a0"
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/questionnaire-1280.png",
+      "sha256": "7f799e1302a47da6352af75379934067007dc618e8d94018dc8383b1b17267d1"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/compact-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/compact-1280.png",
       "sha256": "a4f9a3fd9671efae4881be07d78f197edac3bdbc3cf5715a50a851740d765a39"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/classic-compact-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/classic-compact-1280.png",
       "sha256": "533e5fdc99f24488e5b623c734d3a2e2345d8234d5ad9035a2abdca770f691a9"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/compact-classic-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/compact-classic-1280.png",
       "sha256": "d229e4b7537b46278b71c9268f97c6f0996800738b915453416dafbe2b51b00f"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/plain-parent-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/plain-parent-1280.png",
       "sha256": "75f80b98429e0c42b215825f3e84d9be7885ebed2c861cc1657b98c3e8a5a2bc"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/plain-classic-parent-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/plain-classic-parent-1280.png",
       "sha256": "844ec170418d2b24d70b70979af03b0c7d70941918313ddda1cabe5f4817679d"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/plain-compact-parent-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/plain-compact-parent-1280.png",
       "sha256": "2ddf98a55ccc5afa02ccef2100ef6c6a245c5227c1dc7be4103aac13689f936c"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/questionnaire-390.png",
-      "sha256": "d2635e4b3098a9fc005fae4ed083d4a17a2723900f1eb128b0c55753d4ddcb59"
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/questionnaire-390.png",
+      "sha256": "e604e6fdda39fc6c37a6409d6a45636419f99cf355032c73369c19b45027e04d"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/compact-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/compact-390.png",
       "sha256": "7620b0803c195c8ec92023f5bf9f8ff6974760faa19d0978f8f58bd9b51ae95e"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/classic-compact-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/classic-compact-390.png",
       "sha256": "3ef3223c0724bbfc7308d103f0a14bdd3d267802944fea39bf315dcebc7167e8"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/compact-classic-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/compact-classic-390.png",
       "sha256": "50d9181181e768f304f320174c0ced0ac29c0c82a3f9b76a8b85dd2bb4304114"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/plain-parent-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/plain-parent-390.png",
       "sha256": "4fc8ac61d68478cc73e41cfe8a98772022cacd74023c37a2e6fc400e10dd1fcc"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/plain-classic-parent-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/plain-classic-parent-390.png",
       "sha256": "0e69bb0109026c48791cbf0d49453f0204bbbfa805283826d860ad6e67b7ab1e"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/plain-compact-parent-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/plain-compact-parent-390.png",
       "sha256": "b0111b7c7a75998ad4071da263e7b6062f28d7a312068f68b7805dfb040a6f67"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-parent-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-parent-1280.png",
       "sha256": "4dbeb1ab893d094ea9532978e5895f941e1a74164878f107102ffa0a65757b48"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-child-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-child-1280.png",
       "sha256": "6aa6c1daa444378abbecf888c1518b7698155d76aaa65c2fc86e88f4825a54cc"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-false-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-false-1280.png",
       "sha256": "b97cf4c9afe32a7d00fd7d406357fb1531620698b4929a141586213e9489cb88"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-empty-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-empty-1280.png",
       "sha256": "900d4a77d4991e09b8b6ec8e283d5a9eaba2926c9a81ebd203c4d270bea52c38"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-lazy-empty-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-lazy-empty-1280.png",
       "sha256": "2a13f24df222ccd99e981d37cc255cb1facbe30c4638f825082f61ad856edd3b"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-parent-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-parent-390.png",
       "sha256": "bd1320631a043bc31e68c376a44f0d7a6183779c02a0725302371182a4611ec9"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-child-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-child-390.png",
       "sha256": "2d6789d8ee79eb2947ce240fdce8c3433daf64f39b8d2d615d29c0ac012701be"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-false-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-false-390.png",
       "sha256": "47f4df88615a2d2531640b7e26f6321f414664c477d809c8b62500c222aa39f2"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-empty-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-empty-390.png",
       "sha256": "b4c7ca602427b5f7978bbd2090fb5433160bdaf4869223ada6ae3f8ba9daf070"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/border-lazy-empty-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/border-lazy-empty-390.png",
       "sha256": "29c0a77f4bcec9ad6581623d6eee9ff50ffbffe3f7f6fd170af85d983dc58458"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/ordinary-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/ordinary-1280.png",
       "sha256": "f1b5633d8f04f78ef5e17ec5102369036b02afc7fd1abd8d9cf41c7fc7dded75"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/service-compact-1280.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/service-compact-1280.png",
       "sha256": "6aad51152e3e1b0d9bce2b3ccc828cbf79a429d42523b7a552f90b292c696e65"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/ordinary-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/ordinary-390.png",
       "sha256": "eb441742bb772260eac7f17b263c88bb04eafc6079d0cee0883fc3423a1028e3"
     },
     {
-      "path": "/tmp/cv-row-card-captures-JaFiSz/service-compact-390.png",
+      "path": "/tmp/cv-row-card-captures-8Wf2hZ/service-compact-390.png",
       "sha256": "118c40bb119e5b939167ac3fb6f176549dcf3e32628ef329aad9e26873499ca0"
     }
   ],
@@ -11409,10 +11409,10 @@
     "chromium": "149.0.7827.55"
   },
   "isolation": {
-    "temporary": "/tmp/cv-row-cards-SDcjW8",
-    "database": "/tmp/cv-row-cards-SDcjW8/db.sqlite3",
-    "media": "/tmp/cv-row-cards-SDcjW8/media",
-    "port": 45515
+    "temporary": "/tmp/cv-row-cards-zdQcOQ",
+    "database": "/tmp/cv-row-cards-zdQcOQ/db.sqlite3",
+    "media": "/tmp/cv-row-cards-zdQcOQ/media",
+    "port": 36357
   },
   "servedStylesheet": {
     "url": "/static/crud_views/css/formset.css",
@@ -11423,6 +11423,6 @@
     "reaped": true,
     "temporaryRemoved": true
   },
-  "completed": "2026-11-13T18:39:15.941Z",
+  "completed": "2026-11-13T18:40:23.628Z",
   "passed": true
 }

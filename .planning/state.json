@@ -181,7 +181,7 @@
     {
       "number": "06.32",
       "name": "Workflow transition variant and icon metadata (#362)",
-      "status": "pending"
+      "status": "planned"
     },
     {
       "number": "7",
@@ -190,9 +190,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-plan-review-convergence 06.32 --max-cycles 5",
-    "label": "Review phase 06.32 plan",
-    "reason": "Initial plan ready; external review pending"
+    "command": "$gsd-execute-phase 06.32",
+    "label": "Execute phase 06.32",
+    "reason": "Plan converged in four review cycles; no unresolved review concerns or revision conflicts"
   },
-  "updated_at": "2026-11-13T08:05:54.238Z"
+  "updated_at": "2026-11-13T08:58:46.548Z"
 }

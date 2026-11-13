@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, field_validator
 
+from .queryset import _QuerysetToggle
 from .toggle import ToggleSource, ValueToggle
 
 
@@ -21,9 +22,10 @@ class ConditionalFormSet(BaseModel, arbitrary_types_allowed=True):
     @field_validator("toggle")
     @classmethod
     def reject_value_toggle(cls, toggle):
-        if isinstance(toggle, ValueToggle):
+        if isinstance(toggle, (ValueToggle, _QuerysetToggle)):
+            kind = "QuerysetConditions" if isinstance(toggle, _QuerysetToggle) else "ValueToggle"
             raise ValueError(
-                "ValueToggle supports ConditionalGroup only; whole-formset activation requires "
+                f"{kind} supports ConditionalGroup only; whole-formset activation requires "
                 "a checkbox ModelFieldToggle or UIFieldToggle."
             )
         return toggle

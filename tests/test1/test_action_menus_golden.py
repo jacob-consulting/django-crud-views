@@ -1,6 +1,6 @@
-"""#174: with every inline value None, the action containers render exactly the pre-#174 HTML.
+"""#174: with every inline value None, the action containers preserve their default HTML.
 
-Golden files were captured from main before the container templates changed. Regenerate ONLY when a change to the
+Ordinary-user toolbars omit developer-only manage actions (#361). Regenerate ONLY when a change to the
 default (None) markup is intended: CV_UPDATE_GOLDEN=1 pytest tests/test1/test_action_menus_golden.py
 """
 
@@ -72,6 +72,8 @@ def _fragments(client, url, xpath) -> str:
     doc = lxml_html.fromstring(checked_action_markup(resp))
     nodes = doc.xpath(xpath)
     assert nodes, f"no node for {xpath} at {url}"
+    if xpath == TOOLBAR:
+        assert not doc.cssselect('[cv-context-container] [cv-key="manage"]')
     return "\n".join(_norm(lxml_html.tostring(_canonical(n), encoding="unicode")) for n in nodes)
 
 

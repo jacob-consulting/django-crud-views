@@ -1840,10 +1840,10 @@ Plans:
 - [x] 06.30-13-PLAN.md — Documentation, then one final browser/release refresh and canonical audit handoff
 
 **Wave 13 — Configurable compact-row borders** *(depends on 06.30-13)*
-- [ ] 06.30-14-PLAN.md — Borders default off; Checklist opts in; compact Request Batches stays borderless; visible descriptions and synchronized documentation
+- [x] 06.30-14-PLAN.md — Borders default off; Checklist opts in; compact Request Batches stays borderless; visible descriptions and synchronized documentation
 
 **Wave 14 — Border presentation and final-source acceptance** *(depends on 06.30-14)*
-- [ ] 06.30-15-PLAN.md — Three-state browser proof, one complete source-bound acceptance refresh, then named canonical audit/UAT reconciliation
+- [x] 06.30-15-PLAN.md — Three-state browser proof, one complete source-bound acceptance refresh, then named canonical audit/UAT reconciliation
 
 Plans 14/15 preserve completed plans 01–13 as history. D-15 supersedes only the old compact border default and Checklist choice; UAT test 3/G-06.30-2 and verification truth 39 require explicit owner reconciliation. H1/rest-H2 remain pending; no new approval of the already-authorized border choice is required.
 
@@ -1961,5 +1961,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
-| 06.30. Queryset-driven conditional fields (#360) | 13/15 | In Progress — border implementation and final-source acceptance planned; owner audits and UAT pending | - |
+| 06.30. Queryset-driven conditional fields (#360) | 15/15 | In Progress — automated acceptance passed; final verification and UAT pending | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

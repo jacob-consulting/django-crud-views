@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 14
-status: ready to execute
-stopped_at: Plans 06.30-14/15 reviewed and ready; H1/rest-H2 pending
+current_plan: 15
+status: awaiting verification
+stopped_at: Plans 06.30-14/15 executed; final verification and H1/rest-H2 pending
 last_updated: "2026-11-13T18:23:59.988Z"
 last_activity: 2026-11-13
-last_activity_desc: Plans 14/15 revised from reviews; independent checker passed; implementation pending
+last_activity_desc: Plans 14/15 executed; acceptance and audits pass; final verification pending
 state_head: f3e9aa37679025b46190ebcfe2a4322a6a276274
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 198
-  completed_plans: 196
+  completed_plans: 198
 milestone_name: milestone
 ---
 
@@ -31,13 +31,20 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — READY TO EXECUTE
-Current Plan: 14
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING VERIFICATION
+Current Plan: 15
 Total Plans in Phase: 15
-Status: Ready to execute plans 14/15; existing H1/rest-H2 remain pending
+Status: Awaiting final verification; H1/rest-H2 remain pending
 Last activity: 2026-11-13 — Plans 14/15 revised from reviews; independent checker passed; implementation pending
 
-Next: $gsd-verify-work 06.30 for H1/rest-H2 human judgment. All thirteen plans are executed; canonical verification is human_needed, 43/44 truths verified. G1/G2 automated gaps are closed. Validation31/31, security27closed/0open, scopedUI24/24 and clean code review are current. Phase 7 does not advance.
+Next: independent final verification, then $gsd-verify-work 06.30 for H1/rest-H2. All fifteen plans executed. No phase-complete claim or Phase7 advance.
+
+### Phase 06.30 plans 14/15 execution — 2026-11-13
+
+- CompactLayout.row_border defaults False; Checklist opts in; compact Request Batches remains borderless; descriptions and reference/migration/changelog synchronized. Ordinary and complete-frame suppression semantics preserved.
+- Focused browser391 assertions/36 captures; original upstream87/downstream47. All18 release commands pass: core13,390, four compatibility744 each, examples507+186subtests, docs149, JS447/2, downstream238/83. Independent EVIDENCE_OK; all556 source/36 capture hashes current.
+- Validation37/37; security31closed/0open; D15-scopedUI24/24; deep code review15files/0findings. HumanH1/restH2 still pending. Earlier interrupted matrix attempt143 preserved; fresh detached full retry passed.
+- Original state.json bytes, untracked .gitkeep, developer data, downstream main and pinned adoption preserved. No push/merge/deployment. Final verifier owns canonical truth/UAT supersession and fingerprint.
 
 ### Phase 06.30 border follow-up planning — 2026-11-13
 

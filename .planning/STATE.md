@@ -6,10 +6,10 @@ current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
 stopped_at: Phase 06.30 complete, ready to plan Phase 7
-last_updated: "2026-11-13T19:38:35.923Z"
+last_updated: "2026-11-13T19:43:05.613Z"
 last_activity: 2026-11-13
-last_activity_desc: Phase 06.30 complete, transitioned to Phase 7
-state_head: 7bb3f6be0bc9c9da869dfcc3f0487f61cc7de803
+last_activity_desc: "Phase 06.30 shipped as PR #367"
+state_head: 01fb837779acc903cd655639f03705d7eb005908
 progress:
   total_phases: 37
   completed_phases: 27
@@ -36,7 +36,7 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-13 — Phase 06.30 complete, transitioned to Phase 7
+Last activity: 2026-11-13 -- Phase 06.30 shipped as PR #367
 
 Next: $gsd-plan-phase 7. Phase06.30 complete:15/15 plans,54/54 truths, explicit human UAT passed and historical G1/G2 resolved. Tabler UAT preview remains on9000 with isolated demo data.
 

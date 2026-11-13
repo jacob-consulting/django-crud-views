@@ -4,12 +4,12 @@ milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 9
-status: verifying
+status: awaiting human verification
 stopped_at: Completed 06.30-09-PLAN.md; 9/9 executed, independent phase verification pending
-last_updated: "2026-11-13T11:24:14.113Z"
+last_updated: "2026-11-13T12:14:26.455Z"
 last_activity: 2026-11-13
 last_activity_desc: Phase 06.30 plans executed; independent verification pending
-state_head: fc616da2728428f7c850b4e8b055e1c0fe885167
+state_head: caa41ee9457e052b61f8612a41f9c8134efdb3f8
 progress:
   total_phases: 37
   completed_phases: 27
@@ -34,7 +34,7 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING INDEPENDENT VERIFICATION
 Current Plan: 9
 Total Plans in Phase: 9
-Status: 9/9 plans executed; phase verification pending
+Status: awaiting human verification
 Last activity: 2026-11-13 — Plan 09 acceptance evidence and summary committed
 
 Next: Independently verify Phase 06.30 and complete qualitative UAT; phase completion is not asserted.

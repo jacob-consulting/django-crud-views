@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 06.30-01-PLAN.md
-last_updated: "2026-11-13T09:31:21.883Z"
+stopped_at: Completed 06.30-02-PLAN.md
+last_updated: "2026-11-13T09:44:55.855Z"
 last_activity: 2026-11-13
 last_activity_desc: Phase 06.30 execution started
-state_head: 7fdd9ecf95483d529ca64444649e91300acf4b48
+state_head: d0c30b5acf8f84d096c7b9eabc993aa309fdeb69
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 192
-  completed_plans: 184
+  completed_plans: 185
 milestone_name: milestone
 ---
 
@@ -32,7 +32,7 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 ## Current Position
 
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — EXECUTING
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 9
 Status: Ready to execute
 Last activity: 2026-11-13 — Phase 06.30 execution started
@@ -1001,6 +1001,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.27 P05 | 14min | 3 tasks | 18 files |
 | Phase 06.28 P01 | 11min | 2 tasks | 2 files |
 | Phase 06.30 P01 | 8min | 2 tasks | 8 files |
+| Phase 06.30 P02 | 10min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1278,6 +1279,8 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Plan 01: selected queryset categories use final inherited cleaned_data; inactive clearing reuses the existing persistence pipeline.
 - [Phase 06.30]: Plan 01: all-no-fields sources require a server ConditionalGroup plus an explicit empty ToggleGroup in base/ordinary-inline helpers.
 - [Phase 06.30]: Plan 01: offered projections are scoped to the render context and form/field/source/queryset identity; no cross-form cache.
+- [Phase 06.30]: Plan 02: native model-choice selection hooks remain unchanged; label-only subclasses are admitted with metadata-only key validation.
+- [Phase 06.30]: Plan 02: equivalent immutable sources share per-form clean/render work; conflicting same-controller declarations fail before evaluation.
 
 ### Pending Todos
 
@@ -1357,6 +1360,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T09:31:17.802Z
-Stopped at: Completed 06.30-01-PLAN.md
+Last session: 2026-11-13T09:44:51.256Z
+Stopped at: Completed 06.30-02-PLAN.md
 Resume file: None

@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_conditional_formset.py::test_queryset_formset_rejected[skip] -q -p no:cacheprovider --junitxml=/tmp/063002-red2.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.467\" timestamp=\"2026-11-13T09:37:06.818161+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_conditional_formset\" name=\"test_queryset_formset_rejected[skip]\" time=\"0.329\"><failure message=\"Failed: DID NOT RAISE ValidationError\">on_off = 'skip'\n\n    @pytest.mark.parametrize(\"on_off\", [\"skip\", \"purge\"])\n    def test_queryset_formset_rejected(on_off):\n        source = QuerysetConditions(\"choice\", conditional_key=\"category\", keys=[\"active\"])\n&gt;       with pytest.raises(ValidationError, match=r\"QuerysetConditions.*ConditionalGroup.*checkbox\"):\nE       Failed: DID NOT RAISE ValidationError\n\ntests/test1/test_conditional_formset.py:515: Failed</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_queryset_formset_rejected[skip]",
+  "targetFile": "tests/test1/test_conditional_formset.py",
+  "expected": "Whole-formset queryset membership rejected",
+  "actual": "DID NOT RAISE ValidationError",
+  "reportPath": "/tmp/063002-red2.xml",
+  "runStartedAt": "2026-11-13T09:34:03Z",
+  "reportModifiedAt": "2026-11-13T09:37:07.284030+00:00",
+  "semanticAssessment": "Target constructed unsupported declaration and failed expected rejection assertion."
+}

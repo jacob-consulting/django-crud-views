@@ -450,8 +450,10 @@ from crud_views.lib.conditional import ConditionalGroup, QuerysetConditions, Tog
 from queryset_conditional.standalone import RequestForm
 
 PERMISSIVE = QuerysetConditions(
-    "service", conditional_key="conditional_category",
-    keys=("on_site", "remote", "general"), allow_unmatched=True,
+    "service",
+    conditional_key="conditional_category",
+    keys=("on_site", "remote", "general"),
+    allow_unmatched=True,
 )
 
 

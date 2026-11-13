@@ -10,6 +10,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 PHASE = ROOT / ".planning/phases/06.30-queryset-driven-conditional-fields-360"
@@ -423,13 +424,34 @@ def self_test(sources=None):
             return
         raise AssertionError(f"Accepted {name}")
 
-    valid = {"exit": 0, "kind": "pytest", "output": "2 passed in 0.1s", "tests": 2}
+    sources = sources or sources_from()
+    # Run pytest itself: xdist can omit deselection counts, so output text cannot prove scope.
+    with tempfile.TemporaryDirectory(prefix="cv-pytest-options-") as temporary:
+        fixture = Path(temporary) / "test_selection.py"
+        fixture.write_text("def test_selected(): pass\ndef test_required(): pass\n")
+        with patch.dict(os.environ, {"PYTEST_ADDOPTS": "-k test_selected"}):
+            result = invoke(
+                [sys.executable, "-m", "pytest", "-c", os.devnull, str(fixture), "-q", "-p", "no:cacheprovider"],
+                cwd=temporary,
+                env=environment(sources),
+            )
+        assert result.returncode == 0 and counts(result.stdout, "pytest") == 2, result.stdout + result.stderr
+        assertions += 1
+    valid = {
+        "exit": 0,
+        "kind": "pytest",
+        "output": "2 passed in 0.1s",
+        "tests": 2,
+        "environment": {"PYTEST_ADDOPTS": ""},
+    }
     validate_result(valid)
     for name, changes in [
         ("failed exit", {"exit": 1}),
         ("zero tests", {"tests": 0, "output": "no tests ran"}),
         ("skipped behavior", {"output": "2 passed, 1 skipped"}),
         ("invented count", {"tests": 3}),
+        ("unrecorded pytest policy", {"environment": {}}),
+        ("inherited pytest selection", {"environment": {"PYTEST_ADDOPTS": "-k test_selected"}}),
     ]:
         result = copy.deepcopy(valid)
         result.update(changes)
@@ -511,6 +533,9 @@ def self_test(sources=None):
     wrong = {"source": "/wrong/src/crud_views/__init__.py"}
     rejects(lambda: validate_runtime(wrong, {"series": None, "floor": False}), "wrong import path")
     fixture = {"sources": sources, "docsHashes": {}, "sourceHashes": {"upstream/src/a.py": "old"}}
+    for env in ({}, {"PYTEST_ADDOPTS": "-m selected"}):
+        previous = {**fixture, "commands": [{**valid, "environment": env}]}
+        rejects(lambda: check_resume(previous, fixture), "resume unverified pytest policy")
     rejects(
         lambda: check_resume(fixture, {**fixture, "sourceHashes": {"upstream/src/a.py": "new"}}),
         "resume product change",

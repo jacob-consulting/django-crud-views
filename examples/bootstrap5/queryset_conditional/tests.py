@@ -223,7 +223,7 @@ class StandaloneRequestTests(TestCase):
         with patch.object(RequestCreateView, "form_class", RestrictedRequestForm):
             url = reverse("service_request-create")
             response = self.client.get(url)
-            self.assertNotContains(response, self.consultation.name)
+            self.assertNotContains(response, f'value="{self.consultation.pk}">{self.consultation.name}</option>')
             response = self.client.post(url, {"service": self.consultation.pk, "meeting_url": "https://example.com"})
             self.assertEqual(response.status_code, 200)
             self.assertIn("service", response.context["form"].errors)

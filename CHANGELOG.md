@@ -10,9 +10,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   model-name legend by default, including conditional and AJAX-added rows. `FormSet.row_legend`
   accepts custom text or a lazy translation; `False` (or `""`) removes the entire frame and
   background and padding at that nesting level in both ordinary and compact layouts. Each
-  level opts out independently; section titles/frames remain. Compact defaults and non-empty
-  custom labels retain shared headings and frames without individual legends. Checklist items,
-  Questionnaire Choices and conference Speakers/Referenten demonstrate leaf suppression.
+  level opts out independently; section titles/frames remain. Compact rows now default to no border,
+  retaining padding, background and radius. Keyword-only `CompactLayout.row_border` accepts actual
+  booleans and defaults to `False`; `True` restores the previous border unless complete-frame
+  suppression wins. No compact individual legends are added. Checklist explicitly enables borders;
+  compact Request Batches use the default, with notes on all list/create/update pages. Questionnaire
+  Choices and conference Speakers/Referenten still demonstrate complete-frame suppression.
   Projects expecting unframed rows or overriding the shared row marker/template/CSS should follow
   the [migration guide](docs/migrating-1.0.md#ordinary-formset-row-cards).
 

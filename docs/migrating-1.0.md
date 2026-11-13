@@ -9,8 +9,10 @@ touch.
 
 Ordinary formset rows now have a card-style fieldset and a singular model-name legend by
 default, whether or not the form uses conditional fields. Previously these rows were
-unframed. Compact formsets retain their existing frames by default, but now share the same
-explicit per-level suppression option.
+unframed. Compact rows are borderless by default: `CompactLayout.row_border` is a keyword-only
+strict boolean defaulting to `False`. Set `row_border=True` on each layout to restore the previous
+border unless complete-frame suppression is requested. Border-off retains the existing padding,
+margin, background and radius; section frames are unchanged. This amends the unreleased compact feature.
 
 To retain plain rows, add `row_legend=False` to **each affected `FormSet` declaration**, including
 each child level you want to suppress. For example, with your existing inline formset classes:
@@ -33,12 +35,14 @@ in ordinary and compact layouts, including nested compact padding. They preserve
 validation, controls and saving. A parent's choice does not propagate to its children, and
 leaf rows require an explicit declaration. `title` and the section frame remain. Ordinary
 custom strings retain their capitalization; lazy translations resolve when rendered, with
-empty translations suppressing the frame. Compact `None` and non-empty custom/lazy strings
-keep the existing frames and shared headings without adding individual legends.
+empty translations suppressing the frame. Compact `None` and non-empty custom/lazy strings leave
+the `row_border` choice intact, preserving shared headings without adding individual legends.
+Explicit suppression wins over `row_border=True`. Border choices are independent at each level.
 
-The examples explicitly suppress compact Checklist items, ordinary/compact Questionnaire
-Choices and ordinary conference Speakers (localized as Referenten). Questions and Sessions
-keep their frames. The conference's `on_off="purge"` policy is unchanged. See the
+Checklist explicitly sets `row_border=True`; compact Request Batches omit it for borderless rows.
+Their list/create/update pages explain these choices. Ordinary/compact Questionnaire Choices and
+ordinary conference Speakers (localized as Referenten) still suppress the complete frame. Ordinary
+Questions and Sessions keep their cards. The conference's `on_off="purge"` policy is unchanged. See the
 [Checklist and Sessions/Speakers recipes](reference/formsets.md#row-cards-and-legends).
 
 If you override `crud_views/formsets/formset.html`, review the optional
@@ -47,8 +51,13 @@ If you override `crud_views/formsets/formset.html`, review the optional
 child formsets inside the owning row, and apply the same condition to opening and closing
 fieldsets. CSS selectors that assumed `.cv-formset-form` was always an immediate child of the
 row may need to account for the new fieldset. Do not apply ordinary card rules to compact
-rows. Compact overrides must retain `cv-formset-row-plain` on the functional row wrapper
-for explicit `False`/empty suppression. Their shared CSS must clear border, radius,
+rows. Compact overrides must first emit `cv-formset-row-plain` on the functional row wrapper
+when `row_legend is False` or `row_legend == ''`, including lazy empty text. Only otherwise emit
+`cv-formset-row-bordered` for `compact_layout.row_border=True`; omitted/False adds no marker.
+Do not replace the exact suppression comparison with a truthiness test. Copied/theme CSS must move
+any unconditional border from `.cv-formset-row-compact` to
+`.cv-formset-row-compact.cv-formset-row-bordered`, with base border `0` and other properties unchanged.
+The higher-priority plain rules must still clear border, radius,
 background and all padding, including nested `.cv-formset-compact-child` padding, while
 preserving headings, grid alignment, labels, focus indicators and controls. Check initial,
 invalid and AJAX fragment rendering in your theme.

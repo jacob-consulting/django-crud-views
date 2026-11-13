@@ -1,20 +1,21 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.30"
-current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 15
-status: awaiting human verification
-stopped_at: Completed 06.30-15; verified 53/54, H1/rest-H2 pending
-last_updated: "2026-11-13T19:13:03.442861+00:00"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.30 complete, ready to plan Phase 7
+last_updated: "2026-11-13T19:38:35.923Z"
 last_activity: 2026-11-13
-last_activity_desc: All 15 plans executed; current verification 53/54; H1/rest-H2 pending
-state_head: f3e9aa37679025b46190ebcfe2a4322a6a276274
+last_activity_desc: Phase 06.30 complete, transitioned to Phase 7
+state_head: 7bb3f6be0bc9c9da869dfcc3f0487f61cc7de803
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 198
   completed_plans: 198
+  percent: 73
 milestone_name: milestone
 ---
 
@@ -24,20 +25,27 @@ Total Phases: 37
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-12)
+See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.30 — Queryset-driven conditional fields (#360)
+**Current focus:** Phase7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN VERIFICATION
-Current Plan: 15
-Total Plans in Phase: 15
-Status: Awaiting human verification; H1/rest-H2 remain pending
-Last activity: 2026-11-13 — All15 plans executed; current verification53/54, automated checks pass; H1/rest-H2 pending
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: 0
+Status: Ready to plan
+Last activity: 2026-11-13 — Phase 06.30 complete, transitioned to Phase 7
 
-Next: $gsd-verify-work 06.30 for H1/rest-H2. All15 plans executed; canonical verification human_needed,53/54 truths,0 automated gaps. Validation37/37,security31closed/0open,UI24/24,deepreview0findings. Phase7 does not advance.
+Next: $gsd-plan-phase 7. Phase06.30 complete:15/15 plans,54/54 truths, explicit human UAT passed and historical G1/G2 resolved. Tabler UAT preview remains on9000 with isolated demo data.
+
+### Phase 06.30 human UAT complete — 2026-11-13
+
+- Explicit user passes: example clarity/source navigation, ordinary batches, compact batches, standalone Service Requests, Speakers and pinned downstream Orders. G2 remains resolved/superseded by D15; no historical observation erased.
+- Canonical verification passed54/54 with fresh135-file fingerprint; combined UAT/verification predicate passes. Phase completed via GSD; nextPhase7 ready to plan.
+- Completion emitted non-blocking legacy-summary path-parser warnings (command strings/relative evidence paths) and intentional prose-requirement mapping warning; no formal IDs invented and verified evidence remains current.
+- Original user-modified state.json preserved byte-for-byte. Tabler preview9000 uses disposable DB; first delivered-order403 was corrected by linking an editable confirmed order, without permission changes.
 
 ### Phase 06.30 plans 14/15 execution — 2026-11-13
 
@@ -913,7 +921,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 183
+- Total plans completed: 194
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -955,6 +963,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.27 | 5 | - | - |
 | 06.28 | 1 | - | - |
 | 06.29 | 2 | - | - |
+| 06.30 | 15 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1489,5 +1498,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-13T17:35:16.365Z
-Stopped at: Completed 06.30-15; verified53/54, H1/rest-H2 pending
+Stopped at: Phase 06.30 complete, ready to plan Phase 7
 Resume file: None

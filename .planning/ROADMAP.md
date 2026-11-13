@@ -55,7 +55,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.28: Tooltip recipe lifecycle safeguards (#355)** (completed 2026-11-12)
 
 - [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
-- [ ] **Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)** - approved handover; base forms and inline rows, strict category matching, tabler-test adoption, and a focused example app with linked documentation.
+- [x] **Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)** - approved handover; base forms and inline rows, strict category matching, tabler-test adoption, and a focused example app with linked documentation. (completed 2026-11-13)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1799,7 +1799,7 @@ Plans:
 **Requirements:** Deliver upstream support, the verified tabler-test roastery upgrade, and one separate example app with its own models, focused standalone/inline source modules, ordinary/compact variants, and reciprocal documentation links. Strict matching is the default; check offered options on rendering and the validated selection on POST, permit explicit no-fields categories and an opt-in unmatched policy, and do not scan unused categories. Preserve browser values until save; hide inactive ordinary groups and keep compact cells visible but disabled. Preserve existing conditional behavior and bounded query costs.
 **Depends on:** Phase 06.29 (roadmap sequence); builds on Phase 06.27's conditional groups and Phases 06.24–06.26's compact formset contracts.
 **Ordering:** Complete before Phase 7 freezes the public theme surface; include the settled queryset/inline conditional template and JavaScript contracts in that inventory.
-**Plans:** 15 plans; 13 executed. Plan 14 adds configurable compact-row borders, example descriptions and documentation; plan 15 proves browser presentation and refreshes final-source acceptance. Canonical owner audits and remaining UAT are required before closure.
+**Plans:** 15/15 plans complete; 13 executed. Plan 14 adds configurable compact-row borders, example descriptions and documentation; plan 15 proves browser presentation and refreshes final-source acceptance. Canonical owner audits and remaining UAT are required before closure.
 
 Plans:
 **Wave 1**

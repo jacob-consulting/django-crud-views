@@ -98,6 +98,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.29** Themeable Column1–Column12 via existing registry, render-local complete classes, preserved caller/template ownership and executed recipes — Phase 06.29; canonical 10/10, clean re-review after lazy-extra correction.
 
+- ✓ Queryset-driven conditional fields with upstream/downstream examples, strict matching, documented behavior and source-bound acceptance — Phase06.30 (#360).
+- ✓ Compact row borders are local opt-in via `CompactLayout.row_border=False`; Checklist demonstrates borders, compact Request Batches the borderless default; complete-frame suppression takes precedence — Phase06.30, D15.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -225,4 +228,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-12 after integrating Phases 06.27, 06.28 and 06.29*
+*Last updated: 2026-11-13 after completing Phase06.30 and human UAT*

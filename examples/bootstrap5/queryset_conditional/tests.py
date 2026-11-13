@@ -42,6 +42,80 @@ class RestrictedRequestForm(RequestForm):
         self.fields["service"].queryset = self.fields["service"].queryset.filter(category__code="on_site")
 
 
+class DocumentationRecipeTests(TestCase):
+    def render(self, form):
+        from crispy_forms.helper import FormHelper
+        from crispy_forms.layout import Layout
+        from crispy_forms.utils import render_crispy_form
+
+        # Render the documented layout explicitly without view-owned Save/Cancel actions.
+        helper = FormHelper()
+        helper.form_tag = False
+        helper.layout = Layout(*form.get_layout_fields())
+        return render_crispy_form(form, helper=helper)
+
+    def recipe(self, name):
+        from test_docs_sync import conditional_recipe
+
+        return conditional_recipe(name)
+
+    def test_published_strict_permissive_and_category_change_recipe(self):
+        recipe = self.recipe("queryset-matching")
+        strict = recipe["RequestForm"]
+        permissive = recipe["PermissiveRequestForm"]
+        category = ServiceCategory.objects.create(code="general")
+        service = Service.objects.create(name="Document review", category=category)
+        form = strict(data={"service": service.pk, "visit_address": "discard", "meeting_url": "invalid"}, cv_view=None)
+        self.assertTrue(form.is_valid(), form.errors)
+        saved = form.save()
+        self.assertEqual((saved.visit_address, saved.meeting_url), ("", ""))
+        self.assertIn("Document review", self.render(strict(cv_view=None)))
+        category.code = "new-category"
+        category.save()
+        # No preceding GET is needed, and a category changed after GET is equally rejected.
+        rejected = strict(data={"service": service.pk}, cv_view=None)
+        self.assertFalse(rejected.is_valid())
+        self.assertIn("service", rejected.errors)
+        self.assertIn("new-category", self.render(rejected))
+        with self.assertRaisesMessage(ImproperlyConfigured, "new-category"):
+            self.render(strict(cv_view=None))
+        allowed = permissive(
+            data={"service": service.pk, "visit_address": "discard", "meeting_url": "invalid"}, cv_view=None
+        )
+        self.assertTrue(allowed.is_valid(), allowed.errors)
+        self.assertEqual((allowed.save().visit_address, allowed.instance.meeting_url), ("", ""))
+        self.assertIn("Document review", self.render(permissive(cv_view=None)))
+
+    def test_published_all_no_fields_guard_and_empty_queryset(self):
+        form_class = self.recipe("queryset-no-fields")["NoFieldsRequestForm"]
+        category = ServiceCategory.objects.create(code="general")
+        service = Service.objects.create(name="Document review", category=category)
+        self.assertIn("Document review", self.render(form_class(cv_view=None)))
+        valid = form_class(data={"service": service.pk}, cv_view=None)
+        self.assertTrue(valid.is_valid(), valid.errors)
+        category.code = "unknown"
+        category.save()
+        with self.assertRaisesMessage(ImproperlyConfigured, "unknown"):
+            self.render(form_class(cv_view=None))
+        invalid = form_class(data={"service": service.pk}, cv_view=None)
+        self.assertFalse(invalid.is_valid())
+        self.assertIn("service", invalid.errors)
+        empty = form_class(cv_view=None)
+        empty.fields["service"].queryset = empty.fields["service"].queryset.none()
+        options = html.fromstring(self.render(empty)).xpath("//select[@name='service']/option/@value")
+        self.assertEqual(options, [""])
+
+    def test_published_recipe_zero_matching_options_and_restricted_queryset(self):
+        recipe = self.recipe("queryset-matching")
+        category = ServiceCategory.objects.create(code="general")
+        service = Service.objects.create(name="Document review", category=category)
+        markup = self.render(recipe["RequestForm"](cv_view=None))
+        self.assertEqual(markup.count('cv-data-toggle-values="[]"'), 2)
+        restricted = recipe["RestrictedRequestForm"](data={"service": service.pk}, cv_view=None)
+        self.assertFalse(restricted.is_valid())
+        self.assertIn("service", restricted.errors)
+
+
 class FeatureSeedTests(TestCase):
     def test_feature_is_registered_and_seed_is_idempotent(self):
         from importlib import import_module

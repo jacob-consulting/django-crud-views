@@ -35,6 +35,7 @@ Import everything from `crud_views.lib.conditional`.
 | `ModelFieldToggle(name)` | Toggle backed by a real model/form field |
 | `UIFieldToggle(name)` | Toggle backed by a transient checkbox injected by the mixin |
 | `ValueToggle(name, values=[...])` | Match explicit values of an existing native single-choice field; no injected field |
+| `QuerysetConditions(controller, *, conditional_key, keys, allow_unmatched=False)` | Declare categories for a native model-choice controller; `.when(*keys)` supplies a group toggle |
 | `ConditionalGroup(toggle, fields, required, empty_values)` | Declares one toggled group of fields |
 | `ConditionalGroupFormMixin` | Server-side authority mixin (mix in before the form base) |
 | `ConditionalGroupModelForm` | `CrispyModelForm` with `ConditionalGroupFormMixin` pre-applied |
@@ -317,11 +318,11 @@ Char/Text/Email/URL/Slug; standard integer models include Integer/Small/Big and 
 sentinel must not collide with a declared choice. Native empty choice placeholders (`""`/`None`) are admitted but
 inactive and excluded from integer coercion checks; explicitly configured **empty match values** are rejected.
 
-Callable choices, custom subclasses/widgets, arbitrary or token-changing coercion, relation-backed selectors and
-multiselect controllers are unsupported. Each group has one controller and explicit membership only: no arbitrary
+For `ValueToggle`, callable choices, custom subclasses/widgets, arbitrary or token-changing coercion,
+relation-backed selectors and multiselect controllers are unsupported. Each group has one controller and explicit membership only: no arbitrary
 predicates, multiple-controller expressions or dependency graph. Whole-formset `ValueToggle` activation is explicitly
-refused by `ConditionalFormSet`; use its existing checkbox descriptors. Product-dependent per-row conditions
-(finding 20), expanded compact-radio admission and downstream theme adoption are outside this contract.
+refused by `ConditionalFormSet`; use its existing checkbox descriptors. Relation-backed per-row conditions use the
+separate [QuerysetConditions API](#queryset-driven-conditional-fields); this does not broaden `ValueToggle` or compact-radio admission.
 
 ### Choice clearing
 
@@ -346,6 +347,222 @@ save persists it. Invalid controller errors are retained; raw submitted data can
 or inherited cleaning rejected/removed the controller. Server-disabled controls use trusted initial values.
 Missing controllers retain E311, unsupported automatic clearing retains E312, and value declaration conflicts or
 unsupported controller shapes produce E313 where statically inspectable and `ImproperlyConfigured` at runtime.
+
+## Queryset-driven conditional fields
+
+Use `QuerysetConditions` when a native `ModelChoiceField` selects database objects whose category controls fields.
+There are three distinct values: the **selection key** (normally the object's PK), the **label** (Django's normal
+`label_from_instance`, normally `str(obj)`), and the **conditional key** (a direct attribute or queryset annotation).
+Two services can have different PKs and labels but share `on_site`, so both require the same visit address.
+Labels are never category identifiers; do not replace native choices with a hard-coded PK list.
+
+!!! example "Try it live"
+    Open [Service requests](https://django-crud-views-demo.onrender.com/queryset-conditional/service-request/),
+    [ordinary batches](https://django-crud-views-demo.onrender.com/queryset-conditional/service-batch/), or
+    [compact batches](https://django-crud-views-demo.onrender.com/queryset-conditional/service-batch-compact/).
+    Log in as `alice` / `alice`. The page's source panels show its shared models/conditions and relevant editor module.
+    These destinations become available when this release is deployed; local route/link tests do not verify deployment.
+
+The [example source](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/queryset_conditional)
+keeps standalone and inline editors separate. Its shared declaration is:
+
+<!-- cv-sync: queryset_conditional/conditions.py -->
+```python
+from crud_views.lib.conditional import QuerysetConditions
+
+SERVICE_CONDITIONS = QuerysetConditions(
+    "service",
+    conditional_key="conditional_category",
+    keys=("on_site", "remote", "general"),
+)
+VISIT_CONDITION = SERVICE_CONDITIONS.when("on_site")
+REMOTE_CONDITION = SERVICE_CONDITIONS.when("remote")
+# General is declared above and deliberately belongs to neither field group.
+```
+
+`keys` registers all accepted categories, including known categories that activate **no fields**. `.when(*keys)`
+creates membership for one group; `.when("on_site", "remote")` can share a group across categories. A shared group
+stays active while any of its categories matches. Each controlled field has one owning group; conflicting
+ownership, controller-as-controlled-field cycles and incompatible declarations for one controller are rejected.
+
+The standalone form projects the related category as an annotation, avoiding a per-option category lookup:
+
+<!-- cv-sync: queryset_conditional/standalone.py -->
+```python
+class RequestForm(ConditionalGroupModelForm):
+    service = forms.ModelChoiceField(
+        queryset=Service.objects.annotate(conditional_category=F("category__code")), label=_("Service")
+    )
+    cv_conditional_groups = [
+        ConditionalGroup(toggle=VISIT_CONDITION, fields=["visit_address"], required=["visit_address"]),
+        ConditionalGroup(toggle=REMOTE_CONDITION, fields=["meeting_url"], required=["meeting_url"]),
+    ]
+
+    class Meta:
+        model = ServiceRequest
+        fields = ["service", "visit_address", "meeting_url"]
+
+    def get_layout_fields(self):
+        return [
+            Row(Column8("service")),
+            ToggleGroup(VISIT_CONDITION, Row(Column8("visit_address")), legend=_("On-site visit")),
+            ToggleGroup(REMOTE_CONDITION, Row(Column8("meeting_url")), legend=_("Remote meeting")),
+        ]
+```
+
+Imports and views live in the linked source. If the model itself stores a scalar `category_code`, use
+`conditional_key="category_code"` with its normal queryset instead. Do not pass `category__code` as the
+`conditional_key`: related traversal belongs in `annotate(conditional_category=F("category__code"))`.
+A property can supply the direct attribute, but any queries it performs are application-owned.
+
+### Strict coverage and permissive matching
+
+Strict matching is the default. Rendering checks **offered objects** from the controller's current queryset;
+an unmatched category raises `QuerysetConditionCoverageError` (an `ImproperlyConfigured` subclass), identifying
+the controller and category. It does not scan the category table or reject configured categories with no offered
+objects. An unused category is harmless until an object with that category becomes selectable.
+
+POST checks the **validated selected object**, even without an earlier GET. A category changed between GET and
+POST is re-evaluated. The field's current restricted queryset, native invalid-choice/required validation and final
+inherited `clean()` result remain authoritative; a submitted category or forged/stale PK cannot activate fields.
+Replace `self.fields["service"].queryset` per request after `super().__init__`, preserving the annotation. Never
+broaden that queryset to make conditional validation pass.
+
+Unmatched POST selections become controller form errors and prevent saving. Bound redisplay shows escaped coverage
+diagnostics (`cv-queryset-condition-error`) instead of raising a second coverage exception over the original errors;
+other configuration errors still surface. Rendering metadata is never server authority.
+
+This complete recipe imports the running example's strict form and adds explicit permissive and restricted variants.
+The documentation tests execute this fence against actual model objects for strict GET, no-GET POST, category
+changes, general/no-fields, restricted choices, zero matching options and permissive clearing:
+
+<!-- cv-recipe: queryset-matching -->
+```python
+from crud_views.lib.conditional import ConditionalGroup, QuerysetConditions, ToggleGroup
+from queryset_conditional.standalone import RequestForm
+
+PERMISSIVE = QuerysetConditions(
+    "service", conditional_key="conditional_category",
+    keys=("on_site", "remote", "general"), allow_unmatched=True,
+)
+
+
+class PermissiveRequestForm(RequestForm):
+    cv_conditional_groups = [
+        ConditionalGroup(toggle=PERMISSIVE.when("on_site"), fields=["visit_address"]),
+        ConditionalGroup(toggle=PERMISSIVE.when("remote"), fields=["meeting_url"]),
+    ]
+
+    def get_layout_fields(self):
+        return [
+            "service",
+            ToggleGroup(PERMISSIVE.when("on_site"), "visit_address"),
+            ToggleGroup(PERMISSIVE.when("remote"), "meeting_url"),
+        ]
+
+
+class RestrictedRequestForm(RequestForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["service"].queryset = self.fields["service"].queryset.filter(category__code="on_site")
+```
+
+With `allow_unmatched=True`, unknown categories activate no groups for that controller, and inactive editable
+fields clear normally; other controllers remain independent. Prefer declaring known no-fields categories explicitly.
+A blank placeholder means **no selection** and activates nothing, subject to the field's required validation.
+An actual selected object with a missing, `None` or empty category is unmatched, not a placeholder.
+
+`required=[]` keeps a group's fields optional **while active**; it never preserves inactive values. Use the existing
+[clearing matrix](#clearing-matrix) and [choice clearing](#choice-clearing), including explicit `empty_values` when
+inference is unsupported. Trusted server-disabled controlled fields take precedence over explicit empty values and
+inference; disabled controllers use trusted initial values. Model/database constraints still apply.
+
+### All-no-fields render guard
+
+If every known category activates nothing, register an empty server group **and** render an empty `ToggleGroup`.
+The server group validates selected objects; the layout guard checks offered objects on GET. Keep the native
+controller outside the empty wrapper so it remains visible and usable. This complete base-form recipe accepts
+`general` and still rejects an offered unknown category:
+
+<!-- cv-recipe: queryset-no-fields -->
+```python
+from django import forms
+from django.db.models import F
+from crud_views.lib.conditional import ConditionalGroup, ConditionalGroupModelForm, QuerysetConditions, ToggleGroup
+from queryset_conditional.models import Service, ServiceRequest
+
+NO_FIELDS = QuerysetConditions("service", conditional_key="conditional_category", keys=("general",))
+
+
+class NoFieldsRequestForm(ConditionalGroupModelForm):
+    service = forms.ModelChoiceField(queryset=Service.objects.annotate(conditional_category=F("category__code")))
+    cv_conditional_groups = [ConditionalGroup(toggle=NO_FIELDS.when(), fields=[], required=[])]
+
+    class Meta:
+        model = ServiceRequest
+        fields = ["service"]
+
+    def get_layout_fields(self):
+        return ["service", ToggleGroup(NO_FIELDS.when())]
+```
+
+For ordinary inlines put that same `["service", ToggleGroup(NO_FIELDS.when())]` layout in
+`InlineFormSet.get_helper_layout_fields()` (alongside the existing row controls); that helper owns ordinary rows.
+Compact helpers insert the guard automatically. This bounded guard keeps coverage in rendering without evaluating
+options during form/schema construction. Omitting it in a custom base/ordinary helper skips offered render coverage,
+although selected-object POST validation remains intact: that custom layout is an incomplete integration.
+
+### Queryset controller bounds
+
+- Native `ModelChoiceField` with an exact stock single `Select`, native templates, choice iterator and selection/
+  cleaning hooks. A label-only subclass is supported; selection-changing hooks and manually replaced choices are not.
+- Selection keys: concrete unique scalar text, integer or UUID model fields. The normal PK works, as does
+  `to_field_name="code"` when `code` is such a unique field. Nonunique, related, composite and unsupported key types
+  are refused; do not add coercion adapters.
+- Conditional keys: nonempty strings, integers (including zero), or UUIDs. Matching uses exact string tokens;
+  case/whitespace stay significant. `1` and `"1"` normalize to the same token and cannot both be declared.
+  Booleans, `None`, empty strings and undeclared `.when()` members are rejected. `conditional_key` is one direct
+  identifier, not a related lookup or expression.
+- No AJAX/autocomplete, dynamic radio, multiselect, arbitrary widget adapters, expression/predicate engine or
+  queryset-driven whole-`ConditionalFormSet` activation. Existing static/checkbox and whole-formset APIs keep their scope.
+
+### Query costs
+
+Schema inspection, system checks and compact helper construction do not evaluate choices. During rendering there is
+one additional offered-object projection per form/controller beyond native option rendering, shared by that controller's
+groups and guard within that render. There is no cross-form or cross-request cache: **N rows may add N projections**.
+Validation loads the selected object through normal field cleaning and reads its conditional attribute; it does not
+perform a second offered-category scan. Properties and labels that access related data can add application queries.
+
+The following SQL counts were measured after row construction for direct/annotated categories and labels using
+already-loaded columns, both for ordinary controller/group rendering and compact rows (including all-no-fields guards):
+
+| Row instances | Options per row | Native baseline SQL | Conditional total SQL | Added projection SQL |
+|---|---|---|---|---|
+| 1 | 2 | 1 | 2 | 1 |
+| 20 | 2 | 20 | 40 | 20 |
+| 1 | 20 | 1 | 2 | 1 |
+| 20 | 20 | 20 | 40 | 20 |
+
+These are controlled fixture measurements, not universal page totals. Authentication, row/parent loading, polymorphic
+subtype loading and application label/property work are separate costs. Each projection materializes the offered
+objects, so option count still affects work and memory even when SQL count stays flat. No separate category-source
+scan or schema query is introduced. The executable budgets live in
+`tests/test1/test_conditional_queryset_contract.py` and `tests/test1/test_conditional_queryset_compact.py`.
+
+### Ordinary and compact rows
+
+Base forms and ordinary inline `ToggleGroup` wrappers hide inactive groups. Ordinary inlines need these wrappers in
+their **formset helper**, not only on the row form. [Compact rows](formsets.md#queryset-driven-row-fields) keep cells
+visible and aligned and disable inactive controls; there is no presentation setting. Both use the same server groups.
+Exact prefixed controller names isolate each row on initial/edit/invalid rendering, changes, reset, modal loading and
+`cv:formset:row-added`. Management, identity, deletion and independently disabled controls retain their own semantics.
+
+Switching away and back preserves unsaved browser values. A **successful save** clears inactive editable values,
+including existing rows needing cleanup despite otherwise unchanged data. Reopening cannot restore cleared history.
+No-JavaScript and tampered POSTs use the same server clearing. Empty extra/deleted rows follow Django formset semantics;
+an invalid retained row prevents the normal atomic parent/sibling save. See the
+[metadata/lifecycle reference](javascript.md#conditional-and-formset-initialization).
 
 ## Kind 2 — Conditional formset
 

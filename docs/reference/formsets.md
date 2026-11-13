@@ -474,13 +474,39 @@ the existing row-added event contract. Use the existing `formset:*` button class
 registry is introduced. The heading include uses escaped form labels and declared spans. Private projection
 and helper functions, and the runtime render tree, remain implementation details.
 
-Arbitrary crispy layout inference/objects, custom HTML cells, multiple row layouts, per-row conditional
-columns, heterogeneous/polymorphic schemas, collapsing children, sticky headings, computed/numbered summaries,
+Arbitrary crispy layout inference/objects, custom HTML cells, multiple row layouts,
+heterogeneous/polymorphic schemas, collapsing children, sticky headings, computed/numbered summaries,
 configurable mobile variants, separate bottom Add buttons and new empty-state controls are excluded.
 There is no promise to implement these later. jQuery removal is separate work. Existing legend rendering uses
 the independent `formset:legend` [class-table key](buttons.md#legend-classes), defaulting to `""`, for classic,
 compact and full nested formsets. Row-only fragments omit their outer legend while full children retain theirs.
 Downstream theme adoption is separate follow-up work.
+
+### Queryset-driven row fields
+
+Independent row fields can use [QuerysetConditions](conditional.md#queryset-driven-conditional-fields) with a native
+single-select `ModelChoiceField`. Declare the same `cv_conditional_groups` on the row form for both layouts.
+Ordinary rows render `ToggleGroup` wrappers in `InlineFormSet.get_helper_layout_fields()` and hide inactive groups.
+Compact rows keep the declared cells visible and aligned while disabling inactive controls, preserving their accessible
+labels/errors and independently disabled state. The compact renderer adds conditional metadata and all-no-fields guards
+automatically; no custom crispy wrapper or new presentation option is required.
+
+!!! example "Try it live"
+    Compare [Service requests](https://django-crud-views-demo.onrender.com/queryset-conditional/service-request/),
+    [ordinary batches](https://django-crud-views-demo.onrender.com/queryset-conditional/service-batch/), and
+    [compact batches](https://django-crud-views-demo.onrender.com/queryset-conditional/service-batch-compact/).
+    Log in as `alice` / `alice`; these destinations require deployment of this release.
+    The [inline source](https://github.com/jacob-consulting/django-crud-views/blob/main/examples/bootstrap5/queryset_conditional/inlines.py)
+    shows both declarations using the same row form.
+
+Each row uses its exact prefixed controller name, including added rows. Switching away/back preserves browser values;
+successful save clears inactive editable fields, including existing rows needing cleanup. Empty extra/deleted rows and
+atomic parent/sibling validation retain the existing contract. Read the [complete recipe and render guard](conditional.md#all-no-fields-render-guard)
+and [measured per-row costs](conditional.md#query-costs) before copying a helper.
+
+This addition does not admit dynamic radio, AJAX/autocomplete, multiselect or arbitrary controller widgets, a predicate
+engine, or queryset-driven whole-formset toggles. Compact's other widget/schema bounds still apply; `ValueToggle` remains
+the separate static-choice API, and `ConditionalFormSet` remains a first-level checkbox-controlled feature.
 
 ## Control button classes
 

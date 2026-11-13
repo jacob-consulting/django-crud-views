@@ -1,24 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.32"
+current_phase_name: Workflow transition variant and icon metadata
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.29 complete, ready to discuss Phase 7
-last_updated: "2026-11-12T14:32:55.690Z"
-last_activity: 2026-11-12
-last_activity_desc: "Phase 06.29 shipped as PR #359"
-state_head: d4ddb511c1b99e22caaef0e661e5835899a1fd41
+stopped_at: Phase 06.32 context gathered
+last_updated: "2026-11-13T07:43:18.645Z"
+last_activity: 2026-11-13
+last_activity_desc: "Inserted phase 06.32 from issue #362; approved low-complexity handover governs scope"
+state_head: bbf9fa6594e2197d0014ea89592b27bf44bc8800
 progress:
-  total_phases: 36
+  total_phases: 37
   completed_phases: 35
   total_plans: 183
   completed_plans: 183
 milestone_name: milestone
 ---
 
-Total Phases: 36
+Total Phases: 37
 
 # Project State
 
@@ -27,17 +27,17 @@ Total Phases: 36
 See: .planning/PROJECT.md (updated 2026-11-12)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.32 — Workflow transition variant and icon metadata (#362)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.32 — Workflow transition variant and icon metadata (#362)
 Current Plan: Not started
 Total Plans in Phase: Not planned
 Status: Ready to plan
-Last activity: 2026-11-12 -- Phase 06.29 shipped as PR #359
+Last activity: 2026-11-13 -- Inserted phase 06.32 from issue #362; approved low-complexity handover governs scope
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.32
 
 ### Phase 06.29 completion — 2026-11-12
 
@@ -1343,6 +1343,7 @@ None yet.
 - Phase 06.27 inserted after Phase 06.26: Issue #354: choice-driven conditional groups; approved gsd-handover includes explicit clearing overrides and a complex example with reciprocal documentation links. Complete before Phase 7. (URGENT)
 - Phase 06.28 inserted after Phase 06.27: Issue #355: tooltip recipe documentation and executable regression tests; approved GSD handover D-01–D-06 governs scope. Restored the existing 06.27 roadmap entry from the source checkout. (URGENT)
 - Phase 06.29 inserted after Phase 06.26: Themeable column helpers (#356); explicitly assigned 06.29, approved decisions D-01–D-07, before the Phase 7 theme-surface freeze (URGENT)
+- Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
 
 ## Deferred Items
 
@@ -1352,6 +1353,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-12T14:28:27.198Z
-Stopped at: Phase 06.29 complete, ready to discuss Phase 7
-Resume file: None
+Last session: 2026-11-13T07:43:14.528Z
+Stopped at: Phase 06.32 context gathered
+Resume file: .planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-CONTEXT.md

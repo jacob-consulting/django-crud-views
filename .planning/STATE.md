@@ -1,15 +1,15 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.31"
-current_phase_name: Developer-only manage diagnostics
-current_plan: 6/6 complete
-status: Awaiting human verification
-stopped_at: Phase 06.31 all six plans executed; 21/21 truths verified, one visual UAT pending
-last_updated: "2026-11-13T11:20:05.904Z"
+current_phase: "06.30"
+current_phase_name: "Queryset-driven conditional fields (#360)"
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.31 complete; UAT passed; next roadmap phase 06.30
+last_updated: "2026-11-13T12:19:07.326Z"
 last_activity: 2026-11-13
-last_activity_desc: Phase 06.31 all plans executed; verification 21/21, one visual UAT pending
-state_head: 50068b3ca480f6c901dc96d0dec714522e9dc25a
+last_activity_desc: Phase 06.31 complete, transitioned to Phase 06.30
+state_head: d81a89f501e5f245a2a1b95ec3686db9b3a2f11e
 progress:
   total_phases: 38
   completed_phases: 35
@@ -24,20 +24,25 @@ Total Phases: 38
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-12)
+See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 06.31 — Developer-only manage diagnostics
 
 ## Current Position
 
-Phase: 06.31 (Developer-only manage diagnostics) — AWAITING HUMAN VERIFICATION
-Current Plan: 6/6 complete
+Phase: 06.30 — Queryset-driven conditional fields (#360)
+Current Plan: Not started
 Total Plans in Phase: 6
-Status: Awaiting human verification
-Last activity: 2026-11-13 -- Phase 06.31 all plans executed; verification 21/21, one visual UAT pending
+Status: Ready to plan
+Last activity: 2026-11-13 — Phase 06.31 complete, transitioned to Phase 06.30
 
-Next: $gsd-verify-work 06.31
+Next: $gsd-progress
+
+### Phase 06.31 completion — 2026-11-13
+
+- User passed the bounded visual check on the isolated port9000 demo; UAT1/1 passed, canonical verification passed21/21, combined completion predicate passed without blockers. All six plans complete.
+- Completion scanner warnings are two example-relative path references (actual files exist under examples/bootstrap5/project/) and intentionally prose-only requirements; no missing implementation. No stale handoffs or learnings graduation candidates. No push or merge.
 
 ### Phase 06.31 execution and verification — 2026-11-13
 
@@ -819,7 +824,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 183
+- Total plans completed: 185
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -861,6 +866,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.27 | 5 | - | - |
 | 06.28 | 1 | - | - |
 | 06.29 | 2 | - | - |
+| 06.31 | 6 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1361,6 +1367,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T11:19:19.651Z
-Stopped at: Phase 06.31 all six plans executed; 21/21 truths verified, one visual UAT pending
-Resume file: .planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-UAT.md
+Last session: 2026-11-13T12:19:02.687Z
+Stopped at: Phase 06.31 complete; UAT passed; next roadmap phase 06.30
+Resume file: None

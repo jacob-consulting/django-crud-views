@@ -98,6 +98,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.29** Themeable Column1–Column12 via existing registry, render-local complete classes, preserved caller/template ownership and executed recipes — Phase 06.29; canonical 10/10, clean re-review after lazy-extra correction.
 
+- ✓ Developer-only core/Guardian diagnostics, explicit group setup, bounded read-only demo developer and write-gated example actions; transactional seed conflict rollback and paired migration guidance — Phase 06.31; 21/21 verified, UAT 1/1 passed, clean independent re-review.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -147,6 +149,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Require active configured-group membership for manage diagnostics, including staff/superusers | One shared request/action policy preserves independent CRUD and ancestor authorization | Validated (Phase 06.31) |
+| Roll back the entire single-database demo seed on privilege conflicts | Prevent rejected provisioning from exposing a public credential or new privileged membership; preserve existing operator grants | Validated (Phase 06.31; CR-01 fixed and independently re-reviewed) |
 | Wrap the factory tooltip initializer for placement-only documentation customization | Preserve existing lifecycle safeguards, explicit placement and library defaults without changing runtime or API | Validated (Phase 06.28; 6/6, executable recipe) |
 | Admit exact stock CheckboxInput through existing compact schema and crispy markup; demonstrate it in a separate Checklist ViewSet | Bounded opt-in support preserves native Django semantics, custom-widget boundaries and existing rendering; navigation-only entry keeps one shared example catalog | Validated (Phase 06.26; 17/17, UAT 2/2) |
 | Header icons inherit only for None; plain Icon constants name inheritance and suppression | A bounded getter change preserves renderers and dynamic overrides while allowing custom headings to omit inherited icons | Validated (Phase 06.23; 13/13) |
@@ -225,4 +229,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-12 after integrating Phases 06.27, 06.28 and 06.29*
+*Last updated: 2026-11-13 after Phase 06.31 completion*

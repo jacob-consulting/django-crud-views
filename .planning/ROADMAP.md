@@ -56,7 +56,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 
 - [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
 - [ ] **Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)** - approved handover; base forms and inline rows, strict category matching, tabler-test adoption, and a focused example app with linked documentation.
-- [ ] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance.
+- [x] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance. (completed 2026-11-13)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1812,7 +1812,7 @@ Plans:
 **Requirements:** Require an active, authenticated user with membership in the configured `CRUD_VIEWS_MANAGE_GROUP`, including for staff and superusers. Make `"yes"` the default and require membership regardless of DEBUG; `"no"` denies everyone; `"debug_only"` requires membership and DEBUG=True. Keep existing nested ancestor restrictions and ordinary CRUD permissions. Add the idempotent `cv_manage_group` command, respecting custom group names and preserving existing memberships and permissions. Seed and show a regular developer account alongside Alice/Bob; ensure its configured-group membership and read permissions across examples, including Guardian object/ancestor grants, without write privileges. Preserve Alice/Bob scenarios. Correct the affected custom-form/flash example actions to require appropriate write permissions so read access does not authorize mutation or execution (D-11). Cover direct access, hidden manage actions, production diagnostics, command behavior, example setup/read access, and paired breaking-change/migration documentation. No impersonation, membership-management CLI, automatic startup group creation, broader authorization redesign, or responsive-table work.
 **Depends on:** Phase 06.30 (roadmap sequence only); no implementation dependency on its conditional-field work.
 **Ordering:** Complete before Phase 7 freezes the public surface; include the settled manage settings, group setup command, visibility rules, and migration contract in that inventory.
-**Plans:** 6/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 **Wave 1**

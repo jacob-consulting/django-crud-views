@@ -4,8 +4,8 @@ milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 13
-status: verifying
-stopped_at: Completed 06.30-13; owner audits and H1/rest-H2 pending
+status: awaiting human verification
+stopped_at: Completed 06.30-13; verified 43/44, H1/rest-H2 pending
 last_updated: "2026-11-13T17:35:21.765Z"
 last_activity: 2026-11-13
 last_activity_desc: Plan 13 executed; complete current acceptance passes; owner audits and H1/rest-H2 pending
@@ -34,10 +34,10 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN VERIFICATION
 Current Plan: 13
 Total Plans in Phase: 13
-Status: Awaiting owner audits and human verification
+Status: Awaiting human verification
 Last activity: 2026-11-13 — Plan 13 committed with complete current acceptance; owner audits and H1/rest-H2 pending
 
-Next: Validation, security and UI owners reconcile plan 12/13, then independent phase verification updates canonical G-06.30-2 status and its CLI fingerprint. All thirteen plans are executed with current acceptance. H1/rest-H2 remain pending and Phase 7 does not advance.
+Next: $gsd-verify-work 06.30 for H1/rest-H2 human judgment. All thirteen plans are executed; canonical verification is human_needed, 43/44 truths verified. G1/G2 automated gaps are closed. Validation31/31, security27closed/0open, scopedUI24/24 and clean code review are current. Phase 7 does not advance.
 
 ### Phase 06.30 plan 13 final acceptance — 2026-11-13
 
@@ -1476,5 +1476,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-13T17:35:16.365Z
-Stopped at: Completed 06.30-13; owner audits and H1/rest-H2 pending
+Stopped at: Completed 06.30-13; verified 43/44, H1/rest-H2 pending
 Resume file: None

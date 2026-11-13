@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 10
-status: gaps found
-stopped_at: Plan 10 verified; acceptance refresh and remaining UAT pending
-last_updated: "2026-11-13T15:41:10.572897+00:00"
+current_plan: 11
+status: ready to execute
+stopped_at: Plan 11 checked and ready; acceptance refresh and remaining UAT pending
+last_updated: "2026-11-13T15:52:51.896Z"
 last_activity: 2026-11-13
-last_activity_desc: Plan 10 presentation gap closed; fresh acceptance and remaining UAT pending
-state_head: a83834989eb4bcde8fdcc0a5f84504821a930a9d
+last_activity_desc: Plan 11 acceptance refresh planned and checked
+state_head: 9798affdd8fb63f40230dd4a16ba0b4ae12a60f7
 progress:
   total_phases: 37
   completed_phases: 27
-  total_plans: 193
+  total_plans: 194
   completed_plans: 193
 milestone_name: milestone
 ---
@@ -31,13 +31,18 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING RE-VERIFICATION AND HUMAN UAT
-Current Plan: 10
-Total Plans in Phase: 10
-Status: gaps found
-Last activity: 2026-11-13 — Plan 10 row-card gap implementation, browser evidence and documentation committed
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — READY TO EXECUTE
+Current Plan: 11
+Total Plans in Phase: 11
+Status: ready to execute
+Last activity: 2026-11-13 — Plan 11 acceptance refresh checked with zero findings
 
-Next: $gsd-plan-phase 06.30 --gaps — refresh source-bound acceptance against the preserved downstream adoption branch, then remaining H1/H2 human UAT. Phase remains pending.
+Next: $gsd-execute-phase 06.30 --gaps-only — execute plan 11 acceptance refresh, then remaining H1/H2 human UAT. Phase remains pending.
+
+### Phase 06.30 acceptance refresh planning — 2026-11-13
+
+- Added plan 11, wave 10 after plan 10: isolated adoption checkout, fresh original browser/release acceptance, evidence report and owner-workflow handoff. No feature change or acceptance execution in this planning run.
+- Independent plan checker passed with zero findings; deterministic probes and decision/post-plan coverage pass (13/13). Preserve downstream main, port9000, developer data, G-06.30-1 closure and H1/restH2 pending.
 
 ### Phase 06.30 gap execution verification — 2026-11-13
 

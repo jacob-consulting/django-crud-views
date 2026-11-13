@@ -4,7 +4,7 @@
     "upstream": "/home/alex/projects/alex/django-crud-views",
     "downstream": null
   },
-  "started": "2026-11-13T10:43:58.564Z",
+  "started": "2026-11-13T10:49:53.950Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/queryset-conditional.cjs",
@@ -593,8 +593,9 @@
     "upstream/tests/browser/protected_delete_server.py": "7b3878210ee2f0e60cd479f8f14c9c8f0b2c6baaa86a74491d7d06d03da33a5a",
     "upstream/tests/browser/protected-delete.cjs": "57bf6f2dec5371a5bed174db7bbd9bf2f995c0e38b20b4a4d5b637c763721b23",
     "upstream/tests/browser/protected-delete.test.cjs": "2584ff6709436ba5fb30283452786602681e2e63bb4efc39211f615d4d99734b",
-    "upstream/tests/browser/queryset_conditional_server.py": "1fb90372d07c2bc95da82cf074ae04ec0a979ed7518f063951b3dac252f0da34",
-    "upstream/tests/browser/queryset-conditional.cjs": "3f355d5855e036f87b7f634a5d81891a91b8773168822ada626593615fa88c41",
+    "upstream/tests/browser/queryset_conditional_server.py": "a25516605a897bc6ba5174b4562a569fb468b1f6df6a0413520113d45d4cd1f5",
+    "upstream/tests/browser/queryset_downstream_server.py": "de9b374953c769ce68d55434b79e2e986442b804898c81f651c78dee10ae720b",
+    "upstream/tests/browser/queryset-conditional.cjs": "6f9b7605f73d5b790d93dec753853308f0dbc2b38f090f12a1acd9ebeeb7de17",
     "upstream/tests/browser/templates/conditional_formsets/native_control.html": "6163b7168522f909a2e68881ce4315477854fd834b6e8b64a6ff64b6e07bd2a5",
     "upstream/tests/browser/templates/conditional_formsets/native_formset.html": "03ae7569f1b7a4ac8f60b7236f99a8f995acdc88d6f6314af81a9f8c4767b46e",
     "upstream/tests/browser/templates/conditional_formsets/native_formsets.html": "2bd6207e5acc6591c2d530755fd8950e36eb583376150c22a98d0b54dd6abafa",
@@ -1295,6 +1296,12 @@
           ]
         },
         {
+          "id": "invalid-write-count",
+          "passed": true,
+          "actual": 0,
+          "expected": 0
+        },
+        {
           "id": "forged-zero-write",
           "passed": true,
           "actual": [
@@ -1475,6 +1482,12 @@
           "passed": true,
           "actual": true,
           "expected": true
+        },
+        {
+          "id": "forged-write-count",
+          "passed": true,
+          "actual": 0,
+          "expected": 0
         },
         {
           "id": "no-js-tampered-save",
@@ -2123,6 +2136,12 @@
           ]
         },
         {
+          "id": "mutation-write-count",
+          "passed": true,
+          "actual": 7,
+          "expected": 7
+        },
+        {
           "id": "restored-categories",
           "passed": true,
           "actual": [
@@ -2309,17 +2328,97 @@
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/compact-1280.png",
-      "sha256": "82d6ca98d62df6aa5d7fcc5cea79160dc00ec33a856455deb65250b5fd67364b"
+      "sha256": "3991b21d7a72a949627fc819243e56e538ab46b458ee54a7b9b1d04a93d705eb"
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/compact-390.png",
       "sha256": "edc6fa51207d3795351ae713d1f9b1aaee52204507ca499e7286af5266b4c340"
     }
   ],
+  "pages": [
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-request/1/update/",
+      "status": 200,
+      "htmlBytes": 47412,
+      "sha256": "e092cc896f82d40cfa347b22bfd1addf01dc7c4f6fe06c24a76620c85a74004f"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-request/1/update/",
+      "status": 200,
+      "htmlBytes": 47412,
+      "sha256": "cc7a1621221e8564e9b0814907367ebe5d4d5badf82eab91eb817f4a6af12171"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-request/1/update/",
+      "status": 200,
+      "htmlBytes": 47719,
+      "sha256": "42f73b0183bc7568724a3433a94afb29f48e50faddf896a80f8c9b4bce023cfa"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-batch/2/update/",
+      "status": 200,
+      "htmlBytes": 63067,
+      "sha256": "bfe8358b1f8497ea641aad440a13b6c44a91f750410e0be113fae72257b41a66"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-batch/2/update/",
+      "status": 200,
+      "htmlBytes": 66555,
+      "sha256": "8d63ec6a1ddd66cd20a943ae5cede6a6d55bc8faf46b8fdb2cde8c784239cf25"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-batch-compact/3/update/",
+      "status": 200,
+      "htmlBytes": 64262,
+      "sha256": "21f3edf762f8e0fadde56501cada55060d36393ebd526cb305aa33cac3340f57"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-batch-compact/3/update/",
+      "status": 200,
+      "htmlBytes": 68019,
+      "sha256": "5237961535e259e72ac26dc6439eba4562a20db572cbe7f5e838a4af5d9ad48d"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-request/create/",
+      "status": 200,
+      "htmlBytes": 47194,
+      "sha256": "6146477f76b2ddf3d0c03c864735c22e26a19857c42cf97d7a9069e92f9c7e62"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-batch-compact/4/update/",
+      "status": 200,
+      "htmlBytes": 64267,
+      "sha256": "88d05b0784dff34267398ea42c507d11007fb7d4d81a57d4e5b4d083b84ff2ca"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-batch-compact/5/update/",
+      "status": 200,
+      "htmlBytes": 64330,
+      "sha256": "45a890eff8d9afa411db5c05ae7f463b48c2ca897b2ff7dd9f73cd888852d67c"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-request/1/update/",
+      "status": 200,
+      "htmlBytes": 47717,
+      "sha256": "47391b96e01908597560765b3abf3f14f58b5e94139a5b4aee0abd30aa47d258"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-batch/2/update/",
+      "status": 200,
+      "htmlBytes": 66260,
+      "sha256": "8a04d2f798d538f329405d417631892ec11258ca523a098bd722556d3b231f1f"
+    },
+    {
+      "url": "http://127.0.0.1:42055/queryset-conditional/service-batch-compact/3/update/",
+      "status": 200,
+      "htmlBytes": 67725,
+      "sha256": "4ef64a41647a9d00aae04d20d9ac13776c9b11f42f12dd0fbde4e56c8f0af7e7"
+    }
+  ],
   "provenance": {
     "upstream": {
-      "head": "028c3c41dde4c76d46e34145c5325209a74bc893",
-      "status": " M .planning/state.json\n M tests/browser/queryset-conditional.cjs\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/\n?? tests/browser/queryset_conditional_server.py\n"
+      "head": "90745befdecab84af971fa9d0a1f196e92e08a0a",
+      "status": " M .planning/state.json\n M tests/browser/queryset-conditional.cjs\n M tests/browser/queryset_conditional_server.py\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream-captures/\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream.json\n?? tests/browser/queryset_downstream_server.py\n"
     }
   },
   "runtime": {
@@ -2338,8 +2437,15 @@
   },
   "pageErrors": [],
   "failedRequests": [],
+  "isolation": {
+    "bind": "127.0.0.1",
+    "port": 42055,
+    "temporary": "/tmp/cv-queryset-axG5d3",
+    "database": "/tmp/cv-queryset-axG5d3/db.sqlite3",
+    "media": "/tmp/cv-queryset-axG5d3/media"
+  },
   "servedToggle": {
-    "url": "http://127.0.0.1:40425/static/crud_views/js/toggle.js",
+    "url": "http://127.0.0.1:42055/static/crud_views/js/toggle.js",
     "expectedHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
     "actualHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a"
   },
@@ -2347,5 +2453,5 @@
     "reaped": true,
     "temporaryRemoved": true
   },
-  "completed": "2026-11-13T10:44:07.588Z"
+  "completed": "2026-11-13T10:50:02.929Z"
 }

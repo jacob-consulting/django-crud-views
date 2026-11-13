@@ -35,6 +35,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.handlers import StaticFilesHandler
 from django.core.management import call_command
 from django.core.wsgi import get_wsgi_application
+from django.db import connection
 from django.http import HttpResponseForbidden, JsonResponse
 from django.urls import include, path, reverse
 from queryset_conditional.models import RequestBatch, Service, ServiceCategory, ServiceRequest
@@ -50,6 +51,29 @@ for name in ("alice", "bob"):
     User.objects.create_user(username=name)
 seed()
 services = {s.name: s.pk for s in Service.objects.all()}
+write_count = 0
+
+
+class WriteAudit:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        def audit(execute, sql, params, many, context):
+            global write_count
+            if sql.lstrip().split()[0].upper() in {"INSERT", "UPDATE", "DELETE"} and any(
+                model._meta.db_table in sql for model in (ServiceRequest, RequestBatch)
+            ):
+                write_count += 1
+            return execute(sql, params, many, context)
+
+        if request.path.startswith("/__fixture__/"):
+            return self.get_response(request)
+        with connection.execute_wrapper(audit):
+            return self.get_response(request)
+
+
+settings.MIDDLEWARE = [*settings.MIDDLEWARE, "__main__.WriteAudit"]
 fixtures = {}
 for name in ("ordinary", "compact", "mutation", "unchanged"):
     batch = RequestBatch.objects.create(title=f"Browser {name}")
@@ -104,6 +128,7 @@ def state(request):
                 },
             },
             "services": services,
+            "writes": write_count,
             "fixtures": fixtures,
             "categories": list(ServiceCategory.objects.order_by("pk").values()),
             "requests": list(ServiceRequest.objects.order_by("pk").values()),
@@ -114,5 +139,5 @@ def state(request):
 
 urlpatterns = [path("__fixture__/state/", state), path("", include("project.urls"))]
 with make_server("127.0.0.1", 0, StaticFilesHandler(get_wsgi_application())) as server:
-    print(json.dumps({"port": server.server_port, "temporary": str(TEMP)}), flush=True)
+    print(json.dumps({"port": server.server_port, "temporary": str(TEMP), "login": reverse("login")}), flush=True)
     server.serve_forever()

@@ -7,6 +7,32 @@ const cp = require('node:child_process');
 const crypto = require('node:crypto');
 const REQUIRED = {upstream: ['standalone', 'ordinary', 'compact', 'lifecycle', 'mutation', 'navigation'],
     downstream:['orders','retained-products','mutation','printing']};
+const widths = ids => [1280,390].flatMap(width=>ids.map(id=>`${id}-${width}`));
+const inlineAssertions = [...widths(['inactive-disabled','layout','sibling-value','sibling-enabled','parent-unaffected','row-away-back']),
+    'authorized-insert-initialized','save-status','insert-persisted','inactive-persisted-clear','reopen-clear'];
+const ASSERTIONS = {
+    upstream: {
+        standalone:[...widths(['shared-keeps','ordinary-hidden','away-back','blank-disables','label']),
+            'accessible-required-error','keyboard-active-field','active-required-status','active-required-error','active-required-zero-write',
+            'forged-zero-write','forged-native-error','invalid-write-count','forged-write-count','no-js-tampered-save','fresh-get-cleared','db-cleared'],
+        ordinary:inlineAssertions,
+        compact:[...inlineAssertions,...widths(['geometry','own-focus-fallback','other-focus-preserved'])],
+        lifecycle:['cancelled-reset','native-reset','reset-disabled','independent-disabled','exact-prefix-modal-lifecycle','lifecycle-no-write'],
+        mutation:['changed-category-safe-redisplay','diagnostic-visible','sibling-error-visible','atomic-parent','atomic-rows-empty-extra',
+            'restored-categories','mutation-write-count','unchanged-save','unchanged-db-cleared'],
+        navigation:[...['standalone','ordinary','compact'].flatMap(v=>['relevant-source','docs-links','navigation'].map(a=>`${v}-${a}`)),
+            'navigation-db-unchanged'],
+    },
+    downstream:{
+        orders:[...widths(['compact-visible-disabled','compact-geometry','focus-fallback','row-isolation','preserved-coffee','label']),
+            'native-reset','independent-disabled','invalid-active-status','invalid-active-error','invalid-active-zero-lines','invalid-active-zero-parent',
+            'forged-retired-rejected','forged-zero-write','invalid-write-count','forged-write-count','accessible-invalid-row','row-insertion','inactive-submit','persisted-clearing',
+            'fresh-get-cleared','inserted-optional-coffee','create-optional','create-persisted'],
+        'retained-products':['retained-product','subscription-no-fields','subscription-away-back','retained-save','retired-coffee-retained','subscription-persisted-clear'],
+        mutation:['changed-queryset-safe-rejection','changed-queryset-error','atomic-rows','atomic-parent','mutation-write-count','restored-product-types','unchanged-submit','unchanged-db-clearing'],
+        printing:['print-page','print-handler','print-no-write'],
+    },
+};
 function parseArgs(args) {
     const result = {};
     for (let i = 0; i < args.length; i++) {
@@ -26,11 +52,25 @@ function validateEvidence(record, target, sources, hashes) {
     assert.equal(record.target, target);
     assert.deepEqual(record.sources, sources);
     assert.deepEqual(record.sourceHashes, hashes);
+    assert.equal(record.runtime.source,path.join(sources.upstream,'src/crud_views/__init__.py'));
+    assert.equal(record.runtime.settings,target==='upstream'?'project.settings':'config.settings');
+    for(const key of ['python','django','pythonPath','node','nodePath','playwright','playwrightPath','chromium','chromiumPath','packageLockHash'])
+        assert(record.runtime[key],`Missing runtime ${key}`);
+    assert.equal(record.servedToggle.actualHash,record.servedToggle.expectedHash,'Served static mismatch');
+    assert(record.pages.length>0 && record.pages.every(p=>p.status===200&&p.htmlBytes>0&&p.sha256),'Missing served HTML');
+    assert.equal(record.captures.length,target==='upstream'?7:3,'Missing capture');
+    assert.deepEqual(record.pageErrors,[]);
+    assert.deepEqual(record.failedRequests,[]);
     assert.deepEqual(record.scenarios.map(s => s.id).sort(), [...REQUIRED[target]].sort());
     for (const scenario of record.scenarios) {
         assert(scenario.assertions.length > 0, `Empty ${scenario.id}`);
+        assert.deepEqual(scenario.assertions.map(a=>a.id).sort(),[...ASSERTIONS[target][scenario.id]].sort(),`Missing/duplicate dimensions ${scenario.id}`);
         assert.equal(scenario.dbConfirmed, true, `Missing database proof ${scenario.id}`);
-        for (const assertion of scenario.assertions) assert.equal(assertion.passed, true, assertion.id);
+        for (const assertion of scenario.assertions) {
+            assert.equal(assertion.passed, true, assertion.id);
+            assert(Object.hasOwn(assertion,'actual') && Object.hasOwn(assertion,'expected'));
+            assert.deepEqual(assertion.actual,assertion.expected,`False observation ${assertion.id}`);
+        }
     }
     assert.equal(record.cleanup.reaped, true);
     assert.equal(record.cleanup.temporaryRemoved, true);
@@ -77,13 +117,17 @@ async function selfTest(target) {
     }
     const sources = {upstream: '/expected/upstream', downstream: target === 'downstream' ? '/expected/downstream' : null};
     const valid = {target, sources, sourceHashes: {'upstream/src/example.py': 'abc'},
-        scenarios: REQUIRED[target].map(id => ({id, assertions: [{id: 'observed', passed: true}], dbConfirmed: true})),
+        runtime:{source:path.join(sources.upstream,'src/crud_views/__init__.py'),settings:target==='upstream'?'project.settings':'config.settings',
+            ...Object.fromEntries(['python','django','pythonPath','node','nodePath','playwright','playwrightPath','chromium','chromiumPath','packageLockHash'].map(k=>[k,'offline-fixture']))},
+        servedToggle:{actualHash:'offline-fixture',expectedHash:'offline-fixture'},
+        pages:[{status:200,htmlBytes:100,sha256:'offline-fixture'}],captures:Array(target==='upstream'?7:3).fill({sha256:'offline-fixture'}),
+        pageErrors:[],failedRequests:[],
+        scenarios: REQUIRED[target].map(id => ({id, assertions: ASSERTIONS[target][id].map(id=>({id,passed:true,actual:true,expected:true})), dbConfirmed: true})),
         cleanup: {reaped: true, temporaryRemoved: true}};
-    if(target==='downstream') valid.scenarios[0].assertions.push(...['retained-product','print-handler','row-insertion','persisted-clearing'].map(id=>({id,passed:true})));
     test('accept complete target', () => validateEvidence(valid, target, sources, valid.sourceHashes));
     if(target==='downstream') {
         for(const id of ['retained-product','print-handler','row-insertion','persisted-clearing']) test(`missing ${id}`,()=>{
-            const r=structuredClone(valid);r.scenarios[0].assertions=r.scenarios[0].assertions.filter(a=>a.id!==id);
+            const r=structuredClone(valid);r.scenarios.forEach(s=>s.assertions=s.assertions.filter(a=>a.id!==id));
             assert.throws(()=>validateEvidence(r,target,sources,valid.sourceHashes));
         });
         test('reject substituted upstream',()=>{const r=structuredClone(valid);r.target='upstream';assert.throws(()=>validateEvidence(r,target,sources,valid.sourceHashes));});
@@ -92,8 +136,14 @@ async function selfTest(target) {
     for (const [name, corrupt] of [
         ['zero scenarios', r => r.scenarios = []],
         ['missing scenario', r => r.scenarios.pop()],
+        ['missing dimension', r => r.scenarios[0].assertions.pop()],
+        ['duplicate dimension', r => r.scenarios[0].assertions.push(r.scenarios[0].assertions[0])],
         ['false assertion', r => r.scenarios[0].assertions[0].passed = false],
+        ['false observation labelled passed', r => r.scenarios[0].assertions[0].actual = false],
         ['false database proof', r => r.scenarios[0].dbConfirmed = false],
+        ['missing HTML',r=>r.pages=[]],
+        ['missing capture',r=>r.captures.pop()],
+        ['stale served script',r=>r.servedToggle.actualHash='stale'],
         ['wrong source', r => r.sources.upstream = '/wrong'],
         ['stale fingerprint', r => r.sourceHashes = {}],
         ['failed cleanup', r => r.cleanup.reaped = false],
@@ -126,7 +176,7 @@ async function run(options) {
     const resources = {dir: fs.mkdtempSync(path.join(os.tmpdir(), 'cv-queryset-'))};
     const secret = crypto.randomBytes(24).toString('hex');
     const record = {target: options.target, sources, started: new Date().toISOString(), command: process.argv,
-        sourceHashes: fingerprint(sources), docsHashes: fingerprint(sources, true), scenarios: [], captures: [],
+        sourceHashes: fingerprint(sources), docsHashes: fingerprint(sources, true), scenarios: [], captures: [], pages: [],
         provenance: Object.fromEntries(Object.entries(sources).filter(([,r])=>r).map(([k,r])=>[k, {
             head: cp.execFileSync('git',['rev-parse','HEAD'],{cwd:r}).toString().trim(),
             status: cp.execFileSync('git',['status','--short'],{cwd:r}).toString()}])),
@@ -153,17 +203,21 @@ async function run(options) {
             });
         });
         const base = `http://127.0.0.1:${ready.port}`;
+        record.isolation={bind:'127.0.0.1',port:ready.port,temporary:resources.dir,
+            database:path.join(resources.dir,'db.sqlite3'),media:path.join(resources.dir,'media')};
         resources.browser = await require(playwright).chromium.launch({headless:true, executablePath:chromium, args:['--no-sandbox']});
         record.runtime.chromium = resources.browser.version();
         const context = await resources.browser.newContext({viewport:{width:1280,height:900}});
         const page = await context.newPage();
         page.on('pageerror', error => record.pageErrors.push(String(error)));
         page.on('requestfailed', request => record.failedRequests.push({url:request.url(), error:request.failure().errorText}));
+        page.on('response', response=>{if(response.status()>=400 && ['script','stylesheet','font','image'].includes(response.request().resourceType()))
+            record.failedRequests.push({url:response.url(),status:response.status()});});
         page.setDefaultTimeout(10000);
-        await page.goto(`${base}/login/`);
+        await page.goto(`${base}${ready.login}`);
         await page.locator('[name="username"]').fill('browser');
         await page.locator('[name="password"]').fill('browser-only-password');
-        await Promise.all([page.waitForURL(url => !url.pathname.includes('login'),{waitUntil:'domcontentloaded'}),
+        await Promise.all([page.waitForURL(url => url.pathname!==ready.login,{waitUntil:'domcontentloaded'}),
             page.locator('form').filter({has:page.locator('[name="username"]')}).locator('button[type="submit"],input[type="submit"]').click()]);
         const state = async mutation => {
             const cookies = await context.cookies(base);
@@ -175,7 +229,8 @@ async function run(options) {
         assert.equal(initial.runtime.source, path.join(root,'src/crud_views/__init__.py'));
         assert.equal(initial.runtime.settings, options.target === 'upstream' ? 'project.settings' : 'config.settings');
         Object.assign(record.runtime, initial.runtime);
-        const visit = async url => { const response = await page.goto(`${base}${url}`); assert.equal(response.status(),200, `GET ${url}`); assert((await page.content()).includes('<form')); };
+        const visit = async url => { const response = await page.goto(`${base}${url}`); assert.equal(response.status(),200, `GET ${url}`);
+            const html=await page.content();assert(html.includes('<form'));record.pages.push({url:page.url(),status:response.status(),htmlBytes:Buffer.byteLength(html),sha256:digest(html)}); };
         await visit(initial.urls.standalone || initial.urls.order);
         const toggleURL = await page.locator('script[src*="/toggle.js"]').getAttribute('src');
         const toggle = await context.request.get(new URL(toggleURL, base).href);
@@ -251,9 +306,11 @@ async function upstream(e) {
     check(s,'active-required-status',response.status,200);
     check(s,'active-required-error',response.html.includes('This field is required'));
     check(s,'active-required-zero-write',(await state()).requests,before.requests);
+    check(s,'invalid-write-count',(await state()).writes,before.writes);
     response=await post({service:'99999999',visit_address:'forged'});
     check(s,'forged-zero-write',(await state()).requests,before.requests);
     check(s,'forged-native-error',response.html.includes('Select a valid choice'));
+    check(s,'forged-write-count',(await state()).writes,before.writes);
     response=await post({service:off,visit_address:'forged inactive',meeting_url:'invalid URL'});
     check(s,'no-js-tampered-save',response.status,302);
     await visit(initial.urls.standalone);
@@ -349,6 +406,7 @@ async function upstream(e) {
         check(s,'diagnostic-visible',response.html.includes('unmatched-browser'));
         check(s,'sibling-error-visible',response.html.includes('Enter a valid URL'));
         const after=await state();check(s,'atomic-parent',after.batches,snapshot.batches);check(s,'atomic-rows-empty-extra',after.requests,snapshot.requests);
+        check(s,'mutation-write-count',after.writes,snapshot.writes);
     } finally {
         await state({operation:'category',pk:category.id,code:category.code});
         check(s,'restored-categories',(await state()).categories,snapshot.categories);
@@ -368,5 +426,109 @@ async function upstream(e) {
     }
     check(s,'navigation-db-unchanged',(await state()).categories,initial.categories);s.dbConfirmed=true;
 }
-module.exports = {parseArgs, validateEvidence, fingerprint, REQUIRED};
+async function downstream(e) {
+    const {page,state,initial,visit,scenario,check,capture,post}=e;
+    const coffee=String(initial.products.coffee), equipment=String(initial.products.equipment),
+        retired=String(initial.products.retired), subscription=String(initial.products.subscription);
+    let s=scenario('orders'); await visit(initial.urls.order);
+    let names=await fields(page,'-product'), first=names[0], second=names[1];
+    const grind=first.replace(/product$/,'grind'), bag=first.replace(/product$/,'bag_size'),
+        other=second.replace(/product$/,'grind');
+    for(const width of [1280,390]) {
+        await page.setViewportSize({width,height:900});
+        await set(page,grind,'filter');await set(page,bag,'250g');
+        const geometry=await info(page,grind);
+        await page.evaluate(name=>Array.from(document.querySelectorAll('[name]')).find(n=>n.name===name).focus(),grind);
+        await set(page,first,equipment);
+        const disabled=await info(page,grind);
+        check(s,`compact-visible-disabled-${width}`,{visible:disabled.visible,disabled:disabled.disabled},{visible:true,disabled:true});
+        check(s,`compact-geometry-${width}`,{x:disabled.x,y:disabled.y,width:disabled.width,height:disabled.height},
+            {x:geometry.x,y:geometry.y,width:geometry.width,height:geometry.height});
+        check(s,`focus-fallback-${width}`,(await info(page,first)).focused);
+        check(s,`row-isolation-${width}`,(await info(page,other)).disabled);
+        await set(page,first,coffee);
+        check(s,`preserved-coffee-${width}`,[await value(page,grind),await value(page,bag)],['filter','250g']);
+        check(s,`label-${width}`,(await info(page,grind)).label);
+        await capture(`orders-${width}`);
+    }
+    await page.evaluate(name=>{const f=Array.from(document.querySelectorAll('[name]')).find(n=>n.name===name).form;HTMLFormElement.prototype.reset.call(f);},first);
+    await page.waitForTimeout(30);check(s,'native-reset',await value(page,grind),'espresso');
+    await page.evaluate(name=>Array.from(document.querySelectorAll('[name]')).find(n=>n.name===name).disabled=true,bag);
+    await set(page,first,equipment);await set(page,first,coffee);
+    check(s,'independent-disabled',(await info(page,bag)).disabled);
+    // Reload releases fixture-only ownership before normal persistence.
+    await visit(initial.urls.order);
+    const before=await state();
+    let response=await post({[grind]:'invalid-active',notes:'Must not save'});
+    check(s,'invalid-active-status',response.status,200);
+    check(s,'invalid-active-error',response.html.includes('Select a valid choice'));
+    check(s,'invalid-active-zero-lines',(await state()).lines,before.lines);
+    check(s,'invalid-active-zero-parent',(await state()).orders,before.orders);
+    check(s,'invalid-write-count',(await state()).writes,before.writes);
+    response=await post({[first]:retired});
+    check(s,'forged-retired-rejected',response.html.includes('Select a valid choice'));
+    check(s,'forged-zero-write',(await state()).lines,before.lines);
+    check(s,'forged-write-count',(await state()).writes,before.writes);
+    const quantity=first.replace(/product$/,'quantity');await set(page,quantity,'0');
+    await Promise.all([page.waitForNavigation(),page.evaluate(name=>HTMLFormElement.prototype.submit.call(Array.from(document.querySelectorAll('[name]')).find(n=>n.name===name).form),first)]);
+    check(s,'accessible-invalid-row',await page.evaluate(name=>{
+        const f=Array.from(document.querySelectorAll('[name]')).find(n=>n.name===name);
+        return f.getAttribute('aria-invalid')==='true' && !!f.labels.length && (f.getAttribute('aria-describedby')||'').split(' ').some(id=>document.getElementById(id)?.textContent.includes('greater'));
+    },quantity));
+    await capture('orders-error-390'); await visit(initial.urls.order);
+    const count=(await fields(page,'-product')).length;
+    await page.locator('button.cv-form-ctrl-add').last().click();
+    await page.waitForFunction(count=>document.querySelectorAll('select[name$="-product"]').length>count,count);
+    names=await fields(page,'-product');const added=names.at(-1);
+    await set(page,added,coffee);await set(page,added.replace(/product$/,'quantity'),'2');
+    check(s,'row-insertion',(await info(page,added.replace(/product$/,'grind'))).disabled,false);
+    await set(page,first,equipment);
+    response=await post({[grind]:'forged', [bag]:'forged'});
+    check(s,'inactive-submit',response.status,302);
+    await visit(initial.urls.order);
+    const lines=(await state()).lines.filter(l=>l.order_id===initial.fixtures.order);
+    check(s,'persisted-clearing',[lines[0].grind,lines[0].bag_size],['','']);
+    check(s,'fresh-get-cleared',await value(page,grind),'');
+    check(s,'inserted-optional-coffee',lines.some(l=>l.product_id===initial.products.coffee&&l.quantity===2&&l.grind===''&&l.bag_size===''));
+    // Actual create route, normal CSRF HTTP with no conditional JavaScript in the submission path.
+    await visit(initial.urls.create);names=await fields(page,'-product');
+    response=await post({[names[0]]:coffee,[names[0].replace(/product$/,'quantity')]:'1'});
+    check(s,'create-optional',response.status,302);
+    check(s,'create-persisted',(await state()).orders.length,before.orders.length+1);s.dbConfirmed=true;
+    s=scenario('retained-products');await visit(initial.urls.retained);
+    names=await fields(page,'-product');const retiredName=names[0],subName=names[1],subGrind=subName.replace(/product$/,'grind');
+    check(s,'retained-product',[await value(page,retiredName),await value(page,subName)],[retired,subscription]);
+    await set(page,subName,coffee);await set(page,subGrind,'espresso');await set(page,subName,subscription);
+    check(s,'subscription-no-fields',(await info(page,subGrind)).disabled);
+    await set(page,subName,coffee);check(s,'subscription-away-back',await value(page,subGrind),'espresso');
+    await set(page,subName,subscription);
+    response=await post({[subGrind]:'forged', [subName.replace(/product$/,'bag_size')]:'forged'});
+    check(s,'retained-save',response.status,302);await visit(initial.urls.retained);
+    const retained=(await state()).lines.filter(l=>l.order_id===initial.fixtures.retained);
+    check(s,'retired-coffee-retained',retained[0].product_id,initial.products.retired);
+    check(s,'subscription-persisted-clear',[retained[1].grind,retained[1].bag_size],['','']);s.dbConfirmed=true;
+    s=scenario('mutation');await visit(initial.urls.mutation);names=await fields(page,'-product');
+    const snapshot=await state(), original=snapshot.types.find(p=>p.pk===initial.products.coffee);
+    try {
+        await state({operation:'active',pk:initial.products.coffee,active:false});
+        response=await post({[names[1]]:coffee,notes:'Invalid sibling'});
+        check(s,'changed-queryset-safe-rejection',response.status,200);
+        check(s,'changed-queryset-error',response.html.includes('Select a valid choice'));
+        check(s,'atomic-rows',(await state()).lines,snapshot.lines);
+        check(s,'atomic-parent',(await state()).orders,snapshot.orders);
+        check(s,'mutation-write-count',(await state()).writes,snapshot.writes);
+    } finally {
+        await state({operation:'active',pk:initial.products.coffee,active:original.is_active});
+        check(s,'restored-product-types',(await state()).types,snapshot.types);
+    }
+    await state({operation:'stale'});await visit(initial.urls.unchanged);
+    response=await post({});check(s,'unchanged-submit',response.status,302);
+    check(s,'unchanged-db-clearing',(await state()).lines.filter(l=>l.order_id===initial.fixtures.unchanged).every(l=>l.grind===''&&l.bag_size===''));s.dbConfirmed=true;
+    s=scenario('printing');const beforePrint=await state();
+    const printResponse=await page.goto(`${e.base}${initial.urls.print}`);check(s,'print-page',printResponse.status(),200);
+    await page.evaluate(()=>{window.__printCalls=0;window.print=()=>window.__printCalls++;});
+    await page.locator('[data-print]').click();check(s,'print-handler',await page.evaluate(()=>window.__printCalls),1);
+    check(s,'print-no-write',(await state()).lines,beforePrint.lines);s.dbConfirmed=true;
+}
+module.exports = {parseArgs, validateEvidence, fingerprint, REQUIRED, ASSERTIONS};
 if (require.main === module) (async()=>{const args=parseArgs(process.argv.slice(2)); await (args['self-test'] ? selfTest(args.target) : run(args));})().catch(error=>{console.error(error);process.exitCode=1;});

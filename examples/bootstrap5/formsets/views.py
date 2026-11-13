@@ -99,6 +99,7 @@ cv_formsets: FormSets = FormSets(
             children=OrderedDict(
                 choices=FormSet(
                     title=_("Choices"),
+                    row_legend=False,
                     klass=ChoiceFormSet,
                     fields=["label"],
                     pk_field="id",

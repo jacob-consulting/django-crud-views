@@ -52,6 +52,7 @@ class RequestTable(Table):
 
 
 class RequestListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
+    example_source_files = ("models.py", "conditions.py", "standalone.py")
     cv_viewset = cv_service_request
     table_class = RequestTable
 
@@ -60,12 +61,14 @@ class RequestListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionReq
 
 
 class RequestCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
+    example_source_files = ("models.py", "conditions.py", "standalone.py")
     cv_viewset = cv_service_request
     form_class = RequestForm
     cv_message_template_code = _("Created service request “{{ object }}”")
 
 
 class RequestUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+    example_source_files = ("models.py", "conditions.py", "standalone.py")
     cv_viewset = cv_service_request
     form_class = RequestForm
     cv_message_template_code = _("Updated service request “{{ object }}”")

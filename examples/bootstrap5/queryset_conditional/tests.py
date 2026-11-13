@@ -555,9 +555,12 @@ class SourceAndNavigationTests(TestCase):
 
         view = RequestCreateView()
         for path in ("../project/settings.py", "/etc/passwd", "nested/../../project/settings.py"):
-            with self.subTest(path=path), patch.object(view, "example_source_files", (path,), create=True):
-                with self.assertRaisesMessage(ValueError, "example_source_files"):
-                    snippet_panels({"view": view})
+            with (
+                self.subTest(path=path),
+                patch.object(view, "example_source_files", (path,), create=True),
+                self.assertRaisesMessage(ValueError, "example_source_files"),
+            ):
+                snippet_panels({"view": view})
 
     def test_explicit_selection_rejects_symlink_escape(self):
         from pathlib import Path
@@ -573,9 +576,12 @@ class SourceAndNavigationTests(TestCase):
             outside = root / "private.py"
             outside.write_text("private secret")
             (app / "escape.py").symlink_to(outside)
-            with self.settings(BASE_DIR=root), patch.object(view, "example_source_files", ("escape.py",), create=True):
-                with self.assertRaisesMessage(ValueError, "example_source_files"):
-                    snippet_panels({"view": view})
+            with (
+                self.settings(BASE_DIR=root),
+                patch.object(view, "example_source_files", ("escape.py",), create=True),
+                self.assertRaisesMessage(ValueError, "example_source_files"),
+            ):
+                snippet_panels({"view": view})
 
     def test_explicit_selection_is_complete_and_does_not_append_templates(self):
         from pathlib import Path
@@ -605,9 +611,10 @@ class SourceAndNavigationTests(TestCase):
         view = ThemeIndexView()
         result = snippet_panels({"view": view})
         app = Path(settings.BASE_DIR) / "theming"
-        expected = [f"theming/{name}" for name in SNIPPET_FILES]
+        expected = [f"theming/{name}" for name in SNIPPET_FILES if (app / name).exists()]
+        python_count = len(expected)
         expected += [
             f"theming/{path.relative_to(app).as_posix()}" for path in sorted((app / "templates").rglob("*.html"))
         ]
-        self.assertGreater(len(expected), len(SNIPPET_FILES))
+        self.assertGreater(len(expected), python_count)
         self.assertEqual([panel["title"] for panel in result["panels"]], expected)

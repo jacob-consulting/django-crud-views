@@ -116,11 +116,13 @@ class BatchTable(Table):
 
 
 class BatchListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
+    example_source_files = ("models.py", "conditions.py", "inlines.py")
     cv_viewset = cv_service_batch
     table_class = BatchTable
 
 
 class BatchCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, CreateViewPermissionRequired):
+    example_source_files = ("models.py", "conditions.py", "inlines.py")
     cv_viewset = cv_service_batch
     form_class = BatchForm
     cv_formsets = ORDINARY_FORMSETS
@@ -128,6 +130,7 @@ class BatchCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMix
 
 
 class BatchUpdateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, UpdateViewPermissionRequired):
+    example_source_files = ("models.py", "conditions.py", "inlines.py")
     cv_viewset = cv_service_batch
     form_class = BatchForm
     cv_formsets = ORDINARY_FORMSETS

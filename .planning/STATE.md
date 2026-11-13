@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: Not started
+current_plan: 2
 status: executing
-stopped_at: Phase 06.30 context gathered
-last_updated: "2026-11-13T09:20:05.092Z"
+stopped_at: Completed 06.30-01-PLAN.md
+last_updated: "2026-11-13T09:31:21.883Z"
 last_activity: 2026-11-13
-last_activity_desc: "Inserted Phase 06.30 for issue #360 with approved design and GSD handover"
-state_head: 88a04c4fd3f747d99457024d9f3cd08e29af3b04
+last_activity_desc: Phase 06.30 execution started
+state_head: 7fdd9ecf95483d529ca64444649e91300acf4b48
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 192
-  completed_plans: 183
+  completed_plans: 184
 milestone_name: milestone
 ---
 
@@ -31,11 +31,11 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — EXECUTING
+Current Plan: 2
 Total Plans in Phase: 9
 Status: Ready to execute
-Last activity: 2026-11-13 -- Inserted Phase 06.30 for issue #360 with approved design and GSD handover
+Last activity: 2026-11-13 — Phase 06.30 execution started
 
 Next: $gsd-plan-phase 06.30
 
@@ -1000,6 +1000,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.27 P04 | 7min | 2 tasks | 10 files |
 | Phase 06.27 P05 | 14min | 3 tasks | 18 files |
 | Phase 06.28 P01 | 11min | 2 tasks | 2 files |
+| Phase 06.30 P01 | 8min | 2 tasks | 8 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1274,6 +1275,9 @@ Recent decisions affecting current work:
 - [Phase 06.27]: Keep existing Feature/DocRef stable destinations; prove local routes and generated anchors without claiming unreleased remote availability.
 - [Phase 06.27]: Retain installed JS version mismatch as an explicit compatibility limit; no dependency or lockfile changes.
 - [Phase 06.28]: Plan 01: published tooltip placement wrapper delegates to factory init; runtime/API unchanged; exact-fence placement and lifecycle regressions cover issue 355; no assigned requirement IDs.
+- [Phase 06.30]: Plan 01: selected queryset categories use final inherited cleaned_data; inactive clearing reuses the existing persistence pipeline.
+- [Phase 06.30]: Plan 01: all-no-fields sources require a server ConditionalGroup plus an explicit empty ToggleGroup in base/ordinary-inline helpers.
+- [Phase 06.30]: Plan 01: offered projections are scoped to the render context and form/field/source/queryset identity; no cross-form cache.
 
 ### Pending Todos
 
@@ -1353,6 +1357,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T07:12:39.875Z
-Stopped at: Phase 06.30 context gathered
-Resume file: .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-CONTEXT.md
+Last session: 2026-11-13T09:31:17.802Z
+Stopped at: Completed 06.30-01-PLAN.md
+Resume file: None

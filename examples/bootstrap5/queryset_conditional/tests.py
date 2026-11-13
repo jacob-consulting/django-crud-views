@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch
 
 from django import forms
@@ -8,6 +9,7 @@ from django.db import connection
 from django.db.migrations.loader import MigrationLoader
 from django.test import TestCase
 from django.urls import reverse
+from lxml import html
 from project.testing import form_payload
 
 from crud_views.lib.conditional import ConditionalGroup, QuerysetConditions, ToggleGroup
@@ -314,3 +316,187 @@ class StandaloneRequestTests(TestCase):
         )
         saved.refresh_from_db()
         self.assertEqual(saved.visit_address, "Allowed")
+
+
+class BatchRequestTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from queryset_conditional.seed import seed
+
+        for username in ("alice", "bob"):
+            get_user_model().objects.create_user(username=username)
+        seed()
+        cls.editor = get_user_model().objects.get(username="alice")
+        cls.boiler = Service.objects.get(name="Boiler inspection")
+        cls.remote = Service.objects.get(name="Technical consultation")
+        cls.general = Service.objects.get(name="Document review")
+
+    def setUp(self):
+        self.client.force_login(self.editor)
+
+    variants = ("service_batch", "service_batch_compact")
+
+    def page_payload(self, variant, batch=None):
+        url = reverse(f"{variant}-update", kwargs={"pk": batch.pk}) if batch else reverse(f"{variant}-create")
+        page = self.client.get(url)
+        self.assertEqual(page.status_code, 200)
+        payload = form_payload(page)
+        total_key = next(key for key in payload if key.endswith("-TOTAL_FORMS"))
+        return url, page, payload, total_key.removesuffix("-TOTAL_FORMS")
+
+    def fragment_params(self, page):
+        content = html.fromstring(page.content).cssselect(".cv-formset-content")[0]
+        data = json.loads(content.get("cv-data-formset"))
+        return {
+            "template": "|".join(data["hierarchy"]),
+            "pk": data["prefix_key"].rsplit("-", 2)[-2],
+            "num": form_payload(page)[f"{content.get('cv-data-formset-prefix')}-TOTAL_FORMS"],
+            "formset_parent_prefix_key": data["parent_prefix_key"],
+        }
+
+    def test_batch_create_routes_render_both_layouts(self):
+        self.assertEqual(self.client.get("/queryset-conditional/service-batch/create/").status_code, 200)
+        for path in ("service-batch", "service-batch-compact"):
+            with self.subTest(path=path):
+                page = self.client.get(f"/queryset-conditional/{path}/create/")
+                self.assertEqual(page.status_code, 200)
+                document = html.fromstring(page.content)
+                if path.endswith("compact"):
+                    self.assertTrue(document.cssselect(".cv-formset-row-compact"))
+                    self.assertTrue(document.cssselect(".cv-formset-compact-fields"))
+                else:
+                    self.assertFalse(document.cssselect(".cv-formset-row-compact"))
+                    self.assertContains(page, 'cv-data-toggle-kind="queryset"', count=2)
+
+    def test_create_no_js_and_reopen_independent_rows(self):
+        for variant in self.variants:
+            with self.subTest(variant=variant):
+                url, page, payload, prefix = self.page_payload(variant)
+                payload.update(
+                    {
+                        "title": variant,
+                        f"{prefix}-TOTAL_FORMS": "3",
+                        f"{prefix}-0-service": self.boiler.pk,
+                        f"{prefix}-0-visit_address": "On site",
+                        f"{prefix}-0-meeting_url": "invalid inactive URL",
+                        f"{prefix}-1-service": self.remote.pk,
+                        f"{prefix}-1-visit_address": "Forged inactive address",
+                        f"{prefix}-1-meeting_url": "https://example.com/call",
+                    }
+                )
+                self.assertEqual(self.client.post(url, payload).status_code, 302)
+                batch = RequestBatch.objects.get(title=variant)
+                self.assertEqual(batch.requests.count(), 2)  # Empty extra row stays empty.
+                self.assertEqual(batch.requests.get(service=self.boiler).meeting_url, "")
+                self.assertEqual(batch.requests.get(service=self.remote).visit_address, "")
+                _, reopened, saved, prefix = self.page_payload(variant, batch)
+                self.assertEqual(saved[f"{prefix}-0-visit_address"], "On site")
+                self.assertEqual(saved[f"{prefix}-1-meeting_url"], "https://example.com/call")
+                self.assertEqual(self.client.get(reverse(f"{variant}-list")).status_code, 200)
+
+    def test_active_url_validation_and_invalid_sibling_prevent_all_writes(self):
+        for variant in self.variants:
+            for invalid_url in ("", "not a URL"):
+                with self.subTest(variant=variant, invalid_url=invalid_url):
+                    batch = RequestBatch.objects.create(title="Unchanged")
+                    row = ServiceRequest.objects.create(batch=batch, service=self.boiler, visit_address="Original")
+                    url, _, payload, prefix = self.page_payload(variant, batch)
+                    payload.update(
+                        {
+                            "title": "Must not save",
+                            f"{prefix}-TOTAL_FORMS": "2",
+                            f"{prefix}-0-visit_address": "Must not save",
+                            f"{prefix}-1-service": self.remote.pk,
+                            f"{prefix}-1-meeting_url": invalid_url,
+                        }
+                    )
+                    response = self.client.post(url, payload)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertTrue(html.fromstring(response.content).cssselect(".invalid-feedback"))
+                    row.refresh_from_db()
+                    batch.refresh_from_db()
+                    self.assertEqual(
+                        (batch.title, row.visit_address, batch.requests.count()), ("Unchanged", "Original", 1)
+                    )
+
+    def test_invalid_parent_prevents_row_changes(self):
+        for variant in self.variants:
+            batch = RequestBatch.objects.create(title=variant)
+            row = ServiceRequest.objects.create(batch=batch, service=self.boiler, visit_address="Original")
+            url, _, payload, prefix = self.page_payload(variant, batch)
+            payload.update({"title": "", f"{prefix}-0-visit_address": "Must not save"})
+            self.assertEqual(self.client.post(url, payload).status_code, 200)
+            row.refresh_from_db()
+            self.assertEqual(row.visit_address, "Original")
+
+    def test_update_add_delete_and_unchanged_cleanup(self):
+        for variant in self.variants:
+            with self.subTest(variant=variant):
+                batch = RequestBatch.objects.create(title=variant)
+                cleanup = ServiceRequest.objects.create(batch=batch, service=self.general, visit_address="Stale")
+                deleted = ServiceRequest.objects.create(batch=batch, service=self.remote, meeting_url="invalid")
+                url, page, payload, prefix = self.page_payload(variant, batch)
+                fragment = self.client.get(url, self.fragment_params(page))
+                self.assertEqual(fragment.status_code, 200)
+                self.assertIn(f'name="{prefix}-3-service"', fragment.json()["html"])
+                payload.update(
+                    {
+                        f"{prefix}-TOTAL_FORMS": "4",
+                        f"{prefix}-1-DELETE": "on",
+                        f"{prefix}-3-service": self.remote.pk,
+                        f"{prefix}-3-meeting_url": "https://example.com/added",
+                    }
+                )
+                self.assertEqual(self.client.post(url, payload).status_code, 302)
+                cleanup.refresh_from_db()
+                self.assertEqual(cleanup.visit_address, "")
+                self.assertFalse(ServiceRequest.objects.filter(pk=deleted.pk).exists())
+                self.assertEqual(batch.requests.count(), 2)
+                self.assertEqual(batch.requests.get(service=self.remote).meeting_url, "https://example.com/added")
+
+    def test_strict_bound_redisplay_rejects_changed_category(self):
+        for variant in self.variants:
+            url, _, payload, prefix = self.page_payload(variant)
+            category = ServiceCategory.objects.create(code=f"unknown_{variant}")
+            unknown = Service.objects.create(name="Unconfigured", category=category)
+            payload.update({"title": "Reject", f"{prefix}-0-service": unknown.pk})
+            response = self.client.post(url, payload)
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, category.code)
+            self.assertFalse(RequestBatch.objects.filter(title="Reject").exists())
+            unknown.delete()
+
+    def test_foreign_row_identity_is_rejected(self):
+        for variant in self.variants:
+            batch = RequestBatch.objects.create(title=variant)
+            owned = ServiceRequest.objects.create(batch=batch, service=self.boiler, visit_address="Owned")
+            foreign = ServiceRequest.objects.filter(batch__isnull=False).exclude(batch=batch).first()
+            original = (foreign.service_id, foreign.visit_address, foreign.meeting_url)
+            url, _, payload, prefix = self.page_payload(variant, batch)
+            payload[f"{prefix}-0-id"] = foreign.pk
+            response = self.client.post(url, payload)
+            self.assertEqual(response.status_code, 200)
+            foreign.refresh_from_db()
+            owned.refresh_from_db()
+            self.assertEqual((foreign.service_id, foreign.visit_address, foreign.meeting_url), original)
+            self.assertEqual(owned.visit_address, "Owned")
+
+    def test_permissions_protect_pages_fragments_and_posts(self):
+        unauthorized = get_user_model().objects.create_user(username="unauthorized-batch")
+        batch = RequestBatch.objects.first()
+        before = list(ServiceRequest.objects.values_list("pk", "service_id", "visit_address", "meeting_url"))
+        for variant in self.variants:
+            for target in (None, batch):
+                self.client.force_login(self.editor)
+                url, page, payload, _ = self.page_payload(variant, target)
+                params = self.fragment_params(page)
+                for user, expected in ((None, 302), (unauthorized, 403)):
+                    self.client.logout()
+                    if user:
+                        self.client.force_login(user)
+                    self.assertEqual(self.client.get(url).status_code, expected)
+                    self.assertEqual(self.client.get(url, params).status_code, expected)
+                    self.assertEqual(self.client.post(url, payload).status_code, expected)
+        self.assertEqual(
+            list(ServiceRequest.objects.values_list("pk", "service_id", "visit_address", "meeting_url")), before
+        )

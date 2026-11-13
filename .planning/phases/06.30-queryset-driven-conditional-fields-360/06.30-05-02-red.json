@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:examples/bootstrap5 .venv/bin/python -m pytest -c examples/bootstrap5/pytest.ini examples/bootstrap5/queryset_conditional/tests.py::BatchRequestTests::test_batch_create_routes_render_both_layouts -q -p no:cacheprovider --junitxml=.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-05-02-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.948\" timestamp=\"2026-11-13T10:19:59.196136+00:00\" hostname=\"weaver-dev\"><testcase classname=\"queryset_conditional.tests.BatchRequestTests\" name=\"test_batch_create_routes_render_both_layouts\" time=\"0.789\"><failure message=\"AssertionError: 404 != 200\">self = &lt;queryset_conditional.tests.BatchRequestTests testMethod=test_batch_create_routes_render_both_layouts&gt;\n\n    def test_batch_create_routes_render_both_layouts(self):\n&gt;       self.assertEqual(self.client.get(\"/queryset-conditional/service-batch/create/\").status_code, 200)\nE       AssertionError: 404 != 200\n\nexamples/bootstrap5/queryset_conditional/tests.py:358: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_batch_create_routes_render_both_layouts",
+  "targetFile": "examples/bootstrap5/queryset_conditional/tests.py",
+  "expected": "both batch create endpoints return 200",
+  "actual": "ordinary create endpoint returns 404",
+  "semanticAssessment": "Target executed and failed HTTP status assertion before subtests. Original subtest JUnit report was rejected as incomplete; this is an unmodified fresh single-failure report."
+}

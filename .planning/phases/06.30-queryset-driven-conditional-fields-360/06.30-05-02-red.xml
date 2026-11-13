@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.948" timestamp="2026-11-13T10:19:59.196136+00:00" hostname="weaver-dev"><testcase classname="queryset_conditional.tests.BatchRequestTests" name="test_batch_create_routes_render_both_layouts" time="0.789"><failure message="AssertionError: 404 != 200">self = &lt;queryset_conditional.tests.BatchRequestTests testMethod=test_batch_create_routes_render_both_layouts&gt;
+
+    def test_batch_create_routes_render_both_layouts(self):
+&gt;       self.assertEqual(self.client.get("/queryset-conditional/service-batch/create/").status_code, 200)
+E       AssertionError: 404 != 200
+
+examples/bootstrap5/queryset_conditional/tests.py:358: AssertionError</failure></testcase></testsuite></testsuites>

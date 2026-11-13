@@ -138,9 +138,14 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
     core = dict(DEFAULT_BUTTON_CLASSES)
     workflow = dict(CrudViewsWorkflowConfig.crud_views_button_class_defaults)
     assert len(core) == 102
-    assert len(workflow) == 10
+    assert len(workflow) == 18
+    transitions = {key: value for key, value in workflow.items() if key.startswith("workflow:transition-")}
+    assert transitions == {
+        f"workflow:transition-{variant}": f"btn btn-{variant}"
+        for variant in ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark")
+    }
     assert bc._get_default_button_classes() == core | workflow
-    assert len(get_button_classes()) == 112
+    assert len(get_button_classes()) == 120
     register_button_classes({"workflow:badge-purple": "theme-purple"})
     seen = []
     original_ready = CrudViewsConfig.ready
@@ -161,7 +166,9 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
                 assert get_button_class("workflow", "badge-purple") == "theme-purple"
                 assert get_button_class("workflow", "badge-light") == "project-light"
                 assert "workflow:badge-info" not in get_button_classes()
+                assert not set(transitions) & get_button_classes().keys()
             assert bc._get_default_button_classes() == core | workflow
+            assert transitions.items() <= get_button_classes().items()
             assert get_button_class("workflow", "badge-info") == workflow["workflow:badge-info"]
     assert seen == [core, core]
     # Restoration before any setting_changed signal also invalidates a warmed resolved map.
@@ -177,6 +184,17 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
         assert bc._heading_class("group", "icon-inline") == "me-2"
     assert core == DEFAULT_BUTTON_CLASSES
     assert CrudViewsWorkflowConfig.crud_views_button_class_defaults == workflow
+
+
+@pytest.mark.parametrize("source", ["theme", "settings"])
+@pytest.mark.parametrize("slot", ["transition-success", "transition-purple", "transition-success:icon"])
+def test_workflow_transition_key_checks(source, slot):
+    values = {f"workflow:{slot}": "custom"}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=values if source == "settings" else {}):
+        if source == "theme":
+            register_button_classes(values)
+        messages = button_class_check_messages()
+    assert [message.id for message in messages] == ([] if slot == "transition-success" else ["crud_views.W362"])
 
 
 @pytest.mark.parametrize(
@@ -238,7 +256,7 @@ class ThemeConfig(AppConfig):
     name = "badge_theme_probe"
     path = "."
     def ready(self):
-        assert len(bc._get_default_button_classes()) == 112
+        assert len(bc._get_default_button_classes()) == 120
         bc.register_button_classes({"workflow:badge-info": "theme-info"})
         seen.append(bc.get_button_class("workflow", "badge-info"))
 theme.ThemeConfig = ThemeConfig
@@ -255,7 +273,7 @@ assert len(bc.DEFAULT_BUTTON_CLASSES) == 102
 assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
 django.setup()
 assert seen == ["theme-info"]
-assert len(bc._get_default_button_classes()) == 112
+assert len(bc._get_default_button_classes()) == 120
 assert bc.get_button_class("workflow", "badge-info") == "theme-info"
 assert bc.get_button_class("workflow", "badge-light") == "project-light"
 """

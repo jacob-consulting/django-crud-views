@@ -37,7 +37,12 @@ def _render(form):
 
 
 @pytest.mark.parametrize("modal", [False, True])
-def test_transition_metadata_tracer(client_user_campaign_change, campaign_new, monkeypatch, settings, modal):
+def test_transition_metadata_tracer(
+    client_user_campaign_change, user_campaign_change, cv_campaign, campaign_new, monkeypatch, settings, modal
+):
+    from tests.test1.test_theme_form_requests import _grant_cancel_view
+
+    _grant_cancel_view(user_campaign_change, cv_campaign)
     monkeypatch.setattr(CampaignWorkflowView, "cv_transition_presentation", "buttons")
     monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
     settings.CRUD_VIEWS_ICON_LIBRARIES = {"tabler": {"renderer": "font", "class": "ti ti-{name}"}}
@@ -52,7 +57,7 @@ def test_transition_metadata_tracer(client_user_campaign_change, campaign_new, m
     assert len(first.cssselect(".ti.ti-check")) == 1
     assert first.text_content().strip() == "Confirm"
     assert first.get("value") == "wf_activate"
-    assert first.get("id") == "id_transition-action-0"
+    assert first.get("id") == f"{response.context['form']['transition'].auto_id}-action-0"
     assert second.get("value") == "wf_cancel_new"
     assert document.cssselect("[data-cv-cancel-url], a#button-id-cancel")
     _assert_descriptions(document)

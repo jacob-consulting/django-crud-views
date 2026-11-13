@@ -1,4 +1,6 @@
 import json
+import subprocess
+from pathlib import Path
 from unittest.mock import patch
 
 from django import forms
@@ -43,6 +45,78 @@ class RestrictedRequestForm(RequestForm):
 
 
 class DocumentationRecipeTests(TestCase):
+    def render_copied_wrapper(self, form, legend=None):
+        import re
+
+        from django.template import Context, Template
+        from test_docs_sync import DOCS_DIR
+
+        section = (DOCS_DIR / "reference/conditional.md").read_text().split("### Copied conditional wrapper", 1)[1]
+        recipe = re.search(r"```django\n(.*?)^```", section, re.S | re.M).group(1)
+        template = Template(recipe)
+        layout = form.get_layout_fields()
+        for field in layout:
+            if isinstance(field, ToggleGroup):
+                field.legend = legend
+        with (
+            patch.object(form, "get_layout_fields", return_value=layout),
+            patch(
+                "crud_views.lib.conditional.layout.render_to_string",
+                side_effect=lambda name, context: template.render(Context(context)),
+            ),
+        ):
+            return self.render(form)
+
+    def test_copied_wrapper_empty_membership_hides_and_disables_in_browser(self):
+        form_class = self.recipe("queryset-matching")["RequestForm"]
+        root = Path(__file__).resolve().parents[3]
+        script = """
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+const {JSDOM} = require('jsdom');
+const dom = new JSDOM('<form>' + JSON.parse(fs.readFileSync(0, 'utf8')) + '</form>', {runScripts: 'outside-only'});
+dom.window.eval(fs.readFileSync('src/crud_views/static/crud_views/js/toggle.js', 'utf8'));
+dom.window.cv.initConditional(dom.window.document);
+const groups = [...dom.window.document.querySelectorAll('[cv-data-toggle-group]')];
+assert.equal(groups.length, 2);
+for (const group of groups) {
+    assert.equal(group.getAttribute('cv-data-toggle-values'), '[]');
+    assert.equal(group.style.display, 'none');
+    assert.equal(group.querySelector('input').disabled, true);
+}
+dom.window.close();
+"""
+        for legend in (None, 'Details <"&>'):
+            with self.subTest(legend=legend):
+                form = form_class(cv_view=None, prefix='row-<"&>')
+                form.fields["service"].queryset = form.fields["service"].queryset.none()
+                markup = self.render_copied_wrapper(form, legend)
+                result = subprocess.run(
+                    ["node", "-e", script], input=json.dumps(markup), text=True, capture_output=True, cwd=root
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_copied_wrapper_successful_no_fields_guard_emits_no_container(self):
+        form = self.recipe("queryset-no-fields")["NoFieldsRequestForm"](cv_view=None)
+        rendered = html.fromstring(self.render_copied_wrapper(form))
+        self.assertFalse(rendered.xpath("//*[@cv-data-toggle-group]"))
+        self.assertFalse(rendered.xpath("//*[@role='alert']"))
+
+    def test_copied_wrapper_bound_coverage_diagnostic_is_escaped_outside_groups(self):
+        category = ServiceCategory.objects.create(code="<script>alert(1)</script>")
+        service = Service.objects.create(name="Unknown category", category=category)
+        for recipe, name in (("queryset-matching", "RequestForm"), ("queryset-no-fields", "NoFieldsRequestForm")):
+            with self.subTest(recipe=recipe):
+                form = self.recipe(recipe)[name](data={"service": service.pk}, cv_view=None)
+                self.assertFalse(form.is_valid())
+                rendered = html.fromstring(self.render_copied_wrapper(form))
+                diagnostics = rendered.xpath("//*[@class='cv-queryset-condition-error'][@role='alert']")
+                self.assertTrue(diagnostics)
+                for diagnostic in diagnostics:
+                    self.assertIn(category.code, diagnostic.text_content())
+                    self.assertFalse(diagnostic.xpath("ancestor::*[@cv-data-toggle-group]"))
+                self.assertFalse(rendered.xpath("//script"))
+
     def render(self, form):
         from crispy_forms.helper import FormHelper
         from crispy_forms.layout import Layout

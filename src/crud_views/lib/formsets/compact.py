@@ -8,6 +8,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.forms import widgets
 from django.utils.html import conditional_escape
 
+from crud_views.lib.conditional.layout import ToggleGroup, _QuerysetToggleCell
+from crud_views.lib.conditional.queryset import _QuerysetToggle
+
 from .layout import FormControl
 
 
@@ -146,7 +149,19 @@ def _compact_helper(x_form):
     for column in columns:
         bound_field = x_form.form[column.field]
         bound_field.help_text = conditional_escape(bound_field.help_text)
-    cells = [Div(column.field, css_class=f"col-md-{column.span}") for column in columns]
+    sources = {}
+    controlled = {}
+    for group in getattr(x_form.form, "cv_conditional_groups", ()):
+        if isinstance(group.toggle, _QuerysetToggle):
+            sources.setdefault(group.toggle.field_name(), group.toggle.source)
+            controlled.update((name, group.toggle) for name in group.fields)
+    # Empty guards enforce offered-option coverage even when no cells are controlled.
+    # The render context shares each row/source projection with its cell wrappers.
+    guards = [ToggleGroup(source.when()) for source in sources.values()]
+    cells = []
+    for column in columns:
+        cell = Div(column.field, css_class=f"col-md-{column.span}")
+        cells.append(_QuerysetToggleCell(controlled[column.field], cell) if column.field in controlled else cell)
     controls_class = f"col-md-{declaration.compact_layout.controls_span}"
     if declaration.can_order or not declaration.edit_only or "DELETE" in x_form.form.fields:
         cells.append(Div(FormControl(formset=declaration), css_class=controls_class))
@@ -154,5 +169,5 @@ def _compact_helper(x_form):
         cells.append(Div(css_class=f"{controls_class} d-none d-md-block"))
     identities = (declaration.klass.model._meta.pk.name, declaration.klass.fk.name, "ORDER", "DELETE")
     hidden = [Field(name, type="hidden") for name in dict.fromkeys(identities) if name in x_form.form.fields]
-    helper.layout = Layout(Row(*cells, css_class="cv-formset-compact-fields"), *hidden)
+    helper.layout = Layout(*guards, Row(*cells, css_class="cv-formset-compact-fields"), *hidden)
     return helper

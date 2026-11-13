@@ -1,12 +1,50 @@
 from __future__ import annotations
 
 import json
+from copy import copy
 
 from crispy_forms.layout import Layout, LayoutObject
+from crispy_forms.utils import flatatt
 from django.template.loader import render_to_string
+from django.utils.html import format_html
 
 from .queryset import QuerysetConditionCoverageError, _QuerysetToggle
 from .toggle import ToggleSource, ValueToggle
+
+
+def _queryset_render_values(toggle, form, context):
+    try:
+        return toggle.render_values(form, context), ""
+    except QuerysetConditionCoverageError as exc:
+        if not form.is_bound:
+            raise
+        # A rejected formset response must keep sibling/empty row errors visible.
+        return [], str(exc)
+
+
+class _QuerysetToggleCell(LayoutObject):
+    """Attach row-local membership to the existing compact cell at render time."""
+
+    def __init__(self, toggle, cell):
+        self.toggle = toggle
+        self.cell = cell
+
+    def render(self, form, context, **kwargs):
+        values, diagnostic = _queryset_render_values(self.toggle, form, context)
+        cell = copy(self.cell)
+        cell.flat_attrs += flatatt(
+            {
+                "cv-data-toggle-group": True,
+                "cv-data-toggle-field": form.add_prefix(self.toggle.field_name()),
+                "cv-data-toggle-values": json.dumps(values),
+                "cv-data-toggle-kind": "queryset",
+                "cv-data-toggle-disable-only": True,
+            }
+        )
+        rendered = cell.render(form, context, **kwargs)
+        if diagnostic:
+            return format_html('<div class="cv-queryset-condition-error" role="alert">{}</div>{}', diagnostic, rendered)
+        return rendered
 
 
 class ToggleGroup(LayoutObject):
@@ -35,15 +73,7 @@ class ToggleGroup(LayoutObject):
         queryset_toggle = isinstance(self.toggle_field, _QuerysetToggle)
         guard = queryset_toggle and not self.toggle_field.values and not self.inner.fields
         if queryset_toggle:
-            try:
-                values = self.toggle_field.render_values(form, context)
-            except QuerysetConditionCoverageError as exc:
-                if not form.is_bound:
-                    raise
-                # Rendering must preserve validation errors, including valid
-                # sibling/empty rows on a rejected bound formset response.
-                diagnostic = str(exc)
-                values = []
+            values, diagnostic = _queryset_render_values(self.toggle_field, form, context)
         elif isinstance(self.toggle_field, ValueToggle):
             values = self.toggle_field.values
         inner_html = self.inner.render(form, context, **kwargs)

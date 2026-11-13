@@ -28,9 +28,7 @@ def compact_tree(*, source=None, guard_only=False, extra=2, data=None, parent=No
     declaration = FormSet(
         title="Records",
         klass=factory,
-        compact_layout=CompactLayout(
-            [CompactColumn(name, span=3) for name in klass.Meta.fields], controls_span=3
-        ),
+        compact_layout=CompactLayout([CompactColumn(name, span=3) for name in klass.Meta.fields], controls_span=3),
     )
     trees = FormSets(formsets={"records": declaration})
     request = RequestFactory().get("/") if data is None else RequestFactory().post("/", data)
@@ -95,13 +93,16 @@ def test_compact_no_fields_render_coverage(guard_only, django_assert_num_queries
     if guard_only:
         assert not doc.cssselect("[cv-data-toggle-group]")
     else:
-        assert all(json.loads(cell.get("cv-data-toggle-values")) == [] for cell in doc.cssselect("[cv-data-toggle-group]"))
+        assert all(
+            json.loads(cell.get("cv-data-toggle-values")) == [] for cell in doc.cssselect("[cv-data-toggle-group]")
+        )
     Publisher.objects.create(name="unknown<script>")
-    with pytest.raises(ImproperlyConfigured, match="reference.*unknown"):
+    with pytest.raises(ImproperlyConfigured, match=r"reference.*unknown"):
         render(node)
     _, permissive = compact_tree(guard_only=guard_only, source=source_for(allow_unmatched=True))
     assert not render(permissive).cssselect(".cv-queryset-condition-error")
     # A rejected sibling keeps the whole redisplay bound, even for an empty row.
+    _, node = compact_tree(guard_only=guard_only)
     for row in node.forms:
         row.form.is_bound = True
         row.form.data = {}

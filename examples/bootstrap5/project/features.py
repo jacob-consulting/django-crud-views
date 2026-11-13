@@ -218,6 +218,26 @@ FEATURES: list[Feature] = [
                 label="Conditional field-groups",
                 anchor="kind-1-conditional-field-group-in-a-form",
             ),
+            DocRef(
+                page="reference/conditional.md",
+                label="Queryset-driven conditional fields",
+                anchor="queryset-driven-conditional-fields",
+            ),
+            DocRef(
+                page="reference/conditional.md",
+                label="Strict coverage and permissive matching",
+                anchor="strict-coverage-and-permissive-matching",
+            ),
+            DocRef(
+                page="reference/conditional.md",
+                label="Queryset controller bounds",
+                anchor="queryset-controller-bounds",
+            ),
+            DocRef(
+                page="reference/formsets.md",
+                label="Queryset-driven row fields",
+                anchor="queryset-driven-row-fields",
+            ),
         ),
     ),
     Feature(

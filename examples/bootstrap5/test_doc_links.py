@@ -145,3 +145,21 @@ def test_docs_page_links_back_to_demo(feature, page):
     assert demo_url in links, (
         f"docs/{page} has no 'Try it live' box linking to the {feature.title} example ({demo_url})"
     )
+
+
+def test_queryset_demo_docs_cover_contract_and_resolve_all_three_routes():
+    from django.urls import resolve, reverse
+
+    feature = next(feature for feature in FEATURES if feature.app == "queryset_conditional")
+    assert {
+        ("reference/conditional.md", "queryset-driven-conditional-fields"),
+        ("reference/conditional.md", "strict-coverage-and-permissive-matching"),
+        ("reference/conditional.md", "queryset-controller-bounds"),
+        ("reference/formsets.md", "queryset-driven-row-fields"),
+    } <= {(ref.page, ref.anchor) for ref in feature.docs}
+    for page in ("reference/conditional.md", "reference/formsets.md"):
+        links = demo_links((DOCS_DIR / page).read_text(encoding="utf-8"))
+        for name in ("service_request-list", "service_batch-list", "service_batch_compact-list"):
+            path = reverse(name)
+            assert resolve(path).url_name == name
+            assert DEMO_BASE + path in links

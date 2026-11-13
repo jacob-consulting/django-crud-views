@@ -594,6 +594,15 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Queryset-driven conditional fields** ([#360](https://github.com/jacob-consulting/django-crud-views/issues/360)):
+  opt-in `QuerysetConditions` maps native model-choice selections to declared categories on base forms and
+  independent ordinary/compact inline rows. Strict offered/selected coverage, explicit no-fields categories and
+  permissive opt-in preserve native selection validation; inactive editable values clear on successful save while
+  browser switching retains unsaved values. Compact cells stay visible with inactive controls disabled. A focused
+  service-request example demonstrates all three layouts, with executable
+  [recipes and measured query costs](docs/reference/conditional.md#queryset-driven-conditional-fields).
+  Published example/documentation availability follows deployment; downstream browser acceptance is tracked separately.
+
 - **Choice-driven conditional groups** (#354): share `ValueToggle` descriptors between server groups and crispy
   layouts for native dropdown/radio controls, including groups shared by several choices. Standard choice fields
   support bounded automatic clearing and authoritative explicit `empty_values`. The Customer example demonstrates

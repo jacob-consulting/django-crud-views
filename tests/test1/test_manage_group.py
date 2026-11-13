@@ -6,7 +6,6 @@ from django.core.management import call_command, get_commands
 
 from crud_views.lib.settings import crud_views_settings
 
-
 pytestmark = pytest.mark.django_db
 
 

@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 11
-status: ready to execute
-stopped_at: Plan 11 checked and ready; acceptance refresh and remaining UAT pending
-last_updated: "2026-11-13T15:52:51.896Z"
+status: ready for verification
+stopped_at: Completed 06.30-11-PLAN.md; validation, canonical verification and H1/rest-H2 pending
+last_updated: "2026-11-13T16:20:12.212Z"
 last_activity: 2026-11-13
-last_activity_desc: Plan 11 acceptance refresh planned and checked
-state_head: 9798affdd8fb63f40230dd4a16ba0b4ae12a60f7
+last_activity_desc: Plan 11 acceptance refreshed; owner verification and remaining UAT pending
+state_head: 53fec48240b98edf58a1cdef2794cb967ada5d76
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 194
-  completed_plans: 193
+  completed_plans: 194
 milestone_name: milestone
 ---
 
@@ -31,13 +31,21 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — READY TO EXECUTE
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — READY FOR VERIFICATION
 Current Plan: 11
 Total Plans in Phase: 11
-Status: ready to execute
-Last activity: 2026-11-13 — Plan 11 acceptance refresh checked with zero findings
+Status: ready for verification
+Last activity: 2026-11-13 — Plan 11 full acceptance and final freshness checks passed
 
-Next: $gsd-execute-phase 06.30 --gaps-only — execute plan 11 acceptance refresh, then remaining H1/H2 human UAT. Phase remains pending.
+Next: Validation-owner update and independent phase re-verification, then remaining H1/rest-H2 human UAT. Phase remains pending; no Phase 7 advancement.
+
+### Phase 06.30 plan 11 acceptance refresh — 2026-11-13
+
+- Eleven of eleven plans executed. Original Chromium targets pass upstream 6/87 and downstream 4/47 with ten current captures, database proof and successful cleanup.
+- Fresh complete 18-command matrix passes: core 13,292 plus exact known CSP skip; four compatibility/floor selections 712 each; CSP 1; JS 447/2; examples 505 plus 183 subtests; docs 149; downstream 238/83. Release negative controls 41 and final EVIDENCE_OK pass.
+- Adoption checkout remains detached at 9ca0675 under /home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test, with its existing environment link retained. Explicit imports and final active-main/developer-data identity comparisons pass; port 9000 untouched.
+- Preserved first matrix failure caused by the workflow test's sibling-path default. Its existing CV_WORKFLOW_UPSTREAM_SRC binding passed the isolated case and a full fresh rerun; no source, harness or selection change.
+- EVIDENCE and 11-SUMMARY hand off canonical status to validation/verifier owners. G-06.30-1 stays closed; H1/rest-H2 remain pending. No phase completion, human approval, push or merge. Original state.json bytes and unrelated .gitkeep files preserved.
 
 ### Phase 06.30 acceptance refresh planning — 2026-11-13
 
@@ -1076,6 +1084,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P08 | 13min | 2 tasks | 17 files |
 | Phase 06.30 P09 | 26min | 2 tasks | 11 files |
 | Phase 06.30 P10 | 11min | 3 tasks | 14 files |
+| Phase 06.30 P11 | 21min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1367,6 +1376,7 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Reuse successful command transcripts only for a harness-only correction with byte-identical product/test/asset/docs inputs; always revalidate browsers and repeat integration/lint.
 - [Phase 06.30]: Ordinary row cards use per-level row_legend; False and empty strings remove the entire frame; custom labels retain case and deferred translation.
 - [Phase 06.30]: Plan 10 resolves only G-06.30-1; plan 08/09 evidence is stale until regenerated and H1 plus remaining H2 stay pending.
+- [Phase 06.30]: Plan 11 binds isolated downstream workflow-source checks with CV_WORKFLOW_UPSTREAM_SRC, preserves failed evidence and reruns the full matrix; H1/rest-H2 remain pending.
 
 ### Pending Todos
 
@@ -1446,6 +1456,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T15:22:50.939Z
-Stopped at: Plan 10 verified; acceptance refresh and remaining UAT pending
+Last session: 2026-11-13T16:20:07.354Z
+Stopped at: Completed 06.30-11-PLAN.md; validation, canonical verification and H1/rest-H2 pending
 Resume file: None

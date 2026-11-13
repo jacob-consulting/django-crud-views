@@ -1,3 +1,4 @@
+from queryset_conditional.inlines import cv_service_batch, cv_service_batch_compact
 from queryset_conditional.standalone import cv_service_request
 
-urlpatterns = cv_service_request.urlpatterns
+urlpatterns = cv_service_request.urlpatterns + cv_service_batch.urlpatterns + cv_service_batch_compact.urlpatterns

@@ -371,7 +371,7 @@ class BatchRequestTests(TestCase):
     def test_create_no_js_and_reopen_independent_rows(self):
         for variant in self.variants:
             with self.subTest(variant=variant):
-                url, page, payload, prefix = self.page_payload(variant)
+                url, _, payload, prefix = self.page_payload(variant)
                 payload.update(
                     {
                         "title": variant,
@@ -389,7 +389,7 @@ class BatchRequestTests(TestCase):
                 self.assertEqual(batch.requests.count(), 2)  # Empty extra row stays empty.
                 self.assertEqual(batch.requests.get(service=self.boiler).meeting_url, "")
                 self.assertEqual(batch.requests.get(service=self.remote).visit_address, "")
-                _, reopened, saved, prefix = self.page_payload(variant, batch)
+                _, _, saved, prefix = self.page_payload(variant, batch)
                 self.assertEqual(saved[f"{prefix}-0-visit_address"], "On site")
                 self.assertEqual(saved[f"{prefix}-1-meeting_url"], "https://example.com/call")
                 self.assertEqual(self.client.get(reverse(f"{variant}-list")).status_code, 200)

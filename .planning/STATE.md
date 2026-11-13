@@ -1,20 +1,21 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.32"
-current_phase_name: Workflow transition variant and icon metadata
-current_plan: 1
-status: verifying
-stopped_at: Completed 06.32-01-PLAN.md; awaiting phase audits and verification
-last_updated: "2026-11-13T09:21:13.336Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.32 complete, ready to plan Phase 7
+last_updated: "2026-11-13T09:40:44.892Z"
 last_activity: 2026-11-13
-last_activity_desc: Phase 06.32 plan execution complete; awaiting phase audits and verification
-state_head: 72f9d3db9878d29baada7d5bc98574523b6eee74
+last_activity_desc: Phase 06.32 complete, transitioned to Phase 7
+state_head: 94cb928d33df84f2f2ba94468bebfe2267e485ec
 progress:
   total_phases: 37
-  completed_phases: 35
+  completed_phases: 36
   total_plans: 184
   completed_plans: 184
+  percent: 97
 milestone_name: milestone
 ---
 
@@ -24,20 +25,27 @@ Total Phases: 37
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-12)
+See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.32 — Workflow transition variant and icon metadata
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.32 (Workflow transition variant and icon metadata) — AWAITING VERIFICATION
-Current Plan: 1
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
 Total Plans in Phase: 1
-Status: Plan execution complete — awaiting phase audits and verification
-Last activity: 2026-11-13 — Phase 06.32 plan execution complete; 13,150 full-suite cases passed
+Status: Ready to plan
+Last activity: 2026-11-13 — Phase 06.32 complete, transitioned to Phase 7
 
-Next: Phase 06.32 audits and verification (execute-phase orchestrator)
+Next: $gsd-discuss-phase 7
+
+### Phase 06.32 completion — 2026-11-13
+
+- One plan/three tasks complete: button-only transition variants and icons use existing registries, visible captions and exact fallbacks; four production files changed.
+- Canonical verification passed 7/7, decisions 9/9, with 90 independent passing cases; validation three tasks covered, security six threats closed, deep review 12 files/zero findings. UI 21/24 has optional browser appearance limits, no required human checks.
+- Full Python suite 13,150 passed; Django 4.2/5.2 focused 1,589 each; JavaScript 438 passed; strict docs, scoped Ruff and package wheel/sdist build passed. Shared installed Vitest 5.0.3 differs from declared ^5.0.5; other Python versions and browser appearance unverified.
+- Completion scanner mistook a test command for a file and warned about deliberately prose-only requirements. Tracking progress-row/current-focus leftovers corrected. No implementation gaps, pending todos, stale handoffs or learnings graduation; maps require post-ship refresh. Local commits only.
 
 ### Phase 06.29 completion — 2026-11-12
 
@@ -811,7 +819,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 183
+- Total plans completed: 180
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -853,6 +861,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.27 | 5 | - | - |
 | 06.28 | 1 | - | - |
 | 06.29 | 2 | - | - |
+| 06.32 | 1 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1357,6 +1366,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T09:21:09.410Z
-Stopped at: Completed 06.32-01-PLAN.md; awaiting phase audits and verification
+Last session: 2026-11-13T09:41:49.495652+00:00
+Stopped at: Phase 06.32 complete, ready to plan Phase 7
 Resume file: None

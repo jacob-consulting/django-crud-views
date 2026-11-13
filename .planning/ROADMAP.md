@@ -55,7 +55,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.28: Tooltip recipe lifecycle safeguards (#355)** (completed 2026-11-12)
 
 - [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
-- [ ] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior.
+- [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1808,7 +1808,7 @@ Plans:
 4. Radio presentation, permission filtering, validation, and transition execution retain their behavior; the relevant regression suite passes.
 5. Workflow and theme documentation describe the metadata, keys, defaults, fallbacks, and icon registration; changelog guidance follows repository policy.
 
-**Plans:** 1/1 plans executed
+**Plans:** 1/1 plans complete
 
 Plans:
 **Wave 1**
@@ -1931,5 +1931,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
-| 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | In Progress | - |
+| 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

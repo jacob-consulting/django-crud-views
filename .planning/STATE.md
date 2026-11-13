@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 9
-status: executing
-stopped_at: Completed 06.30-08-PLAN.md; next 06.30-09-PLAN.md
-last_updated: "2026-11-13T10:53:58.847Z"
+status: verifying
+stopped_at: Completed 06.30-09-PLAN.md; 9/9 executed, independent phase verification pending
+last_updated: "2026-11-13T11:24:14.113Z"
 last_activity: 2026-11-13
-last_activity_desc: Phase 06.30 execution started
-state_head: aea6fcb4c50ea28ee49852b8d7a6f1a45acb7186
+last_activity_desc: Phase 06.30 plans executed; independent verification pending
+state_head: fc616da2728428f7c850b4e8b055e1c0fe885167
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 192
-  completed_plans: 191
+  completed_plans: 192
 milestone_name: milestone
 ---
 
@@ -31,13 +31,22 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — EXECUTING
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING INDEPENDENT VERIFICATION
 Current Plan: 9
 Total Plans in Phase: 9
-Status: Ready to execute
-Last activity: 2026-11-13 — Phase 06.30 execution started
+Status: 9/9 plans executed; phase verification pending
+Last activity: 2026-11-13 — Plan 09 acceptance evidence and summary committed
 
-Next: Execute 06.30-09-PLAN.md (approved order: 01, 02, 03, 04, 07, 05, 06, 08, 09).
+Next: Independently verify Phase 06.30 and complete qualitative UAT; phase completion is not asserted.
+
+### Phase 06.30 plan 09 execution — 2026-11-13
+
+- Nine of nine plans executed; summary committed as fc616da2 before progress updates. Phase verification and qualitative UAT remain pending.
+- Final source-bound matrix passes: core 13,243 with its exact existing Django 6-only CSP skip; that CSP case passes on 6.0. Four affected/floor selections pass 712 each; JS 447/2; examples 502 plus 179 subtests; docs 149; downstream apps/theme 238/83. Required behavior has zero skips.
+- Both current-source browser targets pass 6/87 and 4/47; release self-tests 36 and nine actual corrupted-report CLI cases prove integrity rejection. Final docs/link checks and strict build reran after findings/changelog reconciliation.
+- Fixed test-local registry leakage; corrected the integration harness interpreter prerequisite. Successful unchanged-input commands were retained only through explicitly authorized harness-only resumption. All failed attempts remain documented.
+- Upstream delivery e5653007 and ab70d9ed; separate downstream findings commit 2c89e46. No push/deployment or developer-data mutation. Initial dirty state.json and unrelated .gitkeep files remain outside scoped commits.
+- SDK recorded the final plan and left the phase unverified. Global progress recalculation declined for unscoped phase state; corrected the stale ROADMAP table row and removed the SDK's premature prose "Phase complete" wording. No Nyquist compliance or phase-complete flag was set.
 
 ### Phase 06.30 plan 08 execution — 2026-11-13
 
@@ -1037,6 +1046,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P05 | 11min | 3 tasks | 9 files |
 | Phase 06.30 P06 | 7min | 2 tasks | 8 files |
 | Phase 06.30 P08 | 13min | 2 tasks | 17 files |
+| Phase 06.30 P09 | 26min | 2 tasks | 11 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1324,6 +1334,8 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Plan 05 brings forward the minimal conditional-guide demo backlink because Feature.docs registration immediately activates reciprocal-link tests; full queryset documentation remains plan 06.
 - [Phase 06.30]: Plan 06 executes named documentation recipes against real example models; cv-sync verifies running-app excerpts and real routes/anchors remain separate from stable deployment.
 - [Phase 06.30]: Browser acceptance uses real project hosts with disposable SQLite, exact imported upstream identity and byte-for-byte actually served toggle.js checks.
+- [Phase 06.30]: Required feature/downstream selections reject skips; full Django 5.2 records its exact existing Django 6-only CSP skip, with that test verified on 6.0.
+- [Phase 06.30]: Reuse successful command transcripts only for a harness-only correction with byte-identical product/test/asset/docs inputs; always revalidate browsers and repeat integration/lint.
 
 ### Pending Todos
 
@@ -1403,6 +1415,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T10:53:53.955Z
-Stopped at: Completed 06.30-08-PLAN.md; next 06.30-09-PLAN.md
+Last session: 2026-11-13T11:23:34.648Z
+Stopped at: Completed 06.30-09-PLAN.md; 9/9 executed, independent phase verification pending
 Resume file: None

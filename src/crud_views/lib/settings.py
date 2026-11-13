@@ -31,7 +31,7 @@ class CrudViewsSettings(BaseModel):
     extends: str | None = from_settings(
         "CRUD_VIEWS_EXTENDS",
     )
-    manage_views_enabled: str = from_settings("CRUD_VIEWS_MANAGE_VIEWS_ENABLED", default="debug_only")
+    manage_views_enabled: str = from_settings("CRUD_VIEWS_MANAGE_VIEWS_ENABLED", default="yes")
     manage_group: str = from_settings("CRUD_VIEWS_MANAGE_GROUP", default="CRUD_VIEWS_MANAGE")
     manage_show_users: bool = from_settings("CRUD_VIEWS_MANAGE_SHOW_USERS", default=False)
     manage_view_class: str | None = from_settings("CRUD_VIEWS_MANAGE_VIEW_CLASS", default=None)

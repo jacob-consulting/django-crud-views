@@ -66,8 +66,10 @@ def test_manage_membership_query_per_evaluation(cv_author, user_author_view, dja
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("actor,mode,debug", [("anonymous", "yes", True), ("inactive", "yes", True),
-                                             ("active", "no", True), ("active", "debug_only", False)])
+@pytest.mark.parametrize(
+    "actor,mode,debug",
+    [("anonymous", "yes", True), ("inactive", "yes", True), ("active", "no", True), ("active", "debug_only", False)],
+)
 def test_manage_short_circuits_without_membership_query(
     cv_author, user_author_view, monkeypatch, settings, django_assert_num_queries, actor, mode, debug
 ):
@@ -84,6 +86,16 @@ def test_manage_short_circuits_without_membership_query(
         assert not cv_author.get_view_class("manage").cv_has_access(user)
 
 
+@pytest.fixture
+def client_developer(client_user_author_view, user_author_view):
+    from django.contrib.auth.models import Group
+
+    from crud_views.lib.settings import crud_views_settings
+
+    user_author_view.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    return client_user_author_view
+
+
 @pytest.mark.django_db
 def test_manage_view_auto_registered(cv_author: ViewSet):
     """Manage view should be auto-registered when CRUD_VIEWS_MANAGE_VIEWS_ENABLED=yes."""
@@ -98,16 +110,16 @@ def test_manage_url_pattern(cv_author: ViewSet):
 
 
 @pytest.mark.django_db
-def test_manage_view_accessible(client_user_author_view: Client, cv_author):
-    """Manage view should be accessible (has_permission always returns True)."""
-    response = client_user_author_view.get("/author/manage/")
+def test_manage_view_accessible(client_developer: Client, cv_author):
+    """Manage view should be accessible to an active group member."""
+    response = client_developer.get("/author/manage/")
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_manage_view_shows_viewset_info(client_user_author_view: Client, cv_author):
+def test_manage_view_shows_viewset_info(client_developer: Client, cv_author):
     """Manage view should display viewset name and config."""
-    response = client_user_author_view.get("/author/manage/")
+    response = client_developer.get("/author/manage/")
     content = response.content.decode("utf-8")
 
     assert "author" in content
@@ -115,9 +127,9 @@ def test_manage_view_shows_viewset_info(client_user_author_view: Client, cv_auth
 
 
 @pytest.mark.django_db
-def test_manage_view_shows_permissions(client_user_author_view: Client, cv_author):
+def test_manage_view_shows_permissions(client_developer: Client, cv_author):
     """Manage view should list the viewset's permissions."""
-    response = client_user_author_view.get("/author/manage/")
+    response = client_developer.get("/author/manage/")
     content = response.content.decode("utf-8")
 
     assert "add" in content
@@ -127,9 +139,9 @@ def test_manage_view_shows_permissions(client_user_author_view: Client, cv_autho
 
 
 @pytest.mark.django_db
-def test_manage_view_shows_registered_views(client_user_author_view: Client, cv_author):
+def test_manage_view_shows_registered_views(client_developer: Client, cv_author):
     """Manage view should list all registered views for the viewset."""
-    response = client_user_author_view.get("/author/manage/")
+    response = client_developer.get("/author/manage/")
     content = response.content.decode("utf-8")
 
     for key in cv_author.get_all_views():
@@ -137,16 +149,16 @@ def test_manage_view_shows_registered_views(client_user_author_view: Client, cv_
 
 
 @pytest.mark.django_db
-def test_manage_context_has_cv(client_user_author_view: Client, cv_author):
+def test_manage_context_has_cv(client_developer: Client, cv_author):
     """Template context should contain the viewset as 'cv'."""
-    response = client_user_author_view.get("/author/manage/")
+    response = client_developer.get("/author/manage/")
     assert response.context["cv"] is cv_author
 
 
 @pytest.mark.django_db
-def test_manage_context_has_permission_rows(client_user_author_view: Client, cv_author):
+def test_manage_context_has_permission_rows(client_developer: Client, cv_author):
     """Template context 'data' should contain permission rows with access info."""
-    response = client_user_author_view.get("/author/manage/")
+    response = client_developer.get("/author/manage/")
     data = response.context["data"]
 
     assert len(data) >= 4
@@ -164,9 +176,9 @@ def test_manage_context_has_permission_rows(client_user_author_view: Client, cv_
 
 
 @pytest.mark.django_db
-def test_manage_context_has_view_data(client_user_author_view: Client, cv_author):
+def test_manage_context_has_view_data(client_developer: Client, cv_author):
     """Template context 'views' should contain view metadata dicts."""
-    response = client_user_author_view.get("/author/manage/")
+    response = client_developer.get("/author/manage/")
     views = response.context["views"]
 
     assert "list" in views
@@ -194,12 +206,12 @@ def test_manage_registered_on_all_viewsets(cv_author, cv_publisher, cv_book):
 
 @pytest.mark.django_db
 def test_manage_accessible_via_crud_views_manage_group(client, cv_author, monkeypatch):
-    """User in CRUD_VIEWS_MANAGE group can access manage view even when setting is 'no'."""
+    """User in CRUD_VIEWS_MANAGE group can access manage view when enabled."""
     from django.contrib.auth.models import Group, User
 
     from crud_views.lib.settings import crud_views_settings
 
-    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "no")
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "yes")
 
     group = Group.objects.create(name="CRUD_VIEWS_MANAGE")
     user = User.objects.create_user(username="manage_user", password="password")
@@ -237,15 +249,15 @@ def test_manage_anonymous_user_redirected(client, cv_author, monkeypatch):
 
 
 @pytest.mark.django_db
-def test_manage_context_has_permission_holders(client_user_author_view, cv_author):
+def test_manage_context_has_permission_holders(client_developer, cv_author):
     """Manage view context includes permission_holders list."""
-    response = client_user_author_view.get("/author/manage/")
+    response = client_developer.get("/author/manage/")
     assert "permission_holders" in response.context
     assert isinstance(response.context["permission_holders"], list)
 
 
 @pytest.mark.django_db
-def test_manage_permission_holders_shows_groups(client_user_author_view, cv_author):
+def test_manage_permission_holders_shows_groups(client_developer, cv_author):
     """Groups with model-level permissions appear in permission_holders."""
     from django.contrib.auth.models import Group, Permission
     from django.contrib.contenttypes.models import ContentType
@@ -257,7 +269,7 @@ def test_manage_permission_holders_shows_groups(client_user_author_view, cv_auth
     group = Group.objects.create(name="viewers")
     group.permissions.add(perm)
 
-    response = client_user_author_view.get("/author/manage/")
+    response = client_developer.get("/author/manage/")
     holders = response.context["permission_holders"]
 
     viewer_rows = [r for r in holders if r["group"] == "viewers" and r["permission"] == "view"]
@@ -342,13 +354,13 @@ def test_register_uses_custom_manage_view_class():
 
 
 @pytest.mark.django_db
-def test_manage_view_headings_translated(client_user_author_view: Client, cv_author):
+def test_manage_view_headings_translated(client_developer: Client, cv_author):
     """Headings and column headers follow the active language; attribute names (pk, app, ...) stay as-is."""
     from django.utils import translation
     from lxml import html
 
     with translation.override("de"):
-        response = client_user_author_view.get("/author/manage/")
+        response = client_developer.get("/author/manage/")
     doc = html.fromstring(response.content)
     headings = [h.text_content().strip() for h in doc.cssselect("h3, h4")]
     assert {"Eigenschaften", "Berechtigungen", "Berechtigungsinhaber", "Views"} <= set(headings)

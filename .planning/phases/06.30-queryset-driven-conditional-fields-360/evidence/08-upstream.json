@@ -4,7 +4,7 @@
     "upstream": "/home/alex/projects/alex/django-crud-views",
     "downstream": null
   },
-  "started": "2026-11-13T11:17:23.819Z",
+  "started": "2026-11-13T12:01:37.292Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/queryset-conditional.cjs",
@@ -230,7 +230,7 @@
     "upstream/examples/bootstrap5/queryset_conditional/models.py": "335f1279539ea2e44804d50893487ef1202b373f6b8a80ef042d1a2a9619939a",
     "upstream/examples/bootstrap5/queryset_conditional/seed.py": "13d569b253b73a193df3f25c93bdb16a15cd95337cabe2c79692dff2052f1d12",
     "upstream/examples/bootstrap5/queryset_conditional/standalone.py": "5a0b641529bec12cf698c5c6cbfbc6af285d6628923c6d3a0c29b1c18bce4d88",
-    "upstream/examples/bootstrap5/queryset_conditional/tests.py": "c149d7f257b8a83e523aa7883d93634858dd313e1a4abeef32257c03331f0dba",
+    "upstream/examples/bootstrap5/queryset_conditional/tests.py": "58024a658463eea7f54e2cc7a16f7fd623dc7553cefa8a8a6af1c70c18d3ff16",
     "upstream/examples/bootstrap5/queryset_conditional/urls.py": "8e900ce4acef0ae2d5ff1005d6c47e70f73221233dc47caba8fa61c27709430b",
     "upstream/examples/bootstrap5/resources/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "upstream/examples/bootstrap5/resources/apps.py": "4fe4a7e8b965fcfbf01376e72838eca06b405417ff69d7b8a885c518e5ca8c3e",
@@ -609,7 +609,7 @@
     "upstream/tests/browser/theme_adoption_sources.py": "c5aa6a78fadf7ef219c680ef419d4494fb45f8e2570139849d199e16f797be9c",
     "upstream/tests/browser/theme-adoption-config.test.cjs": "60ed998a204447545a948ecf8ea9da0ad389328c153a976d96cdce906c6ad5f2",
     "upstream/tests/browser/theme-adoption.cjs": "9c8f9c7a8545c9f2935744a7f2f44b547ee4e0af29b468472bc91b80b3876168",
-    "upstream/tests/browser/verify_queryset_release.py": "dd25fb678066282e08471e385830fea3e08958aacc8d43d38925687be48b10ec",
+    "upstream/tests/browser/verify_queryset_release.py": "1d4b231c72367674cfd87351bcb1c4fe468f809d1bf33bdd4b0d2c3fa7bec70b",
     "upstream/tests/browser/workflow_presentation_server.py": "5bd1452b2f4096c99a4c73617854a81ad20a6dd08beadd0adac7396288194aa6",
     "upstream/tests/browser/workflow_validation_server.py": "1190fe8878ee3fbd696087c9aa91e6dd64ce72cee22be41d3352618e68997633",
     "upstream/tests/browser/workflow-presentation.cjs": "810ac97bcb303b2e5f8534da5f71b0134def6f1700a18da26274d3a12958e5b4",
@@ -981,7 +981,7 @@
     "upstream/docs/reference/breadcrumb.md": "6e4162de8f2d442735d268e1f82df63a87511070ae891c42fae0ea220343a2a8",
     "upstream/docs/reference/buttons.md": "16086ef70e80515f917b24fcecbdaa3d6e8714a024e6c66b17bebc46a4b0b7ac",
     "upstream/docs/reference/card-list-view.md": "102146fe0b7313add7c66585c073d0ba922f06f024b329a8f89fe5f7fdfd14f4",
-    "upstream/docs/reference/conditional.md": "0d92fecb4fee94540819312d10aee5e2c385a41fa5fab44eb25e4380ba1eb6fa",
+    "upstream/docs/reference/conditional.md": "3541c814f049be3606e296b7e092c385505b711abba14e160cd8200cb7714a2f",
     "upstream/docs/reference/context_buttons.md": "127ae1bf4955c21e2e2b53dec165dfd8ae15a1b4c86c900a6e4a7df61c1b127b",
     "upstream/docs/reference/create_view.md": "991f2d77d3465b62d0dae1b678808fdc8c189da958fa99e5493ce127a2fd785d",
     "upstream/docs/reference/custom_form_view.md": "19e9f0e9279f027ea99684b1aa3dda2e72765e43f2f0967ed328788ddf58069e",
@@ -2317,7 +2317,7 @@
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/standalone-error-390.png",
-      "sha256": "c81cf971f0eb0cb9322fd932fc3d2fbd29b17fb0bba9ed5794c67061ccfbe037"
+      "sha256": "35982694f641db05c824e00dfd59662e8ec17b93acc9597e9f0264da58406151"
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/ordinary-1280.png",
@@ -2338,88 +2338,88 @@
   ],
   "pages": [
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/1/update/",
       "status": 200,
       "htmlBytes": 47412,
-      "sha256": "5f739b55aa1f88e995d93c41b364b7f3004970a3e47471a4a79fb37454aad770"
+      "sha256": "580065e3e07d44224e12b9428b22e263d068acdff75be32bcc376eaef9cd0d6d"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/1/update/",
       "status": 200,
       "htmlBytes": 47412,
-      "sha256": "1095e69cbae8d1c9c36efb2d1df18b7fdaf2382a6c96d591a6945683520b4603"
+      "sha256": "bb8b64d2155e3658d5348e48775bbdae19eca0585f8ceb25e28541a919cc7650"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/1/update/",
       "status": 200,
       "htmlBytes": 47719,
-      "sha256": "806217a4a3fdba988fc8248339847effe23397570860489e9cb30bc016ee5c0e"
+      "sha256": "0960d5728aa03b3fd0abf92632420c1634ac300c90139b5ca34ed6905cfeeae8"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-batch/2/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch/2/update/",
       "status": 200,
       "htmlBytes": 63067,
-      "sha256": "a96e02494a054c8d9f240c6b0c4add0b92d7b106f5780191b91423b211b28828"
+      "sha256": "b751d2b60e53ae1bb88f32ad4a6f809fd22df1a955bf3c2c3f8578cffc820cff"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-batch/2/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch/2/update/",
       "status": 200,
       "htmlBytes": 66555,
-      "sha256": "d2a865c863716b802e9a2bd55c2d3d2d571c4fbb3123475a8635c32a8dedc612"
+      "sha256": "e30b3b958c4bdb4a2f4e53df4243e828ce9270a2f967a1f850a5c8d2824ec081"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-batch-compact/3/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/3/update/",
       "status": 200,
       "htmlBytes": 64262,
-      "sha256": "ae333aa744487c847652c315f1b624fd2c0effe6764b54d1097e6ab1ed2fad32"
+      "sha256": "70d3a44bc1a7f1d2aea309cee033ee898f100b21641ac1777fdf320372a66da4"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-batch-compact/3/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/3/update/",
       "status": 200,
       "htmlBytes": 68019,
-      "sha256": "a3fedd815694b29caaf1a601803b14b9d55d0a227d22d573e22d7ca9e3faf54c"
+      "sha256": "cd9eef8d52a7c62b9e443fe330a66c06faf163e7f124206b1107523cacd8b37c"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-request/create/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/create/",
       "status": 200,
       "htmlBytes": 47194,
-      "sha256": "4a2f0c04d15e82a5eb26227fb041fafa06080b463f73f58a5b61a92ba2a93c0b"
+      "sha256": "955a7bf9659d3c6f2bb5c3a8d603e58aa8559e949b606b074e972cc3fe2d8e23"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-batch-compact/4/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/4/update/",
       "status": 200,
       "htmlBytes": 64267,
-      "sha256": "a822d8642c011641e758a33afd1edacd090b33f0d98c1c6e5c295c00cbc6a16f"
+      "sha256": "a861d5d74e827963c63ae4caf781f00d574ec99650ba45d7286e2c493c523dc6"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-batch-compact/5/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/5/update/",
       "status": 200,
       "htmlBytes": 64330,
-      "sha256": "65337c8771978cea9a9f95c032f7f32c2ef818495218cb2a8861af004f3c145c"
+      "sha256": "0aa7d6f9f665379421aef9b4c6b9875cdd2080389c56f3d6f985ec66a6852626"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/1/update/",
       "status": 200,
       "htmlBytes": 47717,
-      "sha256": "2789f7dedf9922ccb1b6d6de5d3f3bafa94ce805e6b8afcffb9907431abb0a70"
+      "sha256": "d750b380ac45fed796eb5278794b2f7c7604f84e45be7351aa599a7f9bc76c56"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-batch/2/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch/2/update/",
       "status": 200,
       "htmlBytes": 66260,
-      "sha256": "99fd1a7e480bedb93c84f50ed21ba00457b69e5bc0469fe9e2737f5bdeaa5947"
+      "sha256": "b1775ba838f8cf72ae8dee2c657854db9ad2ff51a6ac12c1a446a3690b1e64e4"
     },
     {
-      "url": "http://127.0.0.1:36717/queryset-conditional/service-batch-compact/3/update/",
+      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/3/update/",
       "status": 200,
       "htmlBytes": 67725,
-      "sha256": "92e077eebf054319164629015b8e4e3fa21926e8e69e84b5c75588511359c158"
+      "sha256": "82290320aeb585d3fd5a56217b0fe599932c99bea5990bd9a2abb642669bb573"
     }
   ],
   "provenance": {
     "upstream": {
-      "head": "8f557235173ac4691a033b39a51681404cc64e20",
-      "status": " M .planning/state.json\n M tests/browser/verify_queryset_release.py\n M tests/test1/test_conditional_queryset_inlines.py\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-EVIDENCE.md\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-acceptance.json\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-initial-core-failure.json\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-integration-prerequisite-failure.json\n"
+      "head": "7d1609508762fe8b4e9ff19441732dbc11b731d3",
+      "status": " M .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-EVIDENCE.md\n M .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-REVIEW.md\n M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-acceptance.json\n M .planning/state.json\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-REVIEW-DISPOSITION.md\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-REVIEW-FIX.md\n"
     }
   },
   "runtime": {
@@ -2440,13 +2440,13 @@
   "failedRequests": [],
   "isolation": {
     "bind": "127.0.0.1",
-    "port": 36717,
-    "temporary": "/tmp/cv-queryset-LSnnrG",
-    "database": "/tmp/cv-queryset-LSnnrG/db.sqlite3",
-    "media": "/tmp/cv-queryset-LSnnrG/media"
+    "port": 42121,
+    "temporary": "/tmp/cv-queryset-Aqsex1",
+    "database": "/tmp/cv-queryset-Aqsex1/db.sqlite3",
+    "media": "/tmp/cv-queryset-Aqsex1/media"
   },
   "servedToggle": {
-    "url": "http://127.0.0.1:36717/static/crud_views/js/toggle.js",
+    "url": "http://127.0.0.1:42121/static/crud_views/js/toggle.js",
     "expectedHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
     "actualHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a"
   },
@@ -2454,5 +2454,5 @@
     "reaped": true,
     "temporaryRemoved": true
   },
-  "completed": "2026-11-13T11:17:33.327Z"
+  "completed": "2026-11-13T12:01:46.504Z"
 }

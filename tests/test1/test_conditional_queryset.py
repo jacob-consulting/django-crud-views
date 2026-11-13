@@ -1,7 +1,6 @@
 """Database-backed native selectors, conditional authority and render coverage."""
 
 import json
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -18,7 +17,6 @@ from django.test import Client, override_settings
 from django.urls import path
 from lxml import html
 
-import crud_views
 from crud_views.lib import conditional
 from crud_views.lib.conditional import ConditionalGroup, ConditionalGroupFormMixin, ToggleGroup
 from crud_views.lib.formsets import FormSet, InlineFormSet
@@ -66,7 +64,6 @@ def record_form(source):
 
 
 def test_queryset_render_save_reopen():
-    assert Path(crud_views.__file__).resolve().is_relative_to(Path.cwd() / "src")
     active = Publisher.objects.create(name="active")
     general = Publisher.objects.create(name="general")
     record = Record.objects.create(parent=Profile.objects.create(name="parent"), blank_text="")

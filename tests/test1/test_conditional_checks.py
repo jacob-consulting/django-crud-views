@@ -7,6 +7,7 @@ from django.forms.models import inlineformset_factory
 
 from crud_views import checks
 from crud_views.checks import _conditional_messages, check_conditional
+from crud_views.lib.conditional import QuerysetConditions
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
 from crud_views.lib.conditional.toggle import ModelFieldToggle, UIFieldToggle, ValueToggle
@@ -609,3 +610,47 @@ def test_value_group_checks_model_callable_choices_are_not_evaluated(monkeypatch
 
     errors = _run_check_with(monkeypatch, Dynamic)
     assert [error.id for error in errors] == ["crud_views.E313"]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("mode", ["valid", "multiple", "nonunique", "request_added"])
+@pytest.mark.parametrize("inline", [False, True])
+def test_queryset_checks_are_structural(monkeypatch, django_assert_num_queries, mode, inline):
+    from django.db.models.query import QuerySet
+
+    from tests.test1.app.models import Publisher
+
+    conditions = QuerysetConditions("choice", conditional_key="name", keys=["active"])
+
+    class Candidate(ConditionalGroupFormMixin, forms.Form):
+        choice = forms.ModelChoiceField(queryset=Publisher.objects.all())
+        detail = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(conditions.when("active"), ["detail", "dynamic"])]
+
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("checks must not construct request-dependent forms")
+
+    if mode == "multiple":
+        Candidate.base_fields["choice"] = forms.ModelMultipleChoiceField(queryset=Publisher.objects.all())
+    elif mode == "nonunique":
+        Candidate.base_fields["choice"].to_field_name = "name"
+    elif mode == "request_added":
+        del Candidate.base_fields["choice"]
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("checks must not evaluate querysets")
+
+    monkeypatch.setattr(QuerySet, "_fetch_all", forbidden)
+    monkeypatch.setattr(QuerySet, "iterator", forbidden)
+    with django_assert_num_queries(0):
+        if inline:
+            declaration = SimpleNamespace(klass=SimpleNamespace(form=Candidate), children={}, conditional=None)
+            errors = _run_check_with(monkeypatch, forms.Form, {"rows": declaration})
+        else:
+            errors = _run_check_with(monkeypatch, Candidate)
+    expected = [] if mode == "valid" else ["crud_views.E311" if mode == "request_added" else "crud_views.E313"]
+    assert [error.id for error in errors] == expected
+    if mode in ("multiple", "nonunique"):
+        assert "ModelChoiceField" in errors[0].hint
+        assert "unique" in errors[0].hint
+        assert "disjoint" in errors[0].hint

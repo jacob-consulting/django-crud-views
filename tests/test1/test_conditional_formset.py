@@ -6,6 +6,7 @@ from django.forms.models import inlineformset_factory
 from django.test import RequestFactory
 from pydantic import ValidationError
 
+from crud_views.lib.conditional import QuerysetConditions
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.conditional.toggle import ModelFieldToggle, UIFieldToggle, ValueToggle
 from crud_views.lib.crispy import Column8, CrispyModelForm
@@ -508,3 +509,12 @@ def test_unconditional_formset_projection_has_no_toggle():
     formsets.init(request=RequestFactory().get("/"), form=main_form)
     assert formsets.x_formsets[0].cv_toggle_field == ""
     assert "cv-data-toggle-group" not in render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})
+
+
+@pytest.mark.parametrize("on_off", ["skip", "purge"])
+def test_queryset_formset_rejected(on_off):
+    source = QuerysetConditions("choice", conditional_key="category", keys=["active"])
+    with pytest.raises(ValidationError, match=r"QuerysetConditions.*ConditionalGroup.*checkbox"):
+        ConditionalFormSet(toggle=source.when("active"), on_off=on_off)
+    with pytest.raises(ValidationError, match="ToggleSource"):
+        ConditionalFormSet(toggle=source, on_off=on_off)

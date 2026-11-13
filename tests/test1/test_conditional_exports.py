@@ -21,3 +21,11 @@ def test_value_toggle_export():
 
     assert getattr(conditional, "ValueToggle", None) is ValueToggle
     assert "ValueToggle" in conditional.__all__
+
+
+def test_queryset_conditions_export():
+    import crud_views.lib.conditional as conditional
+    from crud_views.lib.conditional.queryset import QuerysetConditions
+
+    assert conditional.QuerysetConditions is QuerysetConditions
+    assert "QuerysetConditions" in conditional.__all__

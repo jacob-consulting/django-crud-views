@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
+last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
 last_mapped_at: 2026-11-13
 ---
 # Codebase Structure
@@ -67,15 +67,15 @@ django-crud-views/
 
 **`src/crud_views/lib/views/`:**
 - Purpose: Concrete generic CRUD and action views.
-- Contains: List/card/detail/create/update/delete, custom form, manage, child redirect, ordering and common mixins.
-- Key files: `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/views/detail.py`, `src/crud_views/lib/views/create.py`, `src/crud_views/lib/views/update.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/views/mixins.py`.
-- Manage diagnostics live in `src/crud_views/lib/views/manage.py`; keep its active-user, mode, configured-group, and ancestor checks on the shared page/action access path. The view reads and projects existing permission configuration; it is not a grant-management interface.
+- Contains: List/card/detail/create/update/delete, custom form, manage diagnostics, child redirect, ordering and common mixins.
+- Key files: `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/views/detail.py`, `src/crud_views/lib/views/create.py`, `src/crud_views/lib/views/update.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/views/mixins.py`.
+- Manage pages require an active authenticated member of the configured manage group and the selected manage mode; the same gate controls the manage action and direct route. The page projects declared configuration and permission-holder diagnostics. Extend `ManageView` for core display behavior and `GuardianManageView` in `src/crud_views_guardian/lib/views.py` for Guardian grant details.
 
 **`src/crud_views/management/commands/`:**
 - Purpose: Django management commands shipped by the core app.
-- Contains: Asset and group setup/diagnostic utilities.
+- Contains: Static asset and configuration inspection utilities plus manage-group setup.
 - Key files: `src/crud_views/management/commands/cv_assets.py`, `src/crud_views/management/commands/crud_views_show.py`, `src/crud_views/management/commands/cv_manage_group.py`.
-- `cv_manage_group` only ensures that the configured diagnostics group exists. Add future setup commands here and keep permission or membership mutations explicit and separate.
+- `cv_manage_group` idempotently creates only the configured manage diagnostics group. It creates no users and assigns no memberships or permissions; operator account assignment remains the host project's responsibility.
 
 **`src/crud_views/lib/` supporting modules:**
 - Purpose: Reusable domain and presentation services that do not belong to a single CBV.
@@ -90,6 +90,7 @@ django-crud-views/
 - Key files: `src/crud_views/lib/formsets/__init__.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`.
 - Guidance: Add opt-in compact behavior to this package and its formset templates; declare it with `compact_layout` per `FormSet` node. Keep consumer declarations and comparison UI in the example app.
 - Custom widgets may inherit the publicly exported `CompactWidgetCompatible` marker alongside their Django widget class to promise complete compact rendering support; this bypasses widget-specific checks only and supplies no rendering behavior. Shared field coverage, roles, effective labels and row consistency are still validated (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/__init__.py`, `docs/reference/formsets.md`).
+- `CompactLayout.row_border` defaults to false; set it true per formset node to render the compact border hook on rows with visible legends. A false or empty row legend selects the plain compact row styling, suppressing border, padding, radius and card background. Borderless compact rows with legends keep the same non-border geometry as bordered rows (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/static/crud_views/css/formset.css`).
 
 **`src/crud_views/templates/crud_views/formsets/`:**
 - Purpose: Render the recursive formset tree and its browser controls.
@@ -101,16 +102,17 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 
 **`src/crud_views/lib/conditional/`:**
 - Purpose: Declare and render server-enforced conditional form field groups and conditional formsets.
-- Contains: Toggle sources and value-based choice controllers, group validation/cleaning, crispy `ToggleGroup` layout, conditional formset handling, and shared layout helpers.
-- Key files: `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/lib/conditional/formset.py`.
-- Guidance: Put reusable controller and group behavior here. `ValueToggle` supports standard static single-choice fields with select/radio widgets; declarations should keep controlled fields disjoint, and explicit business clear values belong in `ConditionalGroup.empty_values`.
+- Contains: Checkbox and value-choice toggle sources, queryset-category toggle declarations, group validation/cleaning, crispy `ToggleGroup` layout, conditional formset handling, and shared layout helpers.
+- Key files: `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/lib/conditional/formset.py`.
+- Guidance: Put reusable controller and group behavior here. `ValueToggle` supports static single-choice fields with select/radio widgets. `QuerysetConditions` supports a native single `ModelChoiceField`, categories from a direct object attribute or annotation, and the final cleaned object as server authority. Keep controlled fields disjoint and explicit business clear values in `ConditionalGroup.empty_values`.
 - Scope: `ValueToggle` activates `ConditionalGroup` fields only. `ConditionalFormSet` rejects it and uses checkbox-style `ModelFieldToggle`/`UIFieldToggle` for whole-formset skip/purge (`src/crud_views/lib/conditional/formset.py`).
+- `QuerysetConditions` also activates conditional groups only; its render projection reads offered objects from the field queryset and should remain request/render-local. Categories with no fields still require the server group plus an explicit empty crispy `ToggleGroup` declaration (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/layout.py`).
 
 **`examples/bootstrap5/conditional/`:**
 - Purpose: Demonstrate checkbox and choice-controlled conditional fields and formsets in a consumer-style app.
-- Contains: Registration checkbox groups, Event conditional formsets, and Customer choice-driven groups with dropdown and radio editors.
-- Key files: `examples/bootstrap5/conditional/models.py`, `examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/urls.py`, `examples/bootstrap5/project/features.py`.
-- Guidance: Keep the two Customer editors on the same `CustomerForm` declarations/layout; `CustomerRadioForm` overrides only the `kind` widget. The example exercises a shared Wholesale/Distributor business group, nullable automatic clearing for `price_tier`, and explicit `payment_terms="unset"` clearing.
+- Contains: Registration checkbox groups, Event conditional formsets, Customer choice-driven groups with dropdown/radio editors, and the separate queryset-backed conditional selection demo.
+- Key files: `examples/bootstrap5/conditional/models.py`, `examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/urls.py`, `examples/bootstrap5/queryset_conditional/`, `examples/bootstrap5/project/features.py`.
+- Guidance: Keep the two Customer editors on the same `CustomerForm` declarations/layout; `CustomerRadioForm` overrides only the `kind` widget. The queryset example demonstrates `QuerysetConditions` without coupling the opt-in API to the existing Customer form flow.
 
 **`src/crud_views/templates/crud_views/` and `src/crud_views/static/crud_views/`:**
 - Purpose: Bundled Bootstrap 5 theme and browser-side behavior.
@@ -127,8 +129,9 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 **`src/crud_views_workflow/`:**
 - Purpose: FSM transition and history integration.
 - Contains: Workflow views/forms/mixins, audit-history models and migrations, templates, app checks and translations.
-- Key files: `src/crud_views_workflow/lib/views.py` (request/database orchestration and hooks), `src/crud_views_workflow/lib/execution.py` (shared transition validation and transactional engine plus public helper), `src/crud_views_workflow/lib/forms.py` (transition choices, business blocker, comment validation and variant/icon metadata), `src/crud_views_workflow/lib/widgets.py` (button presentation and registry resolution), `src/crud_views_workflow/apps.py` (workflow-owned button-class defaults), `src/crud_views_workflow/lib/mixins.py` (model/history API), and `src/crud_views_workflow/models.py` plus `src/crud_views_workflow/migrations/` (audit persistence).
-- Workflow form actions share core form presentation. Each transition may set `custom["variant"]` to one of eight supported base variants or `custom["icon"]` to a value accepted by the core icon registry; unsupported variants use `form:submit:label`, and the full escaped action label remains visible. The workflow app supplies the corresponding `workflow:transition-*` class defaults, which project/theme settings can override. Rendering lives in `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`; workflow badge and history content remain in the same template namespace. Transition permission examples and regression tests are maintained under `tests/test1/`.
+- Key files: `src/crud_views_workflow/lib/views.py` (request/database orchestration and hooks), `src/crud_views_workflow/lib/execution.py` (shared transition validation and transactional engine plus public helper), `src/crud_views_workflow/lib/forms.py` (transition choices, business blockers, comments and metadata), `src/crud_views_workflow/lib/widgets.py` (button presentation and registry resolution), `src/crud_views_workflow/apps.py` (workflow button-class defaults), `src/crud_views_workflow/lib/mixins.py` (model/history API), and `src/crud_views_workflow/models.py` plus `src/crud_views_workflow/migrations/` (audit persistence).
+- Button presentation reads optional transition `custom["variant"]` and `custom["icon"]` metadata in `WorkflowForm`, with the fixed variant vocabulary and theme/icon projection in `src/crud_views_workflow/lib/widgets.py`. Defaults come from the core button-class registry contribution in `src/crud_views_workflow/apps.py`; markup lives in `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`. This decorates controls only and leaves authorization, comments and execution in the existing workflow path.
+- Workflow badges and history content are themed in `src/crud_views_workflow/templates/crud_views_workflow/`; transition permission opt-in examples and regression tests are maintained under `tests/test1/`.
 
 **`src/crud_views_polymorphic/`:**
 - Purpose: Polymorphic model CRUD flows.
@@ -148,7 +151,7 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 **`examples/bootstrap5/`:**
 - Purpose: Consumer-like demo application and integrated examples.
 - Contains: Django project settings/URLs, management commands and feature apps demonstrating list/detail/forms, nested data, resources, formsets, conditional fields, object detail, Guardian, workflow, polymorphic views, action menus and breadcrumbs.
-- Compact formsets are demonstrated beside classic formsets in `examples/bootstrap5/formsets/views.py`: `cv_formsets` remains the classic recursive tree and `cv_compact_formsets` opts questions and choices in independently. The `compact_create` and `compact_update` views provide comparison routes without changing the default create/update flow. A separate Checklist CRUD family (`Checklist` / `ChecklistItem`) in the same feature app demonstrates a stock BooleanField checkbox in compact rows; its schema is in `models.py` and migration `migrations/0003_checklist_checklistitem.py`. `examples/bootstrap5/project/features.py` keeps one shared Formsets catalog/source-panel entry; `examples/bootstrap5/project/templatetags/example_tags.py` derives an additional nav-only Checklist link and active URL state from it.
+- Compact formsets are demonstrated beside classic formsets in `examples/bootstrap5/formsets/views.py`: `cv_formsets` remains the classic recursive tree and `cv_compact_formsets` opts questions and choices in independently. `CompactLayout.row_border` opts each compact node into bordered rows; the default is borderless but keeps padding, radius, background and margins. A false/empty `row_legend` selects the plain compact row treatment and suppresses those card decorations. The `compact_create` and `compact_update` views provide comparison routes without changing the default create/update flow. A separate Checklist CRUD family (`Checklist` / `ChecklistItem`) demonstrates the stock BooleanField checkbox in compact rows; its schema is in `models.py` and migration `migrations/0003_checklist_checklistitem.py`. `examples/bootstrap5/project/features.py` keeps one shared Formsets catalog/source-panel entry; `examples/bootstrap5/project/templatetags/example_tags.py` derives an additional nav-only Checklist link and active URL state from it.
 - Key files: `examples/bootstrap5/project/settings_demo.py`, `examples/bootstrap5/project/urls.py`, `examples/bootstrap5/project/management/commands/seed.py`.
 
 **`docs/` and `site/`:**
@@ -182,7 +185,7 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 **Entry Points:**
 - `src/crud_views/apps.py`: Core Django app config and registration of core checks.
 - `src/crud_views/management/commands/cv_manage_group.py`: Idempotent creation of the configured manage diagnostics group.
-- `src/crud_views/lib/views/manage.py`: Manage diagnostics view, authorization gate, permission holder and ancestor-policy projections.
+- `src/crud_views/lib/views/manage.py`: Manage diagnostics authorization and projection of permission holders, registered views and ancestor policy.
 - `src/crud_views/lib/viewset/__init__.py`: Public `ViewSet` definition and generated `urlpatterns`.
 - `src/crud_views/lib/view/meta.py`: Import-time CrudView class registration hook.
 - `examples/bootstrap5/project/settings_demo.py`: Demo project's Django settings.
@@ -207,6 +210,8 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - `src/crud_views/lib/table/table.py`: `Table` base (view context, `actions` column, `Meta.sequence`-aware default ordering).
 - `src/crud_views/lib/view/base.py`: `cv_get_meta()` creates page-snippet metadata; `cv_get_parent_object()` returns the immediate parent using the request's resolved ancestor when available; `cv_get_header_icon()` applies the None-only ViewSet fallback.
 - `src/crud_views/lib/icons.py`: semantic icon registry and plain public `Icon.VIEWSET_DEFAULT` / `Icon.NONE` constants.
+- `src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`: Transition button metadata, supported variant resolution and workflow theme defaults.
+- `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`: Native transition button markup and accessible label/help/blocker projection.
 - `src/crud_views/lib/formsets/compact.py`: explicit compact layout declarations, validated form schema projection, compact heading metadata and per-form crispy helper generation.
 - `src/crud_views/lib/formsets/render_tree.py`: recursive formset context tree; chooses compact helper generation only for nodes with `compact_layout` set.
 - `examples/bootstrap5/formsets/views.py`: classic/compact formset declarations and opt-in create/update comparison views.
@@ -252,11 +257,11 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - Interactive object-detail layouts: Put markup in `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/<layout>/`. For tabs, use the existing scoped lifecycle bridge in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and `cv.adapters.tab`; for accordion markup, preserve Bootstrap Collapse data attributes and render initial selected state from `presentation.selected` in the template.
 - Nested/ancestor authorization changes: edit `src/crud_views/lib/ancestors.py` (engine), `src/crud_views/lib/ancestor_policy.py` (config values), `src/crud_views/lib/ancestor_db.py` (database boundary); add tests as `tests/test1/test_ancestor_<aspect>.py` and update `docs/reference/nested.md`.
 - Demonstration: Add or update an example app under `examples/bootstrap5/<feature>/` and connect it through `examples/bootstrap5/project/`.
-- Manage diagnostics changes: Put request behavior and display projection in `src/crud_views/lib/views/manage.py`; put idempotent operator setup commands in `src/crud_views/management/commands/`; keep example-only developer seeding and grant allowlists under `examples/bootstrap5/project/`.
 - For form cancellation behavior, extend the request-aware resolver in `src/crud_views/lib/view/base.py` and its focused tests; preserve template access through `{% cv_cancel_url %}`.
 - For deletion relationship previews, change the collector/summary behavior in `src/crud_views/lib/deletion.py` and the corresponding partials in `src/crud_views/templates/crud_views/snippets/delete/`; keep protected references as plain labels and preserve the display budget.
 - For workflow presentation or permission examples, use `src/crud_views_workflow/lib/` and its templates; document and test permission checks as opt-in per transition.
-- For transition button appearance, project `custom["variant"]` and `custom["icon"]` through `src/crud_views_workflow/lib/forms.py` and `src/crud_views_workflow/lib/widgets.py`; register defaults in `src/crud_views_workflow/apps.py` and render them in `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`. Keep the supported variant set fixed and preserve text labels, escaping, and the core icon host-suppression behavior.
+- For manage diagnostics behavior, change `src/crud_views/lib/views/manage.py`; for group creation lifecycle use `src/crud_views/management/commands/cv_manage_group.py`. Keep sample operator membership/grant setup in `examples/bootstrap5/project/`, not in the reusable command.
+- For workflow transition appearance, project finite variant/icon metadata through `src/crud_views_workflow/lib/forms.py` and `src/crud_views_workflow/lib/widgets.py`, defaults through `src/crud_views_workflow/apps.py`, and output through the transitions template. Preserve visible escaped labels and keep metadata out of authorization and execution.
 - For workflow business blockers or execution semantics, implement the model-only `workflow_check_transition(name, *, user)` contract in the consumer model, keep shared validation/execution in `src/crud_views_workflow/lib/execution.py`, and test public helper plus request behavior in `tests/test1/test_workflow_execution.py`. Do not treat business blockers as permission checks: django-fsm permissions/conditions gate transition availability, while the workflow view's page permission remains separately enforced.
 
 **New Component/Module:**

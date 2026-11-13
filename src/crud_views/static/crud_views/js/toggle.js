@@ -107,7 +107,7 @@
                     const enabled = bindingIsOn(binding);
                     if (enabled !== null) ownedStates.set(group, enabled);
                 }
-                if (ownedStates.has(group)) {
+                if (ownedStates.has(group) && !group.hasAttribute("cv-data-toggle-disable-only")) {
                     const enabled = ownedStates.get(group);
                     if (!enabled && group.style.display !== "none" && group.contains(active)) hidden.push(group);
                     group.style.display = enabled ? "" : "none";
@@ -125,6 +125,15 @@
                     }
                 }
                 const disabled = baselines.get(el) || inactive;
+                if (el === active && !el.disabled && disabled && inactive) {
+                    // Visible compact cells still need focus recovery when this
+                    // reconciliation disables their previously focused control.
+                    for (let group = el.parentElement; group && group !== state.form; group = group.parentElement) {
+                        if (ownedStates.get(group) === false && group.hasAttribute("cv-data-toggle-disable-only")) {
+                            hidden.push(group);
+                        }
+                    }
+                }
                 if (el.disabled !== disabled) el.disabled = disabled;
             });
         } finally {
@@ -172,7 +181,8 @@
             let valid = true;
             if (metadata !== null) {
                 try { values = JSON.parse(metadata); } catch (_) { valid = false; }
-                valid = valid && Array.isArray(values) && values.length > 0 &&
+                valid = valid && Array.isArray(values) &&
+                    (values.length > 0 || group.getAttribute("cv-data-toggle-kind") === "queryset") &&
                     values.every(value => typeof value === "string" && value !== "") && new Set(values).size === values.length;
             }
             const matches = !valid ? [] : metadata === null ? findCheckboxes(form, name) : findChoiceControls(form, name);

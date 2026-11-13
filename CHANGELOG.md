@@ -6,6 +6,19 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Ordinary formset row cards:** ordinary rows now have a bordered fieldset and a singular
+  model-name legend by default, including conditional and AJAX-added rows. `FormSet.row_legend`
+  accepts custom text or a lazy translation; `False` (or `""`) removes the entire frame and
+  background and padding at that nesting level in both ordinary and compact layouts. Each
+  level opts out independently; section titles/frames remain. Compact rows now default to no border,
+  retaining padding, background and radius. Keyword-only `CompactLayout.row_border` accepts actual
+  booleans and defaults to `False`; `True` restores the previous border unless complete-frame
+  suppression wins. No compact individual legends are added. Checklist explicitly enables borders;
+  compact Request Batches use the default, with notes on all list/create/update pages. Questionnaire
+  Choices and conference Speakers/Referenten still demonstrate complete-frame suppression.
+  Projects expecting unframed rows or overriding the shared row marker/template/CSS should follow
+  the [migration guide](docs/migrating-1.0.md#ordinary-formset-row-cards).
+
 - **Developer-only manage diagnostics** (#361, Roastery finding 25, Phase 06.31): core and Guardian manage pages
   now require an active, authenticated member of `CRUD_VIEWS_MANAGE_GROUP`, including staff and superusers.
   `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` defaults to `"yes"` instead of `"debug_only"`; `"no"` is an unconditional
@@ -604,6 +617,17 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- **Queryset-driven conditional fields** ([#360](https://github.com/jacob-consulting/django-crud-views/issues/360)):
+  opt-in `QuerysetConditions` maps native model-choice selections to declared categories on base forms and
+  independent ordinary/compact inline rows. Strict offered/selected coverage, explicit no-fields categories and
+  permissive opt-in preserve native selection validation; inactive editable values clear on successful save while
+  browser switching retains unsaved values. Compact cells stay visible with inactive controls disabled. A focused
+  service-request example demonstrates all three layouts, with executable
+  [recipes and measured query costs](docs/reference/conditional.md#queryset-driven-conditional-fields).
+  The roastery example in `tabler-test` adopts the shared contract with locally verified retained-product,
+  row-insertion, preserve-until-save and persistence behavior. Published example/documentation availability
+  follows deployment; local acceptance does not imply publication.
 
 - **Workflow transition variants and icons** (#362): button presentation reads transition `custom` metadata
   through eight workflow-owned variant class keys and the existing icon registry. Full captions, submit-label

@@ -121,6 +121,7 @@ cv_conference_formsets: FormSets = FormSets(
                 speakers=FormSet(
                     title=_("Speakers"),
                     klass=SpeakerFormSet,
+                    row_legend=False,
                     fields=["name"],
                     pk_field="id",
                 ),

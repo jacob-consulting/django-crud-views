@@ -75,6 +75,7 @@ cv_formsets: FormSets = FormSets(
             children=OrderedDict(
                 choices=FormSet(
                     title=_("Choices"),
+                    row_legend=False,
                     klass=ChoiceFormSet,
                     fields=["label"],
                     pk_field="id",
@@ -84,6 +85,108 @@ cv_formsets: FormSets = FormSets(
     )
 )
 ```
+
+### Row cards and legends
+
+All ordinary formset rows render as bordered cards by default, with or without conditional
+fields. Each `FormSet` declaration controls its own row legend independently, including
+nested levels. The section `title` names the whole formset; `row_legend` names each row.
+
+| `row_legend` | Ordinary row presentation | Compact row presentation |
+| --- | --- | --- |
+| `None` (default) | Card with the row model's singular `verbose_name`, capitalized at the first character. | Border follows `CompactLayout.row_border` (default off); shared headings, no individual legend. |
+| `"your question"` | Card with the exact custom text, preserving capitalization and escaping ordinary HTML characters. | Border follows `row_border`; custom text does not add an individual legend. |
+| `_("your question")` | Custom lazy translation, evaluated in the active language at render time. | Non-empty translated text leaves the `row_border` choice and shared headings unchanged. |
+| `False` | Plain row: no row fieldset, legend, border, background or card padding. | Plain row: no border, radius, background or card padding, including nested padding. Shared headings remain. |
+| `""` | Same complete frame suppression as `False`. | Same complete frame suppression as `False`. |
+
+Import `_` with `from django.utils.translation import gettext_lazy as _`. A lazy translation
+that resolves to an empty string also suppresses the frame.
+Suppression wins even when `CompactLayout.row_border=True`. Otherwise the border option changes
+only the border: compact padding, margin, background and radius remain. Section frames are unchanged.
+
+Other values, including `True`, numeric `0`, bytes and containers, are rejected when declaring
+the `FormSet`. This is presentation only: suppression does not disable fields, controls,
+validation, ordering, deletion, or saving. The functional `.cv-formset-row` wrapper and its
+JavaScript data attributes remain.
+
+The copyable nested declaration above keeps Question cards while `row_legend=False` applies
+only to Choices. It does not change either section's `title` or other nesting levels.
+Initial rendering, validation redisplay and AJAX-added rows all follow the same rule.
+The choice never inherits: suppressing a parent does not suppress its children, and leaf
+rows are not detected automatically. Section headings and section frames remain in both
+layouts; suppression affects only the declared level's individual row frames.
+
+The runnable examples make these independent choices:
+
+- **Checklist:** `cv_checklist_formsets.formsets["items"]` explicitly enables borders with
+  `row_border=True` in the compact declaration below; no legend suppression is requested.
+- **Compact Request Batches:** omit `row_border`, retaining its borderless default. Both examples
+  explain their choice on their list, create and update pages.
+- **Questionnaire:** `cv_compact_formsets.formsets["questions"].children["choices"]` sets
+  `row_legend=False`; its compact Question parent keeps its default padding/background without a border. The ordinary
+  Choices declaration in [Usage](#usage) makes the same independent choice.
+- **Conference:** `cv_conference_formsets.formsets["sessions"].children["speakers"]` suppresses
+  ordinary Speaker rows. **Referenten** is the localized Speakers label, not another formset.
+
+Using the examples' existing formset classes, the compact Checklist declaration is:
+
+```python
+from django.utils.translation import gettext_lazy as _
+from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+
+items = FormSet(
+    title=_("Items"),
+    klass=ChecklistItemFormSet,
+    fields=["label", "done"],
+    pk_field="id",
+    compact_layout=CompactLayout(
+        columns=[CompactColumn("label", span=7), CompactColumn("done", span=2)],
+        controls_span=3,
+        row_border=True,
+    ),
+)
+```
+
+The conference declaration keeps Session cards and its existing purge policy while removing
+only the Speaker leaf frames:
+
+```python
+from django.utils.translation import gettext_lazy as _
+from crud_views.lib.conditional import ConditionalFormSet, ModelFieldToggle
+from crud_views.lib.formsets import FormSet
+
+sessions = FormSet(
+    title=_("Sessions"),
+    klass=SessionFormSet,
+    fields=["title"],
+    pk_field="id",
+    conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_sessions"), on_off="purge"),
+    children={
+        "speakers": FormSet(
+            title=_("Speakers"),
+            klass=SpeakerFormSet,
+            row_legend=False,
+            fields=["name"],
+            pk_field="id",
+        ),
+    },
+)
+```
+
+The owning examples are `examples/bootstrap5/formsets/views.py` and
+`examples/bootstrap5/formsets_conditional/views.py`. Their source panels show the complete
+declarations. Field-label policy is independent of row frames: the ordinary conference
+example retains its existing `form_show_labels=False` behavior and Speakers section legend.
+
+For polymorphic ordinary forms, the default comes from each row's actual model instance, so
+different model types can have different labels in the same formset. At the render-tree
+level, a form without a model instance falls back to the section `title` unchanged; an empty
+fallback also suppresses the frame. Public `FormSet` declarations still require a supported
+inline formset class — this fallback does not add plain Django formset support.
+
+Projects upgrading from unframed ordinary rows should follow the
+[row-card migration guidance](../migrating-1.0.md#ordinary-formset-row-cards).
 
 ### The parent form
 
@@ -233,9 +336,17 @@ its usual helper implementation. Existing custom classic helpers remain valid an
 ### Declaration and validation
 
 The public constructors are `CompactColumn(field: str, *, span: int)` and
-`CompactLayout(columns: list[CompactColumn] | tuple[CompactColumn, ...], *, controls_span: int)`.
+`CompactLayout(columns: list[CompactColumn] | tuple[CompactColumn, ...], *, controls_span: int, row_border: bool = False)`.
 Both are frozen dataclasses; columns are copied into an immutable tuple. `FormSet.compact_layout` accepts
 a `CompactLayout` instance or `None`, not a dictionary or string shorthand.
+
+`row_border` is keyword-only and accepts only actual booleans: `None`, numbers, strings and containers
+raise `ValueError` naming `CompactLayout.row_border`. Omitted or explicit `False` leaves the border off;
+`True` enables it. Each layout owns its choice, with no inheritance between parents, children or siblings.
+Border-off retains padding (1rem on top-level rows, .5rem on nested compact rows), margin, body background
+and radius. `FormSet.row_legend=False` or an empty string (including a lazy empty translation) takes
+precedence and removes the complete row frame. Neither choice adds individual compact legends or changes
+section frames, headings, field validation or saving.
 
 Columns render in declaration order. Names must be nonempty exact field names without whitespace or
 duplicates. Spans and `controls_span` must be actual integers from 1 through 12, excluding booleans and
@@ -456,14 +567,16 @@ requires nor fabricates it. Read-only/edit-only/no-control rows reserve the decl
 ### Compact theme surface and exclusions
 
 The additive public surface is `CompactColumn`, `CompactLayout`, `CompactWidgetCompatible`,
-`FormSet.compact_layout`, these six CSS hooks
+`FormSet.compact_layout`, these CSS hooks
 and the overridable `crud_views/formsets/compact_headings.html` include:
 
 | Hook | Owner / purpose |
 | --- | --- |
 | `cv-formset-compact` | Opted-in formset fieldset |
 | `cv-formset-compact-headings` | Shared heading strip outside all rows |
-| `cv-formset-row-compact` | Opted-in row boundary and padding |
+| `cv-formset-row-compact` | Default compact row boundary and padding, without a border |
+| `cv-formset-row-bordered` | Opt-in compact border from `row_border=True`, unless the frame is suppressed |
+| `cv-formset-row-plain` | Explicit compact `False`/empty suppression on the functional row wrapper |
 | `cv-formset-compact-fields` | Row's own field/control grid, excluding child formsets |
 | `cv-formset-compact-label` | Associated label with responsive visual clipping |
 | `cv-formset-compact-child` | Compact child node's local inset; absent on classic children |
@@ -474,13 +587,59 @@ the existing row-added event contract. Use the existing `formset:*` button class
 registry is introduced. The heading include uses escaped form labels and declared spans. Private projection
 and helper functions, and the runtime render tree, remain implementation details.
 
-Arbitrary crispy layout inference/objects, custom HTML cells, multiple row layouts, per-row conditional
-columns, heterogeneous/polymorphic schemas, collapsing children, sticky headings, computed/numbered summaries,
+Copied `crud_views/formsets/formset.html` overrides must emit `cv-formset-row-plain` first when
+`row_legend is False` or `row_legend == ''` (including lazy empty text); only otherwise emit
+`cv-formset-row-bordered` when `compact_layout.row_border` is true. Do not use a truthiness test
+for `row_legend`: its default `None` does not request suppression. Omitted/False borders add no new marker.
+
+The copied row wrapper's `class` value follows this template expression; retain its existing
+`cv-data-*` attributes and contents alongside it:
+
+```django
+cv-formset-row{% if x_formset.formset.compact_layout %} cv-formset-row-compact{% if x_formset.formset.row_legend is False or x_formset.formset.row_legend == '' %} cv-formset-row-plain{% elif x_formset.formset.compact_layout.row_border %} cv-formset-row-bordered{% endif %}{% endif %}
+```
+
+Copied/theme CSS that unconditionally borders `.cv-formset-row-compact` must move that border to
+`.cv-formset-row-compact.cv-formset-row-bordered`, leaving the base border at `0` and retaining its
+padding, margin, background and radius. The higher-priority plain rules must remove border, radius,
+background and padding at every nesting level, including `.cv-formset-compact-child` padding. Keep the compact
+field grid, shared headings, responsive labels, focus indicators and row controls intact.
+Check the same policy in full renders, invalid POST redisplays and row-only AJAX fragments in custom packs; page-specific CSS is
+not needed for Checklist, Choices or Speakers.
+
+Arbitrary crispy layout inference/objects, custom HTML cells, multiple row layouts,
+heterogeneous/polymorphic schemas, collapsing children, sticky headings, computed/numbered summaries,
 configurable mobile variants, separate bottom Add buttons and new empty-state controls are excluded.
 There is no promise to implement these later. jQuery removal is separate work. Existing legend rendering uses
 the independent `formset:legend` [class-table key](buttons.md#legend-classes), defaulting to `""`, for classic,
 compact and full nested formsets. Row-only fragments omit their outer legend while full children retain theirs.
 Downstream theme adoption is separate follow-up work.
+
+### Queryset-driven row fields
+
+Independent row fields can use [QuerysetConditions](conditional.md#queryset-driven-conditional-fields) with a native
+single-select `ModelChoiceField`. Declare the same `cv_conditional_groups` on the row form for both layouts.
+Ordinary rows render `ToggleGroup` wrappers in `InlineFormSet.get_helper_layout_fields()` and hide inactive groups.
+Compact rows keep the declared cells visible and aligned while disabling inactive controls, preserving their accessible
+labels/errors and independently disabled state. The compact renderer adds conditional metadata and all-no-fields guards
+automatically; no custom crispy wrapper or new presentation option is required.
+
+!!! example "Try it live"
+    Compare [Service requests](https://django-crud-views-demo.onrender.com/queryset-conditional/service-request/),
+    [ordinary batches](https://django-crud-views-demo.onrender.com/queryset-conditional/service-batch/), and
+    [compact batches](https://django-crud-views-demo.onrender.com/queryset-conditional/service-batch-compact/).
+    Log in as `alice` / `alice`; these destinations require deployment of this release.
+    The [inline source](https://github.com/jacob-consulting/django-crud-views/blob/main/examples/bootstrap5/queryset_conditional/inlines.py)
+    shows both declarations using the same row form.
+
+Each row uses its exact prefixed controller name, including added rows. Switching away/back preserves browser values;
+successful save clears inactive editable fields, including existing rows needing cleanup. Empty extra/deleted rows and
+atomic parent/sibling validation retain the existing contract. Read the [complete recipe and render guard](conditional.md#all-no-fields-render-guard)
+and [measured per-row costs](conditional.md#query-costs) before copying a helper.
+
+This addition does not admit dynamic radio, AJAX/autocomplete, multiselect or arbitrary controller widgets, a predicate
+engine, or queryset-driven whole-formset toggles. Compact's other widget/schema bounds still apply; `ValueToggle` remains
+the separate static-choice API, and `ConditionalFormSet` remains a first-level checkbox-controlled feature.
 
 ## Control button classes
 

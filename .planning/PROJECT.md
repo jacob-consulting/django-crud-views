@@ -98,6 +98,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.29** Themeable Column1–Column12 via existing registry, render-local complete classes, preserved caller/template ownership and executed recipes — Phase 06.29; canonical 10/10, clean re-review after lazy-extra correction.
 
+- ✓ Queryset-driven conditional fields with upstream/downstream examples, strict matching, documented behavior and source-bound acceptance — Phase06.30 (#360).
+- ✓ Compact row borders are local opt-in via `CompactLayout.row_border=False`; Checklist demonstrates borders, compact Request Batches the borderless default; complete-frame suppression takes precedence — Phase06.30, D15.
+
 - ✓ Developer-only core/Guardian diagnostics, explicit group setup, bounded read-only demo developer and write-gated example actions; transactional seed conflict rollback and paired migration guidance — Phase 06.31; 21/21 verified, UAT 1/1 passed, clean independent re-review.
 - ✓ **6.32** Button-only workflow transition variants and icons through existing registries, with visible labels, exact fallbacks and preserved workflow behavior — Phase 06.32; canonical 7/7, decisions 9/9, clean deep review and security 6/6.
 
@@ -232,4 +235,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-13 after Phase 06.31 and 06.32 completion*
+*Last updated: 2026-11-13 after completing Phases 06.30, 06.31 and 06.32*

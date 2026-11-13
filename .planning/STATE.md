@@ -1,20 +1,21 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.30"
-current_phase_name: "Queryset-driven conditional fields (#360)"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.31 complete; UAT passed; next roadmap phase 06.30
-last_updated: "2026-11-13T12:25:28.697Z"
+stopped_at: Phase 06.30 complete, ready to plan Phase 7
+last_updated: "2026-11-13T19:43:05.613Z"
 last_activity: 2026-11-13
-last_activity_desc: "Phase 06.31 PR #365 updated with merged Phase 06.32 from main"
-state_head: dfd5a3e947896b48ec66135044f67e32fe6f0776
+last_activity_desc: "Phase 06.30 shipped as PR #367"
+state_head: 01fb837779acc903cd655639f03705d7eb005908
 progress:
   total_phases: 39
-  completed_phases: 36
-  total_plans: 190
-  completed_plans: 190
+  completed_phases: 38
+  total_plans: 205
+  completed_plans: 205
+  percent: 97
 milestone_name: milestone
 ---
 
@@ -27,17 +28,134 @@ Total Phases: 39
 See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.31 — Developer-only manage diagnostics
+**Current focus:** Phase7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.30 — Queryset-driven conditional fields (#360)
+Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-13 -- Phase 06.31 PR #365 updated with merged Phase 06.32 from main
+Last activity: 2026-11-13 -- Phase 06.30 shipped as PR #367
 
-Next: $gsd-progress
+Next: $gsd-plan-phase 7. Phase06.30 complete:15/15 plans,54/54 truths, explicit human UAT passed and historical G1/G2 resolved. Tabler UAT preview remains on9000 with isolated demo data.
+
+### Phase 06.30 shipping integration — 2026-11-13
+
+- PR #367 created; merged completed phases 06.31/06.32 from main and preserved all three phases' records. Seven codebase maps refreshed.
+- CI fixes: formatted one documentation recipe, redacted a disposable CSRF token from archived failure output, and removed an editable-install-only assumption from the save/reopen test. All23 queryset tests pass against a real wheel install; browser source-identity checks remain unchanged.
+- Isolated downstream test-only commit6f25da9 now proves manage denial without group membership, admission after configured-group enrollment and hard-off denial. Original9ca0675 adoption branch and active downstream main remain unchanged.
+- Final18-command acceptance passed: core13602, four affected/floor selections744 each, examples541, docs149, JavaScript447/2, downstream238/83, and41 validator checks. Refreshed browsers87/47 and focused391 assertions pass. Original human UAT remains accepted.
+- GitHub Python CI is still running; lint, docs, JavaScript, Sonar and README checks pass. PR remains open and unmerged; optional review choice is pending.
+
+### Phase 06.30 human UAT complete — 2026-11-13
+
+- Explicit user passes: example clarity/source navigation, ordinary batches, compact batches, standalone Service Requests, Speakers and pinned downstream Orders. G2 remains resolved/superseded by D15; no historical observation erased.
+- Canonical verification passed54/54 with fresh135-file fingerprint; combined UAT/verification predicate passes. Phase completed via GSD; nextPhase7 ready to plan.
+- Completion emitted non-blocking legacy-summary path-parser warnings (command strings/relative evidence paths) and intentional prose-requirement mapping warning; no formal IDs invented and verified evidence remains current.
+- Original user-modified state.json preserved byte-for-byte. Tabler preview9000 uses disposable DB; first delivered-order403 was corrected by linking an editable confirmed order, without permission changes.
+
+### Phase 06.30 plans 14/15 execution — 2026-11-13
+
+- CompactLayout.row_border defaults False; Checklist opts in; compact Request Batches remains borderless; descriptions and reference/migration/changelog synchronized. Ordinary and complete-frame suppression semantics preserved.
+- Focused browser391 assertions/36 captures; original upstream87/downstream47. All18 release commands pass: core13,390, four compatibility744 each, examples507+186subtests, docs149, JS447/2, downstream238/83. Independent EVIDENCE_OK; all556 source/36 capture hashes current.
+- Validation37/37; security31closed/0open; D15-scopedUI24/24; deep code review15files/0findings. HumanH1/restH2 still pending. Earlier interrupted matrix attempt143 preserved; fresh detached full retry passed.
+- Original state.json bytes, untracked .gitkeep, developer data, downstream main and pinned adoption preserved. No push/merge/deployment. Final verifier reconciled truth38/39 and UAT test3/G2 with D15, preserving history; fresh135-file fingerprint and owner status confirm human_needed,53/54,not stale.
+
+### Phase 06.30 border follow-up planning — 2026-11-13
+
+- Plans 14/15 ready: configurable compact borders default off, bordered Checklist and borderless compact Request Batches with notes, documentation, then focused browser proof and one full acceptance refresh.
+- Independent checker passed after bounded sizing rationale and roadmap correction: zero blockers/warnings. Automated decision/post-plan checks cover 13/13 parsed decisions; D-14/D-15 explicitly mapped in COVERAGE and independently checked. No formal requirement IDs exist.
+- Plans 01–13 and their observed history preserved. No implementation or new acceptance claimed; H1/rest-H2 and owner reconciliation remain pending. Existing user-modified state.json bytes preserved outside this planning commit.
+
+### Phase 06.30 plan 13 final acceptance — 2026-11-13
+
+- Thirteen of thirteen plans executed. Reference/migration/release documentation agrees with explicit per-level ordinary/compact suppression and Checklist/Choices/Speakers examples. Docs/link tests149 and strict build pass before acceptance and at the tracer replay.
+- Original Chromium targets pass upstream6/87 and downstream4/47 with ten current captures. Complete fresh18-command matrix passes: core13,310 plus exact known CSPskip; four compatibility/floor selections712 each; CSP1; JS447/2; examples506+183subtests; docs149; downstream238/83. Release41checks and independent EVIDENCE_OK pass.
+- Focused plan12 record remains current:556 source hashes and26 capture hashes verified,193 assertions. Fresh preservation comparisons match developer data, active downstream main and original dirty state.json; port9000 untouched.
+- Task commits2eb31ad5,d83bf077,2f75ea4e. G1 stays closed; G2 execution/acceptance delivered for canonical owner reconciliation. H1/rest-H2 remain pending, including ordinary Speaker individual-label usability. No phase completion, push, merge or deployment.
+
+### Phase 06.30 plan 12 leaf frames — 2026-11-13
+
+- Twelve of thirteen plans executed. Explicit False/empty suppresses complete compact frames, including nested padding. Checklist items, compact Choices and Speakers/Referenten opt out; parent Questions/Sessions remain framed and conference purge remains unchanged.
+- Focused render tests: 249 passed, including post-commit tracer replay. Real example tests: 29 passed plus 10 subtests. Host negative controls: 3 passed. Final focused Chromium: 6 scenarios/193 assertions, 26 captures, matching source/served-CSS hashes and successful cleanup.
+- Commits b047925a and aa26c1e6. Fresh developer database baseline and original dirty state.json bytes preserved; port 9000 and downstream main untouched. No dependency, model, base-template or page-specific CSS changes.
+- Existing ordinary Speaker fields have no individual label/placeholder; retained Speakers section legend and ARIA-linked errors are verified. Preserve this label policy; individual-label usability belongs to H2.
+- Plan 13 owns documentation and one final full acceptance matrix, followed by owner audits/canonical verification. G1 stays closed; no human approval or phase-complete claim. SDK global progress recalculation declined because phase scope is unscoped; the scoped plan count and roadmap row were reconciled.
+
+### Phase 06.30 plan 11 acceptance refresh — 2026-11-13
+
+- Eleven of eleven plans executed. Original Chromium targets pass upstream 6/87 and downstream 4/47 with ten current captures, database proof and successful cleanup.
+- Fresh complete 18-command matrix passes: core 13,292 plus exact known CSP skip; four compatibility/floor selections 712 each; CSP 1; JS 447/2; examples 505 plus 183 subtests; docs 149; downstream 238/83. Release negative controls 41 and final EVIDENCE_OK pass.
+- Adoption checkout remains detached at 9ca0675 under /home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test, with its existing environment link retained. Explicit imports and final active-main/developer-data identity comparisons pass; port 9000 untouched.
+- Preserved first matrix failure caused by the workflow test's sibling-path default. Its existing CV_WORKFLOW_UPSTREAM_SRC binding passed the isolated case and a full fresh rerun; no source, harness or selection change.
+- EVIDENCE and 11-SUMMARY hand off canonical status to validation/verifier owners. G-06.30-1 stays closed; H1/rest-H2 remain pending. No phase completion, human approval, push or merge. Original state.json bytes and unrelated .gitkeep files preserved.
+
+### Phase 06.30 acceptance refresh planning — 2026-11-13
+
+- Added plan 11, wave 10 after plan 10: isolated adoption checkout, fresh original browser/release acceptance, evidence report and owner-workflow handoff. No feature change or acceptance execution in this planning run.
+- Independent plan checker passed with zero findings; deterministic probes and decision/post-plan coverage pass (13/13). Preserve downstream main, port9000, developer data, G-06.30-1 closure and H1/restH2 pending.
+
+### Phase 06.30 gap execution verification — 2026-11-13
+
+- Plan 10 and G-06.30-1 verified. Canonical report: gaps_found, 28/32 must-haves; grouped remaining blocker is stale plan08/09 cross-repository acceptance. No implementation blockers in the row-card follow-up.
+- Independent code review clean after WR-02 startup-parser fix c0ba4502; three negative harness tests and refreshed 56-assertion browser evidence pass. Focused coverage now231 tests. UI audit24/24; security20closed/0open.
+- Current-source Django5.2 broad regression:13292 passed, one known Django6-only CSP skip. Docs149, strict build, scoped lint/checks passed.
+- Downstream adoption remains on gsd/phase-06.30-queryset-conditions; current downstream main is not the adoption acceptance target. No checkout switch was made. H1/restH2 remain pending. No phase completion, push or merge.
+
+### Phase 06.30 plan 10 execution — 2026-11-13
+
+- Ten of ten plans executed. G-06.30-1 resolved with default ordinary row cards and independent complete frame suppression. Strict custom/lazy labels, plain Choice rows, migration and release documentation committed as 040d810f, 35b5ec46 and a8383498.
+- Focused 221 and broader affected 705 tests pass; documentation checks 149 pass and strict MkDocs build passes. Isolated Chromium evidence has 56 assertions and 12 captures, verified source/served-CSS hashes and successful cleanup. Port 9000 and developer data untouched.
+- Prior plan 08 upstream/downstream and plan 09 release evidence are historical/stale for these changed sources. Regenerate through original commands before full source-bound acceptance; H1 and remaining H2 judgments remain pending. No phase-complete or human-approval claim.
+- SDK roadmap progress updated the plan checkbox; its stale 9/10 table and STATE 9-plan pointer were reconciled to 10/10 executed, verification pending. Global update-progress declined for unscoped phase state. Original state.json dirt and unrelated .gitkeep files preserved.
+
+### Phase 06.30 verification — 2026-11-13 (historical before plan 10)
+
+- All nine plans executed. Canonical verification human_needed: 27/28 truths verified, no implementation blockers; two UAT items persist teaching/source clarity and narrow-layout/keyboard/error judgment.
+- Validation 20/20 tasks; security 20/20 threats closed; deep review 48 files, both findings fixed and independently re-reviewed with zero active findings. UI audit 17/24 retains nonblocking overflow/clipping/required-guidance observations.
+- Final post-fix acceptance: core 13,243 plus exact known Django 6-only CSP skip on 5.2 (case passes on 6.0); four compatibility/floor selections 712 each; JS 447/2; examples 505 plus 183 subtests; docs149; downstream238/83. Browser assertions87/47, release self-tests41 and current source-bound integrity pass.
+- Review fixes control inherited PYTEST_ADDOPTS and repair the executable copied-wrapper recipe. Disposition preserves CR-01/WR-01 and commits; fresh full acceptance ran under an inherited filter to prove it ineffective.
+- Canonical CLI fingerprint covers97 upstream paths; separate CLI-generated downstream fingerprint and cross-repository evidence validator cover downstream scope. Optional full Python matrix, other browsers and published documentation remain unverified.
+- No phase completion, human approval, push or merge. Upstream/downstream local changes committed; original state.json and untracked .gitkeep files preserved.
+
+### Phase 06.30 plan 09 execution — 2026-11-13
+
+- Nine of nine plans executed; summary committed as fc616da2 before progress updates. Phase verification and qualitative UAT remain pending.
+- Final source-bound matrix passes: core 13,243 with its exact existing Django 6-only CSP skip; that CSP case passes on 6.0. Four affected/floor selections pass 712 each; JS 447/2; examples 502 plus 179 subtests; docs 149; downstream apps/theme 238/83. Required behavior has zero skips.
+- Both current-source browser targets pass 6/87 and 4/47; release self-tests 36 and nine actual corrupted-report CLI cases prove integrity rejection. Final docs/link checks and strict build reran after findings/changelog reconciliation.
+- Fixed test-local registry leakage; corrected the integration harness interpreter prerequisite. Successful unchanged-input commands were retained only through explicitly authorized harness-only resumption. All failed attempts remain documented.
+- Upstream delivery e5653007 and ab70d9ed; separate downstream findings commit 2c89e46. No push/deployment or developer-data mutation. Initial dirty state.json and unrelated .gitkeep files remain outside scoped commits.
+- SDK recorded the final plan and left the phase unverified. Global progress recalculation declined for unscoped phase state; corrected the stale ROADMAP table row and removed the SDK's premature prose "Phase complete" wording. No Nyquist compliance or phase-complete flag was set.
+
+### Phase 06.30 plan 08 execution — 2026-11-13
+
+- Eight of nine plans complete; phase remains executing. Plan 09 is next.
+- Real Chromium acceptance: upstream six scenarios/87 assertions and downstream four scenarios/47 assertions, with ten captures, actual current toggle.js bytes, domain SQL zero-write rejection proof and disposable DB persistence. Summary committed as aea6fcb4 before progress updates.
+- Offline checks: 20 upstream and 26 downstream assertions; exception-path child/temp cleanup, exact scenario dimensions, source/runtime/static identity and untouched acceptance JSON verified. Both RED reports classified RED_EVIDENCE_OK.
+- Existing upstream Python 3.12.3 and downstream Python 3.14.7 both report Django 6.1.2; Chromium 149.0.7827.55 and Playwright 1.64.1. Plan 09 owns supported-version matrix, release freshness and findings reconciliation. No downstream edits or developer data writes.
+- SDK advanced to plan 09 and ROADMAP section to 8/9; corrected its unchanged table row. Global progress recalculation declined because phase scope is unscoped, not complete; phase completion was not asserted. Initial dirty state.json and unrelated .gitkeep files remain outside scoped commits.
+
+### Phase 06.30 plan 06 execution — 2026-11-13
+
+- Seven of nine plans complete; phase remains executing. Plan 08 is next because plan 07 is already complete.
+- Executable strict/permissive and all-no-fields recipes, bounded query costs, corrected compact scope, reciprocal example links, JS metadata and additive release notes are committed. Summary committed as 0f4da3d4 before progress updates.
+- Required gates: 75 tests and 33 subtests, 149 docs/link tests, strict MkDocs build. Broad examples: 502 tests and 179 subtests; core conditional/formset regression: 721 passed. Scoped Ruff checks passed.
+- Published stable pages still lack the new headings. Final browser/adoption wording remains plan 09-02; no deployment claim. Initial dirty state.json and unrelated .gitkeep files remain outside scoped commits.
+
+### Phase 06.30 plan 05 execution — 2026-11-13
+
+- Six of nine plans complete; phase remains executing. Plan 06 is next.
+- Seeded standalone/ordinary/compact service examples share the category contract, with authorized inline fragments, no-JavaScript clearing, atomic rejection, focused source panels and three active navigation entries.
+- Required combined gate: 83 tests and 98 subtests passed. Full examples: 491 tests and 179 subtests passed. Preserved conditional/formset regressions: 560 passed. Django checks, migration dry-run, strict docs and scoped Ruff checks passed.
+- Minimal reciprocal docs backlink moved forward from plan 06 to keep the feature catalog integration green. Full recipes and browser acceptance remain later plans. Existing dirty state.json and unrelated .gitkeep files remain outside scoped commits.
+
+### Phase 06.30 plan 07 execution — 2026-11-13
+
+- Five of nine plans complete; phase remains executing. Plan 05 is next.
+- Downstream order lines adopt QuerysetConditions, preserving restricted/current product choices, optional coffee fields, compact columns and the model-save safeguard. Three local downstream commits end at 044c511; upstream summary committed d1ab13fc before progress updates.
+- Source-bound orders 32, focused 47 and full downstream application 238 tests passed with two workers; ordinary imports also pass all 15 new tests without skips. Native/conditional SQL is 3/6 per row, stable at 2 versus 20 options; annotation survives polymorphic iteration and cleaning.
+- Browser acceptance remains plan 09. No push/deployment or developer database modification. Existing state.json and unrelated .gitkeep files remain outside scoped commits.
 
 ### Phase 06.31 completion — 2026-11-13
 
@@ -831,6 +949,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
+- Total plans completed: 194
+
 - Total plans completed: 186
 - Average duration: -
 - Total execution time: 0 hours
@@ -873,6 +993,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.27 | 5 | - | - |
 | 06.28 | 1 | - | - |
 | 06.29 | 2 | - | - |
+| 06.30 | 15 | - | - |
+
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
 
@@ -1022,6 +1144,20 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.27 P04 | 7min | 2 tasks | 10 files |
 | Phase 06.27 P05 | 14min | 3 tasks | 18 files |
 | Phase 06.28 P01 | 11min | 2 tasks | 2 files |
+| Phase 06.30 P01 | 8min | 2 tasks | 8 files |
+| Phase 06.30 P02 | 10min | 3 tasks | 12 files |
+| Phase 06.30 P03 | 9min | 2 tasks | 5 files |
+| Phase 06.30 P04 | 7min | 2 tasks | 11 files |
+| Phase 06.30 P07 | 10min | 2 tasks | 5 files |
+| Phase 06.30 P05 | 11min | 3 tasks | 9 files |
+| Phase 06.30 P06 | 7min | 2 tasks | 8 files |
+| Phase 06.30 P08 | 13min | 2 tasks | 17 files |
+| Phase 06.30 P09 | 26min | 2 tasks | 11 files |
+| Phase 06.30 P10 | 11min | 3 tasks | 14 files |
+| Phase 06.30 P11 | 21min | 3 tasks | 12 files |
+| Phase 06.30 P12 | 8min | 2 tasks | 9 files |
+| Phase 06.30 P13 | 15min | 3 tasks | 11 files |
+
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
@@ -1297,6 +1433,27 @@ Recent decisions affecting current work:
 - [Phase 06.27]: Keep existing Feature/DocRef stable destinations; prove local routes and generated anchors without claiming unreleased remote availability.
 - [Phase 06.27]: Retain installed JS version mismatch as an explicit compatibility limit; no dependency or lockfile changes.
 - [Phase 06.28]: Plan 01: published tooltip placement wrapper delegates to factory init; runtime/API unchanged; exact-fence placement and lifecycle regressions cover issue 355; no assigned requirement IDs.
+- [Phase 06.30]: Plan 01: selected queryset categories use final inherited cleaned_data; inactive clearing reuses the existing persistence pipeline.
+- [Phase 06.30]: Plan 01: all-no-fields sources require a server ConditionalGroup plus an explicit empty ToggleGroup in base/ordinary-inline helpers.
+- [Phase 06.30]: Plan 01: offered projections are scoped to the render context and form/field/source/queryset identity; no cross-form cache.
+- [Phase 06.30]: Plan 02: native model-choice selection hooks remain unchanged; label-only subclasses are admitted with metadata-only key validation.
+- [Phase 06.30]: Plan 02: equivalent immutable sources share per-form clean/render work; conflicting same-controller declarations fail before evaluation.
+- [Phase 06.30]: Plan 03: compact row guards and cells share one render-local projection per controller; schema/helper construction stays query-free.
+- [Phase 06.30]: Plan 03: disable-only cells preserve their display and reuse existing focus recovery only when a focused control becomes inactive.
+- [Phase 06.30]: Standalone ViewSet uses name service_request and prefix service-request because hyphenated registry names fail viewset.E002; reverse names are service_request-list/create/update.
+- [Phase 06.30]: Roastery keeps restricted active-type OR retained-current product choices with native subtype annotation; downstream local commits stay separate from upstream metadata.
+- [Phase 06.30]: Batch ViewSets use service_batch/service_batch_compact registry names with service-batch/service-batch-compact URL prefixes, following plan 04 name validation.
+- [Phase 06.30]: Plan 05 brings forward the minimal conditional-guide demo backlink because Feature.docs registration immediately activates reciprocal-link tests; full queryset documentation remains plan 06.
+- [Phase 06.30]: Plan 06 executes named documentation recipes against real example models; cv-sync verifies running-app excerpts and real routes/anchors remain separate from stable deployment.
+- [Phase 06.30]: Browser acceptance uses real project hosts with disposable SQLite, exact imported upstream identity and byte-for-byte actually served toggle.js checks.
+- [Phase 06.30]: Required feature/downstream selections reject skips; full Django 5.2 records its exact existing Django 6-only CSP skip, with that test verified on 6.0.
+- [Phase 06.30]: Reuse successful command transcripts only for a harness-only correction with byte-identical product/test/asset/docs inputs; always revalidate browsers and repeat integration/lint.
+- [Phase 06.30]: Ordinary row cards use per-level row_legend; False and empty strings remove the entire frame; custom labels retain case and deferred translation.
+- [Phase 06.30]: Plan 10 resolves only G-06.30-1; plan 08/09 evidence is stale until regenerated and H1 plus remaining H2 stay pending.
+- [Phase 06.30]: Plan 11 binds isolated downstream workflow-source checks with CV_WORKFLOW_UPSTREAM_SRC, preserves failed evidence and reruns the full matrix; H1/rest-H2 remain pending.
+- [Phase 06.30]: D-14: explicit False/empty suppresses compact frames; preserve per-level defaults and existing conference label policy.
+- [Phase 06.30]: Final plan 13 acceptance passes all 18 commands; canonical audits and H1/rest-H2 remain pending, so do not complete phase or advance Phase 7.
+
 - [Phase 06.32]: Keep the exact eight transition variants independent of the extensible state badge vocabulary.
 - [Phase 06.32]: Resolve presentation on copied actions and defer the icon helper import to preserve pre-setup WorkflowForm imports.
 - [Phase 06.32]: Preserve the exact submit-label fallback regardless of icons and retain deliberate empty/null class suppression.
@@ -1369,6 +1526,8 @@ None yet.
 - Phase 06.27 inserted after Phase 06.26: Issue #354: choice-driven conditional groups; approved gsd-handover includes explicit clearing overrides and a complex example with reciprocal documentation links. Complete before Phase 7. (URGENT)
 - Phase 06.28 inserted after Phase 06.27: Issue #355: tooltip recipe documentation and executable regression tests; approved GSD handover D-01–D-06 governs scope. Restored the existing 06.27 roadmap entry from the source checkout. (URGENT)
 - Phase 06.29 inserted after Phase 06.26: Themeable column helpers (#356); explicitly assigned 06.29, approved decisions D-01–D-07, before the Phase 7 theme-surface freeze (URGENT)
+- Phase 06.30 inserted after Phase 06.29: Issue #360: queryset-driven conditional fields on base forms and inline rows; approved decisions D-01–D-13, tabler-test migration, separate focused example app and cross-linked documentation. Complete before Phase 7. (URGENT)
+
 - Phase 06.31 inserted after Phase 06.30: Issue #361: developer-only manage diagnostics and explicit group setup; carry approved D-01–D-07 from the issue handover. Complete before Phase 7. (URGENT)
 - Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
 
@@ -1380,6 +1539,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T12:19:02.687Z
-Stopped at: Phase 06.31 complete; UAT passed; next roadmap phase 06.30
+Last session: 2026-11-13T17:35:16.365Z
+Stopped at: Phase 06.30 complete, ready to plan Phase 7
 Resume file: None

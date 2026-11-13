@@ -1,0 +1,167 @@
+TAP version 13
+1..101
+ok 1 - tests/js/toggle.test.js > choice conditional lifecycle > choice membership retains shared and disjoint data for select ["consumer","wholesale","distributor"] # time=19.80ms
+ok 2 - tests/js/toggle.test.js > choice conditional lifecycle > choice membership retains shared and disjoint data for select ["0","1","2"] # time=7.02ms
+ok 3 - tests/js/toggle.test.js > choice conditional lifecycle > choice membership retains shared and disjoint data for radio ["consumer","wholesale","distributor"] # time=6.36ms
+ok 4 - tests/js/toggle.test.js > choice conditional lifecycle > choice membership retains shared and disjoint data for radio ["0","1","2"] # time=5.08ms
+ok 5 - tests/js/toggle.test.js > choice conditional lifecycle > choice ownership includes external select controls and excludes foreign peers # time=4.30ms
+ok 6 - tests/js/toggle.test.js > choice conditional lifecycle > choice ownership includes external radio controls and excludes foreign peers # time=3.83ms
+ok 7 - tests/js/toggle.test.js > choice conditional lifecycle > radio ownership treats no checked peer as inactive and malformed multiple checked peers as unresolved # time=3.09ms
+ok 8 - tests/js/toggle.test.js > choice conditional lifecycle > radio listener rebind compares all members, normalizes matches and releases all old peers # time=8.21ms
+ok 9 - tests/js/toggle.test.js > choice conditional lifecycle > choice disabled baseline and inactive ancestors compose for select # time=8.69ms
+ok 10 - tests/js/toggle.test.js > choice conditional lifecycle > choice disabled baseline and inactive ancestors compose for radio # time=7.12ms
+ok 11 - tests/js/toggle.test.js > choice conditional lifecycle > choice native reset and later canceled reset for select at form # time=17.88ms
+ok 12 - tests/js/toggle.test.js > choice conditional lifecycle > choice native reset and later canceled reset for select at document # time=4.27ms
+ok 13 - tests/js/toggle.test.js > choice conditional lifecycle > choice native reset and later canceled reset for radio at form # time=3.67ms
+ok 14 - tests/js/toggle.test.js > choice conditional lifecycle > choice native reset and later canceled reset for radio at document # time=3.50ms
+ok 15 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata select [] preserves last state # time=2.93ms
+ok 16 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata select {} preserves last state # time=2.85ms
+ok 17 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata select null preserves last state # time=2.79ms
+ok 18 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata select [0] preserves last state # time=2.85ms
+ok 19 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata select [""] preserves last state # time=2.81ms
+ok 20 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata select ["a","a"] preserves last state # time=3.38ms
+ok 21 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata select broken preserves last state # time=3.09ms
+ok 22 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata radio [] preserves last state # time=3.00ms
+ok 23 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata radio {} preserves last state # time=2.70ms
+ok 24 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata radio null preserves last state # time=3.00ms
+ok 25 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata radio [0] preserves last state # time=2.67ms
+ok 26 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata radio [""] preserves last state # time=2.57ms
+ok 27 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata radio ["a","a"] preserves last state # time=2.51ms
+ok 28 - tests/js/toggle.test.js > choice conditional lifecycle > malformed choice metadata radio broken preserves last state # time=2.81ms
+ok 29 - tests/js/toggle.test.js > choice conditional lifecycle > rejects mixed or duplicate choice controls select with select and recovers # time=2.45ms
+ok 30 - tests/js/toggle.test.js > choice conditional lifecycle > rejects mixed or duplicate choice controls select with text and recovers # time=2.49ms
+ok 31 - tests/js/toggle.test.js > choice conditional lifecycle > rejects mixed or duplicate choice controls select with multiple and recovers # time=2.33ms
+ok 32 - tests/js/toggle.test.js > choice conditional lifecycle > rejects mixed or duplicate choice controls radio with select and recovers # time=10.33ms
+ok 33 - tests/js/toggle.test.js > choice conditional lifecycle > rejects mixed or duplicate choice controls radio with text and recovers # time=2.34ms
+ok 34 - tests/js/toggle.test.js > choice conditional lifecycle > rejects mixed or duplicate choice controls radio with multiple and recovers # time=2.01ms
+ok 35 - tests/js/toggle.test.js > choice conditional lifecycle > choice focus recovery chooses usable checked radio target # time=63.93ms
+ok 36 - tests/js/toggle.test.js > choice conditional lifecycle > choice focus recovery chooses usable peer radio target # time=7.21ms
+ok 37 - tests/js/toggle.test.js > choice conditional lifecycle > choice focus recovery chooses usable form radio target # time=6.55ms
+not ok 38 - tests/js/toggle.test.js > queryset conditional row lifecycle > queryset empty membership stays inactive with compact=false # time=10.92ms
+    ---
+    error:
+        name: "AssertionError"
+        message: "expected false to be true // Object.is equality"
+    at: "/home/alex/projects/alex/django-crud-views/tests/js/toggle.test.js:260:32"
+    actual: "false"
+    expected: "true"
+    ...
+not ok 39 - tests/js/toggle.test.js > queryset conditional row lifecycle > queryset empty membership stays inactive with compact=true # time=2.19ms
+    ---
+    error:
+        name: "AssertionError"
+        message: "expected false to be true // Object.is equality"
+    at: "/home/alex/projects/alex/django-crud-views/tests/js/toggle.test.js:260:32"
+    actual: "false"
+    expected: "true"
+    ...
+not ok 40 - tests/js/toggle.test.js > queryset conditional row lifecycle > preserves two exact-prefix rows, native submission and independent control roles # time=4.05ms
+    ---
+    error:
+        name: "AssertionError"
+        message: "expected 'none' to be 'grid' // Object.is equality"
+    at: "/home/alex/projects/alex/django-crud-views/tests/js/toggle.test.js:279:46"
+    actual: "none"
+    expected: "grid"
+    ...
+not ok 41 - tests/js/toggle.test.js > queryset conditional row lifecycle > respects a parent controller and an externally disabled cell input # time=2.46ms
+    ---
+    error:
+        name: "AssertionError"
+        message: "expected '' to be 'grid' // Object.is equality"
+    at: "/home/alex/projects/alex/django-crud-views/tests/js/toggle.test.js:302:82"
+    actual: 
+    expected: "grid"
+    ...
+not ok 42 - tests/js/toggle.test.js > queryset conditional row lifecycle > recovers newly disabled compact focus to controller # time=6.07ms
+    ---
+    error:
+        name: "AssertionError"
+        message: "expected 'none' to be 'grid' // Object.is equality"
+    at: "/home/alex/projects/alex/django-crud-views/tests/js/toggle.test.js:317:40"
+    actual: "none"
+    expected: "grid"
+    ...
+not ok 43 - tests/js/toggle.test.js > queryset conditional row lifecycle > recovers newly disabled compact focus to form # time=4.98ms
+    ---
+    error:
+        name: "AssertionError"
+        message: "expected 'none' to be 'grid' // Object.is equality"
+    at: "/home/alex/projects/alex/django-crud-views/tests/js/toggle.test.js:317:40"
+    actual: "none"
+    expected: "grid"
+    ...
+not ok 44 - tests/js/toggle.test.js > queryset conditional row lifecycle > recovers newly disabled compact focus to unrelated # time=3.70ms
+    ---
+    error:
+        name: "AssertionError"
+        message: "expected 'none' to be 'grid' // Object.is equality"
+    at: "/home/alex/projects/alex/django-crud-views/tests/js/toggle.test.js:317:40"
+    actual: "none"
+    expected: "grid"
+    ...
+not ok 45 - tests/js/toggle.test.js > queryset conditional row lifecycle > keeps native and canceled reset local to the owning form # time=4.02ms
+    ---
+    error:
+        name: "AssertionError"
+        message: "expected '' to be 'grid' // Object.is equality"
+    at: "/home/alex/projects/alex/django-crud-views/tests/js/toggle.test.js:333:40"
+    actual: 
+    expected: "grid"
+    ...
+ok 46 - tests/js/toggle.test.js > queryset conditional row lifecycle > initializes inserted rows and rebinds repeated modal redisplay without leaking state # time=5.55ms
+ok 47 - tests/js/toggle.test.js > conditional disabled ownership > keeps a formerly bound inactive group safe during ambiguity and uniquely recovers # time=7.71ms
+ok 48 - tests/js/toggle.test.js > conditional disabled ownership > composes nested owners in inner-first order and retains baseline # time=2.08ms
+ok 49 - tests/js/toggle.test.js > conditional disabled ownership > composes nested owners in outer-first order and retains baseline # time=1.74ms
+ok 50 - tests/js/toggle.test.js > conditional disabled ownership > preserves same-value external disabled writes before synchronous resync # time=1.69ms
+ok 51 - tests/js/toggle.test.js > conditional disabled ownership > reacts to external attribute changes while active or inactive # time=1.86ms
+ok 52 - tests/js/toggle.test.js > conditional disabled ownership > disables custom native actions but preserves values, files, management and native fieldsets # time=4.28ms
+ok 53 - tests/js/toggle.test.js > conditional disabled ownership > captures new descendants without capturing temporary disabled state # time=1.73ms
+ok 54 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > retains a formerly bound true state across zero, two and one matches # time=4.56ms
+ok 55 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > retains a formerly bound false state across zero, two and one matches # time=4.08ms
+ok 56 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > composes frozen inner=true ownership in inner-first initialization order # time=6.84ms
+ok 57 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > composes frozen inner=false ownership in inner-first initialization order # time=6.44ms
+ok 58 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > composes frozen inner=true ownership in outer-first initialization order # time=6.13ms
+ok 59 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > composes frozen inner=false ownership in outer-first initialization order # time=5.64ms
+ok 60 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > composes frozen outer=true ownership in inner-first initialization order # time=5.23ms
+ok 61 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > composes frozen outer=false ownership in inner-first initialization order # time=5.23ms
+ok 62 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > composes frozen outer=true ownership in outer-first initialization order # time=4.90ms
+ok 63 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > composes frozen outer=false ownership in outer-first initialization order # time=5.19ms
+ok 64 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > retries only its form after reset and honors cancellation at form # time=4.52ms
+ok 65 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > retries only its form after reset and honors cancellation at document # time=4.25ms
+ok 66 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > releases frozen ownership during missing modal disposal and reinsert # time=4.00ms
+ok 67 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > releases frozen ownership during ambiguous modal disposal and reinsert # time=3.45ms
+ok 68 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > ignores a stale unresolved toggle during focus recovery with usable ancestor=true # time=6.92ms
+ok 69 - tests/js/toggle.test.js > unresolved conditional ownership lifecycle > ignores a stale unresolved toggle during focus recovery with usable ancestor=false # time=5.58ms
+ok 70 - tests/js/toggle.test.js > conditional reset and focus lifecycle > resynchronizes native reset only after the task and only in its owning form # time=3.88ms
+ok 71 - tests/js/toggle.test.js > conditional reset and focus lifecycle > honors later reset cancellation at form # time=1.72ms
+ok 72 - tests/js/toggle.test.js > conditional reset and focus lifecycle > honors later reset cancellation at document # time=1.70ms
+ok 73 - tests/js/toggle.test.js > conditional reset and focus lifecycle > restores checked defaults without releasing independent disables or duplicating reset handlers # time=2.22ms
+ok 74 - tests/js/toggle.test.js > conditional reset and focus lifecycle > returns stranded focus to the controlling checkbox without stealing outside focus # time=5.23ms
+ok 75 - tests/js/toggle.test.js > conditional reset and focus lifecycle > uses the nearest usable ancestor toggle when an inner target is hidden # time=4.22ms
+ok 76 - tests/js/toggle.test.js > conditional reset and focus lifecycle > rejects hidden toggle and focuses its visible in-modal form # time=6.24ms
+ok 77 - tests/js/toggle.test.js > conditional reset and focus lifecycle > rejects inert toggle and focuses its visible in-modal form # time=5.98ms
+ok 78 - tests/js/toggle.test.js > conditional reset and focus lifecycle > rejects aria-hidden toggle and focuses its visible in-modal form # time=6.16ms
+ok 79 - tests/js/toggle.test.js > conditional reset and focus lifecycle > rejects aria-disabled toggle and focuses its visible in-modal form # time=6.11ms
+ok 80 - tests/js/toggle.test.js > conditional reset and focus lifecycle > rejects disabled toggle and focuses its visible in-modal form # time=5.19ms
+ok 81 - tests/js/toggle.test.js > conditional reset and focus lifecycle > rejects failed-focus toggle and focuses its visible in-modal form # time=6.09ms
+ok 82 - tests/js/toggle.test.js > conditional reset and focus lifecycle > does not focus a hidden initial modal shell and preserves existing fallback tabindex # time=5.75ms
+ok 83 - tests/js/toggle.test.js > conditional reset and focus lifecycle > starts immediately when a script loads after DOMContentLoaded # time=17.05ms
+ok 84 - tests/js/toggle.test.js > conditional reset and focus lifecycle > disposes modal observation and handlers on unload, then permits explicit reuse # time=3.11ms
+ok 85 - tests/js/toggle.test.js > conditional reset and focus lifecycle > recaptures independent changes made while modal content was disposed # time=2.04ms
+ok 86 - tests/js/toggle.test.js > toggle.js > keeps a group with a checked toggle visible and enabled # time=1.60ms
+ok 87 - tests/js/toggle.test.js > toggle.js > hides and disables a group whose toggle is unchecked # time=1.73ms
+ok 88 - tests/js/toggle.test.js > toggle.js > keeps management-form hidden inputs enabled even when the group is off # time=1.32ms
+ok 89 - tests/js/toggle.test.js > toggle.js > reacts to checkbox change in both directions # time=2.19ms
+ok 90 - tests/js/toggle.test.js > toggle.js > finds the checkbox by its exact bound name # time=1.23ms
+ok 91 - tests/js/toggle.test.js > toggle.js > scopes the checkbox lookup to the nearest form # time=1.93ms
+ok 92 - tests/js/toggle.test.js > toggle.js > leaves a group without a matching checkbox untouched # time=1.21ms
+ok 93 - tests/js/toggle.test.js > toggle.js > wires groups injected into the modal via cv:modal:loaded # time=1.17ms
+ok 94 - tests/js/toggle.test.js > toggle.js > wires groups in a formset row added via cv:formset:row-added # time=1.70ms
+ok 95 - tests/js/toggle.test.js > toggle.js > does not double-bind an already-wired group # time=1.68ms
+ok 96 - tests/js/toggle.test.js > toggle.js > does not bind by suffix or to a checkbox owned by another form # time=1.13ms
+ok 97 - tests/js/toggle.test.js > toggle.js > binds sibling and nested row prefixes independently despite shared suffixes # time=6.24ms
+ok 98 - tests/js/toggle.test.js > toggle.js > keeps duplicate exact bindings local and warns without field values # time=2.09ms
+ok 99 - tests/js/toggle.test.js > toggle.js > does not let an unresolved nested group bypass its bound ancestor # time=0.87ms
+ok 100 - tests/js/toggle.test.js > toggle.js > includes an Element root and retries late checkboxes without duplicate handlers # time=1.17ms
+ok 101 - tests/js/toggle.test.js > toggle.js > supports DocumentFragments and names containing selector punctuation # time=1.13ms

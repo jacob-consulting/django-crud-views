@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "object_detail",
     "conditional",
     "formsets_conditional",
+    "queryset_conditional",
     "breadcrumbs",
     "context_buttons",
     "action_menus",

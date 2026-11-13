@@ -46,12 +46,38 @@
     animation: cv-highlight-add 0.5s;
 }
 
+.cv-formset-row-card {
+    min-width: 0;
+    padding: 1rem 1rem .25rem;
+    margin: 0 0 1.25rem;
+    border: 1px solid var(--bs-secondary-color, #6c757d);
+    border-radius: var(--bs-border-radius, .375rem);
+    background-color: var(--bs-body-bg, #fff);
+}
+
+.cv-formset-row-card > .cv-formset-row-legend {
+    float: none;
+    width: auto;
+    padding: 0 .5rem;
+    margin: 0 0 .5rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.cv-formset-row-card .cv-formset-form legend {
+    font-size: .95rem;
+}
+
 .cv-formset-row-compact {
     padding: 1rem;
     margin-bottom: 1rem;
-    border: 1px solid var(--bs-border-color, #dee2e6);
+    border: 0;
     border-radius: var(--bs-border-radius, .375rem);
     background-color: var(--bs-body-bg, #fff);
+}
+
+.cv-formset-row-compact.cv-formset-row-bordered {
+    border: 1px solid var(--bs-border-color, #dee2e6);
 }
 
 .cv-formset-compact-headings {
@@ -110,6 +136,14 @@
 
 .cv-formset-compact-child > .cv-formset-content > .cv-formset-row-compact {
     padding: .5rem;
+}
+
+.cv-formset-row-compact.cv-formset-row-plain,
+.cv-formset-compact-child > .cv-formset-content > .cv-formset-row-compact.cv-formset-row-plain {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
 }
 
 .cv-formset-compact-child > .cv-formset-content > .cv-formset-compact-headings {

@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-13
-last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
+last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
 ---
 # External Integrations
 
@@ -21,10 +21,14 @@ last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
 - Compact formsets explicitly support the exact stock Django `CheckboxInput` with standard template and input type, including Bootstrap styling for package-owned crispy markup. A marked subclass may receive that styling incidentally, but custom widgets/templates are not certified and own accessibility and responsive behavior (`docs/reference/formsets.md`).
 - Theme styling for the `ToggleGroup` and formset `<legend>` elements is exposed through the `conditional:legend` and `formset:legend` button-class slots; it adds no dependency or service integration (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/lib/button_classes.py`).
 - Compact formsets add explicit `CompactColumn` and `CompactLayout` presentation metadata on top of Django inline formsets and crispy helpers; they introduce no service or package dependency (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/formsets.py`, `docs/reference/formsets.md`).
+- Phase 06.30 adds queryset-driven conditional groups through `QuerysetConditions` (`src/crud_views/lib/conditional/queryset.py`). It binds to a native single-select `ModelChoiceField`, reads a direct category attribute or queryset annotation, and validates against the selected object after ordinary field cleaning. This is an internal Django ORM/forms integration; it does not fetch through an external service or broaden controller support to arbitrary widgets (`src/crud_views/lib/conditional/group.py`, `docs/reference/conditional.md`).
+- Compact row borders are opt-in presentation metadata via `CompactLayout.row_border` (default `False`); legend suppression still takes precedence, and no external styling package is added (`src/crud_views/lib/formsets/compact.py`, `docs/reference/formsets.md`).
+- Manage diagnostics are gated by active authenticated membership in a configurable Django `Group`; mode `no` denies all and `debug_only` additionally requires `DEBUG=True`. The `cv_manage_group` management command creates that group but does not assign users or permissions (`src/crud_views/lib/views/manage.py`, `src/crud_views/lib/settings.py`, `src/crud_views/management/commands/cv_manage_group.py`, `docs/reference/settings.md`). Nested manage checks continue to use Django auth data on the configured default database alias (`src/crud_views/lib/views/manage.py`).
 
 **Optional Django extensions:**
 - Install extras independently as `django-crud-views[workflow]`, `[polymorphic]`, `[guardian]`, or `[ordered]`; `[all]` combines them. The apps are shipped in the distribution, but each optional integration requires its corresponding third-party package and app setup (`pyproject.toml`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`).
 - django-fsm-2 and django-fsm-2-admin provide workflow transitions and admin integration (`src/crud_views_workflow/`). `run_transition()` validates actor, object, and transition state and writes history atomically on the selected DB alias (`src/crud_views_workflow/lib/execution.py`); direct FSM method calls bypass that helper behavior.
+- Workflow transition `custom` metadata may supply `variant` and `icon` presentation keys. The workflow widget maps variants through the existing `workflow:transition-*` class slots, resolves icons through the host icon API, and falls back to the standard submit class for unknown variants (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`, `docs/reference/workflow_view.md`). This adds no service or dependency.
 - django-polymorphic supports polymorphic querysets and type-specific creation (`src/crud_views_polymorphic/`).
 - django-guardian adds per-object permission checks and uses the host project's auth backend configuration (`src/crud_views_guardian/lib/mixins.py`).
 - django-ordered-model supports ordering actions for host models that opt in (`src/crud_views/lib/ordered.py`, `pyproject.toml`).
@@ -32,9 +36,9 @@ last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
 **Icons and frontend assets:**
 - `src/crud_views/lib/icons.py` provides plain icon constants and a semantic icon registry; the host template supplies matching icon-font CSS (`docs/reference/icons.md`). Applications and theme apps can register icon mappings/renderers.
 - Django serves package static assets. Optional django-pipeline support is lazy and is not a runtime dependency; with `CRUD_VIEWS_ASSETS_BUNDLED`, package tags emit external bundle entries for the host bundler (`src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `docs/reference/assets.md`).
+- Core and extension apps register JS/CSS bundles through `AppConfig.ready()`; registry order follows `INSTALLED_APPS` after the core bundle. Django system checks validate duplicate/reserved keys and external asset integrity (`src/crud_views/lib/assets.py`, `src/crud_views/checks.py`).
+- Optional django-pipeline integration is settings-time safe: `cv_sources()` lazily resolves registered local assets after app setup, filters by bundle key, and leaves external URLs for template tags (`src/crud_views/lib/pipeline.py`, `docs/reference/assets.md`).
 - Asset registrations may use external CDN URLs and SRI/CSP nonce attributes; the host owns Bootstrap/icon CSS delivery and CSP policy (`src/crud_views/lib/assets.py`).
-- Core and extension apps register JS/CSS bundles through `AppConfig.ready()`; registry order follows `INSTALLED_APPS` after the core bundle. The registry validates duplicate/reserved keys and external asset integrity through Django system checks (`src/crud_views/lib/assets.py`, `src/crud_views/checks.py`).
-- Optional django-pipeline integration is settings-time safe: `cv_sources()` returns a lazy sequence that resolves registered local assets after app setup, filters by bundle key, and leaves external URLs for template tags (`src/crud_views/lib/pipeline.py`, `docs/reference/assets.md`).
 - Formset client behavior is bundled in `src/crud_views/static/crud_views/js/formset.js`; its supported page integration uses jQuery, while compact layout uses package CSS (`src/crud_views/static/crud_views/css/formset.css`).
 
 **Caller-provided resource sources:**

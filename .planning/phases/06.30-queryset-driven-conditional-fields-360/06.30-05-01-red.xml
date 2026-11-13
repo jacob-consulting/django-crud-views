@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.743" timestamp="2026-11-13T10:17:07.147227+00:00" hostname="weaver-dev"><testcase classname="queryset_conditional.tests.FeatureSeedTests" name="test_feature_is_registered_and_seed_is_idempotent" time="0.612"><failure message="AssertionError: 0 != 1">self = &lt;queryset_conditional.tests.FeatureSeedTests testMethod=test_feature_is_registered_and_seed_is_idempotent&gt;
+
+    def test_feature_is_registered_and_seed_is_idempotent(self):
+        from importlib import import_module
+    
+        from project.features import FEATURES
+    
+        features = [feature for feature in FEATURES if feature.app == "queryset_conditional"]
+&gt;       self.assertEqual(len(features), 1)
+E       AssertionError: 0 != 1
+
+examples/bootstrap5/queryset_conditional/tests.py:50: AssertionError</failure></testcase></testsuite></testsuites>

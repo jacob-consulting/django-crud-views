@@ -8,6 +8,7 @@ from django import forms
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.test import RequestFactory
+from django.utils.translation import gettext_lazy
 from lxml import html
 
 from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSets, InlineFormSet
@@ -88,7 +89,16 @@ def test_published_compact_checkbox_recipe():
 
 
 @pytest.mark.django_db
-def test_published_compact_recipe_renders_and_saves_nested_rows(monkeypatch, client_user_publisher_formset):
+@pytest.mark.parametrize("row_border", [None, False, True])
+@pytest.mark.parametrize("row_legend", [None, False, "", gettext_lazy(""), "Item", gettext_lazy("Item")])
+def test_published_compact_recipe_renders_and_saves_nested_rows(
+    monkeypatch, client_user_publisher_formset, row_border, row_legend
+):
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from django.template import Context, Template
+
     text = REFERENCE.read_text()
     heading = "### Standalone compact recipe\n"
     assert text.count(heading) == 1
@@ -105,6 +115,10 @@ def test_published_compact_recipe_renders_and_saves_nested_rows(monkeypatch, cli
     for declaration in (declarations["books"], declarations["books"].children["notes"]):
         assert declaration.klass.__bases__ == (InlineFormSet,)
         assert declaration.compact_layout is not None
+        assert declaration.compact_layout.row_border is False
+        if row_border is not None:
+            declaration.compact_layout = replace(declaration.compact_layout, row_border=row_border)
+        declaration.row_legend = row_legend
         assert declaration.form_show_labels is False  # compact still emits accessible labels
 
     def forbidden(*args, **kwargs):
@@ -122,6 +136,19 @@ def test_published_compact_recipe_renders_and_saves_nested_rows(monkeypatch, cli
     fieldsets = document.cssselect("fieldset.cv-formset-compact")
     assert len(fieldsets) == 3  # books, existing book's notes, extra book's notes
     assert len(document.cssselect(".cv-formset-compact-headings")) == 3
+    theme_section = text.split("### Compact theme surface and exclusions\n", 1)[1].split("\n### ", 1)[0]
+    copied_class = re.findall(r"^```django\n(.*?)^```", theme_section, re.M | re.S)
+    assert len(copied_class) == 1
+    expected_classes = {"cv-formset-row", "cv-formset-row-compact"}
+    if row_legend is False or row_legend == "":
+        expected_classes.add("cv-formset-row-plain")
+    elif row_border:
+        expected_classes.add("cv-formset-row-bordered")
+    copied = Template(copied_class[0]).render(Context({"x_formset": SimpleNamespace(formset=declarations["books"])}))
+    assert set(copied.split()) == expected_classes
+    for row in document.cssselect(".cv-formset-row"):
+        assert set(row.classes) == expected_classes
+    assert not document.cssselect(".cv-formset-row-card, .cv-formset-row-legend")
     assert "Book title" in fieldsets[0].cssselect(".cv-formset-compact-headings")[0].text_content()
     for field in document.cssselect(".cv-formset-compact-fields input"):
         labels = document.xpath(".//label[@for=$id]", id=field.get("id"))

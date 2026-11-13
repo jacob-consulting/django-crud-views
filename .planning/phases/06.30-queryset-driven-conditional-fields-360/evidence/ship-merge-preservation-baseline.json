@@ -1,0 +1,67 @@
+{
+  "started": "2026-11-13T19:49:25.492017+00:00",
+  "upstream": "3b65e427bf39467b7896869f3d4695afcbc43453",
+  "downstream_active": {
+    "head": "4f8d0326d63d7974029b7243b1ddbe63cadb625a",
+    "branch": "main",
+    "status": ""
+  },
+  "data_metadata": {
+    "/home/alex/projects/alex/tabler-test/example/db.sqlite3": {
+      "ino": 11291995,
+      "dev": 2049,
+      "size": 585728,
+      "mtime_ns": 1794550967169122150,
+      "ctime_ns": 1794550967169122150
+    },
+    "/home/alex/projects/alex/tabler-test/example/media": null,
+    "/home/alex/projects/alex/django-crud-views/examples/bootstrap5/db.sqlite3": {
+      "ino": 6252376,
+      "dev": 2049,
+      "size": 634880,
+      "mtime_ns": 1794597606300450516,
+      "ctime_ns": 1794597606300450516
+    },
+    "/home/alex/projects/alex/django-crud-views/examples/bootstrap5/media": null,
+    "/tmp/cv-queryset-uat-9y3QIH/db.sqlite3": {
+      "ino": 2596067,
+      "dev": 2049,
+      "size": 622592,
+      "mtime_ns": 1794581461883812456,
+      "ctime_ns": 1794581461883812456
+    }
+  },
+  "state_json_observed_sha256": "1437f3e690bbec172981b8500f34717190ab621ce1a0bafd39c5f09943eef20f",
+  "state_json_ownership": "Parent owns merge/planning changes; executor neither edits nor restores this file or user stash.",
+  "archive": "/home/alex/projects/alex/django-crud-views/.git/gsd-0630-ship-merge-prior",
+  "prior_evidence": {
+    "08-upstream.json": {
+      "git_commit": "0b10cca3",
+      "sha256": "8f5a4ac34f95f35cbe56d695a9fcbfb5c5972907371ff4a6a2b2d5d9424eb602"
+    },
+    "08-downstream.json": {
+      "git_commit": "0b10cca3",
+      "sha256": "4eada46a1b3dec2083f5e8928a873824784c88229bc227c1acbe1fc79db8f25e"
+    },
+    "09-acceptance.json": {
+      "git_commit": "0b10cca3",
+      "sha256": "82e818db3172782ebfb853c2dbe2ea849eb6d7b31ddd02fa8997860c0d2351a7"
+    },
+    "14-compact-borders.json": {
+      "git_commit": "0b10cca3",
+      "sha256": "8bc1bff91663f3cd2e4799e105e6b936f680ea35af239eaa515d94f2257ecfda"
+    }
+  },
+  "authorized_adoption_update": {
+    "recorded_at": "2026-11-13T20:05:45.921406+00:00",
+    "previous_pin": "9ca0675353d43791672cf57063ecfadc4c745fd4",
+    "current_pin": "6f25da920987028db5f1ac6de26712bd7051ea11",
+    "new_branch": "agent-0630-integrated-acceptance",
+    "original_branch_pin": "9ca0675353d43791672cf57063ecfadc4c745fd4",
+    "status": "",
+    "files": [
+      "example/dashboard/tests.py"
+    ],
+    "scope": "Test-only explicit developer membership fixture for merged phase06.31; no production edits."
+  }
+}

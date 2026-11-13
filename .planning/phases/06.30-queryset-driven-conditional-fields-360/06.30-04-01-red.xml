@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="2.341" timestamp="2026-11-13T09:56:46.578479+00:00" hostname="weaver-dev"><testcase classname="queryset_conditional.tests.StandaloneRequestTests" name="test_authenticated_create_page_renders" time="1.057"><failure message="AssertionError: 404 != 200">self = &lt;queryset_conditional.tests.StandaloneRequestTests testMethod=test_authenticated_create_page_renders&gt;
+
+    def test_authenticated_create_page_renders(self):
+        response = self.client.get("/queryset-conditional/service-request/create/")
+&gt;       self.assertEqual(response.status_code, 200)
+E       AssertionError: 404 != 200
+
+examples/bootstrap5/queryset_conditional/tests.py:30: AssertionError</failure></testcase></testsuite></testsuites>

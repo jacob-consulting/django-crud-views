@@ -215,6 +215,147 @@ describe("choice conditional lifecycle", () => {
     });
 });
 
+function querysetRow(form, prefix, { compact = true, values = ["11", "12"] } = {}) {
+    const row = document.createElement("div");
+    const select = document.createElement("select");
+    select.name = `${prefix}-service`;
+    ["", "11", "12", "20", "30", "unknown"].forEach(value => select.add(new Option(value, value)));
+    select.options[1].defaultSelected = true;
+    row.append(select);
+    const cell = document.createElement("div");
+    cell.setAttribute("cv-data-toggle-group", "");
+    cell.setAttribute("cv-data-toggle-field", select.name);
+    cell.setAttribute("cv-data-toggle-kind", "queryset");
+    cell.setAttribute("cv-data-toggle-values", JSON.stringify(values));
+    if (compact) cell.setAttribute("cv-data-toggle-disable-only", "");
+    cell.style.display = "grid";
+    const value = document.createElement("input");
+    value.name = `${prefix}-detail`; value.defaultValue = "initial";
+    const baseline = document.createElement("input");
+    baseline.name = `${prefix}-baseline`; baseline.disabled = true;
+    cell.append(value, baseline); row.append(cell);
+    for (const role of ["id", "parent", "ORDER", "DELETE", "TOTAL_FORMS"]) {
+        const control = document.createElement("input");
+        control.type = "hidden"; control.name = `${prefix}-${role}`; control.value = "1";
+        row.append(control);
+    }
+    form.append(row);
+    return { row, select, cell, value, baseline, choose: token => {
+        select.value = token; select.dispatchEvent(new Event("change", { bubbles: true }));
+    } };
+}
+
+describe("queryset conditional row lifecycle", () => {
+    beforeAll(async () => { await loadScript("toggle"); });
+    beforeEach(() => { document.body.innerHTML = '<form id="queryset-owner"></form><form id="foreign"></form>'; });
+    afterEach(() => {
+        document.querySelectorAll("form").forEach(form => form.dispatchEvent(new CustomEvent("cv:modal:unload", { bubbles: true })));
+        vi.useRealTimers(); vi.restoreAllMocks();
+    });
+    const owner = () => document.getElementById("queryset-owner");
+
+    it.each([false, true])("queryset empty membership stays inactive with compact=%s", compact => {
+        const { cell, value, choose } = querysetRow(owner(), "rows-0", { compact, values: [] });
+        wire();
+        expect(value.disabled).toBe(true);
+        for (const token of ["", "11", "12", "20", "30", "unknown"]) {
+            choose(token);
+            expect(value.disabled).toBe(true);
+            expect(value.value).toBe("initial");
+            expect(cell.style.display).toBe(compact ? "grid" : "none");
+        }
+    });
+
+    it("preserves two exact-prefix rows, native submission and independent control roles", () => {
+        const form = owner();
+        const first = querysetRow(form, 'rows["<&]-0');
+        const second = querysetRow(form, 'rows["<&]-1');
+        const foreign = querysetRow(document.getElementById("foreign"), 'rows["<&]-0');
+        wire();
+        first.value.value = "unsaved first"; second.value.value = "unsaved second";
+        for (const token of ["", "20", "30", "unknown"]) {
+            first.choose(token);
+            expect(first.value.disabled).toBe(true);
+            expect(first.cell.style.display).toBe("grid");
+            expect(second.value.disabled).toBe(false);
+            expect(foreign.value.disabled).toBe(false);
+            const data = new FormData(form);
+            expect(data.has(first.value.name)).toBe(false);
+            expect(data.get(second.value.name)).toBe("unsaved second");
+            first.row.querySelectorAll('input[type="hidden"]').forEach(input => expect(data.has(input.name)).toBe(true));
+        }
+        for (const token of ["11", "12"]) {
+            first.choose(token);
+            expect(first.value.disabled).toBe(false);
+            expect(first.value.value).toBe("unsaved first");
+            expect(first.baseline.disabled).toBe(true);
+        }
+    });
+
+    it("respects a parent controller and an externally disabled cell input", async () => {
+        const form = owner();
+        const parent = document.createElement("input"); parent.type = "checkbox"; parent.name = "parent"; parent.checked = true;
+        const outer = document.createElement("div"); outer.setAttribute("cv-data-toggle-group", "");
+        outer.setAttribute("cv-data-toggle-field", "parent"); form.append(parent, outer);
+        const row = querysetRow(form, "rows-0"); outer.append(row.row); wire();
+        change(parent, false);
+        expect(outer.style.display).toBe("none"); expect(row.cell.style.display).toBe("grid");
+        expect(row.value.disabled).toBe(true);
+        change(parent, true); expect(row.value.disabled).toBe(false);
+        row.value.disabled = true; await Promise.resolve();
+        row.choose("20"); row.choose("11"); expect(row.value.disabled).toBe(true);
+    });
+
+    it.each(["controller", "form", "unrelated"])("recovers newly disabled compact focus to %s", target => {
+        vi.spyOn(HTMLElement.prototype, "getClientRects").mockReturnValue([{}]);
+        const form = owner(); const row = querysetRow(form, "rows-0");
+        const sibling = querysetRow(form, "rows-1"); wire();
+        row.value.focus();
+        if (target === "form") row.select.disabled = true;
+        if (target === "unrelated") sibling.value.focus();
+        row.choose("20");
+        expect(row.cell.style.display).toBe("grid");
+        expect(document.activeElement).toBe(target === "controller" ? row.select : target === "form" ? form : sibling.value);
+        expect(row.value.value).toBe("initial");
+    });
+
+    it("keeps native and canceled reset local to the owning form", async () => {
+        vi.useFakeTimers();
+        const form = owner(); const row = querysetRow(form, "rows-0");
+        const foreign = querysetRow(document.getElementById("foreign"), "rows-0"); wire();
+        row.value.value = "unsaved"; row.choose("20"); foreign.choose("20");
+        form.addEventListener("reset", event => event.preventDefault(), { once: true });
+        form.reset(); await vi.runAllTimersAsync();
+        expect(row.value.disabled).toBe(true); expect(row.value.value).toBe("unsaved");
+        form.reset(); await vi.runAllTimersAsync();
+        expect(row.value.disabled).toBe(false); expect(row.value.value).toBe("initial");
+        expect(row.baseline.disabled).toBe(true); expect(foreign.value.disabled).toBe(true);
+        expect(row.cell.style.display).toBe("grid");
+    });
+
+    it("initializes inserted rows and rebinds repeated modal redisplay without leaking state", () => {
+        const form = owner(); const first = querysetRow(form, "rows-0"); wire();
+        first.choose("20");
+        const inserted = querysetRow(form, "rows-1"); inserted.select.value = "20";
+        inserted.value.value = "invalid redisplay value";
+        inserted.row.insertAdjacentHTML("beforeend", '<div role="alert">Unrelated field error</div>');
+        inserted.row.dispatchEvent(new CustomEvent("cv:formset:row-added", { bubbles: true }));
+        expect(inserted.value.disabled).toBe(true); expect(first.value.disabled).toBe(true);
+        inserted.choose("11"); expect(inserted.value.value).toBe("invalid redisplay value");
+        const listener = vi.spyOn(inserted.select, "addEventListener");
+        form.dispatchEvent(new CustomEvent("cv:modal:loaded", { bubbles: true }));
+        form.dispatchEvent(new CustomEvent("cv:modal:loaded", { bubbles: true }));
+        expect(listener.mock.calls.filter(([type]) => type === "change")).toHaveLength(0);
+        form.dispatchEvent(new CustomEvent("cv:modal:unload", { bubbles: true }));
+        expect(first.value.disabled).toBe(false); expect(first.baseline.disabled).toBe(true);
+        form.remove(); document.body.append(form);
+        form.dispatchEvent(new CustomEvent("cv:modal:loaded", { bubbles: true }));
+        expect(first.value.disabled).toBe(true); expect(inserted.value.disabled).toBe(false);
+        expect(inserted.row.querySelector('[role="alert"]').textContent).toBe("Unrelated field error");
+        expect(listener.mock.calls.filter(([type]) => type === "change")).toHaveLength(1);
+    });
+});
+
 describe("conditional disabled ownership", () => {
     beforeAll(async () => { await loadScript("toggle"); });
 

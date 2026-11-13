@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
+last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
 last_mapped_at: 2026-11-13
 ---
 <!-- refreshed: 2026-11-13 -->
@@ -44,7 +44,7 @@ last_mapped_at: 2026-11-13
 | View registration metaclass | Registers a class with its `cv_viewset` and adopts the ViewSet model by default | `src/crud_views/lib/view/meta.py` |
 | CrudView integration base | Sibling/action resolution, context, routing, message rendering, access policy, write transaction hooks | `src/crud_views/lib/view/base.py` |
 | Django generic views | List/card/detail/create/update/delete, action, child and manage request handlers | `src/crud_views/lib/views/` |
-| Manage diagnostics | Developer-gated model-permission, permission-holder, and nested-ancestor configuration display | `src/crud_views/lib/views/manage.py` |
+| Manage diagnostics | Developer-gated model-permission, permission-holder, registered-view and nested-ancestor configuration display | `src/crud_views/lib/views/manage.py` |
 | Presentation model | Button/action grouping, context, labels, variants, visibility and metadata | `src/crud_views/lib/view/` |
 | Asset and theme delivery | Registry of app-contributed JS/CSS and theme-template tags/config | `src/crud_views/lib/assets.py`, `src/crud_views/templatetags/crud_views.py` |
 | Object detail extension | Configurable property groups, typed property resolvers, layout templates, detail view integration | `src/crud_views_object_detail/lib/` |
@@ -63,6 +63,7 @@ last_mapped_at: 2026-11-13
 | Delete preview and protection | Bounded related-object preview, protected-row labels, and deletion lifecycle integration | `src/crud_views/lib/deletion.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/templates/crud_views/snippets/delete/` |
 | Nested formset rendering | Request-local recursive formset tree with per-node classic or compact presentation | `src/crud_views/lib/formsets/`, `src/crud_views/templates/crud_views/formsets/` |
 | Choice-driven conditional groups | Server-side `ValueToggle` validation maps canonical single-choice values to disjoint field groups; inactive fields clear using recognized native empty values or explicit `empty_values` | `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py` |
+| Queryset-backed conditional groups | Opt-in `QuerysetConditions` maps offered and selected native `ModelChoiceField` objects to declared categories; final cleaned object controls server validation and render-context-local option projection drives browser visibility | `src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py` |
 | Numbered crispy columns | `Column1` through `Column12` provide numbered Bootstrap grid defaults through the `form:column-N` class registry, using render-local copies and a narrowly audited Bootstrap 5 template bridge | `src/crud_views/lib/crispy/table.py`, `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/crispy/bootstrap5_column.html` |
 
 ## Pattern Overview
@@ -84,9 +85,11 @@ last_mapped_at: 2026-11-13
 - Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
 - Optional packages depend on the core public view abstractions and are enabled by installing their app and declaring their specialized views.
 - Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Request-time schema projection validates field coverage, supported widget shape, effective labels and uniform row metadata before crispy renders. The compact helper composes crispy `Layout`/`Row`/`Div`/`Field` objects around the same bound fields and existing formset controls, so the page-owned outer form, CSRF, validation and save flow remain shared; `compact_layout=None` uses the classic helper unchanged. The exact stock `django.forms.widgets.CheckboxInput` class is in the supported widget set. Custom subclasses/templates require the public `CompactWidgetCompatible` marker, which skips widget-specific checks only and transfers responsibility for complete accessible/dynamic rendering to the widget author; shared field coverage, role, label and row-consistency validation remains (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/formset.html`).
+- Compact row borders are separately opt-in with `CompactLayout.row_border=False` by default. The existing formset template adds `cv-formset-row-bordered` only to compact rows with a visible legend and an enabled option; borderless compact rows retain padding, radius, background and spacing, while rows with `row_legend=False` or `""` suppress those card decorations (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/static/crud_views/css/formset.css`).
 - Legend class customization is a narrow extension of the existing button-class registry: `conditional:legend` and `formset:legend` are resolved by `{% cv_button_class %}` in the existing conditional-group and formset templates. Each slot remains empty by default and independently configurable; this adds no rendering abstraction (`src/crud_views/lib/button_classes.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
 - Choice-driven field groups use `ValueToggle(field, values)` over a standard static `ChoiceField`/`TypedChoiceField` with `Select` or `RadioSelect`; activation is decided from validated server-side form data, not JavaScript. Configuration checks require canonical choice tokens, disjoint controlled fields, and no group/controller overlap. Off groups clear through bounded native field/model empty values or explicit `empty_values` (`src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py`).
 - `ValueToggle` is supported for `ConditionalGroup` only. Whole-formset activation via `ConditionalFormSet` remains checkbox-based (`ModelFieldToggle` or `UIFieldToggle`), enforced by its Pydantic validator; do not use choice-value controllers to skip or purge entire formsets (`src/crud_views/lib/conditional/formset.py`).
+- `QuerysetConditions` extends conditional field groups for one native single `ModelChoiceField`: it declares category keys and a direct category attribute/annotation, uses unique concrete integer/text/UUID selection identity, and provides `when(*keys)` toggles. Validation uses the final inherited `cleaned_data` selected object as authority; rendering projects offered categories once per render context from the field queryset, preserves native widget labels, and reports unmatched coverage on bound responses. Register an empty server group and explicit empty `ToggleGroup` when a category activates no fields. It cannot control whole formsets (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/lib/conditional/formset.py`).
 - The conditional example defines four groups on `CustomerForm`, including shared Wholesale/Distributor business fields, and `CustomerRadioForm` changes only the `kind` widget. The business group explicitly clears `payment_terms` to the persisted `unset` choice, while nullable `price_tier` clears to `None` even though new instances default to `A` (`examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/models.py`).
 
 ## Layers
@@ -140,6 +143,13 @@ last_mapped_at: 2026-11-13
 - Depends on: Core `CrudView`/ViewSet APIs plus the corresponding optional Django ecosystem package.
 - Used by: Consumer projects that install and configure the extension.
 
+**Workflow transition presentation:**
+- Purpose: Project FSM transition choices into native submit buttons with optional theme classes and icons while preserving full labels and the existing permission/execution pipeline.
+- Location: `src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`.
+- Contains: Per-transition `custom["variant"]` and `custom["icon"]` metadata, a fixed eight-variant vocabulary, existing button-class registry resolution and core icon-host projection.
+- Depends on: Workflow transition choices and core button/icon registry. Unsupported variants fall back to `form:submit:label`; metadata does not change transition availability, comments or execution.
+- Used by: `WorkflowForm` when the view opts into `cv_transition_presentation = "buttons"`.
+
 **Object-detail layout adapter:**
 - Purpose: Render property groups into layout packs and initialize interactive tabs while keeping UI-library ownership behind the theme adapter API.
 - Location: `src/crud_views_object_detail/lib/presentation.py`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`
@@ -183,14 +193,6 @@ The snippet-variable contract is deliberately bounded: `object`, `view`, optiona
 
 Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus global `CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE`, `CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS`, `CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS` in `src/crud_views/lib/settings.py`. Structure/action declaration problems surface as system checks in `src/crud_views/checks.py`. Docs: `docs/reference/nested.md`, `docs/reference/guardian.md`.
 
-### Manage Diagnostics Request and Setup
-
-1. A ViewSet's manage page dispatches through `ManageView`; nested requests pass the ancestor guard before the local diagnostics gate (`src/crud_views/lib/views/manage.py`).
-2. `_cv_manage_allowed()` requires an authenticated, active user, an enabled manage mode (and `DEBUG` when mode is `debug_only`), and membership in the configured `CRUD_VIEWS_MANAGE_GROUP`. The same gate backs page permission checks and action visibility.
-3. The page projects ViewSet model permissions, configured group/user holders, and declared ancestor policy for diagnosis. Nested auth-record reads are checked against the default database before querying; display data does not grant permissions (`src/crud_views/lib/views/manage.py`, `src/crud_views/lib/ancestor_db.py`).
-4. `python manage.py cv_manage_group` creates the configured group with `get_or_create` only; operator membership and application permissions remain explicit setup steps (`src/crud_views/management/commands/cv_manage_group.py`, `docs/reference/settings.md`).
-5. The Bootstrap example seeds a non-superuser developer identity, fails closed on conflicting model/object grants, and applies a maintained explicit read-allowlist (`examples/bootstrap5/project/seeding.py`, `examples/bootstrap5/project/management/commands/seed.py`).
-
 ### Asset and Theme Flow
 
 1. Core assets are selected from `CrudViewsSettings`; extensions may register bundles during `AppConfig.ready()` (`src/crud_views/lib/assets.py`).
@@ -212,10 +214,6 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - Resource rows are obtained per request from a consumer-defined `Resource.cv_get_items()` or `cv_get_item()` rather than stored in the Django ORM (`src/crud_views/lib/resource.py`).
 
 **Workflow transition execution:** `WorkflowView` and public `run_transition()` share the private engine in `src/crud_views_workflow/lib/execution.py`. It verifies the selected database alias and persisted actor/object identity, validates availability/business/comment policy, then saves model state and `WorkflowInfo` within one alias-specific atomic block. View follow-ups use `transaction.on_commit()` on that same alias (`src/crud_views_workflow/lib/views.py`).
-
-**Workflow transition presentation:** `WorkflowForm` projects each offered django-fsm transition's `custom["variant"]` and `custom["icon"]` into action data (`src/crud_views_workflow/lib/forms.py`). `_TransitionButtons` accepts only the fixed variants `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`; it resolves variant classes through the existing button-class registry and host icon classes through the core icon placement contract (`src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`). Missing or unsupported variants use the existing `form:submit:label` classes. The template adds optional icon markup and retains the escaped full label (`src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`).
-
-**Manage diagnostics:** `ManageView` exposes configured permission and ancestor-policy diagnostics only after active-user, mode, group-membership and nested-ancestor gates. `cv_manage_group` is a separate setup command with a single group-creation mutation boundary; it does not assign memberships or permissions (`src/crud_views/lib/views/manage.py`, `src/crud_views/management/commands/cv_manage_group.py`).
 
 ### Object-Detail Resolution and Presentation
 
@@ -266,6 +264,7 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - Purpose: Describe recursive formset structure, deletion/order metadata and optional compact field/control grid without embedding markup in consumer views.
 - Examples: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `examples/bootstrap5/formsets/views.py`
 - Pattern: Keep classic crispy helpers on classic inline formsets; opt into compact with `compact_layout=CompactLayout(...)` per node. `_compact_schema()` projects and validates request-bound fields, `_compact_helper()` creates crispy layout objects around the original fields and `FormControl`, and `XForm.helper` chooses this path only for opted-in nodes. The exact stock `django.forms.widgets.CheckboxInput` is supported. A widget subclass or custom template crosses the compatibility boundary only by inheriting `CompactWidgetCompatible`; that marker supplies no renderer, and the author owns labels/groups, headings, help/errors, prefixed IDs/names and dynamic rows (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`).
+- Border treatment is independent: `row_border=True` enables a border only when the compact row has a nonempty legend; the default is borderless while retaining the compact row geometry. `row_legend=False` or `""` selects the plain presentation with border, padding, radius and card background suppressed (`src/crud_views/lib/formsets/formsets.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/static/crud_views/css/formset.css`).
 
 **Checklist example composition:**
 - Purpose: Exercise compact rendering of an ordinary BooleanField in a separate end-to-end CRUD family.
@@ -287,6 +286,13 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 4. `ToggleGroup` connects the same controller to the rendered fieldset. Browser JavaScript controls visibility as progressive enhancement; it does not decide validation or persistence (`src/crud_views/lib/conditional/layout.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`).
 5. `CustomerRadioForm` inherits the same conditional groups and layout as `CustomerForm` and overrides only the `kind` widget, so the dropdown and radio routes exercise identical server behavior (`examples/bootstrap5/conditional/views.py`).
 
+### Queryset-driven conditional group flow
+
+1. The form declaration creates `QuerysetConditions(controller, conditional_key=..., keys=...)`; each `when(...)` toggle is assigned to a `ConditionalGroup` and matching crispy `ToggleGroup` (`src/crud_views/lib/conditional/queryset.py`, `examples/bootstrap5/queryset_conditional/`).
+2. During form cleaning, the group mixin validates the native ModelChoice field shape and category coverage, then uses the final cleaned model object to decide active/required fields. Inactive fields use the existing bounded clearing and persistence pipeline (`src/crud_views/lib/conditional/group.py`).
+3. During rendering, layout wrappers project categories from the offered queryset into option tokens in the Django render context; no choice labels are reconstructed and no request payload decides active server validation (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`).
+4. When `allow_unmatched` is false, an offered or selected object with an undeclared category raises a coverage configuration error; a bound render keeps the diagnostic visible alongside the submitted form errors. An all-no-fields category still needs an explicit empty layout guard for option visibility coverage.
+
 ## Entry Points
 
 **Django app initialization:**
@@ -294,10 +300,16 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - Triggers: Django app registry startup.
 - Responsibilities: Register core system checks via `ready()` importing `crud_views.checks`.
 
-**Manage diagnostics group setup:**
-- Location: `src/crud_views/management/commands/cv_manage_group.py`
-- Triggers: Operator runs `python manage.py cv_manage_group` after configuring Django settings.
-- Responsibilities: Ensure the configured diagnostics group exists without altering its members or permissions.
+**Manage diagnostics:**
+- Location: `src/crud_views/lib/views/manage.py`, with the Guardian extension in `src/crud_views_guardian/lib/views.py`.
+- Triggers: Authenticated developer opens the manage action or direct manage URL.
+- Responsibilities: Require active manage-group membership (plus configured mode and nested ancestor authorization), then project permission holders, current-user results, registered view details and declared ancestor policy. `src/crud_views/management/commands/cv_manage_group.py` creates the configured group without granting permissions or memberships.
+
+### Manage diagnostics request path
+
+1. `ManageView.dispatch()` runs nested ancestor authorization before the normal permission mixin (`src/crud_views/lib/views/manage.py`).
+2. The manage gate requires an authenticated active user, an enabled diagnostics mode, and membership in `CRUD_VIEWS_MANAGE_GROUP`; staff/superuser status and `DEBUG=True` do not independently grant access (`src/crud_views/lib/settings.py`, `src/crud_views/lib/views/manage.py`). The auto-registered action uses the same access check and hides itself when denied.
+3. Authorized pages project ViewSet permission results and declared ancestor policies; Guardian adds object-grant counts and per-view Guardian policy detail (`src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`). `cv_manage_group` creates only the configured group.
 
 **ViewSet URL inclusion:**
 - Location: `src/crud_views/lib/viewset/__init__.py` (`ViewSet.urlpatterns`)

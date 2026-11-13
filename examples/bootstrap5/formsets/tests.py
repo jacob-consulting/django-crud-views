@@ -111,6 +111,33 @@ class FormsetsSeedTest(TestCase):
 
 
 class ChecklistCrudTest(FormsetsTestCase):
+    def assert_bordered_items(self, content):
+        document = html.fromstring(content)
+        rows = document.cssselect(".cv-formset-row")
+        self.assertTrue(rows)
+        self.assertTrue(all("cv-formset-row-bordered" in row.classes for row in rows))
+        self.assertFalse(document.cssselect(".cv-formset-row-plain"))
+        self.assertFalse(document.cssselect(".cv-formset-row-card, .cv-formset-row-legend"))
+
+    def test_pages_explain_explicit_borders_and_keep_questionnaire_link(self):
+        from formsets.views import cv_checklist_formsets
+
+        checklist = self.make_checklist()
+        for action in ("list", "create", "update"):
+            with self.subTest(action=action):
+                page = self.client.get(
+                    reverse(f"checklist-{action}", kwargs={"pk": checklist.pk} if action == "update" else None)
+                )
+                self.assertEqual(page.status_code, 200)
+                document = html.fromstring(page.content)
+                for panel in document.cssselect(".snippet-panels, [id^='snippet-']"):
+                    panel.drop_tree()
+                self.assertIn("Compact rows explicitly enable borders with row_border=True.", document.text_content())
+                links = document.xpath(".//a[@href=$href]", href=reverse("questionnaire-list"))
+                self.assertTrue(any("Questionnaire examples" in link.text_content() for link in links))
+        self.assertIs(cv_checklist_formsets["items"].compact_layout.row_border, True)
+        self.assertIsNone(cv_checklist_formsets["items"].row_legend)
+
     def make_checklist(self):
         checklist = Checklist.objects.create(title="Release checklist")
         ChecklistItem.objects.create(checklist=checklist, label="Review changes", done=True)
@@ -130,6 +157,7 @@ class ChecklistCrudTest(FormsetsTestCase):
     def test_create_with_native_checked_and_omitted_values_and_fragment(self):
         url = reverse("checklist-create")
         response = self.client.get(url)
+        self.assert_bordered_items(response.content)
         payload = form_payload(response)
         payload["title"] = "New checklist"
         label = field_key(payload, "-label")
@@ -138,6 +166,7 @@ class ChecklistCrudTest(FormsetsTestCase):
         fragment = self.client.get(url, self.fragment_params(response))
         self.assertEqual(fragment.status_code, 200)
         document = html.fromstring(fragment.json()["html"])
+        self.assert_bordered_items(fragment.json()["html"])
         for control in document.cssselect("input[name]"):
             if control.get("type") != "checkbox":
                 payload[control.get("name")] = control.get("value", "")
@@ -161,7 +190,9 @@ class ChecklistCrudTest(FormsetsTestCase):
     def test_update_omitted_checkbox_saves_false_and_untouched_extra_stays_empty(self):
         checklist = self.make_checklist()
         url = reverse("checklist-update", kwargs={"pk": checklist.pk})
-        payload = form_payload(self.client.get(url))
+        initial = self.client.get(url)
+        self.assert_bordered_items(initial.content)
+        payload = form_payload(initial)
         done_keys = [key for key in payload if key.endswith("-done")]
         self.assertEqual(len(done_keys), 1)
         payload.pop(done_keys[0])
@@ -180,6 +211,7 @@ class ChecklistCrudTest(FormsetsTestCase):
         payload[label] = "x" * 201
         response = self.client.post(url, payload)
         self.assertContains(response, "Ensure this value has at most 200 characters")
+        self.assert_bordered_items(response.content)
         self.assertEqual(form_payload(response)[label], "x" * 201)
         self.assertIn(label.removesuffix("label") + "done", form_payload(response))
         checklist.refresh_from_db()

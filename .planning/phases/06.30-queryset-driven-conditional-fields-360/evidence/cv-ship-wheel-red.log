@@ -1,0 +1,20 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______________________ test_queryset_render_save_reopen _______________________
+
+    def test_queryset_render_save_reopen():
+>       assert Path(crud_views.__file__).resolve().is_relative_to(Path.cwd() / "src")
+E       AssertionError: assert False
+E        +  where False = is_relative_to((PosixPath('/home/alex/projects/alex/django-crud-views') / 'src'))
+E        +    where is_relative_to = PosixPath('/tmp/cv-ship-wheel-check/lib/python3.12/site-packages/crud_views/__init__.py').is_relative_to
+E        +      where PosixPath('/tmp/cv-ship-wheel-check/lib/python3.12/site-packages/crud_views/__init__.py') = resolve()
+E        +        where resolve = PosixPath('/tmp/cv-ship-wheel-check/lib/python3.12/site-packages/crud_views/__init__.py').resolve
+E        +          where PosixPath('/tmp/cv-ship-wheel-check/lib/python3.12/site-packages/crud_views/__init__.py') = Path('/tmp/cv-ship-wheel-check/lib/python3.12/site-packages/crud_views/__init__.py')
+E        +            where '/tmp/cv-ship-wheel-check/lib/python3.12/site-packages/crud_views/__init__.py' = crud_views.__file__
+E        +    and   PosixPath('/home/alex/projects/alex/django-crud-views') = cwd()
+E        +      where cwd = Path.cwd
+
+tests/test1/test_conditional_queryset.py:69: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_conditional_queryset.py::test_queryset_render_save_reopen
+1 failed in 0.40s

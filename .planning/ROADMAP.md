@@ -55,7 +55,8 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.28: Tooltip recipe lifecycle safeguards (#355)** (completed 2026-11-12)
 
 - [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
-- [ ] **Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)** - approved handover; base forms and inline rows, strict category matching, tabler-test adoption, and a focused example app with linked documentation.
+- [x] **Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)** - approved handover; base forms and inline rows, strict category matching, tabler-test adoption, and a focused example app with linked documentation. (completed 2026-11-13)
+
 - [x] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance. (completed 2026-11-13)
 - [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
@@ -1801,10 +1802,53 @@ Plans:
 **Requirements:** Deliver upstream support, the verified tabler-test roastery upgrade, and one separate example app with its own models, focused standalone/inline source modules, ordinary/compact variants, and reciprocal documentation links. Strict matching is the default; check offered options on rendering and the validated selection on POST, permit explicit no-fields categories and an opt-in unmatched policy, and do not scan unused categories. Preserve browser values until save; hide inactive ordinary groups and keep compact cells visible but disabled. Preserve existing conditional behavior and bounded query costs.
 **Depends on:** Phase 06.29 (roadmap sequence); builds on Phase 06.27's conditional groups and Phases 06.24–06.26's compact formset contracts.
 **Ordering:** Complete before Phase 7 freezes the public theme surface; include the settled queryset/inline conditional template and JavaScript contracts in that inventory.
-**Plans:** 0 plans
+**Plans:** 15/15 complete; canonical verification 54/54 and all required human UAT passed.
 
 Plans:
-- [ ] TBD (run $gsd-plan-phase 06.30 to break down)
+**Wave 1**
+- [x] 06.30-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.30-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.30-03-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.30-04-PLAN.md
+- [x] 06.30-07-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.30-05-PLAN.md
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [x] 06.30-06-PLAN.md
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [x] 06.30-08-PLAN.md
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [x] 06.30-09-PLAN.md
+
+**Wave 9 — UAT gap closure**
+- [x] 06.30-10-PLAN.md — Ordinary row cards, per-level frame suppression, documentation and verification
+
+**Wave 10 — Source-bound acceptance refresh** *(depends on 06.30-10)*
+- [x] 06.30-11-PLAN.md — Isolated adoption checkout, fresh browser/release evidence and owner verification handoff
+
+**Wave 11 — Consistent compact frame suppression** *(depends on 06.30-11)*
+- [x] 06.30-12-PLAN.md — Shared per-level frame opt-out and Checklist/Choices/Referenten examples
+
+**Wave 12 — Final-source acceptance** *(depends on 06.30-12)*
+- [x] 06.30-13-PLAN.md — Documentation, then one final browser/release refresh and canonical audit handoff
+
+**Wave 13 — Configurable compact-row borders** *(depends on 06.30-13)*
+- [x] 06.30-14-PLAN.md — Borders default off; Checklist opts in; compact Request Batches stays borderless; visible descriptions and synchronized documentation
+
+**Wave 14 — Border presentation and final-source acceptance** *(depends on 06.30-14)*
+- [x] 06.30-15-PLAN.md — Three-state browser proof, one complete source-bound acceptance refresh, then named canonical audit/UAT reconciliation
+
+Plans 14/15 preserve completed plans 01–13 as history. D-15 supersedes only the old compact border default and Checklist choice; UAT test 3/G-06.30-2 and verification truth 39 were reconciled by their owners; H1/H2 passed explicitly.
 
 ### Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)
 
@@ -1969,7 +2013,8 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
-| 06.30. Queryset-driven conditional fields (#360) | 0/TBD | Not started | - |
+| 06.30. Queryset-driven conditional fields (#360) | 15/15 | Complete | 2026-11-13 |
+
 | 06.31. Developer-only manage diagnostics (#361) | 6/6 | Complete | 2026-11-13 |
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

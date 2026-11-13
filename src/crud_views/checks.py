@@ -280,7 +280,11 @@ def _conditional_messages(
         messages.append(
             Error(
                 f"Invalid conditional value group on form '{form_name}': {reason}",
-                hint="Use native single-choice controllers, matching choice values and disjoint controlled fields.",
+                hint=(
+                    "Use native static single-choice controllers with matching choice values, or a native "
+                    "ModelChoiceField/Select with a unique integer/text/UUID selection key. "
+                    "Keep controlled fields disjoint and exclude every group controller."
+                ),
                 id="crud_views.E313",
             )
         )

@@ -196,6 +196,51 @@ FEATURES: list[Feature] = [
         ),
     ),
     Feature(
+        app="queryset_conditional",
+        group="forms",
+        title="Queryset conditional fields",
+        description="Service categories control fields in standalone and ordinary or compact inline forms.",
+        about=(
+            "Choose a service: Boiler inspection and Appliance installation both need an on-site visit address; "
+            "Technical consultation needs a meeting URL; Document review needs neither. Switch away and back "
+            "to keep unsaved values, then save to clear fields that no longer apply. Compare a standalone request "
+            "with independent rows in the ordinary and compact batch editors."
+        ),
+        look_at=(
+            "models.py owns the service categories and requests; conditions.py declares the shared category mapping. "
+            "The editor module shown below applies it to the page's form and layout."
+        ),
+        url_name="service_request-list",
+        icon="fa-solid fa-toolbox",
+        docs=(
+            DocRef(
+                page="reference/conditional.md",
+                label="Conditional field-groups",
+                anchor="kind-1-conditional-field-group-in-a-form",
+            ),
+            DocRef(
+                page="reference/conditional.md",
+                label="Queryset-driven conditional fields",
+                anchor="queryset-driven-conditional-fields",
+            ),
+            DocRef(
+                page="reference/conditional.md",
+                label="Strict coverage and permissive matching",
+                anchor="strict-coverage-and-permissive-matching",
+            ),
+            DocRef(
+                page="reference/conditional.md",
+                label="Queryset controller bounds",
+                anchor="queryset-controller-bounds",
+            ),
+            DocRef(
+                page="reference/formsets.md",
+                label="Queryset-driven row fields",
+                anchor="queryset-driven-row-fields",
+            ),
+        ),
+    ),
+    Feature(
         app="workflow",
         group="extensions",
         title="Workflow",

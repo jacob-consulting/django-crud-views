@@ -1,0 +1,3691 @@
+{
+  "scope": "G-06.30-2 focused frames; prior ordinary scenarios retained",
+  "started": "2026-11-13T17:13:22.548Z",
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/formset-row-cards.cjs",
+    "--output",
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/12-row-frames.json"
+  ],
+  "sourceRoot": "/home/alex/projects/alex/django-crud-views",
+  "sourceHashes": {
+    "examples/bootstrap5/action_menus/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/action_menus/apps.py": "8a389839178c544da122976cd2a359255f65425524a2a8881810f6923500365e",
+    "examples/bootstrap5/action_menus/migrations/0001_initial.py": "c5946b3330a83933f209ae4478622b532bf6d4810225eb51d26453603467c740",
+    "examples/bootstrap5/action_menus/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/action_menus/models.py": "9abffdc338420ccc1d7e3de0ab0c86fb6ef69d0db62043fa4efab6c1e15938a1",
+    "examples/bootstrap5/action_menus/seed.py": "d3ac3cafc82f6c1e67c1e4630d4ddef5de8ab78540e7d512164c3a6c36c8df63",
+    "examples/bootstrap5/action_menus/templates/action_menus/table_responsive.html": "ad90b06c9697d7e2b7b296c7342fa8dba831d167a7f5b5349e7ace3f2cdbacc3",
+    "examples/bootstrap5/action_menus/tests.py": "fe9535e012b5dc6d3bb22ff4c8a70f6701e780dada86c12c9c7a04e18b06e4dd",
+    "examples/bootstrap5/action_menus/urls.py": "00fc16b434db4be78473e7b97cff0865c3f4f182419d02a3c2f05c6c0aaa51ea",
+    "examples/bootstrap5/action_menus/views.py": "bc86a13504ad674a4d084c67f158511592a1b6e8ec2def8ebca05d93ce6f2f49",
+    "examples/bootstrap5/breadcrumbs/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/breadcrumbs/apps.py": "0ec4a74967e6d79489858ac59945e171a401e49a0ce42942b7fab13799d10e90",
+    "examples/bootstrap5/breadcrumbs/migrations/0001_initial.py": "ac0df8aaca7b593908e6ec73f9a6b1c5619180f9aa4462687db9fa699ec53ad6",
+    "examples/bootstrap5/breadcrumbs/migrations/0002_translatable_verbose_names.py": "8f97268b325294becd6f2e2aa4b71f26ab3873013747f3d3a9c447e4344256bc",
+    "examples/bootstrap5/breadcrumbs/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/breadcrumbs/models.py": "875504dbd54d8211bc1566d5364b4ce37428103036b9f1f1bf1e7091cd994a4c",
+    "examples/bootstrap5/breadcrumbs/seed.py": "8124562124aa0004fb3107cba9defdb5b52d8f991ebbf71834cf694202e1bc71",
+    "examples/bootstrap5/breadcrumbs/templates/breadcrumbs/host.html": "286ea360436d371f8e42f848e445af8e9b14bc30d6822ee8f71199a82ca0e6b8",
+    "examples/bootstrap5/breadcrumbs/tests.py": "8a692df330abf21d6428d7fc195acda61965245cccb8f7a74535baab358f8816",
+    "examples/bootstrap5/breadcrumbs/urls.py": "b4b429cf8fbe00a29432af9f4f15f80f059e0e344071a0c1ddf45a52fef4a401",
+    "examples/bootstrap5/breadcrumbs/views.py": "9b15268d8d05fbe65e71fe71b9d964cc0e744e2247fa2fb7e67a51aac95c745e",
+    "examples/bootstrap5/card_view/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/card_view/apps.py": "77d9ecb884d9c70884e5071f775acd4d4ad1e07cc33183f625ad87326da774c4",
+    "examples/bootstrap5/card_view/seed.py": "c3750b98f70a068c59f09d90a95d494ce65398ad551e1fa344c420a189a0aac5",
+    "examples/bootstrap5/card_view/tests.py": "b1074afd85c5b822029ab110decdddf345eb463e200d6e676f93b51a9846af1b",
+    "examples/bootstrap5/card_view/urls.py": "7da3833b5f84eed59c30216c909b4f91309ca0373db0cb8ffafc1ac9107a645e",
+    "examples/bootstrap5/card_view/views.py": "d8b64ad6ca64ef87be505cf11970c896f9a5e89a1fefe598147c65fd98825d88",
+    "examples/bootstrap5/conditional/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/conditional/apps.py": "5d81d32b9c6aa22aa662bb623e734e7cc78c88f9bb775880b5b03782582ccd02",
+    "examples/bootstrap5/conditional/migrations/0001_initial.py": "6028112ab7a6b23c429a2be64d3fdafa46f6dfbf148c67afade4369eb7ad85f0",
+    "examples/bootstrap5/conditional/migrations/0002_event_with_speakers_registration_note_speaker.py": "a8282d58203d734acb5fe0668d5181f108ba6ff0b186817bf0f584dfd06bdeaf",
+    "examples/bootstrap5/conditional/migrations/0003_translatable_verbose_names.py": "c6f426abcd67282536e20fb9edb3dae4a289d1df28898f9407596e8b1867944a",
+    "examples/bootstrap5/conditional/migrations/0004_customer.py": "b70fb9ec3004b685d486dbc8d0019c7f09ebd165c76670a5482c6f57a4b5f43e",
+    "examples/bootstrap5/conditional/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/conditional/models.py": "863060109e8fca2ee6899eb5ddf9da16cf050c04c06a84d9b79b2f122da849d5",
+    "examples/bootstrap5/conditional/seed.py": "009ee7de67345aa133093ce9610422d483921b6c71022256e27590716fc800b3",
+    "examples/bootstrap5/conditional/tests.py": "ab3323b2a0fa64d101bc91add2c2fc9a7d9d642a8e985939e9e3f47daa99f29c",
+    "examples/bootstrap5/conditional/urls.py": "442cee0084667bc64c1fd75fbeb801417c880ace0bc57231edd7a9dee714edea",
+    "examples/bootstrap5/conditional/views.py": "e5c7c552391e27be2ebb39db35b17393eb42e1b08a06855edccb403aa7dc46d5",
+    "examples/bootstrap5/context_buttons/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/context_buttons/apps.py": "6760e42afa6e0427470b618f65ddb5754325824b737f5e034b88e2d75f3f1b6f",
+    "examples/bootstrap5/context_buttons/migrations/0001_initial.py": "32ddbfb4c3fbd05c418f3e01ba6f6f6640119a5476272b885811a7c2fad7598f",
+    "examples/bootstrap5/context_buttons/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/context_buttons/models.py": "4f11d0a327c42743a75feabc2b2a9d4e01f524350f26d589031e99c667cdb7c0",
+    "examples/bootstrap5/context_buttons/seed.py": "dd8594d11abb55764c5ab4697317245470e1494999878f157f4045c280acfb6f",
+    "examples/bootstrap5/context_buttons/templates/context_buttons/pill_button.html": "1ba5e314a5ce435bcbc00a6971bddcc5115c1d9aa010961b11f369d520c038e3",
+    "examples/bootstrap5/context_buttons/templates/context_buttons/ticket_detail.html": "de74979c9d9a45467c177cdecd6dc1d76bdac2ad76b3a3ae3f1c940fb7f85b25",
+    "examples/bootstrap5/context_buttons/tests.py": "4eecf53b8e6611e8c3a4bc8aac739819cb1d4f714280ba9a5d6aecd7e543eac1",
+    "examples/bootstrap5/context_buttons/urls.py": "e353e971ce9a0c35a337929a40369ae36673f7674b54de58edb176571e56fcc9",
+    "examples/bootstrap5/context_buttons/views.py": "3cf1037026c0956a6150fa22d3274827123cf263ccb8157d68e4da9f1d024345",
+    "examples/bootstrap5/custom_form/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/custom_form/apps.py": "a2fc244d50c55bb6d5a9ca9518b01edd0e2ac5043dcd6d0c1b4e3ffbbb879b57",
+    "examples/bootstrap5/custom_form/migrations/0001_initial.py": "a9e68dc8fa493656bb8c3928b8277e05dcc1eed23498f5452b44f3915d0bbdce",
+    "examples/bootstrap5/custom_form/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/custom_form/models.py": "816506eb2d8fc840de5109f2157e963f0cdacb17a7d53dd4de2fd77a7320bda4",
+    "examples/bootstrap5/custom_form/seed.py": "23181f34ef18196f5a420295d3367fc821e97b62a14981fc80e5c5d15e42032f",
+    "examples/bootstrap5/custom_form/tests.py": "259ea0956d387f92e01b6a7eb57720e1bfaa0ec7fae0651d99374e43988c53c7",
+    "examples/bootstrap5/custom_form/urls.py": "add93cf8f3de3a26c3784205ea58fac5dd6f1c3f5c0651ab39689c0288a170f0",
+    "examples/bootstrap5/custom_form/views.py": "06dc563d5ee26813809eb7f8a66019de02808f1ee0e3ab84611266d5ac174b9f",
+    "examples/bootstrap5/delete_demo/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/delete_demo/apps.py": "48c94e2f8cfd82562e90fe46b2e0fa619afaa385326b8b78699fa24c850128a6",
+    "examples/bootstrap5/delete_demo/migrations/0001_initial.py": "5d59664f66686f7946b1fbd31f4e0e3648b5041975a361a3e969a0560aad239c",
+    "examples/bootstrap5/delete_demo/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/delete_demo/models.py": "bc41982cf59efea6169912ac74dad58ae32f55fe867375900cebdd9d09a3201e",
+    "examples/bootstrap5/delete_demo/seed.py": "b161a0bda82a98f1e791871f7ca704393c2ccadf97e47e18739499b51437e541",
+    "examples/bootstrap5/delete_demo/tests.py": "2e420aad3e7ec994648dd6a98ea901943ca58328cdd670393b060589991b1f3e",
+    "examples/bootstrap5/delete_demo/urls.py": "7504e9f629e04f00d2d078daad8eb2efdd284578053187f1f8254e0996fdc9ed",
+    "examples/bootstrap5/delete_demo/views.py": "205c26a6ed5869831a77f58c4a026804be9742ee1763b298ececf8cc4e664a97",
+    "examples/bootstrap5/disabled_actions/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/disabled_actions/apps.py": "0853255de055d1d65fe145e7d555bb7e266c2e79cd3aeacda237a96c599f8f97",
+    "examples/bootstrap5/disabled_actions/migrations/0001_initial.py": "d0678d2cd75d88ecc3b480de43e9204438e58460abaed2eedcdda288d7cc3050",
+    "examples/bootstrap5/disabled_actions/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/disabled_actions/models.py": "9bac0d19ac2fd472addd3e20c061ed60ea2d7c93434c6a721dc4dc4596a75844",
+    "examples/bootstrap5/disabled_actions/seed.py": "cdb53d69834d38a95ec05d439ad41731b6800d4e42455583555073fcd3871934",
+    "examples/bootstrap5/disabled_actions/tests.py": "2feecc219faac68941ae7737175c8b287cbc0f13900534d3498ad8c797b0659b",
+    "examples/bootstrap5/disabled_actions/urls.py": "ae0c3caead8443e5810bb656cbb1928f1c6a08a2dab5974313a493d4271c32ac",
+    "examples/bootstrap5/disabled_actions/views.py": "9cb90164ff462b7347df6016ea59440d3e27aa137a8ce69a361554e4489dd7af",
+    "examples/bootstrap5/flash_messages/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/flash_messages/apps.py": "02d384fb9e3771b22d24e2d6f228ff18f7cadd9638eaa46196797ea31ca8cec5",
+    "examples/bootstrap5/flash_messages/migrations/0001_initial.py": "e185db108a903c275fd7346373b0b08a5f62816637f0c9a56b1abba60ec1051d",
+    "examples/bootstrap5/flash_messages/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/flash_messages/models.py": "29b8ec430f955f419044857bff0911565d3f3f45aecabad1234cff963fd25b4d",
+    "examples/bootstrap5/flash_messages/seed.py": "456b4169a0aa85901d5e57793775ca5076cbc29262ff5284dbc5fa30d5563d06",
+    "examples/bootstrap5/flash_messages/templates/flash_messages/compose.html": "b7bfb8f4b722a5f8663fe1327a3a13e37a2affcaf5b756a314c35650932fb452",
+    "examples/bootstrap5/flash_messages/tests.py": "2de8645ae74020dc9f25ce46a82ddb1f8a0fdc8e3316bfef838cb248cc5fbe38",
+    "examples/bootstrap5/flash_messages/urls.py": "dffdab6795ebbe24d37839809ef718ebeaf2499ff45839c1315da3bad1b932a5",
+    "examples/bootstrap5/flash_messages/views.py": "e23fb661bc88f8cd5126fc58d153ee776b0c38833f82319c05e9be9847b01fc0",
+    "examples/bootstrap5/formsets/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/formsets/apps.py": "bd6af4445d94f6ddeedf32926e7d28800ce421e7b01b2d7a4e930ea342eaff9f",
+    "examples/bootstrap5/formsets/migrations/0001_initial.py": "829a8d7064ecadb707ee1b39e1cc8d997bfeb4cdb937dec79ec3ec2814691286",
+    "examples/bootstrap5/formsets/migrations/0002_translatable_verbose_names.py": "463b2585ea19c90c64f29eb85167fd76e57e7108a51aa562374b07c1f72e4b3b",
+    "examples/bootstrap5/formsets/migrations/0003_checklist_checklistitem.py": "968961636ec67cb4c17f57b2dc12341f3706e226c7a0e65235580ff0aa8b1627",
+    "examples/bootstrap5/formsets/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/formsets/models.py": "22cbc0f2b1bdc94617c5e764fa4e8bc94a185415f0df1c15acaf3a5b58683448",
+    "examples/bootstrap5/formsets/seed.py": "afe82f890baa13ef5576030649b6a575781e8f296b6433ed42bc2b6de4be96d6",
+    "examples/bootstrap5/formsets/tests.py": "cc7bf576df24ddfd843ecb205862cbd183f28406c2177b8d411b4cbeb7eab492",
+    "examples/bootstrap5/formsets/urls.py": "0447731804948bacdfda7d58b7fa6cfc5d938ecb19f678fe34bb2eb39be20cdc",
+    "examples/bootstrap5/formsets/views.py": "2536a441fd7e65b971343f76651afb900a4a737543169e020a445d46b241d3e4",
+    "examples/bootstrap5/formsets_conditional/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/formsets_conditional/apps.py": "5764b8fd5ac84a6423a319d58283993ac6ea56c673fd964de4a6abba899fd4f1",
+    "examples/bootstrap5/formsets_conditional/migrations/0001_initial.py": "292b714c7f6db546e088e693773bea56e216fa6c91c81f992ad28d32557fc90e",
+    "examples/bootstrap5/formsets_conditional/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/formsets_conditional/models.py": "94c052b06975d81b70223519e1ca4a5bd7f810a9650e944d9a9c428108ac42d6",
+    "examples/bootstrap5/formsets_conditional/seed.py": "5dea6c1bde055cdb45d70a73f3605e3d2587c319aacdc79ae583069d2c7a5b19",
+    "examples/bootstrap5/formsets_conditional/tests.py": "e9ee72c35641bc71ad74d6d70ef85c9f8b31c8ec4e09fceea3a4be8688c89134",
+    "examples/bootstrap5/formsets_conditional/urls.py": "7773fd607396bd5c96c2520df279394b1a8f1a70ff7035c4a388fbf52b850b68",
+    "examples/bootstrap5/formsets_conditional/views.py": "1ad662770bf5ba71092f5298395c28d8db50055311f8dd6dd702685ea374877b",
+    "examples/bootstrap5/guardian_demo/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/guardian_demo/apps.py": "4370c1afc8cd05879aff3e4511b0c2437a76962ed433fa333fe41e6cefd005c9",
+    "examples/bootstrap5/guardian_demo/migrations/0001_initial.py": "6ce9875ff9e3d089d86388f5e2b7e3e2f6c1bf0527435cfd45522f072cff229b",
+    "examples/bootstrap5/guardian_demo/migrations/0002_translatable_verbose_names.py": "795b2c15a985f1e8d5c6567e81d91d1f59690c213e6a6895986f55b2112a3af0",
+    "examples/bootstrap5/guardian_demo/migrations/0003_note.py": "2057c1faaccf62a229eb846e0087285d7cceb43b72b42013df6d2c504887f652",
+    "examples/bootstrap5/guardian_demo/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/guardian_demo/models.py": "e1c3b03ff8c12a2c6f2095cff8dac119015336ca58c4f970c42fab21318ac6cc",
+    "examples/bootstrap5/guardian_demo/seed.py": "0bf67a8b1ef2b611f2fc646858d47aa12a464a0069e254e677b4a0e81067a915",
+    "examples/bootstrap5/guardian_demo/tests.py": "e355d2ce28fc94ec0bf394d441ab2958c365f295a58c40c865cd033bb8bf79e1",
+    "examples/bootstrap5/guardian_demo/urls.py": "f26beaa462067f603272cc6ac557057c3f65a62b3bd60fb3cb02975e08bcbc51",
+    "examples/bootstrap5/guardian_demo/views.py": "713d0578881e73b803f9d41959b397c7ffe269b5adea841c415bd6c7cc471b25",
+    "examples/bootstrap5/label_modes/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/label_modes/apps.py": "1073f0022624c76a65c4edf5b595f1a878ee1e4d30df2d07a49efd95f839d17c",
+    "examples/bootstrap5/label_modes/migrations/0001_initial.py": "0376f5a50f62a07bd29dca68609f89b3e9b298313b2072e1daef39ffa3b426ef",
+    "examples/bootstrap5/label_modes/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/label_modes/models.py": "9a5d61d5db4e9d917023d87500484770b09a4839ef0bd230d219ad11f3e06966",
+    "examples/bootstrap5/label_modes/seed.py": "88897732fdff86a5c28f6fd1bb2388fb6d8a759cc73db92a358c022da7a53da3",
+    "examples/bootstrap5/label_modes/tests.py": "f9684872665a06613503e25986fad80c769ac9350daaa6910d733bb241b9ec1a",
+    "examples/bootstrap5/label_modes/urls.py": "3798fac9fd4b5879e3e32747c98d21eeb363ae67ec33feb4d080a2c15cddec55",
+    "examples/bootstrap5/label_modes/views.py": "09fb06e1cd7c2072fb1bbebfa130bca21673ae4f584a733bf7df4314c58c147b",
+    "examples/bootstrap5/library/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/library/apps.py": "bb38af62e1528eb1c39aff090908565186b2e5ba5f45aa2e841553ac4dcccbe3",
+    "examples/bootstrap5/library/migrations/0001_initial.py": "b7361af854a6496c0b3052cc5dcf5a4408b117edaa79713b1c6e127c42cd1bf7",
+    "examples/bootstrap5/library/migrations/0002_translatable_verbose_names.py": "704c280a2f7ed90895aff3ff8ecaff62edc808b8fda45671be25c12957045d58",
+    "examples/bootstrap5/library/migrations/0003_pseudonym_not_null.py": "c2d7dbd44c0e2bdc6b88a2b7e5351e646e01e6194a15ab361c9214b7714f2e5b",
+    "examples/bootstrap5/library/migrations/0004_contract.py": "fc6e1bcdad85cda061ea00e01ad421fb679cc7774454072828e8dea9e1987c74",
+    "examples/bootstrap5/library/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/library/models.py": "b3a5ab75465e41fa41a6863adcbed3206c53e0e5c058b4a8837c802d8b0008b1",
+    "examples/bootstrap5/library/seed.py": "e95af5e70c5fb0fc078d03fd741156cd35f5d1de58cb0e3e654ff3b4075c4a15",
+    "examples/bootstrap5/library/tests.py": "2fc2dd54b34caef5906163d4810967a4206f4934c52f1d8d5ebed60a56db51ea",
+    "examples/bootstrap5/library/urls.py": "9a62efa0fedab65855b95c6e2cd28dc1094ea4def6bb409a1e9b4f96da364446",
+    "examples/bootstrap5/library/views.py": "3b35379eb4960f8a7d59e477b9000730da55031b9ed1b43731da662ce1499ee8",
+    "examples/bootstrap5/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/locale/de/LC_MESSAGES/django.mo": "fe347b3f69c4536e37eff4f365d118a073264de86626fa5d0ecf1b7e15983788",
+    "examples/bootstrap5/locale/de/LC_MESSAGES/django.po": "77810172fde06e64063040247c1575fed4f28cb0760c9b02315f3b3d2ccd23a8",
+    "examples/bootstrap5/manage.py": "633814e86bd91f0b1e9975eb70df9a5d07e62610acd7cf5e12ae16c2513f5fd4",
+    "examples/bootstrap5/nested/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/nested/apps.py": "d00b0f671fb25507e415215c5417d532a4537d171168fb34dc5bd2830b9c1619",
+    "examples/bootstrap5/nested/migrations/0001_initial.py": "3c9b9de85f5023783c34a47dcc42aa44b9cf977e09cfb4f0877ac61c7155040b",
+    "examples/bootstrap5/nested/migrations/0002_translatable_verbose_names.py": "b41ce7cc71d1d5be33e7f3c286cbd89868a2b6fe68aadd27d2abeed208aa39c1",
+    "examples/bootstrap5/nested/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/nested/models.py": "abe8eb372d08d92ff1d1592da7640ace8caa3332b27de95638084171dbbb04b9",
+    "examples/bootstrap5/nested/seed.py": "582f1ada40eafbb44e47647ade79939afee2c7a29f9fd115c4ffd677202e15b9",
+    "examples/bootstrap5/nested/tests.py": "2f68d286520bcda13b7e768cfe90b5838869df1446d004f890daba1c6ca9ad11",
+    "examples/bootstrap5/nested/urls.py": "bde45610ce1587910bcfa7013289e8e0793b462907c27c26ce5f4a263406c084",
+    "examples/bootstrap5/nested/views.py": "1c8fb7f936373c7d8378cde8c8dfaee9b80d961df73b1f1d0dbcce85c9f08259",
+    "examples/bootstrap5/object_detail/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/object_detail/apps.py": "ab4e80a2c62f62b4ecd770ae65fb1ce1e54838afec65ab61402ac3734d2a782f",
+    "examples/bootstrap5/object_detail/migrations/0001_initial.py": "77826a4212fb407de546b9d56c2cc2fef600b34b70eb37d93d0bc4a20571380e",
+    "examples/bootstrap5/object_detail/migrations/0002_translatable_verbose_names.py": "4fe17ac60c44d7b5abdd13c47d54dee72620aeaf1a957fe3d4dcd8fb4a53b661",
+    "examples/bootstrap5/object_detail/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/object_detail/models.py": "baeff1896209fd43132dc1e38ff4591e4b2272d8857338ca30949a9ebf39471c",
+    "examples/bootstrap5/object_detail/seed.py": "25b02b5c68e88942edfc7383655144d7608e10b6118f94626f4287347acfa5af",
+    "examples/bootstrap5/object_detail/templates/object_detail/star_rating.html": "f604b153c6213c5407c9ef83b492fc63a6dd8e64ae49cc59786938deb66acabf",
+    "examples/bootstrap5/object_detail/tests.py": "33c0cba804abacc3eb8ab015dc12ccad7a6ed51e1b3b3819bb578d056c385ef3",
+    "examples/bootstrap5/object_detail/urls.py": "7912782d5dc29f0a90eef4bb22e3e2072aae93b4064fa06c0b7e15c7a6718b64",
+    "examples/bootstrap5/object_detail/views.py": "b4801be2d616cd00d30a560e8ebbe0970f9695b24a2718b7aeb84801d481d471",
+    "examples/bootstrap5/polymorphic_demo/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/polymorphic_demo/apps.py": "7133302208ad95efd3931369f89fb5e36a1432c304383b359279c92067558995",
+    "examples/bootstrap5/polymorphic_demo/migrations/0001_initial.py": "ed8b1f787d816a74f6a95a6b1e9afed345ae1e07479819e15ced1bceaba04a1f",
+    "examples/bootstrap5/polymorphic_demo/migrations/0002_translatable_verbose_names.py": "937a8c50bdfe9d655fe83e37132717a39674ab92cf4b32d9980f6e22e12d0780",
+    "examples/bootstrap5/polymorphic_demo/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/polymorphic_demo/models.py": "af26002373be69e9d57a143fbf22d94af62b71aff8947d19e0d4742d525a0bb5",
+    "examples/bootstrap5/polymorphic_demo/seed.py": "2974664ef315de59c8ca3bb52783f31fdcf3f2f81bdba4f13ce03c50380bce00",
+    "examples/bootstrap5/polymorphic_demo/tests.py": "97e98b11adfad8446a7fb3bc4288c09e28b8e76400283145999e473c494a2bef",
+    "examples/bootstrap5/polymorphic_demo/urls.py": "826046f4df75dd6bb3602a73450a204941a425b984c195a46e68b3de9ed3777b",
+    "examples/bootstrap5/polymorphic_demo/views.py": "f43a695bf5f3cf1f07464cf933f82c0513dd5cc6cc4c54a054afec2419023365",
+    "examples/bootstrap5/project/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/project/asgi.py": "286cb3a5058263bde12c2f108cb9538445890c92cee460b2c66231b376b8f14a",
+    "examples/bootstrap5/project/boot.py": "7037a2e0244420908ff6985e94654ba36bd0d95a438fb02eabaa62597f87a147",
+    "examples/bootstrap5/project/context_processors.py": "b26b70cae5cfcd6ecaf05a750afca44481a257a7e803b03cf376fd5da86a48d5",
+    "examples/bootstrap5/project/features.py": "63f38122ef12b33cd8cf673acba1082d1406b5a19e9321f3820503beb2cb96d0",
+    "examples/bootstrap5/project/management/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/project/management/commands/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/project/management/commands/seed.py": "0b41afdc3efee3ca66654468f8cc90228111c86399cb39144a390fc518a8ef7e",
+    "examples/bootstrap5/project/ratelimit.py": "0c97b31c723685d0ba2566370552775212f86d974ae3e45cae3048537d7d56f6",
+    "examples/bootstrap5/project/seeding.py": "d566e8ed196903e74b36bf1ca8dac5bd0248f733d3191f0ce6f1fab481c019df",
+    "examples/bootstrap5/project/settings.py": "fce959755d4247c8e97770ba45586a2c83e3b48f746322663b92cbd2fa856815",
+    "examples/bootstrap5/project/settings_demo.py": "e3f49483fbe55cb2739ba1a2bfb6fa05e9f737bc2e41f25308b15f0ba595e876",
+    "examples/bootstrap5/project/templates/project/429.html": "27007ab7f92d5474ea7f6044f8d98112272d3f1d6f85450db4c2b2f0b243f168",
+    "examples/bootstrap5/project/templates/project/base.html": "6d16fdf17d3112a1fd826cd24e4542f837499e566d8f410ca6588312d55e4107",
+    "examples/bootstrap5/project/templates/project/crud_views.html": "d077071f68769d95784bd5b2ebe79a2c24b949fb7f3899439a3c248804f64182",
+    "examples/bootstrap5/project/templates/project/example_about.html": "c420845242cf5a4338446e28dd347a0b079aaad8626e5b00c0b860aa661b47e8",
+    "examples/bootstrap5/project/templates/project/footer.html": "8af78a26702344c03f56d80b72fcabecc5d9e0531a803390adc5b5ff2160b192",
+    "examples/bootstrap5/project/templates/project/home.html": "19460bd6aac599182fc80786dde4d61bea69cca0392f39aaf4b79e9e63936cc9",
+    "examples/bootstrap5/project/templates/project/nav.html": "82ac0036c0c57b588b9ba8b6fdc3ce8d7d700ed2280524c92ba5b4360fb4b1d4",
+    "examples/bootstrap5/project/templates/project/snippet_panels.html": "71119fe784ca1cf15d67c7aabcb73615ca658c877e9daf246dc897bb5a19ef03",
+    "examples/bootstrap5/project/templates/registration/login.html": "836035ac115dba93d94a93530031e0a2c6619b969d518fab9b542d005d248207",
+    "examples/bootstrap5/project/templatetags/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/project/templatetags/example_tags.py": "cf948f6f9833ccd372fbb4f72450e1f82d136aced79ebacfa5c2dd7f81a1ba41",
+    "examples/bootstrap5/project/test_boot.py": "a3fc55ab63abf5f316ca78e562ccf63e8e8d980e0bb55956c6afb4e049d20d1a",
+    "examples/bootstrap5/project/test_demo.py": "c0b24f7b7dc54a431771487eb2229b562f38ddd9e2c22e7e864ae90d0fa924a9",
+    "examples/bootstrap5/project/test_ratelimit.py": "36294b6581e3ff2a9e0cec956192bbbf390d7d827217c1b21a17bbac82dde4eb",
+    "examples/bootstrap5/project/testing.py": "939a1b53ed4a6283ec74c2ee61d92fe81a15f661053cc1437d7a0ab2ef60d3ed",
+    "examples/bootstrap5/project/tests.py": "793ecd612e34aa7dda07db9865f1b9489b888749fddf10623e073d6c22147a00",
+    "examples/bootstrap5/project/urls.py": "6755c18055cd5fcaf5d1c7f79fd9e8d8307e8c67aedc9b5d9a8104e6eab8bf69",
+    "examples/bootstrap5/project/urls_demo.py": "7b3afb438b8b54a83a415e5c54936b891e26de7beac9be69b2791c53973b3535",
+    "examples/bootstrap5/project/views.py": "04a7c3caa5aa4f2fdc0e56adb64df69fe315961e03c7b569b450b2cb61c7f23b",
+    "examples/bootstrap5/project/wsgi.py": "e3b10db172b3a40bc9ca05a08c50db794ab8a4f3685ad5b88c8321a074211460",
+    "examples/bootstrap5/pytest.ini": "4a39e62afa08099aacfe07f4a7d4542d59c0ec91c4ed9fbfd6e289841053e5ef",
+    "examples/bootstrap5/queryset_conditional/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/queryset_conditional/apps.py": "9f340f9240a569d117d991eb16631c2defa147a27795f131a8acabbd5fb5f2d8",
+    "examples/bootstrap5/queryset_conditional/conditions.py": "65da3c68e58cd71ce554cfbf6e591fd75d356cff6956f733505c9416c73cfe5b",
+    "examples/bootstrap5/queryset_conditional/inlines.py": "e90b1b899c9929add27b9d7f5e1f0fd236f73b967dc940913a590bd21a886888",
+    "examples/bootstrap5/queryset_conditional/migrations/0001_initial.py": "3eed48f0bf472bbfb100ce12232cb804d92713558e471854cc8ed4062b680015",
+    "examples/bootstrap5/queryset_conditional/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/queryset_conditional/models.py": "335f1279539ea2e44804d50893487ef1202b373f6b8a80ef042d1a2a9619939a",
+    "examples/bootstrap5/queryset_conditional/seed.py": "13d569b253b73a193df3f25c93bdb16a15cd95337cabe2c79692dff2052f1d12",
+    "examples/bootstrap5/queryset_conditional/standalone.py": "5a0b641529bec12cf698c5c6cbfbc6af285d6628923c6d3a0c29b1c18bce4d88",
+    "examples/bootstrap5/queryset_conditional/tests.py": "58024a658463eea7f54e2cc7a16f7fd623dc7553cefa8a8a6af1c70c18d3ff16",
+    "examples/bootstrap5/queryset_conditional/urls.py": "8e900ce4acef0ae2d5ff1005d6c47e70f73221233dc47caba8fa61c27709430b",
+    "examples/bootstrap5/resources/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/resources/apps.py": "4fe4a7e8b965fcfbf01376e72838eca06b405417ff69d7b8a885c518e5ca8c3e",
+    "examples/bootstrap5/resources/migrations/0001_initial.py": "f29b6bb9a0925727caee0a1758ed2a59cd319e33b677e907f2a29a72f826fb48",
+    "examples/bootstrap5/resources/migrations/0002_translatable_verbose_names.py": "ca474e97c5b68e2d6ebc57a400f45910e43666ec81d346b30fcd522587540e8a",
+    "examples/bootstrap5/resources/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/resources/models.py": "b54e9ba36f618da8100405c549a0c41c9a7185bf3d8c1b4e7acf071012e856c8",
+    "examples/bootstrap5/resources/seed.py": "9b30d21cb68efd341c7bd4398c03365e294637c368ce330660780bf6b5fa952c",
+    "examples/bootstrap5/resources/templates/resources/s3file_detail.html": "15801ded1e0c55f0abf8f8208e7c8dab944a99e480fb44867c5478c923e4750c",
+    "examples/bootstrap5/resources/tests.py": "2f1c4f2cf470a04502eb150d4f5a47f8d9a65923fd456102cb67feede576b0b6",
+    "examples/bootstrap5/resources/urls.py": "5c7d6bc9bd09f072e134684cb1d9857813c871360036f1e5484b56b82a17ef37",
+    "examples/bootstrap5/resources/views.py": "113eb8e5cccbb6f09c1fba273ad99d87c9f7ed47012418cf7ae26a6533769d79",
+    "examples/bootstrap5/taskfile.yaml": "ba32081f03d6568817ac90f73ca62ed421f86d47c56180f703945f08f413c004",
+    "examples/bootstrap5/test_doc_links.py": "aec5faf7d17c7661299ad3ad300422fce6ba9ccf897875f36dd1ec94bf339c87",
+    "examples/bootstrap5/test_docs_sync.py": "2bc94f31575e2e5e6a0a26b7a5ffd6e5d731fe9373e652a375d8bf7f1f32bcf1",
+    "examples/bootstrap5/test_i18n.py": "4717647efba5fc055ae3e97fbb66e39559ef004e5b2e05d807ab0a8cba833b01",
+    "examples/bootstrap5/theming/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/theming/apps.py": "d2b104d04376e2124a43853951da9c26fd92013341c18222e552fc29faa03e1d",
+    "examples/bootstrap5/theming/seed.py": "2778e005af9e1fc66eac1f18a6cdd2c9e7e2e947068f39f0ac2270196e9fa844",
+    "examples/bootstrap5/theming/templates/theming/index.html": "4333fedfb03e81976564e809925685fe8a4138fca27b3ebcc1162fe4719f837f",
+    "examples/bootstrap5/theming/tests.py": "fdf3677698af032db593dbe904d2dbac1908881cc1cc4d68405156b351d402f2",
+    "examples/bootstrap5/theming/urls.py": "b8e08dfe1f2aec92f360b6c95e3a58c75692163b71b51bb137c81721fbee7573",
+    "examples/bootstrap5/theming/views.py": "4b83997c53db15f6d1bca7af81d9d6e132b4fcf05a4e99efc5642a0fbf5e6562",
+    "examples/bootstrap5/workflow/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/workflow/apps.py": "ac0102aba59c16b9a1b161f1675b6cc2fadf1375c5ee09902c8bf7e4dc086996",
+    "examples/bootstrap5/workflow/migrations/0001_initial.py": "a536c7bfffb139e4d847100f62ad851971ef8a41537a1012cc5f2428ada00d7b",
+    "examples/bootstrap5/workflow/migrations/0002_translatable_verbose_names.py": "7095cee81cca351d01e01c66f0b32412a9c64187b079c1d520a21184dda2331d",
+    "examples/bootstrap5/workflow/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/bootstrap5/workflow/models.py": "2523a627ff2e8ee8e66a083ccdba267b90ac1b84499fbb6c2432b2e148f31c03",
+    "examples/bootstrap5/workflow/seed.py": "46177e6d223adacbda1a2b5eea59007e2e4ee1582cc99844ad0fbf5a2661efcc",
+    "examples/bootstrap5/workflow/tests.py": "b983016076438d9858bc1b17c80cd696b103651cec560cbee865d8ff07fce2fd",
+    "examples/bootstrap5/workflow/urls.py": "ff8831a67937da0385121be4b193b5b38268a0c9bce21c1bfafddc242ad2beff",
+    "examples/bootstrap5/workflow/views.py": "81999d180c1394f9e2f4eaf0c79e2291e9ab263751093f96ae22ef3741fdfbd4",
+    "package-lock.json": "f3ea8ff7293a09b93ef84305a784ed1a13760aed26b140940a606218cc6462af",
+    "package.json": "4253e44facb20fa1d9659fe9a2091a3b68e5e548500f9b6acdc8e9488af0bd23",
+    "src/crud_views/__init__.py": "3a56ad144140e2db6a49222257c8dd13eb2adca1b9ceeda19c2e01e26cd6177b",
+    "src/crud_views/apps.py": "6f703360e9e76a87ae9d65b772390f13a8e298fa0d3e6b193286c802d9584b34",
+    "src/crud_views/checks.py": "df35a988d359ece86e9f815508b53775144d97f4cd3dc812305bf4a6d7c74b27",
+    "src/crud_views/lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views/lib/ancestor_db.py": "8554d32cbb84809e49e8e5dc5b7421657ad75b1a0f81a59966323a7cd0d9cad2",
+    "src/crud_views/lib/ancestor_policy.py": "122938364ef0a762e34b9fe7bc85d9d5442a3f96d17e5e3a8685d49c3bab8d42",
+    "src/crud_views/lib/ancestors.py": "90be44105cde478b2da33a229554fc6756b6d6bea58624ac63d99a06a6e81995",
+    "src/crud_views/lib/assets.py": "815fabd2b3616d6efb5ca04074fc7f362d88005abec53f096d34478f6dc2797b",
+    "src/crud_views/lib/breadcrumb.py": "675d281efae8d7b900766fe300b9ddde5a904c041737ea6575b6f18d3206b74c",
+    "src/crud_views/lib/button_classes.py": "a0effd5a5ca317c60f06341ff23d1b482dbb774e020851a304cbdfe4e78cfe6f",
+    "src/crud_views/lib/check.py": "d2f074a38d7d9484d2bcc30036efa940a97c05eb7235df55bdb6ebd56e2fb671",
+    "src/crud_views/lib/conditional/__init__.py": "bb875e2fd013694b190dfbda334e13d152f1d0a8fddb94d4d41f636ed3dd2c10",
+    "src/crud_views/lib/conditional/formset.py": "b25a46c6016d3916f0c2dff18c771de89f8f5ff14cbd60208bca4f9cab3b6041",
+    "src/crud_views/lib/conditional/group.py": "071b40e341848ef321ffff3bc7f3eeb5bec46421e5d0296fccd4eb6fc982ca7c",
+    "src/crud_views/lib/conditional/layout.py": "a53296853d6c0740a63a554b1a3bbe8037c5f8b56a359be0160c7a49172e12e9",
+    "src/crud_views/lib/conditional/queryset.py": "8b559200240ecb497d1608836c7cb47284c9b3a483f6cb0a7bd95c33f8a999a0",
+    "src/crud_views/lib/conditional/toggle.py": "d17a25f28e702b11f0effabc8b5a5d3a7c515f08a2563261691e7027624d81a2",
+    "src/crud_views/lib/context_processor.py": "bea45802c524ba57c04ed475e4c657e29977a98047e741e8b79cbc0e1fc9627d",
+    "src/crud_views/lib/crispy/__init__.py": "7f30859793d38108ed31bc2a295b53a2c90be61ffeba89d92cb57a794f24f74e",
+    "src/crud_views/lib/crispy/actions.py": "03e506fdc0f3a7567014c2f3fd8d5cb4b4e2337a6a99fadfaf182cfa23d97867",
+    "src/crud_views/lib/crispy/buttons.py": "1d7092ef2be94c63e834a612adb8a8121242f22525a459af022776abc1245fba",
+    "src/crud_views/lib/crispy/form.py": "b3adea0be60b969703df43f1b2975842a1291eb9dfb32ae73f4a54f32716c9d8",
+    "src/crud_views/lib/crispy/table.py": "cce837dc72c088cda909d94ff2c741c8c2a33786de3cd855f807c6a246eef1f3",
+    "src/crud_views/lib/deletion.py": "91b3464f8337006d79b839e4af344dd223fcf12e2ee536f14d0545c3f36280b6",
+    "src/crud_views/lib/exceptions.py": "0072a39d98525f445939f027d76568b32388ecd5302cc59d36c8a270731d2e96",
+    "src/crud_views/lib/formsets/__init__.py": "2fdf0da93267781d818af1dc00344083d2d2579508390c6a682ad86c92a26e72",
+    "src/crud_views/lib/formsets/compact.py": "e2dd32941040d5e5114be53a6c8d84a37a4bbcb2a3ff339ff82fc15dfacf9efb",
+    "src/crud_views/lib/formsets/formsets.py": "4c2f1b51c221ef9ca31b5549282caab57d3d9508dbab69bdefba0514170e7e99",
+    "src/crud_views/lib/formsets/inline_formset.py": "55f5866844e04df5efe2ec5b550ae1252e970220b0901dc6631e8be0fb024195",
+    "src/crud_views/lib/formsets/layout.py": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937",
+    "src/crud_views/lib/formsets/mixins.py": "a7c424b9e86a9aef3cecd094c2680fe9dcd47607257e5fef1e9742f2e6f0985c",
+    "src/crud_views/lib/formsets/render_tree.py": "0bfbec6894742354778668b4d4eacc22d38c4fca8514c565aa2cc1d7a14b57d1",
+    "src/crud_views/lib/icons.py": "d7d74cebf3e940a6a0d92cdc7ce0948f092f3601f8ab541c413df63498a7e763",
+    "src/crud_views/lib/lazy.py": "5403c2570fffd2898aade7fe2f4d243840140f53f4a8ebc8387fd5aeb3c9ef20",
+    "src/crud_views/lib/messages.py": "df20fd99388998e58bd12a29c8acae311ea2a99ce781a043c6dc8043c563fc4f",
+    "src/crud_views/lib/ordered.py": "d9e582df3b182b380eda282e8c198d0c2c22f4345090046fa5e4842fdfc029f8",
+    "src/crud_views/lib/pipeline.py": "d675c2091eed75b65dec51e33a2d3c81b4d556a7bb6f859f398bb68116fd0f35",
+    "src/crud_views/lib/resource.py": "9a4728623212912b2612bde6df1a2e51e494ad2582019d8a5ac42326c5c7e81d",
+    "src/crud_views/lib/session.py": "f44b8a4fc249afc9ad3db6c62e552f85d4925d4029e6f4349008c66966c74d74",
+    "src/crud_views/lib/settings.py": "d37de51601d1ebf5888e920f354717a0c29ca7bb0097b0695532ab70f124927c",
+    "src/crud_views/lib/table/__init__.py": "a338bdccef6068cd9892579146a38a203b8f9338a32fdd985d4a142a46289545",
+    "src/crud_views/lib/table/attrs.py": "32fa50e24f9fb81aa4ee1d71702279573c5c586f6e1a1f3c44db90fd04f89564",
+    "src/crud_views/lib/table/columns.py": "c7170fe7ac6df56e1dd55ed0e2e0dc8c7ab75fe6f4a630eaa00a63e685adae4c",
+    "src/crud_views/lib/table/table.py": "e2f426920be9c778ba57c45f3f18043016df078baa1b037ab8744e048ce841b8",
+    "src/crud_views/lib/vendor.py": "ea903c796bc4238e5932e5de52bfe1bc4261ccf53d6f2683ae7f22dd277da09c",
+    "src/crud_views/lib/view/__init__.py": "12348de5ba48918ca6b4e7693720e07164e60388ee4dcc0d39dac3e3281d8255",
+    "src/crud_views/lib/view/action_menu.py": "f39bb30b71d706012341f9f3ee4abdf299b2d2a28ffa18da279284a072745602",
+    "src/crud_views/lib/view/base.py": "0d532a392a284cea68045488e680610f0528ca940d3bc7eb258ca8e9327ddc0d",
+    "src/crud_views/lib/view/button_data.py": "f251e3018884511b69dd8fa5d0aa357f432e7e522da67794a0afb54ea29f9eff",
+    "src/crud_views/lib/view/buttons.py": "e7ba4108f7f237ea6e5fc49a7e711dd60bf104681f5b41619fa640e740d8eef4",
+    "src/crud_views/lib/view/cancel.py": "2346062872e6d8e2c606aca91a81c39469f9873c90a93e59fe857d66c821e8af",
+    "src/crud_views/lib/view/card.py": "1aa942b39ae0a5e6b20daa5037d0801a4fa2cd95a906cfdac74bedb2373cb61e",
+    "src/crud_views/lib/view/context.py": "ee871ad35b3bbf412c4af227555ccad92d34499e048557b20820bc3cfd2b44a3",
+    "src/crud_views/lib/view/label_mode.py": "0b3f31dc9c283cb2b47cd4ae59935732c6922d70d88e4dffdd830e420e0da2f7",
+    "src/crud_views/lib/view/meta.py": "03401c7898839d0f1a4429e8ed0d6941c43ef6614aada7e716afca8f79c2bb82",
+    "src/crud_views/lib/view/variant.py": "7f71fd0349b0b59435b577ecd668d19aefeb40488d859957e98f4e0d3067ff58",
+    "src/crud_views/lib/view/visibility.py": "18548c82f58c12af2dda45ed3d8b8bf97256dca045a4730067230af313754ef5",
+    "src/crud_views/lib/views/__init__.py": "40246cf27ab811885e7de3fba049b221067114650f3ae3da90d96e4a66f1540e",
+    "src/crud_views/lib/views/action.py": "ee60e630d92c99fecfcfbe6cea6369439d1327474cd8f7f0c5f69ac654861765",
+    "src/crud_views/lib/views/action_ordered.py": "1dbe889377365407287e8c4b26b27ef80e0eb650e01c47f60c78d64a081cd4b9",
+    "src/crud_views/lib/views/card.py": "abf5cd2c0f460a11e5696e606e3db5f4402c4a3a44c0b13e69d169b7d4d7110a",
+    "src/crud_views/lib/views/child.py": "f6e06d0e4f1f56f55e5b8153fe700364e9a43b5838fd54514f65c90130b9fecb",
+    "src/crud_views/lib/views/create.py": "44b79b5438348db547086c30dd1a82ef2b280ee6f25392965aca53180b57e314",
+    "src/crud_views/lib/views/delete.py": "e6d87b497ad34ca413bc5ab89215dcb93912ed65b4ae6151bb5ad56be0655e35",
+    "src/crud_views/lib/views/detail.py": "039cc0aedc07fbe7739393e4765bdb8d2270db1fdd08d8077e584abed86f38ed",
+    "src/crud_views/lib/views/form.py": "6e9c1191da2165f8e0a6f5e367994dd0d7e5dfa106c66118fa59ed94a53c1925",
+    "src/crud_views/lib/views/list.py": "339cc419a04105580fba50e0795debc4dd5f2eb526c7754dd7827f8b45426aa3",
+    "src/crud_views/lib/views/manage.py": "7f4762e0d4235e5370e0d999f07a2fec757cbedc76d4e6b65abb51400f78b5fe",
+    "src/crud_views/lib/views/mixins.py": "2c4ad51e4d3e097053306b3234c09546541128ea2312ae9d34b6f1fc96dd8e50",
+    "src/crud_views/lib/views/update.py": "bd9b274bc616f25c40f1d7ac964f48666f4d860a6d1f039c6f0798f7090a1dc7",
+    "src/crud_views/lib/viewset/__init__.py": "173f3b3e8131c7d04030cabcd2cbf1627a0653b8db79ee8757fa36c7ae35ab1b",
+    "src/crud_views/lib/viewset/parentviewset.py": "1b7525686dcaaed2a6003a3efa324156ba0100600af40d15a2d57c6312e88981",
+    "src/crud_views/lib/viewset/path_regs.py": "48e8810979f535d39dfaf7ecaa44513256f81dd683727ffb237f37e3a7b61bed",
+    "src/crud_views/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views/locale/de/LC_MESSAGES/django.mo": "2be0cac153c71b503299983712931fcfc71f2fe34ec03748f35c30df309e49f8",
+    "src/crud_views/locale/de/LC_MESSAGES/django.po": "61cf10666d88db1f91f45419b1844f4d7209484f51cbe54d4836a8a9b4a68d5b",
+    "src/crud_views/management/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views/management/commands/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views/management/commands/crud_views_show.py": "ce0b8b62e4b48afa81970cc8f5895e3d6986164712ec96259db02d672f93afc4",
+    "src/crud_views/management/commands/cv_assets.py": "38269d26f2fad4a052ef34a6e3497efe7b4abecd7f0741fd89cbb32e8a3963d6",
+    "src/crud_views/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views/static/crud_views/css/formset.css": "412084b9ac1940e6713238017782e9103cc75f3a2c7c873f72a97b2dfa142727",
+    "src/crud_views/static/crud_views/css/icons.css": "1330b06fd3850f4b8567e1fd0c44cd2dc942d1d547d5ac9de1902467105db255",
+    "src/crud_views/static/crud_views/css/property.css": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
+    "src/crud_views/static/crud_views/css/table.css": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
+    "src/crud_views/static/crud_views/js/adapters.js": "06eed642fdf55daa7aa6afea2099f25c69ac153062d926c707e34c74316eaf2b",
+    "src/crud_views/static/crud_views/js/formset.js": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
+    "src/crud_views/static/crud_views/js/list.filter.js": "86600d74a66dcd586a6eb749369b858a19e365b21f9ff17646b79457805810a3",
+    "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+    "src/crud_views/static/crud_views/js/toggle.js": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
+    "src/crud_views/static/crud_views/js/tooltip.js": "69212dee6b30d655c08dbfeb2e423ede582c8b9ecf10358d64bf5d9196e62802",
+    "src/crud_views/static/crud_views/js/viewset.js": "f3a411cc7b779a88e40a86e8189eafcc8e9c965e47503f94cad218b7b9fd5367",
+    "src/crud_views/templates/crud_views/columns/actions.html": "6a37475842a165cc5a976c545964578935a544a62703c2885e568c4905af7c04",
+    "src/crud_views/templates/crud_views/columns/child.html": "bed04279a64ac06ab9e29069adbe4e9b9990fb56295798416bcd5d0e4a3914ef",
+    "src/crud_views/templates/crud_views/columns/naturalday.html": "d50d5f9ace73de54206b6fa67b437e792fcd9786a6499db56ac35aab30fa1570",
+    "src/crud_views/templates/crud_views/columns/naturaltime.html": "8a0732b1ac54480ed4fd1786fd7b3b4f1b20c1a5e4b01d87f37611842f8e5eb0",
+    "src/crud_views/templates/crud_views/columns/uuid.html": "4dc81e94369b9bd9fbaa31037bc69459eca19d9d59e27cef5e93f9f952c4e42b",
+    "src/crud_views/templates/crud_views/conditional/toggle_group.html": "f44b5921e9e6d40643772c441545a9ad0af2c7e8c5969115db67a4585ee385e1",
+    "src/crud_views/templates/crud_views/crispy/bootstrap5_column.html": "01bcd7b74a4937e011ab384d8bec8a20372fd1b9c170f0d00975bb6e6d1bd390",
+    "src/crud_views/templates/crud_views/crispy/bootstrap5_formactions.html": "d5862d3b1c072b1692a2fdb5f04ccf4ed94f623e0189527f31e49830e781b318",
+    "src/crud_views/templates/crud_views/formsets/compact_headings.html": "2f4b3b5133ee315a8c25c99e20bb6c4ad034c2d7a223d5daccdd7d55fe6ccfd0",
+    "src/crud_views/templates/crud_views/formsets/control.html": "eed84cc006d4de94bddf442c366f2faf32d3ab135872e4631fb58f30338d974e",
+    "src/crud_views/templates/crud_views/formsets/formset.html": "bc34fb57ef0f4cf6b3fab6a3c3050608fdd6fb2d64c50c9396d8e6cb3fe67ea3",
+    "src/crud_views/templates/crud_views/formsets/formsets.html": "1c6f6e86aff72847f044a62963cfb9fa41489a4d511578d13273c4ade1e83626",
+    "src/crud_views/templates/crud_views/modal/content.html": "0c537498854336c1ff8179f5d8f87df0e567beab72ba8a57c50c7d3651b02257",
+    "src/crud_views/templates/crud_views/modal/shell.html": "bc5b91977d517671b9c246cbbbce5a813a0d8bc10caf36f8c78f214df15328ee",
+    "src/crud_views/templates/crud_views/shared/config.html": "1608b5d2c1759d04e9e19a2d4f8fd3d20c42b9e54e73f78623482af874fcf84c",
+    "src/crud_views/templates/crud_views/shared/css.html": "7c3b0ababf5f91a31eb59c3869f99433f43707a73d91c4c152d11937da21b472",
+    "src/crud_views/templates/crud_views/shared/js.html": "4f0b588e75949cb512e63124bf1dbddfc163ec7c68c158303300de19274d0adc",
+    "src/crud_views/templates/crud_views/snippets/action/card.html": "f6ce30f9bd32204cd443501f6520abc8a846cba2b17b2a647a90bd7fe7568076",
+    "src/crud_views/templates/crud_views/snippets/action/child.html": "25b6bf694a78585fa5b5dc9951404fc7b11e4129c140ccb8b9b4c05e66d6b74a",
+    "src/crud_views/templates/crud_views/snippets/action/create.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
+    "src/crud_views/templates/crud_views/snippets/action/create_select.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
+    "src/crud_views/templates/crud_views/snippets/action/delete.html": "f11bfedcb940cf4e9e66d72365df78c1b5b150143376e313d8fdd4b86510e470",
+    "src/crud_views/templates/crud_views/snippets/action/detail.html": "2a8598396ddd85658889c66c0bfac527d2584a2eacb6d7a6c92c785bbb42cac2",
+    "src/crud_views/templates/crud_views/snippets/action/down.html": "d870aecb4779afc228bd9f76a11cab288f13eb244be1d06dd11e0e1bbd5256c2",
+    "src/crud_views/templates/crud_views/snippets/action/list.html": "6a37ed5128648dda0028a8a1634cd5cbde4e0d2a41cd866429e077c2c9b4d285",
+    "src/crud_views/templates/crud_views/snippets/action/manage.html": "ad3e9c4a567210fc1dfd7a6e96dbd28d7d14509a870886be35c886fbca5472fa",
+    "src/crud_views/templates/crud_views/snippets/action/up.html": "ea6e1314731a3a455126e60e2a2059a16f3fca8a9b697d989ca6562fca721241",
+    "src/crud_views/templates/crud_views/snippets/action/update.html": "6df05761fedaa7bacc15b42b9cacb598b84d4ac4e89d2bc2bbace1f9bec67109",
+    "src/crud_views/templates/crud_views/snippets/action_short/card.html": "dd72cb5d651c2a25325d7775355947adeae05bc4572ffdce0009bf829dcb595e",
+    "src/crud_views/templates/crud_views/snippets/action_short/child.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+    "src/crud_views/templates/crud_views/snippets/action_short/create.html": "10938e4c6fca6be20b952d70aa239b108b43ab8cb44e0a852aa2755a4c04a7e5",
+    "src/crud_views/templates/crud_views/snippets/action_short/create_select.html": "10938e4c6fca6be20b952d70aa239b108b43ab8cb44e0a852aa2755a4c04a7e5",
+    "src/crud_views/templates/crud_views/snippets/action_short/delete.html": "51cae84830ba25c4e2a57071d336ebb66e31cc6902d3f75ae90c5a44486387a5",
+    "src/crud_views/templates/crud_views/snippets/action_short/detail.html": "eeff18bf82e460e5fa82d61abf4c42ebb99f2aaf544b931bb25ec46b66a02742",
+    "src/crud_views/templates/crud_views/snippets/action_short/down.html": "e3d0bf81cdb2e41d437138074fc2396a3861ddc66403d71e2ba5200c41023ce1",
+    "src/crud_views/templates/crud_views/snippets/action_short/list.html": "8a0676d6ed965d5676dadc7d6861e4b76ac48d642a2404239368aeecd2c4500c",
+    "src/crud_views/templates/crud_views/snippets/action_short/manage.html": "38a5c8921c1016b55373c4837483999b18f385ca7950322e125a2fd6b7c518f4",
+    "src/crud_views/templates/crud_views/snippets/action_short/up.html": "0845d744333345c8510e7ac7c6db3f3d0763dcb19f87f4e5ed25a994473c1d5b",
+    "src/crud_views/templates/crud_views/snippets/action_short/update.html": "92f489142d26cf89432829af2d2e6cfa17913d4c590843ea6194c82a7cf03775",
+    "src/crud_views/templates/crud_views/snippets/alert/list.html": "ecb12fdbd7010f73ab50ea400c0c55c7c1ea1ccf3d9e1b84fa5acba0826d324f",
+    "src/crud_views/templates/crud_views/snippets/alert/text.html": "086dad1784cd3cf16be3beec0c15d969a44ce93bbc15c3f52916a6b5cec89850",
+    "src/crud_views/templates/crud_views/snippets/card_order.html": "a39139996b232b3cc15ac83a942032c1a61ce23293b181d35b4d10c00f6888c3",
+    "src/crud_views/templates/crud_views/snippets/delete/protected_objects.html": "bf8fd0b973823e4f8c75a2d08e2ab956fddb1fd6a46c5c6364d28af107388a93",
+    "src/crud_views/templates/crud_views/snippets/delete/protection_errors.html": "5efd8f4091c16c0aa9e37875650fd4a902f4449f8d50786f8bc9722e57f38f6d",
+    "src/crud_views/templates/crud_views/snippets/delete/related_objects.html": "fd3b90a726130924512a556f924bc120bdce384a4f854d804e502d15d82fbddb",
+    "src/crud_views/templates/crud_views/snippets/delete/related_objects_tree.html": "8156c1128fbacd12c30399034bdb6f96198419d8a1f9a3f2f35f50ed08107f81",
+    "src/crud_views/templates/crud_views/snippets/form_frame.html": "d8b31e2b1c08c82fecb6c3b194b755717fd3be5768387ac46a40bd88e809214b",
+    "src/crud_views/templates/crud_views/snippets/header/card.html": "f6ce30f9bd32204cd443501f6520abc8a846cba2b17b2a647a90bd7fe7568076",
+    "src/crud_views/templates/crud_views/snippets/header/create.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+    "src/crud_views/templates/crud_views/snippets/header/create_select.html": "524e0a718ec06dc3c0033019c6b7768a66b65048c9c73c68ff8cb916f3c46175",
+    "src/crud_views/templates/crud_views/snippets/header/delete.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+    "src/crud_views/templates/crud_views/snippets/header/detail.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+    "src/crud_views/templates/crud_views/snippets/header/filter.html": "0afb1a1647011c07847a0ba4ec7c09ae11861a8ead12ff4a94161c8c1c87cef2",
+    "src/crud_views/templates/crud_views/snippets/header/list.html": "f6ce30f9bd32204cd443501f6520abc8a846cba2b17b2a647a90bd7fe7568076",
+    "src/crud_views/templates/crud_views/snippets/header/manage.html": "486170fa79570c3e2377056b0c6e486e71dc362ad8391cf96d604cb4e01b5bb6",
+    "src/crud_views/templates/crud_views/snippets/header/update.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+    "src/crud_views/templates/crud_views/snippets/language_selector.html": "f91d1e2d178e9261a160d7d10be7f1762f04d3575902833fd3bd4f1ae31753d1",
+    "src/crud_views/templates/crud_views/snippets/message/create.html": "eb9112cf2ff2eaff593fb6ec1c4dc15c84b90efd524aef940e44e7ff951023ae",
+    "src/crud_views/templates/crud_views/snippets/message/delete.html": "01066fa8e25a15709b8aad629b901165d5f8baf048a671dd103c4b9fcf618bba",
+    "src/crud_views/templates/crud_views/snippets/message/down.html": "1f8fb28c1d411139d22351ca263c0eecfa2106ed22be1d96de8eeeb15d0fe55d",
+    "src/crud_views/templates/crud_views/snippets/message/up.html": "dac90c8e2065bec674efeb5ed06842607e3e6b8d37aa598ad0a5f7193b6be664",
+    "src/crud_views/templates/crud_views/snippets/message/update.html": "a398c1b2c49ccd4664d99d854739d42557aa68304a0ea0f0e6d8bd67ce8dc1b8",
+    "src/crud_views/templates/crud_views/snippets/pagination.html": "bb4d05aa38179b686e35cfd2c2edf3b30fa15ecc6340614aa13f51430e73cc41",
+    "src/crud_views/templates/crud_views/snippets/paragraph/card.html": "dbe46becca8ab4b2bf6cfcd84d0674e759f40d8f7de4bee7f82e90265b1a0e49",
+    "src/crud_views/templates/crud_views/snippets/paragraph/create.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
+    "src/crud_views/templates/crud_views/snippets/paragraph/create_select.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
+    "src/crud_views/templates/crud_views/snippets/paragraph/delete.html": "722c89c496429c8577d6de149592d48e16a9622456ccbfef4f61083c841399d4",
+    "src/crud_views/templates/crud_views/snippets/paragraph/detail.html": "edd2cee0b1d9d2665038352917219ebd39fbc233306926b2d51ea5044fbd4300",
+    "src/crud_views/templates/crud_views/snippets/paragraph/list.html": "6a37ed5128648dda0028a8a1634cd5cbde4e0d2a41cd866429e077c2c9b4d285",
+    "src/crud_views/templates/crud_views/snippets/paragraph/manage.html": "1b6a3258aa68f8f3009065a9b2571d685a815bbf9772014ef21f5e345a8deb90",
+    "src/crud_views/templates/crud_views/snippets/paragraph/update.html": "b94fd77bb4865c802f18f9d3f72fb62401973d5850ac2a8caa70d6b346a7a7df",
+    "src/crud_views/templates/crud_views/table/bootstrap5.html": "8c48a7ddf8e4371a658be490191957f9b44e7fba9f0dfc978f3321b531dcae10",
+    "src/crud_views/templates/crud_views/tags/actions_menu.html": "6bd0ef03a4469dd909918ee21bb8a6757fb26b6b209d40304a33ef5d16aa3280",
+    "src/crud_views/templates/crud_views/tags/actions_menu_item.html": "f2a71de627fe880acb80180efc2aed4f5b8f61fcbfb8ab3456b6c0cb702a8ff6",
+    "src/crud_views/templates/crud_views/tags/actions_menu_item_label.html": "beba4593a7b9c866f12caefb9a4c004f025b0fe703a3130d2b9fd8f645eed226",
+    "src/crud_views/templates/crud_views/tags/actions_menu_toggle.html": "c15435b084f5d167a2a9305aa49efd2a39f0e05da734c09d377cd6aae4d8811d",
+    "src/crud_views/templates/crud_views/tags/alert.html": "c57505c5e36a4718b8288aa9adc8c4cde6f05eb6b97e489d91ff4f050c8906cb",
+    "src/crud_views/templates/crud_views/tags/breadcrumb.html": "bb8963ef632dcc4fc07aa2be75f3a41a7adf62b9fe17d8465ed591bdac63ee17",
+    "src/crud_views/templates/crud_views/tags/button/action.html": "55ea449a22f7181f02845052cee8195a5099430d1ba08582b69e111705d577d1",
+    "src/crud_views/templates/crud_views/tags/button/container.html": "524bb64924a4640d74fdcb33201364d7a04b3d0c7cf328d9206819cee283e8bb",
+    "src/crud_views/templates/crud_views/tags/button/form.html": "a4c6bbdf1d6188aca56bccb70deaa0c5e6b0810abcea6877d7c78ba6f76a8e35",
+    "src/crud_views/templates/crud_views/tags/button/menu_item.html": "9e70642f738fd52f9f467f2b6db662b31dfeaf9a96dd29865706dadf5ad8353e",
+    "src/crud_views/templates/crud_views/tags/button/menu_item_label.html": "6227ebf44cad2fd0b20872db6560a7a86bd205375335acd6d744672238d5eb14",
+    "src/crud_views/templates/crud_views/tags/card.html": "7c5caf2e4164d459fc768ae72c5586d26aaf3ed2a021f4afa0366d2cde7d6c24",
+    "src/crud_views/templates/crud_views/tags/card_action.html": "54a65f67c7c97f491ff7ff365eac6997f086363a520f6c469549444166c719a1",
+    "src/crud_views/templates/crud_views/tags/context_action.html": "8271c13e0e1f8a27d13acea182b996d8f866f79b4de2b8451396b80ea9066271",
+    "src/crud_views/templates/crud_views/tags/context_action_filter.html": "82338275d6557be63636e93814a0f9e7f554f3bfc9f08320b3280f9c75c5f4e5",
+    "src/crud_views/templates/crud_views/tags/context_actions.html": "5e5b1a8f48e517e1f91a5947cb33812a57a25deaef38f0d8ffcc1a965d3a74ba",
+    "src/crud_views/templates/crud_views/tags/cv_config.html": "5a2b50239e3d8fea6418080492b54e8934290db44a437800b34df22297d2a218",
+    "src/crud_views/templates/crud_views/tags/form.html": "b299cf3816dd7be9b05bfce61f1b1fbb91e01694e85eced67e59a85cc3b0db9f",
+    "src/crud_views/templates/crud_views/tags/list_action.html": "c492ae7f2bace9cb92f6c125425e037d5bfdada45cd1e544205752cb7f4a1b75",
+    "src/crud_views/templates/crud_views/tags/list_action_form.html": "56eddc71105e7b64ea88374b47139c9c14fb0b4602c0d20aaf7448ca572521cf",
+    "src/crud_views/templates/crud_views/tags/list_filter.html": "89cbba89119e1cfca3a143cd6340e25ff443930e46b5a2da685bbf4d62471e39",
+    "src/crud_views/templates/crud_views/tags/list_filter.inner.html": "5466b5a465915cdf17b409c3d0c9b447d0d5f849d456eaf74e17e5d6b209ec80",
+    "src/crud_views/templates/crud_views/tags/messages.html": "4b8b21e64caee17f40ef560af6c331cbb7021e844f4351c08fa833f21dca71a8",
+    "src/crud_views/templates/crud_views/view_card.content.html": "1ade75a2e558efc8bd897827b049b42677cc251607a34988db0f94e81e73c5f3",
+    "src/crud_views/templates/crud_views/view_card.html": "7ee735f84f99cb7ae8326a8d045edb4f27c27818b48e551a7dd99234e14c38ba",
+    "src/crud_views/templates/crud_views/view_create.content.html": "fe4cf5292da4298f6f18a7dc37f1f91f8816c34abf8bfd864fbfba03d005eb3c",
+    "src/crud_views/templates/crud_views/view_create.html": "1b3ce2d65024033c88d0b2501ecb5bb6d9519131f75d0d9725a4f635a1e3fa37",
+    "src/crud_views/templates/crud_views/view_custom_form.content.html": "fe4cf5292da4298f6f18a7dc37f1f91f8816c34abf8bfd864fbfba03d005eb3c",
+    "src/crud_views/templates/crud_views/view_custom_form.html": "6e31bf64186d4d403c9c85496549d4e2a217f22dae475ce01426705ae7a0047c",
+    "src/crud_views/templates/crud_views/view_delete.content.html": "b2ddee65ef2af278cf677714a2032b16e007a287ba9896dafaa738478567759e",
+    "src/crud_views/templates/crud_views/view_delete.html": "fc47508f209880d9a99367fbf15b32d74ea888f2f9bbac1302509cb2504e04e7",
+    "src/crud_views/templates/crud_views/view_detail.content.html": "5e44e81611e3e84bf8d2bde46cbafd4a9c394c7828fa83942e29cdc351774dbb",
+    "src/crud_views/templates/crud_views/view_detail.html": "fc47508f209880d9a99367fbf15b32d74ea888f2f9bbac1302509cb2504e04e7",
+    "src/crud_views/templates/crud_views/view_detail_custom.html": "7d69dd42cb1980a18bed8ae5c4bbed04c360ee5d0fa47cdadd079c74a57cd9f3",
+    "src/crud_views/templates/crud_views/view_list.content.html": "e7bb9c2a86fcd683831f04e2c05d84b9578170ee7dfe2e2b3ccb14a29dc91b4f",
+    "src/crud_views/templates/crud_views/view_list.html": "c984a14518a31f9e6754c8a71b2a1a5ae951e6daa593d2840011e702a1035604",
+    "src/crud_views/templates/crud_views/view_list_table.content.html": "e864007c5c54db8f79de498f28dad2e850e58b6da4b377d6bc52a8da1fd03428",
+    "src/crud_views/templates/crud_views/view_list_table.filter.html": "c65530927db56cb678357ffde4e08ff570e29dba289cc9f2d621f07575b678ea",
+    "src/crud_views/templates/crud_views/view_list_table.html": "77f014792b74f822879019fbe0fa07e02ef807011950a9ff5fab3fa7c0fec7c2",
+    "src/crud_views/templates/crud_views/view_manage.html": "dbb9fa1dab912dbafd5a191a5d02291ba467c9c5ee71b83823f6ec4bb5ab2ba6",
+    "src/crud_views/templates/crud_views/view_update.content.html": "fe4cf5292da4298f6f18a7dc37f1f91f8816c34abf8bfd864fbfba03d005eb3c",
+    "src/crud_views/templates/crud_views/view_update.html": "6e31bf64186d4d403c9c85496549d4e2a217f22dae475ce01426705ae7a0047c",
+    "src/crud_views/templatetags/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views/templatetags/crud_views.py": "6f15b31248dd18370011b4973484df0f9c8272db191cf0da89ba74626ce7ca4a",
+    "src/crud_views/templatetags/crud_views_formsets.py": "2d1f5eb1bb614965dc15c1cd078f96b4d324cd5b77f536b6364347cb45885dc8",
+    "src/crud_views_guardian/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_guardian/apps.py": "0ba2babfa16a252062da72175393b5138ee18b650b56cb98fac8f45236187782",
+    "src/crud_views_guardian/checks.py": "b3c7429e3cf5bcd9a91ab0a75fdd55bcaffdd86978af0e8ee17cbf7002a5919a",
+    "src/crud_views_guardian/lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_guardian/lib/ancestors.py": "f0c53c15b6a30c6634991722931ef3d2155bfb09f8da0839cb5fa3bd7f1358b2",
+    "src/crud_views_guardian/lib/mixins.py": "1269e4ebee3a0e291b3be473e8f31eae964b5267ac631e3808a95d102d5c2a00",
+    "src/crud_views_guardian/lib/views.py": "6b3bd99a92cf69d3165c7b1a11b71de689f681f7f73410323d27fefb243ccede",
+    "src/crud_views_guardian/lib/viewset.py": "ac08108f61a7586d99824cf7f28e29c5c29fb4f023d9d964ee6c058c095829a6",
+    "src/crud_views_guardian/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_guardian/locale/de/LC_MESSAGES/django.mo": "ed4467a9a28882c950bd6caf156295fa023d97fb15b45bb823679acb72bd0d94",
+    "src/crud_views_guardian/locale/de/LC_MESSAGES/django.po": "179aa648518a7a3f7663292f0eb4aef5d1549e406d3f8fb90a8ccd5b98f4a8e6",
+    "src/crud_views_guardian/templates/crud_views/snippets/guardian/config_table.html": "47ab0db7a67f35489a314f1b9737270928ac84979fe78c83aa159bcd2a051208",
+    "src/crud_views_guardian/templates/crud_views/view_guardian_manage.html": "36a531f8e7fa0d0af97a83a4cc02f2e4180f0683a404862cecad7f7cd9fa83ef",
+    "src/crud_views_object_detail/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_object_detail/apps.py": "cf8c0aa8fff4f1ba35dfb9ea028a27c3520bc42cd2c113c1dcb58be7a7c54c87",
+    "src/crud_views_object_detail/lib/__init__.py": "3823a7debac8b0fed962636f1e22a9d808e0b1083b45f6dba3815db75369e270",
+    "src/crud_views_object_detail/lib/conf.py": "bf0966b74e05fbf16a6f12dc9726280b15c018a3ce992252d9f74c50f49707ec",
+    "src/crud_views_object_detail/lib/config.py": "25de0f7d2629e8f6fcfbf18da30cf31502fe04650d8a56c73bad946cae102cbd",
+    "src/crud_views_object_detail/lib/mixins.py": "dbb0bb9ea60e53b493df76305012b7a9ad92936f52f747b8a34b27f2d30639b1",
+    "src/crud_views_object_detail/lib/presentation.py": "49f0b9d4776f45e38584ffedeeaf183f17a7a035588841b357a5a9db7418fdf5",
+    "src/crud_views_object_detail/lib/resolvers.py": "f55e4db8621f3dddfeefaa8338ea61248b17dcbab529801c0b34102c43991b37",
+    "src/crud_views_object_detail/lib/views.py": "ebccb0a0363f743377e7e7b36ded0f9089cf9563093806aedc2adef6cf462efa",
+    "src/crud_views_object_detail/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_object_detail/locale/de/LC_MESSAGES/django.mo": "d62514f0440b62a253fa4ad75c9768c541b0f13240c48a06192164a738af9d27",
+    "src/crud_views_object_detail/locale/de/LC_MESSAGES/django.po": "7163258afc6dd9590d7457e1e62a21896557c7f20a5109d62a421a954acf1b55",
+    "src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js": "513fbd6652fc7afd4405d2c8eaf3c58239ecae9ba48afbd109c83dd806fce27d",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html": "e63451affd3534946af7cf0d036754fb3dc91f1439cea991d4bd883577676de2",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/object_detail.html": "b2460fdf3f82f8e4d4cc9f37223d94918db56ff7a15ccbced53ed26066675678",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/property.html": "75d254e113714a603cabbbcfd1ce58f9d1e6b4449b07ef61629667aba82b519c",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/card-rows/group.html": "806ae82dc77ecba37d97e5955752f42ac7fa1ef3f06ad43df8cdcd31ad6cf319",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/card-rows/property.html": "84b317f4880635acdd6a1c7ce203d151205af418a45d23e5c9430cc64a92975c",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/list-group-3col/group.html": "bc2408679442cd64f625829d8d4fcd2b7dc9e081c808c24151e40c29581194d4",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/list-group-3col/property.html": "2c903610dad42f1272498f0d108dc44d0944e7ecdf918bbc6fdcd96b87dbcabb",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/split-card/group.html": "195e3771be6c05218ca93291ff147c6270fd8102e3c227b13bec02d1b4aa187d",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/split-card/property.html": "dc0f8e4474641d12a723af12f0c94a73fbea494d34b0241289661662fecb4ca5",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/striped-rows/group.html": "00c94ab4ba8b89a431314bfc97211e4c56d1f10f1c5148058a535b21d27bc0b5",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/striped-rows/property.html": "d023cbf1405dd69cba4912b5b3734e72216ea2ded965737e45369c4ff157cf2d",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/table-inline/group.html": "ad0cf317bc6050db9d325146317cc173c8523a7d8bfb28bcc8e10121da77830a",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/table-inline/property.html": "543c4182ce45846a5f6c028ade59e010d294e68f4d13538591fe7a224d231aef",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/group.html": "6a827d4527f54ad918c5e4e6d42017f24804ac5fc5c7f9ab32a983652338fce3",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/object_detail.html": "a7338450062e383a8004ee4902ef9106a5dbb5423f4926898289fbf680a2af5f",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/property.html": "df8df2a39e3673b88fec94a25950f37dd7fce017b58662f9b537de7cdd109f96",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html": "07d71590bbe4d200ed744310b736bc36c3964d6c19c89852e5719edf05cc400f",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/badge.html": "c44f42ea491b17ef2dc7788f9f298074e3caa9d293fdaf6a355a83acc0ec9e48",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/boolean.html": "9b331ba3d8111b5e7ce48bd07b4d5925c32dbe3708f7982f1875fa0aad812bd4",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/char.html": "63b90db596862fd66551ccfa284cd6acb5e17a2967cead0ff167b10d91e5ac00",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/date.html": "23f2a2c3122a78cfbba599baef2be47239864eddec16ea528b6d9bded7ad6fac",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/datetime.html": "df8f74b183a4f6188f5ea14c04084ca83a586b9890eea1061c7bef6d7c254038",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/default.html": "b2e66cb9658cf7b8257bc307d48379c71a9fc2821b054458cab5de15c3aad4c8",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/float.html": "0da504ef408c139fc2530f1479a56263f957ace8bc389408ae795785f27d5c45",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/foreignkey.html": "0da504ef408c139fc2530f1479a56263f957ace8bc389408ae795785f27d5c45",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/integer.html": "0da504ef408c139fc2530f1479a56263f957ace8bc389408ae795785f27d5c45",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/manytomany.html": "3f526f47a0586869c3c6bd6a312b9bd8d065f2d533186640d963bda013535025",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/text.html": "e7024b30cefbf97ac4e95539536f2843e732f205e3e33ad49957412b9826c519",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/timestamp.html": "8a248a2b8920bf6037a00fa7576e7616c089129da25b7b753e189541e97951c6",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/view_detail.content.html": "2ee488ed149f5d1ff0b7cdd372ffeb497deeceebb17d60547317a22ebacbeed0",
+    "src/crud_views_object_detail/templatetags/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_object_detail/templatetags/crud_views_object_detail.py": "e78578a0a9389b42f4a9513eff700212050518e2f007adb5c2d97767cef75c62",
+    "src/crud_views_polymorphic/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_polymorphic/apps.py": "b4d8985fa5fb52d938c772242daedcd462a700e2f6c65a7099d61f734e7d812f",
+    "src/crud_views_polymorphic/lib/__init__.py": "31c8a0b489a647786453c38e6fe888529795d0c0a6b2e9cf4b0a4ff061644cce",
+    "src/crud_views_polymorphic/lib/create.py": "b035d9831d4e34b45e5a55bf6621029a6fac850bf5dee23200530ccc39afa608",
+    "src/crud_views_polymorphic/lib/create_select.py": "74d03e2dc151d77d930531516d8c537be1255cee290af3b8fd7f64bcc507cbdf",
+    "src/crud_views_polymorphic/lib/delete.py": "0ba1e6614b960e60970f0b97cb127e5ea109b5165185eada6d6c189620ef5ef5",
+    "src/crud_views_polymorphic/lib/detail.py": "c1abb0ff9ee95114c3143fd0a7f1c3d118c26ac3f45a1c17b7d9ed51b88ae233",
+    "src/crud_views_polymorphic/lib/update.py": "813208b358f705ef280e2ee9b3e8b9c5fb7ccda62576083858c0aeb0504621ea",
+    "src/crud_views_polymorphic/lib/utils.py": "ee043b643154f769afc4f31160102e0a975830af8ff0fe60146e9b84787b7384",
+    "src/crud_views_polymorphic/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_polymorphic/locale/de/LC_MESSAGES/django.mo": "b65a99bf327b7de2de80d6b7e53831d9ffbe14dd38ae5eba183d72634a6b034a",
+    "src/crud_views_polymorphic/locale/de/LC_MESSAGES/django.po": "5c55dcd57b7455c9b4020c3f22c4c3f0e59a129e68d78848c522dd70a3c09945",
+    "src/crud_views_workflow/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_workflow/apps.py": "281f5ae798bc497cc1b4e0bc8972397ae4d4719f2e66ea67de3c881a20a5d77f",
+    "src/crud_views_workflow/checks.py": "4197f6a9a20a002c36535631929657c73391a4af2c26e7f3ad5b65bb62cfe528",
+    "src/crud_views_workflow/lib/__init__.py": "404b83e62bb3aeabc174b6430cecec7d4376aa815ac2713621fe406a0f8107d6",
+    "src/crud_views_workflow/lib/enums.py": "1741ade413fedd9d165a6eb9ba05a0bbb794f935b972392a24b52e29d75c7335",
+    "src/crud_views_workflow/lib/execution.py": "e449654bcf023fa69057f10176d9f0809ab5e5a30ee806e1df67e0d5362d5631",
+    "src/crud_views_workflow/lib/forms.py": "1d204a3a96dfce59546895601fcee890b0639db04aa033bfb1163b3459889823",
+    "src/crud_views_workflow/lib/mixins.py": "f2b8c89c34b0458ccbc8cff39daff6127c8f1353425a8f75d1e9cdff3056cacf",
+    "src/crud_views_workflow/lib/views.py": "d0ce2365b865038861a22581ce19b042e680d38415595c27203a24782bca7520",
+    "src/crud_views_workflow/lib/widgets.py": "6fdfa8ba943e0ba5876973903708ad05e0a0a68280473253a0aa88afa4648ab0",
+    "src/crud_views_workflow/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_workflow/locale/de/LC_MESSAGES/django.mo": "08fb74942a757b62aa78eb3624f9524169ea4f0e9e6cc521c373d7c09cb0d01d",
+    "src/crud_views_workflow/locale/de/LC_MESSAGES/django.po": "8798313e32f2628ee02515bf3a394b4251dab0d8594c81c1349a7d85d953fa52",
+    "src/crud_views_workflow/migrations/0001_initial.py": "f8350eafcc6acf18aeafce2f1e3c2862a74b371f6965048e3540e347832d4219",
+    "src/crud_views_workflow/migrations/0002_rename_workflow_object_id_to_pk.py": "a9674aa1cd420a57b23c92f8a3a6cd409792f29af7ef4e684ca2cce16349d34b",
+    "src/crud_views_workflow/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/crud_views_workflow/models.py": "bd17d7230ce20de7b3e295f0b7c36e0e5519d9b1e235f98cfefa8309f608e827",
+    "src/crud_views_workflow/templates/crud_views_workflow/badge.html": "343e2479c129e0e219729a8fe446f3942307e8bb393cb4724afac43f15c169c7",
+    "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.action.html": "994ef06f7ecbb1b6f485d8a35060779a89b45ce71df8067d2253057b237c3019",
+    "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.content.html": "391f8b8fda069c909ded8c6bfc865c0d6656308184fb892b515763ee0ae4fce7",
+    "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html": "def44591ed9355a58e8460b71bc48d7fbfb54d339a1c714a80464c868a2f4c30",
+    "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.html": "c6fd1100ee76519e2195545f6c4216ea2c1fe89fe5c7fa8037bf7fa1f909ab69",
+    "src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html": "4510c4331b37528a19f116f4ce7f29b5d7df95aa2186a87dcf6fc022a65ca8ef",
+    "tests/browser/formset-row-cards.cjs": "472b3d7409baf5c6310cdb2aee137daf3ff1f6a15486f47d22a85a4e47e04b3c",
+    "tests/browser/formset-row-cards.test.cjs": "5023467b0826671c47b8686cab3397927436a8748ef88444ade9c24382d891e8"
+  },
+  "scenarios": [
+    {
+      "id": "checklist-lifecycle",
+      "assertions": [
+        {
+          "id": "initial-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "headings-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "mobile-label-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "inserted-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "invalid-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "required-error-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "save-redirect-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "reopened-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "saved-checked-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "saved-omitted-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "initial-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "headings-390",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "id": "mobile-label-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "inserted-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "invalid-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "required-error-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "save-redirect-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "reopened-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "saved-checked-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "saved-omitted-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "conference-leaf-lifecycle",
+      "assertions": [
+        {
+          "id": "speaker-initial-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-initial-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-inserted-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "speaker-invalid-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-invalid-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-error-and-label-1280",
+          "actual": {
+            "invalid": "true",
+            "error": true,
+            "linkedError": true,
+            "sectionLabel": "Speakers"
+          },
+          "expected": {
+            "invalid": "true",
+            "error": true,
+            "linkedError": true,
+            "sectionLabel": "Speakers"
+          },
+          "passed": true
+        },
+        {
+          "id": "speaker-delete-control-1280",
+          "actual": "1",
+          "expected": "1",
+          "passed": true
+        },
+        {
+          "id": "save-redirect-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-edit-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-add-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-delete-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-reopened-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-reopened-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-initial-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-initial-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-inserted-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "speaker-invalid-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-invalid-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-error-and-label-390",
+          "actual": {
+            "invalid": "true",
+            "error": true,
+            "linkedError": true,
+            "sectionLabel": "Speakers"
+          },
+          "expected": {
+            "invalid": "true",
+            "error": true,
+            "linkedError": true,
+            "sectionLabel": "Speakers"
+          },
+          "passed": true
+        },
+        {
+          "id": "speaker-delete-control-390",
+          "actual": "1",
+          "expected": "1",
+          "passed": true
+        },
+        {
+          "id": "save-redirect-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-edit-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-add-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-delete-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-reopened-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-reopened-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "sessions-off-hidden",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "id": "sessions-off-reopened",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "id": "sessions-off-cascades-database",
+          "actual": {
+            "sessions": 0,
+            "speakers": 0
+          },
+          "expected": {
+            "sessions": 0,
+            "speakers": 0
+          },
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "assets",
+      "assertions": [
+        {
+          "id": "no-preview-suffix",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "stylesheet-response",
+          "actual": 200,
+          "expected": 200,
+          "passed": true
+        },
+        {
+          "id": "served-stylesheet-identity",
+          "actual": "412084b9ac1940e6713238017782e9103cc75f3a2c7c873f72a97b2dfa142727",
+          "expected": "412084b9ac1940e6713238017782e9103cc75f3a2c7c873f72a97b2dfa142727",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "nested-lifecycle",
+      "assertions": [
+        {
+          "id": "initial-frames",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "ajax-child-unframed",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "child-insert-preserves-sibling",
+          "actual": "Would you recommend us?",
+          "expected": "Would you recommend us?",
+          "passed": true
+        },
+        {
+          "id": "original-child-preserved",
+          "actual": "Very",
+          "expected": "Very",
+          "passed": true
+        },
+        {
+          "id": "ajax-parent-and-children",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "parent-insert-preserves-sibling",
+          "actual": "Would you recommend us?",
+          "expected": "Would you recommend us?",
+          "passed": true
+        },
+        {
+          "id": "control-row-ownership",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "invalid-redisplay-frames",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "suppressed-row-error-associated",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "delete-owned-child",
+          "actual": "1",
+          "expected": "1",
+          "passed": true
+        },
+        {
+          "id": "reordered-parent-value",
+          "actual": "Added parent",
+          "expected": "Added parent",
+          "passed": true
+        },
+        {
+          "id": "save-redirect",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "saved-reopened-frames",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "reopened-parent-order",
+          "actual": "Added parent",
+          "expected": "Added parent",
+          "passed": true
+        },
+        {
+          "id": "reopened-nested-value",
+          "actual": "Nested answer",
+          "expected": "Nested answer",
+          "passed": true
+        },
+        {
+          "id": "deleted-child-absent",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "added-child-saved",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "presentation",
+      "assertions": [
+        {
+          "id": "frames-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "card-boundary-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "keyboard-child-controls-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "field-row-identity-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "labelled-suppression-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "explicit-label-associated-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-child-styles-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-parent-styles-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-inserted-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-invalid-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-required-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "compact-save-redirect-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-added-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-reopened-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-child-styles-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-parent-styles-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-inserted-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-invalid-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-required-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "classic-compact-save-redirect-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-added-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-reopened-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-child-styles-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-parent-styles-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-inserted-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-invalid-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-required-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "compact-classic-save-redirect-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-added-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-reopened-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-inserted-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-inserted-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-inserted-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "frames-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "card-boundary-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "keyboard-child-controls-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "field-row-identity-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "labelled-suppression-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "explicit-label-associated-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-child-styles-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-parent-styles-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-inserted-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-invalid-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-required-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "compact-save-redirect-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-added-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-reopened-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-child-styles-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-parent-styles-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-inserted-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-invalid-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-required-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "classic-compact-save-redirect-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-added-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-reopened-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-child-styles-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-parent-styles-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-inserted-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-invalid-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-required-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "compact-classic-save-redirect-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-added-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-reopened-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-inserted-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-inserted-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-inserted-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "conditional-and-compact",
+      "assertions": [
+        {
+          "id": "ordinary-frames-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "ordinary-default-frame-styles-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "ordinary-inactive-disabled-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "ordinary-inactive-visibility-1280",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "id": "ordinary-away-back-1280",
+          "actual": "24 Example Avenue",
+          "expected": "24 Example Avenue",
+          "passed": true
+        },
+        {
+          "id": "service-compact-frames-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "service-compact-default-frame-styles-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "service-compact-inactive-disabled-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "service-compact-inactive-visibility-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "service-compact-away-back-1280",
+          "actual": "24 Example Avenue",
+          "expected": "24 Example Avenue",
+          "passed": true
+        },
+        {
+          "id": "ordinary-frames-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "ordinary-default-frame-styles-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "ordinary-inactive-disabled-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "ordinary-inactive-visibility-390",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "id": "ordinary-away-back-390",
+          "actual": "24 Example Avenue",
+          "expected": "24 Example Avenue",
+          "passed": true
+        },
+        {
+          "id": "service-compact-frames-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "service-compact-default-frame-styles-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "service-compact-inactive-disabled-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "service-compact-inactive-visibility-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "service-compact-away-back-390",
+          "actual": "24 Example Avenue",
+          "expected": "24 Example Avenue",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/checklist-invalid-corrected-1280.png",
+      "sha256": "d5cfbd6c3d8e7091c419b3381c753f9b0caf23516a39089e1eff20ed7328a63f"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/checklist-reopened-1280.png",
+      "sha256": "5ccd01b9e3c72f6d0fc9c7a60c84e28ed5b7de9f41d74c1127e9915d40c1c645"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/checklist-invalid-corrected-390.png",
+      "sha256": "012d02f57ac042e56d8232a2c6a11104b74d392adb992ea8a85cde03b5f0bb96"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/checklist-reopened-390.png",
+      "sha256": "555b75046866ed596654968e01bd3e33b0c67caaf3c6b13daf7353aa9d10c0d0"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/conference-corrected-1280.png",
+      "sha256": "4a09eedb26efa2179798adbcf49f6a9a85a0093af7c5944d57d9597c9e95c667"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/conference-reopened-1280.png",
+      "sha256": "a9097bb4ba470cd8c88d4c7c7cf571e33ea228a059af16594e0bef38d8ce2204"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/conference-corrected-390.png",
+      "sha256": "ae7919b701026bd5e275d058be2c8b9ecc272750274df580740f0dc89ad08cd5"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/conference-reopened-390.png",
+      "sha256": "6162fe86072f20342c2b63044c3baf0d48884de1882a224e283e21ccfccfe1b4"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/questionnaire-1280.png",
+      "sha256": "373a91d95e1b844b6070424ebe5100ca40e23ee13bc244f2ba75ce602ec4edb7"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/compact-1280.png",
+      "sha256": "3b7afaee84dcecdd6a6c48c36523087a5c534d2d0c15889a5ca65a205344601e"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/classic-compact-1280.png",
+      "sha256": "533e5fdc99f24488e5b623c734d3a2e2345d8234d5ad9035a2abdca770f691a9"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/compact-classic-1280.png",
+      "sha256": "16220576267a3637840ec69078e856c2c2057d65085e7ce6a31f7f324f30a349"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-parent-1280.png",
+      "sha256": "2f07fc6c9548c76ea9aef97c4ea6639a0e273eea0c7b878b1330e954dbc4c777"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-classic-parent-1280.png",
+      "sha256": "20c8d04fac691e0aa8c5257f207ffd45554b2f9a1a82a7b06d379e23f1410602"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-compact-parent-1280.png",
+      "sha256": "2ddf98a55ccc5afa02ccef2100ef6c6a245c5227c1dc7be4103aac13689f936c"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/questionnaire-390.png",
+      "sha256": "d402233d95198072f899eb9c1fa4af91e716175b4dc07145a95051644d383be1"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/compact-390.png",
+      "sha256": "bb70e3dae9b4dcea4688882f8cd1115fde91820a7d3b26c97005e8fa4f4c87d8"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/classic-compact-390.png",
+      "sha256": "3ef3223c0724bbfc7308d103f0a14bdd3d267802944fea39bf315dcebc7167e8"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/compact-classic-390.png",
+      "sha256": "a348afc9ff0433732d5505a685e885605adc7a56bbb195bf8edbf126300b3887"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-parent-390.png",
+      "sha256": "0b969890216280804b232ead2bd756099228e0cd0928357d6aafb4b23edac652"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-classic-parent-390.png",
+      "sha256": "d676e96a80e88e4de8cc44817dac2dd7b23aa894ad0cbff80dee0106a4111114"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-compact-parent-390.png",
+      "sha256": "b0111b7c7a75998ad4071da263e7b6062f28d7a312068f68b7805dfb040a6f67"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/ordinary-1280.png",
+      "sha256": "f1b5633d8f04f78ef5e17ec5102369036b02afc7fd1abd8d9cf41c7fc7dded75"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/service-compact-1280.png",
+      "sha256": "4ad1c9a84011586a228b81428ca63c60914895fa35ec68a0e22e0cb18aa5c23b"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/ordinary-390.png",
+      "sha256": "eb441742bb772260eac7f17b263c88bb04eafc6079d0cee0883fc3423a1028e3"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/service-compact-390.png",
+      "sha256": "94169c650c76e0f77bdfa8e939da19a6050fad6d2600e2720372abe34a10144b"
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "playwright": "1.64.1",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "python": "3.12.3",
+    "django": "6.1.2",
+    "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "settings": "project.settings",
+    "chromium": "149.0.7827.55"
+  },
+  "isolation": {
+    "temporary": "/tmp/cv-row-cards-wjNWwl",
+    "database": "/tmp/cv-row-cards-wjNWwl/db.sqlite3",
+    "media": "/tmp/cv-row-cards-wjNWwl/media",
+    "port": 40591
+  },
+  "servedStylesheet": {
+    "url": "/static/crud_views/css/formset.css",
+    "actualHash": "412084b9ac1940e6713238017782e9103cc75f3a2c7c873f72a97b2dfa142727",
+    "expectedHash": "412084b9ac1940e6713238017782e9103cc75f3a2c7c873f72a97b2dfa142727"
+  },
+  "cleanup": {
+    "reaped": true,
+    "temporaryRemoved": true
+  },
+  "completed": "2026-11-13T17:13:49.862Z",
+  "passed": true
+}

@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-11-13T18:45:03Z",
+  "command": "env -u CV_QUERYSET_PYTHON CV_WORKFLOW_UPSTREAM_SRC=\"$PWD/src\" CV_QUERYSET_UPSTREAM=\"$PWD\" CV_QUERYSET_DOWNSTREAM=\"/home/alex/projects/workspaces/cv-phase-06-30-acceptance/tabler-test\" PYTHONDONTWRITEBYTECODE=1 .venv/bin/python tests/browser/verify_queryset_release.py --run --output .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-acceptance.json",
+  "tool_session": 27574,
+  "exit_code": 143,
+  "output": "RUN tests-3-12-django-5-2\n",
+  "completed_command_results": 0,
+  "acceptance_file_modified": false,
+  "acceptance_file_mtime": "2026-11-13T17:32:39.300725300Z",
+  "observation": "Tool session returned exit 143 during the first full-core command; all runner/pytest processes were absent on immediate inspection. Neither executor nor parent signaled processes. The precise external termination cause is not established. No result was reused or classified as passing.",
+  "recovery": "Repeat all 18 original command_specs from scratch using a detached subprocess, explicit stdout/stderr log and exit-status file; source and validation policies unchanged."
+}

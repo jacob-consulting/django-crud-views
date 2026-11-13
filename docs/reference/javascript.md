@@ -321,6 +321,35 @@ defaults are restored; canceled resets leave state untouched. Hiding focused con
 controller (checked radio first, then a usable peer), then an ancestor controller or the owning form. Existing modal
 Cancel/focus behavior remains in place. This adds no events; use the same initializers and lifecycle hooks below.
 
+### Queryset conditional metadata
+
+[Queryset-driven groups](conditional.md#queryset-driven-conditional-fields) use the same `cv.initConditional`
+initializer and lifecycle. Preserve these server-rendered attributes in theme overrides:
+
+| Attribute | Value / meaning |
+|---|---|
+| `cv-data-toggle-group` | Existing conditional group marker |
+| `cv-data-toggle-field` | Exact bound controller name, e.g. `service` or `requests-None-0-2-service` |
+| `cv-data-toggle-kind` | `queryset` identifies dynamic model-choice membership |
+| `cv-data-toggle-values` | Escaped JSON array of native option-key strings belonging to this group |
+| `cv-data-toggle-disable-only` | Presence marker on compact conditional cells; disable controls while keeping the cell visible |
+
+The values are selection keys, not labels or category codes. Resolve the **entire** prefixed name within the actual
+owning form; do not strip a prefix, use suffix matching, or bind to another row's selector. A queryset controller
+is one native single select. Ordinary wrappers hide when inactive; compact cells preserve their display/grid space,
+labels and errors. Both retain unsaved input values and independent disabled ownership; only the server's successful
+save clears inactive values. Inactivation can still return focus from an inactive control to its usable controller.
+
+`cv-data-toggle-kind="queryset"` with `cv-data-toggle-values="[]"` is valid: there are currently no offered options
+matching that group, so it is inactive. An empty static `ValueToggle` array is malformed and remains unmanaged,
+as do invalid JSON/non-array metadata; do not remove the kind marker or turn malformed static data into a dynamic
+empty group. Empty all-no-fields guards check server coverage without requiring a visible browser wrapper.
+
+Page load, late script initialization, `cv:modal:loaded`, `cv:formset:row-added`, modal unload cleanup and native reset
+use the existing entry points. Added rows initialize within their own row subtree. No new event, observer, public
+controller object or application category registry is needed. Conditional metadata guides presentation only;
+native selection and category coverage are checked again on POST.
+
 For markup inserted by your own code, run this from an external script after both package scripts are loaded, with
 `root` referring to your inserted element or its owning form:
 

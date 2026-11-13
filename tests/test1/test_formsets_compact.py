@@ -31,7 +31,8 @@ def test_public_compact_declarations():
     assert not any(callable(value) for value in vars(CompactWidgetCompatible).values())
 
 
-def test_compact_declarations_are_immutable_and_deepcopy_safe():
+@pytest.mark.parametrize("row_border", [False, True])
+def test_compact_declarations_are_immutable_and_deepcopy_safe(row_border):
     from dataclasses import FrozenInstanceError
 
     from crud_views.lib.formsets import FormSet
@@ -39,16 +40,36 @@ def test_compact_declarations_are_immutable_and_deepcopy_safe():
     from tests.test1.app.views_formset import BookFormSet
 
     columns = [CompactColumn("title", span=8)]
-    layout = CompactLayout(columns, controls_span=4)
+    layout = CompactLayout(columns, controls_span=4, row_border=row_border)
     columns.clear()
     assert layout.columns == (CompactColumn("title", span=8),)
     declaration = FormSet(klass=BookFormSet, compact_layout=layout)
     clone = declaration.model_copy(deep=True)
     assert clone.compact_layout == layout
+    assert clone.compact_layout.row_border is row_border
+    with pytest.raises(FrozenInstanceError):
+        layout.row_border = not row_border
     with pytest.raises(FrozenInstanceError):
         layout.controls_span = 2
     with pytest.raises(FrozenInstanceError):
         clone.compact_layout.columns[0].span = 2
+
+
+@pytest.mark.parametrize("value", [None, 0, 1, 0.0, 1.0, "", "true", [], {}, ()])
+def test_compact_border_rejects_non_booleans(value):
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+
+    with pytest.raises(ValueError, match=r"CompactLayout\.row_border"):
+        CompactLayout([CompactColumn("title", span=8)], controls_span=4, row_border=value)
+
+
+def test_compact_border_is_keyword_only_and_defaults_off():
+    from inspect import Parameter, signature
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+
+    assert CompactLayout([CompactColumn("title", span=8)], controls_span=4).row_border is False
+    assert signature(CompactLayout).parameters["row_border"].kind is Parameter.KEYWORD_ONLY
 
 
 @pytest.mark.parametrize("span", [True, False, "1", 1.0, None, 0, -1, 13])
@@ -294,7 +315,8 @@ def test_formset_plain_row_only_has_no_outer_legend(compact):
     doc = html.fragment_fromstring(
         render_to_string("crud_views/formsets/formset.html", {"x_formset": node}), create_parent="div"
     )
-    assert not doc.cssselect("legend, fieldset.cv-formset-fieldset")
+    assert not doc.cssselect("fieldset.cv-formset-fieldset, legend.theme-formset")
+    assert len(doc.cssselect("legend.cv-formset-row-legend")) == (0 if compact else len(node.forms))
     roots = [element for element in doc if isinstance(element.tag, str)]
     assert [row.get("cv-data-formset-form-prefix") for row in roots] == [row.prefix for row in node.forms]
 
@@ -345,6 +367,8 @@ def _nested_declarations(parent_compact=True, leaf_class=None):
 @pytest.mark.django_db
 @pytest.mark.parametrize("parent_compact", [False, True])
 def test_compact_nested_siblings_keep_headings_helpers_and_error_owners(parent_compact, monkeypatch):
+    from dataclasses import replace
+
     from django.forms.utils import ErrorList
     from django.template.loader import render_to_string
     from django.test import RequestFactory
@@ -360,6 +384,8 @@ def test_compact_nested_siblings_keep_headings_helpers_and_error_owners(parent_c
 
     monkeypatch.setattr(BookNoteInlineFormSet, "get_helper_layout_fields", classic_fields)
     declarations = _nested_declarations(parent_compact)
+    memos_declaration = declarations["books"].children["memos"]
+    memos_declaration.compact_layout = replace(memos_declaration.compact_layout, row_border=True)
     node = next(declarations["books"].init(RequestFactory().get("/"), [PublisherFormSetForm(cv_view=None)]))
     notes, memos = node.forms[0].formsets
     for child in (notes, memos):
@@ -371,6 +397,8 @@ def test_compact_nested_siblings_keep_headings_helpers_and_error_owners(parent_c
         child.instance._non_form_errors = ErrorList([f"Formset error for {child.key}"])
     doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
     assert calls == [notes.prefix]
+    for row in doc.cssselect(".cv-formset-row"):
+        assert ("cv-formset-row-bordered" in row.classes) is (row.get("cv-data-formset-prefix") == memos.prefix)
     for child, compact in ((notes, False), (memos, True)):
         fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{child.prefix}")
         assert ("cv-formset-compact-child" in fieldset.get("class")) is compact
@@ -1144,6 +1172,51 @@ def compact_books(monkeypatch):
 
     monkeypatch.setattr(BookInlineFormSet, "get_helper_layout_fields", forbidden)
     return layout
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("row_border", [None, False, True])
+def test_compact_border_opt_in_full_page_and_fragment(monkeypatch, client_user_publisher_formset, row_border):
+    from inspect import signature
+
+    from crud_views.lib.formsets import CompactColumn, CompactLayout
+    from tests.test1.test_fragment_authorization import browser_add_row
+
+    assert "row_border" in signature(CompactLayout).parameters
+    kwargs = {} if row_border is None else {"row_border": row_border}
+    layout = CompactLayout([CompactColumn("title", span=8)], controls_span=4, **kwargs)
+    monkeypatch.setattr(publisher_formsets["books"], "compact_layout", layout)
+    publisher = Publisher.objects.create(name="Bordered publisher")
+    Book.objects.create(publisher=publisher, title="Original")
+    url = f"/publisher-formset/{publisher.pk}/update/"
+    response = client_user_publisher_formset.get(url)
+    assert response.status_code == 200
+    document = html.fromstring(response.content)
+    fieldset = document.cssselect("fieldset.cv-formset-compact")[0]
+    params = browser_add_row(response.content, fieldset.get("cv-data-formset-prefix"))
+    fragment = client_user_publisher_formset.get(url, params)
+    assert fragment.status_code == 200
+    payload = form_payload(response)
+    title_name = next(name for name, value in payload.items() if name.endswith("-title") and value == "Original")
+    payload[title_name] = ""
+    invalid = client_user_publisher_formset.post(url, payload)
+    assert invalid.status_code == 200
+    assert "This field is required." in invalid.content.decode()
+    for tree in (
+        document,
+        html.fragment_fromstring(fragment.json()["html"], create_parent="div"),
+        html.fromstring(invalid.content),
+    ):
+        rows = tree.cssselect(".cv-formset-row-compact")
+        assert rows
+        assert all(("cv-formset-row-bordered" in row.classes) is bool(row_border) for row in rows)
+        assert not tree.cssselect(".cv-formset-row-plain")
+        for row in rows:
+            expected = "cv-formset-row cv-formset-row-compact" + (" cv-formset-row-bordered" if row_border else "")
+            assert row.get("class") == expected
+            own_form = row.cssselect(":scope > .cv-formset-form")[0]
+            for suffix in ("-id", "-publisher", "-DELETE"):
+                assert len(own_form.cssselect(f"input[type=hidden][name$='{suffix}']")) == 1
 
 
 @pytest.mark.django_db

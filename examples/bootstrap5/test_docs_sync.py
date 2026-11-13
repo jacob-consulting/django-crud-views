@@ -90,3 +90,13 @@ def test_marked_block_matches_source(md_file, target, code):
     assert contains_contiguous(significant_lines(source.read_text(encoding="utf-8")), significant_lines(code)), (
         f"{md_file}: marked block not found contiguously in {target} (whitespace-normalized)"
     )
+
+
+def conditional_recipe(name):
+    """Load the actual published recipe, so behavioral tests detect documentation drift."""
+    markdown = (DOCS_DIR / "reference/conditional.md").read_text(encoding="utf-8")
+    match = re.search(rf"<!-- cv-recipe: {re.escape(name)} -->\s*```python\n(.*?)^```", markdown, re.S | re.M)
+    assert match, f"Missing executable conditional recipe: {name}"
+    namespace = {}
+    exec(compile(match[1], f"conditional.md:{name}", "exec"), namespace)
+    return namespace

@@ -1,0 +1,81 @@
+{
+  "downstream_active": {
+    "head": "4f8d0326d63d7974029b7243b1ddbe63cadb625a",
+    "branch": "main",
+    "status": ""
+  },
+  "data_metadata": {
+    "/home/alex/projects/alex/tabler-test/example/db.sqlite3": {
+      "inode": 11291995,
+      "device": 2049,
+      "size": 585728,
+      "mtime_ns": 1794550967169122150,
+      "ctime_ns": 1794550967169122150
+    },
+    "/home/alex/projects/alex/tabler-test/example/media": null,
+    "/home/alex/projects/alex/django-crud-views/examples/bootstrap5/db.sqlite3": {
+      "inode": 6252376,
+      "device": 2049,
+      "size": 634880,
+      "mtime_ns": 1794590507177541827,
+      "ctime_ns": 1794590507177541827
+    },
+    "/home/alex/projects/alex/django-crud-views/examples/bootstrap5/media": null,
+    "/tmp/cv-queryset-uat-9y3QIH/db.sqlite3": {
+      "inode": 2596067,
+      "device": 2049,
+      "size": 622592,
+      "mtime_ns": 1794581461883812456,
+      "ctime_ns": 1794581461883812456
+    }
+  },
+  "state_json_sha256": "1bc981a9fdac07587f27d02acb4de1d3743ccd391217399013471bc440bc36d9",
+  "started": "2026-11-13T17:23:10.351190+00:00",
+  "upstream": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+  "prior_evidence": {
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream-red.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "21e190601e1a7724d2862ad15bca3be6f589fd4e09c6ec38907fbc291a9e41d8"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-downstream.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "e1bd811afb13bcf2855f2b128f85897e80a585dd00ffaf82c7709350f660922e"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-red.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "844402a3dfd91486028c00709d6aab878f3c0b8d64019b9fa138112886b2e10b"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "c33cb15f94b737ac6fc385d3da9073831c1da91fbe8d42435ae13ab9e8aaf3f7"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-acceptance.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "f7c6f33653d1f3ebd7cd705118f69cde4618c8c239f80f6564a7928ccf02171c"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-initial-core-failure.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "f1e2f4898e26902f1a4567bad2354336120ca095ad048c29e0dd9535433010df"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-integration-prerequisite-failure.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "2b1b2ff02e97becd09179a95f56676691705d6489274eb1425133145ab451755"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/10-row-cards.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "dbe4e5cffc6bd6302d921289b59b62664f5d67353ff970ce8d5055c9b8d86637"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/11-preservation-baseline.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "309f8be71d47770576b63f94dec34481f9228931e1fdebc9c2c071b4619beb43"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/11-release-failure-20261113T1606.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "31ec06663cddd5b63920b5fc79bd4280ed40324cf575b002dae98c2618e74138"
+    },
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/12-row-frames.json": {
+      "git_commit": "2eb31ad5b82d17a82fd93a415773b5f30806bb90",
+      "sha256": "b7dfc262759319303f71c0331c5ae75e98fc8030857cf750c93bc3fa999b7b59"
+    }
+  }
+}

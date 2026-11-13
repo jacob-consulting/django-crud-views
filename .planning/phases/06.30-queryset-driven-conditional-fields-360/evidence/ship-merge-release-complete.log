@@ -1,0 +1,38 @@
+RUN tests-3-12-django-5-2
+RESULT tests-3-12-django-5-2: exit=0 tests=13602 seconds=379.05
+RUN tests-3-12-django-4-2
+RESULT tests-3-12-django-4-2: exit=0 tests=744 seconds=7.7
+RUN tests-3-12-django-6-0
+RESULT tests-3-12-django-6-0: exit=0 tests=744 seconds=10.67
+RUN crispy_floor-3-12-django-4-2
+RESULT crispy_floor-3-12-django-4-2: exit=0 tests=744 seconds=8.03
+RUN crispy_floor-3-12-django-6-0
+RESULT crispy_floor-3-12-django-6-0: exit=0 tests=744 seconds=10.79
+RUN django6-csp
+RESULT django6-csp: exit=0 tests=1 seconds=0.76
+RUN npm-tree
+RESULT npm-tree: exit=0 tests=None seconds=0.95
+RUN javascript-unit
+RESULT javascript-unit: exit=0 tests=447 seconds=12.59
+RUN javascript-integration
+RESULT javascript-integration: exit=0 tests=2 seconds=17.41
+RUN examples
+RESULT examples: exit=0 tests=541 seconds=95.5
+RUN docs-links
+RESULT docs-links: exit=0 tests=149 seconds=1.93
+RUN mkdocs-strict
+RESULT mkdocs-strict: exit=0 tests=None seconds=1.74
+RUN migrations
+RESULT migrations: exit=0 tests=None seconds=0.47
+RUN ruff
+RESULT ruff: exit=0 tests=None seconds=0.04
+RUN ruff-format
+RESULT ruff-format: exit=0 tests=None seconds=0.04
+RUN downstream-apps
+RESULT downstream-apps: exit=0 tests=238 seconds=43.15
+RUN downstream-checks
+RESULT downstream-checks: exit=0 tests=None seconds=0.66
+RUN downstream-theme
+RESULT downstream-theme: exit=0 tests=83 seconds=4.44
+SELF_TEST_OK release: 41 named checks
+ACCEPTANCE_OK .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-acceptance.json

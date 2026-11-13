@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
-last_mapped_at: 2026-11-12
+last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
+last_mapped_at: 2026-11-13
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## Test Framework
 
@@ -151,7 +151,7 @@ Vitest loads the real asset into jsdom before cases (`tests/js/toggle.test.js`, 
 - Registry fixtures snapshot `_THEME_BUTTON_CLASSES` and reset the class cache before and after each test. Reuse this isolation when changing registrations or settings; don't rely on pytest-xdist worker lifetime to clear shared module state (`tests/test1/test_button_classes.py`, `tests/test1/test_button_classes_checks.py`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - `tests/test1/test_conditional_layout.py` verifies layered precedence and independence, class escaping, ordinary legend text escaping, and the no-legend `div` path against rendered crispy HTML. `tests/test1/test_formsets_compact.py` parameterizes full, nested, classic/compact, and row-only formsets; it checks direct owner legends, omission on row-only roots, and preservation of full nested child legends.
 - Hostile-value tests must check both raw escaped markup and parsed DOM semantics: exact original text/class, no child injection, and no unexpected script/image/attribute nodes. A row-only fragment assertion should target its own root; nested full descendants are expected to have legends (`tests/test1/test_conditional_layout.py::test_toggle_group_legend_escapes_plain_text_and_classes`, `tests/test1/test_formsets_compact.py::test_formset_legend_escapes_plain_text_and_classes`).
-- `tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs` and `tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table` guard reference inventories: 102 core keys and 112 effective core-plus-workflow keys. Keep embedded fresh-process source and documentation counts synchronized.
+- `tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs` and `tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table` guard reference inventories: 102 core keys and 120 effective core-plus-workflow keys (18 contributed by workflow). Keep embedded fresh-process source and documentation counts synchronized.
 - Phase 06.25.1 retained a full-suite result of 12,486 passed and one existing skip on Python 3.12 / Django 5.2; this is one environment, not a run of the supported matrix. Focused legend/registry/documentation selection and the full run used multicore pytest. See `.planning/phases/06.25.1-issue-346/06.25.1-VERIFICATION.md` for exact gate evidence and environment details.
 
 ## Executable Documentation Recipes
@@ -187,6 +187,14 @@ PYTHONPATH="$PWD/src:$PWD" npm run test:integration
 - Registry acceptance, invalid values, empty/`None`, and utility-mode contracts are tested in `tests/test1/test_button_classes_checks.py`; keep the documented and executable registry inventory checks in `tests/test1/test_button_classes.py` and `tests/test1/test_theme_adoption_docs.py` synchronized.
 - Phase 06.29's verification record reports a full Python suite on Django 5.2/current crispy at **12,868 passed, 1 pre-existing version skip**, and a separate post-merge integration selection at **1,375 passed** with four workers. The floor selection recorded **1,391 passed** on each of Django 4.2 and 6.0. These are phase-recorded results, not checks run during this map refresh; the full-suite count predates ship-time merge integration. See `.planning/phases/06.29-themeable-column-helpers-356/06.29-VERIFICATION.md` for commands, environment, and scope limits.
 
+## Workflow Transition Metadata (Phase 06.32)
+
+- `tests/test1/test_workflow_buttons.py` is the rendered request contract for workflow transition variant/icon metadata. It covers all eight accepted variants; missing, empty, unsupported, hostile, and non-string inputs; icon aliases, suppression, host markup, and declared renderer errors; and full visible captions under icon-only generic form settings.
+- Keep class precedence checks across app defaults, theme registrations, and project settings, including empty/null suppression and conflicting generic label-mode keys. Registry tests isolate `_THEME_BUTTON_CLASSES` and reset its cache (`tests/test1/test_workflow_buttons.py`, `tests/test1/test_button_classes.py`).
+- Preserve lifecycle assertions for page/modal responses, all comment policies, escaped literal labels/help/blockers, required-comment markers, description IDs, disabled state, radio presentation, custom prefixes/forms, bound-form redisplay, refresh after metadata changes, and no writes on refused transitions (`tests/test1/test_workflow_buttons.py`).
+- Inventory and import contracts live in `tests/test1/test_button_classes.py`, `tests/test1/test_button_classes_templates.py`, and `tests/test1/test_import_safety.py`; executable reference tables/recipes live in `tests/test1/test_theme_adoption_docs.py`. Keep 102 core, 18 workflow, and 120 effective counts synchronized, and preserve the bounded AST allowlist for workflow defaults.
+- Phase 06.32 records an independent, focused verifier selection of **90 passed** across workflow rendering, variants/icons, precedence, refresh/refusal, docs, app setup, and pre-setup imports on Python 3.12.3 / Django 6.0.10. The phase verification separately records orchestrator-reported full Python **13,150 passed**, focused Django 4.2 and 5.2 selections of **1,589 each**, and JavaScript **438 tests**; those are recorded phase evidence, not commands run during this map refresh. See `.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-VERIFICATION.md` for provenance and limits.
+
 **Checks run during this map refresh:** None. Test/configuration patterns above were inspected from source and phase records only.
 
-*Testing analysis: 2026-11-12*
+*Testing analysis: 2026-11-13*

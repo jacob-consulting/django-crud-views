@@ -426,6 +426,10 @@ remain as documented above. The default radio presentation and its submit custom
 | `widget.actions` | Ordered offered actions, excluding state/condition/permission-unavailable actions |
 | `action.name`, `action.id` | Exact submitted transition method and unique control ID |
 | `action.label` | Full literal caption; force-escape, never interpret as HTML/templates |
+| `action.variant`, `action.icon` | Raw transition `custom` metadata, or `None` when absent; do not interpolate variants into class names |
+| `action.button_class` | Complete registry-resolved classes for a supported variant or the submit-label fallback; `""` is intentional suppression |
+| `action.icon_class` | Resolved form host-icon classes; append to the button when nonempty |
+| `action.icon_inline` | `False` for a host icon (including a suppressed host slot); otherwise render a truthy `action.icon` once through `cv_icon` |
 | `action.help_text`, `action.help_id` | Optional literal guidance and unique target ID |
 | `action.blockers`, `action.blockers_id` | Every ordered literal business message and its unique list ID |
 | `action.comment_required` | Requires a comment when this action is submitted, independent of preview availability |
@@ -441,8 +445,20 @@ The field-label asterisk means an action must be selected. Only a REQUIRED actio
 **\* Comment required** legend. OPTIONAL/NONE actions can accept empty comments while the transition field stays
 required. Absent help renders nothing; nonempty help and blockers are literal escaped text, not tooltips or HTML.
 
-Buttons use existing `form:submit` label classes, `form:hidden-label` for the accessible suffix and `form:cancel`
-for navigation Cancel. Preserve full visible/accessibility captions and local wrapping, with ordinary page/modal
+Buttons use eight base keys: `workflow:transition-primary`, `workflow:transition-secondary`,
+`workflow:transition-success`, `workflow:transition-danger`, `workflow:transition-warning`,
+`workflow:transition-info`, `workflow:transition-light`, and `workflow:transition-dark`. Their defaults are
+`btn btn-<variant>`; see the [complete inventory](buttons.md#optional-workflow-defaults). The workflow app supplies
+defaults, theme registration overrides them, and project settings override the theme. An explicit `""` or `None`
+suppresses the selected classes. Missing, empty, non-string and unsupported variants use `form:submit:label`,
+including its normal mode/base lookup and overrides, regardless of icon presence. There are no workflow mode-suffixed keys.
+
+Append `action.icon_class` for host placement. For a truthy `action.icon` whose `action.icon_inline` is not `False`,
+render `{% cv_icon action.icon %}` once, followed by a separating space and the force-escaped full `action.label`.
+The existing `form:icon-host` slot controls host classes; empty/null values suppress the host icon without inline
+fallback. Missing/unavailable icons retain the caption; a truthy unusable icon may leave harmless edge whitespace.
+Use `form:hidden-label` for the accessible comment suffix and `form:cancel` for navigation Cancel. Generic form
+label modes must not hide transition captions. Preserve full visible/accessibility captions and local wrapping, with ordinary page/modal
 scrolling. The stock layout wraps transition/comment columns in button mode; custom layouts own equivalent wrapping.
 All offered policies NONE removes the visible comment wrapper/label/help in both presentations; a hidden comment
 input may remain. Button-mode controls/descriptions and Cancel use an instance namespace even with unprefixed forms.
@@ -456,7 +472,9 @@ Custom `get_layout_fields()` implementations can keep extra fields alongside `"t
 contract and eligible Cancel yourself. Previously cached/rendered HTML bypasses normal refresh; arbitrary rewritten
 markup is not automatically repaired. Python `_TransitionButtons`, private execution/refusal helpers and `_workflow_*`
 members are implementation details, not public extension APIs. The template path, `actions` block and context above
-are the new public theme surface for the stability freeze; no icon/variant metadata or new class registry key is added.
+are public theme surfaces for the stability freeze. Copied templates adopt the five added action fields above
+(`variant`, `icon`, `button_class`, `icon_class`, `icon_inline`) to show transition metadata; existing copies retain
+their own rendering until updated. Preserve the `actions` block, native submits, description targets and escaping.
 
 Native Enter in a single-line input can activate the **first submit control in tree order when enabled**, sending its
 valid transition name. Browsers do not skip a disabled first submit to find another enabled action. Enter in the stock
@@ -490,6 +508,8 @@ def ready(self):
                 "workflow:badge-purple": "badge custom-purple",
                 "workflow:history-wrapper": "table-responsive",
                 "workflow:history-table": "table table-hover",
+                "workflow:transition-success": "btn btn-success-lt",
+                "workflow:transition-danger": "btn btn-danger-lt",
             }
         )
 ```

@@ -417,6 +417,8 @@ class Order(WorkflowModelMixin, models.Model):
         permission="orders.change_order",
         custom={
             "label": _("Confirm"),
+            "variant": "success",
+            "icon": "tabler:check",
             "comment": WorkflowComment.OPTIONAL,
             "help_text": _("Confirm after checking the order details."),
         },
@@ -429,7 +431,12 @@ class Order(WorkflowModelMixin, models.Model):
         source=OrderState.NEW,
         target=OrderState.CANCELED,
         permission="orders.change_order",
-        custom={"label": _("Cancel order"), "comment": WorkflowComment.REQUIRED},
+        custom={
+            "label": _("Cancel order"),
+            "variant": "danger",
+            "icon": "tabler:circle-x",
+            "comment": WorkflowComment.REQUIRED,
+        },
     )
     def wf_cancel(self, by=None, comment=None):
         pass
@@ -475,6 +482,25 @@ class OrderWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionReq
 # urlpatterns = cv_order.urlpatterns
 # Include orders.urls in the project's urlpatterns.
 ```
+
+In button presentation, each transition's `custom["variant"]` and `custom["icon"]` control its appearance.
+The supported variants are exactly `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and
+`dark`. Each selects its `workflow:transition-<variant>` class key, with matching `btn btn-<variant>` defaults.
+Theme registrations and project settings can override these [workflow defaults](buttons.md#optional-workflow-defaults);
+an explicit empty string or `None` suppresses the selected classes. Missing, empty, non-string or unsupported
+variants retain the exact `form:submit:label` lookup, even when an icon is supplied.
+
+The example's `tabler:check` and `tabler:circle-x` require a registered Tabler icon library and its CSS/font assets;
+registration and assets are the application's responsibility. This example does not install Tabler. Use the
+[existing icon registry](icons.md) for library names, semantic aliases, raw CSS classes and host placement.
+Icons supplement the full visible caption; generic form icon-only label settings do not hide transition labels.
+Missing, empty or unavailable icons leave text-only controls. Host icons follow `form:icon-host`; an empty or
+`None` host class suppresses that icon without duplicating it inline. Custom renderer exceptions retain their
+normal propagation policy.
+
+These metadata fields affect button presentation only; radio rendering and no-metadata button appearance stay
+unchanged. Authorization, comment policies (Confirm OPTIONAL and Cancel REQUIRED above), execution and history
+still follow the same workflow rules. Invalid redisplay and late-refusal refresh retain the current metadata.
 
 Buttons show only transitions allowed by state, conditions and transition permissions, in their existing order.
 An offered business-blocked action stays visible and natively disabled with every reason in order; unauthorized
@@ -671,7 +697,7 @@ Current and historical badges share `get_state_badge(state)` and the existing
 model APIs. First the model chooses the colour: an unmapped state uses `STATE_BADGE_DEFAULT`. Then the class
 registry resolves `workflow:badge-<colour>`. This is a complete class string, not a colour-formatting setting.
 
-Workflow's AppConfig supplies [eight badge and two history defaults](buttons.md#optional-workflow-defaults).
+Workflow's AppConfig supplies [eight badge, two history and eight transition defaults](buttons.md#optional-workflow-defaults).
 Core plus installed-app defaults sit below theme registrations, which sit below `CRUD_VIEWS_BUTTON_CLASSES`.
 The [theme recipe](theme.md#optional-workflow-classes) registers complete light/custom classes only when workflow
 is installed. Project settings examples below assume that app is installed.
@@ -693,6 +719,8 @@ Project settings override theme choices per key, including explicit disabled ent
 
 ```python
 CRUD_VIEWS_BUTTON_CLASSES = {
+    "workflow:transition-success": "btn project-confirm",
+    "workflow:transition-danger": "btn project-cancel",
     "workflow:badge-success": "badge project-success",
     "workflow:badge-purple": "badge project-purple",
     "workflow:badge-warning": None,
@@ -702,7 +730,7 @@ CRUD_VIEWS_BUTTON_CLASSES = {
 }
 ```
 
-Custom colours need not be in the defaults, but must have one nonempty colour segment without whitespace or
+Custom badge colours need not be in the defaults, but must have one nonempty colour segment without whitespace or
 colon. Workflow keys in settings or theme registrations produce `crud_views.W362` when workflow is absent.
 Values other than strings or `None` produce `crud_views.E361`.
 

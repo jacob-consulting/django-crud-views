@@ -1,3 +1,4 @@
+import ast
 import re
 import uuid
 from pathlib import Path
@@ -26,6 +27,65 @@ EXEMPT_TOKENS = {"btn-close"}
 EXEMPT_FILES = {"crud_views/lib/button_classes.py"}
 
 
+def _mask_workflow_defaults(source, rel):
+    """Allow only declared default values; token counts cannot enforce their source location."""
+    if rel != "crud_views_workflow/apps.py":
+        return source
+    expected = {
+        f"workflow:transition-{variant}": f"btn btn-{variant}"
+        for variant in ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark")
+    }
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return source
+    # AST columns are UTF-8 byte offsets; preserve all newlines and unrelated source bytes.
+    lines = source.encode().splitlines(keepends=True)
+    for cls in tree.body:
+        if not isinstance(cls, ast.ClassDef) or cls.name != "CrudViewsWorkflowConfig":
+            continue
+        for declaration in cls.body:
+            if not (
+                isinstance(declaration, ast.AnnAssign)
+                and isinstance(declaration.target, ast.Name)
+                and declaration.target.id == "crud_views_button_class_defaults"
+                and isinstance(declaration.value, ast.Dict)
+            ):
+                continue
+            for key, value in zip(declaration.value.keys, declaration.value.values, strict=True):
+                if not (
+                    isinstance(key, ast.Constant)
+                    and isinstance(key.value, str)
+                    and isinstance(value, ast.Constant)
+                    and key.value in expected
+                    and value.value == expected[key.value]
+                ):
+                    continue
+                for index in range(value.lineno - 1, value.end_lineno):
+                    start = value.col_offset if index == value.lineno - 1 else 0
+                    end = value.end_col_offset if index == value.end_lineno - 1 else len(lines[index].rstrip(b"\r\n"))
+                    lines[index] = lines[index][:start] + b" " * (end - start) + lines[index][end:]
+    return b"".join(lines).decode()
+
+
+@pytest.mark.parametrize(
+    "rel,body,extra,offending",
+    [
+        ("crud_views_workflow/apps.py", '"workflow:transition-success": "btn btn-success"', "", False),
+        ("crud_views_workflow/apps.py", '"workflow:transition-success": "btn btn-success"', 'other = "btn"', True),
+        ("crud_views_workflow/apps.py", '"workflow:transition-success": "btn btn-purple"', "", True),
+        ("crud_views_workflow/apps.py", '"workflow:transition-purple": "btn btn-purple"', "", True),
+        ("other/apps.py", '"workflow:transition-success": "btn btn-success"', "", True),
+    ],
+)
+def test_workflow_literal_allowance_is_bounded(rel, body, extra, offending):
+    source = f"class CrudViewsWorkflowConfig:\n    crud_views_button_class_defaults: dict = {{{body}}}\n{extra}\n"
+    masked = _mask_workflow_defaults(source, rel)
+    assert bool(TOKEN.findall(masked)) is offending
+    assert masked.count("\n") == source.count("\n")
+    assert TOKEN.findall(_mask_workflow_defaults(source.replace(": dict =", "="), rel))
+
+
 def _shipped_files():
     for pattern in ("*/templates/**/*.html", "*/static/**/*.js", "**/*.py"):
         for path in SRC.glob(pattern):
@@ -42,7 +102,7 @@ def test_no_button_class_literal_in_shipped_templates_python_or_js():
         scanned[path.suffix.lstrip(".")] += 1
         if rel in EXEMPT_FILES:
             continue
-        for token in TOKEN.findall(path.read_text()):
+        for token in TOKEN.findall(_mask_workflow_defaults(path.read_text(), rel)):
             if token not in EXEMPT_TOKENS:
                 offenders.add((rel, token))
     assert all(scanned.values()), scanned

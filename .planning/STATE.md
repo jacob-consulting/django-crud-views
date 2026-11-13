@@ -5,26 +5,27 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.29 complete, ready to discuss Phase 7
-last_updated: "2026-11-12T14:32:55.690Z"
-last_activity: 2026-11-12
-last_activity_desc: "Phase 06.29 shipped as PR #359"
-state_head: d4ddb511c1b99e22caaef0e661e5835899a1fd41
+stopped_at: Phase 06.32 complete, ready to plan Phase 7
+last_updated: "2026-11-13T11:01:49.312Z"
+last_activity: 2026-11-13
+last_activity_desc: "Phase 06.32 shipped as PR #364"
+state_head: ccd3150cd67957cffa2da7401cae38d0d4d761de
 progress:
-  total_phases: 36
-  completed_phases: 35
-  total_plans: 183
-  completed_plans: 183
+  total_phases: 37
+  completed_phases: 36
+  total_plans: 184
+  completed_plans: 184
+  percent: 97
 milestone_name: milestone
 ---
 
-Total Phases: 36
+Total Phases: 37
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-12)
+See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -33,11 +34,18 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: Not planned
+Total Plans in Phase: 1
 Status: Ready to plan
-Last activity: 2026-11-12 -- Phase 06.29 shipped as PR #359
+Last activity: 2026-11-13 -- Phase 06.32 shipped as PR #364
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.32 completion — 2026-11-13
+
+- One plan/three tasks complete: button-only transition variants and icons use existing registries, visible captions and exact fallbacks; four production files changed.
+- Canonical verification passed 7/7, decisions 9/9, with 90 independent passing cases; validation three tasks covered, security six threats closed, deep review 12 files/zero findings. UI 21/24 has optional browser appearance limits, no required human checks.
+- Full Python suite 13,150 passed; Django 4.2/5.2 focused 1,589 each; JavaScript 438 passed; strict docs, scoped Ruff and package wheel/sdist build passed. Shared installed Vitest 5.0.3 differs from declared ^5.0.5; other Python versions and browser appearance unverified.
+- Completion scanner mistook a test command for a file and warned about deliberately prose-only requirements. Tracking progress-row/current-focus leftovers corrected. No implementation gaps, pending todos, stale handoffs or learnings graduation; maps require post-ship refresh. Local commits only.
 
 ### Phase 06.29 completion — 2026-11-12
 
@@ -811,7 +819,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 183
+- Total plans completed: 180
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -853,6 +861,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.27 | 5 | - | - |
 | 06.28 | 1 | - | - |
 | 06.29 | 2 | - | - |
+| 06.32 | 1 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1000,6 +1009,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.27 P04 | 7min | 2 tasks | 10 files |
 | Phase 06.27 P05 | 14min | 3 tasks | 18 files |
 | Phase 06.28 P01 | 11min | 2 tasks | 2 files |
+| Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1274,6 +1284,9 @@ Recent decisions affecting current work:
 - [Phase 06.27]: Keep existing Feature/DocRef stable destinations; prove local routes and generated anchors without claiming unreleased remote availability.
 - [Phase 06.27]: Retain installed JS version mismatch as an explicit compatibility limit; no dependency or lockfile changes.
 - [Phase 06.28]: Plan 01: published tooltip placement wrapper delegates to factory init; runtime/API unchanged; exact-fence placement and lifecycle regressions cover issue 355; no assigned requirement IDs.
+- [Phase 06.32]: Keep the exact eight transition variants independent of the extensible state badge vocabulary.
+- [Phase 06.32]: Resolve presentation on copied actions and defer the icon helper import to preserve pre-setup WorkflowForm imports.
+- [Phase 06.32]: Preserve the exact submit-label fallback regardless of icons and retain deliberate empty/null class suppression.
 
 ### Pending Todos
 
@@ -1343,6 +1356,7 @@ None yet.
 - Phase 06.27 inserted after Phase 06.26: Issue #354: choice-driven conditional groups; approved gsd-handover includes explicit clearing overrides and a complex example with reciprocal documentation links. Complete before Phase 7. (URGENT)
 - Phase 06.28 inserted after Phase 06.27: Issue #355: tooltip recipe documentation and executable regression tests; approved GSD handover D-01–D-06 governs scope. Restored the existing 06.27 roadmap entry from the source checkout. (URGENT)
 - Phase 06.29 inserted after Phase 06.26: Themeable column helpers (#356); explicitly assigned 06.29, approved decisions D-01–D-07, before the Phase 7 theme-surface freeze (URGENT)
+- Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
 
 ## Deferred Items
 
@@ -1352,6 +1366,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-12T14:28:27.198Z
-Stopped at: Phase 06.29 complete, ready to discuss Phase 7
+Last session: 2026-11-13T09:41:49.495652+00:00
+Stopped at: Phase 06.32 complete, ready to plan Phase 7
 Resume file: None

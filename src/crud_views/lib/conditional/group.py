@@ -44,10 +44,16 @@ def validate_value_groups(groups, fields, model=None):
     ``fields=None`` checks structure before initialization mutates fields. Static
     callers may omit request-added fields; runtime callers check their presence.
     """
+    sources = {}
     for group in groups:
         if not isinstance(group.toggle, (ValueToggle, _QuerysetToggle)):
             continue
         controller = group.toggle.field_name()
+        if isinstance(group.toggle, _QuerysetToggle):
+            source = group.toggle.source
+            if controller in sources and sources[controller] != source:
+                raise ImproperlyConfigured(f"QuerysetConditions '{controller}' has conflicting source declarations.")
+            sources[controller] = source
         controlled = set(group.fields)
         outside = set(group.required_fields) - controlled
         if outside:

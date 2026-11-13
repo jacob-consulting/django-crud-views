@@ -1,16 +1,27 @@
 """Opt-in category membership for native model-choice controllers."""
 
+import contextlib
 from dataclasses import dataclass
+from inspect import getattr_static
+from uuid import UUID
 
 from django import forms
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
+from django.db import models
+from django.forms.models import ModelChoiceIterator
 
-from .toggle import ToggleSource, _choice_token
+from .toggle import ToggleSource
 
 _RENDER_PROJECTIONS = object()
 
 
-@dataclass(frozen=True, eq=False)
+def _category_token(value):
+    if isinstance(value, bool) or not isinstance(value, (str, int, UUID)) or value == "":
+        raise ImproperlyConfigured("QuerysetConditions keys must be nonempty strings, integers or UUIDs.")
+    return str(value)
+
+
+@dataclass(frozen=True)
 class QuerysetConditions:
     """Declare the offered categories of a single ModelChoiceField.
 
@@ -30,11 +41,14 @@ class QuerysetConditions:
     def __init__(self, controller, *, conditional_key, keys, allow_unmatched=False):
         if not isinstance(controller, str) or not controller:
             raise ImproperlyConfigured("QuerysetConditions requires a controller field name.")
-        if not isinstance(conditional_key, str) or not conditional_key or "__" in conditional_key:
+        if not isinstance(conditional_key, str) or not conditional_key.isidentifier() or "__" in conditional_key:
             raise ImproperlyConfigured("QuerysetConditions requires a direct category attribute or annotation.")
         if isinstance(keys, (str, bytes)):
             raise ImproperlyConfigured("QuerysetConditions keys must be a collection.")
-        normalized = tuple(_choice_token(key) for key in keys)
+        try:
+            normalized = tuple(_category_token(key) for key in keys)
+        except TypeError as exc:
+            raise ImproperlyConfigured("QuerysetConditions keys must be a collection.") from exc
         if len(set(normalized)) != len(normalized):
             raise ImproperlyConfigured("QuerysetConditions keys must be unique after normalization.")
         object.__setattr__(self, "controller", controller)
@@ -43,7 +57,7 @@ class QuerysetConditions:
         object.__setattr__(self, "allow_unmatched", allow_unmatched)
 
     def when(self, *keys):
-        values = tuple(_choice_token(key) for key in keys)
+        values = tuple(_category_token(key) for key in keys)
         if not set(values) <= set(self.keys):
             raise ImproperlyConfigured(f"QuerysetConditions '{self.controller}' membership uses undeclared keys.")
         return _QuerysetToggle(self, values)
@@ -51,7 +65,7 @@ class QuerysetConditions:
     def category_for(self, obj):
         value = getattr(obj, self.conditional_key, None)
         # Missing/empty categories belong to actual objects, not blank selectors.
-        if isinstance(value, (str, int)) and not isinstance(value, bool) and value != "":
+        if isinstance(value, (str, int, UUID)) and not isinstance(value, bool) and value != "":
             key = str(value)
             if key in self.keys:
                 return key
@@ -77,9 +91,41 @@ class _QuerysetToggle(ToggleSource):
         return self.source.controller
 
     def validate_field(self, field, model_field=None):
-        if type(field) is not forms.ModelChoiceField or type(field.widget) is not forms.Select:
+        native = forms.ModelChoiceField
+        if (
+            not isinstance(field, native)
+            or isinstance(field, forms.ModelMultipleChoiceField)
+            or type(field.widget) is not forms.Select
+            or field.widget.template_name != forms.Select.template_name
+            or field.widget.option_template_name != forms.Select.option_template_name
+            or field.iterator is not ModelChoiceIterator
+            or getattr_static(field, "choices") is not native.choices
+            or "_choices" in vars(field)
+            or any(
+                getattr(getattr(field, hook), "__func__", None) is not getattr(native, hook)
+                for hook in ("prepare_value", "to_python", "validate", "clean")
+            )
+            or type(field.widget.choices) is not ModelChoiceIterator
+            or field.widget.choices.field is not field
+            or field.widget.choices.queryset is not field.queryset
+        ):
             raise ImproperlyConfigured(
                 f"QuerysetConditions '{self.name}' requires a native ModelChoiceField and single Select."
+            )
+        key = field.to_field_name
+        identity = None
+        if field.queryset is not None and (key is None or (isinstance(key, str) and "__" not in key)):
+            with contextlib.suppress(FieldDoesNotExist):
+                identity = field.queryset.model._meta.get_field(key) if key else field.queryset.model._meta.pk
+        if (
+            identity is None
+            or not identity.concrete
+            or identity.is_relation
+            or not identity.unique
+            or not isinstance(identity, (models.IntegerField, models.CharField, models.TextField, models.UUIDField))
+        ):
+            raise ImproperlyConfigured(
+                f"QuerysetConditions '{self.name}' requires a concrete unique integer/text/UUID scalar selection key."
             )
 
     def is_on(self, form):

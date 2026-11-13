@@ -137,20 +137,20 @@ def test_native_identity_metadata(model, key, accepted, django_assert_num_querie
         if accepted:
             source().when("active").validate_field(field)
         else:
-            with pytest.raises(ImproperlyConfigured, match="unique.*scalar"):
+            with pytest.raises(ImproperlyConfigured, match=r"unique.*scalar"):
                 source().when("active").validate_field(field)
 
 
 @pytest.mark.parametrize("change", ["keys", "conditional_key", "allow_unmatched"])
 @pytest.mark.parametrize("reverse", [False, True])
 def test_sources_for_controller_must_agree(change, reverse):
-    kwargs = dict(conditional_key="category", keys=["active", "other"], allow_unmatched=False)
+    kwargs = {"conditional_key": "category", "keys": ["active", "other"], "allow_unmatched": False}
     kwargs[change] = {"keys": ["active"], "conditional_key": "different", "allow_unmatched": True}[change]
     groups = [
         ConditionalGroup(source().when("active"), ["one"]),
         ConditionalGroup(QuerysetConditions("choice", **kwargs).when("active"), ["two"]),
     ]
-    with pytest.raises(ImproperlyConfigured, match="conflicting.*source"):
+    with pytest.raises(ImproperlyConfigured, match=r"conflicting.*source"):
         validate_value_groups(groups[::-1] if reverse else groups, None)
 
 
@@ -167,7 +167,7 @@ def test_mixed_ownership_is_order_independent(reverse, conflict):
         second.fields = ["choice"]
     else:
         first.required = ["two"]
-    with pytest.raises(ImproperlyConfigured, match="conflicts|required fields"):
+    with pytest.raises(ImproperlyConfigured, match=r"conflicts|required fields"):
         validate_value_groups([second, first] if reverse else [first, second], None)
 
 
@@ -207,7 +207,7 @@ def test_unique_text_native_options_metadata_and_post():
     native = [node.get("value") for node in doc.cssselect("option") if node.get("value")]
     assert native == [str(form.fields["choice"].prepare_value(obj)) for obj in options]
     assert json.loads(doc.cssselect("[cv-data-toggle-group]")[0].get("cv-data-toggle-values")) == native
-    for option, token in zip(options, native):
+    for option, token in zip(options, native, strict=False):
         bound = Form(data={"choice": token, "detail": "kept"})
         assert bound.is_valid(), bound.errors
         assert bound.cleaned_data["choice"] == option

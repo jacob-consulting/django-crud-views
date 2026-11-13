@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:examples/bootstrap5 .venv/bin/python -m pytest -c examples/bootstrap5/pytest.ini examples/bootstrap5/queryset_conditional/tests.py -n 2 -q -p no:cacheprovider --junitxml=.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-04-01-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"2.341\" timestamp=\"2026-11-13T09:56:46.578479+00:00\" hostname=\"weaver-dev\"><testcase classname=\"queryset_conditional.tests.StandaloneRequestTests\" name=\"test_authenticated_create_page_renders\" time=\"1.057\"><failure message=\"AssertionError: 404 != 200\">self = &lt;queryset_conditional.tests.StandaloneRequestTests testMethod=test_authenticated_create_page_renders&gt;\n\n    def test_authenticated_create_page_renders(self):\n        response = self.client.get(\"/queryset-conditional/service-request/create/\")\n&gt;       self.assertEqual(response.status_code, 200)\nE       AssertionError: 404 != 200\n\nexamples/bootstrap5/queryset_conditional/tests.py:30: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_authenticated_create_page_renders",
+  "targetFile": "examples/bootstrap5/queryset_conditional/tests.py",
+  "expected": "Authenticated editor renders HTTP 200 with service controller and conditional metadata",
+  "actual": "HTTP 404 before standalone editor exists",
+  "reportPath": ".planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-04-01-red.xml",
+  "runStartedAt": "2026-11-13T09:56:26Z",
+  "reportModifiedAt": "2026-11-13T09:56:48.918483+00:00",
+  "semanticAssessment": "Actual authenticated Django client request executed and failed the planned HTTP status assertion (404 instead of 200); no setup/import failure."
+}

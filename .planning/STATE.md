@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 12
-status: ready to execute
-stopped_at: Planned 06.30-12/13 for G-06.30-2; implementation, acceptance and remaining UAT pending
-last_updated: "2026-11-13T16:20:12.212Z"
+current_plan: 13
+status: executing
+stopped_at: Completed 06.30-12; plan 13 documentation and final acceptance next; H1/rest-H2 pending
+last_updated: "2026-11-13T17:16:09.751Z"
 last_activity: 2026-11-13
-last_activity_desc: Plans 12/13 drafted for consistent leaf frames and final acceptance; H1/rest-H2 pending
-state_head: 53fec48240b98edf58a1cdef2794cb967ada5d76
+last_activity_desc: Plan 12 executed; plan 13 documentation and final acceptance next; H1/rest-H2 pending
+state_head: aa26c1e6efabdc663162a96a80076bbbaafb60d2
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 196
-  completed_plans: 194
+  completed_plans: 195
 milestone_name: milestone
 ---
 
@@ -32,12 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 ## Current Position
 
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN VERIFICATION
-Current Plan: 12
+Current Plan: 13
 Total Plans in Phase: 13
-Status: ready to execute
-Last activity: 2026-11-13 — Plans 12/13 drafted for consistent per-level leaf frames and acceptance
+Status: Ready to execute
+Last activity: 2026-11-13 — Plan 12 committed with 193 browser assertions; plan 13 remains pending
 
-Next: Independent plan checking, then $gsd-execute-phase 06.30 --gaps-only. Plan12 delivers shared compact suppression and Checklist/Choices/Referenten examples; plan13 publishes documentation before one final acceptance refresh. New G-06.30-2 is open. Prior canonical verification describes the pre-change baseline; H1/rest-H2 remain pending and Phase 7 does not advance.
+Next: Execute plan 13: publish reference/migration/release documentation, then refresh final cross-repository acceptance. Plan 12 implementation passes focused checks; G-06.30-2 still awaits final acceptance and owner audits. Prior canonical verification describes the pre-change baseline; H1/rest-H2 remain pending and Phase 7 does not advance.
+
+### Phase 06.30 plan 12 leaf frames — 2026-11-13
+
+- Twelve of thirteen plans executed. Explicit False/empty suppresses complete compact frames, including nested padding. Checklist items, compact Choices and Speakers/Referenten opt out; parent Questions/Sessions remain framed and conference purge remains unchanged.
+- Focused render tests: 249 passed, including post-commit tracer replay. Real example tests: 29 passed plus 10 subtests. Host negative controls: 3 passed. Final focused Chromium: 6 scenarios/193 assertions, 26 captures, matching source/served-CSS hashes and successful cleanup.
+- Commits b047925a and aa26c1e6. Fresh developer database baseline and original dirty state.json bytes preserved; port 9000 and downstream main untouched. No dependency, model, base-template or page-specific CSS changes.
+- Existing ordinary Speaker fields have no individual label/placeholder; retained Speakers section legend and ARIA-linked errors are verified. Preserve this label policy; individual-label usability belongs to H2.
+- Plan 13 owns documentation and one final full acceptance matrix, followed by owner audits/canonical verification. G1 stays closed; no human approval or phase-complete claim. SDK global progress recalculation declined because phase scope is unscoped; the scoped plan count and roadmap row were reconciled.
 
 ### Phase 06.30 plan 11 acceptance refresh — 2026-11-13
 
@@ -1085,6 +1093,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P09 | 26min | 2 tasks | 11 files |
 | Phase 06.30 P10 | 11min | 3 tasks | 14 files |
 | Phase 06.30 P11 | 21min | 3 tasks | 12 files |
+| Phase 06.30 P12 | 8min | 2 tasks | 9 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1377,6 +1386,7 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Ordinary row cards use per-level row_legend; False and empty strings remove the entire frame; custom labels retain case and deferred translation.
 - [Phase 06.30]: Plan 10 resolves only G-06.30-1; plan 08/09 evidence is stale until regenerated and H1 plus remaining H2 stay pending.
 - [Phase 06.30]: Plan 11 binds isolated downstream workflow-source checks with CV_WORKFLOW_UPSTREAM_SRC, preserves failed evidence and reruns the full matrix; H1/rest-H2 remain pending.
+- [Phase 06.30]: D-14: explicit False/empty suppresses compact frames; preserve per-level defaults and existing conference label policy.
 
 ### Pending Todos
 
@@ -1456,6 +1466,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T16:20:07.354Z
-Stopped at: Completed 06.30-11; automated verification passed, H1/rest-H2 pending
+Last session: 2026-11-13T17:16:04.638Z
+Stopped at: Completed 06.30-12; plan 13 documentation and final acceptance next; H1/rest-H2 pending
 Resume file: None

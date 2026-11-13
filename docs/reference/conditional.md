@@ -172,15 +172,18 @@ Render it directly with ordinary escaping; do not prepend another prefix or use 
 minimal override retains the optional legend and generated inner content:
 
 ```django
+{% if cv_toggle_diagnostic %}<div class="cv-queryset-condition-error" role="alert">{{ cv_toggle_diagnostic }}</div>{% endif %}
+{% if not cv_toggle_guard %}
 {% if cv_toggle_legend %}
-<fieldset cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %} class="{{ cv_toggle_css }}">
+<fieldset cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %}{% if cv_toggle_kind %} cv-data-toggle-kind="{{ cv_toggle_kind }}"{% endif %} class="{{ cv_toggle_css }}">
     <legend>{{ cv_toggle_legend }}</legend>
     {{ cv_toggle_inner }}
 </fieldset>
 {% else %}
-<div cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %} class="{{ cv_toggle_css }}">
+<div cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %}{% if cv_toggle_kind %} cv-data-toggle-kind="{{ cv_toggle_kind }}"{% endif %} class="{{ cv_toggle_css }}">
     {{ cv_toggle_inner }}
 </div>
+{% endif %}
 {% endif %}
 ```
 
@@ -188,9 +191,14 @@ To adopt the class hook in a copied wrapper, load the existing tag library with 
 and add `class="{% cv_button_class 'conditional' 'legend' %}"` to its legend. The minimal recipe above
 keeps ordinary legend text escaping; copied wrappers opt in to the hook themselves.
 
-`cv_toggle_values` is serialized JSON for a ValueToggle, otherwise `None`. Render with ordinary attribute escaping
+`cv_toggle_values` is serialized JSON for a ValueToggle or the current queryset membership, otherwise `None`.
+Render with ordinary attribute escaping
 in **both** wrapper branches: never add `safe`, interpolate executable code or serialize it again. Omitting this
 attribute keeps the existing checkbox contract. Radio peers share the same exact bound name and owning form.
+Preserve `cv_toggle_kind` in both branches so an empty queryset membership (`[]`) hides and disables the group.
+Render `cv_toggle_diagnostic` with ordinary escaping outside the conditional wrapper so coverage errors stay visible.
+Honor `cv_toggle_guard`: a no-fields coverage guard emits only a diagnostic when coverage fails, and no container
+when coverage succeeds.
 
 Conditional formset wrappers likewise render their `x_formset.cv_toggle_field` directly; it is the parent form's
 bound toggle name. Checkbox lookup uses exact `name` equality and actual owning-form identity, including native

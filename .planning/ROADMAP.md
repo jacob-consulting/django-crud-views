@@ -1812,7 +1812,7 @@ Plans:
 **Requirements:** Require an active, authenticated user with membership in the configured `CRUD_VIEWS_MANAGE_GROUP`, including for staff and superusers. Make `"yes"` the default and require membership regardless of DEBUG; `"no"` denies everyone; `"debug_only"` requires membership and DEBUG=True. Keep existing nested ancestor restrictions and ordinary CRUD permissions. Add the idempotent `cv_manage_group` command, respecting custom group names and preserving existing memberships and permissions. Seed and show a regular developer account alongside Alice/Bob; ensure its configured-group membership and read permissions across examples, including Guardian object/ancestor grants, without write privileges. Preserve Alice/Bob scenarios. Correct the affected custom-form/flash example actions to require appropriate write permissions so read access does not authorize mutation or execution (D-11). Cover direct access, hidden manage actions, production diagnostics, command behavior, example setup/read access, and paired breaking-change/migration documentation. No impersonation, membership-management CLI, automatic startup group creation, broader authorization redesign, or responsive-table work.
 **Depends on:** Phase 06.30 (roadmap sequence only); no implementation dependency on its conditional-field work.
 **Ordering:** Complete before Phase 7 freezes the public surface; include the settled manage settings, group setup command, visibility rules, and migration contract in that inventory.
-**Plans:** 5 plans
+**Plans:** 6 plans
 
 Plans:
 **Wave 1**
@@ -1821,9 +1821,12 @@ Plans:
 - [ ] 06.31-04-PLAN.md — Explicit write permissions for reminder, invitation and flash example actions
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.31-03-PLAN.md — Seeded developer model/resource and Guardian object reads with denied writes
+- [ ] 06.31-06-PLAN.md — Policy/example regressions, toolbar goldens, accessible diagnostics and full prerequisite gates
 
 **Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.31-03-PLAN.md — Seeded developer model/resource and Guardian object reads with denied writes
+
+**Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06.31-05-PLAN.md — Account guidance, example documentation and paired breaking migration contract
 
 ### Phase 7: Theme-surface stability policy

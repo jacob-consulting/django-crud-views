@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 11
-status: awaiting human verification
-stopped_at: Completed 06.30-11; automated verification passed, H1/rest-H2 pending
+current_plan: 12
+status: ready to execute
+stopped_at: Planned 06.30-12/13 for G-06.30-2; implementation, acceptance and remaining UAT pending
 last_updated: "2026-11-13T16:20:12.212Z"
 last_activity: 2026-11-13
-last_activity_desc: Plan 11 verified; human_needed, 35/36 truths; H1/rest-H2 pending
+last_activity_desc: Plans 12/13 drafted for consistent leaf frames and final acceptance; H1/rest-H2 pending
 state_head: 53fec48240b98edf58a1cdef2794cb967ada5d76
 progress:
   total_phases: 37
   completed_phases: 27
-  total_plans: 194
+  total_plans: 196
   completed_plans: 194
 milestone_name: milestone
 ---
@@ -32,12 +32,12 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 ## Current Position
 
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN VERIFICATION
-Current Plan: 11
-Total Plans in Phase: 11
-Status: awaiting human verification
-Last activity: 2026-11-13 — Plan 11 full acceptance and final freshness checks passed
+Current Plan: 12
+Total Plans in Phase: 13
+Status: ready to execute
+Last activity: 2026-11-13 — Plans 12/13 drafted for consistent per-level leaf frames and acceptance
 
-Next: $gsd-verify-work 06.30 for remaining H1/rest-H2 human UAT. Canonical verification is human_needed (35/36 truths); all automated gaps closed. Phase remains pending; no Phase 7 advancement.
+Next: Independent plan checking, then $gsd-execute-phase 06.30 --gaps-only. Plan12 delivers shared compact suppression and Checklist/Choices/Referenten examples; plan13 publishes documentation before one final acceptance refresh. New G-06.30-2 is open. Prior canonical verification describes the pre-change baseline; H1/rest-H2 remain pending and Phase 7 does not advance.
 
 ### Phase 06.30 plan 11 acceptance refresh — 2026-11-13
 

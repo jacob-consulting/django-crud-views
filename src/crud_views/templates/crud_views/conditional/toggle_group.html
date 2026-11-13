@@ -2,13 +2,16 @@
 {# toggle.js ships via the cv_js registry (crud_views_settings.javascript) — no inline script here #}
 {# cv_toggle_field is the exact bound HTML controller name, including the form prefix. #}
 {% load crud_views %}
+{% if cv_toggle_diagnostic %}<div class="cv-queryset-condition-error" role="alert">{{ cv_toggle_diagnostic }}</div>{% endif %}
+{% if not cv_toggle_guard %}
 {% if cv_toggle_legend %}
-<fieldset class="cv-toggle-group {{ cv_toggle_css }}" cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %}>
+<fieldset class="cv-toggle-group {{ cv_toggle_css }}" cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %}{% if cv_toggle_kind %} cv-data-toggle-kind="{{ cv_toggle_kind }}"{% endif %}>
     <legend class="{% cv_button_class 'conditional' 'legend' %}">{{ cv_toggle_legend }}</legend>
     {{ cv_toggle_inner }}
 </fieldset>
 {% else %}
-<div class="cv-toggle-group {{ cv_toggle_css }}" cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %}>
+<div class="cv-toggle-group {{ cv_toggle_css }}" cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}"{% if cv_toggle_values %} cv-data-toggle-values="{{ cv_toggle_values }}"{% endif %}{% if cv_toggle_kind %} cv-data-toggle-kind="{{ cv_toggle_kind }}"{% endif %}>
     {{ cv_toggle_inner }}
 </div>
+{% endif %}
 {% endif %}

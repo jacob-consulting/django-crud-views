@@ -5,7 +5,7 @@ import json
 from crispy_forms.layout import Layout, LayoutObject
 from django.template.loader import render_to_string
 
-from .queryset import _QuerysetToggle
+from .queryset import QuerysetConditionCoverageError, _QuerysetToggle
 from .toggle import ToggleSource, ValueToggle
 
 
@@ -30,16 +30,31 @@ class ToggleGroup(LayoutObject):
         self.inner = Layout(*fields)
 
     def render(self, form, context, **kwargs):
+        values = None
+        diagnostic = ""
+        queryset_toggle = isinstance(self.toggle_field, _QuerysetToggle)
+        guard = queryset_toggle and not self.toggle_field.values and not self.inner.fields
+        if queryset_toggle:
+            try:
+                values = self.toggle_field.render_values(form, context)
+            except QuerysetConditionCoverageError as exc:
+                if not form.is_bound:
+                    raise
+                # Rendering must preserve validation errors, including valid
+                # sibling/empty rows on a rejected bound formset response.
+                diagnostic = str(exc)
+                values = []
+        elif isinstance(self.toggle_field, ValueToggle):
+            values = self.toggle_field.values
         inner_html = self.inner.render(form, context, **kwargs)
         name = self.toggle_field.field_name() if isinstance(self.toggle_field, ToggleSource) else self.toggle_field
         context.update(
             {
                 "cv_toggle_field": form.add_prefix(name),
-                "cv_toggle_values": json.dumps(self.toggle_field.render_values(form, context))
-                if isinstance(self.toggle_field, _QuerysetToggle)
-                else json.dumps(self.toggle_field.values)
-                if isinstance(self.toggle_field, ValueToggle)
-                else None,
+                "cv_toggle_values": json.dumps(values) if values is not None else None,
+                "cv_toggle_kind": "queryset" if queryset_toggle else "",
+                "cv_toggle_diagnostic": diagnostic,
+                "cv_toggle_guard": guard,
                 "cv_toggle_css": self.css_class or "",
                 "cv_toggle_legend": self.legend or "",
                 "cv_toggle_inner": inner_html,

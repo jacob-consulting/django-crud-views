@@ -10,7 +10,7 @@ from crispy_forms.layout import Layout
 from crispy_forms.utils import render_crispy_form
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import F, Value, CharField
+from django.db.models import CharField, F, Value
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
@@ -22,9 +22,8 @@ import crud_views
 from crud_views.lib import conditional
 from crud_views.lib.conditional import ConditionalGroup, ConditionalGroupFormMixin, ToggleGroup
 from crud_views.lib.formsets import FormSet, InlineFormSet
-from tests.test1.app.models import Author
+from tests.test1.app.models import Author, Profile, Publisher
 from tests.test1.app.models import ConditionalPersistenceRecord as Record
-from tests.test1.app.models import Profile, Publisher
 
 pytestmark = pytest.mark.django_db
 
@@ -128,6 +127,7 @@ def test_queryset_rejects_unmatched_selection_without_get():
 
 def guard_form(source):
     """Server declaration plus explicit render guard is the complete integration."""
+
     class GuardForm(ConditionalGroupFormMixin, forms.ModelForm):
         cv_conditional_groups = [ConditionalGroup(source.when(), fields=[], required=[])]
 
@@ -183,7 +183,7 @@ def test_queryset_no_fields_render_coverage(render_mode, django_assert_num_queri
     assert len(doc.cssselect("select")) == 1
     assert not doc.cssselect("[cv-data-toggle-group]")
     Publisher.objects.create(name="unconfigured")
-    with pytest.raises(ImproperlyConfigured, match="reference.*unconfigured"):
+    with pytest.raises(ImproperlyConfigured, match=r"reference.*unconfigured"):
         render(source)
     doc = html.fromstring(render(source, bound=True))
     assert "unconfigured" in doc.cssselect(".cv-queryset-condition-error")[0].text_content()
@@ -300,7 +300,7 @@ def test_queryset_empty_object_category_is_not_blank_selection(category, permiss
     if permissive:
         assert "cv-queryset-condition-error" not in render_crispy_form(unbound)
     else:
-        with pytest.raises(ImproperlyConfigured, match="reference.*category"):
+        with pytest.raises(ImproperlyConfigured, match=r"reference.*category"):
             render_crispy_form(unbound)
 
 
@@ -311,3 +311,39 @@ def test_queryset_unoffered_categories_are_not_scanned():
     form.fields["reference"].queryset = form.fields["reference"].queryset.filter(pk=general.pk)
     doc = html.fromstring(render_crispy_form(form))
     assert len(doc.cssselect("select option")) == 2  # Placeholder plus the offered object.
+
+
+def test_queryset_metadata_escapes_native_text_tokens_and_hostile_category():
+    token = '"><script>alert("token")</script>'
+    category = '<img src=x onerror="category">'
+    option = Record.objects.create(parent=Profile.objects.create(name="parent"), unique_text=token)
+    source = conditional.QuerysetConditions("choice", conditional_key="category", keys=[category])
+
+    class TextKeyForm(ConditionalGroupFormMixin, forms.Form):
+        choice = forms.ModelChoiceField(
+            queryset=Record.objects.annotate(category=Value(category)), to_field_name="unique_text"
+        )
+        detail = forms.CharField()
+        cv_conditional_groups = [ConditionalGroup(source.when(category), ["detail"])]
+
+    form = TextKeyForm(data={"choice": token, "detail": "kept"})
+    helper = FormHelper()
+    helper.form_action = ""
+    helper.disable_csrf = True
+    helper.layout = Layout("choice", ToggleGroup(source.when(category), "detail", legend="Details"))
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data["choice"].pk == option.pk
+    doc = html.fromstring(render_crispy_form(form, helper=helper))
+    assert doc.cssselect("option[selected]")[0].get("value") == token
+    assert json.loads(doc.cssselect("fieldset")[0].get("cv-data-toggle-values")) == [token]
+    assert not doc.cssselect("script, img, [onerror]")
+
+
+def test_queryset_guard_and_visible_group_share_projection(django_assert_num_queries):
+    Publisher.objects.create(name="active")
+    source = source_for()
+    form = record_form(source)()
+    context = Context()
+    with django_assert_num_queries(1):
+        assert ToggleGroup(source.when()).render(form, context).strip() == ""
+        ToggleGroup(source.when("active")).render(form, context)

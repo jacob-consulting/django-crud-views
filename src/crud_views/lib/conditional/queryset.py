@@ -7,6 +7,8 @@ from django.core.exceptions import ImproperlyConfigured
 
 from .toggle import ToggleSource, _choice_token
 
+_RENDER_PROJECTIONS = object()
+
 
 @dataclass(frozen=True, eq=False)
 class QuerysetConditions:
@@ -14,6 +16,10 @@ class QuerysetConditions:
 
     Keys with no membership activate no fields. Register even an all-no-fields
     source with ``ConditionalGroup(source.when(), fields=[], required=[])``.
+    Its base form helper or ordinary InlineFormSet.get_helper_layout_fields must
+    also include ``ToggleGroup(source.when())``, with the controller outside.
+    Omitting that guard omits render coverage; selected-object validation still
+    runs, but that custom helper is an incomplete integration.
     """
 
     controller: str
@@ -86,10 +92,30 @@ class _QuerysetToggle(ToggleSource):
         return category in self.values
 
     def render_values(self, form, context):
+        """Project current offered options once per source in this render only.
+
+        Native widget rendering owns labels. The projection reads only the
+        direct category and prepare_value(), never field.choices or raw POST.
+        """
         field = form.fields[self.name]
         self.validate_field(field)
-        return [
-            str(field.prepare_value(obj))
-            for obj in field.queryset.all()
-            if str(getattr(obj, self.source.conditional_key, None)) in self.values
-        ]
+        cache = context.render_context.get(_RENDER_PROJECTIONS)
+        if cache is None:
+            cache = context.render_context[_RENDER_PROJECTIONS] = {}
+        key = (form, field, self.source, field.queryset)
+        if key not in cache:
+            projection = []
+            error = None
+            try:
+                # A clone prevents an earlier render's queryset result cache
+                # from concealing changed categories on a later render.
+                for obj in field.queryset.all():
+                    category = self.source.category_for(obj)
+                    projection.append((category, str(field.prepare_value(obj))))
+            except QuerysetConditionCoverageError as exc:
+                error = exc
+            cache[key] = (projection, error)
+        projection, error = cache[key]
+        if error is not None:
+            raise error
+        return [token for category, token in projection if category in self.values]

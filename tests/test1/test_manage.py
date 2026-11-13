@@ -5,6 +5,86 @@ from crud_views.lib.viewset import ViewSet
 
 
 @pytest.mark.django_db
+def test_manage_production_request_and_action_require_membership(client, user_author_view, cv_author, settings):
+    from django.contrib.auth.models import Group
+
+    from crud_views.lib.settings import crud_views_settings
+
+    settings.DEBUG = False
+    client.force_login(user_author_view)
+    denied = client.get("/author/manage/")
+    assert denied.status_code == 403
+    assert b"permission_holders" not in denied.content
+    assert b"/author/manage/" not in client.get("/author/").content
+
+    group = Group.objects.create(name=crud_views_settings.manage_group)
+    user_author_view.groups.add(group)
+    admitted = client.get("/author/manage/")
+    assert admitted.status_code == 200
+    assert "permission_holders" in admitted.context
+    assert b"/author/manage/" in client.get("/author/").content
+
+    user_author_view.groups.remove(group)
+    assert client.get("/author/manage/").status_code == 403
+    assert b"/author/manage/" not in client.get("/author/").content
+
+
+def test_manage_unset_setting_defaults_to_yes_on_first_import():
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    env = os.environ.copy()
+    env.pop("DJANGO_SETTINGS_MODULE", None)
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[2] / "src")
+    code = """
+from django.conf import settings
+settings.configure(SECRET_KEY="isolated-manage-default")
+assert not hasattr(settings, "CRUD_VIEWS_MANAGE_VIEWS_ENABLED")
+from crud_views.lib.settings import CrudViewsSettings, crud_views_settings
+assert CrudViewsSettings.model_fields["manage_views_enabled"].default == "yes"
+assert crud_views_settings.manage_views_enabled == "yes"
+"""
+    result = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("evaluations", [1, 3])
+def test_manage_membership_query_per_evaluation(cv_author, user_author_view, django_assert_num_queries, evaluations):
+    from django.contrib.auth.models import Group
+
+    from crud_views.lib.settings import crud_views_settings
+
+    user_author_view.groups.add(Group.objects.create(name=crud_views_settings.manage_group))
+    manage = cv_author.get_view_class("manage")
+    with django_assert_num_queries(evaluations) as captured:
+        for _ in range(evaluations):
+            assert manage.cv_has_access(user_author_view)
+    assert all("auth_user_groups" in query["sql"] for query in captured.captured_queries)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("actor,mode,debug", [("anonymous", "yes", True), ("inactive", "yes", True),
+                                             ("active", "no", True), ("active", "debug_only", False)])
+def test_manage_short_circuits_without_membership_query(
+    cv_author, user_author_view, monkeypatch, settings, django_assert_num_queries, actor, mode, debug
+):
+    from django.contrib.auth.models import AnonymousUser
+
+    from crud_views.lib.settings import crud_views_settings
+
+    settings.DEBUG = debug
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", mode)
+    user = AnonymousUser() if actor == "anonymous" else user_author_view
+    if actor == "inactive":
+        user.is_active = False
+    with django_assert_num_queries(0):
+        assert not cv_author.get_view_class("manage").cv_has_access(user)
+
+
+@pytest.mark.django_db
 def test_manage_view_auto_registered(cv_author: ViewSet):
     """Manage view should be auto-registered when CRUD_VIEWS_MANAGE_VIEWS_ENABLED=yes."""
     assert cv_author.has_view("manage")

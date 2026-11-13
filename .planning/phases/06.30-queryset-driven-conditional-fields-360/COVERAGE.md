@@ -105,6 +105,21 @@ Focused browser feedback is node tests/browser/queryset-conditional.cjs --self-t
 
 Raw-review advisories are also dispositioned in affected PLAN ledgers: first-use app scaffolding, historical JS provenance, compact marker location, standalone mixin order, source override ownership, adoption wording timing, polymorphic retention/SQL, static serving and extra crispy-floor selections. No implementation or runtime pass is claimed. Waves and task IDs are unchanged; source authority remains the approved context/design.
 
+## Review round 2 coverage — d8dd7b82
+
+| Finding | Executable task coverage | Disposition |
+|---|---|---|
+| C2-01 | 05-01/03, 06-02 | Existing valid DocRef at registration; expected forms catalog updated before project gate; new references follow headings/backlinks |
+| C2-02 | 04-01 | Temporary URLConf preserves all project routes and appends current standalone ViewSet patterns directly |
+| C2-03 | 08-01/02 | Served toggle.js bytes must equal the explicit current upstream source file, independently of import identity |
+| C2-04 | 01-01 | Query-free native validate_field protocol exists before the tracer invokes the widened group loop |
+| C2-05 | 02-01 | Existing unique_text fixture proves non-PK rendered option/metadata/prepared-token equality and native POST |
+| C2-06 | 06-01/02 | Markdown-owning 06-01 adds required admonition backlinks; 06-02 wires references and checks them |
+| C2-07 | 08-01/02 | Mutation scenarios restore fixture state in finally and verify it before continuing |
+| C2-08 | 09-01 | Both available Django 4.2/6.0 crispy-floor selections are mandatory with distinct actual results |
+
+Prior Round 1 ledgers and scope remain intact. The absent-category semantic change is rejected against the approved unmatched/permissive contract; the unmigrated-table objection is rejected by the installed Django run_syncdb test setup. Other cycle-two advisory observations retain their already specified no-container guards, exact cell markers/geometry, repeat-safe focus, native/query-free admission, ordinary helpers, dynamic-empty documentation and bounded tooling. No new feature or task is introduced; 9 plans, 20 tasks and 8 waves remain.
+
 ## Discovery and exclusions
 
 Existing RESEARCH/PATTERNS supplied current live-code and official Django/crispy discovery; no new library research was needed. Graph status returned exists=false. Agent-skills mapping was empty and no project skill directory was found. Relevant prior 06.27/06.24 summary contracts were read for static/checkbox ownership, crispy schema and persistence preservation.

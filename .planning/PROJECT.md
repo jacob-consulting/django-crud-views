@@ -101,6 +101,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ Queryset-driven conditional fields with upstream/downstream examples, strict matching, documented behavior and source-bound acceptance — Phase06.30 (#360).
 - ✓ Compact row borders are local opt-in via `CompactLayout.row_border=False`; Checklist demonstrates borders, compact Request Batches the borderless default; complete-frame suppression takes precedence — Phase06.30, D15.
 
+- ✓ Developer-only core/Guardian diagnostics, explicit group setup, bounded read-only demo developer and write-gated example actions; transactional seed conflict rollback and paired migration guidance — Phase 06.31; 21/21 verified, UAT 1/1 passed, clean independent re-review.
+- ✓ **6.32** Button-only workflow transition variants and icons through existing registries, with visible labels, exact fallbacks and preserved workflow behavior — Phase 06.32; canonical 7/7, decisions 9/9, clean deep review and security 6/6.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -150,6 +153,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Require active configured-group membership for manage diagnostics, including staff/superusers | One shared request/action policy preserves independent CRUD and ancestor authorization | Validated (Phase 06.31) |
+| Roll back the entire single-database demo seed on privilege conflicts | Prevent rejected provisioning from exposing a public credential or new privileged membership; preserve existing operator grants | Validated (Phase 06.31; CR-01 fixed and independently re-reviewed) |
 | Wrap the factory tooltip initializer for placement-only documentation customization | Preserve existing lifecycle safeguards, explicit placement and library defaults without changing runtime or API | Validated (Phase 06.28; 6/6, executable recipe) |
 | Admit exact stock CheckboxInput through existing compact schema and crispy markup; demonstrate it in a separate Checklist ViewSet | Bounded opt-in support preserves native Django semantics, custom-widget boundaries and existing rendering; navigation-only entry keeps one shared example catalog | Validated (Phase 06.26; 17/17, UAT 2/2) |
 | Header icons inherit only for None; plain Icon constants name inheritance and suppression | A bounded getter change preserves renderers and dynamic overrides while allowing custom headings to omit inherited icons | Validated (Phase 06.23; 13/13) |
@@ -210,6 +215,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Numbered columns resolve complete registry classes on a shallow render copy; bridge only exact installed Bootstrap source | Preserves defaults, caller extras and custom-template ownership without a new grid or cache abstraction | Validated (Phase 06.29) |
 
+| Resolve transition presentation on copied actions with eight workflow-owned variant keys and the existing icon helper | Keeps optional-app imports safe, preserves exact submit-label fallbacks and avoids a new rendering abstraction | Validated (Phase 06.32) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -228,4 +235,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-13 after completing Phase06.30 and human UAT*
+*Last updated: 2026-11-13 after completing Phases 06.30, 06.31 and 06.32*

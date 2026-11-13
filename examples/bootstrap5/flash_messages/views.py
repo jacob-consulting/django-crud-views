@@ -45,6 +45,7 @@ class NoticeComposeView(BreadcrumbMixin, CrispyViewMixin, CustomFormNoObjectView
     """Queues one flash message at the chosen level, then redirects back here, where {% cv_messages %} shows it."""
 
     cv_key = "compose"
+    cv_permission = "add"
     cv_path = "compose"
     cv_icon_action = "fas:comment-dots"
     cv_viewset = cv_notice

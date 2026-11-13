@@ -687,6 +687,9 @@ def test_query_full_card_page_control(
         for permission in ("view", "change"):
             user_guardian_object_perm(actor, links.parent, permission, parent)
     client.force_login(actor)
+    # Registration appends manage even to an empty declaration. This control measures
+    # child-link costs; manage membership projection is covered in test_manage.py.
+    monkeypatch.setattr(links.card, "cv_context_actions", [])
     if materialized:
         # Isolate rendering supplied objects; the second lane retains the real Guardian host queryset.
         monkeypatch.setattr(links.card, "get_queryset", lambda self: parents)

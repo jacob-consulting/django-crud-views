@@ -609,8 +609,12 @@ migrations, use the seed management command to set up demo users and data:
 python manage.py seed
 ```
 
-This creates the `alice` and `bob` demo users and assigns per-object permissions on the
-seeded `Document` objects (see `guardian_demo/seed.py`):
+This creates the `alice`, `bob`, and `developer` demo users. The developer is an active, regular account with
+manage-group membership, model read permissions and explicit object read grants on seeded documents and notes,
+including the document ancestors required for nested pages. It has no staff/superuser privileges or add/change/delete
+grants. These grants cover seeded data; they do not automatically grant access to future objects.
+
+Alice and Bob retain their ownership and shares on the seeded `Document` objects (see `guardian_demo/seed.py`):
 
 | Document          | Owner | alice                | bob                  |
 |-------------------|-------|----------------------|----------------------|
@@ -633,7 +637,14 @@ Team Handbook's notes but cannot add one.
 
 ## GuardianManageView
 
-When `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` is enabled (or a user is in the `CRUD_VIEWS_MANAGE` group), guardian-enabled viewsets show an enhanced manage page at `/<prefix>/manage/`.
+Guardian-enabled ViewSets provide an enhanced manage page at `/<prefix>/manage/`. Like core manage pages, it
+requires an active, authenticated member of `CRUD_VIEWS_MANAGE_GROUP` (default `CRUD_VIEWS_MANAGE`), including
+for staff and superusers. `CRUD_VIEWS_MANAGE_VIEWS_ENABLED="yes"` is the default and permits those members
+regardless of `DEBUG`; `"no"` denies everyone, while `"debug_only"` additionally requires `DEBUG=True`.
+Denied users see no manage action, including under the ordinary disabled-action presentation, and cannot open
+the direct URL. See [Manage diagnostics](settings.md#manage-diagnostics) for the full policy and explicit
+`migrate` then `cv_manage_group` setup. The group-only command preserves grants and memberships; use Django admin
+or application setup to assign memberships.
 
 Every manage page, core and Guardian, shows an **Ancestor policy** table: the ViewSet's declared values next to
 the effective ones. "As an ancestor of nested requests" lists `provider` and `accept_global_perms`; "Requests to
@@ -672,11 +683,14 @@ holds `global_fallback_applicable`, `cv_guardian_accept_global_perms` (`None` wh
 `effective_policy` (`"strict"`, `"global fallback"` or `"not applicable"`). The `guardian_config` key
 `cv_guardian_accept_global_perms` is gone.
 
-Who may open the manage page locally has not changed: `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` (`"yes"`, `"debug_only"`
-with `DEBUG`, or `"no"`) and membership of the `CRUD_VIEWS_MANAGE_GROUP` group (default `CRUD_VIEWS_MANAGE`)
-still decide, not object permissions. A **nested** manage page is a Read endpoint and additionally passes normal
-ancestor authorization first: a public manage setting or manage-group membership does not bypass the ancestors,
-and an ancestor grant does not bypass the manage setting or group.
+Manage-group membership is independent of ordinary model and object permissions. A **nested** manage page is a
+Read endpoint and additionally passes normal ancestor authorization: membership does not bypass the ancestors,
+and an ancestor grant does not bypass the manage mode, active-account requirement or group membership.
+
+Current-user diagnostic results describe the signed-in account. To inspect Alice's results, temporarily add Alice
+to the manage group, sign in as Alice, inspect, then remove the membership. Alice can open diagnostics during
+that interval; the developer account does not impersonate her. Configuration tables remain configuration, rather
+than proof of a particular user's access.
 
 **Permission Holders** — extends the standard group listing with an "Objects (guardian)" column showing how many objects each group has per-object access to.
 
@@ -710,6 +724,9 @@ CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS = "myapp.views.MyCustomGuardianManageView"
 ```
 
 The per-viewset `manage_view_class` field takes priority over the global setting.
+
+Custom subclasses inherit the default manage authorization. If an application overrides authorization methods,
+it remains responsible for enforcing the intended mode, actor, membership and ancestor policy.
 
 For plain `ViewSet` (non-guardian), the equivalent is:
 

@@ -1,10 +1,115 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from crud_views.lib.settings import crud_views_settings
 from guardian_demo.models import Document, Note
+
+
+@override_settings(DEBUG=False)
+class DeveloperGuardianTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from io import StringIO
+
+        from django.core.management import call_command
+
+        call_command("seed", stdout=StringIO())
+
+    def setUp(self):
+        self.developer = get_user_model().objects.get(username="developer")
+        self.client.force_login(self.developer)
+
+    def test_seeded_documents_and_notes_have_object_reads(self):
+        from guardian.shortcuts import get_perms
+
+        self.assertTrue(self.developer.has_perm("guardian_demo.view_document", Document.objects.first()))
+        for model in (Document, Note):
+            for obj in model.objects.all():
+                with self.subTest(model=model.__name__, pk=obj.pk):
+                    self.assertEqual(set(get_perms(self.developer, obj)), {f"view_{model._meta.model_name}"})
+        self.assertEqual(self.client.get(reverse("document-manage")).status_code, 200)
+        listing = self.client.get(reverse("document-list"))
+        for doc in Document.objects.all():
+            self.assertContains(listing, doc.title)
+            self.assertEqual(self.client.get(reverse("document-detail", kwargs={"pk": doc.pk})).status_code, 200)
+            for key in ("list", "manage"):
+                self.assertEqual(
+                    self.client.get(reverse(f"note-{key}", kwargs={"document_pk": doc.pk})).status_code, 200
+                )
+            for note in doc.notes.all():
+                kwargs = {"document_pk": doc.pk, "pk": note.pk}
+                self.assertEqual(self.client.get(reverse("note-detail", kwargs=kwargs)).status_code, 200)
+
+    def test_parent_revocation_denies_nested_reads_and_diagnostics(self):
+        from guardian.shortcuts import remove_perm
+
+        note = Note.objects.first()
+        remove_perm("guardian_demo.view_document", self.developer, note.document)
+        actor = get_user_model().objects.get(pk=self.developer.pk)
+        self.assertTrue(actor.has_perm("guardian_demo.view_document"))
+        self.assertTrue(actor.groups.filter(name=crud_views_settings.manage_group).exists())
+        self.assertTrue(actor.has_perm("guardian_demo.view_note", note))
+        self.client.force_login(actor)
+        for key in ("list", "manage", "detail"):
+            kwargs = {"document_pk": note.document_id}
+            if key == "detail":
+                kwargs["pk"] = note.pk
+            self.assertEqual(self.client.get(reverse(f"note-{key}", kwargs=kwargs)).status_code, 403)
+
+    def test_repeated_seed_preserves_grants_owners_and_shares_and_excludes_unseeded_objects(self):
+        from guardian.models import UserObjectPermission
+        from guardian.shortcuts import get_perms
+
+        from guardian_demo.seed import seed
+
+        outsider = Document.objects.create(title="Unseeded", body="Private", owner=Document.objects.first().owner)
+        note = Note.objects.create(document=outsider, author=outsider.owner, text="Unseeded note")
+        models = (Document, Note, UserObjectPermission)
+        before = {model: list(model.objects.order_by("pk").values()) for model in models}
+        seed()
+        self.assertEqual({model: list(model.objects.order_by("pk").values()) for model in models}, before)
+        actor = get_user_model().objects.get(pk=self.developer.pk)
+        self.assertEqual(get_perms(actor, outsider), [])
+        self.assertEqual(get_perms(actor, note), [])
+        self.assertEqual(self.client.get(reverse("document-detail", kwargs={"pk": outsider.pk})).status_code, 403)
+        self.assertEqual(self.client.get(reverse("note-manage", kwargs={"document_pk": outsider.pk})).status_code, 403)
+
+    def test_document_and_note_mutations_have_no_effect(self):
+        before = {model: list(model.objects.order_by("pk").values()) for model in (Document, Note)}
+        doc = Document.objects.first()
+        note = Note.objects.first()
+        for key in ("create", "update", "delete"):
+            cases = (
+                ("document", {} if key == "create" else {"pk": doc.pk}, {"title": "Forbidden", "body": "No"}),
+                (
+                    "note",
+                    {"document_pk": note.document_id, **({} if key == "create" else {"pk": note.pk})},
+                    {"text": "Forbidden"},
+                ),
+            )
+            for name, kwargs, data in cases:
+                with self.subTest(name=name, key=key):
+                    self.assertEqual(self.client.post(reverse(f"{name}-{key}", kwargs=kwargs), data).status_code, 403)
+        self.assertEqual({model: list(model.objects.order_by("pk").values()) for model in (Document, Note)}, before)
+
+    def test_conflicting_user_and_group_object_grants_are_named_and_preserved(self):
+        from django.core.management import CommandError
+        from guardian.shortcuts import assign_perm, get_perms, remove_perm
+
+        from guardian_demo.seed import seed
+
+        group = self.developer.groups.get()
+        for obj in (Document.objects.first(), Note.objects.first()):
+            perm = f"change_{obj._meta.model_name}"
+            for recipient in (self.developer, group):
+                with self.subTest(model=obj._meta.label, recipient=str(recipient)):
+                    assign_perm(perm, recipient, obj)
+                    with self.assertRaisesRegex(CommandError, f"{obj._meta.label}.*{obj.pk}.*{perm}"):
+                        seed()
+                    self.assertIn(perm, get_perms(recipient, obj))
+                    remove_perm(perm, recipient, obj)
 
 
 class GuardianTestCase(TestCase):
@@ -123,6 +228,7 @@ class NoteAncestorTest(GuardianTestCase):
         self.assertEqual(self.client.get(reverse("note-detail", kwargs=kwargs)).status_code, 200)
         self.assertEqual(self.client.get(reverse("note-update", kwargs=kwargs)).status_code, 200)
 
+    @override_settings(DEBUG=False)
     def test_manage_pages_report_ancestor_policy(self):
         from guardian_demo.views import cv_document
 

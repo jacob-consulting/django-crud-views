@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: e646846213bc2b8b39ccf694c5696bc55165e9f9
+last_mapped_commit: 0b10cca3b246ba2fa8d1e80a3b1cdcd8ce6833ce
 last_mapped_at: 2026-11-13
 ---
 # Testing Patterns
@@ -151,7 +151,7 @@ Vitest loads the real asset into jsdom before cases (`tests/js/toggle.test.js`, 
 - Registry fixtures snapshot `_THEME_BUTTON_CLASSES` and reset the class cache before and after each test. Reuse this isolation when changing registrations or settings; don't rely on pytest-xdist worker lifetime to clear shared module state (`tests/test1/test_button_classes.py`, `tests/test1/test_button_classes_checks.py`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - `tests/test1/test_conditional_layout.py` verifies layered precedence and independence, class escaping, ordinary legend text escaping, and the no-legend `div` path against rendered crispy HTML. `tests/test1/test_formsets_compact.py` parameterizes full, nested, classic/compact, and row-only formsets; it checks direct owner legends, omission on row-only roots, and preservation of full nested child legends.
 - Hostile-value tests must check both raw escaped markup and parsed DOM semantics: exact original text/class, no child injection, and no unexpected script/image/attribute nodes. A row-only fragment assertion should target its own root; nested full descendants are expected to have legends (`tests/test1/test_conditional_layout.py::test_toggle_group_legend_escapes_plain_text_and_classes`, `tests/test1/test_formsets_compact.py::test_formset_legend_escapes_plain_text_and_classes`).
-- `tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs` and `tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table` guard reference inventories: 102 core keys and 112 effective core-plus-workflow keys. Keep embedded fresh-process source and documentation counts synchronized.
+- `tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs` and `tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table` guard reference inventories: Phase 06.29 recorded 102 core and 112 effective workflow keys; after Phase 06.32 the effective workflow count is 120. Keep embedded fresh-process source and documentation counts synchronized.
 - Phase 06.25.1 retained a full-suite result of 12,486 passed and one existing skip on Python 3.12 / Django 5.2; this is one environment, not a run of the supported matrix. Focused legend/registry/documentation selection and the full run used multicore pytest. See `.planning/phases/06.25.1-issue-346/06.25.1-VERIFICATION.md` for exact gate evidence and environment details.
 
 ## Executable Documentation Recipes
@@ -195,6 +195,21 @@ PYTHONPATH="$PWD/src:$PWD" npm run test:integration
 - Browser tests use target-specific Django servers and Playwright Chromium. `tests/browser/queryset-conditional.cjs` captures upstream and pinned downstream behavior at 1280px and 390px, checks exact scenario/assertion matrices and database state, fingerprints source/runtime/assets, and verifies process/temp-directory cleanup. Use `tests/browser/verify_queryset_release.py` to validate the release evidence and its negative controls.
 - Phase 06.30 acceptance records 7 focused upstream scenarios with 391 assertions and 36 captures, plus original upstream (6 scenarios/87 assertions/7 captures) and pinned downstream (4 scenarios/47 assertions/3 captures) browser records. Final release evidence reports 13,390 Python tests passed with the exact known Django-6-only CSP skip on Python 3.12.3/Django 5.2.19 using four workers; JavaScript 447 unit and 2 integration tests; 507 examples tests; and the remaining matrix, docs, lint and release checks. These are recorded phase results, not checks run during this map refresh (`.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md`).
 - Human acceptance is separately recorded: H1 and all H2 portions, including downstream Orders, have explicit user passes. Do not treat screenshots or automated keyboard/style checks as a substitute for those responses; consult `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-UAT.md` for scope and `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md` for acceptance limits.
+
+## Developer-Only Manage Diagnostics (Phase 06.31)
+
+- `tests/test1/test_manage.py` checks the direct manage endpoint, request-time developer-group membership, production mode, action visibility, membership query counts, and custom manage-view selection. Pair it with `tests/test1/test_authorization_matrix.py` so hidden actions and endpoint denial remain aligned.
+- `tests/test1/test_ancestor_manage.py` builds temporary root URLs and fresh ViewSets, parameterizes core/Guardian behavior and ancestor policies, then inspects resolution events to prove scope, lookup ordering, and absence of farther-ancestor queries. Keep teardown for URL configuration, registries, and caches.
+- Assert configured declarations separately from effective inherited/default values, including explicit `None`; test settings defaults and explicit ViewSet declarations independently. Do not infer the distinction from rendered text alone (`tests/test1/test_ancestor_manage.py`).
+- Phase 06.31 records 21/21 verification truths and one explicit user visual pass for account guidance and manage-link presentation. It also records a merged manage/workflow integration selection of 478 passed with four workers and a strict documentation build. These are phase records, not checks run during this map refresh (`.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-VERIFICATION.md`, `.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-UAT.md`).
+
+## Workflow Transition Presentation Metadata (Phase 06.32)
+
+- `tests/test1/test_workflow_buttons.py` covers production Crispy rendering and request behavior. Its `transition_metadata` fixture decorates existing django-fsm transition objects with `monkeypatch.setitem(step.custom, ...)`; reuse it to test metadata without creating a parallel workflow or renderer.
+- Assert rendered DOM structure through the existing `_document` and `_buttons` helpers: class tokens, visible text, icon nodes, input name/value, IDs, disabled state, and accessible descriptions. Include normal/modal requests, eight valid variants, missing/empty/unknown/malformed metadata, icon host/inline/suppression paths, and hostile label/help/blocker text (`tests/test1/test_workflow_buttons.py`).
+- Exercise app-default → theme → project override precedence, preserving explicit empty and `None` suppression. Snapshot/restore `bc._THEME_BUTTON_CLASSES` and clear cached values around registry mutations (`tests/test1/test_workflow_buttons.py`, `tests/test1/test_button_classes.py`).
+- Invalid POST redisplay and late refusal should assert refreshed metadata while retaining bound data, errors, IDs, and workflow state. Confirm button-only metadata is ignored for radio presentation (`tests/test1/test_workflow_buttons.py`).
+- Phase 06.32 verification records 7/7 truths, including request-level transition behavior and inventory/source-literal/import-safety checks; phase records are not reruns from this map refresh (`.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-VERIFICATION.md`).
 
 **Checks run during this map refresh:** None. Test/configuration patterns above were inspected from source and phase records only.
 

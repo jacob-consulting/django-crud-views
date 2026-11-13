@@ -201,8 +201,8 @@ an alternate framework's grid.
 
 ### Optional workflow defaults
 
-The 102-key table above is core-only. Installing `crud_views_workflow` adds these ten app-owned defaults,
-for 112 effective default keys with only that contribution. Other installed extensions may add more.
+The 102-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
+for 120 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|
@@ -216,10 +216,19 @@ for 112 effective default keys with only that contribution. Other installed exte
 | `workflow:badge-dark` | `badge rounded-pill text-bg-dark` |
 | `workflow:history-wrapper` | `table-responsive` |
 | `workflow:history-table` | `table` |
+| `workflow:transition-primary` | `btn btn-primary` |
+| `workflow:transition-secondary` | `btn btn-secondary` |
+| `workflow:transition-success` | `btn btn-success` |
+| `workflow:transition-danger` | `btn btn-danger` |
+| `workflow:transition-warning` | `btn btn-warning` |
+| `workflow:transition-info` | `btn btn-info` |
+| `workflow:transition-light` | `btn btn-light` |
+| `workflow:transition-dark` | `btn btn-dark` |
 
-Custom colours need not occur in this table. With workflow installed, `workflow:badge-colour` accepts one
+Custom badge colours need not occur in this table. With workflow installed, `workflow:badge-colour` accepts one
 nonempty colour segment without whitespace or colon, for example `workflow:badge-purple`. None of these keys
 accepts a label-mode suffix. Workflow keys supplied by a theme or settings warn with W362 when workflow is absent.
+Transition variants are limited to the eight base keys above; unsupported variants use `form:submit:label`.
 See the [conditional theme recipe](theme.md#optional-workflow-classes) and
 [badge rendering contract](workflow_view.md#themeable-state-badges).
 

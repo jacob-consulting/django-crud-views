@@ -133,6 +133,8 @@ class WorkflowForm(CrispyForm):
                     "blockers": blockers,
                     "id": f"{self['transition'].auto_id}-action-{index}",
                     "help_text": steps[name].custom.get("help_text"),
+                    "variant": steps[name].custom.get("variant"),
+                    "icon": steps[name].custom.get("icon"),
                     "comment_required": self.transition_comments.get(name) == WorkflowComment.REQUIRED,
                 }
             )

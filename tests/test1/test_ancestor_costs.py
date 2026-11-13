@@ -1,12 +1,15 @@
 """
 Phase 06.18 plan 10 Task 2 — measured query cost of ancestor authorization against the pre-edit baseline (ANCE-08).
 
-The matrix replays plan 01's observation fixtures exactly (``test_ancestor_authorization._observation_chain``):
+The matrix replays plan 01's ancestor-only observation fixtures (``test_ancestor_authorization._observation_chain``):
 one ancestor (Publisher → Book) and three ancestors (Publisher → Book → BookNote → test-scoped leaf), plain and
 Guardian leaf views, list / object (detail) / create (form GET), full cascade and nearest-only, each with a cold
 and a warm permission vocabulary — 24 depth/provider/operation/mode cells. The pre-edit numbers of the same
 fixtures (source ``d5567ba2``, plan 01) are embedded below; legacy had no modes, so its single observation is the
 base of both mode cells.
+
+Manage projection is excluded after registration from the concrete leaf classes so its developer-membership
+query is not attributed to ancestry. The real projection cost is measured separately in test_manage.py.
 
 Every request is split into the ancestor guard (``ancestors._authorize_ancestors``) and the rest of the request.
 The assertions are about attribution and prohibited work, never a query budget:
@@ -208,7 +211,7 @@ def _run_matrix(chain, depth, provider, recorder, *, label_suffix="", helper_gat
 
 @contextmanager
 def _chain_context(depth, provider):
-    """plan 01's observation chain for (depth, provider), inside the test-scoped deep leaf when depth is 3."""
+    """Ancestor-only chain without manage projection, inside the test-scoped deep leaf when depth is 3."""
     guardian = provider == "guardian"
 
     def routed(models_chain, fk_names):
@@ -236,6 +239,8 @@ def _chain_context(depth, provider):
 @pytest.mark.parametrize("depth", DEPTHS)
 def test_cost_matrix_against_the_pre_edit_baseline(depth, provider, probe):
     with _chain_context(depth, provider) as chain:
+        for key in ("list", "detail", "create"):
+            assert chain.leaf_vs.get_view_class(key).cv_context_actions == []
         cells = _run_matrix(chain, depth, provider, probe)
     assert len(cells) == 6  # 2 modes x 3 operations, each cold and warm
     for name, cell in cells.items():

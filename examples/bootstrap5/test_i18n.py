@@ -1,4 +1,5 @@
 import gettext as gettext_mod
+from io import StringIO
 from pathlib import Path
 
 import pytest
@@ -179,3 +180,38 @@ def test_demo_chrome_renders_german(client, settings):
     with translation.override("de"):
         html = render_to_string("project/429.html", request=RequestFactory().get("/"))
     assert "Zu viele Änderungen" in html
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("language", ["en", "de"])
+@pytest.mark.parametrize("surface", ["login", "home", "banner"])
+def test_demo_account_notices_include_developer(client, settings, language, surface):
+    from django.urls import reverse
+    from lxml import html
+
+    settings.DEMO_MODE = surface == "banner"
+    response = client.get(reverse("login" if surface == "login" else "home"), HTTP_ACCEPT_LANGUAGE=language)
+    assert response.status_code == 200
+    document = html.fromstring(response.content)
+    notice = document.cssselect("#demo-banner" if surface == "banner" else ".alert-info")[0]
+    assert notice.xpath(".//code/text()")[-1] == "developer/developer"
+    for credentials in ("alice/alice", "bob/bob", "developer/developer"):
+        assert credentials in notice.xpath(".//code/text()")
+    assert "read access and developer diagnostics" in notice.text_content()
+
+
+@pytest.mark.django_db
+def test_published_demo_credentials_match_seed_output(client, django_user_model):
+    from django.core.management import call_command
+    from django.urls import reverse
+    from lxml import html
+
+    output = StringIO()
+    call_command("seed", stdout=output)
+    document = html.fromstring(client.get(reverse("login")).content)
+    credentials = document.cssselect(".alert-info")[0].xpath(".//code/text()")
+    for username in ("alice", "bob", "developer"):
+        credential = f"{username}/{username}"
+        assert credential in output.getvalue()
+        assert credential in credentials
+        assert django_user_model.objects.get(username=username).check_password(username)

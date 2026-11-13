@@ -11,15 +11,15 @@ last_activity: 2026-11-13
 last_activity_desc: "Phase 06.30 shipped as PR #367"
 state_head: 01fb837779acc903cd655639f03705d7eb005908
 progress:
-  total_phases: 37
-  completed_phases: 27
-  total_plans: 198
-  completed_plans: 198
-  percent: 73
+  total_phases: 39
+  completed_phases: 38
+  total_plans: 205
+  completed_plans: 205
+  percent: 97
 milestone_name: milestone
 ---
 
-Total Phases: 37
+Total Phases: 39
 
 # Project State
 
@@ -148,6 +148,26 @@ Next: $gsd-plan-phase 7. Phase06.30 complete:15/15 plans,54/54 truths, explicit 
 - Downstream order lines adopt QuerysetConditions, preserving restricted/current product choices, optional coffee fields, compact columns and the model-save safeguard. Three local downstream commits end at 044c511; upstream summary committed d1ab13fc before progress updates.
 - Source-bound orders 32, focused 47 and full downstream application 238 tests passed with two workers; ordinary imports also pass all 15 new tests without skips. Native/conditional SQL is 3/6 per row, stable at 2 versus 20 options; annotation survives polymorphic iteration and cleaning.
 - Browser acceptance remains plan 09. No push/deployment or developer database modification. Existing state.json and unrelated .gitkeep files remain outside scoped commits.
+
+### Phase 06.31 completion — 2026-11-13
+
+- User passed the bounded visual check on the isolated port9000 demo; UAT1/1 passed, canonical verification passed21/21, combined completion predicate passed without blockers. All six plans complete.
+- Completion scanner warnings are two example-relative path references (actual files exist under examples/bootstrap5/project/) and intentionally prose-only requirements; no missing implementation. No stale handoffs or learnings graduation candidates. No push or merge.
+
+### Phase 06.31 execution and verification — 2026-11-13
+
+- Six plans/16 tasks complete and committed: active-member manage policy, explicit group command, bounded read-only developer seed, example write gates, preserved regressions and paired migration docs.
+- Final core 13,193 passed/one existing Django-version skip; final pre-review app runner320; post-fix full examples491 plus219 subtests; JS438, strict MkDocs and Ruff passed. Python3.12.3/Django5.2.19 behavioral evidence; other runtimes and browser visuals unverified.
+- Deep review found CR-01 failed seeding could expose a public developer credential with writes; fixed with atomic command and three RED/GREEN rollback tests, independently re-reviewed clean (52 tests/78 subtests and standalone reproductions). Security15/15 closed; validation16/16 covered. UI18/24 with inherited/deferred advisories.
+- Canonical verification human_needed:21/21 truths,11/11 decisions, zero implementation gaps; fresh72 tests/50 subtests,83-file fingerprint current. One bounded visual UAT saved for notices and manage-link focus/tooltips.
+- Phase remains pending; no human approval, phase advancement, push or merge. Existing invitation success-message issue recorded in deferred-items.md. Next: $gsd-verify-work 06.31.
+
+### Phase 06.32 completion — 2026-11-13
+
+- One plan/three tasks complete: button-only transition variants and icons use existing registries, visible captions and exact fallbacks; four production files changed.
+- Canonical verification passed 7/7, decisions 9/9, with 90 independent passing cases; validation three tasks covered, security six threats closed, deep review 12 files/zero findings. UI 21/24 has optional browser appearance limits, no required human checks.
+- Full Python suite 13,150 passed; Django 4.2/5.2 focused 1,589 each; JavaScript 438 passed; strict docs, scoped Ruff and package wheel/sdist build passed. Shared installed Vitest 5.0.3 differs from declared ^5.0.5; other Python versions and browser appearance unverified.
+- Completion scanner mistook a test command for a file and warned about deliberately prose-only requirements. Tracking progress-row/current-focus leftovers corrected. No implementation gaps, pending todos, stale handoffs or learnings graduation; maps require post-ship refresh. Local commits only.
 
 ### Phase 06.29 completion — 2026-11-12
 
@@ -922,6 +942,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 **Velocity:**
 
 - Total plans completed: 194
+
+- Total plans completed: 186
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -964,6 +986,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.28 | 1 | - | - |
 | 06.29 | 2 | - | - |
 | 06.30 | 15 | - | - |
+
+| 06.31 | 6 | - | - |
+| 06.32 | 1 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1124,6 +1149,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P11 | 21min | 3 tasks | 12 files |
 | Phase 06.30 P12 | 8min | 2 tasks | 9 files |
 | Phase 06.30 P13 | 15min | 3 tasks | 11 files |
+
+| Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1419,6 +1446,10 @@ Recent decisions affecting current work:
 - [Phase 06.30]: D-14: explicit False/empty suppresses compact frames; preserve per-level defaults and existing conference label policy.
 - [Phase 06.30]: Final plan 13 acceptance passes all 18 commands; canonical audits and H1/rest-H2 remain pending, so do not complete phase or advance Phase 7.
 
+- [Phase 06.32]: Keep the exact eight transition variants independent of the extensible state badge vocabulary.
+- [Phase 06.32]: Resolve presentation on copied actions and defer the icon helper import to preserve pre-setup WorkflowForm imports.
+- [Phase 06.32]: Preserve the exact submit-label fallback regardless of icons and retain deliberate empty/null class suppression.
+
 ### Pending Todos
 
 None yet.
@@ -1488,6 +1519,9 @@ None yet.
 - Phase 06.28 inserted after Phase 06.27: Issue #355: tooltip recipe documentation and executable regression tests; approved GSD handover D-01–D-06 governs scope. Restored the existing 06.27 roadmap entry from the source checkout. (URGENT)
 - Phase 06.29 inserted after Phase 06.26: Themeable column helpers (#356); explicitly assigned 06.29, approved decisions D-01–D-07, before the Phase 7 theme-surface freeze (URGENT)
 - Phase 06.30 inserted after Phase 06.29: Issue #360: queryset-driven conditional fields on base forms and inline rows; approved decisions D-01–D-13, tabler-test migration, separate focused example app and cross-linked documentation. Complete before Phase 7. (URGENT)
+
+- Phase 06.31 inserted after Phase 06.30: Issue #361: developer-only manage diagnostics and explicit group setup; carry approved D-01–D-07 from the issue handover. Complete before Phase 7. (URGENT)
+- Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
 
 ## Deferred Items
 

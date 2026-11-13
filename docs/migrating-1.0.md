@@ -65,6 +65,61 @@ invalid and AJAX fragment rendering in your theme.
 No database migration is required. See the complete
 [row legend API and synchronized nested example](reference/formsets.md#row-cards-and-legends).
 
+## Developer-only manage diagnostics
+
+Issue #361 / Roastery finding 25 / Phase 06.31 changes who may open core and Guardian manage pages.
+Previously the setting could admit users without membership, and group membership could override `"no"`.
+Now every manage request requires an active, authenticated member of `CRUD_VIEWS_MANAGE_GROUP`
+(default `CRUD_VIEWS_MANAGE`). Staff and superusers must also join explicitly; DEBUG alone grants no access.
+
+| `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` | Current behavior |
+|---|---|
+| `"yes"` (new default, previously `"debug_only"`) | Active authenticated configured-group member, with either DEBUG value |
+| `"debug_only"` | The same membership/actor requirements AND `DEBUG=True` |
+| `"no"` | Hard off for everyone, including members and superusers |
+
+Denied manage controls are hidden even where ordinary denied actions are configured to be disabled. The URLs
+remain registered and enforce the same denial on direct requests. Ordinary CRUD permissions, Guardian object
+grants and nested ancestor checks remain independent: membership grants diagnostics, not application reads or
+writes, and does not bypass a protected ancestor. Custom manage subclasses should retain the inherited policy;
+review any overrides of permission or access methods.
+
+After upgrading, run:
+
+```shell
+python manage.py migrate
+python manage.py cv_manage_group
+```
+
+The repeat-safe command creates only the configured group and reports whether it was created or already present.
+It respects a custom `CRUD_VIEWS_MANAGE_GROUP`, works with `DEBUG=False`, and preserves existing memberships and
+permissions. It creates no users and assigns no membership or grants. Use Django admin or your application's
+setup to add the intended active developer users to that group and grant their required application reads
+separately. Select `"no"` to disable diagnostics entirely, or `"debug_only"` to restrict members to debug mode.
+See [manage settings](reference/settings.md#manage-diagnostics).
+
+Current-user permission results describe the signed-in account. There is no impersonation: developer's results
+are not Alice's results. To diagnose Alice, temporarily add Alice to the configured group, sign in as Alice,
+inspect her results, and remove the membership afterwards. Alice herself can open diagnostics during that interval.
+
+The example seed now publishes `developer/developer` alongside Alice/Bob. It creates an active, nonstaff,
+nonsuperuser member with explicit model/resource reads and Guardian object reads for the seeded Documents,
+Notes, Projects, Tasks and Milestones, including protected ancestors. These are bounded seeded grants, not
+automatic permissions for future production objects. Repeated seeds reuse accounts/data and restore demo
+passwords. Conflicting customized developer flags or user/group/object grants raise an actionable error. The full
+seed command rolls back its database changes, including new accounts, password resets, memberships, and grants,
+while preserving pre-existing credentials and grants for deliberate operator resolution; see the
+[full seed/conflict contract](getting_started/demo.md#developer-account-and-seeded-reads).
+Public demo credentials belong only to the examples. Consumer membership setup is separate; no deployed
+application has been automatically upgraded or provisioned by this change.
+
+Example actions also now choose write permissions explicitly: Contact reminder requires
+`custom_form.change_contact`, invitation requires `custom_form.add_contact`, and flash notification composer
+requires `flash_messages.add_notice`. Both GET and POST are gated. Alice/Bob retain their abilities; developer
+may read permitted surfaces and inspect diagnostics but cannot execute these actions or open the composer.
+The reusable custom-form defaults are unchanged; copied example declarations should carry their explicit
+`cv_permission` values. See [custom forms](reference/custom_form_view.md).
+
 ## Numbered column custom renderers
 
 The default Bootstrap 5 template bridge for `Column1`–`Column12` now respects Django's autoescaping.
@@ -1050,10 +1105,12 @@ and for copied templates and Python overrides.
 Every nested request now checks the ancestors named in its URL before the endpoint does any work of its own. This
 covers plain and `*PermissionRequired` views, Guardian views and manage pages, and one shared mechanism does it for
 all of them. Before, a plain nested view checked no ancestor, and a Guardian child checked its parent through
-fields on its own ViewSet. Top-level ViewSets are unchanged and do no ancestor work. The endpoint's own gates are
-unchanged and stay independent: its permission, Guardian object grant or list filter, actor rules, action state,
+fields on its own ViewSet. Top-level ViewSets do no ancestor work. The endpoint's own gates stay independent:
+its permission, Guardian object grant or list filter, actor rules, action state,
 forms and create attachment. An ancestor grant never replaces them, and they never replace an ancestor grant. The
-full contract is [Ancestor authorization](reference/nested.md#ancestor-authorization).
+full contract is [Ancestor authorization](reference/nested.md#ancestor-authorization). Earlier claims that all
+local gates were unchanged are superseded for manage by Phase 06.31's
+[developer-only diagnostics](#developer-only-manage-diagnostics).
 
 Under the default settings a nested endpoint needs:
 
@@ -1171,10 +1228,12 @@ Each view keeps its own Book object gate as well: `change` on the Book for both 
 
 #### Nested manage pages
 
-A nested manage page is Read: it now needs normal ancestry, in addition to the manage setting
-(`CRUD_VIEWS_MANAGE_VIEWS_ENABLED`) or group that already opened it. A public manage page does not bypass the
-ancestors, and the manage group does not either. It shows the declared ancestor policy, not whether a user can pass
-it. See [GuardianManageView](reference/guardian.md#guardianmanageview).
+A nested manage page is Read: it requires normal ancestry AND an enabled manage mode AND active, authenticated
+membership in the configured manage group. There is no public setting-only path, and membership does not bypass
+ancestors or Guardian object grants. The page shows the declared ancestor policy, not whether another user can
+pass it. Phase 06.31 supersedes the earlier setting-or-group policy; follow
+[developer-only diagnostics](#developer-only-manage-diagnostics) and
+[GuardianManageView](reference/guardian.md#guardianmanageview).
 
 #### Nested write database selection
 
@@ -1686,7 +1745,9 @@ An explicit `app.view_car` mapping under a Vehicle resolver remains incompatible
 Nonempty discovered defaults are cached on the ViewSet for its process lifetime; empty discovery retries.
 Configure the resolver before startup. Changes to permissions or the resolver after discovery need a fresh
 ViewSet or process restart; runtime setting hot reload is not promised. The strict helper, per-view global
-fallback, object/group grants, active-superuser behavior, inactive denial and manage policy remain unchanged.
+fallback, object/group grants, active-superuser behavior and inactive denial remain unchanged for ordinary views.
+Earlier unchanged-manage-policy guidance is superseded by Phase 06.31's
+[developer-only diagnostics](#developer-only-manage-diagnostics).
 
 ### The Guardian manage page
 
@@ -1701,7 +1762,8 @@ view's own policy from `views.<key>.guardian_policy`:
 ```
 
 `effective_policy` is `"strict"`, `"global fallback"` or `"not applicable"`. `global_fallback_applicable` and the view's
-`cv_guardian_accept_global_perms` (`None` when not applicable) sit next to it. Who may open the page is unchanged. See
+`cv_guardian_accept_global_perms` (`None` when not applicable) sit next to it. The earlier claim that page access
+was unchanged is superseded by Phase 06.31's [developer-only diagnostics](#developer-only-manage-diagnostics). See
 [GuardianManageView](reference/guardian.md#guardianmanageview).
 
 ### Nested Guardian create access

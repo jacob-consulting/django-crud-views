@@ -321,7 +321,9 @@ FEATURES: list[Feature] = [
             'and the explicit ancestor_policy=AncestorPolicy(provider="guardian", accept_global_perms=False) on '
             "cv_document; NoteCreateView.cv_form_valid, which grants the author and the document owner; and the "
             "'Ancestor policy' table on the manage pages (/guardian/document/manage/ and "
-            "/guardian/document/<pk>/note/manage/, available locally because DEBUG enables manage views)."
+            "/guardian/document/<pk>/note/manage/). These require an active member of the configured manage group "
+            "and an enabled manage mode; nested diagnostics also require view on the parent document. "
+            "The seeded developer has these reads; DEBUG alone grants no access."
         ),
         url_name="document-list",
         icon="fa-solid fa-user-lock",
@@ -497,7 +499,9 @@ FEATURES: list[Feature] = [
             "last_reminded_dt; MessageMixin flashes the success message. 'Invite' is a non-object custom form "
             "with no pk in its URL: it takes an email address and creates a new contact. Remind sits in the "
             "list's row actions, Invite in its context actions, because an object view cannot be linked "
-            "without an object."
+            "without an object. Remind requires Contact change permission and Invite requires Contact add "
+            "permission. Alice and Bob have both; developer may read contacts and inspect diagnostics, "
+            "but cannot run either action."
         ),
         look_at=(
             "ContactRemindView (CustomFormViewPermissionRequired) and ContactInviteView "
@@ -608,10 +612,13 @@ FEATURES: list[Feature] = [
             "where {% cv_messages %} in the base template renders it as a dismissible alert, coloured by level. "
             "Debug messages are dropped, not queued: Django's default MESSAGE_LEVEL is INFO, so add_message ignores "
             "anything below it, and this demo does not lower it. The blue box above the form is a single "
-            "{% cv_alert %} drawn by the template itself, through the same alert frame."
+            "{% cv_alert %} drawn by the template itself, through the same alert frame. "
+            "The composer requires Notice add permission: Alice and Bob may compose; developer may inspect "
+            "diagnostics but cannot open or submit the composer."
         ),
         look_at=(
-            "NoticeComposeView.cv_form_valid in views.py (a CustomFormNoObjectView) and the cv_alert tag in "
+            "NoticeComposeView.cv_form_valid in views.py (CustomFormNoObjectViewPermissionRequired with "
+            "cv_permission='add') and the cv_alert tag in "
             "templates/flash_messages/compose.html; {% cv_messages %} sits in project/base.html."
         ),
         url_name="notice-compose",

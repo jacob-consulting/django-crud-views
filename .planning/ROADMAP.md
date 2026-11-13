@@ -56,6 +56,9 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 
 - [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
 - [x] **Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)** - approved handover; base forms and inline rows, strict category matching, tabler-test adoption, and a focused example app with linked documentation. (completed 2026-11-13)
+
+- [x] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance. (completed 2026-11-13)
+- [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1799,7 +1802,7 @@ Plans:
 **Requirements:** Deliver upstream support, the verified tabler-test roastery upgrade, and one separate example app with its own models, focused standalone/inline source modules, ordinary/compact variants, and reciprocal documentation links. Strict matching is the default; check offered options on rendering and the validated selection on POST, permit explicit no-fields categories and an opt-in unmatched policy, and do not scan unused categories. Preserve browser values until save; hide inactive ordinary groups and keep compact cells visible but disabled. Preserve existing conditional behavior and bounded query costs.
 **Depends on:** Phase 06.29 (roadmap sequence); builds on Phase 06.27's conditional groups and Phases 06.24–06.26's compact formset contracts.
 **Ordering:** Complete before Phase 7 freezes the public theme surface; include the settled queryset/inline conditional template and JavaScript contracts in that inventory.
-**Plans:** 15/15 plans complete; 13 executed. Plan 14 adds configurable compact-row borders, example descriptions and documentation; plan 15 proves browser presentation and refreshes final-source acceptance. Canonical owner audits and remaining UAT are required before closure.
+**Plans:** 15/15 complete; canonical verification 54/54 and all required human UAT passed.
 
 Plans:
 **Wave 1**
@@ -1845,13 +1848,59 @@ Plans:
 **Wave 14 — Border presentation and final-source acceptance** *(depends on 06.30-14)*
 - [x] 06.30-15-PLAN.md — Three-state browser proof, one complete source-bound acceptance refresh, then named canonical audit/UAT reconciliation
 
-Plans 14/15 preserve completed plans 01–13 as history. D-15 supersedes only the old compact border default and Checklist choice; UAT test 3/G-06.30-2 and verification truth 39 require explicit owner reconciliation. H1/rest-H2 remain pending; no new approval of the already-authorized border choice is required.
+Plans 14/15 preserve completed plans 01–13 as history. D-15 supersedes only the old compact border default and Checklist choice; UAT test 3/G-06.30-2 and verification truth 39 were reconciled by their owners; H1/H2 passed explicitly.
+
+### Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)
+
+**Goal:** Core and Guardian manage pages are available only to explicitly authorized developers, including in production with `DEBUG=False`, while ordinary users cannot see the manage action or open its URL.
+**Source:** [Issue #361 — gsd-handover](https://github.com/jacob-consulting/django-crud-views/issues/361#gsd-handover). Carry approved decisions D-01–D-11 and the issue's acceptance criteria into planning, including the active-user rule and seeded developer read access explicitly covering Guardian.
+**Requirements:** Require an active, authenticated user with membership in the configured `CRUD_VIEWS_MANAGE_GROUP`, including for staff and superusers. Make `"yes"` the default and require membership regardless of DEBUG; `"no"` denies everyone; `"debug_only"` requires membership and DEBUG=True. Keep existing nested ancestor restrictions and ordinary CRUD permissions. Add the idempotent `cv_manage_group` command, respecting custom group names and preserving existing memberships and permissions. Seed and show a regular developer account alongside Alice/Bob; ensure its configured-group membership and read permissions across examples, including Guardian object/ancestor grants, without write privileges. Preserve Alice/Bob scenarios. Correct the affected custom-form/flash example actions to require appropriate write permissions so read access does not authorize mutation or execution (D-11). Cover direct access, hidden manage actions, production diagnostics, command behavior, example setup/read access, and paired breaking-change/migration documentation. No impersonation, membership-management CLI, automatic startup group creation, broader authorization redesign, or responsive-table work.
+**Depends on:** Phase 06.30 (roadmap sequence only); no implementation dependency on its conditional-field work.
+**Ordering:** Complete before Phase 7 freezes the public surface; include the settled manage settings, group setup command, visibility rules, and migration contract in that inventory.
+**Plans:** 6/6 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.31-01-PLAN.md — Active group-only manage gate, hidden actions and nested authorization/cost attribution preservation
+- [x] 06.31-02-PLAN.md — Idempotent group-only command and configuration/diagnostic references
+- [x] 06.31-04-PLAN.md — Explicit write permissions for reminder, invitation and flash example actions
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.31-06-PLAN.md — Policy/example regressions, toolbar goldens, accessible diagnostics and full core/example pytest prerequisites
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.31-03-PLAN.md — Seeded developer model/resource and Guardian object reads with denied writes
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.31-05-PLAN.md — Account guidance with preserved German chrome, README and paired breaking migration contract
+### Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)
+
+**Goal:** Workflow transition buttons honor their declared variant and icon through the existing theme registries, while retaining visible labels, current fallbacks, and workflow behavior.
+**Source:** [Issue #362 — GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/362#gsd-handover). The maintainer approved the low-complexity option; carry decisions D-01–D-09 and the issue's acceptance criteria into planning without reopening settled choices unless a concrete conflict is found.
+**Requirements:** In `cv_transition_presentation = "buttons"` only, read `custom["variant"]` and `custom["icon"]`. Support `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark` through workflow-owned `workflow:transition-<variant>` class keys with Bootstrap defaults and existing theme/project overrides. Missing, empty, or unsupported variants retain `form:submit:label` styling; missing or empty icons keep text-only buttons. Reuse icon rendering and host placement, always retain the visible label, and preserve escaping, comment markers, descriptions, disabled controls, invalid-form rendering, and refresh behavior. Include focused rendered-output tests, existing workflow regression coverage, documentation, and a changelog entry.
+**Depends on:** Phase 06.13.1 (existing workflow button presentation), Phase 6 (existing form class and icon contracts).
+**Ordering:** Follows 06.29 in this worktree's roadmap and must settle before Phase 7 freezes the public theme surface. The maintainer explicitly assigned 06.32; phases 06.30 and 06.31 are handled in other worktrees and are not implementation dependencies of this issue.
+**Scope exclusions:** Per-view presentation hooks, transition-name-specific class keys, arbitrary CSS variant interpolation, icon-only transition buttons, radio redesign, new JavaScript, new registries, and downstream application upgrades. Preserve permissions, validation, execution, comments, and history. Exact private helpers, mode-specific lookup details, and test placement remain planning discretion within the approved issue boundaries.
+**Success Criteria**:
+
+1. Confirm/success and Cancel/danger have distinct theme-resolved classes and declared icons when the library is registered; theme and project overrides work.
+2. All eight supported variants and missing/empty/unsupported fallbacks are covered; absent metadata preserves current rendering.
+3. Labels remain visible, icons honor existing inline/host placement without duplication, and disabled/blocker/comment accessibility behavior survives invalid submissions and refreshes.
+4. Radio presentation, permission filtering, validation, and transition execution retain their behavior; the relevant regression suite passes.
+5. Workflow and theme documentation describe the metadata, keys, defaults, fallbacks, and icon registration; changelog guidance follows repository policy.
+
+**Plans:** 1/1 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.32-01-PLAN.md — Workflow transition metadata rendering, regression coverage, and documentation
 
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
+**Additional ordering:** Phases 06.30 and 06.31 must settle before this freeze; inventory their final conditional-field and developer-diagnostic contracts.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -1872,6 +1921,8 @@ Phase 06.23 must also settle before this freeze; include the public `Icon` const
 inheritance/suppression contract (#329).
 Phase 06.24 must also settle before this freeze; include the opt-in compact formset declaration, responsive
 rendering and nested composition contracts (#347).
+Phase 06.32 must also settle before this freeze; include its transition metadata and
+`workflow:transition-<variant>` class keys (#362) in the stability review.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -1903,7 +1954,7 @@ rendering and nested composition contracts (#347).
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 6.14 → 6.15 → 6.16 → 6.17 → 6.18 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 6.14 → 6.15 → 6.16 → 6.17 → 6.18 → … → 6.29 → 6.32 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -1926,7 +1977,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 17 | 6.15 (#326) | Polymorphic labels and per-model groups, including tabler-test adoption and verification |
 | 18 | 6.18 (ancestor authorization) | Follows completed 6.17; approved design v2 governs scope and acceptance |
 | 19 | 06.24 (#347) | Opt-in compact formset declarations and nested responsive rendering before the freeze |
-| 20 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15/6.18/06.24 contracts settled; last change before the 1.0.0 bump |
+| 20 | 06.32 (#362) | Workflow transition metadata and theme keys settle before the freeze; independent of 06.30/06.31 |
+| 21 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15/6.18/06.24/06.32 contracts settled; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -1961,5 +2013,8 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
-| 06.30. Queryset-driven conditional fields (#360) | 15/15 | In Progress — automated acceptance passed; human verification pending | - |
+| 06.30. Queryset-driven conditional fields (#360) | 15/15 | Complete | 2026-11-13 |
+
+| 06.31. Developer-only manage diagnostics (#361) | 6/6 | Complete | 2026-11-13 |
+| 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

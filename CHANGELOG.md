@@ -19,6 +19,16 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   Projects expecting unframed rows or overriding the shared row marker/template/CSS should follow
   the [migration guide](docs/migrating-1.0.md#ordinary-formset-row-cards).
 
+- **Developer-only manage diagnostics** (#361, Roastery finding 25, Phase 06.31): core and Guardian manage pages
+  now require an active, authenticated member of `CRUD_VIEWS_MANAGE_GROUP`, including staff and superusers.
+  `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` defaults to `"yes"` instead of `"debug_only"`; `"no"` is an unconditional
+  hard off, while `"debug_only"` requires membership and `DEBUG=True`. Denied manage actions are hidden and
+  nested/object permissions remain independent. Run `cv_manage_group` after migrations and assign membership
+  explicitly; see [migration steps](docs/migrating-1.0.md#developer-only-manage-diagnostics).
+  The example seed adds `developer/developer` with bounded reads and diagnostics, not write privileges.
+  Example reminders now require Contact change, invitations Contact add, and the notification composer Notice add;
+  Alice/Bob retain these abilities. Diagnostics describe the signed-in account, with no impersonation.
+
 - **Numbered column custom renderers:** the default Bootstrap 5 bridge for `Column1`–`Column12`
   now escapes plain strings from `get_rendered_fields()`. Crispy's standard rendered fields remain unchanged.
   Custom HTML renderers should use `format_html()` to escape interpolated values; see the
@@ -49,7 +59,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
     `viewset.E268` fails, and the request raises `ImproperlyConfigured` in both cascade modes and with
     all-`"none"` ancestry. Classified built-in endpoints and top-level endpoints need no entry. A top-level
     nonempty `actions` is rejected.
-  - Nested manage pages need normal ancestry as well as their manage setting or group.
+  - Nested manage pages require an enabled manage mode AND active, authenticated configured-group membership,
+    plus independent normal ancestry. See [developer-only diagnostics](docs/migrating-1.0.md#developer-only-manage-diagnostics).
   - Nested core `cv_get_db_alias()` now consults the router with the resolved object as `instance` hint. A router
     that answers `default` for the model alone but another alias for that instance now causes
     `ImproperlyConfigured` before any hook or write, including with `cv_atomic = False`. Review nested routers and
@@ -617,6 +628,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   The roastery example in `tabler-test` adopts the shared contract with locally verified retained-product,
   row-insertion, preserve-until-save and persistence behavior. Published example/documentation availability
   follows deployment; local acceptance does not imply publication.
+
+- **Workflow transition variants and icons** (#362): button presentation reads transition `custom` metadata
+  through eight workflow-owned variant class keys and the existing icon registry. Full captions, submit-label
+  fallbacks, theme/project overrides, comments and workflow execution remain intact. See the
+  [workflow guide](docs/reference/workflow_view.md#business-validation-and-native-transition-buttons).
 
 - **Choice-driven conditional groups** (#354): share `ValueToggle` descriptors between server groups and crispy
   layouts for native dropdown/radio controls, including groups shared by several choices. Standard choice fields

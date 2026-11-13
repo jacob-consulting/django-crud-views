@@ -8,13 +8,61 @@ named exactly as shown — there is no `CRUD_VIEWS = {...}` dict.
 | Key                  | Description                                              | Type  | Default      |
 |----------------------|----------------------------------------------------------|-------|--------------|
 | CRUD_VIEWS_EXTENDS              | Base template that crud_views templates extend (required; can be overridden per ViewSet/view — see [Base template](templates.md))     | `str` | `None`       |
-| CRUD_VIEWS_MANAGE_VIEWS_ENABLED | Show manage view button, values are: `yes,no,debug_only` | `str` | `debug_only` |
-| CRUD_VIEWS_MANAGE_GROUP | Django group name that grants manage view access regardless of CRUD_VIEWS_MANAGE_VIEWS_ENABLED | `str` | `CRUD_VIEWS_MANAGE` |
+| CRUD_VIEWS_MANAGE_VIEWS_ENABLED | Manage diagnostics mode: `yes` requires active, authenticated group membership; `no` denies everyone; `debug_only` additionally requires `DEBUG=True`. | `str` | `yes` |
+| CRUD_VIEWS_MANAGE_GROUP | Django group whose membership is required for manage diagnostics when the mode allows access. | `str` | `CRUD_VIEWS_MANAGE` |
 | CRUD_VIEWS_MANAGE_SHOW_USERS | Whether to show a Users column in the Permission Holders section of ManageView | `bool` | `False` |
 | CRUD_VIEWS_MANAGE_VIEW_CLASS | Dotted import path to a custom `ManageView` subclass used as the base for auto-registered manage views. When `None`, uses `ManageView`. | `str \| None` | `None` |
 | CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS | Dotted import path to a custom `GuardianManageView` subclass used as the base for auto-registered guardian manage views. When `None`, uses `GuardianManageView`. | `str \| None` | `None` |
 | CRUD_VIEWS_BREADCRUMB_PREFIX | List of dicts with `title`, `url_name`, optional `args`/`kwargs` prepended to every breadcrumb (see [Breadcrumb](breadcrumb.md)); malformed entries fail system check `crud_views.E102`. | `list` | `[]` |
 | CRUD_VIEWS_STRICT | Strict mode: misconfigurations that are otherwise logged and skipped raise instead (an unregistered key in a button tag, an icon-only button without an icon). pytest-django runs tests with `DEBUG=False`, so set it to `True` in your test settings to make such mistakes fail the tests. | `bool` | `DEBUG` |
+
+## Manage diagnostics
+
+Core and Guardian manage pages are developer diagnostics. Both the manage action and direct URL require an
+authenticated, active member of `CRUD_VIEWS_MANAGE_GROUP`. Staff and superusers also need this membership.
+Denied manage actions are hidden, even when ordinary inaccessible application actions are configured to appear
+disabled. Manage URLs stay registered; disabling diagnostics still denies direct requests.
+
+| `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` | Local access rule |
+|---|---|
+| `"yes"` (default) | Active, authenticated group membership, with either value of `DEBUG`. |
+| `"no"` | Unconditional hard off, including group members and superusers. |
+| `"debug_only"` | Active, authenticated group membership **and** `DEBUG=True`. |
+
+`DEBUG=True` alone never grants access. The default `"yes"` permits authorized developers to diagnose production
+behavior with `DEBUG=False`.
+
+### Set up the manage group
+
+After migrations, explicitly create the configured group:
+
+```bash
+python manage.py migrate
+python manage.py cv_manage_group
+```
+
+The command reports the actual group name and whether it was created or already present. It works with
+`DEBUG=False` and in every enable mode, including `"no"`; creating the group does not enable diagnostics.
+Repeated runs preserve existing memberships and permissions. It creates no users and assigns no memberships
+or permissions. Assign real account membership through Django admin or your application's account setup.
+
+To use another group name, configure it before running the command:
+
+```python
+CRUD_VIEWS_MANAGE_GROUP = "Project developers"
+```
+
+Membership grants diagnostics only. Ordinary model/object permissions and nested ancestor authorization remain
+independent. A nested manage page is a Read endpoint and must also pass its ancestor policy; the group is no
+ancestor-permission bypass. Existing custom subclasses of `ManageView` or `GuardianManageView` inherit these
+defaults. Applications overriding authorization methods remain responsible for enforcing their intended policy.
+
+### Diagnose the signed-in account
+
+Current-user permission results describe the signed-in user. To diagnose Alice's results, temporarily add Alice
+to the configured manage group, inspect while signed in as Alice, then remove that membership. Alice herself can
+open diagnostics during that interval, subject to the mode and ancestor policy. A separate developer account
+does not impersonate Alice or reproduce her permission results.
 
 ## Delete preview
 

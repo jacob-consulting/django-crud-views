@@ -9,7 +9,9 @@ CONTACTS = [("Ada Lovelace", "ada@example.com"), ("Grace Hopper", "grace@example
 def seed():
     user_model = get_user_model()
     for username in ("alice", "bob"):
-        grant_model_perms(user_model.objects.get(username=username), Contact)
+        grant_model_perms(
+            user_model.objects.get(username=username), Contact, actions=("view", "add", "change", "delete")
+        )
 
     for name, email in CONTACTS:
         Contact.objects.get_or_create(email=email, defaults={"name": name})

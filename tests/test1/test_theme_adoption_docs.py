@@ -256,11 +256,14 @@ def test_workflow_presentation_docs():
         assert badge(States.PURPLE).get("class") == "badge rounded-pill text-bg-purple"
         assert badge(States.UNMAPPED).get("class") == "badge rounded-pill text-bg-info"
         _python("### Optional workflow classes")["ready"](None)
+        assert bc.get_button_class("workflow", "transition-success") == "btn btn-success-lt"
         assert badge(States.SUCCESS).get("class") == "badge bg-success-lt"
         assert badge(States.PURPLE).get("class") == "badge custom-purple"
         assert badge(States.UNMAPPED).get("class") == "badge bg-info-lt"
         overrides = _python("### Project workflow classes", WORKFLOW)["CRUD_VIEWS_BUTTON_CLASSES"]
         with override_settings(CRUD_VIEWS_BUTTON_CLASSES=overrides):
+            assert bc.get_button_class("workflow", "transition-success") == "btn project-confirm"
+            assert bc.get_button_class("workflow", "transition-danger") == "btn project-cancel"
             for state, classes in (
                 (States.SUCCESS, "badge project-success"),
                 (States.PURPLE, "badge project-purple"),
@@ -279,8 +282,8 @@ def test_workflow_presentation_docs():
     documented = dict(re.findall(r"^\| `(workflow:[^`]+)` \| `([^`]+)` \|$", section, re.M))
     assert documented == CrudViewsWorkflowConfig.crud_views_button_class_defaults
     assert len(bc.DEFAULT_BUTTON_CLASSES) == 102
-    assert len(bc._get_default_button_classes()) == 112
-    assert "112 effective default keys" in section
+    assert len(bc._get_default_button_classes()) == 120
+    assert "120 effective default keys" in section
     precedence = text.split("### Precedence\n", 1)[1].split("\n## ", 1)[0]
     assert "core defaults + installed-app defaults + theme registrations + CRUD_VIEWS_BUTTON_CLASSES" in precedence
     assert "collisions with core or another app's defaults are rejected" in precedence
@@ -333,6 +336,8 @@ assert bool(registered) == INSTALLED
 assert "workflow:badge-purple" not in bc._get_default_button_classes()
 if INSTALLED:
     assert bc.get_button_class("workflow", "badge-purple") == "badge custom-purple"
+    assert bc.get_button_class("workflow", "transition-success") == "btn btn-success-lt"
+    assert bc.get_button_class("workflow", "transition-danger") == "btn btn-danger-lt"
 
 # Independently check the documented warning rule for settings and direct theme registrations.
 for layer in ("settings", "theme"):
@@ -341,6 +346,9 @@ for layer in ("settings", "theme"):
         ("workflow:badge-", False),
         ("workflow:badge-pur ple", False),
         ("workflow:badge-purple:icon", False),
+        ("workflow:transition-success", True),
+        ("workflow:transition-purple", False),
+        ("workflow:transition-success:icon", False),
     ):
         snapshot = dict(bc._THEME_BUTTON_CLASSES)
         try:

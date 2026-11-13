@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: e646846213bc2b8b39ccf694c5696bc55165e9f9
+last_mapped_commit: 0b10cca3b246ba2fa8d1e80a3b1cdcd8ce6833ce
 last_mapped_at: 2026-11-13
 ---
 # Codebase Structure
@@ -67,8 +67,15 @@ django-crud-views/
 
 **`src/crud_views/lib/views/`:**
 - Purpose: Concrete generic CRUD and action views.
-- Contains: List/card/detail/create/update/delete, custom form, manage, child redirect, ordering and common mixins.
-- Key files: `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/views/detail.py`, `src/crud_views/lib/views/create.py`, `src/crud_views/lib/views/update.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/views/mixins.py`.
+- Contains: List/card/detail/create/update/delete, custom form, manage diagnostics, child redirect, ordering and common mixins.
+- Key files: `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/views/detail.py`, `src/crud_views/lib/views/create.py`, `src/crud_views/lib/views/update.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/views/mixins.py`.
+- Manage pages require an active authenticated member of the configured manage group and the selected manage mode; the same gate controls the manage action and direct route. The page projects declared configuration and permission-holder diagnostics. Extend `ManageView` for core display behavior and `GuardianManageView` in `src/crud_views_guardian/lib/views.py` for Guardian grant details.
+
+**`src/crud_views/management/commands/`:**
+- Purpose: Django management commands shipped by the core app.
+- Contains: Static asset and configuration inspection utilities plus manage-group setup.
+- Key files: `src/crud_views/management/commands/cv_assets.py`, `src/crud_views/management/commands/crud_views_show.py`, `src/crud_views/management/commands/cv_manage_group.py`.
+- `cv_manage_group` idempotently creates only the configured manage diagnostics group. It creates no users and assigns no memberships or permissions; operator account assignment remains the host project's responsibility.
 
 **`src/crud_views/lib/` supporting modules:**
 - Purpose: Reusable domain and presentation services that do not belong to a single CBV.
@@ -122,8 +129,9 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 **`src/crud_views_workflow/`:**
 - Purpose: FSM transition and history integration.
 - Contains: Workflow views/forms/mixins, audit-history models and migrations, templates, app checks and translations.
-- Key files: `src/crud_views_workflow/lib/views.py` (request/database orchestration and hooks), `src/crud_views_workflow/lib/execution.py` (shared transition validation and transactional engine plus public helper), `src/crud_views_workflow/lib/forms.py` (transition choices, business blocker and comment validation), `src/crud_views_workflow/lib/widgets.py` (button presentation), `src/crud_views_workflow/lib/mixins.py` (model/history API), and `src/crud_views_workflow/models.py` plus `src/crud_views_workflow/migrations/` (audit persistence).
-- Workflow form actions share core form presentation, while workflow badges and content are themed in `src/crud_views_workflow/templates/crud_views_workflow/`; transition permission opt-in examples and regression tests are maintained under `tests/test1/`.
+- Key files: `src/crud_views_workflow/lib/views.py` (request/database orchestration and hooks), `src/crud_views_workflow/lib/execution.py` (shared transition validation and transactional engine plus public helper), `src/crud_views_workflow/lib/forms.py` (transition choices, business blockers, comments and metadata), `src/crud_views_workflow/lib/widgets.py` (button presentation and registry resolution), `src/crud_views_workflow/apps.py` (workflow button-class defaults), `src/crud_views_workflow/lib/mixins.py` (model/history API), and `src/crud_views_workflow/models.py` plus `src/crud_views_workflow/migrations/` (audit persistence).
+- Button presentation reads optional transition `custom["variant"]` and `custom["icon"]` metadata in `WorkflowForm`, with the fixed variant vocabulary and theme/icon projection in `src/crud_views_workflow/lib/widgets.py`. Defaults come from the core button-class registry contribution in `src/crud_views_workflow/apps.py`; markup lives in `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`. This decorates controls only and leaves authorization, comments and execution in the existing workflow path.
+- Workflow badges and history content are themed in `src/crud_views_workflow/templates/crud_views_workflow/`; transition permission opt-in examples and regression tests are maintained under `tests/test1/`.
 
 **`src/crud_views_polymorphic/`:**
 - Purpose: Polymorphic model CRUD flows.
@@ -176,6 +184,8 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 
 **Entry Points:**
 - `src/crud_views/apps.py`: Core Django app config and registration of core checks.
+- `src/crud_views/management/commands/cv_manage_group.py`: Idempotent creation of the configured manage diagnostics group.
+- `src/crud_views/lib/views/manage.py`: Manage diagnostics authorization and projection of permission holders, registered views and ancestor policy.
 - `src/crud_views/lib/viewset/__init__.py`: Public `ViewSet` definition and generated `urlpatterns`.
 - `src/crud_views/lib/view/meta.py`: Import-time CrudView class registration hook.
 - `examples/bootstrap5/project/settings_demo.py`: Demo project's Django settings.
@@ -200,6 +210,8 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - `src/crud_views/lib/table/table.py`: `Table` base (view context, `actions` column, `Meta.sequence`-aware default ordering).
 - `src/crud_views/lib/view/base.py`: `cv_get_meta()` creates page-snippet metadata; `cv_get_parent_object()` returns the immediate parent using the request's resolved ancestor when available; `cv_get_header_icon()` applies the None-only ViewSet fallback.
 - `src/crud_views/lib/icons.py`: semantic icon registry and plain public `Icon.VIEWSET_DEFAULT` / `Icon.NONE` constants.
+- `src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`: Transition button metadata, supported variant resolution and workflow theme defaults.
+- `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`: Native transition button markup and accessible label/help/blocker projection.
 - `src/crud_views/lib/formsets/compact.py`: explicit compact layout declarations, validated form schema projection, compact heading metadata and per-form crispy helper generation.
 - `src/crud_views/lib/formsets/render_tree.py`: recursive formset context tree; chooses compact helper generation only for nodes with `compact_layout` set.
 - `examples/bootstrap5/formsets/views.py`: classic/compact formset declarations and opt-in create/update comparison views.
@@ -248,6 +260,8 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - For form cancellation behavior, extend the request-aware resolver in `src/crud_views/lib/view/base.py` and its focused tests; preserve template access through `{% cv_cancel_url %}`.
 - For deletion relationship previews, change the collector/summary behavior in `src/crud_views/lib/deletion.py` and the corresponding partials in `src/crud_views/templates/crud_views/snippets/delete/`; keep protected references as plain labels and preserve the display budget.
 - For workflow presentation or permission examples, use `src/crud_views_workflow/lib/` and its templates; document and test permission checks as opt-in per transition.
+- For manage diagnostics behavior, change `src/crud_views/lib/views/manage.py`; for group creation lifecycle use `src/crud_views/management/commands/cv_manage_group.py`. Keep sample operator membership/grant setup in `examples/bootstrap5/project/`, not in the reusable command.
+- For workflow transition appearance, project finite variant/icon metadata through `src/crud_views_workflow/lib/forms.py` and `src/crud_views_workflow/lib/widgets.py`, defaults through `src/crud_views_workflow/apps.py`, and output through the transitions template. Preserve visible escaped labels and keep metadata out of authorization and execution.
 - For workflow business blockers or execution semantics, implement the model-only `workflow_check_transition(name, *, user)` contract in the consumer model, keep shared validation/execution in `src/crud_views_workflow/lib/execution.py`, and test public helper plus request behavior in `tests/test1/test_workflow_execution.py`. Do not treat business blockers as permission checks: django-fsm permissions/conditions gate transition availability, while the workflow view's page permission remains separately enforced.
 
 **New Component/Module:**

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: e646846213bc2b8b39ccf694c5696bc55165e9f9
+last_mapped_commit: 0b10cca3b246ba2fa8d1e80a3b1cdcd8ce6833ce
 last_mapped_at: 2026-11-13
 ---
 # Codebase Concerns
@@ -108,6 +108,18 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 - Safe modification: preserve the separation between render-time offered coverage and POST-time selected-object validation; do not inspect `field.choices` or raw POST to discover authority. Keep source inference explicit and query-free, and update the contract before admitting custom sources or widgets.
 - Test coverage: `tests/test1/test_conditional_queryset*.py`, `tests/test1/test_conditional_group.py`, `tests/test1/test_conditional_formset.py`, and `tests/browser/queryset-conditional.cjs`. Phase 06.30 verification passed 54/54 must-haves; its review disposition records zero active findings. The documented restrictions on native model-choice fields, scalar keys, and explicit category sources are product bounds, not unresolved defects.
 
+**Manage diagnostics and group command:**
+- Files: `src/crud_views/lib/views/manage.py`, `src/crud_views/management/commands/cv_manage_group.py`, `src/crud_views/lib/settings.py`, `src/crud_views_guardian/lib/views.py`
+- Why fragile: manage-page access and action visibility share a policy involving mode, active authentication, group membership, and nested ancestor checks. The group setup command creates only the configured group; it intentionally does not grant permissions or change memberships. Staff and superusers still require group membership when group-gated mode is active.
+- Safe modification: preserve the distinction between page access, manage-action visibility, and Django permissions. Keep `cv_manage_group` idempotent and group-only, and test top-level and nested requests plus mode changes when changing the policy.
+- Test coverage: `tests/test1/test_manage.py`, `tests/test1/test_manage_group.py`, `tests/test1/test_ancestor_manage.py`, `tests/test1/test_guardian.py`, and `tests/test1/test_authorization_matrix.py`. Phase 06.31 verification passed its must-haves and final review disposition reports zero open findings. The documented setup boundary is intentional.
+
+**Workflow transition button presentation:**
+- Files: `src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`
+- Why fragile: workflow actions pass transition metadata through the existing theme class and icon registries, while retaining native submit names, values, labels, disabled states, and refresh behavior. Presentation metadata is copied and resolved during rendering; it must not alter transition availability or execution.
+- Safe modification: preserve fallback behavior when the workflow app/metadata or icon library is absent, retain visible labels and native submit controls, and exercise invalid-form refresh and denied-transition paths alongside visual variants.
+- Test coverage: `tests/test1/test_workflow_buttons.py`, `tests/test1/test_workflow.py`, `tests/test1/test_workflow_execution.py`, `tests/test1/test_workflow_permissions.py`, and `tests/test1/test_button_classes.py`. Phase 06.32 verification passed 7/7 must-haves with no active review findings. Registered icon libraries and application-loaded assets remain documented prerequisites, not defects.
+
 **Workflow permission and transition helper boundaries:**
 - Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `docs/reference/workflow_view.md`
 - Why fragile: `run_transition()` requires a persisted actor/object on the selected write alias; direct django-fsm calls bypass helper validation/history, and `workflow_check_transition()` is business validation rather than authorization. Page access and transition permissions are separate.
@@ -188,6 +200,8 @@ Phase 06.27's two review findings are closed and should not be treated as open c
 Phase 06.29's critical review finding is also closed: lazy caller classes are coerced when the numbered column helper is constructed, preserving construction-time language and avoiding a render-time crash in `src/crud_views/lib/crispy/table.py`. Regression coverage is in `tests/test1/test_crispy_columns.py`; disposition and independent re-review are recorded in `.planning/phases/06.29-themeable-column-helpers-356/06.29-REVIEW-DISPOSITION.md`. The phase review and verification report record no remaining findings. Per-column registry/template resolution remains an intentional, uncached render-time cost; the phase accepts this bounded overhead and does not claim a measured performance guarantee.
 
 Phase 06.30 is verified at 54/54 must-haves in `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md`; its final review disposition records zero active findings. Earlier defects and failed release attempts retained in the phase reports are historical and have documented fixes/fresh passing acceptance. They are not current concerns. Qualitative UI recommendations and verification scope boundaries in the phase reports describe residual uncertainty, not confirmed implementation defects.
+
+Phase 06.31's seeded example command had a critical rollback defect during review; the final implementation wraps user/group/permission setup and feature seeding in a transaction, and `.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-REVIEW-DISPOSITION.md` records the finding fixed with zero open findings. The incident is closed, not a current vulnerability. Phase 06.32's workflow variant/icon integration is verified at 7/7 must-haves in `.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-VERIFICATION.md`; its declared registry and asset prerequisites are intentional.
 
 ---
 

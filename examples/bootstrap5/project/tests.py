@@ -9,6 +9,36 @@ import crud_views
 from project.features import FEATURES
 
 
+@override_settings(DEBUG=False)
+class ManageProjectionTest(TestCase):
+    def test_only_explicit_members_see_and_open_diagnostics(self):
+        from django.contrib.auth.models import Group
+        from library.models import Author
+        from lxml import html
+
+        from crud_views.lib.settings import crud_views_settings
+        from project.seeding import grant_model_perms
+
+        ordinary = get_user_model().objects.create_user(username="ordinary-reader")
+        member = get_user_model().objects.create_user(username="diagnostic-reader")
+        member.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+        manage_url = reverse("author-manage")
+        for actor, allowed in ((ordinary, False), (member, True)):
+            with self.subTest(actor=actor.username):
+                grant_model_perms(actor, Author, actions=("view",))
+                self.client.force_login(actor)
+                response = self.client.get(reverse("author-list"))
+                self.assertEqual(response.status_code, 200)
+                markup = response.content.decode().split('id="snippet-panels"')[0]
+                links = html.fromstring(markup).cssselect('[cv-context-container] [cv-key="manage"]')
+                self.assertEqual(len(links), int(allowed))
+                if allowed:
+                    self.assertEqual(links[0].get("href"), manage_url)
+                else:
+                    self.assertNotIn(manage_url, markup)
+                self.assertEqual(self.client.get(manage_url).status_code, 200 if allowed else 403)
+
+
 class FooterTest(TestCase):
     LINKS = (
         "https://django-crud-views.readthedocs.io/",

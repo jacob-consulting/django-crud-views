@@ -1799,12 +1799,11 @@ Plans:
 **Requirements:** Deliver upstream support, the verified tabler-test roastery upgrade, and one separate example app with its own models, focused standalone/inline source modules, ordinary/compact variants, and reciprocal documentation links. Strict matching is the default; check offered options on rendering and the validated selection on POST, permit explicit no-fields categories and an opt-in unmatched policy, and do not scan unused categories. Preserve browser values until save; hide inactive ordinary groups and keep compact cells visible but disabled. Preserve existing conditional behavior and bounded query costs.
 **Depends on:** Phase 06.29 (roadmap sequence); builds on Phase 06.27's conditional groups and Phases 06.24–06.26's compact formset contracts.
 **Ordering:** Complete before Phase 7 freezes the public theme surface; include the settled queryset/inline conditional template and JavaScript contracts in that inventory.
-**Plans:** 9/9 plans executed
+**Plans:** 10/10 plans executed; fresh phase acceptance and remaining UAT pending
 
 Plans:
 **Wave 1**
 - [x] 06.30-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 06.30 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.30-02-PLAN.md
@@ -1827,6 +1826,9 @@ Plans:
 
 **Wave 8** *(blocked on Wave 7 completion)*
 - [x] 06.30-09-PLAN.md
+
+**Wave 9 — UAT gap closure**
+- [x] 06.30-10-PLAN.md — Ordinary row cards, per-level frame suppression, documentation and verification
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1942,5 +1944,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.28. Tooltip recipe lifecycle safeguards (#355) | 1/1 | Complete    | 2026-11-12 |
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
-| 06.30. Queryset-driven conditional fields (#360) | 9/9 | In Progress — verification pending | - |
+| 06.30. Queryset-driven conditional fields (#360) | 10/10 | In Progress — re-verification and UAT pending | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

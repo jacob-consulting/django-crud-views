@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 9
-status: awaiting human verification
-stopped_at: "Phase 06.30 verified: 27/28 truths, two qualitative UAT checks pending"
-last_updated: "2026-11-13T12:14:57.634Z"
+current_plan: 10
+status: awaiting verification
+stopped_at: Completed 06.30-10-PLAN.md; independent review, fresh acceptance and remaining UAT pending
+last_updated: "2026-11-13T15:22:56.169Z"
 last_activity: 2026-11-13
-last_activity_desc: Phase 06.30 verified; two qualitative UAT checks pending
-state_head: 280e193cd3e42c38ef23d0ae1d71c2bb20c0069f
+last_activity_desc: Plan 10 presentation gap closed; fresh acceptance and remaining UAT pending
+state_head: a83834989eb4bcde8fdcc0a5f84504821a930a9d
 progress:
   total_phases: 37
   completed_phases: 27
-  total_plans: 192
-  completed_plans: 192
+  total_plans: 193
+  completed_plans: 193
 milestone_name: milestone
 ---
 
@@ -31,15 +31,22 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN UAT
-Current Plan: 9
-Total Plans in Phase: 9
-Status: awaiting human verification
-Last activity: 2026-11-13 — Plan 09 acceptance evidence and summary committed
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING RE-VERIFICATION AND HUMAN UAT
+Current Plan: 10
+Total Plans in Phase: 10
+Status: awaiting verification
+Last activity: 2026-11-13 — Plan 10 row-card gap implementation, browser evidence and documentation committed
 
-Next: $gsd-verify-work 06.30 — two qualitative UAT checks; phase remains pending.
+Next: independent plan 10 review and phase re-verification, then remaining H1/H2 human UAT. Phase remains pending.
 
-### Phase 06.30 verification — 2026-11-13
+### Phase 06.30 plan 10 execution — 2026-11-13
+
+- Ten of ten plans executed. G-06.30-1 resolved with default ordinary row cards and independent complete frame suppression. Strict custom/lazy labels, plain Choice rows, migration and release documentation committed as 040d810f, 35b5ec46 and a8383498.
+- Focused 221 and broader affected 705 tests pass; documentation checks 149 pass and strict MkDocs build passes. Isolated Chromium evidence has 56 assertions and 12 captures, verified source/served-CSS hashes and successful cleanup. Port 9000 and developer data untouched.
+- Prior plan 08 upstream/downstream and plan 09 release evidence are historical/stale for these changed sources. Regenerate through original commands before full source-bound acceptance; H1 and remaining H2 judgments remain pending. No phase-complete or human-approval claim.
+- SDK roadmap progress updated the plan checkbox; its stale 9/10 table and STATE 9-plan pointer were reconciled to 10/10 executed, verification pending. Global update-progress declined for unscoped phase state. Original state.json dirt and unrelated .gitkeep files preserved.
+
+### Phase 06.30 verification — 2026-11-13 (historical before plan 10)
 
 - All nine plans executed. Canonical verification human_needed: 27/28 truths verified, no implementation blockers; two UAT items persist teaching/source clarity and narrow-layout/keyboard/error judgment.
 - Validation 20/20 tasks; security 20/20 threats closed; deep review 48 files, both findings fixed and independently re-reviewed with zero active findings. UI audit 17/24 retains nonblocking overflow/clipping/required-guidance observations.
@@ -1056,6 +1063,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P06 | 7min | 2 tasks | 8 files |
 | Phase 06.30 P08 | 13min | 2 tasks | 17 files |
 | Phase 06.30 P09 | 26min | 2 tasks | 11 files |
+| Phase 06.30 P10 | 11min | 3 tasks | 14 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1345,6 +1353,8 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Browser acceptance uses real project hosts with disposable SQLite, exact imported upstream identity and byte-for-byte actually served toggle.js checks.
 - [Phase 06.30]: Required feature/downstream selections reject skips; full Django 5.2 records its exact existing Django 6-only CSP skip, with that test verified on 6.0.
 - [Phase 06.30]: Reuse successful command transcripts only for a harness-only correction with byte-identical product/test/asset/docs inputs; always revalidate browsers and repeat integration/lint.
+- [Phase 06.30]: Ordinary row cards use per-level row_legend; False and empty strings remove the entire frame; custom labels retain case and deferred translation.
+- [Phase 06.30]: Plan 10 resolves only G-06.30-1; plan 08/09 evidence is stale until regenerated and H1 plus remaining H2 stay pending.
 
 ### Pending Todos
 
@@ -1424,6 +1434,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T11:23:34.648Z
-Stopped at: Phase 06.30 verified: 27/28 truths, two qualitative UAT checks pending
+Last session: 2026-11-13T15:22:50.939Z
+Stopped at: Completed 06.30-10-PLAN.md; independent review, fresh acceptance and remaining UAT pending
 Resume file: None

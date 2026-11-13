@@ -1,7 +1,10 @@
+import json
+
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
+from lxml import html
 from project.testing import field_key, field_keys, form_payload
 
 from formsets_conditional.models import Conference, Session, Speaker
@@ -23,6 +26,54 @@ def _speaker_prefix(payload: dict) -> str:
 
 
 class ConferenceTest(FormsetsConditionalTestCase):
+    def assert_session_and_speaker_frames(self, content, fragment=False):
+        document = html.fromstring(content)
+        rows = document.cssselect(".cv-formset-row")
+        self.assertTrue(rows)
+        for row in rows:
+            key = json.loads(row.get("cv-data-formset-form"))["key"]
+            cards = row.cssselect(":scope > .cv-formset-row-card")
+            self.assertEqual(bool(cards), key == "sessions")
+            self.assertFalse("cv-formset-row-compact" in row.classes)
+        if not fragment:
+            self.assertTrue(document.cssselect('[cv-data-formset-key="sessions"]'))
+            self.assertTrue(document.cssselect('[cv-data-formset-key="sessions-speakers"]'))
+
+    def test_plain_speaker_update_fragment_and_invalid_response(self):
+        conference = Conference.objects.create(name="Frames", with_sessions=True)
+        session = Session.objects.create(conference=conference, title="Framed session")
+        speaker = Speaker.objects.create(session=session, name="Unchanged speaker")
+        url = reverse("conference-update", kwargs={"pk": conference.pk})
+        initial = self.client.get(url)
+        self.assert_session_and_speaker_frames(initial.content)
+        document = html.fromstring(initial.content)
+        content = document.cssselect('[cv-data-formset-key="sessions-speakers"] .cv-formset-content')[0]
+        data = json.loads(content.get("cv-data-formset"))
+        payload = form_payload(initial)
+        fragment = self.client.get(
+            url,
+            {
+                "template": "|".join(data["hierarchy"]),
+                "pk": data["prefix_key"].rsplit("-", 2)[-2],
+                "num": payload[f"{content.get('cv-data-formset-prefix')}-TOTAL_FORMS"],
+                "formset_parent_prefix_key": data["parent_prefix_key"],
+            },
+        )
+        self.assertEqual(fragment.status_code, 200)
+        self.assert_session_and_speaker_frames(fragment.json()["html"], fragment=True)
+        name = next(key for key in field_keys(payload, "-name") if payload[key] == speaker.name)
+        payload[name] = ""
+        invalid = self.client.post(url, payload)
+        self.assertContains(invalid, "This field is required")
+        self.assert_session_and_speaker_frames(invalid.content)
+        speaker.refresh_from_db()
+        self.assertEqual(speaker.name, "Unchanged speaker")
+        payload[name] = "Corrected speaker"
+        self.assertEqual(self.client.post(url, payload).status_code, 302)
+        speaker.refresh_from_db()
+        self.assertEqual(speaker.name, "Corrected speaker")
+        self.assert_session_and_speaker_frames(self.client.get(url).content)
+
     def test_list_renders_with_snippets(self):
         Conference.objects.create(name="PyCon")
         resp = self.client.get(reverse("conference-list"))
@@ -33,6 +84,7 @@ class ConferenceTest(FormsetsConditionalTestCase):
     def test_create_with_billing_sessions_and_speakers(self):
         resp = self.client.get(reverse("conference-create"))
         self.assertEqual(resp.status_code, 200)
+        self.assert_session_and_speaker_frames(resp.content)
         payload = form_payload(resp)
         payload["name"] = "DjangoCon"
         payload["with_billing"] = "on"

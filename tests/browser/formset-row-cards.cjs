@@ -38,6 +38,8 @@ from django.core.wsgi import get_wsgi_application
 from django.http import HttpResponse
 from django.urls import include, path, reverse
 from formsets.seed import seed as seed_formsets
+from formsets_conditional.seed import seed as seed_conferences
+from formsets_conditional.models import Conference
 from queryset_conditional.seed import seed as seed_services
 from formsets.models import Checklist, Questionnaire
 from queryset_conditional.models import RequestBatch
@@ -49,6 +51,7 @@ User = get_user_model()
 User.objects.create_superuser(username='browser', password='browser-only-password', email='')
 for name in ('alice', 'bob'): User.objects.create_user(username=name)
 seed_formsets()
+seed_conferences()
 seed_services()
 mixed = cv_formsets.model_copy(deep=True)
 mixed['questions'].children['choices'] = cv_compact_formsets['questions'].children['choices'].model_copy(deep=True)
@@ -56,23 +59,39 @@ reverse_mixed = cv_compact_formsets.model_copy(deep=True)
 reverse_mixed['questions'].children['choices'] = cv_formsets['questions'].children['choices'].model_copy(deep=True)
 labelled = cv_formsets.model_copy(deep=True)
 labelled['questions'].children['choices'].form_show_labels = True
+plain_parent = cv_compact_formsets.model_copy(deep=True)
+plain_parent['questions'].row_legend = False
+plain_parent['questions'].children['choices'].row_legend = None
+plain_classic_parent = mixed.model_copy(deep=True)
+plain_classic_parent['questions'].row_legend = False
+plain_classic_parent['questions'].children['choices'].row_legend = None
+plain_compact_parent = reverse_mixed.model_copy(deep=True)
+plain_compact_parent['questions'].row_legend = False
+plain_compact_parent['questions'].children['choices'].row_legend = None
 urlpatterns = [
     path('favicon.ico', lambda request: HttpResponse(status=204)),
     path('__mixed/classic-compact/<int:pk>/', QuestionnaireUpdateView.as_view(cv_formsets=mixed)),
     path('__mixed/compact-classic/<int:pk>/', QuestionnaireUpdateView.as_view(cv_formsets=reverse_mixed)),
     path('__mixed/labelled/<int:pk>/', QuestionnaireUpdateView.as_view(cv_formsets=labelled)),
+    path('__mixed/plain-parent/<int:pk>/', QuestionnaireUpdateView.as_view(cv_formsets=plain_parent)),
+    path('__mixed/plain-classic-parent/<int:pk>/', QuestionnaireUpdateView.as_view(cv_formsets=plain_classic_parent)),
+    path('__mixed/plain-compact-parent/<int:pk>/', QuestionnaireUpdateView.as_view(cv_formsets=plain_compact_parent)),
     path('', include('project.urls')),
 ]
 pk = Questionnaire.objects.get(title='Customer Survey').pk
 batch = RequestBatch.objects.get(title='Weekly service requests').pk
 checklist = Checklist.objects.get(title='Release checklist').pk
 urls = {
+    'conference': reverse('conference-update', kwargs={'pk': Conference.objects.get(name='Python Summit').pk}),
     'checklist': reverse('checklist-update', kwargs={'pk': checklist}),
     'questionnaire': reverse('questionnaire-update', kwargs={'pk': pk}),
     'compact': reverse('questionnaire-compact_update', kwargs={'pk': pk}),
     'classic-compact': f'/__mixed/classic-compact/{pk}/',
     'compact-classic': f'/__mixed/compact-classic/{pk}/',
     'labelled': f'/__mixed/labelled/{pk}/',
+    'plain-parent': f'/__mixed/plain-parent/{pk}/',
+    'plain-classic-parent': f'/__mixed/plain-classic-parent/{pk}/',
+    'plain-compact-parent': f'/__mixed/plain-compact-parent/{pk}/',
     'ordinary': reverse('service_batch-update', kwargs={'pk': batch}),
     'service-compact': reverse('service_batch_compact-update', kwargs={'pk': batch}),
 }
@@ -165,7 +184,7 @@ async function run() {
             await page.screenshot({path: file, fullPage: true});
             record.screenshots.push({path: file, sha256: digest(fs.readFileSync(file))});
         };
-        const rows = kind => page.locator(`.cv-formset-row[cv-data-formset-form*='"key": "${kind === 'choices' ? 'questions-choices' : kind}"']`);
+        const rows = kind => page.locator(`.cv-formset-row[cv-data-formset-form*='"key": "${({choices: 'questions-choices', speakers: 'sessions-speakers'})[kind] || kind}"']`);
         const ownButton = (row, action) => row.locator(`:scope > .cv-formset-form button.cv-form-ctrl-${action}, :scope > .cv-formset-row-card > .cv-formset-form button.cv-form-ctrl-${action}`);
         const input = (row, suffix) => row.locator(`input[name$="-${suffix}"]`).first();
         const shapes = async () => page.locator('.cv-formset-row').evaluateAll(elements => elements.map(row => ({
@@ -185,6 +204,8 @@ async function run() {
             await Promise.all([page.waitForNavigation(), form.evaluate(el => {el.noValidate = true; el.requestSubmit();})]);
         };
         const plainRow = async (s, id, row) => {
+            // Inspect steady-state frames after the existing insertion/delete highlight finishes.
+            await row.evaluate(async el => {await Promise.all(el.getAnimations().map(animation => animation.finished.catch(() => {})));});
             const actual = await row.evaluate(el => {
                 const css = getComputedStyle(el);
                 return {borders: ['Top', 'Right', 'Bottom', 'Left'].map(side => css[`border${side}Width`]),
@@ -196,6 +217,12 @@ async function run() {
             check(s, id, actual, {borders: ['0px', '0px', '0px', '0px'], padding: ['0px', '0px', '0px', '0px'],
                 radius: '0px', background: 'rgba(0, 0, 0, 0)', cards: 0, legends: 0});
         };
+        const framedRow = async (s, id, row) => check(s, id, await row.evaluate(el => {
+            const frame = el.querySelector(':scope > .cv-formset-row-card') || el;
+            const css = getComputedStyle(frame);
+            return parseFloat(css.borderTopWidth) > 0 && parseFloat(css.paddingLeft) > 0
+                && css.backgroundColor !== 'rgba(0, 0, 0, 0)';
+        }));
         const checklist = scenario('checklist-lifecycle');
         for (const width of [1280, 390]) {
             await page.setViewportSize({width, height: 900});
@@ -231,6 +258,65 @@ async function run() {
             check(checklist, `saved-omitted-${width}`, values.some(v => v.label === `Corrected item ${width}` && !v.done));
             await capture(`checklist-reopened-${width}`);
         }
+        const conference = scenario('conference-leaf-lifecycle');
+        for (const width of [1280, 390]) {
+            await page.setViewportSize({width, height: 900});
+            await visit('conference');
+            await plainRow(conference, `speaker-initial-${width}`, rows('speakers').first());
+            await framedRow(conference, `session-initial-${width}`, rows('sessions').first());
+            const oldName = await input(rows('speakers').first(), 'name').inputValue();
+            const count = await rows('speakers').count();
+            await ownButton(rows('speakers').first(), 'add').click();
+            await page.waitForFunction(n => [...document.querySelectorAll('.cv-formset-row')].filter(el =>
+                JSON.parse(el.getAttribute('cv-data-formset-form')).key === 'sessions-speakers').length === n + 1, count);
+            const added = rows('sessions').first().locator('.cv-formset-row').nth(1);
+            await input(added, 'name').fill(`New speaker ${width}`);
+            await plainRow(conference, `speaker-inserted-${width}`, added);
+            await input(rows('speakers').first(), 'name').fill('');
+            await submit();
+            await plainRow(conference, `speaker-invalid-${width}`, rows('speakers').first());
+            await framedRow(conference, `session-invalid-${width}`, rows('sessions').first());
+            const speakerAccessibility = await input(rows('speakers').first(), 'name').evaluate(el => {
+                const row = el.closest('.cv-formset-row');
+                const ids = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+                return {invalid: el.getAttribute('aria-invalid'), error: row.textContent.includes('required'),
+                    linkedError: ids.some(id => row.querySelector(`[id="${id}"]`)?.textContent.includes('required')),
+                    sectionLabel: row.closest('.cv-formset-fieldset').querySelector(':scope > legend').textContent.trim()};
+            });
+            check(conference, `speaker-error-and-label-${width}`, speakerAccessibility,
+                {invalid: 'true', error: true, linkedError: true, sectionLabel: 'Speakers'});
+            await input(rows('speakers').first(), 'name').fill(`Edited speaker ${width}`);
+            // Select a different persisted speaker even after the previous viewport's save.
+            const otherIndex = await rows('speakers').evaluateAll((els, width) => els.findIndex(el => {
+                const name = el.querySelector('input[name$="-name"]').value;
+                return name && name !== `Edited speaker ${width}` && name !== `New speaker ${width}`;
+            }), width);
+            assert(otherIndex >= 0, 'A distinct saved speaker must be available for deletion');
+            const otherSpeaker = rows('speakers').nth(otherIndex);
+            const deletedName = await input(otherSpeaker, 'name').inputValue();
+            await ownButton(otherSpeaker, 'delete').click();
+            check(conference, `speaker-delete-control-${width}`, await input(otherSpeaker, 'DELETE').inputValue(), '1');
+            await capture(`conference-corrected-${width}`);
+            await submit();
+            check(conference, `save-redirect-${width}`, new URL(page.url()).pathname !== ready.urls.conference);
+            await visit('conference');
+            const names = await rows('speakers').locator('input[name$="-name"]').evaluateAll(els => els.map(el => el.value));
+            check(conference, `speaker-edit-saved-${width}`, names.includes(`Edited speaker ${width}`) && !names.includes(oldName));
+            check(conference, `speaker-add-saved-${width}`, names.includes(`New speaker ${width}`));
+            check(conference, `speaker-delete-saved-${width}`, !names.includes(deletedName));
+            await plainRow(conference, `speaker-reopened-${width}`, rows('speakers').first());
+            await framedRow(conference, `session-reopened-${width}`, rows('sessions').first());
+            await capture(`conference-reopened-${width}`);
+        }
+        await page.locator('input[name="with_sessions"]').uncheck();
+        check(conference, 'sessions-off-hidden', await rows('sessions').first().isVisible(), false);
+        await submit();
+        await visit('conference');
+        check(conference, 'sessions-off-reopened', await page.locator('input[name="with_sessions"]').isChecked(), false);
+        const purge = JSON.parse(cp.execFileSync(python, ['-c',
+            "import json,sqlite3,sys; c=sqlite3.connect('file:'+sys.argv[1]+'?mode=ro',uri=True); pk=c.execute(\"SELECT id FROM formsets_conditional_conference WHERE name='Python Summit'\").fetchone()[0]; print(json.dumps({'sessions': c.execute('SELECT count(*) FROM formsets_conditional_session WHERE conference_id=?',(pk,)).fetchone()[0], 'speakers': c.execute('SELECT count(*) FROM formsets_conditional_speaker').fetchone()[0]}))",
+            record.isolation.database], {encoding: 'utf8'}));
+        check(conference, 'sessions-off-cascades-database', purge, {sessions: 0, speakers: 0});
         await visit('questionnaire');
         const asset = scenario('assets');
         const stylesheet = await page.locator('link[href*="/formset.css"]').getAttribute('href');
@@ -327,6 +413,45 @@ async function run() {
                     return r.compact === compact && r.cards === (!compact && r.key === 'questions' ? 1 : 0);
                 }));
                 await plainRow(presentation, `${kind}-child-styles-${width}`, rows('choices').first());
+                await framedRow(presentation, `${kind}-parent-styles-${width}`, rows('questions').first());
+                const count = await rows('choices').count();
+                await ownButton(rows('choices').first(), 'add').click();
+                await page.waitForFunction(n => [...document.querySelectorAll('.cv-formset-row')].filter(el =>
+                    JSON.parse(el.getAttribute('cv-data-formset-form')).key === 'questions-choices').length === n + 1, count);
+                const added = rows('questions').first().locator('.cv-formset-row').nth(1);
+                const addedLabel = `Added ${kind} ${width}`;
+                await input(added, 'label').fill(addedLabel);
+                await plainRow(presentation, `${kind}-inserted-child-${width}`, added);
+                const original = await input(rows('choices').first(), 'label').inputValue();
+                await input(rows('choices').first(), 'label').fill('');
+                await submit();
+                await plainRow(presentation, `${kind}-invalid-child-${width}`, rows('choices').first());
+                check(presentation, `${kind}-required-error-${width}`, await input(rows('choices').first(), 'label').getAttribute('aria-invalid'), 'true');
+                await input(rows('choices').first(), 'label').fill(original);
+                await submit();
+                check(presentation, `${kind}-save-redirect-${width}`, new URL(page.url()).pathname !== ready.urls[kind]);
+                await visit(kind);
+                check(presentation, `${kind}-added-saved-${width}`, await rows('choices').locator('input[name$="-label"]').evaluateAll(
+                    (els, expected) => els.some(el => el.value === expected), addedLabel));
+                await plainRow(presentation, `${kind}-reopened-child-${width}`, rows('choices').first());
+                await capture(`${kind}-${width}`);
+            }
+            for (const kind of ['plain-parent', 'plain-classic-parent', 'plain-compact-parent']) {
+                await visit(kind);
+                await plainRow(presentation, `${kind}-parent-${width}`, rows('questions').first());
+                await framedRow(presentation, `${kind}-child-${width}`, rows('choices').first());
+                const count = await rows('choices').count();
+                await ownButton(rows('choices').first(), 'add').click();
+                await page.waitForFunction(n => [...document.querySelectorAll('.cv-formset-row')].filter(el =>
+                    JSON.parse(el.getAttribute('cv-data-formset-form')).key === 'questions-choices').length === n + 1, count);
+                const added = rows('questions').first().locator('.cv-formset-row').nth(1);
+                await input(added, 'label').fill('Mixed inserted answer');
+                await framedRow(presentation, `${kind}-inserted-child-${width}`, added);
+                await input(rows('choices').first(), 'label').fill('');
+                await submit();
+                await plainRow(presentation, `${kind}-invalid-parent-${width}`, rows('questions').first());
+                await framedRow(presentation, `${kind}-invalid-child-${width}`, rows('choices').first());
+                check(presentation, `${kind}-invalid-error-${width}`, await input(rows('choices').first(), 'label').getAttribute('aria-invalid'), 'true');
                 await capture(`${kind}-${width}`);
             }
         }
@@ -338,6 +463,7 @@ async function run() {
                 const shape = await shapes();
                 check(service, `${kind}-frames-${width}`, shape.length > 0 && shape.every(r => kind === 'ordinary' ? r.cards === 1 && r.legend === 'Service request' : r.cards === 0 && r.compact));
                 const first = page.locator('.cv-formset-row').first();
+                await framedRow(service, `${kind}-default-frame-styles-${width}`, first);
                 const address = first.locator('input[name$="-visit_address"]');
                 const saved = await address.inputValue();
                 const selector = first.locator('select[name$="-service"]');
@@ -353,7 +479,7 @@ async function run() {
         assert.deepEqual(record.pageErrors, []);
         assert.deepEqual(record.failedRequests, []);
         assert.deepEqual(fingerprints(), record.sourceHashes, 'Source changed during run');
-        assert.deepEqual(record.scenarios.map(s => s.id), ['checklist-lifecycle', 'assets', 'nested-lifecycle', 'presentation', 'conditional-and-compact']);
+        assert.deepEqual(record.scenarios.map(s => s.id), ['checklist-lifecycle', 'conference-leaf-lifecycle', 'assets', 'nested-lifecycle', 'presentation', 'conditional-and-compact']);
         assert(record.scenarios.every(s => s.assertions.length > 0));
     } catch (error) {failure = error; record.failure = String(error); console.error(hostLog.slice(-3000));}
     finally {

@@ -1,6 +1,6 @@
 {
   "scope": "G-06.30-2 focused frames; prior ordinary scenarios retained",
-  "started": "2026-11-13T17:08:32.826Z",
+  "started": "2026-11-13T17:13:22.548Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/formset-row-cards.cjs",
@@ -104,7 +104,7 @@
     "examples/bootstrap5/formsets/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "examples/bootstrap5/formsets/models.py": "22cbc0f2b1bdc94617c5e764fa4e8bc94a185415f0df1c15acaf3a5b58683448",
     "examples/bootstrap5/formsets/seed.py": "afe82f890baa13ef5576030649b6a575781e8f296b6433ed42bc2b6de4be96d6",
-    "examples/bootstrap5/formsets/tests.py": "da5e63e012a1e458bdef3618f54b425ff77d843e24d320227801be86bc03e139",
+    "examples/bootstrap5/formsets/tests.py": "cc7bf576df24ddfd843ecb205862cbd183f28406c2177b8d411b4cbeb7eab492",
     "examples/bootstrap5/formsets/urls.py": "0447731804948bacdfda7d58b7fa6cfc5d938ecb19f678fe34bb2eb39be20cdc",
     "examples/bootstrap5/formsets/views.py": "2536a441fd7e65b971343f76651afb900a4a737543169e020a445d46b241d3e4",
     "examples/bootstrap5/formsets_conditional/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -113,9 +113,9 @@
     "examples/bootstrap5/formsets_conditional/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "examples/bootstrap5/formsets_conditional/models.py": "94c052b06975d81b70223519e1ca4a5bd7f810a9650e944d9a9c428108ac42d6",
     "examples/bootstrap5/formsets_conditional/seed.py": "5dea6c1bde055cdb45d70a73f3605e3d2587c319aacdc79ae583069d2c7a5b19",
-    "examples/bootstrap5/formsets_conditional/tests.py": "ead56b253577f74566d1176b580dff87e9ec7a6942e0b2222f6fdf4ed5ef0704",
+    "examples/bootstrap5/formsets_conditional/tests.py": "e9ee72c35641bc71ad74d6d70ef85c9f8b31c8ec4e09fceea3a4be8688c89134",
     "examples/bootstrap5/formsets_conditional/urls.py": "7773fd607396bd5c96c2520df279394b1a8f1a70ff7035c4a388fbf52b850b68",
-    "examples/bootstrap5/formsets_conditional/views.py": "67e1c3ca10130a6fdb976a237101ee48195cb1af13e4d5677e6781ad262956b0",
+    "examples/bootstrap5/formsets_conditional/views.py": "1ad662770bf5ba71092f5298395c28d8db50055311f8dd6dd702685ea374877b",
     "examples/bootstrap5/guardian_demo/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "examples/bootstrap5/guardian_demo/apps.py": "4370c1afc8cd05879aff3e4511b0c2437a76962ed433fa333fe41e6cefd005c9",
     "examples/bootstrap5/guardian_demo/migrations/0001_initial.py": "6ce9875ff9e3d089d86388f5e2b7e3e2f6c1bf0527435cfd45522f072cff229b",
@@ -563,7 +563,7 @@
     "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.history.html": "def44591ed9355a58e8460b71bc48d7fbfb54d339a1c714a80464c868a2f4c30",
     "src/crud_views_workflow/templates/crud_views_workflow/view_workflow.html": "c6fd1100ee76519e2195545f6c4216ea2c1fe89fe5c7fa8037bf7fa1f909ab69",
     "src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html": "4510c4331b37528a19f116f4ce7f29b5d7df95aa2186a87dcf6fc022a65ca8ef",
-    "tests/browser/formset-row-cards.cjs": "37ba0bca4adb2b5befbb22d1d572de4f346679552d12cd97b88f6ab7d5f3d9ff",
+    "tests/browser/formset-row-cards.cjs": "472b3d7409baf5c6310cdb2aee137daf3ff1f6a15486f47d22a85a4e47e04b3c",
     "tests/browser/formset-row-cards.test.cjs": "5023467b0826671c47b8686cab3397927436a8748ef88444ade9c24382d891e8"
   },
   "scenarios": [
@@ -965,6 +965,483 @@
       ]
     },
     {
+      "id": "conference-leaf-lifecycle",
+      "assertions": [
+        {
+          "id": "speaker-initial-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-initial-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-inserted-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "speaker-invalid-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-invalid-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-error-and-label-1280",
+          "actual": {
+            "invalid": "true",
+            "error": true,
+            "linkedError": true,
+            "sectionLabel": "Speakers"
+          },
+          "expected": {
+            "invalid": "true",
+            "error": true,
+            "linkedError": true,
+            "sectionLabel": "Speakers"
+          },
+          "passed": true
+        },
+        {
+          "id": "speaker-delete-control-1280",
+          "actual": "1",
+          "expected": "1",
+          "passed": true
+        },
+        {
+          "id": "save-redirect-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-edit-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-add-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-delete-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-reopened-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-reopened-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-initial-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-initial-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-inserted-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "speaker-invalid-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-invalid-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-error-and-label-390",
+          "actual": {
+            "invalid": "true",
+            "error": true,
+            "linkedError": true,
+            "sectionLabel": "Speakers"
+          },
+          "expected": {
+            "invalid": "true",
+            "error": true,
+            "linkedError": true,
+            "sectionLabel": "Speakers"
+          },
+          "passed": true
+        },
+        {
+          "id": "speaker-delete-control-390",
+          "actual": "1",
+          "expected": "1",
+          "passed": true
+        },
+        {
+          "id": "save-redirect-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-edit-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-add-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-delete-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "speaker-reopened-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "session-reopened-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "sessions-off-hidden",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "id": "sessions-off-reopened",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "id": "sessions-off-cascades-database",
+          "actual": {
+            "sessions": 0,
+            "speakers": 0
+          },
+          "expected": {
+            "sessions": 0,
+            "speakers": 0
+          },
+          "passed": true
+        }
+      ]
+    },
+    {
       "id": "assets",
       "assertions": [
         {
@@ -1186,6 +1663,150 @@
           "passed": true
         },
         {
+          "id": "compact-parent-styles-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-inserted-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-invalid-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-required-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "compact-save-redirect-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-added-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-reopened-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
           "id": "classic-compact-1280",
           "actual": true,
           "expected": true,
@@ -1193,6 +1814,150 @@
         },
         {
           "id": "classic-compact-child-styles-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-parent-styles-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-inserted-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-invalid-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-required-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "classic-compact-save-redirect-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-added-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-reopened-child-1280",
           "actual": {
             "borders": [
               "0px",
@@ -1275,6 +2040,462 @@
             "cards": 0,
             "legends": 0
           },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-parent-styles-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-inserted-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-invalid-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-required-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "compact-classic-save-redirect-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-added-saved-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-reopened-child-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-inserted-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-inserted-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-error-1280",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-inserted-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-parent-1280",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-child-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-error-1280",
+          "actual": "true",
+          "expected": "true",
           "passed": true
         },
         {
@@ -1366,6 +2587,150 @@
           "passed": true
         },
         {
+          "id": "compact-parent-styles-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-inserted-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-invalid-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-required-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "compact-save-redirect-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-added-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-reopened-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
           "id": "classic-compact-390",
           "actual": true,
           "expected": true,
@@ -1373,6 +2738,150 @@
         },
         {
           "id": "classic-compact-child-styles-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-parent-styles-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-inserted-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-invalid-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "classic-compact-required-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "classic-compact-save-redirect-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-added-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "classic-compact-reopened-child-390",
           "actual": {
             "borders": [
               "0px",
@@ -1456,6 +2965,462 @@
             "legends": 0
           },
           "passed": true
+        },
+        {
+          "id": "compact-classic-parent-styles-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-inserted-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-invalid-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "compact-classic-required-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "compact-classic-save-redirect-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-added-saved-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "compact-classic-reopened-child-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-inserted-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-parent-invalid-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-inserted-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-classic-parent-invalid-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-inserted-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-parent-390",
+          "actual": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "expected": {
+            "borders": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "padding": [
+              "0px",
+              "0px",
+              "0px",
+              "0px"
+            ],
+            "radius": "0px",
+            "background": "rgba(0, 0, 0, 0)",
+            "cards": 0,
+            "legends": 0
+          },
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-child-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "plain-compact-parent-invalid-error-390",
+          "actual": "true",
+          "expected": "true",
+          "passed": true
         }
       ]
     },
@@ -1464,6 +3429,12 @@
       "assertions": [
         {
           "id": "ordinary-frames-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "ordinary-default-frame-styles-1280",
           "actual": true,
           "expected": true,
           "passed": true
@@ -1493,6 +3464,12 @@
           "passed": true
         },
         {
+          "id": "service-compact-default-frame-styles-1280",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
           "id": "service-compact-inactive-disabled-1280",
           "actual": true,
           "expected": true,
@@ -1512,6 +3489,12 @@
         },
         {
           "id": "ordinary-frames-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "id": "ordinary-default-frame-styles-390",
           "actual": true,
           "expected": true,
           "passed": true
@@ -1541,6 +3524,12 @@
           "passed": true
         },
         {
+          "id": "service-compact-default-frame-styles-390",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
           "id": "service-compact-inactive-disabled-390",
           "actual": true,
           "expected": true,
@@ -1563,67 +3552,107 @@
   ],
   "screenshots": [
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/checklist-invalid-corrected-1280.png",
+      "path": "/tmp/cv-row-card-captures-qGWLXg/checklist-invalid-corrected-1280.png",
       "sha256": "d5cfbd6c3d8e7091c419b3381c753f9b0caf23516a39089e1eff20ed7328a63f"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/checklist-reopened-1280.png",
+      "path": "/tmp/cv-row-card-captures-qGWLXg/checklist-reopened-1280.png",
       "sha256": "5ccd01b9e3c72f6d0fc9c7a60c84e28ed5b7de9f41d74c1127e9915d40c1c645"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/checklist-invalid-corrected-390.png",
-      "sha256": "60eb20625586479861603739d8c066ddafbcc67fc9c08b4961ebf9b0944230fd"
+      "path": "/tmp/cv-row-card-captures-qGWLXg/checklist-invalid-corrected-390.png",
+      "sha256": "012d02f57ac042e56d8232a2c6a11104b74d392adb992ea8a85cde03b5f0bb96"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/checklist-reopened-390.png",
+      "path": "/tmp/cv-row-card-captures-qGWLXg/checklist-reopened-390.png",
       "sha256": "555b75046866ed596654968e01bd3e33b0c67caaf3c6b13daf7353aa9d10c0d0"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/questionnaire-1280.png",
-      "sha256": "40374b7bbe18946db0107dc4d09f7d765d958e816fd69bdff7ce79d115e22cab"
+      "path": "/tmp/cv-row-card-captures-qGWLXg/conference-corrected-1280.png",
+      "sha256": "4a09eedb26efa2179798adbcf49f6a9a85a0093af7c5944d57d9597c9e95c667"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/compact-1280.png",
-      "sha256": "6d3c3d40cd07b41e44205b99fdfc9fe355a2209756713ac8be4d5db14d0b014e"
+      "path": "/tmp/cv-row-card-captures-qGWLXg/conference-reopened-1280.png",
+      "sha256": "a9097bb4ba470cd8c88d4c7c7cf571e33ea228a059af16594e0bef38d8ce2204"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/classic-compact-1280.png",
-      "sha256": "4cd67afd34551e6ddf7bb07fa457e34d435465a9bc4ca9891c6cbeb2ec849f3b"
+      "path": "/tmp/cv-row-card-captures-qGWLXg/conference-corrected-390.png",
+      "sha256": "ae7919b701026bd5e275d058be2c8b9ecc272750274df580740f0dc89ad08cd5"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/compact-classic-1280.png",
-      "sha256": "04d597886ae22f5c66dcd317590440bb689b5056bb63bafcb3e7e18fdc74199f"
+      "path": "/tmp/cv-row-card-captures-qGWLXg/conference-reopened-390.png",
+      "sha256": "6162fe86072f20342c2b63044c3baf0d48884de1882a224e283e21ccfccfe1b4"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/questionnaire-390.png",
-      "sha256": "dd0f4daaacf54d124caff0b7d2fa72bf69cb15ba9158c0213afea23622025ee0"
+      "path": "/tmp/cv-row-card-captures-qGWLXg/questionnaire-1280.png",
+      "sha256": "373a91d95e1b844b6070424ebe5100ca40e23ee13bc244f2ba75ce602ec4edb7"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/compact-390.png",
-      "sha256": "126ff0e24c901c372965c7551941cdfe370030b11e8f0df10ab840931802d7bd"
+      "path": "/tmp/cv-row-card-captures-qGWLXg/compact-1280.png",
+      "sha256": "3b7afaee84dcecdd6a6c48c36523087a5c534d2d0c15889a5ca65a205344601e"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/classic-compact-390.png",
-      "sha256": "1e1f50e4e4af8243523a893cba17593d5913f37d158d90e7f5f374610fb189d2"
+      "path": "/tmp/cv-row-card-captures-qGWLXg/classic-compact-1280.png",
+      "sha256": "533e5fdc99f24488e5b623c734d3a2e2345d8234d5ad9035a2abdca770f691a9"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/compact-classic-390.png",
-      "sha256": "9cb729a3c75c730c1e33325231c827815abcf1a57e605c04f4050f7bbefbb011"
+      "path": "/tmp/cv-row-card-captures-qGWLXg/compact-classic-1280.png",
+      "sha256": "16220576267a3637840ec69078e856c2c2057d65085e7ce6a31f7f324f30a349"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/ordinary-1280.png",
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-parent-1280.png",
+      "sha256": "2f07fc6c9548c76ea9aef97c4ea6639a0e273eea0c7b878b1330e954dbc4c777"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-classic-parent-1280.png",
+      "sha256": "20c8d04fac691e0aa8c5257f207ffd45554b2f9a1a82a7b06d379e23f1410602"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-compact-parent-1280.png",
+      "sha256": "2ddf98a55ccc5afa02ccef2100ef6c6a245c5227c1dc7be4103aac13689f936c"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/questionnaire-390.png",
+      "sha256": "d402233d95198072f899eb9c1fa4af91e716175b4dc07145a95051644d383be1"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/compact-390.png",
+      "sha256": "bb70e3dae9b4dcea4688882f8cd1115fde91820a7d3b26c97005e8fa4f4c87d8"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/classic-compact-390.png",
+      "sha256": "3ef3223c0724bbfc7308d103f0a14bdd3d267802944fea39bf315dcebc7167e8"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/compact-classic-390.png",
+      "sha256": "a348afc9ff0433732d5505a685e885605adc7a56bbb195bf8edbf126300b3887"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-parent-390.png",
+      "sha256": "0b969890216280804b232ead2bd756099228e0cd0928357d6aafb4b23edac652"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-classic-parent-390.png",
+      "sha256": "d676e96a80e88e4de8cc44817dac2dd7b23aa894ad0cbff80dee0106a4111114"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/plain-compact-parent-390.png",
+      "sha256": "b0111b7c7a75998ad4071da263e7b6062f28d7a312068f68b7805dfb040a6f67"
+    },
+    {
+      "path": "/tmp/cv-row-card-captures-qGWLXg/ordinary-1280.png",
       "sha256": "f1b5633d8f04f78ef5e17ec5102369036b02afc7fd1abd8d9cf41c7fc7dded75"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/service-compact-1280.png",
+      "path": "/tmp/cv-row-card-captures-qGWLXg/service-compact-1280.png",
       "sha256": "4ad1c9a84011586a228b81428ca63c60914895fa35ec68a0e22e0cb18aa5c23b"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/ordinary-390.png",
+      "path": "/tmp/cv-row-card-captures-qGWLXg/ordinary-390.png",
       "sha256": "eb441742bb772260eac7f17b263c88bb04eafc6079d0cee0883fc3423a1028e3"
     },
     {
-      "path": "/tmp/cv-row-card-captures-ZRRzBO/service-compact-390.png",
+      "path": "/tmp/cv-row-card-captures-qGWLXg/service-compact-390.png",
       "sha256": "94169c650c76e0f77bdfa8e939da19a6050fad6d2600e2720372abe34a10144b"
     }
   ],
@@ -1643,10 +3672,10 @@
     "chromium": "149.0.7827.55"
   },
   "isolation": {
-    "temporary": "/tmp/cv-row-cards-hl11bC",
-    "database": "/tmp/cv-row-cards-hl11bC/db.sqlite3",
-    "media": "/tmp/cv-row-cards-hl11bC/media",
-    "port": 44849
+    "temporary": "/tmp/cv-row-cards-wjNWwl",
+    "database": "/tmp/cv-row-cards-wjNWwl/db.sqlite3",
+    "media": "/tmp/cv-row-cards-wjNWwl/media",
+    "port": 40591
   },
   "servedStylesheet": {
     "url": "/static/crud_views/css/formset.css",
@@ -1657,6 +3686,6 @@
     "reaped": true,
     "temporaryRemoved": true
   },
-  "completed": "2026-11-13T17:08:45.792Z",
+  "completed": "2026-11-13T17:13:49.862Z",
   "passed": true
 }

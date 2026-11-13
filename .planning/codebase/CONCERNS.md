@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
-last_mapped_at: 2026-11-12
+last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
+last_mapped_at: 2026-11-13
 ---
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## Tech Debt
 
@@ -108,6 +108,12 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 - Safe modification: route transitions through the documented helper and preserve independent page and transition permission checks.
 - Test coverage: `tests/test1/test_workflow_permissions.py` and `tests/test1/test_workflow_execution.py`; concurrency and Guardian/nested-object combinations are not certified.
 
+**Workflow transition presentation metadata:**
+- Files: `src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`, `src/crud_views_workflow/apps.py`
+- Why fragile: per-transition variant and icon metadata is resolved while rendering copied action dictionaries, with a fixed eight-variant vocabulary, shared icon host resolution, and exact `form:submit:label` fallback. The app contributes theme defaults through the existing class registry; registry extension and project overrides have separate precedence rules.
+- Safe modification: preserve metadata resolution on the button rendering path, the deferred `icon_host_keys` import (pre-setup imports are supported), copied-action isolation, explicit empty/null suppression, and the full visible caption. Keep state badge colors independent from transition variants.
+- Test coverage: `tests/test1/test_workflow_buttons.py`, `tests/test1/test_button_classes.py`, and `tests/test1/test_import_safety.py` cover rendered markup, registry behavior, fallbacks, and import safety. Phase 06.32 recorded a clean 12-file deep review and no open security threats; its browser appearance review had no running target. Font glyph appearance, computed contrast, and viewport wrapping are therefore unverified, not demonstrated defects (`.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-UI-REVIEW.md`, `.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-VERIFICATION.md`).
+
 **Snippet parent resolution:**
 - Files: `src/crud_views/lib/view/base.py`, `docs/reference/templates.md`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`
 - Why fragile: `parent_object` resolves lazily through Django template evaluation, whose variable-resolution handling can suppress exceptions inside operators such as `{% if parent_object %}`. `cv_assert_parent()` also uses assertions and is invoked redundantly from `cv_get_parent_object()`.
@@ -169,6 +175,12 @@ None independently confirmed.
 - Risk: runtime or presentation differences outside the recorded evidence remain unestablished. This is scope of verification, not a confirmed defect.
 - Priority: Low
 
+**Workflow transition browser appearance:**
+- What's not tested: actual registered font glyphs, computed theme contrast, and visual wrapping at supported viewport sizes for the new transition variants/icons; phase 06.32 used rendered-output assertions without an applicable running workflow page or modal.
+- Files: `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`, `docs/reference/workflow_view.md`, `.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-UI-REVIEW.md`
+- Risk: downstream theme or font assets may display differently than the asserted HTML classes and markup suggest. The phase review found no source defect and explicitly left these visual properties unclaimed.
+- Priority: Low; verify in a configured consuming application when visual appearance is being evaluated.
+
 **Compact formset consumer extension hooks:**
 - What's not tested: arbitrary third-party widgets/templates, compact-column mutation in `add_fields()`, query-issuing constructors/`get_form_kwargs(None)`, and compact polymorphic forms are outside the documented support contract.
 - Files: `docs/reference/formsets.md`, `src/crud_views/lib/formsets/compact.py`, `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-COMPATIBILITY.md`
@@ -183,4 +195,4 @@ Phase 06.29's critical review finding is also closed: lazy caller classes are co
 
 ---
 
-*Concerns audit: 2026-11-12*
+*Concerns audit: 2026-11-13*

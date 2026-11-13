@@ -2,6 +2,8 @@
 
 from django.forms.widgets import ChoiceWidget
 
+from crud_views.lib.button_classes import get_button_class
+
 
 class _TransitionButtons(ChoiceWidget):
     template_name = "crud_views_workflow/widgets/transitions.html"
@@ -18,6 +20,11 @@ class _TransitionButtons(ChoiceWidget):
         return ""
 
     def get_context(self, name, value, attrs):
+        # The view package requires initialized apps; WorkflowForm also supports pre-setup imports.
+        from crud_views.lib.view.button_data import icon_host_keys
+
+        # Transition variants are a fixed contract, independent of extensible state badge colours.
+        variants = ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark")
         context = super().get_context(name, value, attrs)
         widget = context["widget"]
         attrs = widget["attrs"]
@@ -37,6 +44,13 @@ class _TransitionButtons(ChoiceWidget):
         widget["comment_required"] = any(action["comment_required"] for action in self.actions)
         for action in self.actions:
             action = dict(action)
+            variant = action.get("variant")
+            action["button_class"] = (
+                get_button_class("workflow", "transition-" + variant)
+                if isinstance(variant, str) and variant in variants
+                else get_button_class("form", "submit", "label")
+            )
+            action["icon_class"], action["icon_inline"] = icon_host_keys(action.get("icon"), "form")
             descriptions = list(tokens)
             action["help_id"] = f"{action['id']}-help"
             action["blockers_id"] = f"{action['id']}-blockers"

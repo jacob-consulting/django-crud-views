@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
-last_mapped_at: 2026-11-12
+last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
+last_mapped_at: 2026-11-13
 ---
-<!-- refreshed: 2026-11-12 -->
+<!-- refreshed: 2026-11-13 -->
 
 # Architecture
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## System Overview
 
@@ -66,6 +66,8 @@ last_mapped_at: 2026-11-12
 ## Pattern Overview
 
 **Overall:** Registry-driven composition of Django class-based views with a reusable server-rendered Bootstrap 5 presentation layer.
+
+**Workflow transition presentation (Phase 06.32):** `WorkflowForm` keeps its radio transition control by default and supports opt-in `cv_transition_presentation = "buttons"`, which uses `_TransitionButtons`. Button actions receive transition `custom["variant"]` and `custom["icon"]` metadata. The fixed accepted variants are `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`; each selects `workflow:transition-<variant>`, while missing or unsupported values use `form:submit:label`. Icons follow the core form icon host and inline rendering contract. The button UI retains full visible captions and uses the same workflow validation and execution flow (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`, `tests/test1/test_workflow_buttons.py`, `docs/reference/workflow_view.md`).
 
 **Key Characteristics:**
 - A `ViewSet` instance is the central router and shared configuration boundary. A concrete view joins it declaratively through `cv_viewset` and `cv_key`.
@@ -378,4 +380,4 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 
 ---
 
-*Architecture analysis: 2026-11-12*
+*Architecture analysis: 2026-11-13*

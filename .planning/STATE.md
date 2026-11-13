@@ -6,19 +6,19 @@ current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: Not started
 status: planning
 stopped_at: Phase 06.31 complete; UAT passed; next roadmap phase 06.30
-last_updated: "2026-11-13T12:22:27.610Z"
+last_updated: "2026-11-13T12:25:28.697Z"
 last_activity: 2026-11-13
-last_activity_desc: "Phase 06.31 shipped as PR #365"
-state_head: 23507235438e14338a571f54df0045dbc478f6ac
+last_activity_desc: "Phase 06.31 PR #365 updated with merged Phase 06.32 from main"
+state_head: dfd5a3e947896b48ec66135044f67e32fe6f0776
 progress:
-  total_phases: 38
-  completed_phases: 35
-  total_plans: 189
-  completed_plans: 189
+  total_phases: 39
+  completed_phases: 36
+  total_plans: 190
+  completed_plans: 190
 milestone_name: milestone
 ---
 
-Total Phases: 38
+Total Phases: 39
 
 # Project State
 
@@ -33,9 +33,9 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 
 Phase: 06.30 — Queryset-driven conditional fields (#360)
 Current Plan: Not started
-Total Plans in Phase: 6
+Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-13 -- Phase 06.31 shipped as PR #365
+Last activity: 2026-11-13 -- Phase 06.31 PR #365 updated with merged Phase 06.32 from main
 
 Next: $gsd-progress
 
@@ -51,6 +51,13 @@ Next: $gsd-progress
 - Deep review found CR-01 failed seeding could expose a public developer credential with writes; fixed with atomic command and three RED/GREEN rollback tests, independently re-reviewed clean (52 tests/78 subtests and standalone reproductions). Security15/15 closed; validation16/16 covered. UI18/24 with inherited/deferred advisories.
 - Canonical verification human_needed:21/21 truths,11/11 decisions, zero implementation gaps; fresh72 tests/50 subtests,83-file fingerprint current. One bounded visual UAT saved for notices and manage-link focus/tooltips.
 - Phase remains pending; no human approval, phase advancement, push or merge. Existing invitation success-message issue recorded in deferred-items.md. Next: $gsd-verify-work 06.31.
+
+### Phase 06.32 completion — 2026-11-13
+
+- One plan/three tasks complete: button-only transition variants and icons use existing registries, visible captions and exact fallbacks; four production files changed.
+- Canonical verification passed 7/7, decisions 9/9, with 90 independent passing cases; validation three tasks covered, security six threats closed, deep review 12 files/zero findings. UI 21/24 has optional browser appearance limits, no required human checks.
+- Full Python suite 13,150 passed; Django 4.2/5.2 focused 1,589 each; JavaScript 438 passed; strict docs, scoped Ruff and package wheel/sdist build passed. Shared installed Vitest 5.0.3 differs from declared ^5.0.5; other Python versions and browser appearance unverified.
+- Completion scanner mistook a test command for a file and warned about deliberately prose-only requirements. Tracking progress-row/current-focus leftovers corrected. No implementation gaps, pending todos, stale handoffs or learnings graduation; maps require post-ship refresh. Local commits only.
 
 ### Phase 06.29 completion — 2026-11-12
 
@@ -824,7 +831,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 185
+- Total plans completed: 186
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -867,6 +874,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.28 | 1 | - | - |
 | 06.29 | 2 | - | - |
 | 06.31 | 6 | - | - |
+| 06.32 | 1 | - | - |
 
 | 06.15 | 4 | - | - |
 
@@ -1014,6 +1022,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.27 P04 | 7min | 2 tasks | 10 files |
 | Phase 06.27 P05 | 14min | 3 tasks | 18 files |
 | Phase 06.28 P01 | 11min | 2 tasks | 2 files |
+| Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1288,6 +1297,9 @@ Recent decisions affecting current work:
 - [Phase 06.27]: Keep existing Feature/DocRef stable destinations; prove local routes and generated anchors without claiming unreleased remote availability.
 - [Phase 06.27]: Retain installed JS version mismatch as an explicit compatibility limit; no dependency or lockfile changes.
 - [Phase 06.28]: Plan 01: published tooltip placement wrapper delegates to factory init; runtime/API unchanged; exact-fence placement and lifecycle regressions cover issue 355; no assigned requirement IDs.
+- [Phase 06.32]: Keep the exact eight transition variants independent of the extensible state badge vocabulary.
+- [Phase 06.32]: Resolve presentation on copied actions and defer the icon helper import to preserve pre-setup WorkflowForm imports.
+- [Phase 06.32]: Preserve the exact submit-label fallback regardless of icons and retain deliberate empty/null class suppression.
 
 ### Pending Todos
 
@@ -1358,6 +1370,7 @@ None yet.
 - Phase 06.28 inserted after Phase 06.27: Issue #355: tooltip recipe documentation and executable regression tests; approved GSD handover D-01–D-06 governs scope. Restored the existing 06.27 roadmap entry from the source checkout. (URGENT)
 - Phase 06.29 inserted after Phase 06.26: Themeable column helpers (#356); explicitly assigned 06.29, approved decisions D-01–D-07, before the Phase 7 theme-surface freeze (URGENT)
 - Phase 06.31 inserted after Phase 06.30: Issue #361: developer-only manage diagnostics and explicit group setup; carry approved D-01–D-07 from the issue handover. Complete before Phase 7. (URGENT)
+- Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
 
 ## Deferred Items
 

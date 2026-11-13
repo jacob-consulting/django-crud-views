@@ -9,6 +9,14 @@ class CrudViewsWorkflowConfig(AppConfig):
     label = "cvw"
 
     crud_views_button_class_defaults: ClassVar[dict[str, str | None]] = {
+        "workflow:transition-primary": "btn btn-primary",
+        "workflow:transition-secondary": "btn btn-secondary",
+        "workflow:transition-success": "btn btn-success",
+        "workflow:transition-danger": "btn btn-danger",
+        "workflow:transition-warning": "btn btn-warning",
+        "workflow:transition-info": "btn btn-info",
+        "workflow:transition-light": "btn btn-light",
+        "workflow:transition-dark": "btn btn-dark",
         "workflow:badge-primary": "badge rounded-pill text-bg-primary",
         "workflow:badge-secondary": "badge rounded-pill text-bg-secondary",
         "workflow:badge-success": "badge rounded-pill text-bg-success",

@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: c92671d066e71dbbfb372a17161d08532a01b3f8
-last_mapped_at: 2026-11-12
+last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
+last_mapped_at: 2026-11-13
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-12
+**Analysis Date:** 2026-11-13
 
 ## Directory Layout
 
@@ -122,6 +122,7 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - Contains: Workflow views/forms/mixins, audit-history models and migrations, templates, app checks and translations.
 - Key files: `src/crud_views_workflow/lib/views.py` (request/database orchestration and hooks), `src/crud_views_workflow/lib/execution.py` (shared transition validation and transactional engine plus public helper), `src/crud_views_workflow/lib/forms.py` (transition choices, business blocker and comment validation), `src/crud_views_workflow/lib/widgets.py` (button presentation), `src/crud_views_workflow/lib/mixins.py` (model/history API), and `src/crud_views_workflow/models.py` plus `src/crud_views_workflow/migrations/` (audit persistence).
 - Workflow form actions share core form presentation, while workflow badges and content are themed in `src/crud_views_workflow/templates/crud_views_workflow/`; transition permission opt-in examples and regression tests are maintained under `tests/test1/`.
+- Workflow transitions default to radio choices; views can opt into submit-button presentation with `cv_transition_presentation = "buttons"` in `src/crud_views_workflow/lib/views.py`. `src/crud_views_workflow/lib/forms.py` builds action metadata from each transition's `custom["variant"]` and `custom["icon"]`; `src/crud_views_workflow/lib/widgets.py` maps the fixed eight Bootstrap variants to `workflow:transition-<variant>` classes and resolves icons through the core `form:icon-host` contract. Edit the transition markup in `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`; keep tests in `tests/test1/test_workflow_buttons.py` and the published API guidance in `docs/reference/workflow_view.md` aligned.
 
 **`src/crud_views_polymorphic/`:**
 - Purpose: Polymorphic model CRUD flows.
@@ -320,4 +321,4 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 
 ---
 
-*Structure analysis: 2026-11-12*
+*Structure analysis: 2026-11-13*

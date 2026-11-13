@@ -99,6 +99,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ **6.29** Themeable Column1–Column12 via existing registry, render-local complete classes, preserved caller/template ownership and executed recipes — Phase 06.29; canonical 10/10, clean re-review after lazy-extra correction.
 
 - ✓ Developer-only core/Guardian diagnostics, explicit group setup, bounded read-only demo developer and write-gated example actions; transactional seed conflict rollback and paired migration guidance — Phase 06.31; 21/21 verified, UAT 1/1 passed, clean independent re-review.
+- ✓ **6.32** Button-only workflow transition variants and icons through existing registries, with visible labels, exact fallbacks and preserved workflow behavior — Phase 06.32; canonical 7/7, decisions 9/9, clean deep review and security 6/6.
 
 ### Active
 
@@ -211,6 +212,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Numbered columns resolve complete registry classes on a shallow render copy; bridge only exact installed Bootstrap source | Preserves defaults, caller extras and custom-template ownership without a new grid or cache abstraction | Validated (Phase 06.29) |
 
+| Resolve transition presentation on copied actions with eight workflow-owned variant keys and the existing icon helper | Keeps optional-app imports safe, preserves exact submit-label fallbacks and avoids a new rendering abstraction | Validated (Phase 06.32) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -229,4 +232,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-13 after Phase 06.31 completion*
+*Last updated: 2026-11-13 after Phase 06.31 and 06.32 completion*

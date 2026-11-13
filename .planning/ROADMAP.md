@@ -57,6 +57,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.29: Themeable column helpers (#356) (INSERTED)** - approved issue handover; registry-backed column classes, bounded rendering changes, documentation and regression coverage. (completed 2026-11-12)
 - [ ] **Phase 06.30: Queryset-driven conditional fields (#360) (INSERTED)** - approved handover; base forms and inline rows, strict category matching, tabler-test adoption, and a focused example app with linked documentation.
 - [x] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance. (completed 2026-11-13)
+- [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1828,6 +1829,27 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [x] 06.31-05-PLAN.md — Account guidance with preserved German chrome, README and paired breaking migration contract
+### Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)
+
+**Goal:** Workflow transition buttons honor their declared variant and icon through the existing theme registries, while retaining visible labels, current fallbacks, and workflow behavior.
+**Source:** [Issue #362 — GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/362#gsd-handover). The maintainer approved the low-complexity option; carry decisions D-01–D-09 and the issue's acceptance criteria into planning without reopening settled choices unless a concrete conflict is found.
+**Requirements:** In `cv_transition_presentation = "buttons"` only, read `custom["variant"]` and `custom["icon"]`. Support `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark` through workflow-owned `workflow:transition-<variant>` class keys with Bootstrap defaults and existing theme/project overrides. Missing, empty, or unsupported variants retain `form:submit:label` styling; missing or empty icons keep text-only buttons. Reuse icon rendering and host placement, always retain the visible label, and preserve escaping, comment markers, descriptions, disabled controls, invalid-form rendering, and refresh behavior. Include focused rendered-output tests, existing workflow regression coverage, documentation, and a changelog entry.
+**Depends on:** Phase 06.13.1 (existing workflow button presentation), Phase 6 (existing form class and icon contracts).
+**Ordering:** Follows 06.29 in this worktree's roadmap and must settle before Phase 7 freezes the public theme surface. The maintainer explicitly assigned 06.32; phases 06.30 and 06.31 are handled in other worktrees and are not implementation dependencies of this issue.
+**Scope exclusions:** Per-view presentation hooks, transition-name-specific class keys, arbitrary CSS variant interpolation, icon-only transition buttons, radio redesign, new JavaScript, new registries, and downstream application upgrades. Preserve permissions, validation, execution, comments, and history. Exact private helpers, mode-specific lookup details, and test placement remain planning discretion within the approved issue boundaries.
+**Success Criteria**:
+
+1. Confirm/success and Cancel/danger have distinct theme-resolved classes and declared icons when the library is registered; theme and project overrides work.
+2. All eight supported variants and missing/empty/unsupported fallbacks are covered; absent metadata preserves current rendering.
+3. Labels remain visible, icons honor existing inline/host placement without duplication, and disabled/blocker/comment accessibility behavior survives invalid submissions and refreshes.
+4. Radio presentation, permission filtering, validation, and transition execution retain their behavior; the relevant regression suite passes.
+5. Workflow and theme documentation describe the metadata, keys, defaults, fallbacks, and icon registration; changelog guidance follows repository policy.
+
+**Plans:** 1/1 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.32-01-PLAN.md — Workflow transition metadata rendering, regression coverage, and documentation
 
 ### Phase 7: Theme-surface stability policy
 
@@ -1855,6 +1877,8 @@ Phase 06.23 must also settle before this freeze; include the public `Icon` const
 inheritance/suppression contract (#329).
 Phase 06.24 must also settle before this freeze; include the opt-in compact formset declaration, responsive
 rendering and nested composition contracts (#347).
+Phase 06.32 must also settle before this freeze; include its transition metadata and
+`workflow:transition-<variant>` class keys (#362) in the stability review.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -1886,7 +1910,7 @@ rendering and nested composition contracts (#347).
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 6.14 → 6.15 → 6.16 → 6.17 → 6.18 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 6.8 → 6.9 → 6.10 → 6.13 → 6.13.1 → 6.14 → 6.15 → 6.16 → 6.17 → 6.18 → … → 6.29 → 6.32 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -1909,7 +1933,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 17 | 6.15 (#326) | Polymorphic labels and per-model groups, including tabler-test adoption and verification |
 | 18 | 6.18 (ancestor authorization) | Follows completed 6.17; approved design v2 governs scope and acceptance |
 | 19 | 06.24 (#347) | Opt-in compact formset declarations and nested responsive rendering before the freeze |
-| 20 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15/6.18/06.24 contracts settled; last change before the 1.0.0 bump |
+| 20 | 06.32 (#362) | Workflow transition metadata and theme keys settle before the freeze; independent of 06.30/06.31 |
+| 21 | 7 (plan 4) | Needs 6.10, 4 and 5 merged and 6.13.1/6.15/6.18/06.24/06.32 contracts settled; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -1945,5 +1970,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
 | 06.29. Themeable column helpers (#356) | 2/2 | Complete    | 2026-11-12 |
 | 06.30. Queryset-driven conditional fields (#360) | 0/TBD | Not started | - |
-| 06.31. Developer-only manage diagnostics (#361) | 0/6 | Planned | - |
+| 06.31. Developer-only manage diagnostics (#361) | 6/6 | Complete | 2026-11-13 |
+| 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

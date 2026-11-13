@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src:examples/bootstrap5:/tmp/cv-0631-example-deps /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python examples/bootstrap5/manage.py test project.test_developer.DeveloperSeedTest.test_seed_creates_regular_developer --noinput",
+  "exitCode": 1,
+  "output": "Creating test database for alias 'default'...\nF\n======================================================================\nFAIL: test_seed_creates_regular_developer (project.test_developer.DeveloperSeedTest.test_seed_creates_regular_developer)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/alex/projects/workspaces/cv-phase-06-31/django-crud-views/examples/bootstrap5/project/test_developer.py\", line 18, in test_seed_creates_regular_developer\n    self.assertTrue(get_user_model().objects.filter(username=\"developer\").exists())\nAssertionError: False is not true\n\n----------------------------------------------------------------------\nRan 1 test in 0.754s\n\nFAILED (failures=1)\nDestroying test database for alias 'default'...\nFound 1 test(s).\nSystem check identified no issues (0 silenced).\n",
+  "targetTest": "project.test_developer.DeveloperSeedTest.test_seed_creates_regular_developer",
+  "targetFile": "examples/bootstrap5/project/test_developer.py",
+  "expected": "Seed creates developer",
+  "actual": "Developer missing",
+  "semanticAssessment": "Target executed and failed on developer existence assertion; no fixture or import failure."
+}

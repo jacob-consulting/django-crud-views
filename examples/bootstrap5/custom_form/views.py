@@ -55,6 +55,7 @@ class ContactRemindView(BreadcrumbMixin, MessageMixin, CrispyViewMixin, CustomFo
     """An object-based custom form: loads the contact from the URL, then acts on it."""
 
     cv_key = "remind"
+    cv_permission = "change"
     cv_path = "remind"
     cv_icon_action = "fas:bell"
     cv_viewset = cv_contact
@@ -87,6 +88,7 @@ class ContactInviteView(BreadcrumbMixin, MessageMixin, CrispyViewMixin, CustomFo
     """A non-object custom form: no pk in the URL, it creates a new contact."""
 
     cv_key = "invite"
+    cv_permission = "add"
     cv_path = "invite"
     cv_icon_action = "fas:envelope"
     cv_viewset = cv_contact

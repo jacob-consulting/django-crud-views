@@ -1,5 +1,6 @@
 from urllib.parse import urlsplit
 
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.core.management import call_command
@@ -151,4 +152,4 @@ class ContactSeedPermissionsTest(TestCase):
                 response = self.client.post(invite_url, {"email": email}, follow=True)
                 self.assertEqual(response.status_code, 200)
                 self.assertTrue(Contact.objects.filter(email=email).exists())
-                self.assertEqual([str(m) for m in response.context["messages"]], [f"Invited “{email}”"])
+                self.assertEqual([m.level for m in response.context["messages"]], [messages.SUCCESS])

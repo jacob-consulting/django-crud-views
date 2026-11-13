@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 4
+current_plan: 5
 status: executing
-stopped_at: Completed 06.30-03-PLAN.md
-last_updated: "2026-11-13T09:54:49.391Z"
+stopped_at: Completed 06.30-04-PLAN.md
+last_updated: "2026-11-13T10:04:50.672Z"
 last_activity: 2026-11-13
 last_activity_desc: Phase 06.30 execution started
-state_head: 53e378d3dd79e8c98c522a3067badf97e0b1946f
+state_head: 01ac27bc75c120f0bb23f906ce13a9948336a692
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 192
-  completed_plans: 186
+  completed_plans: 187
 milestone_name: milestone
 ---
 
@@ -32,7 +32,7 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 ## Current Position
 
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — EXECUTING
-Current Plan: 4
+Current Plan: 5
 Total Plans in Phase: 9
 Status: Ready to execute
 Last activity: 2026-11-13 — Phase 06.30 execution started
@@ -1003,6 +1003,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P01 | 8min | 2 tasks | 8 files |
 | Phase 06.30 P02 | 10min | 3 tasks | 12 files |
 | Phase 06.30 P03 | 9min | 2 tasks | 5 files |
+| Phase 06.30 P04 | 7min | 2 tasks | 11 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1284,6 +1285,7 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Plan 02: equivalent immutable sources share per-form clean/render work; conflicting same-controller declarations fail before evaluation.
 - [Phase 06.30]: Plan 03: compact row guards and cells share one render-local projection per controller; schema/helper construction stays query-free.
 - [Phase 06.30]: Plan 03: disable-only cells preserve their display and reuse existing focus recovery only when a focused control becomes inactive.
+- [Phase 06.30]: Standalone ViewSet uses name service_request and prefix service-request because hyphenated registry names fail viewset.E002; reverse names are service_request-list/create/update.
 
 ### Pending Todos
 
@@ -1363,6 +1365,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T09:54:45.229Z
-Stopped at: Completed 06.30-03-PLAN.md
+Last session: 2026-11-13T10:04:46.263Z
+Stopped at: Completed 06.30-04-PLAN.md
 Resume file: None

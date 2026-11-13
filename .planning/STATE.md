@@ -5,11 +5,11 @@ current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
 current_plan: 9
 status: awaiting human verification
-stopped_at: Completed 06.30-09-PLAN.md; 9/9 executed, independent phase verification pending
-last_updated: "2026-11-13T12:14:26.455Z"
+stopped_at: "Phase 06.30 verified: 27/28 truths, two qualitative UAT checks pending"
+last_updated: "2026-11-13T12:14:57.634Z"
 last_activity: 2026-11-13
-last_activity_desc: Phase 06.30 plans executed; independent verification pending
-state_head: caa41ee9457e052b61f8612a41f9c8134efdb3f8
+last_activity_desc: Phase 06.30 verified; two qualitative UAT checks pending
+state_head: 280e193cd3e42c38ef23d0ae1d71c2bb20c0069f
 progress:
   total_phases: 37
   completed_phases: 27
@@ -31,13 +31,22 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 
 ## Current Position
 
-Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING INDEPENDENT VERIFICATION
+Phase: 06.30 (Queryset-driven conditional fields (#360)) — AWAITING HUMAN UAT
 Current Plan: 9
 Total Plans in Phase: 9
 Status: awaiting human verification
 Last activity: 2026-11-13 — Plan 09 acceptance evidence and summary committed
 
-Next: Independently verify Phase 06.30 and complete qualitative UAT; phase completion is not asserted.
+Next: $gsd-verify-work 06.30 — two qualitative UAT checks; phase remains pending.
+
+### Phase 06.30 verification — 2026-11-13
+
+- All nine plans executed. Canonical verification human_needed: 27/28 truths verified, no implementation blockers; two UAT items persist teaching/source clarity and narrow-layout/keyboard/error judgment.
+- Validation 20/20 tasks; security 20/20 threats closed; deep review 48 files, both findings fixed and independently re-reviewed with zero active findings. UI audit 17/24 retains nonblocking overflow/clipping/required-guidance observations.
+- Final post-fix acceptance: core 13,243 plus exact known Django 6-only CSP skip on 5.2 (case passes on 6.0); four compatibility/floor selections 712 each; JS 447/2; examples 505 plus 183 subtests; docs149; downstream238/83. Browser assertions87/47, release self-tests41 and current source-bound integrity pass.
+- Review fixes control inherited PYTEST_ADDOPTS and repair the executable copied-wrapper recipe. Disposition preserves CR-01/WR-01 and commits; fresh full acceptance ran under an inherited filter to prove it ineffective.
+- Canonical CLI fingerprint covers97 upstream paths; separate CLI-generated downstream fingerprint and cross-repository evidence validator cover downstream scope. Optional full Python matrix, other browsers and published documentation remain unverified.
+- No phase completion, human approval, push or merge. Upstream/downstream local changes committed; original state.json and untracked .gitkeep files preserved.
 
 ### Phase 06.30 plan 09 execution — 2026-11-13
 
@@ -1416,5 +1425,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-13T11:23:34.648Z
-Stopped at: Completed 06.30-09-PLAN.md; 9/9 executed, independent phase verification pending
+Stopped at: Phase 06.30 verified: 27/28 truths, two qualitative UAT checks pending
 Resume file: None

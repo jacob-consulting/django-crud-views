@@ -594,6 +594,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Workflow transition variants and icons** (#362): button presentation reads transition `custom` metadata
+  through eight workflow-owned variant class keys and the existing icon registry. Full captions, submit-label
+  fallbacks, theme/project overrides, comments and workflow execution remain intact. See the
+  [workflow guide](docs/reference/workflow_view.md#business-validation-and-native-transition-buttons).
+
 - **Choice-driven conditional groups** (#354): share `ValueToggle` descriptors between server groups and crispy
   layouts for native dropdown/radio controls, including groups shared by several choices. Standard choice fields
   support bounded automatic clearing and authoritative explicit `empty_values`. The Customer example demonstrates

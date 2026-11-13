@@ -1808,11 +1808,11 @@ Plans:
 4. Radio presentation, permission filtering, validation, and transition execution retain their behavior; the relevant regression suite passes.
 5. Workflow and theme documentation describe the metadata, keys, defaults, fallbacks, and icon registration; changelog guidance follows repository policy.
 
-**Plans:** 1 plan
+**Plans:** 1/1 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.32-01-PLAN.md — Workflow transition metadata rendering, regression coverage, and documentation
+- [x] 06.32-01-PLAN.md — Workflow transition metadata rendering, regression coverage, and documentation
 
 ### Phase 7: Theme-surface stability policy
 

@@ -179,15 +179,25 @@
       "status": "complete"
     },
     {
+      "number": "06.30",
+      "name": "Queryset-driven conditional fields (#360)",
+      "status": "pending"
+    },
+    {
+      "number": "06.31",
+      "name": "Developer-only manage diagnostics (#361)",
+      "status": "pending"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step (plan phase 7)",
-    "reason": "Phase 7 \u2014 needs a plan"
+    "command": "$gsd-plan-review-convergence 06.31",
+    "label": "Review phase 06.31 plans",
+    "reason": "Five draft plans cover D-01\u2013D-11; external review pending"
   },
-  "updated_at": "2026-11-12T14:27:46.496Z"
+  "updated_at": "2026-11-13T08:12:27.251453+00:00"
 }

@@ -4,14 +4,14 @@
     "upstream": "/home/alex/projects/alex/django-crud-views",
     "downstream": null
   },
-  "started": "2026-11-13T12:01:37.292Z",
+  "started": "2026-11-13T15:56:40.279Z",
   "command": [
     "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
     "/home/alex/projects/alex/django-crud-views/tests/browser/queryset-conditional.cjs",
     "--target",
     "upstream",
     "--output",
-    "/home/alex/projects/alex/django-crud-views/.planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream.json"
+    ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream.json"
   ],
   "sourceHashes": {
     "upstream/examples/bootstrap5/action_menus/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -120,7 +120,7 @@
     "upstream/examples/bootstrap5/formsets/seed.py": "afe82f890baa13ef5576030649b6a575781e8f296b6433ed42bc2b6de4be96d6",
     "upstream/examples/bootstrap5/formsets/tests.py": "da5e63e012a1e458bdef3618f54b425ff77d843e24d320227801be86bc03e139",
     "upstream/examples/bootstrap5/formsets/urls.py": "0447731804948bacdfda7d58b7fa6cfc5d938ecb19f678fe34bb2eb39be20cdc",
-    "upstream/examples/bootstrap5/formsets/views.py": "a0cf7806a5b195798dd6a222b6effae5a245859ce549452ccbd93eb5c7ab21b2",
+    "upstream/examples/bootstrap5/formsets/views.py": "ac61f2c53951b85022372e5de3e438c5e9e399326ef0135142eea159cb993298",
     "upstream/examples/bootstrap5/guardian_demo/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "upstream/examples/bootstrap5/guardian_demo/apps.py": "4370c1afc8cd05879aff3e4511b0c2437a76962ed433fa333fe41e6cefd005c9",
     "upstream/examples/bootstrap5/guardian_demo/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -389,11 +389,11 @@
     "upstream/src/crud_views/lib/exceptions.py": "0072a39d98525f445939f027d76568b32388ecd5302cc59d36c8a270731d2e96",
     "upstream/src/crud_views/lib/formsets/__init__.py": "2fdf0da93267781d818af1dc00344083d2d2579508390c6a682ad86c92a26e72",
     "upstream/src/crud_views/lib/formsets/compact.py": "e2dd32941040d5e5114be53a6c8d84a37a4bbcb2a3ff339ff82fc15dfacf9efb",
-    "upstream/src/crud_views/lib/formsets/formsets.py": "d4cdee62b1edbe58794b4bf671cd93ccf756603e4e2e50f3162288fd93242cd7",
+    "upstream/src/crud_views/lib/formsets/formsets.py": "4c2f1b51c221ef9ca31b5549282caab57d3d9508dbab69bdefba0514170e7e99",
     "upstream/src/crud_views/lib/formsets/inline_formset.py": "55f5866844e04df5efe2ec5b550ae1252e970220b0901dc6631e8be0fb024195",
     "upstream/src/crud_views/lib/formsets/layout.py": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937",
     "upstream/src/crud_views/lib/formsets/mixins.py": "a7c424b9e86a9aef3cecd094c2680fe9dcd47607257e5fef1e9742f2e6f0985c",
-    "upstream/src/crud_views/lib/formsets/render_tree.py": "c90eeb13961690e867fe691c7264f4d0b356ee85881496a6f46119ad7427d893",
+    "upstream/src/crud_views/lib/formsets/render_tree.py": "0bfbec6894742354778668b4d4eacc22d38c4fca8514c565aa2cc1d7a14b57d1",
     "upstream/src/crud_views/lib/icons.py": "d7d74cebf3e940a6a0d92cdc7ce0948f092f3601f8ab541c413df63498a7e763",
     "upstream/src/crud_views/lib/lazy.py": "5403c2570fffd2898aade7fe2f4d243840140f53f4a8ebc8387fd5aeb3c9ef20",
     "upstream/src/crud_views/lib/messages.py": "df20fd99388998e58bd12a29c8acae311ea2a99ce781a043c6dc8043c563fc4f",
@@ -443,7 +443,7 @@
     "upstream/src/crud_views/management/commands/crud_views_show.py": "ce0b8b62e4b48afa81970cc8f5895e3d6986164712ec96259db02d672f93afc4",
     "upstream/src/crud_views/management/commands/cv_assets.py": "38269d26f2fad4a052ef34a6e3497efe7b4abecd7f0741fd89cbb32e8a3963d6",
     "upstream/src/crud_views/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "upstream/src/crud_views/static/crud_views/css/formset.css": "4b5fd32545077a17c2bd2a2af4d387256c9039e22dcd765494267587c4d0ba84",
+    "upstream/src/crud_views/static/crud_views/css/formset.css": "979cc5c169f2883927bc66afdb5e649e73e1deac6629da6175703b11286dca51",
     "upstream/src/crud_views/static/crud_views/css/icons.css": "1330b06fd3850f4b8567e1fd0c44cd2dc942d1d547d5ac9de1902467105db255",
     "upstream/src/crud_views/static/crud_views/css/property.css": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
     "upstream/src/crud_views/static/crud_views/css/table.css": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
@@ -464,12 +464,12 @@
     "upstream/src/crud_views/templates/crud_views/crispy/bootstrap5_formactions.html": "d5862d3b1c072b1692a2fdb5f04ccf4ed94f623e0189527f31e49830e781b318",
     "upstream/src/crud_views/templates/crud_views/formsets/compact_headings.html": "2f4b3b5133ee315a8c25c99e20bb6c4ad034c2d7a223d5daccdd7d55fe6ccfd0",
     "upstream/src/crud_views/templates/crud_views/formsets/control.html": "eed84cc006d4de94bddf442c366f2faf32d3ab135872e4631fb58f30338d974e",
-    "upstream/src/crud_views/templates/crud_views/formsets/formset.html": "a35d1279de5b43109e82082689c647922d1e3653346155454f875c8ddcdfe96c",
+    "upstream/src/crud_views/templates/crud_views/formsets/formset.html": "79b98e0caa859979120a5210b38672598393e67abeda801f481555f9ff4f5863",
     "upstream/src/crud_views/templates/crud_views/formsets/formsets.html": "1c6f6e86aff72847f044a62963cfb9fa41489a4d511578d13273c4ade1e83626",
     "upstream/src/crud_views/templates/crud_views/modal/content.html": "0c537498854336c1ff8179f5d8f87df0e567beab72ba8a57c50c7d3651b02257",
     "upstream/src/crud_views/templates/crud_views/modal/shell.html": "bc5b91977d517671b9c246cbbbce5a813a0d8bc10caf36f8c78f214df15328ee",
     "upstream/src/crud_views/templates/crud_views/shared/config.html": "1608b5d2c1759d04e9e19a2d4f8fd3d20c42b9e54e73f78623482af874fcf84c",
-    "upstream/src/crud_views/templates/crud_views/shared/css.html": "f2952496e00be7607b20fde31044f3fc2204ab024059595a222f6ddf17d754e6",
+    "upstream/src/crud_views/templates/crud_views/shared/css.html": "7c3b0ababf5f91a31eb59c3869f99433f43707a73d91c4c152d11937da21b472",
     "upstream/src/crud_views/templates/crud_views/shared/js.html": "4f0b588e75949cb512e63124bf1dbddfc163ec7c68c158303300de19274d0adc",
     "upstream/src/crud_views/templates/crud_views/snippets/action_short/card.html": "dd72cb5d651c2a25325d7775355947adeae05bc4572ffdce0009bf829dcb595e",
     "upstream/src/crud_views/templates/crud_views/snippets/action_short/child.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
@@ -585,6 +585,8 @@
     "upstream/tests/browser/conditional_formsets_server.py": "cddcb71b0525c87514bd69b567e2177561fadcf2ecf0e0bfe1f1457627dabf77",
     "upstream/tests/browser/conditional-formsets-evidence.test.cjs": "be9694e1f4e4e001f924433354557cddf479e030b7ea7326c7c3c70a7ae03272",
     "upstream/tests/browser/conditional-formsets.cjs": "cdf79060297912e2ef6001ecc575cbd838d5c3d70cd46e99b7e6a6193c06d7c6",
+    "upstream/tests/browser/formset-row-cards.cjs": "43479f0f254734cd58efa850109542d26101a9357ce7a2bc158df63bb47d184a",
+    "upstream/tests/browser/formset-row-cards.test.cjs": "5023467b0826671c47b8686cab3397927436a8748ef88444ade9c24382d891e8",
     "upstream/tests/browser/modal-focus.cjs": "803bcbceafa80a677a2ed940435b44a430bfb6b2203f9195fc0d8e67b4b8d064",
     "upstream/tests/browser/presentation_server.py": "08e8afa959de9966fa40332c2e14bb43e5c4570f3abd75e8eb2c82f95e56d29f",
     "upstream/tests/browser/presentation-cleanup.test.cjs": "4cbf59bcec56162d8754c08ffd97633bdf1429cc062578c7b5ae21a0d13ebb40",
@@ -838,9 +840,10 @@
     "upstream/tests/test1/test_form_media.py": "dedc076b1b2a5e21d63825739dd1d9e2b79be9d53a8d80c0752cc94367197569",
     "upstream/tests/test1/test_form_validation.py": "19920a43607b6b3a033cd2b9b1578eb0f0f5a8d75ff57ec5ee665a12e5675e1a",
     "upstream/tests/test1/test_formset_pk_boundary.py": "67ba992beeab74ce1d05ef4073f7c3d5f42586f86055f4c872e60a5ca231dfdc",
+    "upstream/tests/test1/test_formset_row_legends.py": "e33b7c2ef974f52c068ab9d0efa16e4589e445b8f69c7564f1e0e00f640cf42d",
     "upstream/tests/test1/test_formsets_bugs.py": "8d16de2731b7ef1216c88ccb8e3aeea7c7e7ff9e9e8d40283ffe7bd145f77cc4",
     "upstream/tests/test1/test_formsets_compact_docs.py": "b89dcc99d608a156f3e84380adc2d563c396cef3d074184afdebf899061efa52",
-    "upstream/tests/test1/test_formsets_compact.py": "b8002efed4de649664ace4749d2dc98973bb200680275342f8ab8901def0f110",
+    "upstream/tests/test1/test_formsets_compact.py": "a1636dfe6eb80b450ef3ed27d1064294e602b6dc97678510656b883a495f722c",
     "upstream/tests/test1/test_formsets_controls.py": "5d916d224f591a7ad850eb74ef4848a809b42cc35250269d3c03e3d8a5311ad9",
     "upstream/tests/test1/test_formsets_ergonomics.py": "42f92f3c4202162d331286ac06e7b75d05bd595fdb8ba2d7ff758fbc1db234c0",
     "upstream/tests/test1/test_formsets_parent_required.py": "da444ad9b9b474c612884005f3b7352216f9d34517f20095a1b3bee3ec90e29a",
@@ -972,7 +975,7 @@
     "upstream/docs/getting_started/tutorial-6-books.md": "69799ef23ed96f242bc9f83231c1cde67c303dbc0873c961dbadc601fc47ed5f",
     "upstream/docs/index.md": "9d9899056dd5eb3dc4c5d1ff70fb31cf91307b18d3d796df489ac051845e7a72",
     "upstream/docs/js/mermaid-init.js": "6c5703ad003ccb047f883b583d0419563e930683e30f8885d6248d7d2c731193",
-    "upstream/docs/migrating-1.0.md": "2ea1610ff06e7d982fb9fd21303d49a54d093a1d53f53080531590c2578e142c",
+    "upstream/docs/migrating-1.0.md": "a79bb2cb7f13cf57654c8cba14246f3bb948441b941f20d2487e4b85eb49957a",
     "upstream/docs/reference/.pages": "4c7a7df6b098524f864a7cd0b834651fd844120943c7ade1889b063827a5b8a3",
     "upstream/docs/reference/action_enabled.md": "fe012c548f03c7e1273d2a85dde3911ec83e4fe9ccd6ee2b3aad958a184652f7",
     "upstream/docs/reference/action_menus.md": "52a176d522d87edc6986516e837f20a2b26903cc913c7f59b8007cb3e484b692",
@@ -987,7 +990,7 @@
     "upstream/docs/reference/custom_form_view.md": "19e9f0e9279f027ea99684b1aa3dda2e72765e43f2f0967ed328788ddf58069e",
     "upstream/docs/reference/delete_view.md": "8a5ce92273aceccc4d233188244bbbbf695d37775a969bd8da05fa29f1d81a30",
     "upstream/docs/reference/detail_view.md": "fbc72f4f84e5ae2b061515628984b8a378df24a3355f61d130b38c4114248857",
-    "upstream/docs/reference/formsets.md": "f59903147665c660b313f968f391476ce438f460c69abec245e6b801036895d0",
+    "upstream/docs/reference/formsets.md": "6bf20d7ae8ad6029dcab8ab2024b42b9900c6392744e2ad3950cf30333ba2d04",
     "upstream/docs/reference/guardian.md": "d0c79aef81b7df8fcfbce7ad04b5a8622be82667922a883230960c63f80d3fb9",
     "upstream/docs/reference/icons.md": "e374b076603cd1271251748b3fd3eda18099639580aec678269e4bcf293d9b88",
     "upstream/docs/reference/inaccessible_actions.md": "0e30aa768ceb13d0d5dd2ad88b65710e59ac7ac0a4e631df2d6807086ca6cc5c",
@@ -2317,109 +2320,109 @@
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/standalone-error-390.png",
-      "sha256": "35982694f641db05c824e00dfd59662e8ec17b93acc9597e9f0264da58406151"
+      "sha256": "59ab8864380e7e9c64862ef471947ee7d795157e208962f5c8a99426335499bb"
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/ordinary-1280.png",
-      "sha256": "48e89bceefdbcfb1737fedb751ca5aeca05b7a32f7c679fda15ceaed2f0a8bdf"
+      "sha256": "70880f1c8f5e790616d072a68b5e427e62a6ab5292135330cc0ca6a9025bea33"
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/ordinary-390.png",
-      "sha256": "fe214ef464e6f8063cfbbd27b039ee5119faf607f63cd79ccdcb51175b51d6a6"
+      "sha256": "9421eabaa36381de1e0be02b945af68dab46a2b9c7f389cb2629b03a3f8b45a0"
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/compact-1280.png",
-      "sha256": "3991b21d7a72a949627fc819243e56e538ab46b458ee54a7b9b1d04a93d705eb"
+      "sha256": "82d6ca98d62df6aa5d7fcc5cea79160dc00ec33a856455deb65250b5fd67364b"
     },
     {
       "path": ".planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/08-upstream-captures/compact-390.png",
-      "sha256": "edc6fa51207d3795351ae713d1f9b1aaee52204507ca499e7286af5266b4c340"
+      "sha256": "61d3f2447011aab5f9e2c96db59fc0245fe131a40e9798950f4471c72490e4fb"
     }
   ],
   "pages": [
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/1/update/",
       "status": 200,
-      "htmlBytes": 47412,
-      "sha256": "580065e3e07d44224e12b9428b22e263d068acdff75be32bcc376eaef9cd0d6d"
+      "htmlBytes": 47413,
+      "sha256": "3887cffa9f84371d3fa8aa5d34f235795e2bb01d75fbc73e5a0ea6674a273540"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/1/update/",
       "status": 200,
-      "htmlBytes": 47412,
-      "sha256": "bb8b64d2155e3658d5348e48775bbdae19eca0585f8ceb25e28541a919cc7650"
+      "htmlBytes": 47413,
+      "sha256": "89ff073bcd46a86581a8cb39d4df9c3942b701d24713e77907a5e9ce4299ca1c"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/1/update/",
       "status": 200,
-      "htmlBytes": 47719,
-      "sha256": "0960d5728aa03b3fd0abf92632420c1634ac300c90139b5ca34ed6905cfeeae8"
+      "htmlBytes": 47720,
+      "sha256": "eddcb0e6f3b6d00273c452fe4df97fe5ddc48ec6cd5ad1e30fae426e12391987"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch/2/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch/2/update/",
       "status": 200,
-      "htmlBytes": 63067,
-      "sha256": "b751d2b60e53ae1bb88f32ad4a6f809fd22df1a955bf3c2c3f8578cffc820cff"
+      "htmlBytes": 63410,
+      "sha256": "7f5a4f83cd004c90046b1ca31bf100362472c02447a081342cc29cd01d82e28a"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch/2/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch/2/update/",
       "status": 200,
-      "htmlBytes": 66555,
-      "sha256": "e30b3b958c4bdb4a2f4e53df4243e828ce9270a2f967a1f850a5c8d2824ec081"
+      "htmlBytes": 67012,
+      "sha256": "16be6082ae25cb5481861cc3b4c99f9d6a3e2f634e33d567b150201879cf9b97"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/3/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/3/update/",
       "status": 200,
-      "htmlBytes": 64262,
-      "sha256": "70d3a44bc1a7f1d2aea309cee033ee898f100b21641ac1777fdf320372a66da4"
+      "htmlBytes": 64263,
+      "sha256": "ec19f54a3bf7b9ed984bb2010c28b0f7e3e0bee6ca4b89535a834f53eb03271b"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/3/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/3/update/",
       "status": 200,
-      "htmlBytes": 68019,
-      "sha256": "cd9eef8d52a7c62b9e443fe330a66c06faf163e7f124206b1107523cacd8b37c"
+      "htmlBytes": 68020,
+      "sha256": "cc0cbba9613d1033f916512c3e14d329b6d8a9692e4ca8a61b4d511d17722cd2"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/create/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/create/",
       "status": 200,
-      "htmlBytes": 47194,
-      "sha256": "955a7bf9659d3c6f2bb5c3a8d603e58aa8559e949b606b074e972cc3fe2d8e23"
+      "htmlBytes": 47195,
+      "sha256": "dc52bc7c0c930dc9ff19bb339073f9a5f0e40c0b6dbebf59a353a15ecd7821a5"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/4/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/4/update/",
       "status": 200,
-      "htmlBytes": 64267,
-      "sha256": "a861d5d74e827963c63ae4caf781f00d574ec99650ba45d7286e2c493c523dc6"
+      "htmlBytes": 64268,
+      "sha256": "e9097cf93cd946a24c2333238e1f8caea8abac3f9084d6a42fa0db5cbec01c69"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/5/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/5/update/",
       "status": 200,
-      "htmlBytes": 64330,
-      "sha256": "0aa7d6f9f665379421aef9b4c6b9875cdd2080389c56f3d6f985ec66a6852626"
+      "htmlBytes": 64331,
+      "sha256": "bf6dfa4958dc2cf92a8985e343073f202e9cda701282ed1b201785968542f996"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-request/1/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-request/1/update/",
       "status": 200,
-      "htmlBytes": 47717,
-      "sha256": "d750b380ac45fed796eb5278794b2f7c7604f84e45be7351aa599a7f9bc76c56"
+      "htmlBytes": 47718,
+      "sha256": "8cab4b587fcf9f9d3e80a326e724151c240c9056355bbd460a1a066c0ea2fa96"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch/2/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch/2/update/",
       "status": 200,
-      "htmlBytes": 66260,
-      "sha256": "b1775ba838f8cf72ae8dee2c657854db9ad2ff51a6ac12c1a446a3690b1e64e4"
+      "htmlBytes": 66717,
+      "sha256": "4456d1b213f098c4fb3f5eff6bcb3651061db27594173f1bbe95a4b1e75ba794"
     },
     {
-      "url": "http://127.0.0.1:42121/queryset-conditional/service-batch-compact/3/update/",
+      "url": "http://127.0.0.1:38945/queryset-conditional/service-batch-compact/3/update/",
       "status": 200,
-      "htmlBytes": 67725,
-      "sha256": "82290320aeb585d3fd5a56217b0fe599932c99bea5990bd9a2abb642669bb573"
+      "htmlBytes": 67726,
+      "sha256": "b5703c704805ffade0e515b7197a349034b00a50b2bfba36d902320d419c80c1"
     }
   ],
   "provenance": {
     "upstream": {
-      "head": "7d1609508762fe8b4e9ff19441732dbc11b731d3",
-      "status": " M .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-EVIDENCE.md\n M .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-REVIEW.md\n M .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/09-acceptance.json\n M .planning/state.json\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-REVIEW-DISPOSITION.md\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-REVIEW-FIX.md\n"
+      "head": "eec7c8c710d28aac1da771d4ffb52f4780839b2a",
+      "status": " M .planning/state.json\n?? .planning/phases/06.26-issue-351/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/.gitkeep\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/11-baseline-stale-20261113T1555.log\n?? .planning/phases/06.30-queryset-driven-conditional-fields-360/evidence/11-preservation-baseline.json\n"
     }
   },
   "runtime": {
@@ -2440,13 +2443,13 @@
   "failedRequests": [],
   "isolation": {
     "bind": "127.0.0.1",
-    "port": 42121,
-    "temporary": "/tmp/cv-queryset-Aqsex1",
-    "database": "/tmp/cv-queryset-Aqsex1/db.sqlite3",
-    "media": "/tmp/cv-queryset-Aqsex1/media"
+    "port": 38945,
+    "temporary": "/tmp/cv-queryset-cGvCF1",
+    "database": "/tmp/cv-queryset-cGvCF1/db.sqlite3",
+    "media": "/tmp/cv-queryset-cGvCF1/media"
   },
   "servedToggle": {
-    "url": "http://127.0.0.1:42121/static/crud_views/js/toggle.js",
+    "url": "http://127.0.0.1:38945/static/crud_views/js/toggle.js",
     "expectedHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
     "actualHash": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a"
   },
@@ -2454,5 +2457,5 @@
     "reaped": true,
     "temporaryRemoved": true
   },
-  "completed": "2026-11-13T12:01:46.504Z"
+  "completed": "2026-11-13T15:56:48.470Z"
 }

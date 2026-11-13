@@ -1,0 +1,34 @@
+{
+  "started": "2026-11-13T15:56:28Z",
+  "upstream": "eec7c8c710d28aac1da771d4ffb52f4780839b2a",
+  "downstream_active": {
+    "head": "4f8d0326d63d7974029b7243b1ddbe63cadb625a",
+    "branch": "main",
+    "status": ""
+  },
+  "data_metadata": {
+    "/home/alex/projects/alex/tabler-test/example/db.sqlite3": {
+      "inode": 11291995,
+      "device": 2049,
+      "size": 585728,
+      "mtime_ns": 1794550967169122150,
+      "ctime_ns": 1794550967169122150
+    },
+    "/home/alex/projects/alex/tabler-test/example/media": null,
+    "/home/alex/projects/alex/django-crud-views/examples/bootstrap5/db.sqlite3": {
+      "inode": 6252376,
+      "device": 2049,
+      "size": 581632,
+      "mtime_ns": 1794384209819456428,
+      "ctime_ns": 1794384209819456428
+    },
+    "/home/alex/projects/alex/django-crud-views/examples/bootstrap5/media": null,
+    "/tmp/cv-queryset-uat-9y3QIH/db.sqlite3": {
+      "inode": 2596067,
+      "device": 2049,
+      "size": 622592,
+      "mtime_ns": 1794581461883812456,
+      "ctime_ns": 1794581461883812456
+    }
+  }
+}

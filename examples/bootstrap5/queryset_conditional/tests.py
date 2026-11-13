@@ -498,6 +498,7 @@ class BatchRequestTests(TestCase):
                 if path.endswith("compact"):
                     self.assertTrue(document.cssselect(".cv-formset-row-compact"))
                     self.assertTrue(document.cssselect(".cv-formset-compact-fields"))
+                    self.assertFalse(document.cssselect(".cv-formset-row-bordered, .cv-formset-row-plain"))
                 else:
                     self.assertFalse(document.cssselect(".cv-formset-row-compact"))
                     self.assertContains(page, 'cv-data-toggle-kind="queryset"', count=2)
@@ -665,6 +666,13 @@ class SourceAndNavigationTests(TestCase):
                     )
                     self.assertEqual(page.status_code, 200)
                     document = html.fromstring(page.content)
+                    visible = html.fromstring(page.content)
+                    for panel in visible.cssselect(".snippet-panels, [id^='snippet-']"):
+                        panel.drop_tree()
+                    self.assertEqual(
+                        "Compact rows are borderless by default (row_border=False)." in visible.text_content(),
+                        variant == "service_batch_compact",
+                    )
                     panels = document.cssselect('[id^="snippet-queryset_conditional-"]')
                     self.assertEqual(
                         [panel.get("id") for panel in panels],
@@ -683,6 +691,10 @@ class SourceAndNavigationTests(TestCase):
                     self.assertEqual(ACTIVE_NAV_ITEM.findall(nav), [reverse(f"{variant}-list")])
                     for name in ("service_request", "service_batch", "service_batch_compact"):
                         self.assertIn(reverse(f"{name}-list"), nav)
+
+        from queryset_conditional.inlines import COMPACT_FORMSETS
+
+        self.assertIs(COMPACT_FORMSETS["requests"].compact_layout.row_border, False)
 
     def test_explicit_selection_rejects_absolute_and_traversal_paths(self):
         from project.templatetags.example_tags import snippet_panels

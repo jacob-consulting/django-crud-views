@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.30"
 current_phase_name: "Queryset-driven conditional fields (#360)"
-current_plan: 5
+current_plan: 6
 status: executing
-stopped_at: Completed 06.30-07-PLAN.md; next 06.30-05-PLAN.md
-last_updated: "2026-11-13T10:15:03.494Z"
+stopped_at: Completed 06.30-05-PLAN.md; next 06.30-06-PLAN.md
+last_updated: "2026-11-13T10:27:34.451Z"
 last_activity: 2026-11-13
 last_activity_desc: Phase 06.30 execution started
-state_head: d1ab13fcaeb565f1c660c7524f73b2f45fe7f1af
+state_head: 52c29206cf35d533a5359d55484674e763a35ad8
 progress:
   total_phases: 37
   completed_phases: 27
   total_plans: 192
-  completed_plans: 188
+  completed_plans: 189
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-12)
 ## Current Position
 
 Phase: 06.30 (Queryset-driven conditional fields (#360)) — EXECUTING
-Current Plan: 5
+Current Plan: 6
 Total Plans in Phase: 9
 Status: Ready to execute
 Last activity: 2026-11-13 — Phase 06.30 execution started
 
-Next: Execute 06.30-05-PLAN.md (approved order: 01, 02, 03, 04, 07, 05, 06, 08, 09).
+Next: Execute 06.30-06-PLAN.md (approved order: 01, 02, 03, 04, 07, 05, 06, 08, 09).
+
+### Phase 06.30 plan 05 execution — 2026-11-13
+
+- Six of nine plans complete; phase remains executing. Plan 06 is next.
+- Seeded standalone/ordinary/compact service examples share the category contract, with authorized inline fragments, no-JavaScript clearing, atomic rejection, focused source panels and three active navigation entries.
+- Required combined gate: 83 tests and 98 subtests passed. Full examples: 491 tests and 179 subtests passed. Preserved conditional/formset regressions: 560 passed. Django checks, migration dry-run, strict docs and scoped Ruff checks passed.
+- Minimal reciprocal docs backlink moved forward from plan 06 to keep the feature catalog integration green. Full recipes and browser acceptance remain later plans. Existing dirty state.json and unrelated .gitkeep files remain outside scoped commits.
 
 ### Phase 06.30 plan 07 execution — 2026-11-13
 
@@ -1012,6 +1019,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P03 | 9min | 2 tasks | 5 files |
 | Phase 06.30 P04 | 7min | 2 tasks | 11 files |
 | Phase 06.30 P07 | 10min | 2 tasks | 5 files |
+| Phase 06.30 P05 | 11min | 3 tasks | 9 files |
 
 | Phase 06.15 P01 | 8min | 3 tasks | 5 files |
 | Phase 06.15 P02 | 5min | 2 tasks | 2 files |
@@ -1295,6 +1303,8 @@ Recent decisions affecting current work:
 - [Phase 06.30]: Plan 03: disable-only cells preserve their display and reuse existing focus recovery only when a focused control becomes inactive.
 - [Phase 06.30]: Standalone ViewSet uses name service_request and prefix service-request because hyphenated registry names fail viewset.E002; reverse names are service_request-list/create/update.
 - [Phase 06.30]: Roastery keeps restricted active-type OR retained-current product choices with native subtype annotation; downstream local commits stay separate from upstream metadata.
+- [Phase 06.30]: Batch ViewSets use service_batch/service_batch_compact registry names with service-batch/service-batch-compact URL prefixes, following plan 04 name validation.
+- [Phase 06.30]: Plan 05 brings forward the minimal conditional-guide demo backlink because Feature.docs registration immediately activates reciprocal-link tests; full queryset documentation remains plan 06.
 
 ### Pending Todos
 
@@ -1374,6 +1384,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T10:14:59.278Z
-Stopped at: Completed 06.30-07-PLAN.md; next 06.30-05-PLAN.md
+Last session: 2026-11-13T10:27:30.008Z
+Stopped at: Completed 06.30-05-PLAN.md; next 06.30-06-PLAN.md
 Resume file: None

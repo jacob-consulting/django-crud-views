@@ -442,11 +442,12 @@ def _build_chain(sfx: str, *, cascade: bool | None = None, provider: str | None 
 
 
 @pytest.fixture(autouse=True)
-def manage_group_gate(monkeypatch):
-    """The test project makes manage public; here the local manage gate is the group (debug_only, DEBUG off)."""
+def manage_group_gate(monkeypatch, settings):
+    """Enabled diagnostics require membership even with DEBUG off."""
     from crud_views.lib.settings import crud_views_settings
 
-    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "debug_only")
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "yes")
+    settings.DEBUG = False
 
 
 def _leaf_vocabulary(ns):
@@ -817,12 +818,12 @@ def test_guardian_outer_object_denial_never_enters_the_deeper_queryset(guardian_
     assert trace.events == [*expected, ("queryset", gc.book.name)]
 
 
-# ── manage: ancestry plus the unchanged local settings/group gate ───────────
+# ── manage: ancestry plus enabled local membership ─────────────────────────
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("entry", [e for e in INVENTORY if e.guard == "manage"], ids=lambda e: e.id)
-def test_nested_manage_needs_ancestry_and_group(chain, world, trace, entry, settings):
+def test_nested_manage_needs_ancestry_and_group(chain, world, trace, entry, monkeypatch):
     from crud_views.lib.settings import crud_views_settings
 
     url = _entry_url(chain, entry, world.penguin.pk, world.book.pk)
@@ -844,3 +845,10 @@ def test_nested_manage_needs_ancestry_and_group(chain, world, trace, entry, sett
         ct = ContentType.objects.get_for_model(model)
         member.user_permissions.add(Permission.objects.get(content_type=ct, codename=f"{action}_{ct.model}"))
     assert _client(member).get(url).status_code == 200
+    # debug_only still denies the same authorized member when DEBUG is off,
+    # after independently checking the ancestry.
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "debug_only")
+    trace.events[:] = []
+    assert _client(member).get(url).status_code == 403
+    assert trace.events[:4] == _guard(chain, entry, upto="nearest")
+    assert trace.events.index(("manage_gate",)) > trace.events.index(("model_perm", "app.view_book"))

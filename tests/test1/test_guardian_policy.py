@@ -419,9 +419,19 @@ def test_inactive_superuser_helper_returns_nothing(pol, publishers):
 STRICT_HELPER = {"policy": "strict", "accept_global_perms": False, "use_groups": True}
 
 
+def _manager(username="manager"):
+    from django.contrib.auth.models import Group
+
+    from crud_views.lib.settings import crud_views_settings
+
+    user = _user(username)
+    user.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    return user
+
+
 @pytest.mark.django_db
 def test_manage_reports_strict_helper_instead_of_removed_flag(pol, client):
-    client.force_login(_user("manager"))
+    client.force_login(_manager())
     response = client.get(_url(pol.pub_vs, "manage"))
     assert response.status_code == 200
 
@@ -494,7 +504,7 @@ def _policy_row(view_key, accept_cell, effective_text):
 
 @pytest.mark.django_db
 def test_manage_context_reports_mixed_policies_on_one_viewset(pol, client):
-    client.force_login(_user("manager"))
+    client.force_login(_manager())
     policies = _views_policy(_manage(client, pol.pub_vs))
 
     assert policies == {
@@ -511,7 +521,7 @@ def test_manage_context_reports_parent_only_applicability(pol, client, publisher
     from tests.lib.helper.guardian import user_guardian_object_perm
 
     a, _b = publishers
-    manager = _user("manager")
+    manager = _manager()
     client.force_login(manager)
 
     # phase 06.18: the nested manage page keeps its own gate and additionally needs the strict Publisher ancestor
@@ -535,7 +545,7 @@ def test_manage_context_reports_parent_only_applicability(pol, client, publisher
 @pytest.mark.django_db
 def test_manage_never_reads_policy_from_the_viewset(pol, client, monkeypatch):
     """Changing a view class flips its row; the row is the view's own class attribute (D-03)."""
-    client.force_login(_user("manager"))
+    client.force_login(_manager())
     monkeypatch.setattr(pol.PublisherList, "cv_guardian_accept_global_perms", True)
     monkeypatch.setattr(pol.PublisherDetail, "cv_guardian_accept_global_perms", False)
 
@@ -546,7 +556,7 @@ def test_manage_never_reads_policy_from_the_viewset(pol, client, monkeypatch):
 
 @pytest.mark.django_db
 def test_manage_html_names_each_views_policy_and_the_strict_helper(pol, client):
-    client.force_login(_user("manager"))
+    client.force_login(_manager())
     content = _flat(_manage(client, pol.pub_vs))
 
     assert "Global permission fallback" in content
@@ -563,7 +573,7 @@ def test_manage_html_names_each_views_policy_and_the_strict_helper(pol, client):
 @pytest.mark.django_db
 def test_manage_html_reports_parent_none_create_as_not_applicable(pol, client, publishers):
     a, _b = publishers
-    client.force_login(_user("manager"))
+    client.force_login(_manager())
     content = _flat(_manage(client, pol.free_vs, parent_pk=a.pk))
 
     assert _policy_row("create", "—", "not applicable").search(content)
@@ -619,7 +629,7 @@ def test_reported_child_policies_match_access_for_a_global_only_user(pol, client
     assert client.get(create_url).status_code == 200
 
 
-# ── manage gate preserved (A20): patched singleton modes/groups, live DEBUG ───
+# ── explicit manage membership gate: patched singleton modes/groups, live DEBUG ───
 
 MANAGE_GROUP = "pol_manage_admins"
 
@@ -641,7 +651,7 @@ def _actor_client(client, actor):
 
     if actor == "anonymous":
         return client
-    user = _user(f"manage_{actor}")
+    user = _user(f"manage_{actor}", superuser=actor == "superuser")
     if actor == "group":
         user.groups.add(Group.objects.get_or_create(name=MANAGE_GROUP)[0])
     client.force_login(user)
@@ -652,21 +662,25 @@ def _actor_client(client, actor):
 @pytest.mark.parametrize(
     ("mode", "debug", "actor", "status"),
     [
-        ("yes", False, "anonymous", 200),
-        ("yes", False, "nongroup", 200),
-        ("debug_only", True, "anonymous", 200),
-        ("debug_only", True, "nongroup", 200),
+        ("yes", False, "anonymous", 302),
+        ("yes", False, "nongroup", 403),
+        ("yes", False, "superuser", 403),
+        ("yes", False, "group", 200),
+        ("debug_only", True, "anonymous", 302),
+        ("debug_only", True, "nongroup", 403),
+        ("debug_only", True, "group", 200),
         ("debug_only", False, "anonymous", 302),
         ("debug_only", False, "nongroup", 403),
-        ("debug_only", False, "group", 200),
+        ("debug_only", False, "group", 403),
         ("no", False, "anonymous", 302),
         ("no", True, "anonymous", 302),
         ("no", False, "nongroup", 403),
         ("no", True, "nongroup", 403),
-        ("no", False, "group", 200),
+        ("no", False, "group", 403),
+        ("no", True, "group", 403),
     ],
 )
-def test_manage_gate_is_unchanged(pol, client, manage_mode, mode, debug, actor, status):
+def test_manage_gate_requires_enabled_membership(pol, client, manage_mode, mode, debug, actor, status):
     manage_mode(mode)
     with override_settings(DEBUG=debug):
         response = _actor_client(client, actor).get(_url(pol.pub_vs, "manage"))
@@ -682,7 +696,7 @@ def test_manage_gate_is_unchanged(pol, client, manage_mode, mode, debug, actor, 
 
 @pytest.mark.django_db
 def test_group_member_sees_policy_rows_under_group_gate(pol, client, manage_mode):
-    manage_mode("no")
+    manage_mode("yes")
     response = _actor_client(client, "group").get(_url(pol.pub_vs, "manage"))
 
     assert response.status_code == 200
@@ -831,7 +845,7 @@ def test_policy_mutation_cannot_turn_global_permission_into_helper_authority(pol
 
 @pytest.mark.django_db
 def test_manage_policy_copies_are_detached_across_requests_and_from_helper(pol, client, publishers):
-    user = _grant_global(_user("copy_manager"), "view_publisher")
+    user = _grant_global(_manager("copy_manager"), "view_publisher")
     client.force_login(user)
     first = _manage(client, pol.pub_vs)
     second = _manage(client, pol.pub_vs)
@@ -851,7 +865,7 @@ def test_inherited_global_flag_and_explicit_sibling_override_remain_independent(
     from crud_views_guardian.lib.mixins import GuardianQuerysetMixin
 
     obj, other = publishers
-    user = _grant_global(_user("inherited_policy"), "view_publisher")
+    user = _grant_global(_manager("inherited_policy"), "view_publisher")
     client.force_login(user)
     assert "cv_guardian_accept_global_perms" not in pol.PublisherList.__dict__
     monkeypatch.setattr(GuardianQuerysetMixin, "cv_guardian_accept_global_perms", True)

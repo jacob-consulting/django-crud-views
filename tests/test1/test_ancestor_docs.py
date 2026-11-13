@@ -688,14 +688,16 @@ def test_note_view_fallback_does_not_relax_the_strict_book_ancestor(fallback, bo
     assert _client(member).get(f.note_list()).status_code == 200
 
 
-def test_nested_manage_needs_ancestry_and_its_unchanged_local_gate(fallback, books, monkeypatch):
+def test_nested_manage_needs_ancestry_and_enabled_membership(fallback, books, monkeypatch):
     from crud_views.lib.settings import crud_views_settings
 
     f = fallback
     nobody = _user("m_nobody")
-    assert _client(nobody).get(f.note_manage()).status_code == 403  # public manage does not bypass ancestry
+    assert _client(nobody).get(f.note_manage()).status_code == 403
     reader = _user("m_reader", (Publisher, "view"))
     _grant(f.cv_book, "view", reader, books.book)
+    assert _client(reader).get(f.note_manage()).status_code == 403
+    reader.groups.add(Group.objects.create(name=crud_views_settings.manage_group))
     response = _client(reader).get(f.note_manage())
     assert response.status_code == 200
     policy = response.context["ancestor_policy"]
@@ -706,10 +708,10 @@ def test_nested_manage_needs_ancestry_and_its_unchanged_local_gate(fallback, boo
     assert config["parent_viewset"] == "book (ancestor provider: guardian)"
     views = response.context["views"]
     assert views["list"]["guardian_policy"]["effective_policy"] == "global fallback"
-    # the local manage gate is unchanged: not public and not in the manage group → 403 despite the grants
+    # Disabling manage denies even members with all ancestor grants.
     monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "no")
     assert _client(reader).get(f.note_manage()).status_code == 403
-    reader.groups.add(Group.objects.create(name=crud_views_settings.manage_group))
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "yes")
     assert _client(reader).get(f.note_manage()).status_code == 200
     # and the group never bypasses ancestry
     nobody.groups.add(Group.objects.get(name=crud_views_settings.manage_group))
@@ -717,7 +719,11 @@ def test_nested_manage_needs_ancestry_and_its_unchanged_local_gate(fallback, boo
 
 
 def test_publisher_manage_reports_its_ancestor_fallback(fallback, books):
+    from crud_views.lib.settings import crud_views_settings
+
     superuser = User.objects.create_superuser(username="m_super", password="pw")
+    assert _client(superuser).get(_url(fallback.cv_book, "manage", publisher_pk=books.penguin.pk)).status_code == 403
+    superuser.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
     response = _client(superuser).get(_url(fallback.cv_book, "manage", publisher_pk=books.penguin.pk))
     assert response.status_code == 200
     assert response.context["guardian_config"]["parent_viewset"] == (
@@ -874,9 +880,6 @@ def test_both_release_surfaces_state_the_same_migration_contract():
             "all-none",
             "classified built-in",
             "top-level",
-            # nested manage
-            "manage setting",
-            "or group",
             # boundaries
             "get_queryset()",
             "Resource",

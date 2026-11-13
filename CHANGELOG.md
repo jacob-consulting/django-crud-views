@@ -6,6 +6,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Ordinary formset row cards:** ordinary rows now have a bordered fieldset and a singular
+  model-name legend by default, including conditional and AJAX-added rows. `FormSet.row_legend`
+  accepts custom text or a lazy translation; `False` (or `""`) removes the entire frame and
+  padding at that nesting level. Section titles and compact layouts retain their existing
+  behavior. Projects expecting unframed rows or overriding formset templates/CSS should follow
+  the [migration guide](docs/migrating-1.0.md#ordinary-formset-row-cards).
+
 - **Numbered column custom renderers:** the default Bootstrap 5 bridge for `Column1`–`Column12`
   now escapes plain strings from `get_rendered_fields()`. Crispy's standard rendered fields remain unchanged.
   Custom HTML renderers should use `format_html()` to escape interpolated values; see the

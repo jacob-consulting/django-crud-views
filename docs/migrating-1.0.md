@@ -5,6 +5,44 @@ the route from **0.29.x** to 1.0.0. The [CHANGELOG](https://github.com/jacob-con
 stays the complete record, ordered by release and issue; this page orders the same changes by what you have to
 touch.
 
+## Ordinary formset row cards
+
+Ordinary formset rows now have a card-style fieldset and a singular model-name legend by
+default, whether or not the form uses conditional fields. Previously these rows were
+unframed. Compact formsets retain their existing presentation.
+
+To retain plain rows, add `row_legend=False` to **each affected `FormSet` declaration**, including
+each child level you want to suppress. For example, with your existing inline formset classes:
+
+```python
+from crud_views.lib.formsets import FormSet
+
+questions = FormSet(
+    title="Questions",
+    klass=QuestionFormSet,
+    # Questions keep their default cards.
+    children={
+        "choices": FormSet(title="Choices", klass=ChoiceFormSet, row_legend=False),
+    },
+)
+```
+
+`False` and `""` remove the **whole row frame, legend, border and card padding**, not just its
+caption. They preserve fields, validation, controls and saving. A parent's choice does not
+propagate to its children. `title` remains the section heading; custom `row_legend` strings
+retain their capitalization and lazy translations resolve when rendered.
+
+If you override `crud_views/formsets/formset.html`, review the optional
+`fieldset.cv-formset-row-card` and `legend.cv-formset-row-legend` inside the existing
+`div.cv-formset-row`. Preserve that functional wrapper and its `cv-data-*` attributes, keep
+child formsets inside the owning row, and apply the same condition to opening and closing
+fieldsets. CSS selectors that assumed `.cv-formset-form` was always an immediate child of the
+row may need to account for the new fieldset. Do not apply ordinary card rules to compact
+rows. Check initial, invalid and AJAX fragment rendering in your theme.
+
+No database migration is required. See the complete
+[row legend API and synchronized nested example](reference/formsets.md#row-cards-and-legends).
+
 ## Numbered column custom renderers
 
 The default Bootstrap 5 template bridge for `Column1`–`Column12` now respects Django's autoescaping.

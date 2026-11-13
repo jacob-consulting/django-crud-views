@@ -75,6 +75,7 @@ cv_formsets: FormSets = FormSets(
             children=OrderedDict(
                 choices=FormSet(
                     title=_("Choices"),
+                    row_legend=False,
                     klass=ChoiceFormSet,
                     fields=["label"],
                     pk_field="id",
@@ -84,6 +85,39 @@ cv_formsets: FormSets = FormSets(
     )
 )
 ```
+
+### Row cards and legends
+
+All ordinary formset rows render as bordered cards by default, with or without conditional
+fields. Each `FormSet` declaration controls its own row legend independently, including
+nested levels. The section `title` names the whole formset; `row_legend` names each row.
+
+| `row_legend` | Ordinary row presentation |
+| --- | --- |
+| `None` (default) | Card with the row model's singular `verbose_name`, capitalized at the first character. |
+| `"your question"` | Card with the exact custom text, preserving capitalization and escaping ordinary HTML characters. |
+| `_("your question")` | Custom lazy translation, evaluated in the active language at render time. Import `_` with `from django.utils.translation import gettext_lazy as _`. |
+| `False` | Plain row: no row fieldset, legend, border, or card padding. |
+| `""` | Same complete frame suppression as `False`. |
+
+Other values, including `True`, numeric `0`, bytes and containers, are rejected when declaring
+the `FormSet`. This is presentation only: suppression does not disable fields, controls,
+validation, ordering, deletion, or saving. The functional `.cv-formset-row` wrapper and its
+JavaScript data attributes remain.
+
+The copyable nested declaration above keeps Question cards while `row_legend=False` applies
+only to Choices. It does not change either section's `title` or other nesting levels.
+Initial rendering, validation redisplay and AJAX-added rows all follow the same rule.
+Compact layouts ignore `row_legend` and keep their existing shared headings and row styling.
+
+For polymorphic ordinary forms, the default comes from each row's actual model instance, so
+different model types can have different labels in the same formset. At the render-tree
+level, a form without a model instance falls back to the section `title` unchanged; an empty
+fallback also suppresses the frame. Public `FormSet` declarations still require a supported
+inline formset class — this fallback does not add plain Django formset support.
+
+Projects upgrading from unframed ordinary rows should follow the
+[row-card migration guidance](../migrating-1.0.md#ordinary-formset-row-cards).
 
 ### The parent form
 

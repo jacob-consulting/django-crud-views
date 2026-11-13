@@ -50,7 +50,7 @@
     },
     {
       "number": "06.3",
-      "name": "Delete protection and write-boundary integrity \u2014 issue #282",
+      "name": "Delete protection and write-boundary integrity — issue #282",
       "status": "complete"
     },
     {
@@ -179,15 +179,20 @@
       "status": "complete"
     },
     {
+      "number": "06.32",
+      "name": "Workflow transition variant and icon metadata (#362)",
+      "status": "pending"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step (plan phase 7)",
-    "reason": "Phase 7 \u2014 needs a plan"
+    "command": "$gsd-plan-review-convergence 06.32 --max-cycles 5",
+    "label": "Review phase 06.32 plan",
+    "reason": "Initial plan ready; external review pending"
   },
-  "updated_at": "2026-11-12T14:27:46.496Z"
+  "updated_at": "2026-11-13T08:05:54.238Z"
 }

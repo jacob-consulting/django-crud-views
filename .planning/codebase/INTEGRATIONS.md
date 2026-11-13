@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-13
-last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
+last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
 ---
 # External Integrations
 
@@ -25,7 +25,6 @@ last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
 **Optional Django extensions:**
 - Install extras independently as `django-crud-views[workflow]`, `[polymorphic]`, `[guardian]`, or `[ordered]`; `[all]` combines them. The apps are shipped in the distribution, but each optional integration requires its corresponding third-party package and app setup (`pyproject.toml`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`).
 - django-fsm-2 and django-fsm-2-admin provide workflow transitions and admin integration (`src/crud_views_workflow/`). `run_transition()` validates actor, object, and transition state and writes history atomically on the selected DB alias (`src/crud_views_workflow/lib/execution.py`); direct FSM method calls bypass that helper behavior.
-- django-fsm transition `custom` metadata may supply `variant` and `icon` presentation values. Button variants are limited to `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`; each maps to a workflow button-class key with defaults registered by `src/crud_views_workflow/apps.py`. Icons resolve through the shared semantic icon registry and are placed according to `form:icon-host`; absent or unavailable icons leave text controls. These values only affect button presentation, not transition eligibility or radio rendering (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `docs/reference/workflow_view.md`).
 - django-polymorphic supports polymorphic querysets and type-specific creation (`src/crud_views_polymorphic/`).
 - django-guardian adds per-object permission checks and uses the host project's auth backend configuration (`src/crud_views_guardian/lib/mixins.py`).
 - django-ordered-model supports ordering actions for host models that opt in (`src/crud_views/lib/ordered.py`, `pyproject.toml`).
@@ -34,6 +33,8 @@ last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
 - `src/crud_views/lib/icons.py` provides plain icon constants and a semantic icon registry; the host template supplies matching icon-font CSS (`docs/reference/icons.md`). Applications and theme apps can register icon mappings/renderers.
 - Django serves package static assets. Optional django-pipeline support is lazy and is not a runtime dependency; with `CRUD_VIEWS_ASSETS_BUNDLED`, package tags emit external bundle entries for the host bundler (`src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `docs/reference/assets.md`).
 - Asset registrations may use external CDN URLs and SRI/CSP nonce attributes; the host owns Bootstrap/icon CSS delivery and CSP policy (`src/crud_views/lib/assets.py`).
+- Core and extension apps register JS/CSS bundles through `AppConfig.ready()`; registry order follows `INSTALLED_APPS` after the core bundle. The registry validates duplicate/reserved keys and external asset integrity through Django system checks (`src/crud_views/lib/assets.py`, `src/crud_views/checks.py`).
+- Optional django-pipeline integration is settings-time safe: `cv_sources()` returns a lazy sequence that resolves registered local assets after app setup, filters by bundle key, and leaves external URLs for template tags (`src/crud_views/lib/pipeline.py`, `docs/reference/assets.md`).
 - Formset client behavior is bundled in `src/crud_views/static/crud_views/js/formset.js`; its supported page integration uses jQuery, while compact layout uses package CSS (`src/crud_views/static/crud_views/css/formset.css`).
 
 **Caller-provided resource sources:**

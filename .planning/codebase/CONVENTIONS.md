@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
+last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
 last_mapped_at: 2026-11-13
 ---
 # Coding Conventions
@@ -97,7 +97,7 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - Registry precedence is defaults → installed theme registrations → `CRUD_VIEWS_BUTTON_CLASSES`; cache invalidation follows theme registration and settings changes. Tests that register theme classes should snapshot/restore `bc._THEME_BUTTON_CLASSES` and reset the cache around each test (`tests/test1/test_button_classes_checks.py`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - Keep legend text as ordinary template-interpolated values and classes in quoted attributes. Test hostile plain strings at both boundaries by asserting escaped source output, exact parsed text/attribute values, and absence of injected nodes (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`, `tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
 - Preserve markup ownership: ToggleGroup without a legend remains a `div`; formset row-only fragments omit their own outer fieldset/legend, while nested full formsets retain their own direct legends. Assert direct-child ownership and fragment roots rather than banning all descendant legends (`tests/test1/test_conditional_layout.py`, `tests/test1/test_formsets_compact.py`).
-- Button-class reference inventories are executable contracts: the core inventory has 102 keys, workflow contributes 18 keys, and the effective core-plus-workflow inventory has 120. Update the canonical table, reference docs, workflow inventory, and embedded fresh-process guard together (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
+- Button-class reference inventories are executable contracts: the current core inventory has 102 keys and the effective core-plus-workflow inventory has 112. Update the canonical table, reference docs, workflow inventory, and embedded fresh-process guard together (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
 ## Executable Documentation Recipes
 
@@ -118,14 +118,19 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - Resolve registry classes at render time so already-built layouts observe current theme/settings. Preserve constructor-provided classes additively, but honor explicit subclass or instance class/template ownership; do not infer ownership by comparing class strings (`src/crud_views/lib/crispy/table.py`, `tests/test1/test_crispy_columns.py`).
 - Render through a shallow per-render copy and crispy's existing renderer. Keep caller context and the original layout reusable across nested/sibling renders; avoid mutating shared wrapper state (`tests/test1/test_crispy_columns.py::test_column6_theme_tracer`, `test_column_nested_sibling_context_isolation`).
 - The local Bootstrap leaf is an audited bridge only for the installed stock Bootstrap template. Preserve ordinary crispy `Column` behavior and explicit custom templates/packs; test classes, field output, attributes, and ownership through rendered HTML (`src/crud_views/templates/crud_views/crispy/bootstrap5_column.html`, `tests/test1/test_crispy_columns.py`).
-- Keep the canonical 102 core / 120 core-plus-workflow registry inventories synchronized with registry defaults and documentation (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
+- Keep the canonical 102 core / 112 core-plus-workflow registry inventories synchronized with registry defaults and documentation (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
-## Workflow Transition Metadata (Phase 06.32)
+## Developer-Only Manage Diagnostics (Phase 06.31)
 
-- Keep transition `variant` and `icon` as optional metadata on the existing workflow action dictionaries. Resolve them per render on copied dictionaries; do not mutate stored actions or introduce a view hook (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `tests/test1/test_workflow_buttons.py`).
-- Button presentation supports only the eight Bootstrap variant names (`primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`). Missing, empty, unsupported, non-string, and unhashable values use the existing `form:submit:label` fallback. Preserve selected empty/null registry overrides as suppression (`src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`, `tests/test1/test_workflow_buttons.py`).
-- Declare the eight `workflow:transition-*` base slots in the optional workflow app. Keep the workflow inventory at 18 and merged core-plus-workflow inventory at 120; the core inventory remains 102 (`src/crud_views_workflow/apps.py`, `tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`).
-- Reuse shared icon normalization and host resolution. Inline and host rendering are mutually exclusive; host leaves own their markup and must not receive a duplicate inline icon. Preserve full captions regardless of generic form label mode (`src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`, `tests/test1/test_workflow_buttons.py`).
-- Preserve the button-only contract: radio presentation continues rendering native choices without button metadata. On invalid/refused requests, refresh current actions while retaining bound form identity, submitted values, errors, and accessible description targets (`tests/test1/test_workflow_buttons.py`).
+- Keep manage authorization checks explicit and request-time: the active authenticated user must be a member of the configured developer group; staff/superuser status and `DEBUG` do not grant access (`src/crud_views/lib/views/manage.py`, `src/crud_views/lib/view/visibility.py`). Preserve the view action visibility gate alongside the endpoint gate so unauthorized users cannot see a control that would fail on click (`tests/test1/test_manage.py`, `tests/test1/test_authorization_matrix.py`).
+- Treat ancestor diagnostics as a scoped query contract. Resolve and display only the selected ancestor scope, preserve declared values beside effective defaults, and avoid probing farther ancestors during render (`src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_db.py`, `tests/test1/test_ancestor_manage.py`). Use event/query assertions to prove absence of extra lookups, not only final HTML assertions.
+- Cover core and Guardian management through shared parameterized policy cases while retaining tests for Guardian-specific presentation (`src/crud_views_guardian/lib/views.py`, `tests/test1/test_ancestor_manage.py`, `tests/test1/test_guardian.py`).
+
+## Workflow Transition Presentation Metadata (Phase 06.32)
+
+- Put transition presentation metadata on the existing django-fsm transition declarations and keep the button renderer on its existing workflow form path. Supported variant names map to the `workflow:transition-<variant>` button-class keys; use the common class registry for app defaults, theme registration, and project overrides rather than embedding consumer-specific classes (`src/crud_views_workflow/apps.py`, `tests/test1/test_workflow_buttons.py`, `tests/test1/test_button_classes.py`).
+- Keep the transition variant registry bounded to the eight documented Bootstrap variants. Tests should verify those keys are accepted and unsupported names (including malformed values) are rejected or fall back safely (`tests/test1/test_button_classes.py`, `tests/test1/test_workflow_buttons.py`).
+- Preserve source-location discipline for shipped class literals: the source inventory test masks only the expected values inside `CrudViewsWorkflowConfig.crud_views_button_class_defaults`; do not broaden the exemption for workflow templates or other modules (`tests/test1/test_button_classes_templates.py`).
+- When adding workflow default keys, update the executable core/workflow inventory and the reference section together. Current counts are 102 core and 120 core-plus-workflow defaults (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
 *Convention analysis: 2026-11-13*

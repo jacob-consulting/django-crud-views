@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
+last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
 last_mapped_at: 2026-11-13
 ---
 # Codebase Concerns
@@ -45,6 +45,12 @@ last_mapped_at: 2026-11-13
 - Files: `src/crud_views_polymorphic/lib/utils.py`, `src/crud_views_polymorphic/lib/create.py`, `src/crud_views_polymorphic/lib/create_select.py`
 - Trigger: directly request a polymorphic-create URL with a nonexistent content-type id or a model missing from `polymorphic_forms`.
 - Workaround: expose only selector-provided types. A targeted fix could turn invalid/unconfigured types into a deliberate 404 or form error and report the resolved model.
+
+**Manage diagnostics with a custom user model lacking `username`:**
+- Symptoms: when `CRUD_VIEWS_MANAGE_SHOW_USERS=True`, loading manage diagnostics raises `FieldError` for user models that do not define a `username` field.
+- Files: `src/crud_views/lib/views/manage.py`, `tests/test1/test_manage.py`
+- Trigger: enable holder-name display with an email-only or otherwise username-free `AUTH_USER_MODEL`.
+- Workaround: leave `CRUD_VIEWS_MANAGE_SHOW_USERS` disabled; a fix should derive a display/order field from the configured user model or use its string representation.
 
 ## Security Considerations
 
@@ -188,6 +194,8 @@ None independently confirmed.
 - Priority: Low; documentation and explicit validation define the boundary.
 
 ## Resolved Findings
+
+Phase 06.31's critical seed rollback finding is closed: the complete example seed command runs inside `transaction.atomic`, and regression tests verify that rejected direct or group/object permission conflicts leave account credentials, memberships, grants, and seeded rows unchanged. This boundary applies to the management command's single default database; calling individual helpers directly does not provide the same outer transaction. Evidence is in `.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-REVIEW-DISPOSITION.md`, `.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-REVIEW-FIXES.md`, and `.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-VERIFICATION.md`.
 
 Phase 06.27's two review findings are closed and should not be treated as open concerns: inherited cleaners returning `None` are normalized in `src/crud_views/lib/conditional/group.py`, and the browser evidence checker now rejects contradictory choice observations in `tests/browser/conditional-formsets.cjs`. The independent review is clean; details and regression evidence are in `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-REVIEW-DISPOSITION.md` and `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-FIXES.md`.
 

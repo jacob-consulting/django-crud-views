@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 644048051fb9df94d042c698a3962738e486d74b
+last_mapped_commit: 47ce1d3069876f23c027f26a6290ed26b83c5804
 last_mapped_at: 2026-11-13
 ---
 <!-- refreshed: 2026-11-13 -->
@@ -44,16 +44,18 @@ last_mapped_at: 2026-11-13
 | View registration metaclass | Registers a class with its `cv_viewset` and adopts the ViewSet model by default | `src/crud_views/lib/view/meta.py` |
 | CrudView integration base | Sibling/action resolution, context, routing, message rendering, access policy, write transaction hooks | `src/crud_views/lib/view/base.py` |
 | Django generic views | List/card/detail/create/update/delete, action, child and manage request handlers | `src/crud_views/lib/views/` |
+| Manage diagnostics | Developer-gated model-permission, permission-holder, and nested-ancestor configuration display | `src/crud_views/lib/views/manage.py` |
 | Presentation model | Button/action grouping, context, labels, variants, visibility and metadata | `src/crud_views/lib/view/` |
 | Asset and theme delivery | Registry of app-contributed JS/CSS and theme-template tags/config | `src/crud_views/lib/assets.py`, `src/crud_views/templatetags/crud_views.py` |
 | Object detail extension | Configurable property groups, typed property resolvers, layout templates, detail view integration | `src/crud_views_object_detail/lib/` |
-| Workflow extension | FSM transition form actions and workflow history/audit model | `src/crud_views_workflow/lib/` |
+| Workflow extension | FSM transition form actions, configurable button variant/icon presentation, and workflow history/audit model | `src/crud_views_workflow/lib/` |
 | Polymorphic extension | Type selection and model-specific create/update/detail views | `src/crud_views_polymorphic/lib/` |
 | Guardian extension | Object permission-aware ViewSet, view mixins, permission management screens | `src/crud_views_guardian/lib/` |
 | Resource abstraction | Pydantic-backed, non-ORM row contract for read-oriented views | `src/crud_views/lib/resource.py` |
 | Semantic icon contract | Plain-value `Icon` constants, inherited/overridden view header icon selection, registry resolution and template projection | `src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templatetags/crud_views.py` |
 | Legend class hooks | Existing button-class registry supplies the `conditional:legend` and `formset:legend` slots to their respective rendered legends | `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html` |
 | Startup validation | Django checks over registered ViewSets, views, templates, asset declarations and extension configuration | `src/crud_views/checks.py`, `src/crud_views_workflow/checks.py`, `src/crud_views_guardian/checks.py` |
+| Manage group setup command | Idempotently creates only the configured diagnostics group; does not grant permissions or memberships | `src/crud_views/management/commands/cv_manage_group.py` |
 | Ancestor authorization engine | Request-local guard for nested ViewSets: static ancestry validation, actor admission, outermost-inward ancestor resolution and permission gates, child/parent membership checks | `src/crud_views/lib/ancestors.py` |
 | Ancestor policy values | Strict Pydantic `AncestorPolicy` / `AncestorPermissions` (provider, cascade, read/write/action permission pairs) | `src/crud_views/lib/ancestor_policy.py` |
 | Nested default-database boundary | Refuses non-`default` aliases for nested ORM data, writes and authorization records | `src/crud_views/lib/ancestor_db.py` |
@@ -67,13 +69,11 @@ last_mapped_at: 2026-11-13
 
 **Overall:** Registry-driven composition of Django class-based views with a reusable server-rendered Bootstrap 5 presentation layer.
 
-**Workflow transition presentation (Phase 06.32):** `WorkflowForm` keeps its radio transition control by default and supports opt-in `cv_transition_presentation = "buttons"`, which uses `_TransitionButtons`. Button actions receive transition `custom["variant"]` and `custom["icon"]` metadata. The fixed accepted variants are `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`; each selects `workflow:transition-<variant>`, while missing or unsupported values use `form:submit:label`. Icons follow the core form icon host and inline rendering contract. The button UI retains full visible captions and uses the same workflow validation and execution flow (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`, `tests/test1/test_workflow_buttons.py`, `docs/reference/workflow_view.md`).
-
 **Key Characteristics:**
 - A `ViewSet` instance is the central router and shared configuration boundary. A concrete view joins it declaratively through `cv_viewset` and `cv_key`.
 - Form Cancel navigation is resolved per request through `cv_get_cancel_url()` and exposed to the form-button renderer; resolution accounts for access, nested objects, and request origin/query state (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/button_data.py`).
 - Protected-delete previews have a bounded display budget and render protected-object references as plain labels (`src/crud_views/lib/deletion.py`, `src/crud_views/templates/crud_views/snippets/delete/protected_objects.html`).
-- Workflow transitions use the shared form-frame and themeable presentation contracts; the documented opt-in page gate uses explicit transition rules and is covered by request tests (`src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/templates/crud_views_workflow/`, `tests/test1/`).
+- Workflow transitions use the shared form-frame and themeable presentation contracts; transition button metadata can select one of eight fixed variants and an optional icon while preserving the full caption. The documented opt-in page gate uses explicit transition rules and is covered by request tests (`src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/templates/crud_views_workflow/`, `tests/test1/`).
 - Nested requests pass through one ancestor-authorization guard (`_authorize_ancestors`) before any endpoint work: it resolves each ancestor through its own ViewSet queryset, applies per-ancestor permission gates (provider `model`, `guardian` or `none`; full cascade or nearest-only) and stores the resolved chain on the view instance (`src/crud_views/lib/ancestors.py`). Top-level requests do no ancestor work.
 - `CrudViewMetaClass` performs registration during class creation; consumers include the ViewSet's `urlpatterns` from their Django URL configuration.
 - `CrudView.cv_get_meta()` adds `view` and, only for child ViewSets, a `SimpleLazyObject` for immediate `parent_object`; resolving it delegates to `cv_get_parent_object()`, which reuses the ancestor guard's resolved parent when available and otherwise looks up the parent from the URL kwarg (`src/crud_views/lib/view/base.py`).
@@ -183,6 +183,14 @@ The snippet-variable contract is deliberately bounded: `object`, `view`, optiona
 
 Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus global `CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE`, `CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS`, `CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS` in `src/crud_views/lib/settings.py`. Structure/action declaration problems surface as system checks in `src/crud_views/checks.py`. Docs: `docs/reference/nested.md`, `docs/reference/guardian.md`.
 
+### Manage Diagnostics Request and Setup
+
+1. A ViewSet's manage page dispatches through `ManageView`; nested requests pass the ancestor guard before the local diagnostics gate (`src/crud_views/lib/views/manage.py`).
+2. `_cv_manage_allowed()` requires an authenticated, active user, an enabled manage mode (and `DEBUG` when mode is `debug_only`), and membership in the configured `CRUD_VIEWS_MANAGE_GROUP`. The same gate backs page permission checks and action visibility.
+3. The page projects ViewSet model permissions, configured group/user holders, and declared ancestor policy for diagnosis. Nested auth-record reads are checked against the default database before querying; display data does not grant permissions (`src/crud_views/lib/views/manage.py`, `src/crud_views/lib/ancestor_db.py`).
+4. `python manage.py cv_manage_group` creates the configured group with `get_or_create` only; operator membership and application permissions remain explicit setup steps (`src/crud_views/management/commands/cv_manage_group.py`, `docs/reference/settings.md`).
+5. The Bootstrap example seeds a non-superuser developer identity, fails closed on conflicting model/object grants, and applies a maintained explicit read-allowlist (`examples/bootstrap5/project/seeding.py`, `examples/bootstrap5/project/management/commands/seed.py`).
+
 ### Asset and Theme Flow
 
 1. Core assets are selected from `CrudViewsSettings`; extensions may register bundles during `AppConfig.ready()` (`src/crud_views/lib/assets.py`).
@@ -204,6 +212,10 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - Resource rows are obtained per request from a consumer-defined `Resource.cv_get_items()` or `cv_get_item()` rather than stored in the Django ORM (`src/crud_views/lib/resource.py`).
 
 **Workflow transition execution:** `WorkflowView` and public `run_transition()` share the private engine in `src/crud_views_workflow/lib/execution.py`. It verifies the selected database alias and persisted actor/object identity, validates availability/business/comment policy, then saves model state and `WorkflowInfo` within one alias-specific atomic block. View follow-ups use `transaction.on_commit()` on that same alias (`src/crud_views_workflow/lib/views.py`).
+
+**Workflow transition presentation:** `WorkflowForm` projects each offered django-fsm transition's `custom["variant"]` and `custom["icon"]` into action data (`src/crud_views_workflow/lib/forms.py`). `_TransitionButtons` accepts only the fixed variants `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`; it resolves variant classes through the existing button-class registry and host icon classes through the core icon placement contract (`src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`). Missing or unsupported variants use the existing `form:submit:label` classes. The template adds optional icon markup and retains the escaped full label (`src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`).
+
+**Manage diagnostics:** `ManageView` exposes configured permission and ancestor-policy diagnostics only after active-user, mode, group-membership and nested-ancestor gates. `cv_manage_group` is a separate setup command with a single group-creation mutation boundary; it does not assign memberships or permissions (`src/crud_views/lib/views/manage.py`, `src/crud_views/management/commands/cv_manage_group.py`).
 
 ### Object-Detail Resolution and Presentation
 
@@ -281,6 +293,11 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 - Location: `src/crud_views/apps.py`
 - Triggers: Django app registry startup.
 - Responsibilities: Register core system checks via `ready()` importing `crud_views.checks`.
+
+**Manage diagnostics group setup:**
+- Location: `src/crud_views/management/commands/cv_manage_group.py`
+- Triggers: Operator runs `python manage.py cv_manage_group` after configuring Django settings.
+- Responsibilities: Ensure the configured diagnostics group exists without altering its members or permissions.
 
 **ViewSet URL inclusion:**
 - Location: `src/crud_views/lib/viewset/__init__.py` (`ViewSet.urlpatterns`)

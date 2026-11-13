@@ -1690,7 +1690,7 @@
       "python": "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
       "series": null,
       "floor": false,
-      "started": "2026-11-13T11:16:32Z",
+      "started": "2026-11-13T11:20:55Z",
       "environment": {
         "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/tabler-test/src:/home/alex/projects/alex/django-crud-views/examples/bootstrap5",
         "PYTHONDONTWRITEBYTECODE": "1",
@@ -1706,8 +1706,8 @@
         "crispy-bootstrap5": "2026.9"
       },
       "exit": 0,
-      "output": "bringing up nodes...\nbringing up nodes...\n\n........................................................................ [ 48%]\n........................................................................ [ 96%]\n.....                                                                    [100%]\n149 passed in 1.13s\n",
-      "seconds": 1.8,
+      "output": "bringing up nodes...\nbringing up nodes...\n\n........................................................................ [ 48%]\n........................................................................ [ 96%]\n.....                                                                    [100%]\n149 passed in 1.12s\n",
+      "seconds": 1.87,
       "tests": 149
     },
     {
@@ -1722,7 +1722,7 @@
       "python": "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
       "series": null,
       "floor": false,
-      "started": "2026-11-13T11:16:33Z",
+      "started": "2026-11-13T11:20:57Z",
       "environment": {
         "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/tabler-test/src:/home/alex/projects/alex/django-crud-views/examples/bootstrap5",
         "PYTHONDONTWRITEBYTECODE": "1",
@@ -1738,8 +1738,8 @@
         "crispy-bootstrap5": "2026.9"
       },
       "exit": 0,
-      "output": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /tmp/cv-docs-hie12tm5\nINFO    -  Documentation built in 1.27 seconds\n",
-      "seconds": 1.54,
+      "output": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /tmp/cv-docs-scsner_0\nINFO    -  Documentation built in 1.28 seconds\n",
+      "seconds": 1.58,
       "tests": null
     },
     {
@@ -8452,5 +8452,85 @@
       "exit": 1,
       "output": "ACCEPTANCE_FAILED: Required source-binding environment changed\n"
     }
-  ]
+  ],
+  "reconciliation": {
+    "upstreamSourceCommit": "e5653007",
+    "downstreamSourceCommit": "044c511",
+    "downstreamFindingsCommit": "2c89e46",
+    "docsCommands": [
+      {
+        "id": "docs-links",
+        "command": [
+          "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-c",
+          "examples/bootstrap5/pytest.ini",
+          "examples/bootstrap5/test_docs_sync.py",
+          "examples/bootstrap5/test_doc_links.py",
+          "-n",
+          "2",
+          "-q",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "cwd": "/home/alex/projects/alex/django-crud-views",
+        "kind": "pytest",
+        "python": "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+        "series": null,
+        "floor": false,
+        "started": "2026-11-13T11:20:55Z",
+        "environment": {
+          "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/tabler-test/src:/home/alex/projects/alex/django-crud-views/examples/bootstrap5",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "CV_QUERYSET_UPSTREAM": "/home/alex/projects/alex/django-crud-views",
+          "CV_QUERYSET_DOWNSTREAM": "/home/alex/projects/alex/tabler-test",
+          "CV_FRAGMENT_PYTHON": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python"
+        },
+        "runtime": {
+          "python": "3.12.3",
+          "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+          "Django": "6.1.2",
+          "django-crispy-forms": "2.7",
+          "crispy-bootstrap5": "2026.9"
+        },
+        "exit": 0,
+        "output": "bringing up nodes...\nbringing up nodes...\n\n........................................................................ [ 48%]\n........................................................................ [ 96%]\n.....                                                                    [100%]\n149 passed in 1.12s\n",
+        "seconds": 1.87,
+        "tests": 149
+      },
+      {
+        "id": "mkdocs-strict",
+        "command": [
+          "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+          "-c",
+          "import subprocess,sys,tempfile; \nwith tempfile.TemporaryDirectory(prefix='cv-docs-') as d: subprocess.run([sys.executable,'-m','mkdocs','build','--strict','--site-dir',d],check=True)"
+        ],
+        "cwd": "/home/alex/projects/alex/django-crud-views",
+        "kind": null,
+        "python": "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+        "series": null,
+        "floor": false,
+        "started": "2026-11-13T11:20:57Z",
+        "environment": {
+          "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/tabler-test/src:/home/alex/projects/alex/django-crud-views/examples/bootstrap5",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "CV_QUERYSET_UPSTREAM": "/home/alex/projects/alex/django-crud-views",
+          "CV_QUERYSET_DOWNSTREAM": "/home/alex/projects/alex/tabler-test",
+          "CV_FRAGMENT_PYTHON": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python"
+        },
+        "runtime": {
+          "python": "3.12.3",
+          "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+          "Django": "6.1.2",
+          "django-crispy-forms": "2.7",
+          "crispy-bootstrap5": "2026.9"
+        },
+        "exit": 0,
+        "output": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /tmp/cv-docs-scsner_0\nINFO    -  Documentation built in 1.28 seconds\n",
+        "seconds": 1.58,
+        "tests": null
+      }
+    ]
+  }
 }

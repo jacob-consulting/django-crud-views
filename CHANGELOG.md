@@ -601,7 +601,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   browser switching retains unsaved values. Compact cells stay visible with inactive controls disabled. A focused
   service-request example demonstrates all three layouts, with executable
   [recipes and measured query costs](docs/reference/conditional.md#queryset-driven-conditional-fields).
-  Published example/documentation availability follows deployment; downstream browser acceptance is tracked separately.
+  The roastery example in `tabler-test` adopts the shared contract with locally verified retained-product,
+  row-insertion, preserve-until-save and persistence behavior. Published example/documentation availability
+  follows deployment; local acceptance does not imply publication.
 
 - **Choice-driven conditional groups** (#354): share `ValueToggle` descriptors between server groups and crispy
   layouts for native dropdown/radio controls, including groups shared by several choices. Standard choice fields

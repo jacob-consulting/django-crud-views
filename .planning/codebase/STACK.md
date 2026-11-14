@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-13
-last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
+last_mapped_at: 2026-11-14
+last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-13
+**Analysis Date:** 2026-11-14
 
 ## Languages
 
@@ -56,6 +56,7 @@ last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
 - Phase 06.30 conditional form fields add the opt-in `QuerysetConditions` API for native single-select `ModelChoiceField` controllers. It declares category keys on the field queryset and uses the selected, field-cleaned model object for server-side validation (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`).
 - Compact formsets expose the strict boolean `CompactLayout.row_border` option; it is presentation metadata and adds no dependency (`src/crud_views/lib/formsets/compact.py`).
 - Manage diagnostics use Django auth groups and settings (`CRUD_VIEWS_MANAGE_VIEWS_ENABLED`, `CRUD_VIEWS_MANAGE_GROUP`); `cv_manage_group` creates the configured group without changing membership or permissions (`src/crud_views/lib/settings.py`, `src/crud_views/management/commands/cv_manage_group.py`).
+- Manage diagnostics render structured permission matrices, effective ViewSet/view configuration with provenance, route/hierarchy data, ancestor policies, and ViewSet-scoped Django system-check messages from Django auth, ORM, routing, and check APIs (`src/crud_views/lib/views/manage.py`). The checks are collected for display; global startup checks remain separate.
 - Workflow transition presentation can read optional `variant` and `icon` keys from django-fsm transition `custom` metadata and resolve them through the existing button-class and icon APIs (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`).
 - Demo-only dependencies are Gunicorn, WhiteNoise, and django-ratelimit (`requirements/demo.txt`)
 - Formset layouts, including compact layouts, use existing Django forms and crispy APIs; no additional package dependency is introduced (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/layout.py`)
@@ -86,4 +87,4 @@ last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
 
 ---
 
-*Stack analysis: 2026-11-13*
+*Stack analysis: 2026-11-14*

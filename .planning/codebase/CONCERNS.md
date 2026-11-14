@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
-last_mapped_at: 2026-11-13
+last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
+last_mapped_at: 2026-11-14
 ---
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-13
+**Analysis Date:** 2026-11-14
 
 ## Tech Debt
 
@@ -169,10 +169,10 @@ None independently confirmed.
 - Risk: uncaught lookup/form-selection exceptions can return server errors instead of a controlled response.
 - Priority: High
 
-**Custom user model without `username` in manage view:**
-- What's not tested: `CRUD_VIEWS_MANAGE_SHOW_USERS=True` with an email-only user model; the query names `username` directly in `values_list()` and `order_by()`.
-- Files: `src/crud_views/lib/views/manage.py`, `tests/test1/test_manage.py`
-- Risk: Django raises `FieldError` when the configured user model has no `username` field.
+**Custom user model without `username` in legacy manage holder path:**
+- What's not tested: `CRUD_VIEWS_MANAGE_SHOW_USERS=True` with an email-only user model through `get_permission_holders()`; this legacy method still names `username` directly in `values_list()` and `order_by()`. The structured manage matrix uses `user_model.USERNAME_FIELD`, but the legacy holder path remains present.
+- Files: `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`, `tests/test1/test_manage.py`, `tests/test1/test_guardian.py`
+- Risk: Django raises `FieldError` if this path is used with a configured user model lacking a `username` field.
 - Priority: Medium
 
 **Third-party theme contract:**
@@ -182,9 +182,9 @@ None independently confirmed.
 - Priority: Medium
 
 **Cross-environment and browser scope:**
-- What's not tested: phase 06.27 browser captures and the actual example were exercised in recorded runtimes only; they do not certify other browser engines, installed external themes, assistive-technology behavior, or every supported Python/Django combination. The current source has per-series conditional tests, but no claim is made for a full-suite replay on every matrix cell.
-- Files: `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-VERIFICATION.md`, `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-COMPATIBILITY.md`, `tests/browser/conditional-formsets.cjs`
-- Risk: runtime or presentation differences outside the recorded evidence remain unestablished. This is scope of verification, not a confirmed defect.
+- What's not tested: phase 06.33 release evidence covers Python 3.12 with Django 4.2/5.2/6.0; seven declared Python/Django combinations lack prepared environments. Browser evidence covers Chromium 149 only; Firefox, WebKit, older engines, installed external themes, and assistive-technology behavior are not certified. In older engines, Presentation help using `::details-content` is available after expanding its disclosure, so the experience differs from current Chromium.
+- Files: `.planning/phases/06.33-structured-manage-page-366/deferred-items.md`, `.planning/phases/06.33-structured-manage-page-366/06.33-VERIFICATION.md`, `src/crud_views/static/crud_views/css/manage.css`, `tests/browser/manage-presentation.cjs`
+- Risk: compatibility or presentation differences outside the recorded environments remain unestablished; this is a verification boundary, not a confirmed defect. Phase 06.33 UAT passed, and its eight review findings are resolved.
 - Priority: Low
 
 **Compact formset consumer extension hooks:**
@@ -205,4 +205,4 @@ Phase 06.31's seeded example command had a critical rollback defect during revie
 
 ---
 
-*Concerns audit: 2026-11-13*
+*Concerns audit: 2026-11-14*

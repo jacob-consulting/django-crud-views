@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
-last_mapped_at: 2026-11-13
+last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
+last_mapped_at: 2026-11-14
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-13
+**Analysis Date:** 2026-11-14
 
 ## Naming Patterns
 
@@ -142,4 +142,12 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - Keep shipped class literals confined to `CrudViewsWorkflowConfig.crud_views_button_class_defaults`; the AST/source inventory exception is intentionally limited to those declarations (`tests/test1/test_button_classes_templates.py`).
 - Keep documentation and executable inventories synchronized at 102 core and 120 effective core-plus-workflow defaults (`tests/test1/test_button_classes.py`, `tests/test1/test_theme_adoption_docs.py`, `docs/reference/buttons.md`).
 
-*Convention analysis: 2026-11-13*
+## Structured Manage Diagnostics (Phase 06.33)
+
+- Keep manage presentation builders explicit about their inputs: pass the registered `ViewSet` and actor directly, and keep request-specific route coordinates in the request adapter (`src/crud_views/lib/views/manage.py`, `tests/test1/test_manage_cards.py`). A presentation helper must not consult `self.request` implicitly.
+- Treat the permission matrix as structured data: columns identify configured permission keys, holder rows retain stable database primary keys, and user labels may change independently of grant identity. Test direct group and user grants, custom/empty permission vocabularies, active-superuser privacy, and folding at 20/21 rows (`tests/test1/test_manage_cards.py`).
+- Preserve fixed query budgets across holder and column cardinalities. The core holder test warms only actor permission caches, then measures five queries (two aggregates) for both 1/4 columns and 1/21 holders; extend its matrix when changing that query shape (`tests/test1/test_manage_cards.py::test_holder_queries_are_batched`).
+- For request rendering, assert parsed DOM roles, table scopes, accessible wrappers, stable card IDs, safe links, hostile-text escaping, and no inline event/style/script payloads. Use lxml helpers already present in `tests/test1/test_manage_cards.py`; test responsive real-browser layout separately in `tests/browser/manage-presentation.cjs`.
+- Keep core and Guardian coverage parameterized through the existing ViewSet fixtures. An absent manage registration must raise before database reads for auth-dependent builders, while pure view inventory remains safe (`tests/test1/test_manage_cards.py`, `tests/test1/test_manage_guardian.py`).
+
+*Convention analysis: 2026-11-14*

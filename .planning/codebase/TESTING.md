@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
-last_mapped_at: 2026-11-13
+last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
+last_mapped_at: 2026-11-14
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-13
+**Analysis Date:** 2026-11-14
 
 ## Test Framework
 
@@ -211,8 +211,17 @@ PYTHONPATH="$PWD/src:$PWD" npm run test:integration
 - Invalid POST redisplay and late refusal should assert refreshed metadata while retaining bound data, errors, IDs, and workflow state. Confirm button-only metadata is ignored for radio presentation (`tests/test1/test_workflow_buttons.py`).
 - Phase 06.32 verification records 7/7 truths, including request-level transition behavior and inventory/source-literal/import-safety checks; phase records are not reruns from this map refresh (`.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-VERIFICATION.md`).
 
+## Structured Manage Diagnostics (Phase 06.33)
+
+- `tests/test1/test_manage_cards.py` owns the structured core manage matrix contract. Use explicit `ViewSet` and actor inputs, parameterize core/Guardian request layouts, preserve primary-key identity when holder labels are renamed, and cover direct grants, custom vocabularies, user privacy, 20/21-row folding, and zero-read failure when an auth-dependent builder has no registered manage view.
+- Keep query scaling assertions at multiple holder and permission cardinalities with `CaptureQueriesContext`. The core budget is five queries (two aggregate counts) after warming only the actor permission cache; `tests/test1/test_manage_guardian.py` owns corresponding Guardian query coverage. Assert both output cardinality and query shape.
+- Request tests should pair builder data with real rendered responses: check hostile names are escaped, user/superuser rows obey `CRUD_VIEWS_MANAGE_SHOW_USERS`, staff/superuser status does not bypass developer-group admission, and replacement/legacy template paths preserve their data contracts (`tests/test1/test_manage_cards.py`, `tests/test1/test_manage_release.py`, `tests/test1/test_manage_docs.py`).
+- Run broad Python verification with `pytest tests -n auto`; use bounded `-n N` when sharing machine resources. Nox sessions in `noxfile.py` also run pytest-xdist with `-n auto`. Reserve serial pytest for a small selection where worker startup costs more, or a concrete ordering/isolation issue, and state that reason. Do not interrupt an already running verification merely to change worker count (`CLAUDE.md`).
+- Browser evidence is a separate real-browser gate: `tests/browser/manage-presentation.cjs` starts an owned disposable Django/SQLite fixture, drives Playwright Chromium over core, Guardian, nested and denied cases, captures DOM facts/screenshots, validates exact mappings for all 52 UI criteria, checks CSP/assets/source hashes, and proves owned process/database cleanup. `tests/browser/manage-presentation.test.cjs` tests evidence-validator negative cases, exact criterion ownership/cardinality, cached assets, startup failures and cleanup.
+- The committed post-review receipt records automated acceptance only: 13,950 Python tests, 1,659-test replays on Django 4.2 and 5.2 plus 53 extra tests each, 370 example tests, 457 JavaScript tests, 2 JS integration tests, 8 browser harness tests, and 50 browser cases with 52 mappings, 1,071 assertions and 49 captures. Seven runtime combinations and human visual UAT remain unverified; screenshots do not replace visual acceptance (`.planning/phases/06.33-structured-manage-page-366/06.33-POST-REVIEW-EVIDENCE.md`, `.planning/phases/06.33-structured-manage-page-366/06.33-UAT.md`). These are recorded phase results, not checks run during this map refresh.
+
 **Checks run during this map refresh:** None. Test/configuration patterns above were inspected from source and phase records only.
 
-*Testing analysis: 2026-11-13*
+*Testing analysis: 2026-11-14*
 
 - Wheel-installed nox sessions must exercise the same behavioral tests as editable checkouts; do not require package imports to live beneath `src/`. Browser acceptance separately checks source identity. The ship integration fixture explicitly tests manage denial without group membership, admission after enrollment and hard-off denial in the isolated downstream checkout.

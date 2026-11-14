@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
-last_mapped_at: 2026-11-13
+last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
+last_mapped_at: 2026-11-14
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-13
+**Analysis Date:** 2026-11-14
 
 ## Directory Layout
 
@@ -69,7 +69,9 @@ django-crud-views/
 - Purpose: Concrete generic CRUD and action views.
 - Contains: List/card/detail/create/update/delete, custom form, manage diagnostics, child redirect, ordering and common mixins.
 - Key files: `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/views/detail.py`, `src/crud_views/lib/views/create.py`, `src/crud_views/lib/views/update.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/views/mixins.py`.
-- Manage pages require an active authenticated member of the configured manage group and the selected manage mode; the same gate controls the manage action and direct route. The page projects declared configuration and permission-holder diagnostics. Extend `ManageView` for core display behavior and `GuardianManageView` in `src/crud_views_guardian/lib/views.py` for Guardian grant details.
+- Manage pages require an active authenticated member of the configured manage group and the selected manage mode; the same gate controls the manage action and direct route. `ManageView` builds structured projections for permission matrices/holders, generated routes, ViewSet facts, upward hierarchy, presentation, registered view requirements/provenance and checks (`src/crud_views/lib/views/manage.py`). Extend its data-builder hooks for core fields; `GuardianManageView` in `src/crud_views_guardian/lib/views.py` augments holder rows with object-grant counts, adds Guardian policy metadata and appends scoped Guardian composition checks.
+- Permission descriptions are provided by each registered view's `cv_get_requirement()` in `src/crud_views/lib/view/base.py`; `ManageView._manage_requirement()` resolves local/selected-ancestor keys for display and reports missing metadata without authorizing. Provenance rows distinguish default, inherited, explicit, ViewSet/global fallback and model Meta values. Keep these builders descriptive and side-effect-bounded; custom templates/labels are not executed to derive descriptions.
+- Manage diagnostics collect only the selected ViewSet's checks: `viewset.checks()` plus the scoped collectors `collect_ancestor_checks([viewset])`, `collect_conditional_checks([viewset])`, and `collect_viewset_icon_checks([viewset])`; Guardian adds `collect_guardian_composition_checks([viewset])`. Do not replace this with global Django startup checks (`src/crud_views/checks.py`, `src/crud_views_guardian/checks.py`).
 
 **`src/crud_views/management/commands/`:**
 - Purpose: Django management commands shipped by the core app.
@@ -185,7 +187,9 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 **Entry Points:**
 - `src/crud_views/apps.py`: Core Django app config and registration of core checks.
 - `src/crud_views/management/commands/cv_manage_group.py`: Idempotent creation of the configured manage diagnostics group.
-- `src/crud_views/lib/views/manage.py`: Manage diagnostics authorization and projection of permission holders, registered views and ancestor policy.
+- `src/crud_views/lib/views/manage.py`: Manage authorization plus structured permission, route, fact/provenance, hierarchy, presentation, view-requirement and scoped-check projections.
+- `src/crud_views/lib/view/base.py`: `CrudView.cv_get_requirement()` is the view contract used to describe the active local permission requirement and whether ancestor authorization applies.
+- `src/crud_views_guardian/lib/views.py`, `src/crud_views_guardian/checks.py`: Guardian manage projection (object grants, policy metadata, scoped composition diagnostics).
 - `src/crud_views/lib/viewset/__init__.py`: Public `ViewSet` definition and generated `urlpatterns`.
 - `src/crud_views/lib/view/meta.py`: Import-time CrudView class registration hook.
 - `examples/bootstrap5/project/settings_demo.py`: Demo project's Django settings.
@@ -260,7 +264,7 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 - For form cancellation behavior, extend the request-aware resolver in `src/crud_views/lib/view/base.py` and its focused tests; preserve template access through `{% cv_cancel_url %}`.
 - For deletion relationship previews, change the collector/summary behavior in `src/crud_views/lib/deletion.py` and the corresponding partials in `src/crud_views/templates/crud_views/snippets/delete/`; keep protected references as plain labels and preserve the display budget.
 - For workflow presentation or permission examples, use `src/crud_views_workflow/lib/` and its templates; document and test permission checks as opt-in per transition.
-- For manage diagnostics behavior, change `src/crud_views/lib/views/manage.py`; for group creation lifecycle use `src/crud_views/management/commands/cv_manage_group.py`. Keep sample operator membership/grant setup in `examples/bootstrap5/project/`, not in the reusable command.
+- For manage diagnostics, keep structured data builders in `src/crud_views/lib/views/manage.py` and presentation in the core/Guardian manage templates; implement requirement descriptions through `cv_get_requirement()` in `src/crud_views/lib/view/base.py` or its view override. Add per-ViewSet check collectors in `src/crud_views/checks.py` and explicitly pass the selected `[viewset]`; extend Guardian holder/policy data and its scoped composition check in `src/crud_views_guardian/lib/views.py` / `src/crud_views_guardian/checks.py`. Use `tests/test1/test_manage_*.py` and `tests/test1/test_manage_guardian.py` for regression coverage. For group creation lifecycle use `src/crud_views/management/commands/cv_manage_group.py`. Keep sample operator membership/grant setup in `examples/bootstrap5/project/`, not in the reusable command.
 - For workflow transition appearance, project finite variant/icon metadata through `src/crud_views_workflow/lib/forms.py` and `src/crud_views_workflow/lib/widgets.py`, defaults through `src/crud_views_workflow/apps.py`, and output through the transitions template. Preserve visible escaped labels and keep metadata out of authorization and execution.
 - For workflow business blockers or execution semantics, implement the model-only `workflow_check_transition(name, *, user)` contract in the consumer model, keep shared validation/execution in `src/crud_views_workflow/lib/execution.py`, and test public helper plus request behavior in `tests/test1/test_workflow_execution.py`. Do not treat business blockers as permission checks: django-fsm permissions/conditions gate transition availability, while the workflow view's page permission remains separately enforced.
 
@@ -336,4 +340,4 @@ Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and valid
 
 ---
 
-*Structure analysis: 2026-11-13*
+*Structure analysis: 2026-11-14*

@@ -1,0 +1,82 @@
+[data-cv-manage] {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+[data-cv-manage] > *,
+[data-cv-manage] .card,
+[data-cv-manage] .card-body,
+[data-cv-manage] details {
+    min-width: 0;
+}
+
+[data-cv-manage] summary,
+[data-cv-manage] td,
+[data-cv-manage] code,
+[data-cv-manage] .list-group-item {
+    overflow-wrap: anywhere;
+}
+
+[data-cv-manage] summary {
+    min-height: 44px;
+    padding: 8px;
+    cursor: pointer;
+}
+
+[data-cv-manage] .cv-manage-config th[scope="row"] {
+    width: 192px;
+    min-width: 192px;
+    white-space: nowrap;
+}
+
+[data-cv-manage] .cv-manage-config td {
+    min-width: 160px;
+}
+
+[data-cv-manage] th,
+[data-cv-manage] small,
+[data-cv-manage] .badge,
+[data-cv-manage] .card-footer {
+    font-size: 14px;
+}
+
+[data-cv-manage] code {
+    font-size: inherit;
+}
+
+[data-cv-manage] th,
+[data-cv-manage] strong,
+[data-cv-manage] .h6 {
+    font-weight: 600;
+}
+
+[data-cv-manage] .h6 {
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+[data-cv-manage] .card-header,
+[data-cv-manage] .cv-manage-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+[data-cv-manage] .cv-manage-help {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 50%;
+}
+
+[data-cv-manage] .cv-manage-badge-group {
+    background-color: #a61e6a;
+    color: #fff;
+}
+
+[data-cv-manage] [hidden] {
+    display: none !important;
+}

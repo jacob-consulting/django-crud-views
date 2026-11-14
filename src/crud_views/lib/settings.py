@@ -345,6 +345,7 @@ class CrudViewsSettings(BaseModel):
                 "modal": self.get_js("modal.js"),
                 "toggle": self.get_js("toggle.js"),
                 "tooltip": self.get_js("tooltip.js"),
+                "manage": self.get_js("manage.js"),
             }
         )
 
@@ -356,6 +357,7 @@ class CrudViewsSettings(BaseModel):
                 "table": self.get_css("table.css"),
                 "formset": self.get_css("formset.css"),
                 "icons": self.get_css("icons.css"),
+                "manage": self.get_css("manage.css"),
             }
         )
 

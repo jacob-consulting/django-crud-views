@@ -87,6 +87,28 @@ def test_setting_fallback_preserves_constructor_none(field):
     assert row["is_default"] is False
 
 
+@pytest.mark.parametrize("core_setting", [None, "crud_views.lib.views.manage.ManageView"])
+@pytest.mark.parametrize("guardian_setting", [None, "crud_views_guardian.lib.views.GuardianManageView"])
+@pytest.mark.parametrize("explicit", [False, True])
+def test_guardian_manage_class_source_uses_guardian_setting(monkeypatch, core_setting, guardian_setting, explicit):
+    from crud_views_guardian.lib.views import GuardianManageView
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.test_manage_provenance import make_viewset
+
+    monkeypatch.setattr(crud_views_settings, "manage_view_class", core_setting)
+    monkeypatch.setattr(crud_views_settings, "guardian_manage_view_class", guardian_setting)
+    vs = make_viewset(
+        GuardianViewSet,
+        **({"manage_view_class": "crud_views_guardian.lib.views.GuardianManageView"} if explicit else {}),
+    )
+    row = entries(GuardianManageView().get_manage_presentation(vs, None))["manage_view_class"]
+    assert row["source"] == (
+        "set" if explicit else "CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS" if guardian_setting else "default"
+    )
+    assert row["value"] == "crud_views_guardian.lib.views.GuardianManageView"
+    assert row["is_default"] is not explicit
+
+
 def test_all_configuration_builders_ignore_ambient_request(monkeypatch):
     def poison(self):
         raise AssertionError("No ambient request in data builders")

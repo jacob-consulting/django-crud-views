@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 
 from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.ancestors import _immediate_parent_access
+from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views import (
     ActionViewPermissionRequired,
     CardListViewPermissionRequired,
@@ -384,6 +385,14 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
 
 
 class GuardianManageView(ManageView):
+    @staticmethod
+    def _manage_class_source(viewset):
+        if viewset.manage_view_class:
+            return None
+        return (
+            "CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS" if crud_views_settings.guardian_manage_view_class else _("default")
+        )
+
     template_name = "crud_views/view_guardian_manage.html"
 
     def get_manage_checks(self, viewset, user):

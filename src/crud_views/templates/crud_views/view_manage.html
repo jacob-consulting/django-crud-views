@@ -81,6 +81,7 @@
         {% endif %}
         {% endif %}
         {% else %}
+        <p data-manage-actor>{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}</p>
         <p>{% translate "No permissions configured. Review this ViewSet's permission configuration." %}</p>
         {% endif %}
         <p>{% blocktranslate count count=matrix.superusers.count %}{{ count }} active superuser holds every permission{% plural %}{{ count }} active superusers hold every permission{% endblocktranslate %}{% if matrix.show_users and matrix.superusers.names %}: {{ matrix.superusers.names|join:", " }}{% endif %}</p>

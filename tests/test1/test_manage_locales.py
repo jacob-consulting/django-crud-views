@@ -120,7 +120,8 @@ def test_empty_manage_vocabulary_retains_translated_actor(request, fixture, clie
     viewset = request.getfixturevalue(fixture)
     actor = django_user_model.objects.create_user(username="empty-vocabulary-developer")
     actor.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
-    monkeypatch.setattr(viewset, "_default_permissions", {})
+    # Pydantic stores PrivateAttr outside __dict__; restore its actual storage.
+    monkeypatch.setitem(viewset.__pydantic_private__, "_default_permissions", {})
     client.force_login(actor)
     with translation.override("de"):
         response = client.get(reverse(viewset.get_router_name("manage")))

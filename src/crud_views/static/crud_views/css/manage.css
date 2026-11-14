@@ -88,6 +88,11 @@
     margin-inline-start: 8px;
 }
 
+/* Stock outline-secondary is below 4.5:1 on Bootstrap's tinted card header. */
+[data-cv-manage] [data-cv-manage-help].btn-outline-secondary {
+    --bs-btn-color: var(--bs-secondary-text-emphasis, #495057);
+}
+
 [data-cv-manage] .cv-manage-default td {
     color: var(--bs-secondary-color, #6c757d);
 }

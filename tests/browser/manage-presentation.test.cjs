@@ -4,10 +4,11 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const {CSP, preflight, declarations, assetFor, validateEvidence, validateAssets, requiredCases, startOwned} = require('./manage-presentation.cjs');
+const {CSP, preflight, declarations, assetFor, validateEvidence, validateAssets, requiredCases, uiMappings, startOwned} = require('./manage-presentation.cjs');
 const digest = 'a'.repeat(64);
 function valid() {
-    return {cases: requiredCases('all').map(id => ({id, passed: true})), preflight: {status: 'passed'}, csp: CSP,
+    return {cases: requiredCases('all').map(id => ({id, passed: true, facts: {verified: true}})), preflight: {status: 'passed'}, csp: CSP,
+        ui: uiMappings(), screenshots: requiredCases('all').map(id => ({case: id, sha256: digest})),
         failures: [], requiredAssets: ['manage.js', 'bootstrap.css'], assets: ['manage.js', 'bootstrap.css'].map(url => ({url, status: 200, sha256: digest})),
         cleanup: [{stopped: true, databaseRemoved: true}], sources: {files: Object.fromEntries(Array.from({length: 11}, (_, i) => [i, digest]))}};
 }
@@ -17,6 +18,14 @@ test('empty or incomplete evidence never passes', () => {
     for (const id of requiredCases('all')) {
         const report = valid(); report.cases = report.cases.filter(item => item.id !== id);
         assert.throws(() => validateEvidence(report, 'all'), /Missing case/);
+    }
+});
+test('all 52 exact UI source IDs require passed cases and actual captures/DOM facts', () => {
+    const coverage = fs.readFileSync(path.resolve(__dirname, '../../.planning/phases/06.33-structured-manage-page-366/COVERAGE.md'), 'utf8');
+    const ids = [...coverage.matchAll(/^\| ((?:permissions|views|presentation|facts|checks|defaults|help)\.[a-z-]+) \|/gm)].map(match => match[1]);
+    assert.deepEqual(Object.keys(uiMappings()).sort(), ids.sort());
+    for (const mutate of [r => delete r.ui['help.loading'], r => r.ui['help.error'] = ['absent'], r => r.screenshots.pop(), r => r.cases[0].facts = {}]) {
+        const report = valid(); mutate(report); assert.throws(() => validateEvidence(report, 'all'));
     }
 });
 test('assets, CSP, errors, sources and owned cleanup are mandatory', () => {

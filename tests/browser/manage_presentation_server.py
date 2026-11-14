@@ -86,12 +86,18 @@ def serve(directory):
     book = Book.objects.create(title="Nested browser book", publisher=publisher)
     BookNote.objects.create(note="Nested note", book=book)
     read = Permission.objects.get(content_type__app_label="app", codename="view_author")
-    readers.permissions.add(read)
+    add = Permission.objects.get(content_type__app_label="app", codename="add_author")
+    readers.permissions.add(read, add)
+    empty_group = Group.objects.create(name="Zero-members")
+    empty_group.permissions.add(add)
+    many_group = Group.objects.create(name="Many-members")
+    many_group.permissions.add(add)
+    many_group.user_set.add(*users[:2])
     developer.user_permissions.add(
         *Permission.objects.filter(content_type__app_label="app", codename__in=["view_publisher", "view_book"])
     )
-    assign_perm("app.view_author", developer, author)
-    assign_perm("app.change_author", developer, author)
+    assign_perm("app.view_author", readers, author)
+    assign_perm("app.change_author", readers, author)
     assign_perm("app.contact_author", readers, author)
     viewsets = {}
     for kind, cls in (("core", ViewSet), ("guardian", GuardianViewSet)):
@@ -170,10 +176,11 @@ def serve(directory):
                     patch.object(vs, "context_buttons", [ContextButton(key="broken", key_target="absent")])
                 )
             if scenario == "empty":
+                stack.enter_context(patch.object(type(vs), "checks", lambda self: []))
                 stack.enter_context(patch.object(vs, "_default_permissions", {}))
                 stack.enter_context(patch.object(vs, "context_buttons", []))
             if scenario == "no-holders":
-                stack.enter_context(patch.object(vs, "_default_permissions", {"add": "app.add_author"}))
+                stack.enter_context(patch.object(vs, "_default_permissions", {"delete": "app.delete_author"}))
             kwargs = {"browser_parent_pk": publisher.pk, "browser_child_pk": book.pk} if kind == "nested" else {}
             response = view.as_view()(request, **kwargs)
             # Explicit template-contract boundary cases: zero registered display rows / no default rows.

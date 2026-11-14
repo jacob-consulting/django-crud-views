@@ -681,6 +681,71 @@ def test_manage_override_shows_mixed_policy_only_when_authorized(
     assert policies["detail"] == "global fallback"
     assert policies["create"] == "not applicable"
     assert "accept_global_perms" in content.split("MX-MANAGE-SENTINEL", 1)[1]  # the strict helper policy
+    from lxml import html
+
+    doc = html.fromstring(response.content)
+    assert len(doc.xpath("//*[@id='cv-manage-permissions']")) == 1
+    rows = {row["key"]: row for row in response.context["manage_views"]}
+    assert rows["detail"]["guardian_policy"]["effective_policy"] == "global fallback"
+    assert rows["list"]["guardian_policy"]["effective_policy"] == "strict"
+
+
+@pytest.mark.django_db
+def test_guardian_legacy_include_and_lazy_keys_are_preserved(
+    settings, client, cv_guardian_publisher, django_user_model, monkeypatch
+):
+    from django.contrib.auth.models import Group
+    from guardian.shortcuts import assign_perm
+    from lxml import html
+
+    from crud_views.lib.settings import crud_views_settings
+    from tests.test1.app.models import Publisher
+
+    actor = django_user_model.objects.create_user(username="legacy guardian developer")
+    actor.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    group = Group.objects.create(name="legacy object readers")
+    obj = Publisher.objects.create(name="Legacy object")
+    assign_perm("app.view_publisher", group, obj)
+    client.force_login(actor)
+    cls = cv_guardian_publisher.get_view_class("manage")
+    counts = {"get_view_data": 0, "get_permission_holders": 0, "_get_permission_data": 0}
+    for name in counts:
+        original = getattr(cls, name)
+
+        def counted(self, original=original, name=name):
+            counts[name] += 1
+            return original(self)
+
+        monkeypatch.setattr(cls, name, counted)
+    templates = copy.deepcopy(settings.TEMPLATES)
+    templates[0]["APP_DIRS"] = False
+    templates[0]["OPTIONS"]["loaders"] = [
+        (
+            "django.template.loaders.locmem.Loader",
+            {
+                "crud_views/view_guardian_manage.html": (
+                    '{% extends "crud_views/view_manage.html" %}{% block guardian_config %}'
+                    '<section id="legacy-guardian">{% include "crud_views/snippets/guardian/config_table.html" %}'
+                    "{{ views|length }} {{ views|length }} {{ data|length }} {{ data|length }}"
+                    "{{ permission_holders|length }} {{ permission_holders|length }}</section>{% endblock %}"
+                ),
+            },
+        ),
+        "django.template.loaders.app_directories.Loader",
+    ]
+    settings.TEMPLATES = templates
+    response = client.get("/guardian_publisher/manage/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    legacy = doc.get_element_by_id("legacy-guardian")
+    assert "parent_viewset" in legacy.text_content()
+    assert "ancestor_policy.provider" in legacy.text_content()
+    assert "global model permissions are not accepted" in legacy.text_content()
+    assert counts == dict.fromkeys(counts, 1)
+    matrix = doc.get_element_by_id("cv-manage-permissions")
+    assert "legacy object readers" in matrix.text_content() and "1 object" in matrix.text_content()
+    assert len(doc.xpath("//*[@id='cv-manage-permissions']")) == 1
+    assert not doc.xpath("//*[@id='cv-manage-guardian']")
 
 
 # ── alert: one generic blocked notice, only permitted protected labels ────────

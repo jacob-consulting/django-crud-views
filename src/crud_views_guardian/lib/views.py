@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DEFAULT_DB_ALIAS, connections, router
+from django.db.models import Count
 from django.utils.translation import gettext as _
 
 from crud_views.lib.ancestor_db import _check_nested_auth
@@ -385,6 +386,80 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
 class GuardianManageView(ManageView):
     template_name = "crud_views/view_guardian_manage.html"
 
+    def _guard_manage_auth(self, viewset, user):
+        """Check the supplied model's configured grant routes before core diagnostics."""
+        super()._guard_manage_auth(viewset, user)
+        _check_nested_auth(viewset.get_view_class("manage"), actor=user, model=viewset.model, provider="guardian")
+
+    def get_manage_actor_row(self, viewset, user):
+        self._guard_manage_auth(viewset, user)
+        row = super().get_manage_actor_row(viewset, user)
+        for cell in row["cells"]:
+            cell["object_count"] = viewset.get_objects_for_user(user, cell["key"]).count()
+        return row
+
+    def get_manage_permissions(self, viewset, user):
+        from guardian.ctypes import get_content_type
+        from guardian.utils import get_group_obj_perms_model, get_user_obj_perms_model
+
+        self._guard_manage_auth(viewset, user)
+        data = super().get_manage_permissions(viewset, user)
+        content_type = get_content_type(viewset.model)
+        permissions = {
+            f"{content_type.app_label}.{codename}": pk
+            for pk, codename in Permission.objects.filter(content_type=content_type).values_list("pk", "codename")
+        }
+        permission_keys = {
+            permissions[col["permission"]]: col["key"] for col in data["columns"] if col["permission"] in permissions
+        }
+        data["groups"] = self._manage_object_rows(
+            data["columns"],
+            data["groups"],
+            get_group_obj_perms_model(viewset.model),
+            "group",
+            "name",
+            content_type,
+            permission_keys,
+        )
+        if data["show_users"]:
+            users = self._manage_object_rows(
+                data["columns"],
+                data["users"] + data["users_overflow"],
+                get_user_obj_perms_model(viewset.model),
+                "user",
+                get_user_model().USERNAME_FIELD,
+                content_type,
+                permission_keys,
+            )
+            data["users"], data["users_overflow"] = users[:20], users[20:]
+        return data
+
+    @staticmethod
+    def _manage_object_rows(columns, model_rows, grant_model, holder, label_field, content_type, permission_keys):
+        """Merge one aggregate per grant table into direct model holders, keyed by PK."""
+        rows = {row["id"]: row for row in model_rows}
+        grants = grant_model.objects.filter(permission_id__in=permission_keys)
+        generic = grant_model.objects.is_generic()
+        if generic:
+            grants = grants.filter(content_type=content_type)
+        counts = {"object_count": Count("object_pk" if generic else "content_object_id", distinct=True)}
+        if holder == "group":
+            counts["member_count"] = Count("group__user", distinct=True)
+        for grant in grants.values(holder + "_id", holder + "__" + label_field, "permission_id").annotate(**counts):
+            pk = grant[holder + "_id"]
+            row = rows.setdefault(
+                pk,
+                {
+                    "id": pk,
+                    "label": grant[holder + "__" + label_field],
+                    "member_count": grant.get("member_count"),
+                    "cells": [{"key": col["key"], "model": False, "object_count": None} for col in columns],
+                },
+            )
+            key = permission_keys[grant["permission_id"]]
+            next(cell for cell in row["cells"] if cell["key"] == key)["object_count"] = grant["object_count"]
+        return sorted(rows.values(), key=lambda row: (row["label"], row["id"]))
+
     def get_manage_guardian(self, viewset, user):
         """Fixed helper policy, independent of per-view and ancestor fallback."""
         from crud_views_guardian.lib.viewset import STRICT_HELPER_POLICY
@@ -392,6 +467,7 @@ class GuardianManageView(ManageView):
         return {"get_objects_for_user": dict(STRICT_HELPER_POLICY)}
 
     def get_manage_views(self, viewset, user):
+        self._guard_manage_auth(viewset, user)
         rows = super().get_manage_views(viewset, user)
         for row in rows:
             view = viewset.get_view_class(row["key"])
@@ -400,8 +476,8 @@ class GuardianManageView(ManageView):
             accept = bool(getattr(view, "cv_guardian_accept_global_perms", False)) if applicable else None
             effective = (_("global fallback") if accept else _("strict")) if applicable else _("not applicable")
             row["guardian_policy"] = {
-                "global_fallback_applicable": applicable,
-                "cv_guardian_accept_global_perms": accept,
+                "applicable": applicable,
+                "accept_global_perms": accept,
                 "effective_policy": effective,
                 "tooltip": (
                     _("Visible rows are filtered by this permission; an empty list is allowed.")

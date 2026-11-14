@@ -361,6 +361,7 @@ def events(monkeypatch):
     original_get_object = CrudView.get_object
     original_enabled = CrudView.cv_action_enabled.__func__
     original_holders = ManageView.get_permission_holders
+    original_matrix = ManageView.get_manage_permissions
 
     def tables(model, provider):
         recorded.append(("auth", model.__name__, provider))
@@ -386,6 +387,10 @@ def events(monkeypatch):
         recorded.append(("holders", self.cv_viewset.name))
         return original_holders(self)
 
+    def matrix(self, viewset, user):
+        recorded.append(("matrix", viewset.name))
+        return original_matrix(self, viewset, user)
+
     if original_tables is not None:
         monkeypatch.setattr(ancestor_db, "_auth_tables", tables)
     monkeypatch.setattr(ViewSet, "permissions", property(permissions))
@@ -393,6 +398,7 @@ def events(monkeypatch):
     monkeypatch.setattr(CrudView, "get_object", get_object)
     monkeypatch.setattr(CrudView, "cv_action_enabled", classmethod(enabled))
     monkeypatch.setattr(ManageView, "get_permission_holders", holders)
+    monkeypatch.setattr(ManageView, "get_manage_permissions", matrix)
     return recorded
 
 
@@ -718,13 +724,14 @@ def test_nested_manage_member_reaches_context_and_rejects_auth_routing(adb, worl
     events.clear()
     assert client.get(_manage_url(adb, viewset)).status_code == 200
     auth_at = [index for index, event in enumerate(events) if event[0] == "auth"]
-    assert auth_at and ("holders", viewset.name) in events[auth_at[0] :]
+    assert auth_at and ("matrix", viewset.name) in events[auth_at[0] :]
     routes.read[Permission] = "shard"
     events.clear()
     with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
         client.get(_manage_url(adb, viewset))
     _assert_refused_without_auth_reads(sql)
     assert ("holders", viewset.name) not in events
+    assert ("matrix", viewset.name) not in events
 
 
 def test_guardian_manage_holders_refuse_a_shard_grant_route(adb, world, routes, events):

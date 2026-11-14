@@ -92,13 +92,16 @@ class CrudView(metaclass=CrudViewMetaClass):
     """
 
     @classmethod
-    def _cv_requirement_is_custom(cls) -> bool:
+    def _cv_requirement_is_custom(cls, *, after=None) -> bool:
         """An undescribed, more-specific has_permission owner needs an explicit description.
 
         This deliberately does not inspect dispatch, object loading or queryset overrides.
         Projects changing those gates must describe them explicitly.
         """
         owners = cls.__mro__
+        if after is not None:
+            # Known delegating gates inspect the same suffix as their super() call.
+            owners = owners[owners.index(after) + 1 :]
         description = next(i for i, owner in enumerate(owners) if "cv_get_requirement" in vars(owner))
         gate = next((i for i, owner in enumerate(owners) if "has_permission" in vars(owner)), len(owners))
         return gate < description

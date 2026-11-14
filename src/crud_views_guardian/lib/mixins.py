@@ -349,6 +349,8 @@ class GuardianParentPermissionMixin:
             and not issubclass(cls, (GuardianObjectPermissionMixin, GuardianQuerysetMixin))
         ):
             return {"kind": "none", "value": None, "ancestor_applies": True}
+        if cls._cv_requirement_is_custom(after=GuardianParentPermissionMixin):
+            return {"kind": "custom", "value": None, "ancestor_applies": True}
         return super().cv_get_requirement()
 
     @classmethod

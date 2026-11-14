@@ -139,6 +139,38 @@ def test_requirement_contract_exists_without_viewset():
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("described", [False, True])
+def test_guardian_parent_delegation_describes_intervening_custom_gate(client, django_user_model, described):
+    from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
+
+    class CustomCreate(core.CreateViewPermissionRequired):
+        def has_permission(self):
+            return False
+
+    if described:
+        CustomCreate.cv_get_requirement = classmethod(
+            lambda cls: {"kind": "group", "value": "project gate", "ancestor_applies": True}
+        )
+
+    def build(sfx):
+        vs = GuardianViewSet(model=Author, name="delegated" + sfx)
+        wrapped = type("WrappedCustomCreate", (GuardianParentPermissionMixin, CustomCreate), {})
+        view = register(wrapped, vs, fields=["first_name", "last_name"])
+        return (vs, view), [vs]
+
+    with isolated_routes(build) as (vs, view):
+        actor = django_user_model.objects.create_user(username="delegated gate")
+        grant(actor, vs, "add")
+        client.force_login(actor)
+        assert client.get(reverse(vs.get_router_name("tested"))).status_code == 403
+        assert view.cv_get_requirement() == {
+            "kind": "group" if described else "custom",
+            "value": "project gate" if described else None,
+            "ancestor_applies": True,
+        }
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("base,key", CORE_CASES, ids=[cls.__name__ for cls, _ in CORE_CASES])
 def test_core_descriptions_match_native_requests(base, key, client, django_user_model, simple_templates):
     def build(sfx):

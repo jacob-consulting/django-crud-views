@@ -6,7 +6,11 @@ from lxml import html
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view.buttons import (
-    ChildContextButton, ContextButton, FilterContextButton, ParentContextButton, SiblingContextButton,
+    ChildContextButton,
+    ContextButton,
+    FilterContextButton,
+    ParentContextButton,
+    SiblingContextButton,
 )
 from crud_views.lib.views.manage import ManageView
 from crud_views.lib.viewset import ParentViewSet
@@ -25,19 +29,34 @@ def entries(data):
 
 
 def test_presentation_fields_and_counts():
-    viewset = make(context_buttons=[], extends="", context_actions_inline=[], list_actions_inline=["detail"],
-                   card_actions_inline=(), context_actions_label_mode={}, list_actions_label_mode={"detail": "label"},
-                   form_actions_label_mode={"submit": "both"}, manage_view_class=None)
+    viewset = make(
+        context_buttons=[],
+        extends="",
+        context_actions_inline=[],
+        list_actions_inline=["detail"],
+        card_actions_inline=(),
+        context_actions_label_mode={},
+        list_actions_label_mode={"detail": "label"},
+        form_actions_label_mode={"submit": "both"},
+        manage_view_class=None,
+    )
     data = presentation(viewset)
     rows = entries(data)
     assert [s["key"] for s in data["sections"]] == ["context-buttons", "templates-and-actions", "label-modes", "other"]
     for key, expected in {
-        "extends": "''", "context_actions_inline": "[]", "list_actions_inline": "['detail']",
-        "card_actions_inline": "()", "context_actions_label_mode": "{}",
-        "list_actions_label_mode": "{'detail': 'label'}", "form_actions_label_mode": "{'submit': 'both'}",
+        "context_actions_inline": "[]",
+        "list_actions_inline": "['detail']",
+        "card_actions_inline": "()",
+        "context_actions_label_mode": "{}",
+        "list_actions_label_mode": "{'detail': 'label'}",
+        "form_actions_label_mode": "{'submit': 'both'}",
     }.items():
         assert rows[key]["value"] == expected
         assert rows[key]["is_default"] is False
+    assert rows["extends"]["value"] == repr(crud_views_settings.extends)
+    assert rows["extends"]["declared_value"] == "''"
+    assert rows["extends"]["is_default"] is False
+    assert rows["extends"]["source"] == "CRUD_VIEWS_EXTENDS"
     assert rows["manage_view_class"]["value"] == "crud_views.lib.views.manage.ManageView"
     assert rows["manage_view_class"]["is_default"] is False
     all_rows = [r for s in data["sections"] for r in s["entries"]]
@@ -47,16 +66,40 @@ def test_presentation_fields_and_counts():
     assert rows["context_buttons"]["is_default"] is False
 
 
-@pytest.mark.parametrize("field", [
-    "extends", "inaccessible_actions", "context_actions_inline", "list_actions_inline", "card_actions_inline",
-    "context_actions_label_mode", "list_actions_label_mode", "form_actions_label_mode",
-])
+@pytest.mark.parametrize(
+    "field",
+    [
+        "extends",
+        "inaccessible_actions",
+        "context_actions_inline",
+        "list_actions_inline",
+        "card_actions_inline",
+        "context_actions_label_mode",
+        "list_actions_label_mode",
+        "form_actions_label_mode",
+    ],
+)
 def test_setting_fallback_preserves_constructor_none(field):
     viewset = make(**{field: None})
     row = entries(presentation(viewset))[field]
     assert row["value"] == repr(getattr(crud_views_settings, field))
     assert row["source"] == "CRUD_VIEWS_" + field.upper()
     assert row["is_default"] is False
+
+
+def test_all_configuration_builders_ignore_ambient_request(monkeypatch):
+    def poison(self):
+        raise AssertionError("No ambient request in data builders")
+
+    monkeypatch.setattr(ManageView, "request", property(poison), raising=False)
+    viewset = make()
+    register(viewset, cv_has_access=classmethod(lambda *args: pytest.fail("No access evaluation")))
+    manage = ManageView()
+    assert manage.get_manage_facts(viewset, None)
+    assert manage.get_manage_hierarchy(viewset, None)["parents"] == []
+    assert manage.get_manage_routes(viewset, None)
+    assert manage.get_manage_ancestor_policy(viewset, None)["requests"] is None
+    assert manage.get_manage_presentation(viewset, None)["sections"]
 
 
 @pytest.mark.django_db
@@ -108,13 +151,19 @@ def test_custom_and_static_labels_never_render_or_query(django_assert_num_querie
     class Inherited(ContextButton):
         pass
 
-    viewset = make(context_buttons=[
-        ContextButton(key="template", key_target="list", label_template="project/object.html"),
-        ContextButton(key="code", key_target="list", label_template_code="{{ object.secret }} {{ view.request }} <script>" + "x" * 240),
-        Inherited(key="inherited", key_target="list"),
-        Custom(key="custom", key_target="list", template="project/custom.html"),
-        Rendering(key="rendering", key_target="list"),
-    ])
+    viewset = make(
+        context_buttons=[
+            ContextButton(key="template", key_target="list", label_template="project/object.html"),
+            ContextButton(
+                key="code",
+                key_target="list",
+                label_template_code="{{ object.secret }} {{ view.request }} <script>" + "x" * 240,
+            ),
+            Inherited(key="inherited", key_target="list"),
+            Custom(key="custom", key_target="list", template="project/custom.html"),
+            Rendering(key="rendering", key_target="list"),
+        ]
+    )
     register(viewset)
     with django_assert_num_queries(0):
         rows = entries(presentation(viewset))
@@ -135,9 +184,11 @@ def test_presentation_closed_counts_help_and_escaping(client, cv_author, django_
     actor = django_user_model.objects.create_user(username="presentation-dev")
     actor.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
     client.force_login(actor)
-    monkeypatch.setattr(cv_author, "context_buttons", [
-        ContextButton(key="unsafe", key_target="list", label_template_code="{{ object.x }} <script>bad</script>")
-    ])
+    monkeypatch.setattr(
+        cv_author,
+        "context_buttons",
+        [ContextButton(key="unsafe", key_target="list", label_template_code="{{ object.x }} <script>bad</script>")],
+    )
     response = client.get("/author/manage/")
     assert response.status_code == 200
     doc = html.fromstring(response.content)
@@ -166,4 +217,3 @@ def test_empty_context_buttons_visible_state(client, cv_author, django_user_mode
     response = client.get("/author/manage/")
     card = html.fromstring(response.content).get_element_by_id("cv-manage-presentation")
     assert "No context buttons configured." in card.text_content()
-

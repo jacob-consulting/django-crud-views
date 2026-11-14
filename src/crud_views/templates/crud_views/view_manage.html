@@ -169,6 +169,54 @@
     </section>
     {% endblock manage_views %}
 
+    {% block manage_presentation %}
+    <details class="card mb-3" id="cv-manage-presentation">
+        <summary class="card-header">
+            <strong>{% translate "Presentation" %}</strong>
+            <span>{% blocktranslate with set=manage_presentation.set_count count defaults=manage_presentation.default_count %}{{ set }} set · {{ defaults }} default · applies to all views{% plural %}{{ set }} set · {{ defaults }} defaults · applies to all views{% endblocktranslate %}</span>
+        </summary>
+        <a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#presentation" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Presentation' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        <div class="card-body">
+        {% for section in manage_presentation.sections %}
+            <div class="table-responsive">
+            <table class="table table-sm cv-manage-config">
+            <tbody>
+                <tr data-cv-section="{{ section.key }}" data-cv-default-count="{{ section.default_count }}">
+                    <th scope="colgroup" colspan="{% if section.key == 'context-buttons' %}4{% else %}2{% endif %}">
+                        {{ section.label }}
+                        <span data-cv-default-count hidden>{% blocktranslate count count=section.default_count %}{{ count }} default hidden{% plural %}{{ count }} defaults hidden{% endblocktranslate %}</span>
+                        {% if section.key == 'templates-and-actions' or section.key == 'label-modes' %}
+                        <a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#{{ section.key }}" target="_blank" rel="noopener" aria-label="{% blocktranslate with section=section.label %}Documentation: {{ section }}{% endblocktranslate %}" title="{% translate 'Opens in a new tab' %}">?</a>
+                        {% endif %}
+                    </th>
+                </tr>
+                {% if section.key == 'context-buttons' %}
+                <tr><th scope="col">{% translate "Key" %}</th><th scope="col">{% translate "Type" %}</th><th scope="col">{% translate "Points to" %}</th><th scope="col">{% translate "Label declaration" %}</th></tr>
+                {% endif %}
+                {% for entry in section.entries %}
+                    <tr data-cv-config-row{% if entry.is_default %} data-cv-default-row{% endif %}>
+                    <th scope="row" class="text-nowrap fw-medium">{{ entry.key }}</th>
+                    {% if entry.is_button %}
+                        <td{% if entry.is_default %} class="text-muted"{% endif %}><code>{{ entry.type }}</code> <small class="text-muted">({{ entry.source }})</small></td>
+                        <td{% if entry.is_default %} class="text-muted"{% endif %}>{{ entry.points_to }}</td>
+                        <td{% if entry.is_default %} class="text-muted"{% endif %}>{{ entry.label }}</td>
+                    {% elif entry.empty_buttons %}
+                        <td colspan="3"{% if entry.is_default %} class="text-muted"{% endif %}>{% translate "No context buttons configured." %} <small class="text-muted">({{ entry.source }})</small></td>
+                    {% else %}
+                        <td{% if entry.is_default %} class="text-muted"{% endif %}>{{ entry.value }} <small class="text-muted">({{ entry.source }})</small>{% if entry.declared_value %} <small>{% blocktranslate with value=entry.declared_value %}declared: {{ value }}{% endblocktranslate %}</small>{% endif %}</td>
+                    {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+            </div>
+        {% endfor %}
+        <p>{% translate "Each view's context_actions decides where buttons appear. View-specific context buttons appear under Other." %}</p>
+        </div>
+    </details>
+    {% endblock manage_presentation %}
+
+
     </div>
     <div class="col-12 col-lg-4">
     {% block manage_checks_clean %}

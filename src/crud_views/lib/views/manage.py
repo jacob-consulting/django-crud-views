@@ -1,5 +1,6 @@
 import inspect
 from collections import OrderedDict
+from types import SimpleNamespace
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
@@ -17,7 +18,7 @@ from crud_views.lib.check import (
     _project_cv_declarations,
     _registry_vocabulary,
 )
-from crud_views.lib.exceptions import ViewSetError
+from crud_views.lib.exceptions import ViewSetError, ViewSetNotFoundError
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 
@@ -330,6 +331,158 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         data["children"] = [self._manage_hierarchy_item(child, user) for child in children]
         return data
 
+    def _manage_context_button(self, viewset, user, button):
+        """Describe known static target rules; never execute a button or label template."""
+        from crud_views.lib.view.buttons import (
+            ChildContextButton,
+            ContextButton,
+            FilterContextButton,
+            ParentContextButton,
+            SiblingContextButton,
+        )
+
+        builtins = (ParentContextButton, ChildContextButton, SiblingContextButton, FilterContextButton, ContextButton)
+        hooks = (
+            "get_context",
+            "render_label",
+            "_apply_label",
+            "_apply_variant",
+            "_inject_template",
+            "_resolve_container_key",
+        )
+        builtin = next(
+            (
+                base
+                for base in builtins
+                if isinstance(button, base)
+                and all(
+                    inspect.getattr_static(type(button), hook) is inspect.getattr_static(base, hook) for hook in hooks
+                )
+            ),
+            None,
+        )
+        row = self._manage_field(viewset, "context_buttons", button)
+        row.update(key=button.key, type=self._manage_display(type(button)), is_button=True)
+        target = None
+        unavailable = _("Target unavailable; review this button's configuration.")
+        if builtin is None:
+            points_to = _("custom button: %(type)s · template: %(template)s") % {
+                "type": row["type"],
+                "template": self._manage_display(button.template),
+            }
+        elif builtin is FilterContextButton:
+            points_to = _("toggles the list filter") + " · " + str(button.template)
+        elif builtin is ParentContextButton and viewset.parent is None:
+            points_to = _("top level, never shown")
+        else:
+            points_to = unavailable
+            try:
+                target_viewset, key = viewset, button.key_target
+                if builtin is ParentContextButton:
+                    target_viewset = viewset.parent.viewset
+                elif builtin is ChildContextButton:
+                    target_viewset, key = viewset.get_viewset(button.child_name), button.child_key
+                    if target_viewset.parent is None or target_viewset.parent.name != viewset.name:
+                        target_viewset = None
+                elif builtin is SiblingContextButton:
+                    target_viewset, key = viewset.get_viewset(button.sibling_name), button.sibling_key
+                    if (
+                        not viewset.parent
+                        or not target_viewset.parent
+                        or viewset.parent.name != target_viewset.parent.name
+                    ):
+                        target_viewset = None
+                if target_viewset is not None and key is not None:
+                    # The existing list-to-card alias is a static routing rule.
+                    name = target_viewset.get_router_name(key)
+                    target = next(
+                        (route for route in self.get_manage_routes(target_viewset, user) if route["name"] == name), None
+                    )
+                    if target:
+                        points_to = name + " → " + (target["route_error"] or target["route"])
+            except (ImproperlyConfigured, ViewSetError, ViewSetNotFoundError):
+                points_to = unavailable
+        if button.label_template:
+            label = _("Template: %(template)s") % {"template": button.label_template}
+        elif button.label_template_code:
+            label = _("Inline template: %(code)s") % {"code": self._manage_display(button.label_template_code)}
+        else:
+            label = _("Target view label") if target is not None else _("Dynamic/custom label")
+        row.update(points_to=points_to, label=label)
+        return row
+
+    def get_manage_presentation(self, viewset, user):
+        """Static ViewSet presentation values, sharing the Views default-row contract."""
+        buttons = [self._manage_context_button(viewset, user, button) for button in viewset.context_buttons]
+        if not buttons:
+            buttons = [{**self._manage_field(viewset, "context_buttons", []), "empty_buttons": True}]
+        sections = [
+            {
+                "key": "context-buttons",
+                "label": _("Context buttons"),
+                "entries": buttons,
+            }
+        ]
+        # Reuse runtime getters without creating a request or registered view.
+        resolver = SimpleNamespace(cv_viewset=viewset, cv_extends_template=None, cv_inaccessible_actions=None)
+        for key, label, fields in (
+            (
+                "templates-and-actions",
+                _("Templates and actions"),
+                (
+                    "extends",
+                    "inaccessible_actions",
+                    "context_actions_inline",
+                    "list_actions_inline",
+                    "card_actions_inline",
+                ),
+            ),
+            (
+                "label-modes",
+                _("Label modes"),
+                (
+                    "context_actions_label_mode",
+                    "list_actions_label_mode",
+                    "form_actions_label_mode",
+                ),
+            ),
+        ):
+            rows = []
+            for field in fields:
+                declared = getattr(viewset, field)
+                inherited = declared is None
+                if field == "extends":
+                    value = CrudView.cv_get_extends_template(resolver)
+                    inherited = not declared
+                elif field == "inaccessible_actions":
+                    value = CrudView.cv_get_inaccessible_actions.__func__(resolver)
+                else:
+                    value = CrudView.cv_first_inline_keys.__func__(resolver, None, field)
+                source = "CRUD_VIEWS_" + field.upper() if inherited else None
+                row = self._manage_field(viewset, field, value, source)
+                if field == "extends" and declared == "":
+                    row["declared_value"] = "''"
+                rows.append(row)
+            sections.append({"key": key, "label": label, "entries": rows})
+        source = None
+        if viewset.manage_view_class is None:
+            source = "CRUD_VIEWS_MANAGE_VIEW_CLASS" if crud_views_settings.manage_view_class else _("default")
+        sections.append(
+            {
+                "key": "other",
+                "label": _("Other"),
+                "entries": [self._manage_field(viewset, "manage_view_class", viewset.get_manage_view_class(), source)],
+            }
+        )
+        for section in sections:
+            section["default_count"] = sum(entry["is_default"] for entry in section["entries"])
+        entries = [entry for section in sections for entry in section["entries"]]
+        return {
+            "sections": sections,
+            "default_count": sum(entry["is_default"] for entry in entries),
+            "set_count": sum(not entry["is_default"] for entry in entries),
+        }
+
     def _manage_requirement(self, viewset, user, view):
         """Resolve presentation metadata narrowly; auth/database failures remain visible."""
         from crud_views.lib.ancestors import _operation_requirements, _selected_gates, _validate_ancestor_structure
@@ -545,6 +698,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 ),
                 "manage_routes": self.get_manage_routes(self.cv_viewset, self.request.user),
                 "manage_ancestor_policy": self.get_manage_ancestor_policy(self.cv_viewset, self.request.user),
+                "manage_presentation": self.get_manage_presentation(self.cv_viewset, self.request.user),
                 "manage_docs_base_url": self.manage_docs_base_url,
             }
         )

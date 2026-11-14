@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.33"
 current_phase_name: Structured manage page
-current_plan: Not started
-status: planning
-stopped_at: Phase 06.33 context gathered; ready to plan
-last_updated: "2026-11-14T09:28:59.001Z"
-last_activity: 2026-11-13
-last_activity_desc: "Phase 06.30 shipped as PR #367"
-state_head: 9e421a066c6d132da1bb6fba12d2e905076b5c6d
+current_plan: 2
+status: executing
+stopped_at: Completed 06.33-01-PLAN.md
+last_updated: "2026-11-14T12:27:00Z"
+last_activity: 2026-11-14
+last_activity_desc: Phase 06.33 plan 01 completed; plan 02 next
+state_head: 505b098a
 progress:
   total_phases: 40
   completed_phases: 27
-  total_plans: 205
-  completed_plans: 205
+  total_plans: 215
+  completed_plans: 206
 milestone_name: milestone
 ---
 
@@ -27,17 +27,24 @@ Total Phases: 40
 See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.33 — Structured manage page (#366)
+**Current focus:** Phase 06.33 — Structured manage page
 
 ## Current Position
 
-Phase: 06.33 — Structured manage page (#366)
-Current Plan: Not started
-Total Plans in Phase: 0
-Status: Ready to plan
-Last activity: 2026-11-13 -- Phase 06.30 shipped as PR #367
+Phase: 06.33 (Structured manage page) — EXECUTING
+Current Plan: 2
+Total Plans in Phase: 10
+Status: Executing Phase 06.33
+Last activity: 2026-11-14 — Phase 06.33 plan 01 completed
 
-Next: $gsd-plan-phase 06.33
+Next: Continue $gsd-execute-phase 06.33 with plan 02
+
+### Phase 06.33 plan 01 execution — 2026-11-14
+
+- Core Permissions card, explicit ViewSet/user builders, batched PK-based direct holders, group/superuser counts, hidden-user protection and exactly-20 user folding committed. Core stock rendering evaluates no legacy getter; locmem overrides evaluate each legacy key once with retained shapes.
+- Nine manage theme keys and exact documentation guards: 111 core defaults, 129 with workflow. Required gates pass 483 (including post-commit tracer replay), 514 and final combined 657 tests on Python 3.12.3 / Django 6.0.10 with four workers. Scoped Ruff and whitespace checks pass.
+- Six task commits end at bd809111; SUMMARY committed as 505b098a before progress updates. One of ten plans complete; Guardian stock migration, richer view metadata, remaining cards, assets, German/browser acceptance and broad matrix remain with their later owners.
+- Root-guard extraction error was halted and resolved by the orchestrator. SDK roadmap updated successfully; Markdown progress/session updates preserve pre-existing state.json bytes because SDK state mutations publish that file. Unrelated .gitkeep dirt preserved. No push, merge or phase-complete claim.
 
 ### Phase 06.30 shipping integration — 2026-11-13
 
@@ -996,6 +1003,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
+| 06.33 | 1 | 12min | 12min |
 
 | 06.15 | 4 | - | - |
 
@@ -1009,6 +1017,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
+| Phase 06.33 P01 | 12min | 3 tasks | 12 files |
 | Phase 01 P01 | 7 min | 2 tasks | 9 files |
 | Phase 01 P02 | 6 min | 2 tasks | 7 files |
 | Phase 01 P03 | 4 min | 2 tasks | 7 files |
@@ -1167,6 +1176,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.33 plan 01] Resolve diagnostic auth routing against the supplied ViewSet's registered manage class; Resource diagnostics fail before reads. Pivot direct holders by PK, split users at 20, and preserve legacy getters behind request-local lazy proxies.
 
 Decisions are logged in the PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
@@ -1539,6 +1550,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-14T09:28:54.627Z
-Stopped at: Phase 06.33 context gathered; ready to plan
-Resume file: .planning/phases/06.33-structured-manage-page-366/06.33-CONTEXT.md
+Last session: 2026-11-14T12:27:00Z
+Stopped at: Completed 06.33-01-PLAN.md
+Resume file: None

@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.33"
 current_phase_name: Structured manage page
-current_plan: 8
+current_plan: 9
 status: executing
-stopped_at: Completed 06.33-07-PLAN.md
-last_updated: "2026-11-14T13:49:00Z"
+stopped_at: Completed 06.33-08-PLAN.md
+last_updated: "2026-11-14T14:01:00Z"
 last_activity: 2026-11-14
-last_activity_desc: Phase 06.33 plan 07 completed; plan 08 next
-state_head: 2c23bdc2
+last_activity_desc: Phase 06.33 plan 08 completed; plan 09 next
+state_head: 6bdded39
 progress:
   total_phases: 40
   completed_phases: 27
   total_plans: 215
-  completed_plans: 212
+  completed_plans: 213
 milestone_name: milestone
 ---
 
@@ -32,12 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 ## Current Position
 
 Phase: 06.33 (Structured manage page) — EXECUTING
-Current Plan: 8
+Current Plan: 9
 Total Plans in Phase: 10
 Status: Executing Phase 06.33
-Last activity: 2026-11-14 — Phase 06.33 plan 07 completed
+Last activity: 2026-11-14 — Phase 06.33 plan 08 completed
 
-Next: Continue $gsd-execute-phase 06.33 with plan 08
+Next: Continue $gsd-execute-phase 06.33 with plan 09
+
+### Phase 06.33 plan 08 execution — 2026-11-14
+
+- Indexed manage reference supplies all eleven rendered help targets; derived subclasses replace every help base. Public block/context/builder inventories match live source and context, including both checks blocks, request-free guard boundaries, constructor provenance, empty-extends fallback and explicit declared_value.
+- Paired Breaking changelog/migration covers stock DOM and whole-card output changes, lazy legacy getters and retained Guardian config-table includes. Strict Guardian global-fallback exclusion preserves the active-superuser shortcut. Executable theme/legacy recipes, exact 111/129 class counts, external JS lifecycle/default behavior and both German catalog paths are documented.
+- Classified RED/GREEN for tasks 1/3; final required docs gate 37 passed. Shared documentation regression: 572 passed in 21.71s on Python 3.12.3 / Django 6.0.10, four workers. Strict MkDocs, all 11 actual generated anchors, scoped Ruff/format and whitespace pass.
+- Five task commits end at 61b4b3d3; SUMMARY/validation committed as 6bdded39 before ROADMAP progress. Three tasks, 13 task/evidence files, approximately eleven minutes. Eight of ten plans complete; plan 09 owns German/browser acceptance and plan 10 the supported-version/full release matrix.
+- No production changes, dependencies, settings, stubs or skipped required checks. Targeted Markdown state updates preserve original state.json checksum and unrelated .gitkeep dirt; SDK ROADMAP succeeded and stale table reconciled to 8/10. No push, merge, publication or phase-complete claim.
 
 ### Phase 06.33 plan 07 execution — 2026-11-14
 
@@ -1047,7 +1055,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
-| 06.33 | 7 | 77min | 11min |
+| 06.33 | 8 | 88min | 11min |
 
 | 06.15 | 4 | - | - |
 
@@ -1067,6 +1075,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.33 P04 | 12min | 3 tasks | 15 files |
 | Phase 06.33 P05 | 10min | 2 tasks | 10 files |
 | Phase 06.33 P06 | 12min | 2 tasks | 8 files |
+| Phase 06.33 P08 | 11min | 3 tasks | 13 files |
 | Phase 01 P01 | 7 min | 2 tasks | 9 files |
 | Phase 01 P02 | 6 min | 2 tasks | 7 files |
 | Phase 01 P03 | 4 min | 2 tasks | 7 files |
@@ -1603,6 +1612,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-14T13:49:12Z
-Stopped at: Completed 06.33-07-PLAN.md
+Last session: 2026-11-14T14:01:00Z
+Stopped at: Completed 06.33-08-PLAN.md
 Resume file: None

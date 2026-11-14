@@ -366,7 +366,7 @@ def test_manage_view_headings_translated(client_developer: Client, cv_author):
             "username": response.context["manage_permissions"]["actor"]["label"]
         }
     doc = html.fromstring(response.content)
-    headings = [h.text_content().strip() for h in doc.cssselect("h3, h4")]
+    headings = [h.text_content().strip() for h in doc.cssselect("h2, h3")]
     columns = [th.text_content().strip() for th in doc.cssselect("th")]
     assert labels <= set(headings + columns)
     assert "Berechtigungen" in headings

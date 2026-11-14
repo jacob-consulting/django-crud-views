@@ -158,7 +158,7 @@
                 {% for entry in section.entries %}
                     <tr data-cv-config-row{% if entry.is_default %} data-cv-default-row class="{% cv_button_class 'manage' 'row-default' %}"{% endif %}>
                         <th scope="row" class="text-nowrap">{{ entry.key }}</th>
-                        <td{% if entry.is_default %} class="text-muted"{% endif %}>{{ entry.value }} <small class="text-muted">({{ entry.source }})</small>{% if entry.unknown %} <span class="{% cv_button_class 'manage' 'badge-policy-na' %}">{% translate "unknown attribute" %}</span>{% endif %}</td>
+                        <td>{{ entry.value }} <small class="text-muted">({{ entry.source }})</small>{% if entry.unknown %} <span class="{% cv_button_class 'manage' 'badge-policy-na' %}">{% translate "unknown attribute" %}</span>{% endif %}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -203,13 +203,13 @@
                     <tr data-cv-config-row{% if entry.is_default %} data-cv-default-row class="{% cv_button_class 'manage' 'row-default' %}"{% endif %}>
                     <th scope="row" class="text-nowrap">{{ entry.key }}</th>
                     {% if entry.is_button %}
-                        <td{% if entry.is_default %} class="text-muted"{% endif %}><code>{{ entry.type }}</code> <small class="text-muted">({{ entry.source }})</small></td>
-                        <td{% if entry.is_default %} class="text-muted"{% endif %}>{{ entry.points_to }}</td>
-                        <td{% if entry.is_default %} class="text-muted"{% endif %}>{{ entry.label }}</td>
+                        <td><code>{{ entry.type }}</code> <small class="text-muted">({{ entry.source }})</small></td>
+                        <td>{{ entry.points_to }}</td>
+                        <td>{{ entry.label }}</td>
                     {% elif entry.empty_buttons %}
-                        <td colspan="3"{% if entry.is_default %} class="text-muted"{% endif %}>{% translate "No context buttons configured." %} <small class="text-muted">({{ entry.source }})</small></td>
+                        <td colspan="3">{% translate "No context buttons configured." %} <small class="text-muted">({{ entry.source }})</small></td>
                     {% else %}
-                        <td{% if entry.is_default %} class="text-muted"{% endif %}>{{ entry.value }} <small class="text-muted">({{ entry.source }})</small>{% if entry.declared_value %} <small>{% blocktranslate with value=entry.declared_value %}declared: {{ value }}{% endblocktranslate %}</small>{% endif %}</td>
+                        <td>{{ entry.value }} <small class="text-muted">({{ entry.source }})</small>{% if entry.declared_value %} <small>{% blocktranslate with value=entry.declared_value %}declared: {{ value }}{% endblocktranslate %}</small>{% endif %}</td>
                     {% endif %}
                     </tr>
                 {% endfor %}

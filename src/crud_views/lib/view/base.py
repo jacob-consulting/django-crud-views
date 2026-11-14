@@ -91,6 +91,27 @@ class CrudView(metaclass=CrudViewMetaClass):
     A view that is part of a ViewSet
     """
 
+    @classmethod
+    def _cv_requirement_is_custom(cls) -> bool:
+        """An undescribed, more-specific has_permission owner needs an explicit description.
+
+        This deliberately does not inspect dispatch, object loading or queryset overrides.
+        Projects changing those gates must describe them explicitly.
+        """
+        owners = cls.__mro__
+        description = next(i for i, owner in enumerate(owners) if "cv_get_requirement" in vars(owner))
+        gate = next((i for i, owner in enumerate(owners) if "has_permission" in vars(owner)), len(owners))
+        return gate < description
+
+    @classmethod
+    def cv_get_requirement(cls) -> dict:
+        """Describe the owning gate without evaluating actor, object or ancestor access."""
+        return {
+            "kind": "custom" if cls._cv_requirement_is_custom() else "none",
+            "value": None,
+            "ancestor_applies": True,
+        }
+
     cv_viewset: ViewSet | None = None
     cv_key: str | None = None  # the key to register the view (i.e. detail, list, create, update, delete)
     cv_path: str | None = None  # i.e. detail, update or "" for list views
@@ -1150,6 +1171,15 @@ ViewContext.model_rebuild()
 
 class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
     cv_permission: str | None = None  # permission required for the view
+
+    @classmethod
+    def cv_get_requirement(cls) -> dict:
+        custom = cls._cv_requirement_is_custom()
+        return {
+            "kind": "custom" if custom else "permission",
+            "value": None if custom else cls.cv_permission,
+            "ancestor_applies": True,
+        }
 
     @classmethod
     def checks(cls) -> Iterable[Check]:

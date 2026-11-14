@@ -1,3 +1,4 @@
+import re
 from collections import OrderedDict
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -8,6 +9,7 @@ from django.utils.translation import gettext as _
 from django.views import generic
 
 from crud_views.lib.ancestor_db import _check_nested_auth
+from crud_views.lib.exceptions import ViewSetError
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 
@@ -63,6 +65,15 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
 
     def has_permission(self):
         return self._cv_manage_allowed(self.request.user)
+
+    @classmethod
+    def cv_get_requirement(cls) -> dict:
+        custom = cls._cv_requirement_is_custom()
+        return {
+            "kind": "custom" if custom else "group",
+            "value": None if custom else crud_views_settings.manage_group,
+            "ancestor_applies": True,
+        }
 
     @classmethod
     def cv_has_access(cls, user, obj=None) -> bool:
@@ -201,12 +212,85 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             for holder in holders.values()
         ]
 
+    def get_manage_routes(self, viewset, user):
+        """One display projection of generated routes; never reverse example object URLs."""
+        views = viewset.get_all_views()
+        if not views:
+            return []
+        try:
+            patterns = {pattern.name: str(pattern.pattern) for pattern in viewset.urlpatterns}
+        except (ImproperlyConfigured, ViewSetError):
+            patterns = {}
+        rows = []
+        for key in views:
+            name = viewset.get_router_name(key)
+            pattern = patterns.get(name)
+            rows.append(
+                {
+                    "key": key,
+                    "name": name,
+                    "route": re.sub(r"\(\?P<([^>]+)>[^)]+\)", r"<\1>", pattern).removeprefix("^").removesuffix("$")
+                    if pattern is not None
+                    else None,
+                    "route_error": None if pattern is not None else _("Route unavailable; review system checks"),
+                }
+            )
+        return rows
+
+    def _manage_requirement(self, viewset, user, view):
+        """Resolve presentation metadata narrowly; auth/database failures remain visible."""
+        from crud_views.lib.ancestors import _operation_requirements, _selected_gates, _validate_ancestor_structure
+
+        errors = []
+        parent = None
+        requirement = {"kind": "custom", "value": None, "ancestor_applies": True}
+        try:
+            requirement = view.cv_get_requirement()
+            if requirement["ancestor_applies"] and viewset.parent is not None:
+                chain = _validate_ancestor_structure(viewset)
+                pair = _operation_requirements(view)
+                selected = _selected_gates(viewset, chain)
+                if selected:
+                    index = next(iter(selected))
+                    key = getattr(pair, selected[index])
+                    if key is not None:
+                        parent = {"key": key, "ancestor": chain[index][1]}
+        except ImproperlyConfigured:
+            errors.append(_("Requirement unavailable; review system checks"))
+
+        # Keep routing guards and permission map access outside the presentation-only catch.
+        permission = None
+        if requirement["kind"] == "permission":
+            self._guard_manage_auth(viewset, user)
+            permission = viewset.permissions.get(requirement["value"])
+            if permission is None:
+                errors.append(_("Undeclared permission key: %(key)s") % {"key": requirement["value"]})
+        if parent is not None:
+            self._guard_manage_auth(viewset, user)
+            ancestor = parent.pop("ancestor")
+            _check_nested_auth(view, actor=user, model=ancestor.model)
+            parent["permission"] = ancestor.permissions.get(parent["key"])
+            if parent["permission"] is None:
+                errors.append(_("Undeclared ancestor permission key: %(key)s") % {"key": parent["key"]})
+        return {
+            "requirement": requirement,
+            "permission": permission,
+            "parent_requirement": parent,
+            "requirement_metadata_error": "; ".join(errors) or None,
+        }
+
     def get_manage_views(self, viewset, user):
         """Project registered class facts directly; legacy overrides remain independent."""
         labels = {"base": _("Navigation"), "templates": _("Templates"), "icons": _("Icons")}
+        routes = {row["key"]: row for row in self.get_manage_routes(viewset, user)}
         return [
             {
                 "key": key,
+                "route_name": routes[key]["name"],
+                "route": routes[key]["route"],
+                "route_error": routes[key]["route_error"],
+                **self._manage_requirement(viewset, user, viewset.get_all_views()[key]),
+                "guardian_policy": None,
                 "class_path": data["base"]["class"],
                 "sections": [
                     {

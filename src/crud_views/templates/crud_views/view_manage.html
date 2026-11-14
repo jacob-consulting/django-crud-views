@@ -87,8 +87,39 @@
     {% block manage_views %}
     {% for item in manage_views %}
 
-        <h4>{{ item.key }}</h4>
-        <p><code>{{ item.class_path }}</code></p>
+        <details id="cv-view-{{ item.key }}">
+        <summary aria-describedby="cv-view-{{ item.key }}-requirement">
+            <strong>{{ item.key }}</strong>
+            <code>{{ item.class_path }}</code>
+            <span>{% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}</span>
+            {% if item.requirement.kind == 'permission' %}
+                {% if item.permission %}
+                    <span class="{% cv_button_class 'manage' 'badge-permission' %}" data-cv-tooltip title="{% blocktranslate with permission=item.permission %}Needs permission: {{ permission }}{% endblocktranslate %}"><span class="visually-hidden">{% translate "Permission: " %}</span>{{ item.requirement.value }}</span>
+                {% else %}
+                    <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% blocktranslate with key=item.requirement.value %}Undeclared permission key: {{ key }}{% endblocktranslate %}">{% blocktranslate with key=item.requirement.value %}undeclared: {{ key }}{% endblocktranslate %}</span>
+                {% endif %}
+            {% elif item.requirement.kind == 'group' %}
+                <span class="{% cv_button_class 'manage' 'badge-group' %}" data-cv-tooltip title="{% blocktranslate with group=item.requirement.value %}Needs group membership: {{ group }}{% endblocktranslate %}"><span class="visually-hidden">{% translate "Group: " %}</span>{{ item.requirement.value }}</span>
+            {% elif item.requirement.kind == 'custom' %}
+                <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% translate 'Custom access requirement' %}">{% translate "custom" %}</span>
+            {% else %}
+                <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% translate 'No own permission required' %}">{% translate "none" %}</span>
+            {% endif %}
+            {% if item.parent_requirement %}
+                {% if item.parent_requirement.permission %}
+                    <span class="{% cv_button_class 'manage' 'badge-permission' %}" data-cv-tooltip title="{% blocktranslate with permission=item.parent_requirement.permission %}Needs ancestor permission: {{ permission }}{% endblocktranslate %}">{% blocktranslate with key=item.parent_requirement.key %}parent: {{ key }}{% endblocktranslate %}</span>
+                {% else %}
+                    <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% blocktranslate with key=item.parent_requirement.key %}Undeclared ancestor permission key: {{ key }}{% endblocktranslate %}">{% blocktranslate with key=item.parent_requirement.key %}parent: {{ key }} (undeclared){% endblocktranslate %}</span>
+                {% endif %}
+            {% endif %}
+            <span id="cv-view-{{ item.key }}-requirement" class="visually-hidden">
+                {% if item.requirement.kind == 'permission' and item.permission %}{% blocktranslate with permission=item.permission %}Needs permission: {{ permission }}{% endblocktranslate %}{% elif item.requirement.kind == 'group' %}{% blocktranslate with group=item.requirement.value %}Needs group membership: {{ group }}{% endblocktranslate %}{% elif item.requirement.kind == 'custom' %}{% translate "Custom access requirement" %}{% elif item.requirement.kind == 'none' %}{% translate "No own permission required" %}{% endif %}
+                {% if item.parent_requirement.permission %}{% blocktranslate with permission=item.parent_requirement.permission %}Needs ancestor permission: {{ permission }}{% endblocktranslate %}{% endif %}
+                {% if item.requirement_metadata_error %}{{ item.requirement_metadata_error }}{% endif %}
+            </span>
+        </summary>
+        <p><code>{{ item.route_name }}</code> — {% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}</p>
+        {% if item.requirement_metadata_error %}<p>{{ item.requirement_metadata_error }}</p>{% endif %}
 
         <div class="table-responsive">
     <table class="table table-striped">
@@ -108,7 +139,7 @@
         </table>
     </div>
 
-        <br>
+        </details>
 
     {% empty %}<p>{% translate "No views registered. Review this ViewSet's registration." %}</p>
     {% endfor %}

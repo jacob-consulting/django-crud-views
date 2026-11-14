@@ -153,3 +153,23 @@ All five HIGH and eleven actionable findings are incorporated into PLAN task act
 | A11 | All feature plans; 09.3 | Slice-local completion; all 52 exact UI truths lifted to final browser plan. |
 
 Unsupported advice remains explicitly rejected in plans: replacing real AutoManageView with its base, broader custom-gate inference, redundant dynamic grant schema and reducing approved automated UI criteria. No writer-owned revision conflict arose.
+
+## Review round 2 — dae8e0e9
+
+Prior H1–H5/A1–A11 remain closed by independent review. All eleven current findings are executable dispositions; no new capability or task was added (10 plans, 25 tasks, 9 waves).
+
+| Finding | Executable owner | Disposition |
+|---|---|---|
+| C2-A1 | 01.2 boundary; 06.1 deletion/test migration; 07.2 preservation | Old Properties/spacer DOM and retained assertions change together in 06.1. |
+| C2-A2 | 01.1–3, 02.1, 03.2 | Early shared-template gates replay all three retained ancestor/Guardian modules. |
+| C2-A3 | 02.1, 05.1 | Missing own/ancestor keys render neutral undeclared-key text without invented permission strings; original endpoint errors remain. |
+| C2-A4 | 02.1, 06.1 | One shared route/error projection feeds view summaries and URL names. |
+| C2-A5 | 01.1, 08.2 | Auth-reading builders without a registered manage class raise a documented error before reads; pure routes/configuration remain callable. |
+| C2-A6 | 03.1, 08.2 | Normal constructor provenance supported; model_construct bypass explicitly unsupported, no extra machinery. |
+| C2-A7 | 04.2–3, 08.2 | Retain legacy config_table snippet unchanged and test/document explicit project includes. |
+| C2-A8 | 06.1, 10.2 | Isolated no-admin/no-admindocs import and real route builder probe on each cached series. |
+| C2-A9 | 08.2 | Breaking classification settled with paired migration guidance. |
+| C2-A10 | 09.2 | runtime/stopOwned import source is cancel-navigation.cjs; workflow runner remains the analog. |
+| C2-A11 | 10.2 | All seven omitted retained modules added to both literal cached-series commands. |
+
+No revision conflict arose. Explicit unsupported boundaries do not defer an approved feature or broaden Resource/manage access scope.

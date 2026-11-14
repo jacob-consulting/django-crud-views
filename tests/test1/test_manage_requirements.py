@@ -51,6 +51,10 @@ CORE_CASES = [
 ]
 
 
+class ProjectManageBase(ManageView):
+    pass
+
+
 def register(base, viewset, key="tested", **attrs):
     return type(
         "Requirement" + base.__name__,
@@ -441,3 +445,43 @@ def test_exact_custom_action_policy_matches_request(client, developer):
         assert client.post(url).status_code == 403
         grant(developer, parent, "change")
         assert client.post(url).status_code == 302
+
+
+@pytest.mark.django_db
+def test_configured_manage_base_keeps_actual_wrapper_identity(developer):
+    def build(sfx):
+        vs = ViewSet(model=Author, name="reqwrapper" + sfx, manage_view_class=__name__ + ".ProjectManageBase")
+        return vs, []
+
+    with isolated_routes(build) as vs:
+        cls = vs.get_view_class("manage")
+        assert cls.__bases__ == (ProjectManageBase,)
+        row = ManageView().get_manage_views(vs, developer)[0]
+        assert row["class_path"] == f"{cls.__module__}.{cls.__qualname__}"
+        assert row["class_path"].endswith(".AutoManageView")
+        assert row["requirement"]["kind"] == "group"
+
+
+@pytest.mark.django_db
+def test_inherited_custom_gate_requests_remain_authoritative(client, developer, simple_templates):
+    class ProjectGate:
+        def has_permission(self):
+            return self.request.user.groups.filter(name="Custom readers").exists()
+
+    class ProjectDetail(ProjectGate, core.DetailViewPermissionRequired):
+        pass
+
+    def build(sfx):
+        vs = ViewSet(model=Author, name="reqcustom" + sfx)
+        cls = register(ProjectDetail, vs, template_name="requirement.html")
+        return (vs, cls), [vs]
+
+    with isolated_routes(build) as (vs, cls):
+        author = Author.objects.create(first_name="Custom", last_name="Gate")
+        grant(developer, vs, "view")
+        client.force_login(developer)
+        url = reverse(vs.get_router_name("tested"), kwargs={vs.pk_name: author.pk})
+        assert cls.cv_get_requirement()["kind"] == "custom"
+        assert client.get(url).status_code == 403
+        developer.groups.add(Group.objects.create(name="Custom readers"))
+        assert client.get(url).status_code == 200

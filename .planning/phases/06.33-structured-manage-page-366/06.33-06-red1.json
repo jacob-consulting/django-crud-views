@@ -1,0 +1,12 @@
+{
+  "command": "PYTHONPATH=src .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_manage_facts.py::test_identity_builder_effective_values_and_constructor_sources --junitxml=/tmp/gsd-0633-06-red1.xml -q",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.157\" timestamp=\"2026-11-14T13:21:47.613512+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_manage_facts\" name=\"test_identity_builder_effective_values_and_constructor_sources\" time=\"0.002\"><failure message=\"AssertionError: Identity must have an explicit request-free facts builder&#10;assert False&#10; +  where False = callable(None)\">def test_identity_builder_effective_values_and_constructor_sources():\n        viewset = make(ordering=\"\", icon_header=\"\", verbose_name=None)\n        builder = getattr(ManageView(), \"get_manage_facts\", None)\n&gt;       assert callable(builder), \"Identity must have an explicit request-free facts builder\"\nE       AssertionError: Identity must have an explicit request-free facts builder\nE       assert False\nE        +  where False = callable(None)\n\ntests/test1/test_manage_facts.py:46: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_identity_builder_effective_values_and_constructor_sources",
+  "targetFile": "tests/test1/test_manage_facts.py",
+  "expected": "Explicit request-free identity builder",
+  "actual": "AssertionError: callable(None) is false",
+  "reportPath": "/tmp/gsd-0633-06-red1.xml",
+  "runStartedAt": "2026-11-14T13:19:23Z",
+  "reportModifiedAt": "2026-11-14T13:21:47.770048+00:00"
+}

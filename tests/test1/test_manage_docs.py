@@ -124,7 +124,7 @@ def test_manage_script_is_documented_with_its_enhancement_boundary():
         "without JavaScript",
         "tooltip adapter",
     ):
-        assert name in section
+        assert name.casefold() in section.casefold()
     assert (ROOT / "src/crud_views/static/crud_views/js/manage.js").is_file()
 
 

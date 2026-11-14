@@ -948,3 +948,34 @@ new themes should use the prepared cards:
 
 Manage additions require no optional app in core. Guardian behavior remains in its extension. Review the
 [paired migration](../migrating-1.0.md#structured-manage-cards) when replacing complete cards or copying markup.
+
+### Manage class registration
+
+Use the existing registry in your theme's `AppConfig.ready()`. These example class names are supplied by the
+theme's own CSS; all unmentioned keys retain their defaults:
+
+```python
+def ready(self):
+    from crud_views.lib.button_classes import register_button_classes
+
+    register_button_classes({"manage:help": "theme-help", "manage:row-default": "theme-default"})
+```
+
+All nine keys are inventoried with exact defaults in [Buttons](buttons.md#the-class-table): `manage:badge-model`,
+`manage:badge-objects`, `manage:badge-permission`, `manage:badge-group`, `manage:badge-policy-global`,
+`manage:badge-policy-strict`, `manage:badge-policy-na`, `manage:row-default`, `manage:help`.
+Project `CRUD_VIEWS_BUTTON_CLASSES` entries override theme registrations per key; `""` or `None` clears classes.
+Replacing the default-row class also replaces its CSS muting without affecting the switch's data markers.
+
+Retain the [external manage assets](javascript.md#manage-defaults) through the existing asset loader.
+`data-cv-manage` scopes the page; one `data-cv-show-defaults` control in `data-cv-defaults-control` handles both
+Views and Presentation. `data-cv-config-row`, `data-cv-default-row`, `data-cv-section` and
+`data-cv-default-count` connect rows and server-translated hidden counts. Start with all rows visible and hide
+the control until initialization succeeds. `data-cv-manage-help` identifies documentation links;
+`data-cv-tooltip` delegates badge tooltip behavior to the existing adapter. No JS persistence or inline assets
+are introduced, and native disclosures work without JavaScript.
+
+German translation sources are `src/crud_views/locale/de/LC_MESSAGES/django.po` and
+`src/crud_views_guardian/locale/de/LC_MESSAGES/django.po`. Keep both catalogs in translation verification when
+changing shared or Guardian-only diagnostics copy. This inventory names their ownership; browser/translation
+acceptance must verify the rendered locale rather than infer it from a catalog filename.

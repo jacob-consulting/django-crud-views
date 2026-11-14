@@ -190,6 +190,21 @@ buttons look the same for every variant by default, the `card` buttons distingui
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
 
+### Manage diagnostic classes
+
+The nine `manage:*` entries above are complete utility class strings, without label-mode variants.
+`manage:badge-model` and `manage:badge-objects` label matrix facts; `manage:badge-permission` and
+`manage:badge-group` describe gates; `manage:badge-policy-global`, `manage:badge-policy-strict` and
+`manage:badge-policy-na` describe Guardian policy. `manage:row-default` owns default-value muting (keys remain
+stronger), and `manage:help` styles the card/section documentation links. Default rows are not dimmed by opacity.
+
+The stock `cv-manage-badge-group` and `cv-manage-default` styles live in external `manage.css`. Replacing their
+registry strings lets a theme own their appearance; the default-state JS uses data attributes, not those classes.
+Keep textual labels and focus/help behavior when restyling. The one Show defaults switch hides default rows in
+Views and Presentation only after successful JS setup; without JavaScript all rows are readable. See the
+[theme registration recipe](theme.md#manage-class-registration) and [external asset contract](javascript.md#manage-defaults).
+The exact 111 core / 129 with-workflow inventories above remain unchanged by this documentation addition.
+
 ### Numbered column classes
 
 `Column1` through `Column12` read `form:column-1` through `form:column-12` at each render, including layouts

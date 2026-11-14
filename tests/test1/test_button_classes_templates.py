@@ -40,6 +40,9 @@ def test_manage_default_rows_and_help_resolve_project_classes(client, cv_author,
         doc = html.fromstring(client.get("/author/manage/").content)
     rows = doc.cssselect("[data-cv-default-row]")
     assert rows and all(row.get("class") == "project-default" for row in rows)
+    assert not any(row.cssselect("td.text-muted") for row in rows), (
+        "The registered row class owns default value styling"
+    )
     assert doc.cssselect("#cv-manage-views .project-group")
     assert doc.cssselect("#cv-manage-views .project-permission")
     links = doc.cssselect("a[data-cv-manage-help]")

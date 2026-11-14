@@ -19,9 +19,15 @@
 }
 
 [data-cv-manage] summary {
+    position: relative;
     min-height: 44px;
     padding: 8px;
     cursor: pointer;
+}
+
+/* Keep absolutely positioned accessible descriptions inside their scroll region. */
+[data-cv-manage] .table-responsive {
+    position: relative;
 }
 
 [data-cv-manage] .cv-manage-config th[scope="row"] {

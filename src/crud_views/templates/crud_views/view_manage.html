@@ -12,7 +12,7 @@
     <section class="card mb-3" id="cv-manage-permissions">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="h6 mb-0">{% translate "Permissions" %}</h3>
-            <a class="btn btn-sm btn-outline-secondary" href="{{ manage_docs_base_url }}#permissions" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Permissions' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+            <a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#permissions" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Permissions' %}" title="{% translate 'Opens in a new tab' %}">?</a>
         </div>
         <div class="card-body">
         {% with matrix=manage_permissions %}
@@ -26,7 +26,7 @@
             <tbody>
                 <tr data-manage-actor>
                     <th scope="row">{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}</th>
-                    {% for cell in matrix.actor.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="badge bg-light text-dark border">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}
+                    {% for cell in matrix.actor.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="{% cv_button_class 'manage' 'badge-model' %}">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="{% cv_button_class 'manage' 'badge-objects' %}">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}
                 </tr>
             </tbody>
             <tbody data-manage-groups>
@@ -34,7 +34,7 @@
                 {% for row in matrix.groups %}
                 <tr data-holder-id="{{ row.id }}">
                     <th scope="row">{{ row.label }} <small class="text-muted">{% blocktranslate count count=row.member_count %}{{ count }} member{% plural %}{{ count }} members{% endblocktranslate %}</small></th>
-                    {% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="badge bg-light text-dark border">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}
+                    {% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="{% cv_button_class 'manage' 'badge-model' %}">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="{% cv_button_class 'manage' 'badge-objects' %}">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}
                 </tr>
                 {% empty %}
                 <tr><td colspan="{{ matrix.columns|length|add:1 }}">{% translate "No groups hold these permissions." %}</td></tr>
@@ -48,7 +48,7 @@
             {% if matrix.users %}
             <div class="table-responsive"><table class="table table-sm">
             <thead><tr><th scope="col">{% translate "Users" %}</th>{% for column in matrix.columns %}<th scope="col">{{ column.key }}<br><small>{{ column.codename }}</small></th>{% endfor %}</tr></thead><tbody>{% for row in matrix.users %}
-<tr data-holder-id="{{ row.id }}"><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="badge bg-light text-dark border">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}</tr>
+<tr data-holder-id="{{ row.id }}"><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="{% cv_button_class 'manage' 'badge-model' %}">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="{% cv_button_class 'manage' 'badge-objects' %}">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}</tr>
 {% endfor %}</tbody>
             </table></div>
             {% else %}<p>{% translate "No users hold these permissions directly." %}</p>{% endif %}
@@ -58,7 +58,7 @@
             <summary>{% blocktranslate with count=matrix.users_overflow|length %}+ {{ count }} more{% endblocktranslate %}</summary>
             <div class="table-responsive"><table class="table table-sm">
             <thead><tr><th scope="col">{% translate "Users" %}</th>{% for column in matrix.columns %}<th scope="col">{{ column.key }}<br><small>{{ column.codename }}</small></th>{% endfor %}</tr></thead><tbody>{% for row in matrix.users_overflow %}
-<tr data-holder-id="{{ row.id }}"><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="badge bg-light text-dark border">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}</tr>
+<tr data-holder-id="{{ row.id }}"><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="{% cv_button_class 'manage' 'badge-model' %}">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="{% cv_button_class 'manage' 'badge-objects' %}">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}</tr>
 {% endfor %}</tbody>
             </table></div>
         </details>

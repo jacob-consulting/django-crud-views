@@ -170,11 +170,22 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `heading:icon-host` | `{name_class}` |
 | `heading:icon-inline` | `me-2` |
 | `heading-page:icon-inline` / `heading-modal:icon-inline` | `""` |
+| `manage:badge-model` | `badge bg-secondary` |
+| `manage:badge-objects` | `badge bg-light text-dark border` |
+| `manage:badge-permission` | `badge bg-primary` |
+| `manage:badge-group` | `badge cv-manage-badge-group` |
+| `manage:badge-policy-global` | `badge bg-success` |
+| `manage:badge-policy-strict` | `badge bg-success` |
+| `manage:badge-policy-na` | `badge bg-secondary` |
+| `manage:row-default` | `cv-manage-default` |
+| `manage:help` | `btn btn-sm btn-outline-secondary` |
 
-The default table has 102 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 111 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
-keys and two dismissal utilities; the two form-group utilities each contribute one key, and numbered columns contribute twelve width keys. The `context` and `list`
+keys and two dismissal utilities; the two form-group utilities each contribute one key, numbered columns contribute
+twelve width keys, and manage diagnostics contribute nine keys. Manage values replace complete class strings;
+theme registrations override defaults and project settings override the theme. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
@@ -201,8 +212,8 @@ an alternate framework's grid.
 
 ### Optional workflow defaults
 
-The 102-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
-for 120 effective default keys with only that contribution. Other installed extensions may add more.
+The 111-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
+for 129 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|

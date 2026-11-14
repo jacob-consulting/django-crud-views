@@ -10,7 +10,7 @@ Formal-ID spec-less edge/prohibition probe skipped because ROADMAP assigns prose
 
 | Source | Item | Owning plans/tasks | Disposition |
 |---|---|---|---|
-| GOAL | Read permissions/configuration at a glance, responsive core/Guardian, set/default clarity | 01–07; browser 09.3 | COVERED |
+| GOAL | Read permissions/configuration at a glance, responsive core/Guardian, set/default clarity | 01–07; all 52 UI truths/browser 09.3 | COVERED |
 | REQ | ROADMAP prose: matrix, actor/direct grants, counts and privacy | 01.1–2, 04.2 | COVERED; no formal REQ IDs |
 | REQ | ROADMAP prose: view inventory, provenance, gate descriptions and parity | 02.1–2, 03.1–2, 04.1 | COVERED |
 | REQ | ROADMAP prose: checks, facts, hierarchy, relative routes, targets, ancestor policy | 05.1–2, 06.1–2 | COVERED |
@@ -49,7 +49,7 @@ Formal-ID spec-less edge/prohibition probe skipped because ROADMAP assigns prose
 | D-12 | Shared progressive defaults switch and hidden counts | 03.2, 07.1 | COVERED |
 | D-13 | Explicit-input Python builders and complete shared Guardian rendering | 01.1, 04.2, 05.1, 06.1, 06.2 | COVERED |
 | D-14 | Whole-card blocks, lazy old shapes and independent getters | 01.2, 04.1, 04.2, 07.2 | COVERED |
-| D-15 | Registry-backed badges/default/help | 01.1, 07.2, 08.3 | COVERED |
+| D-15 | Registry-backed badges/default/help | 01.3, 07.2, 08.3 | COVERED |
 | D-16 | Historical handover boundary | 01.1 | INFORMATIONAL: approved handover is historical; this run creates executable plans only, no implementation/worktree implied. |
 | D-17 | Scoped checks, separate collectors and silencing | 05.1, 05.2 | COVERED |
 | D-18 | Effective ViewSet identity and icon | 06.1 | COVERED |
@@ -68,66 +68,88 @@ Formal-ID spec-less edge/prohibition probe skipped because ROADMAP assigns prose
 
 ## UI consideration ownership — 52/52 explicit
 
-IDs combine UI-PROBE.requirement_id and category. Every row's exact source resolution is lifted into the listed plan's must_haves.truths. The source resolution is the acceptance contract, not evidence of completion. Browser task 09.3 verifies every row against final pages; focused data/DOM/JS tasks own the underlying state.
+IDs combine UI-PROBE.requirement_id and category. Every row's exact source resolution is lifted into plan 09's must_haves.truths, after the feature dependencies exist. The listed feature task owns implementation, not an early claim of final browser/German/Guardian completion. The source resolution is the acceptance contract, not evidence of completion. Browser task 09.3 verifies every row against final pages; focused data/DOM/JS tasks own the underlying state.
 
-| UI ID | Owning task / must-have plan | Final evidence |
+| UI ID | Feature task (all final truths: plan 09) | Final evidence |
 |---|---|---|
-| permissions.empty | 01.1–2 / 01 | 04.2 data; 09.3 browser |
-| permissions.loading | 01.1–2 / 01 | 04.2 data; 09.3 browser |
-| permissions.error | 01.1–2 / 01 | 04.2 data; 09.3 browser |
-| permissions.populated | 01.1–2 / 01 | 04.2 data; 09.3 browser |
-| permissions.partial | 01.1–2 / 01 | 04.2 data; 09.3 browser |
-| permissions.overflow | 01.1–2 / 01 | 04.2 data; 09.3 browser |
-| permissions.zero-one-many | 01.1–2 / 01 | 04.2 data; 09.3 browser |
-| permissions.long-text | 01.1–2 / 01 | 04.2 data; 09.3 browser |
-| views.empty | 03.1–2 / 03 | 02.1, 04.1 request; 09.3 browser |
-| views.loading | 03.1–2 / 03 | 02.1, 04.1 request; 09.3 browser |
-| views.error | 03.1–2 / 03 | 02.1, 04.1 request; 09.3 browser |
-| views.populated | 03.1–2 / 03 | 02.1, 04.1 request; 09.3 browser |
-| views.partial | 03.1–2 / 03 | 02.1, 04.1 request; 09.3 browser |
-| views.overflow | 03.1–2 / 03 | 02.1, 04.1 request; 09.3 browser |
-| views.zero-one-many | 03.1–2 / 03 | 02.1, 04.1 request; 09.3 browser |
-| views.long-text | 03.1–2 / 03 | 02.1, 04.1 request; 09.3 browser |
-| presentation.empty | 06.2 / 06 | 07.1 toggle; 09.3 browser |
-| presentation.loading | 06.2 / 06 | 07.1 toggle; 09.3 browser |
-| presentation.error | 06.2 / 06 | 07.1 toggle; 09.3 browser |
-| presentation.populated | 06.2 / 06 | 07.1 toggle; 09.3 browser |
-| presentation.partial | 06.2 / 06 | 07.1 toggle; 09.3 browser |
-| presentation.overflow | 06.2 / 06 | 07.1 toggle; 09.3 browser |
-| presentation.zero-one-many | 06.2 / 06 | 07.1 toggle; 09.3 browser |
-| presentation.long-text | 06.2 / 06 | 07.1 toggle; 09.3 browser |
-| facts.empty | 06.1 / 06 | 09.3 browser |
-| facts.loading | 06.1 / 06 | 09.3 browser |
-| facts.error | 06.1 / 06 | 09.3 browser |
-| facts.populated | 06.1 / 06 | 09.3 browser |
-| facts.partial | 06.1 / 06 | 09.3 browser |
-| facts.overflow | 06.1 / 06 | 09.3 browser |
-| facts.zero-one-many | 06.1 / 06 | 09.3 browser |
-| facts.long-text | 06.1 / 06 | 09.3 browser |
-| checks.empty | 05.1–2 / 05 | 09.3 browser |
-| checks.loading | 05.1–2 / 05 | 09.3 browser |
-| checks.error | 05.1–2 / 05 | 09.3 browser |
-| checks.populated | 05.1–2 / 05 | 09.3 browser |
-| checks.partial | 05.1–2 / 05 | 09.3 browser |
-| checks.overflow | 05.1–2 / 05 | 09.3 browser |
-| checks.zero-one-many | 05.1–2 / 05 | 09.3 browser |
-| checks.long-text | 05.1–2 / 05 | 09.3 browser |
-| help.loading | 07.2 / 07 | 08.1 anchor tests; 09.3 browser |
-| help.error | 07.2 / 07 | 08.1 anchor tests; 09.3 browser |
-| help.overflow | 07.2 / 07 | 08.1 anchor tests; 09.3 browser |
-| help.long-text | 07.2 / 07 | 08.1 anchor tests; 09.3 browser |
-| defaults.empty | 07.1 / 07 | 09.3 browser |
-| defaults.loading | 07.1 / 07 | 09.3 browser |
-| defaults.error | 07.1 / 07 | 09.3 browser |
-| defaults.populated | 07.1 / 07 | 09.3 browser |
-| defaults.partial | 07.1 / 07 | 09.3 browser |
-| defaults.overflow | 07.1 / 07 | 09.3 browser |
-| defaults.zero-one-many | 07.1 / 07 | 09.3 browser |
-| defaults.long-text | 07.1 / 07 | 09.3 browser |
+| permissions.empty | 01.1–2 | 04.2 data; 09.3 browser |
+| permissions.loading | 01.1–2 | 04.2 data; 09.3 browser |
+| permissions.error | 01.1–2 | 04.2 data; 09.3 browser |
+| permissions.populated | 01.1–2 | 04.2 data; 09.3 browser |
+| permissions.partial | 01.1–2 | 04.2 data; 09.3 browser |
+| permissions.overflow | 01.1–2 | 04.2 data; 09.3 browser |
+| permissions.zero-one-many | 01.1–2 | 04.2 data; 09.3 browser |
+| permissions.long-text | 01.1–2 | 04.2 data; 09.3 browser |
+| views.empty | 03.1–2 | 02.1, 04.1 request; 09.3 browser |
+| views.loading | 03.1–2 | 02.1, 04.1 request; 09.3 browser |
+| views.error | 03.1–2 | 02.1, 04.1 request; 09.3 browser |
+| views.populated | 03.1–2 | 02.1, 04.1 request; 09.3 browser |
+| views.partial | 03.1–2 | 02.1, 04.1 request; 09.3 browser |
+| views.overflow | 03.1–2 | 02.1, 04.1 request; 09.3 browser |
+| views.zero-one-many | 03.1–2 | 02.1, 04.1 request; 09.3 browser |
+| views.long-text | 03.1–2 | 02.1, 04.1 request; 09.3 browser |
+| presentation.empty | 06.2 | 07.1 toggle; 09.3 browser |
+| presentation.loading | 06.2 | 07.1 toggle; 09.3 browser |
+| presentation.error | 06.2 | 07.1 toggle; 09.3 browser |
+| presentation.populated | 06.2 | 07.1 toggle; 09.3 browser |
+| presentation.partial | 06.2 | 07.1 toggle; 09.3 browser |
+| presentation.overflow | 06.2 | 07.1 toggle; 09.3 browser |
+| presentation.zero-one-many | 06.2 | 07.1 toggle; 09.3 browser |
+| presentation.long-text | 06.2 | 07.1 toggle; 09.3 browser |
+| facts.empty | 06.1 | 09.3 browser |
+| facts.loading | 06.1 | 09.3 browser |
+| facts.error | 06.1 | 09.3 browser |
+| facts.populated | 06.1 | 09.3 browser |
+| facts.partial | 06.1 | 09.3 browser |
+| facts.overflow | 06.1 | 09.3 browser |
+| facts.zero-one-many | 06.1 | 09.3 browser |
+| facts.long-text | 06.1 | 09.3 browser |
+| checks.empty | 05.1–2 | 09.3 browser |
+| checks.loading | 05.1–2 | 09.3 browser |
+| checks.error | 05.1–2 | 09.3 browser |
+| checks.populated | 05.1–2 | 09.3 browser |
+| checks.partial | 05.1–2 | 09.3 browser |
+| checks.overflow | 05.1–2 | 09.3 browser |
+| checks.zero-one-many | 05.1–2 | 09.3 browser |
+| checks.long-text | 05.1–2 | 09.3 browser |
+| help.loading | 07.2 | 08.1 anchor tests; 09.3 browser |
+| help.error | 07.2 | 08.1 anchor tests; 09.3 browser |
+| help.overflow | 07.2 | 08.1 anchor tests; 09.3 browser |
+| help.long-text | 07.2 | 08.1 anchor tests; 09.3 browser |
+| defaults.empty | 07.1 | 09.3 browser |
+| defaults.loading | 07.1 | 09.3 browser |
+| defaults.error | 07.1 | 09.3 browser |
+| defaults.populated | 07.1 | 09.3 browser |
+| defaults.partial | 07.1 | 09.3 browser |
+| defaults.overflow | 07.1 | 09.3 browser |
+| defaults.zero-one-many | 07.1 | 09.3 browser |
+| defaults.long-text | 07.1 | 09.3 browser |
 
 ## Approved exclusions and implementation boundaries
 
 No impersonation, another-user evaluation/trace, dump command, editing, tabs, comparison grid, new settings, Resource manage route, broad permission/cv_* reference pages, downstream Tabler adoption, dependency upgrade or authorization redesign. Plain data/builders and two provenance records keep the feature developer-maintainable. Existing manage enable modes, active configured-group gate (including staff/superusers), protected ancestors, optional app boundaries and example read-only developer grants remain intact. Tests may create isolated real admitted actors; they must not weaken production access.
 
-No unplanned in-scope item found. Plans 01–07 serialize shared manage source/template ownership; 08 and 09 can run together because they modify disjoint files; 10 consumes both. Each task has at most five modified files. Calibration factor=1, sample_count=0, confidence=low; estimates are raw projections, not execution measurements.
+No unplanned in-scope item found. Plans 01–07 serialize shared manage source/template ownership; 08 and 09 can run together because they modify disjoint files; 10 consumes both. Each of 25 tasks has at most five modified files; plans 01, 04 and 07 now have three tasks to synchronize affected regression inventories within their changing plan. Calibration factor=1, sample_count=0, confidence=low; estimates are raw projections, not execution measurements.
 
+
+## Review round 1 — ff2ea0c6
+
+All five HIGH and eleven actionable findings are incorporated into PLAN task actions/acceptance, with per-plan Review Dispositions Ledgers. No implementation evidence is implied.
+
+| Finding | Executable owner | Resolution |
+|---|---|---|
+| H1 | 01.2 | Own legacy core headings migration; translated new strings proved in 09.1. |
+| H2 | 01.3; retained 07.2/08.3 | Nine keys and exact live/docs count guards synchronized together. |
+| H3 | 07.1/07.3; 10.2 | All five asset/pipeline inventories owned and verified before dependent waves. |
+| H4 | 04.3; 06.1 | Guardian fallback assertions move with table removal; ancestor-layout assertions remain 06.1. |
+| H5 | 04.3; 10.2 | test_guardian and test_guardian_policy migrations preserve effective helper/policy behavior. |
+| A1 | 02.1, 05.1, 06.1 | Bounded per-view display errors after admission; empty routes checked before urlpatterns. |
+| A2 | 02.1, 04.1 | Nearest provider-enabled ancestor; no badge for no gate/None key. |
+| A3 | 04.2 | Reuse Shelf/direct-FK fixture models. |
+| A4/A5 | 06.2 | Actual context/list/card inline fields; static label-template descriptions without rendering. |
+| A6/A7 | 08.3, 07.1/07.3 | javascript.md inventory and equivalent forbidden-global source test. |
+| A8 | 09.2/09.3 | Pinned asset checksums/cache, literal CSP, preflight failure distinct from product behavior. |
+| A9/A10 | 10.1 | Reuse existing real declarations; direct runtime/docs inventory test, no test-name matching. |
+| A11 | All feature plans; 09.3 | Slice-local completion; all 52 exact UI truths lifted to final browser plan. |
+
+Unsupported advice remains explicitly rejected in plans: replacing real AutoManageView with its base, broader custom-gate inference, redundant dynamic grant schema and reducing approved automated UI criteria. No writer-owned revision conflict arose.

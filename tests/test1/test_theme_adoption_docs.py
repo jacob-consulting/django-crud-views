@@ -74,6 +74,7 @@ def test_theme_registration_recipe():
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "label"}):
         assert default_label_mode("form") == "label"
     assert default_label_mode("form") == "icon"
+
     with pytest.raises(ValueError):
         register_label_mode_defaults({"form": "label", "unknown": "icon"})
     assert default_label_mode("form") == "icon"
@@ -84,6 +85,18 @@ def test_theme_registration_recipe():
         pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS"),
     ):
         default_label_mode("form")
+
+
+def test_manage_theme_recipe_preserves_registry_precedence():
+    namespace = _python("### Manage class registration")
+    namespace["ready"](None)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={}):
+        assert bc.get_button_class("manage", "help") == "theme-help"
+        assert bc.get_button_class("manage", "row-default") == "theme-default"
+        assert bc.get_button_class("manage", "badge-permission") == bc.DEFAULT_BUTTON_CLASSES["manage:badge-permission"]
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"manage:help": "project-help", "manage:row-default": ""}):
+        assert bc.get_button_class("manage", "help") == "project-help"
+        assert bc.get_button_class("manage", "row-default") == ""
 
 
 def test_column_registration_and_project_recipes():

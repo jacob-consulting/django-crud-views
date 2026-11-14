@@ -49,3 +49,4 @@
 - [Icons](icons.md) — semantic icon names, icon libraries and custom renderers
 - [Buttons](buttons.md) — button variants, the class table, logic templates and leaves
 - [Settings](settings.md) — all available settings for django-crud-views
+- [Manage diagnostics](manage.md) — permission matrices, configuration cards and developer diagnostics

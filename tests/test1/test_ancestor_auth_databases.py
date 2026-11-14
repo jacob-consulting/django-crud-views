@@ -748,6 +748,32 @@ def test_guardian_manage_holders_refuse_a_shard_grant_route(adb, world, routes, 
         view.get_permission_holders()
 
 
+@pytest.mark.parametrize("table", CORE + GENERIC + DIRECT)
+@pytest.mark.parametrize("warm", [False, True])
+@pytest.mark.parametrize("builder", ["get_manage_permissions", "get_manage_actor_row", "get_manage_views"])
+def test_guardian_builders_guard_supplied_nested_model_before_queries(adb, routes, table, warm, builder):
+    from crud_views_guardian.lib.views import GuardianManageView
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+
+    # Only diagnostic builders run: no fake request or dynamic schema is required.
+    def build(sfx):
+        vs = GuardianViewSet(
+            model=Shelf,
+            name="aadirectmanage" + sfx,
+            parent=ParentViewSet(name=adb.none.name, attribute="name"),
+        )
+        return vs, []
+
+    with isolated_routes(build) as vs:
+        actor = User.objects.create_user(username="guarded builder", is_superuser=True)
+        if warm:
+            assert vs.permissions
+        routes.read[TABLES[table]] = "shard"
+        with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
+            getattr(GuardianManageView(), builder)(vs, actor)
+        _assert_refused_without_auth_reads(sql)
+
+
 def test_top_level_guardian_and_manage_keep_their_routing(adb, world, routes, monkeypatch):
     """Top-level ViewSets: Guardian list/detail gates, the strict ViewSet helper and the manage page keep their
     routed behaviour (no default-database boundary)."""

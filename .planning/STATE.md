@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.33"
 current_phase_name: Structured manage page
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 06.33-02-PLAN.md
-last_updated: "2026-11-14T12:41:00Z"
+stopped_at: Completed 06.33-03-PLAN.md
+last_updated: "2026-11-14T12:52:00Z"
 last_activity: 2026-11-14
-last_activity_desc: Phase 06.33 plan 02 completed; plan 03 next
-state_head: c26e77bf
+last_activity_desc: Phase 06.33 plan 03 completed; plan 04 next
+state_head: 62bbdb35
 progress:
   total_phases: 40
   completed_phases: 27
   total_plans: 215
-  completed_plans: 207
+  completed_plans: 208
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 ## Current Position
 
 Phase: 06.33 (Structured manage page) — EXECUTING
-Current Plan: 3
+Current Plan: 4
 Total Plans in Phase: 10
 Status: Executing Phase 06.33
-Last activity: 2026-11-14 — Phase 06.33 plan 02 completed
+Last activity: 2026-11-14 — Phase 06.33 plan 03 completed
 
-Next: Continue $gsd-execute-phase 06.33 with plan 03
+Next: Continue $gsd-execute-phase 06.33 with plan 04
+
+### Phase 06.33 plan 03 execution — 2026-11-14
+
+- Constructor/pre-registration declaration provenance and shared W280 project discovery committed. Static ordered configuration rows exclude descriptors, retain full class paths, cap escaped repr and show independent default/source/unknown metadata. Views card includes docs help, badge key and server default counts for plan 07.
+- Both tasks have classified RED/GREEN evidence. Final gates: 71 constructor/discovery/Resource/Guardian vocabulary tests and 550 shared-template/core/ancestor/Guardian/override tests pass on Python 3.12.3 / Django 6.0.10 with four workers. Scoped Ruff/format/whitespace pass; one translation-variable shadow was fixed before the final gates.
+- Four task commits end at cc7a181d; SUMMARY committed as 62bbdb35 before SDK roadmap progress. Two tasks, nine source/test/evidence files, seven minutes of recorded execution. Three of ten plans complete; plan 04 next. model_construct provenance remains explicitly unsupported; public documentation belongs to plan 08.
+- Targeted Markdown state/session edits preserve original state.json bytes and unrelated .gitkeep dirt. Guardian-specific enriched metadata and later UI/browser/release work remain with their owners. No push, merge or phase-complete claim.
 
 ### Phase 06.33 plan 02 execution — 2026-11-14
 
@@ -1187,6 +1194,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 - [Phase 06.33 plan 01] Resolve diagnostic auth routing against the supplied ViewSet's registered manage class; Resource diagnostics fail before reads. Pivot direct holders by PK, split users at 20, and preserve legacy getters behind request-local lazy proxies.
 - [Phase 06.33 plan 02] Describe only effective has_permission ownership automatically; custom dispatch/object/queryset gates require explicit descriptions. Reuse one generated-route projection and the request engine's nearest enforced ancestor selection. Keep unchanged extension gates inherited and verify them with native requests.
+- [Phase 06.33 plan 03] Capture constructor keys before validators and own context-action declarations before registration writes; keep W280 policy unchanged and inspect display data statically. Source labels remain independent from project declaration status; model_construct provenance is unsupported.
 
 Decisions are logged in the PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
@@ -1559,6 +1567,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-14T12:41:00Z
-Stopped at: Completed 06.33-02-PLAN.md
+Last session: 2026-11-14T12:52:00Z
+Stopped at: Completed 06.33-03-PLAN.md
 Resume file: None

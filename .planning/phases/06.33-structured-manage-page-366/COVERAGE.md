@@ -195,3 +195,11 @@ Counts remain 10 plans, 25 tasks, 9 waves and all 52 UI criteria. No new scope, 
 | C4-A5 | 09.1 | Compiled catalogs must match PO translations/plurals/contexts/semantic metadata and load through Django; cross-compiler byte identity is not required. |
 
 All five LOW findings have executable dispositions; counts remain 10 plans, 25 tasks, 9 waves. The existing Resource fixture reference in earlier coverage means the pattern, not shared pytest fixture availability. Advisory pattern-map wording is outside this revision's ownership and creates no new implementation scope.
+
+## Review round 5 — 9dc53e37
+
+| Finding | Executable owner | Disposition |
+|---|---|---|
+| C5-A1 | 01.2, 04.2 | Verify actual PK row ids, one-row merge across columns/model/object grants and stable identity after a valid unique rename. Equal labels are feasible across Group/User tables, with separate holder sections. Duplicate names within either stock auth model are rejected as an invalid fixture premise; no auth schema/custom-model change. |
+
+All approved decisions and D-13 explicit-input builders remain unchanged. Counts remain 10 plans, 25 tasks, 9 waves. No new scope or revision conflict.

@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from lxml import html
 
 from crud_views.lib.settings import crud_views_settings
 from guardian_demo.models import Document, Note
@@ -41,6 +42,50 @@ class DeveloperGuardianTest(TestCase):
             for note in doc.notes.all():
                 kwargs = {"document_pk": doc.pk, "pk": note.pk}
                 self.assertEqual(self.client.get(reverse("note-detail", kwargs=kwargs)).status_code, 200)
+
+    def test_manage_action_opens_shared_cards_and_strict_object_counts(self):
+        self.client.logout()
+        self.assertTrue(self.client.login(username="developer", password="developer"))
+        listing = self.client.get(reverse("document-list"))
+        (link,) = html.fromstring(listing.content).cssselect('[cv-context-container] a[cv-key="manage"]')
+        self.assertEqual(link.get("href"), reverse("document-manage"))
+        response = self.client.get(link.get("href"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "crud_views/view_manage.html")
+        self.assertTemplateUsed(response, "crud_views/view_guardian_manage.html")
+        document = html.fromstring(response.content)
+        self.assertTrue(document.cssselect("#cv-manage-guardian"))
+        actor = response.context["manage_permissions"]["actor"]
+        self.assertEqual(actor["label"], "developer")
+        cells = {cell["key"]: cell for cell in actor["cells"]}
+        self.assertTrue(cells["view"]["model"])
+        self.assertEqual(cells["view"]["object_count"], Document.objects.count())
+        for key in ("add", "change", "delete"):
+            self.assertFalse(cells[key]["model"])
+            self.assertEqual(cells[key]["object_count"], 0)
+        self.assertFalse(response.context["manage_guardian"]["get_objects_for_user"]["accept_global_perms"])
+        self.assertFalse(document.cssselect("[data-manage-users]"))
+        facts = {row["key"]: row for row in response.context["manage_facts"]}
+        self.assertFalse(facts["icon_header"]["is_default"])
+        self.assertTrue(facts["prefix"]["is_default"])
+
+        doc = Document.objects.first()
+        listing = self.client.get(reverse("note-list", kwargs={"document_pk": doc.pk}))
+        (link,) = html.fromstring(listing.content).cssselect('[cv-context-container] a[cv-key="manage"]')
+        response = self.client.get(link.get("href"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["manage_hierarchy"]["parents"][0]["url"], reverse("document-manage"))
+        create = next(row for row in response.context["manage_views"] if row["key"] == "create")
+        self.assertEqual(create["requirement"]["kind"], "none")
+        self.assertEqual(create["parent_requirement"]["key"], "change")
+
+    def test_seeded_alice_and_bob_cannot_open_guardian_diagnostics(self):
+        for username in ("alice", "bob"):
+            self.assertTrue(self.client.login(username=username, password=username))
+            listing = self.client.get(reverse("document-list"))
+            self.assertEqual(listing.status_code, 200)
+            self.assertFalse(html.fromstring(listing.content).cssselect('[cv-context-container] [cv-key="manage"]'))
+            self.assertEqual(self.client.get(reverse("document-manage")).status_code, 403)
 
     def test_parent_revocation_denies_nested_reads_and_diagnostics(self):
         from guardian.shortcuts import remove_perm

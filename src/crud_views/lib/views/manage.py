@@ -1,3 +1,4 @@
+import inspect
 import re
 from collections import OrderedDict
 
@@ -9,6 +10,7 @@ from django.utils.translation import gettext as _
 from django.views import generic
 
 from crud_views.lib.ancestor_db import _check_nested_auth
+from crud_views.lib.check import _project_cv_declarations
 from crud_views.lib.exceptions import ViewSetError
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
@@ -296,13 +298,35 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                     {
                         "key": section,
                         "label": labels[section],
-                        "entries": [{"key": name, "value": value} for name, value in entries.items()],
+                        "entries": [
+                            self._manage_view_entry(viewset.get_all_views()[key], name)
+                            for name in entries
+                            if name.startswith("cv_")
+                        ],
                     }
                     for section, entries in data.items()
                 ],
             }
             for key, data in self._get_view_data(viewset).items()
         ]
+
+    @staticmethod
+    def _manage_view_entry(view, name):
+        declarations = _project_cv_declarations(view, include_classes=True, exclude_generated=True)
+        owner = declarations.get(name)
+        source = _("default") if owner is None else (_("set") if owner is view else _("inherited"))
+        value = inspect.getattr_static(view, name, None)
+        if name == "cv_icon_header" and value is None and view.cv_viewset.icon_header is not None:
+            value = view.cv_viewset.icon_header
+            source = _("from ViewSet")
+        display = f"{value.__module__}.{value.__qualname__}" if isinstance(value, type) else repr(value)
+        return {
+            "key": name.removeprefix("cv_"),
+            "value": display,
+            "source": source,
+            "is_default": owner is None,
+            "unknown": False,
+        }
 
     def _get_permission_data(self):
         _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)

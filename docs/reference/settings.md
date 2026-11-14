@@ -10,7 +10,7 @@ named exactly as shown — there is no `CRUD_VIEWS = {...}` dict.
 | CRUD_VIEWS_EXTENDS              | Base template that crud_views templates extend (required; can be overridden per ViewSet/view — see [Base template](templates.md))     | `str` | `None`       |
 | CRUD_VIEWS_MANAGE_VIEWS_ENABLED | Manage diagnostics mode: `yes` requires active, authenticated group membership; `no` denies everyone; `debug_only` additionally requires `DEBUG=True`. | `str` | `yes` |
 | CRUD_VIEWS_MANAGE_GROUP | Django group whose membership is required for manage diagnostics when the mode allows access. | `str` | `CRUD_VIEWS_MANAGE` |
-| CRUD_VIEWS_MANAGE_SHOW_USERS | Whether to show a Users column in the Permission Holders section of ManageView | `bool` | `False` |
+| CRUD_VIEWS_MANAGE_SHOW_USERS | Show direct-user rows and active-superuser names in the manage Permissions matrix; rows after the first 20 fold into a disclosure. | `bool` | `False` |
 | CRUD_VIEWS_MANAGE_VIEW_CLASS | Dotted import path to a custom `ManageView` subclass used as the base for auto-registered manage views. When `None`, uses `ManageView`. | `str \| None` | `None` |
 | CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS | Dotted import path to a custom `GuardianManageView` subclass used as the base for auto-registered guardian manage views. When `None`, uses `GuardianManageView`. | `str \| None` | `None` |
 | CRUD_VIEWS_BREADCRUMB_PREFIX | List of dicts with `title`, `url_name`, optional `args`/`kwargs` prepended to every breadcrumb (see [Breadcrumb](breadcrumb.md)); malformed entries fail system check `crud_views.E102`. | `list` | `[]` |
@@ -59,7 +59,12 @@ defaults. Applications overriding authorization methods remain responsible for e
 
 ### Diagnose the signed-in account
 
-Current-user permission results describe the signed-in user. To diagnose Alice's results, temporarily add Alice
+The Permissions matrix's **Access for: username (you)** row describes the signed-in user's effective model
+permissions, including groups and active-superuser status. Guardian adds strict object counts, including group
+grants and its active-superuser all-object shortcut. Group and optional User rows show direct grants instead.
+See [Permissions](manage.md#permissions) for the distinction and default visibility.
+
+To diagnose Alice's results, temporarily add Alice
 to the configured manage group, inspect while signed in as Alice, then remove that membership. Alice herself can
 open diagnostics during that interval, subject to the mode and ancestor policy. A separate developer account
 does not impersonate Alice or reproduce her permission results.

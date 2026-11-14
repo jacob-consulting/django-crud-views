@@ -759,7 +759,7 @@ page showed.
 | Button leaves (`tags/button/action.html`, `tags/button/menu_item.html`) | Only actions the user may see. A denied action never reaches the leaf, and a disabled one arrives with `cv_disabled`. |
 | `crud_views/view_delete.content.html`, `snippets/delete/related_objects.html` | Every delete page has independent `has_protected_objects`; omit the whole form while true. Detailed context has selected `protected_objects` and `related_objects`, independent full `related_summary` and `delete_preview_truncated`; these are absent when previews are off. |
 | `crud_views/snippets/delete/protected_objects.html` | Independent body inside the shared alert frame, consuming caller-context `items` with model instance `obj` and always `url=None`. Render escaped plain text; model fields use `item.obj.field`. |
-| `crud_views/view_guardian_manage.html` | Each view's own global-fallback policy in `views.<key>.guardian_policy`, and the strict helper policy in `guardian_config.get_objects_for_user`. |
+| `crud_views/view_guardian_manage.html` | Shared `manage_*` cards, including each `manage_views` row's `guardian_policy` and `manage_guardian.get_objects_for_user`; legacy dictionaries remain available. See [manage contracts](#structured-manage-contracts). |
 | Formset templates | The editor's rows and choices, only on a page or row request the user passed the editor's gates for. |
 
 The blocked-deletion notice is the one place where the list and the state differ. Decide whether to show the notice
@@ -810,3 +810,141 @@ confirmation form only inside `{% if not has_protected_objects %}` (and retain t
 also removes the form-contained cancel control. A copied alert leaf must render `alert.text` or
 `alert.body_template` as well as heading/items to show the generic sentence. See
 [Protected objects](delete_view.md#protected-objects).
+
+## Structured manage contracts
+
+Core `crud_views/view_manage.html` owns the shared page; Guardian's
+`crud_views/view_guardian_manage.html` extends it. The [manage reference](manage.md) explains the visible
+semantics. This inventory is the public theme surface before the 1.0 freeze; #370's another-user evaluator and
+#371's configuration-dump command are separate follow-ups, not current UI or command capabilities.
+
+### Manage blocks
+
+Each block replaces its whole card/strip at the stated position. Existing overrides keep their own markup;
+they do not acquire actor/superuser enhancements until migrated. `cv_content` remains the enclosing page block.
+
+| Block | Position and prepared context |
+|---|---|
+| `manage_checks` | Main-column issues from `manage_checks` |
+| `permission_holders` | Main Permissions card from `manage_permissions` |
+| `manage_views` | Main Views card from `manage_views` |
+| `manage_presentation` | Main collapsed Presentation from `manage_presentation` |
+| `manage_checks_clean` | Side-column clean strip from `manage_checks` |
+| `manage_viewset` | Side ViewSet card from `manage_facts` |
+| `manage_hierarchy` | Side Hierarchy card from `manage_hierarchy` |
+| `manage_urls` | Side URL names card from `manage_routes` |
+| `ancestor_policy` | Side Ancestor policy from `manage_ancestor_policy`; anchor `cv-ancestor-policy` |
+| `guardian_config` | Side Guardian card from `manage_guardian`, when present |
+
+Keep both checks blocks when relocating checks: failures and clean results occupy different columns.
+
+### Prepared manage context
+
+Strings are plain data for Django autoescaping, not trusted HTML. Do not mark labels, class representations,
+check messages or route text safe. Keep visibility policy intact, including omitting user names when disabled.
+
+| Context key | Shape |
+|---|---|
+| `manage_permissions` | Dict: `columns`, `actor`, `groups`, `users`, `users_overflow`, `show_users`, `superusers` |
+| `manage_views` | Ordered list of view dicts: `key`, `class_path`, `route_name`, `route`, `route_error`, `requirement`, `permission`, `parent_requirement`, `requirement_metadata_error`, `guardian_policy`, `sections`; Guardian also adds `parent_only_requirement` |
+| `manage_checks` | Dict: `count`, `messages`; each message has `id`, `severity`, `message`, `hint` |
+| `manage_facts` | Ordered list of field rows: `key`, `value`, `source`, `is_default`; the icon row also has `icon` |
+| `manage_hierarchy` | Dict: `parents`, `children`, `route_error`; entries have `name`, `model`, `resource`, `route_name`, `route`, `route_error`, `url` (links upwards only) |
+| `manage_routes` | Ordered list of `key`, `name`, `route`, `route_error` dicts |
+| `manage_ancestor_policy` | Dict: `as_ancestor`, `requests`; the same structure as the legacy ancestor key below |
+| `manage_presentation` | Dict: `sections`, `set_count`, `default_count`; section dicts have `key`, `label`, `entries`, `default_count` |
+| `manage_guardian` | Guardian-only dict: `get_objects_for_user` with `policy`, `accept_global_perms`, `use_groups` |
+| `manage_docs_base_url` | One URL string, supplied by the manage class attribute, for every help link |
+
+Permission columns have `key`, `permission` (full Django string) and `codename`. Actor/holder rows have `id`,
+`label`, `member_count`, `cells`; cells have `key`, `model` (boolean), `object_count` (integer or `None`).
+`superusers` has `count` and `names`; users are split at 20 rows. Core object counts are `None`.
+Guardian actor counts use strict effective access, while direct holder counts use configured grant tables.
+
+View sections have `key`, `label`, `entries`, `default_count`; ordinary entries have `key`, `value`, `source`,
+`is_default`, `unknown`. Configuration source and default classification are separate. Presentation rows use
+the field-row shape, with button-specific metadata for context-button entries. Explicit empty `extends` keeps
+its effective setting fallback and an additional `declared_value` of `"''"`. Normal ViewSet constructor keys
+are recorded before validators infer defaults. Pydantic `model_construct` bypasses that record and is unsupported
+for declaration provenance; this is not a general guarantee about other Pydantic construction paths.
+
+### Request-free manage builders
+
+Every method below takes explicit `(viewset, user)` and does not read `self.request`:
+
+| Method | Result |
+|---|---|
+| `get_manage_actor_row` | The supplied actor row |
+| `get_manage_permissions` | Permission matrix |
+| `get_manage_views` | View inventory and requirement metadata |
+| `get_manage_checks` | Scoped check results |
+| `get_manage_facts` | Identity rows |
+| `get_manage_hierarchy` | Hierarchy; optional keyword-only `route_kwargs=None` supplies current URL coordinates |
+| `get_manage_routes` | Generated relative routes |
+| `get_manage_ancestor_policy` | Ancestor configuration |
+| `get_manage_presentation` | Shared presentation configuration |
+| `get_manage_guardian` | Guardian-only helper policy |
+
+These are presentation builders, not an authorization API. The web adapter remains responsible for admission,
+active-account/group/mode checks and actual ancestor authorization. Auth-reading builders use the **supplied**
+ViewSet's registered manage class for the existing nested database/auth guard before diagnostic reads. If that
+class is absent, they raise the fixed
+`ImproperlyConfigured("Manage diagnostics require a registered manage view")`. A Resource ViewSet is an actual
+absence example; this does not add Resource diagnostics. `manage_views_enabled="no"` still registers model
+AutoManageView/URLs and controls availability/context actions. Pure configuration/route projections have no
+auth-read dependency. View metadata that needs permission maps, and Guardian's enriched inventory, also use
+the auth guard. Pass `route_kwargs` explicitly for hierarchy links instead of inventing an object or request.
+
+### Requirement descriptions
+
+The public `CrudView.cv_get_requirement()` classmethod returns a small dictionary:
+
+```python
+{"kind": "permission", "value": "change", "ancestor_applies": True}
+```
+
+`kind` is `permission`, `group`, `none` or `custom`. `value` is a permission-map key for `permission`, a group
+name for `group`, and `None` for `none`/`custom`. `ancestor_applies` says whether the ancestor policy contributes
+to the description; it is not an opt-out from enforcement. The manage page derives the parent badge from
+the policy rather than duplicating it in this method. This describes configuration, not a user's access result.
+
+Shipped owning gates describe themselves. If a project overrides `has_permission()`, override
+`cv_get_requirement()` alongside it to describe the actual gate; otherwise it is reported as custom. Arbitrary
+project `dispatch()`/`get_object()` changes cannot be inferred. No per-object evaluator or another-user trace
+is implied, and changing the description does not grant access.
+
+### Legacy manage context and includes
+
+The following keys remain for existing overrides. Stock templates do not evaluate the lazy legacy getters.
+Overriding `get_view_data()` or `get_permission_holders()` affects only the old keys, not the new card builders.
+
+| Context key | Preserved shape and evaluation |
+|---|---|
+| `cv` | ViewSet instance |
+| `data` | Lazy list of `viewset` (key), `django` (permission string), `has_permission` rows |
+| `views` | Lazy ordered mapping keyed by view key, containing `base`, `templates`, `icons` mappings; Guardian adds `base.guardian_mixin` and `guardian_policy` |
+| `permission_holders` | Lazy list of `group`, `permission`, `has_model_perm`, `object_count`, `users` dicts; legacy Guardian counts still use generic `GroupObjectPermission` |
+| `show_users` | Existing boolean setting value |
+| `ancestor_policy` | Dict: `as_ancestor` has `provider`, `effective_provider`, `accept_global_perms`; `requests` is `None` at top level, otherwise `cascade`, `read`, `write` declared/effective dicts and exact `actions` pairs |
+| `guardian_config` | Guardian-only dict: `parent_viewset` (description or `None`), `ancestor_policy` (`provider`, `accept_global_perms`), `get_objects_for_user` (strict helper policy) |
+
+Legacy `views.<key>.guardian_policy` retains `global_fallback_applicable`, `cv_guardian_accept_global_perms`
+(`None` if inapplicable) and `effective_policy`. New rows instead use `guardian_policy.applicable`,
+`accept_global_perms`, `effective_policy`, `tooltip`. The removed ViewSet-level
+`guardian_config.cv_guardian_accept_global_perms` is not restored.
+
+The legacy `crud_views/snippets/guardian/config_table.html` remains unchanged for explicit project includes,
+fed by the preserved `guardian_config` shape. This compatibility example is for an existing override;
+new themes should use the prepared cards:
+
+```django
+{% extends "crud_views/view_guardian_manage.html" %}
+{% block guardian_config %}
+    <div class="table-responsive">
+        {% include "crud_views/snippets/guardian/config_table.html" %}
+    </div>
+{% endblock guardian_config %}
+```
+
+Manage additions require no optional app in core. Guardian behavior remains in its extension. Review the
+[paired migration](../migrating-1.0.md#structured-manage-cards) when replacing complete cards or copying markup.

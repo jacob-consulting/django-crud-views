@@ -128,7 +128,7 @@ update and delete retain their own object permission too. See [GuardianManageVie
 
 ## Templates and actions
 
-Presentation shows effective `extends`, `inaccessible_actions`, and context/list/form action-inline lists.
+Presentation shows effective `extends`, `inaccessible_actions`, and context/list/card action-inline lists.
 An explicit empty `extends` still uses the runtime setting fallback; its row preserves the explicit empty
 `declared_value` separately from that effective value/source. See [Base template](templates.md) and
 [inaccessible actions](inaccessible_actions.md).
@@ -159,4 +159,4 @@ class ProjectManageView(ManageView):
 For Guardian, subclass `crud_views_guardian.lib.views.GuardianManageView` instead. Existing global
 `CRUD_VIEWS_MANAGE_VIEW_CLASS` / `CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS` configuration also applies.
 The one context value `manage_docs_base_url` supplies every card/section link. Preserve all 11 anchors above in
-your hosted page. See [custom theme guidance](theme.md).
+your hosted page. See [the public template and builder inventory](theme.md#structured-manage-contracts).

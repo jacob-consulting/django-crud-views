@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.33"
 current_phase_name: Structured manage page
-current_plan: 7
+current_plan: 8
 status: executing
-stopped_at: Completed 06.33-06-PLAN.md
-last_updated: "2026-11-14T13:34:04Z"
+stopped_at: Completed 06.33-07-PLAN.md
+last_updated: "2026-11-14T13:49:00Z"
 last_activity: 2026-11-14
-last_activity_desc: Phase 06.33 plan 06 completed; plan 07 next
-state_head: 7a055dcd
+last_activity_desc: Phase 06.33 plan 07 completed; plan 08 next
+state_head: 2c23bdc2
 progress:
   total_phases: 40
   completed_phases: 27
   total_plans: 215
-  completed_plans: 211
+  completed_plans: 212
 milestone_name: milestone
 ---
 
@@ -32,12 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 ## Current Position
 
 Phase: 06.33 (Structured manage page) — EXECUTING
-Current Plan: 7
+Current Plan: 8
 Total Plans in Phase: 10
 Status: Executing Phase 06.33
-Last activity: 2026-11-14 — Phase 06.33 plan 06 completed
+Last activity: 2026-11-14 — Phase 06.33 plan 07 completed
 
-Next: Continue $gsd-execute-phase 06.33 with plan 07
+Next: Continue $gsd-execute-phase 06.33 with plan 08
+
+### Phase 06.33 plan 07 execution — 2026-11-14
+
+- One progressive Show defaults switch controls Views and Presentation through external manage.js/CSS. Native disclosures, translated hidden counts, focus and unenhanced values are preserved. Shared core/Guardian markup has labeled keyboard-scrollable tables, semantic headings, help targets and registry-owned default styles; both checks blocks and permission_holders remain intact.
+- Four classified RED records cover the initializer, accessibility/registry markup, existing asset inventory drift and a final default-style regression. Task gates: 10 JS/486 Python, 669 Python, and 81 asset/pipeline tests plus 10 JS. Final combined gate: 972 passed in 46.77s on Python 3.12.3 / Django 6.0.10, four workers; scoped Ruff/format/whitespace pass. Retained German heading selector follows h2/h3 without weakening its assertions.
+- Eight task/fix commits end at 903fec99; SUMMARY/validation committed as 2c23bdc2 before ROADMAP progress. Three tasks, 18 source/test/evidence files, approximately twelve implementation minutes. Seven of ten plans complete; plan 08 next. No new dependencies or authorization changes.
+- Decision: registered default-row class owns value muting. Presentation help remains summary's sibling; scoped details-content styling keeps it visible when closed, while its body remains folded. Isolated Chromium confirms a 32×32 target; older engines lacking this pseudo-element expose help when expanded. Plan 09 retains measured browser/German/contrast ownership, plan 10 the supported-version/full acceptance matrix.
+- Targeted Markdown updates preserve original state.json checksum and unrelated .gitkeep dirt. SDK ROADMAP update succeeded; stale table reconciled to 7/10. Optional WINDOWS recording declined on existing table/header disagreement. No stubs, skipped required verification, push, merge or phase-complete claim.
 
 ### Phase 06.33 plan 06 execution — 2026-11-14
 
@@ -1039,7 +1047,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
-| 06.33 | 6 | 65min | 10.83min |
+| 06.33 | 7 | 77min | 11min |
 
 | 06.15 | 4 | - | - |
 
@@ -1595,6 +1603,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-14T13:34:04Z
-Stopped at: Completed 06.33-06-PLAN.md
+Last session: 2026-11-14T13:49:12Z
+Stopped at: Completed 06.33-07-PLAN.md
 Resume file: None

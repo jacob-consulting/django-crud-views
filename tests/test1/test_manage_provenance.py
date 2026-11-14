@@ -142,6 +142,17 @@ def test_complete_static_inventory_and_fixed_sections():
     register(viewset, base=Inventory)
     prepared = next(item for item in ManageView().get_manage_views(viewset, None) if item["key"] == "list")
     assert [section["key"] for section in prepared["sections"]] == ["navigation", "templates", "icons", "other"]
+    assert [entry["key"] for entry in prepared["sections"][0]["entries"]] == [
+        "context_actions",
+        "list_actions",
+        "home_key",
+        "success_key",
+        "success_keys",
+        "cancel_key",
+        "cancel_keys",
+        "list_action_method",
+        "backend_only",
+    ]
     data = rows(viewset)
     assert data["annotation_only"]["value"] == "not declared"
     assert data["annotation_only"]["is_default"] is True
@@ -152,6 +163,14 @@ def test_complete_static_inventory_and_fixed_sections():
     assert data["long"]["value"] == repr(Inventory.cv_long)[:200] + "…"
     assert not {"viewset", "descriptor", "header_template", "custom_property", "custom_method"} & data.keys()
     assert {"context_buttons", "modal", "pk", "object", "key", "path"} <= data.keys()
+    assert {
+        "header_template_code",
+        "paragraph_template_code",
+        "action_label_template_code",
+        "action_short_label_template_code",
+        "filter_header_template",
+        "message_template_error_code",
+    } <= {entry["key"] for entry in prepared["sections"][1]["entries"]}
     all_keys = [entry["key"] for section in prepared["sections"] for entry in section["entries"]]
     assert len(all_keys) == len(set(all_keys))
     other = prepared["sections"][-1]
@@ -195,3 +214,14 @@ def test_declaring_values_does_not_reorder_rows():
     assert "modal" in before, "Noncurated data attributes must be present in Other"
     assert before["modal"]["is_default"] is True
     assert after["modal"]["is_default"] is False
+
+
+def test_annotation_discovery_is_class_local():
+    class Base:
+        cv_annotation: str
+
+    class Child(Base):
+        pass
+
+    assert check._own_cv_annotations(Base) == {"cv_annotation"}
+    assert check._own_cv_annotations(Child) == set()

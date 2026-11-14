@@ -10,7 +10,13 @@ from django.utils.translation import gettext as _
 from django.views import generic
 
 from crud_views.lib.ancestor_db import _check_nested_auth
-from crud_views.lib.check import _project_cv_declarations
+from crud_views.lib.check import (
+    CheckUnknownAttributes,
+    _collect_cv_names,
+    _is_config_value,
+    _project_cv_declarations,
+    _registry_vocabulary,
+)
 from crud_views.lib.exceptions import ViewSetError
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
@@ -283,7 +289,6 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
 
     def get_manage_views(self, viewset, user):
         """Project registered class facts directly; legacy overrides remain independent."""
-        labels = {"base": _("Navigation"), "templates": _("Templates"), "icons": _("Icons")}
         routes = {row["key"]: row for row in self.get_manage_routes(viewset, user)}
         return [
             {
@@ -291,41 +296,106 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "route_name": routes[key]["name"],
                 "route": routes[key]["route"],
                 "route_error": routes[key]["route_error"],
-                **self._manage_requirement(viewset, user, viewset.get_all_views()[key]),
+                **self._manage_requirement(viewset, user, view),
                 "guardian_policy": None,
-                "class_path": data["base"]["class"],
-                "sections": [
-                    {
-                        "key": section,
-                        "label": labels[section],
-                        "entries": [
-                            self._manage_view_entry(viewset.get_all_views()[key], name)
-                            for name in entries
-                            if name.startswith("cv_")
-                        ],
-                    }
-                    for section, entries in data.items()
-                ],
+                "class_path": f"{view.__module__}.{view.__qualname__}",
+                "sections": self._manage_view_sections(view),
             }
-            for key, data in self._get_view_data(viewset).items()
+            for key, view in viewset.get_all_views().items()
         ]
 
-    @staticmethod
-    def _manage_view_entry(view, name):
+    def _manage_view_sections(self, view):
+        all_names, data_names = set(), set()
+        for klass in view.__mro__:
+            _collect_cv_names(klass, all_names, data_names, include_classes=True)
+        # An overriding descriptor/method must not expose a base's data or be invoked.
+        missing = object()
+        values = {name: inspect.getattr_static(view, name, missing) for name in data_names - {"cv_viewset"}}
+        values = {name: value for name, value in values.items() if _is_config_value(value) or isinstance(value, type)}
         declarations = _project_cv_declarations(view, include_classes=True, exclude_generated=True)
+        checker = CheckUnknownAttributes(context=view)
+        registry_names = _registry_vocabulary()[0]
+        context_names = checker._context_names()[0]
+        unknown = checker._suspects() - registry_names - context_names - checker._allowlist()
+        navigation = [
+            "cv_context_actions",
+            "cv_list_actions",
+            "cv_home_key",
+            "cv_success_key",
+            "cv_success_keys",
+            "cv_cancel_key",
+            "cv_cancel_keys",
+            "cv_list_action_method",
+            "cv_backend_only",
+        ]
+        groups = [
+            ("navigation", _("Navigation"), navigation),
+            ("templates", _("Templates"), sorted(name for name in values if "_template" in name)),
+            ("icons", _("Icons"), ["cv_icon_action", "cv_icon_header"]),
+        ]
+        guardian = sorted(name for name in values if name.startswith("cv_guardian_"))
+        if guardian:
+            groups.append(("guardian", _("Guardian"), guardian))
+        curated = {name for _, _, names in groups for name in names}
+        groups.append(("other", _("Other"), sorted(values.keys() - curated)))
+        sections = []
+        for key, label, names in groups:
+            entries = [
+                self._manage_view_entry(view, name, values[name], declarations, unknown, missing)
+                for name in names
+                if name in values
+            ]
+            sections.append(
+                {
+                    "key": key,
+                    "label": label,
+                    "entries": entries,
+                    "default_count": sum(entry["is_default"] for entry in entries),
+                }
+            )
+        return sections
+
+    @staticmethod
+    def _manage_view_entry(view, name, value, declarations, unknown, missing):
         owner = declarations.get(name)
         source = _("default") if owner is None else (_("set") if owner is view else _("inherited"))
-        value = inspect.getattr_static(view, name, None)
-        if name == "cv_icon_header" and value is None and view.cv_viewset.icon_header is not None:
-            value = view.cv_viewset.icon_header
+        # Only known, request-independent fallback paths. Empty/False are values, not missing data.
+        field = name.removeprefix("cv_")
+        layered = {
+            "list_actions_inline",
+            "context_actions_inline",
+            "card_actions_inline",
+            "list_actions_label_mode",
+            "context_actions_label_mode",
+            "form_actions_label_mode",
+            "inaccessible_actions",
+        }
+        if value is None and field in layered:
+            viewset_value = getattr(view.cv_viewset, field)
+            value = CrudView.cv_first_inline_keys.__func__(view, value, field)
+            source = _("from ViewSet") if viewset_value is not None else _("global setting")
+        elif value is None and field in {"icon_header", "context_buttons", "extends_template"}:
+            viewset_field = "extends" if field == "extends_template" else field
+            value = getattr(view.cv_viewset, viewset_field)
             source = _("from ViewSet")
-        display = f"{value.__module__}.{value.__qualname__}" if isinstance(value, type) else repr(value)
+            if field == "extends_template" and value is None:
+                value = crud_views_settings.extends
+                source = _("global setting")
+        if value is missing:
+            display = _("not declared")
+            source = _("not declared")
+        elif isinstance(value, type):
+            display = f"{value.__module__}.{value.__qualname__}"
+        else:
+            display = repr(value)
+            if len(display) > 200:
+                display = display[:200] + "…"
         return {
-            "key": name.removeprefix("cv_"),
+            "key": field,
             "value": display,
             "source": source,
             "is_default": owner is None,
-            "unknown": False,
+            "unknown": name in unknown,
         }
 
     def _get_permission_data(self):

@@ -78,13 +78,13 @@
     </section>
     {% endblock permission_holders %}
 
-    <br><hr><br>
-
-    <h3>{% translate "Views" %}</h3>
-
-    <br>
-
     {% block manage_views %}
+    <section class="card mb-3" id="cv-manage-views">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="h6 mb-0">{% translate "Views" %}</h3>
+        <a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#views" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Views' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+    </div>
+    <div class="card-body">
     {% for item in manage_views %}
 
         <details id="cv-view-{{ item.key }}">
@@ -122,19 +122,19 @@
         {% if item.requirement_metadata_error %}<p>{{ item.requirement_metadata_error }}</p>{% endif %}
 
         <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-sm cv-manage-config">
             {% for section in item.sections %}
-
-                <tr>
-                    <th scope="col" colspan="2">{{ section.label }}</th>
+                <tbody>
+                <tr data-cv-section="{{ section.key }}" data-cv-default-count="{{ section.default_count }}">
+                    <th scope="col" colspan="2">{{ section.label }} <span data-cv-default-count hidden>{% blocktranslate count count=section.default_count %}{{ count }} default hidden{% plural %}{{ count }} defaults hidden{% endblocktranslate %}</span></th>
                 </tr>
-
                 {% for entry in section.entries %}
-                    <tr>
-                        <td>{{ entry.key }}</td>
-                        <td>{{ entry.value }}</td>
+                    <tr data-cv-config-row{% if entry.is_default %} data-cv-default-row{% endif %}>
+                        <th scope="row" class="text-nowrap fw-medium">{{ entry.key }}</th>
+                        <td{% if entry.is_default %} class="text-muted"{% endif %}>{{ entry.value }} <small class="text-muted">({{ entry.source }})</small>{% if entry.unknown %} <span class="{% cv_button_class 'manage' 'badge-policy-na' %}">{% translate "unknown attribute" %}</span>{% endif %}</td>
                     </tr>
                 {% endfor %}
+                </tbody>
             {% endfor %}
         </table>
     </div>
@@ -143,6 +143,9 @@
 
     {% empty %}<p>{% translate "No views registered. Review this ViewSet's registration." %}</p>
     {% endfor %}
+    </div>
+    <div class="card-footer text-muted" data-manage-badge-key>{% translate "permission: own gate · group: required membership · parent: ancestor permission · none: no own permission · custom: project access requirement" %}</div>
+    </section>
     {% endblock manage_views %}
 
     </div>

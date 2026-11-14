@@ -312,3 +312,20 @@ def test_views_inventory_markup_and_docs(client, cv_author, developer, monkeypat
     assert "<script>injected</script>" not in rendered
     assert "&lt;script&gt;injected&lt;/script&gt;" in rendered
     assert "unknown attribute" in card[0].text_content()
+
+
+def test_views_empty_and_all_default_section_copy(client, cv_author, developer, monkeypatch):
+    client.force_login(developer)
+    response = client.get("/author/manage/")
+    doc = html_parser.fromstring(response.content)
+    sections = doc.cssselect("#cv-view-manage [data-cv-section]")
+    icons = next(section for section in sections if section.get("data-cv-section") == "icons")
+    assert icons.get("data-cv-default-count") == "2"
+    assert "2 defaults hidden" in icons.text_content()
+    monkeypatch.setattr(cv_author.get_view_class("manage"), "get_manage_views", lambda self, viewset, user: [])
+    response = client.get("/author/manage/")
+    doc = html_parser.fromstring(response.content)
+    assert (
+        "No views registered. Review this ViewSet's registration."
+        in doc.cssselect("#cv-manage-views")[0].text_content()
+    )

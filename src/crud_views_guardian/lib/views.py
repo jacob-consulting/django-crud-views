@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DEFAULT_DB_ALIAS, connections, router
+from django.utils.translation import gettext as _
 
 from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.ancestors import _immediate_parent_access
@@ -384,11 +385,63 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
 class GuardianManageView(ManageView):
     template_name = "crud_views/view_guardian_manage.html"
 
+    def get_manage_guardian(self, viewset, user):
+        """Fixed helper policy, independent of per-view and ancestor fallback."""
+        from crud_views_guardian.lib.viewset import STRICT_HELPER_POLICY
+
+        return {"get_objects_for_user": dict(STRICT_HELPER_POLICY)}
+
+    def get_manage_views(self, viewset, user):
+        rows = super().get_manage_views(viewset, user)
+        for row in rows:
+            view = viewset.get_view_class(row["key"])
+            labels = [label for cls, label in GUARDIAN_MIXINS if issubclass(view, cls)]
+            applicable = self._guardian_global_fallback_applicable(view)
+            accept = bool(getattr(view, "cv_guardian_accept_global_perms", False)) if applicable else None
+            effective = (_("global fallback") if accept else _("strict")) if applicable else _("not applicable")
+            row["guardian_policy"] = {
+                "global_fallback_applicable": applicable,
+                "cv_guardian_accept_global_perms": accept,
+                "effective_policy": effective,
+                "tooltip": (
+                    _("Visible rows are filtered by this permission; an empty list is allowed.")
+                    if issubclass(view, GuardianQuerysetMixin)
+                    else _("The object's permission is checked independently of ancestor policy.")
+                    if applicable
+                    else _("This view has no local Guardian object or queryset policy.")
+                ),
+            }
+            section = next((s for s in row["sections"] if s["key"] == "guardian"), None)
+            if section is None:
+                section = {"key": "guardian", "label": _("Guardian"), "entries": [], "default_count": 0}
+                row["sections"].insert(-1, section)
+            section["entries"].insert(
+                0,
+                {
+                    "key": "guardian_mixin",
+                    "value": " + ".join(labels) if labels else "—",
+                    "source": _("effective"),
+                    "is_default": False,
+                    "unknown": False,
+                },
+            )
+            section["entries"].append(
+                {
+                    "key": "effective_policy",
+                    "value": effective,
+                    "source": _("effective"),
+                    "is_default": False,
+                    "unknown": False,
+                }
+            )
+        return rows
+
     def get_context_data(self, **kwargs):
         from crud_views.lib.ancestors import _effective_provider
         from crud_views_guardian.lib.viewset import STRICT_HELPER_POLICY
 
         context = super().get_context_data(**kwargs)
+        context["manage_guardian"] = self.get_manage_guardian(self.cv_viewset, self.request.user)
         parent = self.cv_viewset.parent
         if parent is not None:
             parent_vs = parent.viewset

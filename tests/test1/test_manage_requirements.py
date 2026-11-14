@@ -513,7 +513,9 @@ def test_guardian_descriptions_match_requests(base, key, nested, grant_kind, cli
             name="reqgc" + sfx,
             parent=ParentViewSet(name=parent.name, attribute="publisher") if nested else None,
             ancestor_policy=AncestorPolicy(
-                actions={"tested": AncestorPermissions(nearest="change", higher="view")} if nested else {}
+                actions={"tested": AncestorPermissions(nearest="change", higher="view")}
+                if nested and issubclass(base, core.ActionView)
+                else {}
             ),
         )
         attrs = {"template_name": "requirement.html", "get_success_url": lambda self: "/"}

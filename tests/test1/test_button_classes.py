@@ -131,6 +131,53 @@ def test_numbered_column_defaults(width):
     assert get_button_class("form", f"column-{width}") == f"col-md-{width}"
 
 
+def test_manage_registry_defaults_and_overrides():
+    defaults = {
+        "badge-model": "badge bg-secondary",
+        "badge-objects": "badge bg-light text-dark border",
+        "badge-permission": "badge bg-primary",
+        "badge-group": "badge cv-manage-badge-group",
+        "badge-policy-global": "badge bg-success",
+        "badge-policy-strict": "badge bg-success",
+        "badge-policy-na": "badge bg-secondary",
+        "row-default": "cv-manage-default",
+        "help": "btn btn-sm btn-outline-secondary",
+    }
+    assert {key: value for key, value in DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")} == {
+        f"manage:{key}": value for key, value in defaults.items()
+    }
+    for key, value in defaults.items():
+        assert get_button_class("manage", key) == value
+    register_button_classes({"manage:help": "theme-help"})
+    assert get_button_class("manage", "help") == "theme-help"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"manage:help": "project-help"}):
+        assert get_button_class("manage", "help") == "project-help"
+        assert not [m for m in button_class_check_messages() if m.id == "crud_views.W362"]
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"manage:undeclared": "invalid"}):
+        assert [m for m in button_class_check_messages() if m.id == "crud_views.W362"]
+
+
+@pytest.mark.django_db
+def test_core_manage_card_resolves_registry_classes(client, cv_author, user_author_view):
+    from django.contrib.auth.models import Group
+    from lxml import html
+
+    from crud_views.lib.settings import crud_views_settings
+
+    user_author_view.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    client.force_login(user_author_view)
+    register_button_classes({"manage:badge-model": "theme-model", "manage:help": "theme-help"})
+    response = client.get("/author/manage/")
+    doc = html.fromstring(response.content)
+    assert doc.cssselect("#cv-manage-permissions .theme-model")
+    assert doc.cssselect("#cv-manage-permissions a.theme-help")
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"manage:badge-model": "project-model"}):
+        doc = html.fromstring(client.get("/author/manage/").content)
+        assert doc.cssselect("#cv-manage-permissions .project-model")
+        assert doc.cssselect("#cv-manage-permissions a.theme-help")
+        assert not doc.cssselect("#cv-manage-permissions .theme-model")
+
+
 def test_workflow_app_defaults_lifecycle(monkeypatch):
     from crud_views.apps import CrudViewsConfig
     from crud_views_workflow.apps import CrudViewsWorkflowConfig

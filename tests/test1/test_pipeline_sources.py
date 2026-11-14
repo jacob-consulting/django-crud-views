@@ -13,12 +13,14 @@ CORE_JS = [
     "crud_views/js/modal.js",
     "crud_views/js/toggle.js",
     "crud_views/js/tooltip.js",
+    "crud_views/js/manage.js",
 ]
 CORE_CSS = [
     "crud_views/css/property.css",
     "crud_views/css/table.css",
     "crud_views/css/formset.css",
     "crud_views/css/icons.css",
+    "crud_views/css/manage.css",
 ]
 
 
@@ -36,7 +38,7 @@ def test_resolution_is_lazy(asset_registry):
     sources = cv_sources("js")  # created before the bundle exists, like in settings.py
     asset_registry.register_assets(key="late", js=["late/x.js"])
     assert "late/x.js" in list(sources)
-    assert len(sources) == 8
+    assert len(sources) == 9
     assert sources[-1] == "late/x.js"
 
 
@@ -144,4 +146,4 @@ def test_adapters_is_the_first_core_script():
     from crud_views.lib.settings import crud_views_settings
 
     keys = list(crud_views_settings.javascript().keys())
-    assert keys == ["adapters", "viewset", "formset", "list_filter", "modal", "toggle", "tooltip"]
+    assert keys == ["adapters", "viewset", "formset", "list_filter", "modal", "toggle", "tooltip", "manage"]

@@ -1,4 +1,5 @@
 import difflib
+import inspect
 import re
 from collections.abc import Iterable
 from typing import Any
@@ -281,16 +282,15 @@ def _is_config_value(value: Any) -> bool:
 def _own_cv_annotations(klass: type) -> set[str]:
     """cv_*-prefixed names from ``klass.__annotations__``.
 
-    Handles annotation-only declarations like `cv_formsets: FormSets` (no default) that
-    never appear in vars(klass). Read only this class's annotations, with the existing
-    defensive fallback for the PEP 649 lazy path on 3.14.
+    Handles annotation-only declarations like `cv_formsets: FormSets` (no default).
+    The public API reads class-local annotations across eager and lazy Python
+    versions without depending on their private storage names.
     """
-    annotations = vars(klass).get("__annotations__", {})
-    if "__annotate__" in vars(klass):
-        try:
-            annotations = klass.__annotations__
-        except Exception:
-            annotations = vars(klass).get("__annotations__", {})
+    try:
+        annotations = inspect.get_annotations(klass)
+    except Exception:
+        # Preserve the defensive fallback when lazy annotations cannot resolve.
+        annotations = vars(klass).get("__annotations__", {})
     return {name for name in annotations if name.startswith(_CV_PREFIX)}
 
 

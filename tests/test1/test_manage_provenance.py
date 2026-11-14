@@ -253,12 +253,16 @@ def test_declaring_values_does_not_reorder_rows():
     assert after["modal"]["is_default"] is False
 
 
-def test_annotation_discovery_is_class_local():
+@pytest.mark.parametrize("read_first", [False, True])
+def test_annotation_discovery_is_class_local(read_first):
     class Base:
         cv_annotation: str
 
     class Child(Base):
         pass
+
+    if read_first:
+        assert Base.__annotations__ == {"cv_annotation": str}
 
     assert check._own_cv_annotations(Base) == {"cv_annotation"}
     assert check._own_cv_annotations(Child) == set()

@@ -460,6 +460,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- Read class annotations through Python's public inspection API so Python 3.15 manage diagnostics include annotation-only attributes and Guardian policies do not trigger false W280 warnings.
+
 - Invalid nested formset fields now redisplay their errors instead of raising an `AttributeError`
   while checking whether the parent row is present. Classic and compact editors retain the submitted values.
 

@@ -166,7 +166,7 @@
     {% empty %}<p>{% translate "No views registered. Review this ViewSet's registration." %}</p>
     {% endfor %}
     </div>
-    <div class="card-footer text-muted" data-manage-badge-key>{% translate "permission: own gate · group: required membership · parent: ancestor permission · none: no own permission · custom: project access requirement" %}</div>
+    <div class="card-footer text-muted" data-manage-badge-key>{% translate "Blue: required permission · Magenta: required group · Green: Guardian policy. Hover a badge for details." %} {% translate "permission: own gate · group: required membership · parent: ancestor permission · none: no own permission · custom: project access requirement" %}</div>
     </section>
     {% endblock manage_views %}
 

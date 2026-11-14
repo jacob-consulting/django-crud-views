@@ -111,6 +111,41 @@ def test_manage_german_requests_load_compiled_messages(request, fixture, client,
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+@pytest.mark.parametrize(
+    "language,legend",
+    [
+        (
+            "en",
+            "Blue: required permission · Magenta: required group · Green: Guardian policy. Hover a badge for details.",
+        ),
+        (
+            "de",
+            "Blau: erforderliche Berechtigung · Magenta: erforderliche Gruppe · Grün: Guardian-Richtlinie. "
+            "Details erscheinen beim Überfahren eines Abzeichens.",
+        ),
+    ],
+)
+def test_rendered_semantic_legend(request, fixture, language, legend, client, django_user_model, monkeypatch):
+    from django.contrib.auth.models import Group
+    from lxml import html
+
+    from crud_views.lib.settings import crud_views_settings
+
+    vs = request.getfixturevalue(fixture)
+    actor = django_user_model.objects.create_user(username="legend-developer")
+    actor.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    client.force_login(actor)
+    monkeypatch.setattr(trans_real, "_translations", {})
+    with translation.override(language):
+        response = client.get(reverse(vs.get_router_name("manage")))
+    assert response.status_code == 200
+    text = html.fromstring(response.content).cssselect("[data-manage-badge-key]")[0].text_content()
+    assert legend in text
+    assert ("ancestor permission" if language == "en" else "Berechtigung des übergeordneten ViewSets") in text
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
 def test_empty_manage_vocabulary_retains_translated_actor(request, fixture, client, django_user_model, monkeypatch):
     from django.contrib.auth.models import Group
     from lxml import html as html_parser

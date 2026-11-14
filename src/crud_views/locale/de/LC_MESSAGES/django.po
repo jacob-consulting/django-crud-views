@@ -16,6 +16,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: templates/crud_views/view_manage.html
+msgid "Blue: required permission · Magenta: required group · Green: Guardian policy. Hover a badge for details."
+msgstr "Blau: erforderliche Berechtigung · Magenta: erforderliche Gruppe · Grün: Guardian-Richtlinie. Details erscheinen beim Überfahren eines Abzeichens."
+
 #: lib/crispy/form.py:35
 msgid "Save"
 msgstr "Speichern"

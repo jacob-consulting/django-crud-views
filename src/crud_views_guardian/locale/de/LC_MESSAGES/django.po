@@ -17,6 +17,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: lib/views.py
+msgid "default"
+msgstr "Standard"
+
 #: templates/crud_views/snippets/guardian/config_table.html:4
 msgid "Setting"
 msgstr "Einstellung"

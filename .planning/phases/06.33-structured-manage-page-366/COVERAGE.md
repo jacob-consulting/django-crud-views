@@ -173,3 +173,13 @@ Prior H1–H5/A1–A11 remain closed by independent review. All eleven current f
 | C2-A11 | 10.2 | All seven omitted retained modules added to both literal cached-series commands. |
 
 No revision conflict arose. Explicit unsupported boundaries do not defer an approved feature or broaden Resource/manage access scope.
+
+## Review round 3 — a909d251
+
+| Finding | Executable owner | Resolution |
+|---|---|---|
+| C3-A1 | 01.1, 08.2 | A Resource-based fixture proves actual absence; mode=no preserves model AutoManageView/URLs and disabled access. No registration change or Resource feature. |
+| C3-A2 | 01.1–3, 02.1, 03.2, 04.3, 05.1, 06.1–2, 07.1–2 | All 11 shared-template editing tasks run current cards/ancestor/Guardian/override regression modules at their own gates. |
+| C3-A4 | 06.1; catalog owner 09.1 | Heading migration uses current gettext results before the new German catalog; identifiers remain literal and new-message translation completeness is still mandatory in 09.1. |
+
+Counts remain 10 plans, 25 tasks, 9 waves and all 52 UI criteria. No new scope, implementation evidence, revision conflict or deferred actionable finding.

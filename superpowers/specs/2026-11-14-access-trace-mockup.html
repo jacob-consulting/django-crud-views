@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Access trace mockup (v1)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/css/tabler.min.css">
+<style>
+  body { background: #f6f8fb; }
+  .k { font-family: var(--tblr-font-monospace); font-size: .8rem; }
+  .sect { font-size: .7rem; letter-spacing: .04em; }
+  .note { border-left: 3px solid var(--tblr-border-color); padding-left: .75rem; }
+  /* per-view result lines */
+  details.cv-res { border-top: 1px solid var(--tblr-border-color); }
+  details.cv-res > summary { list-style: none; cursor: pointer; padding: .5rem 1rem; }
+  details.cv-res > summary::-webkit-details-marker { display: none; }
+  details.cv-res > summary:hover, details.cv-res[open] > summary { background: var(--tblr-bg-surface-secondary); }
+  .chev { display: inline-block; transition: transform .15s; color: var(--tblr-secondary); }
+  details.cv-res[open] .chev { transform: rotate(90deg); }
+  .vk { display: inline-block; width: 5rem; }
+  .outcome { width: 5.5rem; display: inline-block; text-align: center; }
+  /* trace steps */
+  table.steps { width: 100%; }
+  table.steps td { padding: .25rem .75rem; vertical-align: top; font-size: .8rem; border-bottom: 1px solid var(--tblr-border-color-translucent, #eef1f5); }
+  table.steps td.n { width: 2rem; color: var(--tblr-secondary); text-align: right; }
+  table.steps td.m { width: 6.5rem; }
+  table.steps tr.nr td { color: var(--tblr-secondary); }
+  table.steps .why { color: var(--tblr-secondary); }
+  /* terminal */
+  pre.term { background: #1b1f27; color: #d6dbe4; border-radius: 6px; padding: 1rem 1.25rem; font-size: .8rem; line-height: 1.45; overflow-x: auto; }
+  .term .p { color: #8b95a7; }      /* prompt, labels */
+  .term .ok { color: #5fd38d; }     /* passed */
+  .term .no { color: #ff6b6b; font-weight: 600; } /* denied */
+  .term .dim { color: #6b7385; }    /* not reached, not evaluated */
+  .term .warn { color: #f2c744; }   /* error, not evaluated note */
+  .term .key { color: #7db7ff; }    /* JSON keys */
+  .term .str { color: #d6dbe4; }
+  .term .b { font-weight: 700; color: #fff; }
+</style>
+</head>
+<body>
+<div class="container-xl py-4">
+  <div class="mb-3">
+    <h2 class="page-title">Access trace mockup</h2>
+    <div class="text-secondary">For django-crud-views #370: the Access check card on the manage page, and <span class="k">cv_access</span> on the command line.</div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body small">
+      <div class="text-uppercase fw-bold sect text-secondary mb-2">How to read this</div>
+      <ul class="mb-0">
+        <li>Static mockup: the forms don't submit. They show the result of the values already typed in.</li>
+        <li>The data is the tabler-test demo's: 25 customers, <span class="k">sam</span> holds object grants (view, change) on customers 26 to 29 and the model permissions <span class="k">add_customer</span>, <span class="k">view_order</span>, <span class="k">add_order</span>, <span class="k">change_order</span>. <span class="k">order</span> is a core ViewSet nested under the Guardian ViewSet <span class="k">customer</span>. The outcomes are worked out by hand from that data, not produced by code.</li>
+        <li>Rendered in the Tabler theme. Upstream ships stock Bootstrap 5 markup with classes from the class registry (D-16).</li>
+        <li>The card only exists when the project sets <span class="k">CRUD_VIEWS_MANAGE_ACCESS_TRACE</span> (D-15).</li>
+        <li>This file has a <span class="k">&lt;style&gt;</span> block and no script. The implementation has neither inline styles nor inline scripts (D-16); the expandable lines are native <span class="k">&lt;details&gt;</span>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="mb-2">1 · On the manage page <span class="text-secondary fw-normal">/customer/manage/</span></h3>
+
+  <div class="row g-3 mb-4">
+    <div class="col-lg-8">
+
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="card-title">Permissions</h3><div class="card-actions text-secondary small">the matrix of #366; with a user checked below, its first row shows that user instead of "you"</div></div>
+        <div class="table-responsive">
+          <table class="table table-vcenter card-table">
+            <thead><tr><th>Holder</th><th class="text-center">view</th><th class="text-center">add</th><th class="text-center">change</th><th class="text-center">delete</th></tr></thead>
+            <tbody>
+              <tr><td><span class="text-secondary">Access for:</span> <strong>sam</strong> <span class="text-secondary">(checked below)</span></td><td class="text-center"><span class="badge bg-azure-lt">4 objects</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td><td class="text-center"><span class="badge bg-azure-lt">4 objects</span></td><td class="text-center text-secondary">—</td></tr>
+              <tr><td colspan="5" class="text-secondary small">… groups and users as in #366 …</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Access check -->
+      <div class="card">
+        <div class="card-header"><h3 class="card-title">Access check</h3><div class="card-actions d-flex align-items-center text-secondary small">runs the real checks for another user; changes nothing<a class="btn btn-sm btn-outline-secondary ms-2 rounded-circle px-2" href="#" title="Documentation: Access check" aria-label="Documentation: Access check">?</a></div></div>
+
+        <div class="card-body border-bottom">
+          <div class="text-uppercase fw-bold sect text-secondary mb-2">This ViewSet</div>
+          <form class="row g-2 align-items-end" method="get">
+            <div class="col-sm-4"><label class="form-label small mb-1">User (username or id)</label><input class="form-control form-control-sm k" name="cv_access_user" value="sam"></div>
+            <div class="col-sm-3"><label class="form-label small mb-1">Object pk <span class="text-secondary">(optional)</span></label><input class="form-control form-control-sm k" name="cv_access_pk" value="26"></div>
+            <div class="col-auto"><button class="btn btn-sm btn-primary" type="button">Check</button></div>
+          </form>
+        </div>
+
+        <div class="card-body py-2 small"><strong>sam</strong> <span class="text-secondary">(active)</span> · customer 26 <span class="text-secondary">Bean &amp; Bloom Café</span></div>
+
+        <div>
+          <details class="cv-res">
+            <summary><span class="chev">›</span> <strong class="k ms-1 vk">list</strong> <span class="badge bg-green-lt outcome">allowed</span> <span class="small ms-2">sees 4 of 25 objects</span></summary>
+            <table class="steps">
+              <tr><td class="n">1</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>route <span class="k">customer-list</span> → <span class="k">sales.views.customers.CustomerListView</span></td></tr>
+              <tr><td class="n">2</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>login middleware <span class="why">· authenticated</span></td></tr>
+              <tr><td class="n">3</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>list filter: needs <span class="k">sales.view_customer</span> per object <span class="why">· guardian, global fallback · sees 4 of 25</span></td></tr>
+            </table>
+          </details>
+          <details class="cv-res">
+            <summary><span class="chev">›</span> <strong class="k ms-1 vk">detail</strong> <span class="badge bg-green-lt outcome">allowed</span> <span class="small ms-2">object grant <span class="k">view_customer</span></span></summary>
+            <table class="steps">
+              <tr><td class="n">1</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>route <span class="k">customer-detail</span> → <span class="k">sales.views.customers.CustomerDetailView</span></td></tr>
+              <tr><td class="n">2</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>login middleware <span class="why">· authenticated</span></td></tr>
+              <tr><td class="n">3</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>customer 26 found</td></tr>
+              <tr><td class="n">4</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>customer 26: needs <span class="k">sales.view_customer</span> <span class="why">· guardian · object grant</span></td></tr>
+              <tr><td class="n">5</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>action state <span class="why">· enabled</span></td></tr>
+            </table>
+          </details>
+          <details class="cv-res">
+            <summary><span class="chev">›</span> <strong class="k ms-1 vk">create</strong> <span class="badge bg-green-lt outcome">allowed</span> <span class="small ms-2">model permission <span class="k">sales.add_customer</span></span></summary>
+            <table class="steps"><tr><td class="n">…</td><td class="m"></td><td class="why">steps as above; ends with "not evaluated: database configuration is checked when the form is submitted" only on nested ViewSets</td></tr></table>
+          </details>
+          <details class="cv-res">
+            <summary><span class="chev">›</span> <strong class="k ms-1 vk">update</strong> <span class="badge bg-green-lt outcome">allowed</span> <span class="small ms-2">object grant <span class="k">change_customer</span></span></summary>
+            <table class="steps"><tr><td class="n">…</td><td class="m"></td><td class="why">steps as for detail, with <span class="k">sales.change_customer</span></td></tr></table>
+          </details>
+          <details class="cv-res" open>
+            <summary><span class="chev">›</span> <strong class="k ms-1 vk">delete</strong> <span class="badge bg-red-lt outcome">denied</span> <span class="small ms-2">needs <span class="k">sales.delete_customer</span> on customer 26</span></summary>
+            <table class="steps">
+              <tr><td class="n">1</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>route <span class="k">customer-delete</span> → <span class="k">sales.views.customers.CustomerDeleteView</span></td></tr>
+              <tr><td class="n">2</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>login middleware <span class="why">· authenticated</span></td></tr>
+              <tr><td class="n">3</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>customer 26 found</td></tr>
+              <tr><td class="n">4</td><td class="m"><span class="badge bg-red-lt">denied</span></td><td>customer 26: needs <span class="k">sales.delete_customer</span> <span class="why">· guardian, global fallback · no object grant, no model permission</span></td></tr>
+              <tr class="nr"><td class="n">5</td><td class="m"><span class="badge bg-secondary-lt">not reached</span></td><td>action state</td></tr>
+            </table>
+            <div class="px-3 py-2 small"><strong>Denied at step 4.</strong> <span class="text-secondary">Other middleware and URL decorators are not traced.</span></div>
+          </details>
+          <details class="cv-res">
+            <summary><span class="chev">›</span> <strong class="k ms-1 vk">manage</strong> <span class="badge bg-red-lt outcome">denied</span> <span class="small ms-2">needs group <span class="k">CRUD_VIEWS_MANAGE</span></span></summary>
+            <table class="steps"><tr><td class="n">…</td><td class="m"></td><td class="why">mode <span class="k">yes</span> · active user · not a member of the group</td></tr></table>
+          </details>
+        </div>
+        <div class="card-body border-top py-2 small text-secondary">Without an object pk, <span class="k">detail</span>, <span class="k">update</span> and <span class="k">delete</span> say "needs an object pk". A view whose URL needs more than that says "use the path field".</div>
+
+        <div class="card-body border-top">
+          <div class="text-uppercase fw-bold sect text-secondary mb-2">Any URL</div>
+          <form class="row g-2 align-items-end" method="get">
+            <div class="col-sm-3"><label class="form-label small mb-1">User (username or id)</label><input class="form-control form-control-sm k" name="cv_access_user" value="sam"></div>
+            <div class="col-sm-6"><label class="form-label small mb-1">Path</label><input class="form-control form-control-sm k" name="cv_access_path" value="/customer/41/order/117/update/"></div>
+            <div class="col-auto"><button class="btn btn-sm btn-primary" type="button">Check</button></div>
+          </form>
+        </div>
+
+        <div class="card-body py-2 small border-top"><strong>sam</strong> <span class="text-secondary">(active)</span> · <span class="k">/customer/41/order/117/update/</span> · <span class="k">order-update</span> → <span class="k">sales.views.orders.OrderUpdateView</span></div>
+        <div class="px-3 pb-1 small"><span class="text-uppercase fw-bold sect text-secondary">Plan</span> <span class="k ms-2">customer</span> parent: <span class="k">change</span> <span class="text-secondary">· guardian, model fallback · rule from global CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS</span></div>
+        <table class="steps">
+          <tr><td class="n">1</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>route resolved</td></tr>
+          <tr><td class="n">2</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>login middleware <span class="why">· authenticated</span></td></tr>
+          <tr><td class="n">3</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>ancestor structure and declarations valid</td></tr>
+          <tr><td class="n">4</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>actor admitted <span class="why">· authenticated, active</span></td></tr>
+          <tr><td class="n">5</td><td class="m"><span class="badge bg-green-lt">passed</span></td><td>customer 41 found</td></tr>
+          <tr><td class="n">6</td><td class="m"><span class="badge bg-red-lt">denied</span></td><td>customer 41: needs <span class="k">sales.change_customer</span> <span class="why">· guardian, model fallback · no object grant, no model permission</span></td></tr>
+          <tr class="nr"><td class="n">7</td><td class="m"><span class="badge bg-secondary-lt">not reached</span></td><td>own permission: needs <span class="k">sales.change_order</span></td></tr>
+          <tr class="nr"><td class="n">8</td><td class="m"><span class="badge bg-secondary-lt">not reached</span></td><td>order 117 found · action state</td></tr>
+          <tr class="nr"><td class="n">9</td><td class="m"><span class="badge bg-yellow-lt">not evaluated</span></td><td>database configuration is checked when the form is submitted</td></tr>
+        </table>
+        <div class="card-footer small"><strong>Denied at step 6:</strong> sam has no change grant on customer 41. <span class="text-secondary">Other middleware and URL decorators are not traced.</span></div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-body small text-secondary">
+          <div class="text-uppercase fw-bold sect mb-2">Side column</div>
+          The side cards of #366 (checks, ViewSet, Hierarchy, URL names, Ancestor policy, Guardian) are unchanged and not drawn here.
+          <div class="mt-3 text-uppercase fw-bold sect mb-2">Badges</div>
+          <div class="mb-1"><span class="badge bg-green-lt">passed</span> / <span class="badge bg-green-lt">allowed</span> the check let the user through</div>
+          <div class="mb-1"><span class="badge bg-red-lt">denied</span> the first one decides the outcome</div>
+          <div class="mb-1"><span class="badge bg-secondary-lt">not reached</span> planned, but the run stopped earlier</div>
+          <div class="mb-1"><span class="badge bg-yellow-lt">not evaluated</span> checked only when the page is built or submitted</div>
+          <div class="mb-1"><span class="badge bg-yellow-lt">error</span> the code raised; class and message are shown</div>
+          <div class="mt-2">Other outcomes: <span class="k">not found</span>, <span class="k">login redirect</span>, <span class="k">no such route</span>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="mb-2">2 · On the command line</h3>
+
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <div class="text-secondary small mb-1">Text output (default). Denied by the view's own permission, after the parent passed. Exit code 1.</div>
+<pre class="term"><span class="p">$</span> <span class="b">python manage.py cv_access /customer/26/order/124/delete/ sam</span>
+
+<span class="p">path </span>  /customer/26/order/124/delete/
+<span class="p">route</span>  order-delete  →  sales.views.orders.OrderDeleteView
+<span class="p">user </span>  sam (active)
+
+<span class="p">plan </span>  customer  parent: change   guardian, model fallback
+       <span class="dim">rule: global CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS</span>
+
+ 1  <span class="ok">✓</span>  route resolved
+ 2  <span class="ok">✓</span>  login middleware                  <span class="dim">authenticated</span>
+ 3  <span class="ok">✓</span>  ancestor structure and declarations valid
+ 4  <span class="ok">✓</span>  actor admitted                    <span class="dim">authenticated, active</span>
+ 5  <span class="ok">✓</span>  customer 26 found
+ 6  <span class="ok">✓</span>  customer 26: sales.change_customer <span class="dim">guardian · object grant</span>
+ 7  <span class="no">✗</span>  own permission: sales.delete_order <span class="dim">no model permission</span>
+<span class="dim"> 8  ·  order 124 found · action state     not reached</span>
+<span class="dim"> 9  ·  database configuration            not evaluated: checked on submit</span>
+
+<span class="no">DENIED at step 7:</span> sam lacks sales.delete_order.
+<span class="dim">Other middleware and URL decorators are not traced.</span>
+<span class="p">$</span> echo $?
+1</pre>
+    </div>
+    <div class="col-lg-6">
+      <div class="text-secondary small mb-1"><span class="k">--as-json</span>, also coloured on a terminal. Allowed. Exit code 0. Steps shortened here.</div>
+<pre class="term"><span class="p">$</span> <span class="b">python manage.py cv_access /customer/26/order/124/detail/ sam --as-json</span>
+{
+  <span class="key">"version"</span>: 1,
+  <span class="key">"path"</span>: <span class="str">"/customer/26/order/124/detail/"</span>,
+  <span class="key">"route"</span>: <span class="str">"order-detail"</span>,
+  <span class="key">"view"</span>: <span class="str">"sales.views.orders.OrderDetailView"</span>,
+  <span class="key">"user"</span>: {<span class="key">"username"</span>: <span class="str">"sam"</span>, <span class="key">"active"</span>: true, <span class="key">"anonymous"</span>: false},
+  <span class="key">"outcome"</span>: <span class="ok">"allowed"</span>,
+  <span class="key">"decided_by"</span>: null,
+  <span class="key">"plan"</span>: [
+    {<span class="key">"viewset"</span>: <span class="str">"customer"</span>, <span class="key">"permission"</span>: <span class="str">"sales.view_customer"</span>,
+     <span class="key">"provider"</span>: <span class="str">"guardian"</span>,
+     <span class="key">"source"</span>: <span class="str">"global CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS"</span>}
+  ],
+  <span class="key">"steps"</span>: [
+    {<span class="key">"n"</span>: 1, <span class="key">"kind"</span>: <span class="str">"route"</span>, <span class="key">"result"</span>: <span class="ok">"passed"</span>},
+    {<span class="key">"n"</span>: 6, <span class="key">"kind"</span>: <span class="str">"ancestor_gate"</span>, <span class="key">"viewset"</span>: <span class="str">"customer"</span>,
+     <span class="key">"object"</span>: {<span class="key">"model"</span>: <span class="str">"sales.customer"</span>, <span class="key">"pk"</span>: 26},
+     <span class="key">"permission"</span>: <span class="str">"sales.view_customer"</span>,
+     <span class="key">"result"</span>: <span class="ok">"passed"</span>, <span class="key">"how"</span>: <span class="str">"object grant"</span>},
+    {<span class="key">"n"</span>: 7, <span class="key">"kind"</span>: <span class="str">"own_permission"</span>,
+     <span class="key">"permission"</span>: <span class="str">"sales.view_order"</span>, <span class="key">"result"</span>: <span class="ok">"passed"</span>},
+    {<span class="key">"n"</span>: 9, <span class="key">"kind"</span>: <span class="str">"action_state"</span>, <span class="key">"result"</span>: <span class="ok">"passed"</span>}
+  ],
+  <span class="key">"untraced"</span>: <span class="str">"other middleware and URL decorators"</span>
+}
+<span class="p">$</span> echo $?
+0</pre>
+      <div class="text-secondary small"><span class="k">--no-color</span> removes the colours. Piped output (<span class="k">… --as-json | jq</span>) is plain without it. <span class="k">--anonymous</span> replaces the user. The JSON field names are the builder's choice; the <span class="k">version</span> key is fixed (D-13).</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

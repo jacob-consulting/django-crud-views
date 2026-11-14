@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manage page mockup (v13)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/css/tabler.min.css">
+<style>
+  body { background: #f6f8fb; }
+  .k { font-family: var(--tblr-font-monospace); font-size: .8rem; }
+  .sect { font-size: .7rem; letter-spacing: .04em; }
+  .kv td { padding: .15rem .75rem .15rem 0; vertical-align: top; }
+  .kv td:first-child { white-space: nowrap; }
+  /* views list */
+  details.cv-view { border-top: 1px solid var(--tblr-border-color); }
+  details.cv-view:first-child { border-top: 0; }
+  details.cv-view > summary { list-style: none; cursor: pointer; padding: .75rem 1rem; }
+  details.cv-view > summary::-webkit-details-marker { display: none; }
+  details.cv-view > summary:hover { background: var(--tblr-bg-surface-secondary); }
+  details.cv-view[open] > summary { background: var(--tblr-bg-surface-secondary); }
+  .chev { display: inline-block; transition: transform .15s; color: var(--tblr-secondary); }
+  details.cv-view[open] .chev, details.cv-pres[open] .chev { transform: rotate(90deg); }
+  details.cv-pres > summary::-webkit-details-marker { display: none; }
+  /* expanded key/value table */
+  .cfg { width: 100%; }
+  .cfg td, .cfg th { padding: .3rem 1rem; border-bottom: 1px solid var(--tblr-border-color-translucent, #eef1f5); vertical-align: top; }
+  .cfg td.key { width: 15rem; white-space: nowrap; font-family: var(--tblr-font-monospace); font-size: .8rem; color: var(--tblr-body-color); font-weight: 500; }
+  .cfg td.val { font-family: var(--tblr-font-monospace); font-size: .8rem; }
+  .cfg tr.group th { background: var(--tblr-bg-surface-tertiary, #f1f4f8); font-size: .7rem; letter-spacing: .04em; text-transform: uppercase; color: var(--tblr-secondary); font-weight: 700; padding-top: .3rem; padding-bottom: .3rem; }
+  .cfg tr.dflt td.key { color: var(--tblr-body-color); opacity: .75; }
+  .cfg tr.dflt td.val { color: var(--tblr-secondary); }
+  /* Show defaults: without JS nothing is hidden; the script adds .hide-defaults on load */
+  .cfg tr.dnote { display: none; }
+  .cfg tr.dnote td { font-size: .75rem; color: var(--tblr-secondary); font-style: italic; }
+  .hide-defaults .cfg tr.dflt { display: none; }
+  .hide-defaults .cfg tr.dnote { display: table-row; }
+
+  .cv-help { width: 1.6rem; height: 1.6rem; padding: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: .8rem; line-height: 1; }
+  tr.you td { background: var(--tblr-bg-surface-secondary); }
+</style>
+</head>
+<body>
+<div class="container-xl py-4">
+  <div class="mb-3">
+    <h2 class="page-title">⚙ ViewSet Management</h2>
+    <div class="text-secondary">Manage details of ViewSet <strong>customer</strong></div>
+  </div>
+
+  <div class="row g-3">
+    <!-- ================= main column ================= -->
+    <div class="col-lg-8">
+
+      <!-- Permissions -->
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="card-title">Permissions</h3><div class="card-actions text-secondary small d-flex align-items-center">who holds what<a class="btn btn-sm btn-outline-secondary cv-help ms-2" href="https://django-crud-views.readthedocs.io/en/stable/getting_started/tutorial-5-filters-permissions/#permissions-in-practice" target="_blank" rel="noopener" title="Documentation: Permissions (closest existing page; dedicated section missing)" aria-label="Documentation: Permissions">?</a></div></div>
+        <div class="table-responsive">
+          <table class="table table-vcenter card-table">
+            <thead><tr><th>Holder</th>
+              <th class="text-center">view<div class="k text-secondary fw-normal text-lowercase">view_customer</div></th>
+              <th class="text-center">add<div class="k text-secondary fw-normal text-lowercase">add_customer</div></th>
+              <th class="text-center">change<div class="k text-secondary fw-normal text-lowercase">change_customer</div></th>
+              <th class="text-center">delete<div class="k text-secondary fw-normal text-lowercase">delete_customer</div></th></tr></thead>
+            <tbody>
+              <!-- D-05: the signed-in user's effective result, groups and superuser status included -->
+              <tr class="you"><td><span class="text-secondary">Access for:</span> <strong>alex</strong> <span class="text-secondary">(you)</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td></tr>
+              <tr><td colspan="5" class="bg-light text-uppercase fw-bold sect text-secondary py-1">Groups</td></tr>
+              <tr><td>Account managers <span class="text-secondary small">· 1 member</span></td><td class="text-center text-secondary">—</td><td class="text-center"><span class="badge bg-green-lt">model</span></td><td class="text-center text-secondary">—</td><td class="text-center text-secondary">—</td></tr>
+              <tr><td>Owner <span class="text-secondary small">· 1 member</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td></tr>
+              <tr><td>Roasters <span class="text-secondary small">· 1 member</span></td><td class="text-center"><span class="badge bg-green-lt">model</span></td><td class="text-center text-secondary">—</td><td class="text-center text-secondary">—</td><td class="text-center text-secondary">—</td></tr>
+              <tr><td colspan="5" class="bg-light text-uppercase fw-bold sect text-secondary py-1">Users <span class="fw-normal text-lowercase">(only with CRUD_VIEWS_MANAGE_SHOW_USERS)</span></td></tr>
+              <tr><td>sam</td><td class="text-center"><span class="badge bg-azure-lt">4 objects</span></td><td class="text-center text-secondary">—</td><td class="text-center"><span class="badge bg-azure-lt">4 objects</span></td><td class="text-center text-secondary">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-body py-2 small text-secondary border-top">1 active superuser holds every permission <span class="k">(admin)</span> <span class="fst-italic">— name only with CRUD_VIEWS_MANAGE_SHOW_USERS</span></div>
+        <div class="card-footer text-secondary small"><span class="badge bg-green-lt">model</span> model-level permission · <span class="badge bg-azure-lt">n objects</span> Guardian object grants · "Access for" is the effective result, rights through groups included</div>
+      </div>
+
+      <!-- Views -->
+      <div class="card" id="views-card">
+        <div class="card-header">
+          <h3 class="card-title">Views <span class="text-secondary fw-normal">· 6</span></h3>
+          <div class="card-actions d-flex align-items-center">
+            <label class="form-check form-switch mb-0">
+              <input class="form-check-input" type="checkbox" id="show-defaults" checked>
+              <span class="form-check-label small">Show defaults</span>
+            </label>
+            <a class="btn btn-sm btn-outline-secondary cv-help ms-2" href="https://django-crud-views.readthedocs.io/en/stable/reference/" target="_blank" rel="noopener" title="Documentation: Views (closest existing page; dedicated section missing)" aria-label="Documentation: Views">?</a>
+          </div>
+        </div>
+
+        <div>
+          <!-- list -->
+          <details class="cv-view" id="cv-view-list">
+            <summary><div class="row align-items-center g-2">
+              <div class="col-auto"><span class="chev">›</span></div>
+              <div class="col-auto" style="width:5.5rem"><strong>list</strong></div>
+              <div class="col"><span class="k">/customer/</span><div class="k text-secondary">sales.views.customers.CustomerListView</div></div>
+              <div class="col-auto"><span class="badge bg-blue-lt" data-cv-tooltip title="needs permission: sales.view_customer"><span class="visually-hidden">permission </span>view</span> <span class="badge bg-green-lt" data-cv-tooltip title="Guardian: model permissions accepted as fallback">global fallback</span></div>
+            </div></summary>
+            <table class="cfg">
+              <tr class="group"><th colspan="2">Navigation</th></tr>
+              <tr class="dflt"><td class="key">context_actions</td><td class="val">parent, list, filter, create, manage</td></tr>
+              <tr><td class="key">list_actions</td><td class="val">detail, update, delete</td></tr>
+              <tr class="dflt"><td class="key">home_key</td><td class="val">list</td></tr>
+              <tr class="dflt"><td class="key">success_key</td><td class="val">list</td></tr>
+              <tr class="dflt"><td class="key">success_keys</td><td class="val">—</td></tr>
+              <tr class="dflt"><td class="key">cancel_key</td><td class="val">list</td></tr>
+              <tr class="dflt"><td class="key">cancel_keys</td><td class="val">—</td></tr>
+              <tr class="dflt"><td class="key">list_action_method</td><td class="val">get</td></tr>
+              <tr class="dflt"><td class="key">backend_only</td><td class="val">False</td></tr>
+              <tr class="group"><th colspan="2">Templates</th></tr>
+              <tr class="dnote"><td colspan="2">5 defaults hidden</td></tr>
+              <tr class="dflt"><td class="key">header_template</td><td class="val">crud_views/snippets/header/list.html</td></tr>
+              <tr class="dflt"><td class="key">paragraph_template</td><td class="val">crud_views/snippets/paragraph/list.html</td></tr>
+              <tr class="dflt"><td class="key">action_label_template</td><td class="val">crud_views/snippets/action/list.html</td></tr>
+              <tr class="dflt"><td class="key">action_short_label_template</td><td class="val">crud_views/snippets/action_short/list.html</td></tr>
+              <tr class="dflt"><td class="key">*_template_code</td><td class="val">— (all four)</td></tr>
+              <tr class="group"><th colspan="2">Icons</th></tr>
+              <tr class="dnote"><td colspan="2">2 defaults hidden</td></tr>
+              <tr class="dflt"><td class="key">icon_header</td><td class="val">tabler:building-store (from ViewSet)</td></tr>
+              <tr class="dflt"><td class="key">icon_action</td><td class="val">list</td></tr>
+              <tr class="group"><th colspan="2">Guardian</th></tr>
+              <tr class="dflt"><td class="key">guardian_mixin</td><td class="val">QuerysetMixin + ParentMixin</td></tr>
+              <tr><td class="key">guardian_accept_global_perms</td><td class="val">True → global fallback: model permissions accepted</td></tr>
+              <tr class="group"><th colspan="2">Other</th></tr>
+              <tr class="dflt"><td class="key">action_variant</td><td class="val">secondary</td></tr>
+              <tr class="dflt"><td class="key">atomic</td><td class="val">True</td></tr>
+              <tr class="dflt"><td class="key">context_actions_inline</td><td class="val">— (ViewSet, then setting)</td></tr>
+              <tr class="dflt"><td class="key">inaccessible_actions</td><td class="val">hide (setting CRUD_VIEWS_INACCESSIBLE_ACTIONS)</td></tr>
+              <tr><td class="key">list_actions_inline</td><td class="val">detail</td></tr>
+              <tr class="dflt"><td class="key">modal</td><td class="val">False</td></tr>
+              <tr class="dflt"><td class="key">…</td><td class="val">(every remaining cv_* attribute, alphabetical)</td></tr>
+            </table>
+          </details>
+
+          <!-- detail (open) -->
+          <details class="cv-view" id="cv-view-detail" open>
+            <summary><div class="row align-items-center g-2">
+              <div class="col-auto"><span class="chev">›</span></div>
+              <div class="col-auto" style="width:5.5rem"><strong>detail</strong></div>
+              <div class="col"><span class="k">/customer/&lt;pk&gt;/detail/</span><div class="k text-secondary">sales.views.customers.CustomerDetailView</div></div>
+              <div class="col-auto"><span class="badge bg-blue-lt" data-cv-tooltip title="needs permission: sales.view_customer"><span class="visually-hidden">permission </span>view</span> <span class="badge bg-green-lt" data-cv-tooltip title="Guardian: model permissions accepted as fallback">global fallback</span></div>
+            </div></summary>
+            <table class="cfg">
+              <tr class="group"><th colspan="2">Navigation</th></tr>
+              <tr><td class="key">context_actions</td><td class="val">home, update, orders, subscriptions, addresses, delete, manage</td></tr>
+              <tr class="dflt"><td class="key">list_actions</td><td class="val">—</td></tr>
+              <tr class="dflt"><td class="key">home_key</td><td class="val">list</td></tr>
+              <tr class="dflt"><td class="key">success_key</td><td class="val">list</td></tr>
+              <tr class="dflt"><td class="key">success_keys</td><td class="val">—</td></tr>
+              <tr class="dflt"><td class="key">cancel_key</td><td class="val">list</td></tr>
+              <tr class="dflt"><td class="key">cancel_keys</td><td class="val">—</td></tr>
+              <tr class="dflt"><td class="key">list_action_method</td><td class="val">get</td></tr>
+              <tr class="dflt"><td class="key">backend_only</td><td class="val">False</td></tr>
+              <tr class="group"><th colspan="2">Templates</th></tr>
+              <tr><td class="key">header_template</td><td class="val">sales/snippets/customer_header.html</td></tr>
+              <tr><td class="key">paragraph_template</td><td class="val">sales/snippets/customer_paragraph.html</td></tr>
+              <tr class="dflt"><td class="key">action_label_template</td><td class="val">crud_views/snippets/action/detail.html</td></tr>
+              <tr class="dflt"><td class="key">action_short_label_template</td><td class="val">crud_views/snippets/action_short/detail.html</td></tr>
+              <tr class="dflt"><td class="key">*_template_code</td><td class="val">— (all four)</td></tr>
+              <tr class="group"><th colspan="2">Icons</th></tr>
+              <tr><td class="key">icon_header</td><td class="val">"" (suppressed)</td></tr>
+              <tr class="dflt"><td class="key">icon_action</td><td class="val">detail</td></tr>
+              <tr class="group"><th colspan="2">Guardian</th></tr>
+              <tr class="dflt"><td class="key">guardian_mixin</td><td class="val">ObjectPermissionMixin + ParentMixin</td></tr>
+              <tr><td class="key">guardian_accept_global_perms</td><td class="val">True → global fallback: model permissions accepted</td></tr>
+              <tr class="group"><th colspan="2">Other</th></tr>
+              <tr class="dflt"><td class="key">action_variant</td><td class="val">secondary</td></tr>
+              <tr class="dflt"><td class="key">atomic</td><td class="val">True</td></tr>
+              <tr><td class="key">context_actions_inline</td><td class="val">update, orders, subscriptions, addresses</td></tr>
+              <tr class="dflt"><td class="key">context_buttons</td><td class="val">— (the ViewSet's, see Presentation)</td></tr>
+              <tr class="dflt"><td class="key">inaccessible_actions</td><td class="val">hide (setting CRUD_VIEWS_INACCESSIBLE_ACTIONS)</td></tr>
+              <tr class="dflt"><td class="key">modal</td><td class="val">False</td></tr>
+              <tr><td class="key">object_detail_layout</td><td class="val">split-card</td></tr>
+              <tr><td class="key">property_display</td><td class="val">[{'title': 'Details', 'icon': 'tabler:building-store', 'properties': […13]}]</td></tr>
+              <tr class="dflt"><td class="key">…</td><td class="val">(every remaining cv_* attribute, alphabetical)</td></tr>
+            </table>
+          </details>
+
+          <!-- create -->
+          <details class="cv-view" id="cv-view-create">
+            <summary><div class="row align-items-center g-2">
+              <div class="col-auto"><span class="chev">›</span></div>
+              <div class="col-auto" style="width:5.5rem"><strong>create</strong></div>
+              <div class="col"><span class="k">/customer/create/</span><div class="k text-secondary">sales.views.customers.CustomerCreateView</div></div>
+              <div class="col-auto"><span class="badge bg-blue-lt" data-cv-tooltip title="needs permission: sales.add_customer"><span class="visually-hidden">permission </span>add</span> <span class="badge bg-secondary-lt" data-cv-tooltip title="Guardian: this view never consults the global fallback">not applicable</span></div>
+            </div></summary>
+            <table class="cfg"><tr class="group"><th colspan="2">Navigation</th></tr><tr class="dflt"><td class="key">…</td><td class="val">(same structure; stub in this mockup)</td></tr><tr class="group"><th colspan="2">Other</th></tr><tr><td class="key">message_template_code</td><td class="val">…</td></tr></table>
+          </details>
+
+          <!-- update -->
+          <details class="cv-view" id="cv-view-update">
+            <summary><div class="row align-items-center g-2">
+              <div class="col-auto"><span class="chev">›</span></div>
+              <div class="col-auto" style="width:5.5rem"><strong>update</strong></div>
+              <div class="col"><span class="k">/customer/&lt;pk&gt;/update/</span><div class="k text-secondary">sales.views.customers.CustomerUpdateView</div></div>
+              <div class="col-auto"><span class="badge bg-blue-lt" data-cv-tooltip title="needs permission: sales.change_customer"><span class="visually-hidden">permission </span>change</span> <span class="badge bg-green-lt" data-cv-tooltip title="Guardian: model permissions accepted as fallback">global fallback</span></div>
+            </div></summary>
+            <table class="cfg"><tr class="group"><th colspan="2">Navigation</th></tr><tr class="dflt"><td class="key">…</td><td class="val">(same structure; stub in this mockup)</td></tr><tr class="group"><th colspan="2">Other</th></tr><tr><td class="key">message_template_code</td><td class="val">…</td></tr></table>
+          </details>
+
+          <!-- delete -->
+          <details class="cv-view" id="cv-view-delete">
+            <summary><div class="row align-items-center g-2">
+              <div class="col-auto"><span class="chev">›</span></div>
+              <div class="col-auto" style="width:5.5rem"><strong>delete</strong></div>
+              <div class="col"><span class="k">/customer/&lt;pk&gt;/delete/</span><div class="k text-secondary">sales.views.customers.CustomerDeleteView</div></div>
+              <div class="col-auto"><span class="badge bg-blue-lt" data-cv-tooltip title="needs permission: sales.delete_customer"><span class="visually-hidden">permission </span>delete</span> <span class="badge bg-green-lt" data-cv-tooltip title="Guardian: model permissions accepted as fallback">global fallback</span></div>
+            </div></summary>
+            <table class="cfg"><tr class="group"><th colspan="2">Navigation</th></tr><tr class="dflt"><td class="key">…</td><td class="val">(same structure; stub in this mockup)</td></tr><tr class="group"><th colspan="2">Other</th></tr><tr><td class="key">message_template_code</td><td class="val">…</td></tr><tr><td class="key">modal</td><td class="val">True</td></tr><tr><td class="key">show_related_objects</td><td class="val">…</td></tr></table>
+          </details>
+
+          <!-- manage -->
+          <details class="cv-view" id="cv-view-manage">
+            <summary><div class="row align-items-center g-2">
+              <div class="col-auto"><span class="chev">›</span></div>
+              <div class="col-auto" style="width:5.5rem"><strong>manage</strong></div>
+              <div class="col"><span class="k">/customer/manage/</span><div class="k text-secondary">crud_views_guardian.lib.views.GuardianManageView</div></div>
+              <div class="col-auto"><span class="badge bg-purple-lt" data-cv-tooltip title="needs group membership: CRUD_VIEWS_MANAGE"><span class="visually-hidden">group </span>CRUD_VIEWS_MANAGE</span> <span class="badge bg-secondary-lt" data-cv-tooltip title="Guardian: this view never consults the global fallback">not applicable</span></div>
+            </div></summary>
+            <table class="cfg"><tr class="group"><th colspan="2">Navigation</th></tr><tr class="dnote"><td colspan="2">all defaults hidden</td></tr><tr class="dflt"><td class="key">context_actions</td><td class="val">home</td></tr></table>
+          </details>
+        </div>
+        <div class="card-footer text-secondary small">
+          <span class="badge bg-blue-lt">add</span> required permission ·
+          <span class="badge bg-blue-lt">parent: view</span> required on the parent object (nested ViewSets) ·
+          <span class="badge bg-purple-lt">group</span> required group membership ·
+          <span class="badge bg-secondary-lt">no permission</span> none required ·
+          <span class="badge bg-secondary-lt">custom</span> the view checks access itself ·
+          <span class="badge bg-green-lt">global fallback</span> Guardian policy — hover a badge for details
+        </div>
+      </div>
+
+      <!-- presentation (collapsed, main column) -->
+      <details class="card mt-3 cv-pres">
+        <summary class="card-header" style="cursor:pointer; list-style:none">
+          <h3 class="card-title"><span class="chev">›</span> Presentation</h3>
+          <div class="card-actions small text-secondary d-flex align-items-center">1 set · 9 defaults · applies to all views<a class="btn btn-sm btn-outline-secondary cv-help ms-2" href="https://django-crud-views.readthedocs.io/en/stable/reference/context_buttons/" target="_blank" rel="noopener" title="Documentation: Presentation" aria-label="Documentation: Presentation">?</a></div>
+        </summary>
+        <table class="cfg">
+          <tr class="group"><th colspan="2">Context buttons</th></tr>
+          <tr><td colspan="2" class="p-0">
+            <table class="table table-sm card-table mb-0">
+              <thead><tr><th class="ps-3">key</th><th>type</th><th>points to</th><th>label</th></tr></thead>
+              <tbody class="k">
+                <tr><td class="ps-3"><strong>home</strong></td><td class="text-secondary">ContextButton</td><td>customer-list <span class="text-secondary">→ /customer/</span></td><td class="text-secondary">default</td></tr>
+                <tr><td class="ps-3"><strong>parent</strong></td><td class="text-secondary">ParentContextButton</td><td class="text-secondary">parent's list — none here: top level, never shown</td><td class="text-secondary">default</td></tr>
+                <tr><td class="ps-3"><strong>filter</strong></td><td class="text-secondary">FilterContextButton</td><td>toggles the list filter <span class="text-secondary">(context_action_filter.html)</span></td><td class="text-secondary">default</td></tr>
+                <tr><td class="ps-3"><strong>orders</strong></td><td class="text-secondary">ChildContextButton</td><td>order-list <span class="text-secondary">→ /customer/&lt;customer_pk&gt;/order/</span></td><td>Orders</td></tr>
+                <tr><td class="ps-3"><strong>subscriptions</strong></td><td class="text-secondary">ChildContextButton</td><td>subscription-list <span class="text-secondary">→ /customer/&lt;customer_pk&gt;/subscription/</span></td><td>Subscriptions</td></tr>
+                <tr><td class="ps-3"><strong>addresses</strong></td><td class="text-secondary">ChildContextButton</td><td>address-list <span class="text-secondary">→ /customer/&lt;customer_pk&gt;/address/</span></td><td>Addresses</td></tr>
+              </tbody>
+            </table>
+            <div class="px-3 py-1 small text-secondary">Which view shows which button: the <code>context_actions</code> row of each view above. A view's own <code>context_buttons</code> are in its Other section.</div>
+          </td></tr>
+          <tr class="group"><th colspan="2">Templates and actions <a href="https://django-crud-views.readthedocs.io/en/stable/reference/templates/#per-viewset" target="_blank" rel="noopener" class="text-secondary ms-1 text-decoration-none" title="Documentation: templates per ViewSet" aria-label="Documentation: Templates and actions">?</a></th></tr>
+          <tr class="dnote"><td colspan="2">5 defaults hidden</td></tr>
+          <tr class="dflt"><td class="key">extends</td><td class="val">project/crud_views.html (setting CRUD_VIEWS_EXTENDS)</td></tr>
+          <tr class="dflt"><td class="key">inaccessible_actions</td><td class="val">hide (setting CRUD_VIEWS_INACCESSIBLE_ACTIONS)</td></tr>
+          <tr class="dflt"><td class="key">list_actions_inline</td><td class="val">—</td></tr>
+          <tr class="dflt"><td class="key">context_actions_inline</td><td class="val">—</td></tr>
+          <tr class="dflt"><td class="key">card_actions_inline</td><td class="val">—</td></tr>
+          <tr class="group"><th colspan="2">Label modes <a href="https://django-crud-views.readthedocs.io/en/stable/reference/action_menus/#label-mode" target="_blank" rel="noopener" class="text-secondary ms-1 text-decoration-none" title="Documentation: label modes" aria-label="Documentation: Label modes">?</a></th></tr>
+          <tr class="dnote"><td colspan="2">3 defaults hidden</td></tr>
+          <tr class="dflt"><td class="key">context_actions_label_mode</td><td class="val">—</td></tr>
+          <tr class="dflt"><td class="key">list_actions_label_mode</td><td class="val">—</td></tr>
+          <tr class="dflt"><td class="key">form_actions_label_mode</td><td class="val">—</td></tr>
+          <tr class="group"><th colspan="2">Other</th></tr>
+          <tr class="dnote"><td colspan="2">1 default hidden</td></tr>
+          <tr class="dflt"><td class="key">manage_view_class</td><td class="val">crud_views_guardian.lib.views.GuardianManageView (default)</td></tr>
+        </table>
+      </details>
+    </div>
+
+    <!-- ================= side column ================= -->
+    <div class="col-lg-4">
+
+      <!-- checks -->
+      <div class="card mb-3">
+        <div class="card-body py-2 d-flex align-items-center small">
+          <span class="badge bg-green-lt me-2">✓ no issues</span>
+          <span class="text-secondary flex-fill">178 system checks for this ViewSet</span><a class="btn btn-sm btn-outline-secondary cv-help ms-2" href="https://django-crud-views.readthedocs.io/en/stable/faq/#why-is-my-cv_-attribute-silently-ignored-check-w280" target="_blank" rel="noopener" title="Documentation: System checks (closest existing page; dedicated section missing)" aria-label="Documentation: System checks">?</a>
+        </div>
+      </div>
+
+      <!-- ViewSet identity -->
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="card-title">ViewSet</h3><div class="card-actions"><a class="btn btn-sm btn-outline-secondary cv-help ms-2" href="https://django-crud-views.readthedocs.io/en/stable/getting_started/tutorial-1-setup/#the-viewset" target="_blank" rel="noopener" title="Documentation: ViewSet (closest existing page; dedicated section missing)" aria-label="Documentation: ViewSet">?</a></div></div>
+        <div class="card-body small">
+          <table class="kv">
+            <tr><td class="k">name</td><td class="k">customer</td></tr>
+            <tr><td class="k">model</td><td class="k">sales.models.Customer</td></tr>
+            <tr><td class="k text-secondary">verbose names</td><td class="text-secondary">customer · customers (model Meta)</td></tr>
+            <tr><td class="k text-secondary">ordering</td><td class="k text-secondary">name <span class="font-sans-serif">(model Meta)</span></td></tr>
+            <tr><td class="k">icon</td><td><span class="badge bg-secondary-lt">🏪</span> <span class="k">tabler:building-store</span></td></tr>
+            <tr><td class="k text-secondary">prefix</td><td class="k text-secondary">customer <span class="font-sans-serif">(from name)</span></td></tr>
+            <tr><td class="k text-secondary">pk</td><td class="k text-secondary">pk = \d+ <span class="font-sans-serif">(from model)</span></td></tr>
+            <tr><td class="k text-secondary">app</td><td class="text-secondary">—</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- hierarchy -->
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="card-title">Hierarchy</h3><div class="card-actions"><a class="btn btn-sm btn-outline-secondary cv-help ms-2" href="https://django-crud-views.readthedocs.io/en/stable/reference/nested/#navigating-between-parent-and-child" target="_blank" rel="noopener" title="Documentation: Hierarchy" aria-label="Documentation: Hierarchy">?</a></div></div>
+        <div class="card-body small">
+          <div class="text-secondary text-uppercase fw-bold sect mb-1">Parents</div>
+          <div class="text-secondary mb-3">— top level</div>
+          <div class="text-secondary text-uppercase fw-bold sect mb-1">Children</div>
+          <div class="list-group list-group-flush">
+            <div class="list-group-item px-0 py-1"><strong>address</strong> <span class="k text-secondary">sales.Address</span><div class="k text-secondary">address-manage → /customer/&lt;customer_pk&gt;/address/manage/</div></div>
+            <div class="list-group-item px-0 py-1"><strong>order</strong> <span class="k text-secondary">sales.Order</span><div class="k text-secondary">order-manage → /customer/&lt;customer_pk&gt;/order/manage/</div></div>
+            <div class="list-group-item px-0 py-1"><strong>subscription</strong> <span class="k text-secondary">sales.CustomerSubscription</span><div class="k text-secondary">subscription-manage → /customer/&lt;customer_pk&gt;/subscription/manage/</div></div>
+          </div>
+          <div class="text-secondary mt-2" style="font-size:.75rem">Children are not linked: their manage pages need a parent object. To open one, go to the child's list under a customer and use its manage action. On <code>/customer/5/address/manage/</code> this card reads: Parents <a href="#">customer ›</a> (linked to <code>/customer/manage/</code>), Children —.</div>
+        </div>
+      </div>
+
+      <!-- URLs -->
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="card-title">URL names</h3><div class="card-actions"><a class="btn btn-sm btn-outline-secondary cv-help ms-2" href="https://django-crud-views.readthedocs.io/en/stable/reference/nested/#url-structure" target="_blank" rel="noopener" title="Documentation: URL names" aria-label="Documentation: URL names">?</a></div></div>
+        <div class="card-body small">
+          <table class="kv">
+            <tr><td class="k">customer-list</td><td class="k text-secondary">/customer/</td></tr>
+            <tr><td class="k">customer-detail</td><td class="k text-secondary">/customer/&lt;pk&gt;/detail/</td></tr>
+            <tr><td class="k">customer-create</td><td class="k text-secondary">/customer/create/</td></tr>
+            <tr><td class="k">customer-update</td><td class="k text-secondary">/customer/&lt;pk&gt;/update/</td></tr>
+            <tr><td class="k">customer-delete</td><td class="k text-secondary">/customer/&lt;pk&gt;/delete/</td></tr>
+            <tr><td class="k">customer-manage</td><td class="k text-secondary">/customer/manage/</td></tr>
+          </table>
+          <div class="text-secondary mt-2" style="font-size:.75rem">Routes are relative to where the ViewSet is included.</div>
+        </div>
+      </div>
+
+      <!-- ancestor policy -->
+      <div class="card mb-3" id="cv-ancestor-policy">
+        <div class="card-header"><h3 class="card-title">Ancestor policy</h3><div class="card-actions"><a class="btn btn-sm btn-outline-secondary cv-help ms-2" href="https://django-crud-views.readthedocs.io/en/stable/reference/nested/#ancestor-authorization" target="_blank" rel="noopener" title="Documentation: Ancestor policy" aria-label="Documentation: Ancestor policy">?</a></div></div>
+        <div class="card-body small">
+          <div class="text-secondary text-uppercase fw-bold sect mb-2">As ancestor of nested requests</div>
+          <table class="kv mb-3">
+            <tr><td class="k text-secondary">provider</td><td><span class="badge bg-azure-lt">guardian</span> <span class="text-secondary">inherited</span></td></tr>
+            <tr><td class="k">accept_global_perms</td><td><span class="badge bg-green-lt">True</span></td></tr>
+          </table>
+          <div class="text-secondary text-uppercase fw-bold sect mb-2">Requests to this ViewSet</div>
+          <div class="text-secondary">Not applicable: top-level ViewSet.</div>
+        </div>
+        <div class="card-footer text-secondary small">Configuration only, not an access result for any user.</div>
+      </div>
+
+      <!-- guardian -->
+      <div class="card">
+        <div class="card-header"><h3 class="card-title">Guardian</h3><div class="card-actions"><a class="btn btn-sm btn-outline-secondary cv-help ms-2" href="https://django-crud-views.readthedocs.io/en/stable/reference/guardian/#guardianmanageview" target="_blank" rel="noopener" title="Documentation: Guardian" aria-label="Documentation: Guardian">?</a></div></div>
+        <div class="card-body small">
+          <table class="kv">
+            <tr><td class="k text-secondary">get_objects_for_user</td><td><span class="badge bg-orange-lt">strict</span></td></tr>
+          </table>
+          <div class="text-secondary mt-2">Per-view fallback: on each view's line.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // D-12: with JS, defaults are hidden on load; without JS, every row stays visible.
+  (function () {
+    var sw = document.getElementById('show-defaults');
+    function apply() { document.body.classList.toggle('hide-defaults', !sw.checked); }
+    sw.checked = false;
+    sw.addEventListener('change', apply);
+    apply();
+  })();
+</script>
+</body>
+</html>

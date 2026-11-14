@@ -7,7 +7,11 @@ const path = require('node:path');
 const {CSP, preflight, declarations, assetFor, validateEvidence, validateAssets, requiredCases, uiMappings, startOwned} = require('./manage-presentation.cjs');
 const digest = 'a'.repeat(64);
 function valid() {
-    return {cases: requiredCases('all').map(id => ({id, passed: true, facts: {verified: true}})), preflight: {status: 'passed'}, csp: CSP,
+    return {cases: requiredCases('all').map(id => ({id, passed: true, facts: {verified: true}, criteria: Object.fromEntries(
+        Object.entries(uiMappings()).filter(([, cases]) => cases.includes(id)).map(([criterion]) => [criterion, {
+            surface: criterion.split('.')[0], measurements: {count: Number(id.match(/(?:collections|holders)(\d+)/)?.[1] ?? 1)},
+            assertions: [{name: 'unit fixture measurement', actual: true, expected: true}],
+        }]))})), preflight: {status: 'passed'}, csp: CSP,
         ui: uiMappings(), screenshots: requiredCases('all').map(id => ({case: id, sha256: digest})),
         failures: [], requiredAssets: ['manage.js', 'bootstrap.css'], assets: ['manage.js', 'bootstrap.css'].map(url => ({url, status: 200, sha256: digest})),
         cleanup: [{stopped: true, databaseRemoved: true}], sources: {files: Object.fromEntries(Array.from({length: 11}, (_, i) => [i, digest]))}};
@@ -35,6 +39,21 @@ test('assets, CSP, errors, sources and owned cleanup are mandatory', () => {
         const report = valid(); mutate(report); assert.throws(() => validateEvidence(report, 'all'));
     }
     assert.throws(() => validateAssets([], []));
+});
+test('unrelated holder scenarios cannot prove view, child or check cardinality', () => {
+    for (const criterion of ['views.zero-one-many', 'facts.zero-one-many', 'checks.zero-one-many']) {
+        const report = valid();
+        report.ui[criterion] = ['core-holders0', 'core-holders1', 'core-holders21'];
+        assert.throws(() => validateEvidence(report, 'all'), /criterion|mapping/i);
+    }
+});
+test('criterion measurements, assertions and exact cardinalities are mandatory', () => {
+    for (const mutate of [proof => delete proof.measurements, proof => proof.assertions = [],
+        proof => proof.assertions[0].actual = false, proof => proof.measurements.count = 21]) {
+        const report = valid();
+        mutate(report.cases.find(item => item.id === 'core-collections1-en').criteria['views.zero-one-many']);
+        assert.throws(() => validateEvidence(report, 'all'), /criterion/i);
+    }
 });
 test('startup timeout cleans only owned process/data and retains diagnostics', async () => {
     const script = "const fs=require('node:fs');fs.writeFileSync(process.argv.at(-1)+'/owned.sqlite3','test');console.error('fixture-start');setInterval(()=>{},1000)";

@@ -101,7 +101,13 @@ def serve(directory):
     assign_perm("app.contact_author", readers, author)
     viewsets = {}
     for kind, cls in (("core", ViewSet), ("guardian", GuardianViewSet)):
-        vs = cls(model=Author, name="browser_" + kind, prefix=kind)
+        vs = cls(
+            model=Author,
+            name="browser_" + kind,
+            prefix=kind + "/" + "permission_configuration_review_" * 6,
+            verbose_name=LONG,
+        )
+        vs.context_buttons = [ContextButton(key="collection", key_target="list")]
         viewsets[kind] = vs
         type(
             "Berechtigungsdiagnose" + LONG,
@@ -124,6 +130,22 @@ def serve(directory):
     class BrowserResource(Resource):
         pk: str
 
+    collections = {}
+    for kind, cls in (("core", ViewSet), ("guardian", GuardianViewSet)):
+        for count in (0, 1, 3):
+            name = f"collection_{kind}_{count}"
+            vs = cls(model=Author, name=name, prefix=name)
+            for index in range(max(0, count - 1)):
+                type(
+                    f"CollectionView{index}",
+                    (GuardianListViewPermissionRequired if kind == "guardian" else ListViewPermissionRequired,),
+                    {"__module__": __name__, "cv_viewset": vs, "cv_key": f"list{index}", "cv_path": f"list{index}"},
+                )
+            for index in range(count):
+                ViewSet(model=BrowserResource, name=f"{name}_child{index}", parent=ParentViewSet(name=name))
+            vs.context_buttons = [ContextButton(key=f"button{index}", key_target="manage") for index in range(count)]
+            collections[kind, count] = vs
+
     ViewSet(model=BrowserResource, name="browser_resource", parent=ParentViewSet(name=parent.name))
     viewsets.update(nested=leaf, hierarchy=parent)
 
@@ -144,6 +166,10 @@ def serve(directory):
                 Warning("Must be silenced", id="fixture.W002"),
             ]
 
+    class CleanDiagnosticCheck:
+        def messages(self):
+            return []
+
     def manage(request, kind, scenario):
         if kind not in viewsets or scenario not in {
             "normal",
@@ -156,9 +182,13 @@ def serve(directory):
             "hidden",
             "zero-defaults",
             "no-holders",
+            "collections0",
+            "collections1",
+            "collections3",
         }:
             return HttpResponse(status=404)
-        vs = viewsets[kind]
+        collection_count = int(scenario[-1]) if scenario.startswith("collections") else None
+        vs = collections[kind, collection_count] if collection_count is not None else viewsets[kind]
         count = int(scenario[7:]) if scenario.startswith("holders") else 21
         User.user_permissions.through.objects.filter(user_id__in=[u.pk for u in users]).delete()
         for user in users[:count]:
@@ -170,6 +200,12 @@ def serve(directory):
             stack.enter_context(translation.override(request.GET.get("language", "en")))
             stack.enter_context(patch.object(crud_views_settings, "manage_show_users", scenario != "hidden"))
             stack.enter_context(override_settings(SILENCED_SYSTEM_CHECKS=["fixture.W002", "viewset.W280"]))
+            if collection_count is not None:
+                stack.enter_context(
+                    patch.object(
+                        type(vs), "checks", lambda self: [CleanDiagnosticCheck() for _ in range(collection_count)]
+                    )
+                )
             if scenario == "errors":
                 stack.enter_context(patch.object(type(vs), "checks", lambda self: [DiagnosticCheck()]))
                 stack.enter_context(
@@ -185,18 +221,19 @@ def serve(directory):
             response = view.as_view()(request, **kwargs)
             # Explicit template-contract boundary cases: zero registered display rows / no default rows.
             # Data and authorization still come from the real request; no mocked permissions or checks.
-            if scenario == "empty":
+            if scenario == "empty" or collection_count == 0:
                 response.context_data["manage_views"] = []
-            if scenario == "zero-defaults":
-                for item in response.context_data["manage_views"]:
-                    for section in item["sections"]:
-                        section["default_count"] = 0
-                        for entry in section["entries"]:
-                            entry["is_default"] = False
-                for section in response.context_data["manage_presentation"]["sections"]:
-                    section["default_count"] = 0
+            if collection_count == 0:
+                response.context_data["manage_routes"] = []
+            if scenario == "zero-defaults" or collection_count is not None:
+                remaining = collection_count or 0
+                sections = [section for item in response.context_data["manage_views"] for section in item["sections"]]
+                sections += response.context_data["manage_presentation"]["sections"]
+                for section in sections:
                     for entry in section["entries"]:
-                        entry["is_default"] = False
+                        entry["is_default"] = remaining > 0
+                        remaining = max(0, remaining - 1)
+                    section["default_count"] = sum(entry["is_default"] for entry in section["entries"])
             response.render()
         return response
 

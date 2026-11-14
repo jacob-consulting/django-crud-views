@@ -85,7 +85,8 @@ function requiredCases(selection) {
     if (selection === 'smoke') return smoke;
     return [...smoke, ...['core', 'guardian'].flatMap(kind => [
         ...[390, 1280].flatMap(width => ['en', 'de'].map(language => `${kind}-layout-${language}-${width}`)),
-        ...['errors', 'empty', 'no-holders', 'holders0', 'holders1', 'holders20', 'holders21', 'hidden', 'zero-defaults', 'no-js', 'missing-js'].map(state => `${kind}-${state}`),
+        ...['errors', 'errors-1280', 'empty', 'no-holders', 'holders0', 'holders1', 'holders20', 'holders21', 'hidden', 'zero-defaults', 'no-js', 'missing-js'].map(state => `${kind}-${state}`),
+        ...[0, 1, 3].flatMap(count => ['en', 'de'].map(language => `${kind}-collections${count}-${language}`)),
     ]), 'nested-ancestors', 'hierarchy-resource', 'documentation-failure'];
 }
 function validateAssets(required, observed) {
@@ -110,6 +111,11 @@ function validateEvidence(report, selection) {
         for (const id of uiIds()) {
             const mapping = report.ui?.[id];
             assert(mapping?.length && mapping.every(caseId => report.cases.some(item => item.id === caseId && item.passed)), `Unproven UI mapping: ${id}`);
+            assert.deepEqual(mapping, uiMappings()[id], `Unrelated criterion mapping: ${id}`);
+            for (const caseId of mapping) {
+                const proof = report.cases.find(item => item.id === caseId).criteria?.[id];
+                validateCriterion(id, caseId, proof);
+            }
         }
         assert.equal(Object.keys(report.ui).length, 52);
         for (const item of report.cases.filter(item => item.id !== 'ordinary-denied')) {
@@ -124,17 +130,149 @@ function uiIds() {
         .concat(['loading', 'error', 'overflow', 'long-text'].map(state => `help.${state}`));
 }
 function uiMappings() {
-    const categories = {
-        empty: ['core-empty', 'guardian-empty', 'core-no-holders', 'guardian-no-holders', 'core-zero-defaults', 'hierarchy-resource'],
-        loading: ['core-no-js', 'guardian-no-js', 'core-missing-js', 'guardian-missing-js'],
-        error: ['core-errors', 'guardian-errors', 'ordinary-denied', 'documentation-failure'],
-        populated: ['core-layout-en-1280', 'guardian-layout-en-1280', 'nested-ancestors', 'hierarchy-resource'],
-        partial: ['guardian-layout-en-390', 'core-errors', 'core-hidden', 'guardian-hidden', 'hierarchy-resource'],
-        overflow: ['core-layout-en-390', 'guardian-layout-en-390', 'core-layout-de-1280', 'guardian-layout-de-1280'],
-        'zero-one-many': ['core-holders0', 'core-holders1', 'core-holders20', 'core-holders21', 'guardian-holders0', 'guardian-holders1', 'guardian-holders20', 'guardian-holders21', 'core-zero-defaults'],
-        'long-text': ['core-layout-de-390', 'guardian-layout-de-390', 'core-errors', 'guardian-errors'],
+    const both = (...states) => ['core', 'guardian'].flatMap(kind => states.map(state => `${kind}-${state}`));
+    const collections = both(...[0, 1, 3].flatMap(n => ['en', 'de'].map(language => `collections${n}-${language}`)));
+    const layouts = both('layout-en-390', 'layout-de-390', 'layout-en-1280', 'layout-de-1280');
+    const loading = both('no-js', 'missing-js');
+    // Explicit surface ownership. Passing a case for one surface proves nothing about another.
+    const surfaces = {
+        permissions: {empty: both('empty', 'no-holders'), loading, error: ['ordinary-denied'], populated: layouts,
+            partial: ['guardian-layout-en-390'], overflow: layouts,
+            'zero-one-many': both('holders0', 'holders1', 'holders20', 'holders21'), 'long-text': layouts},
+        views: {empty: both('empty'), loading, error: ['ordinary-denied'], populated: layouts,
+            partial: layouts, overflow: layouts, 'zero-one-many': collections, 'long-text': layouts},
+        presentation: {empty: both('empty'), loading, error: both('errors'), populated: layouts,
+            partial: both('errors'), overflow: layouts, 'zero-one-many': collections, 'long-text': layouts},
+        facts: {empty: both('empty'), loading, error: ['ordinary-denied'], populated: ['nested-ancestors', 'hierarchy-resource'],
+            partial: ['hierarchy-resource'], overflow: layouts, 'zero-one-many': collections, 'long-text': layouts},
+        checks: {empty: both('empty'), loading, error: both('errors'), populated: both('errors'),
+            partial: both('errors'), overflow: both('errors', 'errors-1280'), 'zero-one-many': collections, 'long-text': both('errors', 'errors-1280')},
+        defaults: {empty: both('zero-defaults'), loading, error: loading, populated: layouts,
+            partial: loading, overflow: layouts, 'zero-one-many': collections, 'long-text': layouts},
+        help: {loading, error: ['documentation-failure'], overflow: layouts, 'long-text': layouts},
     };
-    return Object.fromEntries(uiIds().map(id => [id, categories[id.split('.')[1]]]));
+    return Object.fromEntries(Object.entries(surfaces).flatMap(([surface, states]) =>
+        Object.entries(states).map(([state, cases]) => [`${surface}.${state}`, cases])));
+}
+
+function validateCriterion(id, caseId, proof) {
+    assert(proof && proof.surface === id.split('.')[0] && proof.measurements && Object.keys(proof.measurements).length,
+        `Missing criterion measurements: ${id}/${caseId}`);
+    assert(Array.isArray(proof.assertions) && proof.assertions.length && proof.assertions.every(item =>
+        typeof item.name === 'string' && item.name && Object.hasOwn(item, 'actual') && Object.hasOwn(item, 'expected') &&
+        JSON.stringify(item.actual) === JSON.stringify(item.expected)), `Failed criterion assertion: ${id}/${caseId}`);
+    if (id.endsWith('.zero-one-many')) {
+        const expected = Number(caseId.match(/(?:collections|holders)(\d+)/)?.[1]);
+        assert.equal(proof.measurements.count, expected, `Wrong criterion cardinality: ${id}/${caseId}`);
+    }
+}
+
+async function criterionProofs(page, caseId, facts) {
+    const proofs = {};
+    for (const [id, cases] of Object.entries(uiMappings())) {
+        if (!cases.includes(caseId)) continue;
+        const [surface, state] = id.split('.');
+        const measurements = await page.evaluate(surface => {
+            const selectors = {permissions: '#cv-manage-permissions', views: '#cv-manage-views', presentation: '#cv-manage-presentation',
+                facts: '#cv-manage-viewset, #cv-manage-hierarchy, #cv-manage-urls', checks: '#cv-manage-checks-clean, #cv-manage-checks-issues',
+                defaults: '[data-cv-defaults-control], [data-cv-default-count]', help: '[data-cv-manage-help]'};
+            const nodes = [...document.querySelectorAll(selectors[surface])];
+            const text = nodes.map(el => el.textContent).join(' ');
+            const root = document.querySelector('[data-cv-manage]');
+            const rects = nodes.map(el => {const r = el.getBoundingClientRect(), wrapper = el.closest('.table-responsive');
+                return {left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height,
+                    localScroll: !!wrapper && wrapper.getAttribute('role') === 'region' && wrapper.tabIndex === 0 && !!wrapper.getAttribute('aria-label')};});
+            const count = selector => document.querySelectorAll(selector).length;
+            const rows = [...document.querySelectorAll('#cv-manage-views details')].map(el => ({id: el.id, top: el.getBoundingClientRect().top, bottom: el.getBoundingClientRect().bottom}));
+            const children = [...document.querySelectorAll('[data-manage-child]')].map(el => ({text: el.textContent, links: el.querySelectorAll('a').length, top: el.getBoundingClientRect().top, bottom: el.getBoundingClientRect().bottom}));
+            return {text, rects, width: innerWidth, documentWidth: document.documentElement.scrollWidth, nodes: nodes.length,
+                views: rows, children, buttons: count('#cv-manage-presentation tbody tr[data-cv-config-row] td:nth-child(4)'),
+                presentationSections: count('#cv-manage-presentation tbody'),
+                checks: Number(document.querySelector('#cv-manage-checks-clean')?.textContent.match(/\d+/)?.[0] ?? 0),
+                issues: count('#cv-manage-checks-issues li'), defaults: count('[data-cv-default-row]'), hidden: count('[data-cv-default-row][hidden]'),
+                users: count('[data-manage-users] tr[data-holder-id]'), remainder: count('[data-manage-users-overflow] tr[data-holder-id]'),
+                overflowDisclosures: count('[data-manage-users-overflow]'), actor: count('[data-manage-actor]'),
+                cells: [...document.querySelectorAll('[data-manage-actor] td')].map(el => ({key: el.dataset.permission, text: el.textContent})),
+                controls: count('[data-cv-show-defaults]'), controlHidden: !document.querySelector('[data-cv-defaults-control]')?.getBoundingClientRect().height,
+                configRows: count('[data-cv-config-row]'), help: [...document.querySelectorAll('[data-cv-manage-help]')].map(el => ({href: el.href, target: el.target, label: el.getAttribute('aria-label')})),
+                htmlLanguage: document.documentElement.lang, csp: window.manageCspViolations ?? [], root: !!root};
+        }, surface);
+        const assertions = [];
+        const check = (name, actual, expected = true) => {assert.deepEqual(actual, expected, `${id}/${caseId}: ${name}`); assertions.push({name, actual, expected});};
+        check('surface present', measurements.nodes > 0);
+        if (state === 'zero-one-many') {
+            const n = Number(caseId.match(/(?:collections|holders)(\d+)/)[1]);
+            const counts = {permissions: measurements.users + measurements.remainder, views: measurements.views.length,
+                presentation: measurements.buttons, facts: measurements.children.length, checks: measurements.checks, defaults: measurements.defaults};
+            measurements.count = counts[surface]; check('collection cardinality', measurements.count, n);
+            if (surface === 'permissions') {
+                check('first users', measurements.users, Math.min(n, 20)); check('remainder users', measurements.remainder, Math.max(n - 20, 0));
+                check('overflow disclosure', measurements.overflowDisclosures, Number(n > 20));
+                check('superuser plural count', measurements.text.includes(`${Math.min(n, 2)} active superuser${n === 1 ? ' holds' : 's hold'}`));
+            }
+            if (surface === 'views' || surface === 'facts') {
+                const items = surface === 'views' ? measurements.views : measurements.children;
+                check('vertical stacking', items.every((item, i) => !i || item.top >= items[i - 1].bottom));
+            }
+            if (surface === 'checks') check('plural-aware check count', measurements.text.includes(measurements.htmlLanguage === 'de'
+                ? `${n} Systemprüfung${n === 1 ? ' für' : 'en für'}` : `${n} system check${n === 1 ? ' for' : 's for'}`));
+            if (surface === 'defaults') {
+                check('hidden default rows', measurements.hidden, n);
+                check('plural-aware hidden count', measurements.text.includes(measurements.htmlLanguage === 'de'
+                    ? `${n} Standardwert${n === 1 ? ' ausgeblendet' : 'e ausgeblendet'}` : `${n} default${n === 1 ? ' hidden' : 's hidden'}`));
+            }
+        } else if (state === 'empty') {
+            const empty = {permissions: measurements.actor === 1 && /No permissions configured|No direct permission holders/.test(measurements.text),
+                views: measurements.views.length === 0 && measurements.text.includes('No views registered.'),
+                presentation: measurements.buttons === 0 && measurements.text.includes('No context buttons configured.'),
+                facts: measurements.children.length === 0 && measurements.text.includes('top level') && measurements.text.includes('icon_header'),
+                checks: measurements.issues === 0 && measurements.text.includes('no issues'), defaults: measurements.defaults === 0 && measurements.controls === 1};
+            check('specific empty state', empty[surface]);
+        } else if (state === 'loading' || (surface === 'defaults' && ['error', 'partial'].includes(state))) {
+            check('server rendered surface', facts.raw.surfaces[surface] > 0);
+            check('all configuration rows readable', measurements.hidden, 0);
+            check('uninitialized control hidden', measurements.controlHidden);
+            if (surface === 'help') check('native help links', measurements.help.every(link => link.href.includes('#') && link.target === '_blank' && !!link.label));
+        } else if (['error', 'partial', 'populated'].includes(state)) {
+            if (surface === 'presentation' && state !== 'populated') check('missing target fallback', measurements.text.includes('Target unavailable; review'));
+            else if (surface === 'checks') {
+                check('visible scoped issue', measurements.issues, 1);
+                check('severity and ID', measurements.text.includes('Warning') && measurements.text.includes('fixture.W001'));
+                check('silenced issue absent', !measurements.text.includes('fixture.W002'));
+            } else if (surface === 'permissions') {
+                check('actor row', measurements.actor, 1); check('permission cells', measurements.cells.length > 0);
+                if (state === 'partial') {
+                    const cell = key => measurements.cells.find(item => item.key === key).text;
+                    check('combined grant', /model/.test(cell('view')) && /object/.test(cell('view')));
+                    check('object-only grant', !/model/.test(cell('change')) && /object/.test(cell('change')));
+                    check('model-only grant', /model/.test(cell('add')) && !/object/.test(cell('add')));
+                    check('no grant dash', cell('delete').includes('—'));
+                }
+            } else if (surface === 'views') {
+                check('view disclosures', measurements.views.length > 1);
+                check('annotation fallback', /not declared|nicht deklariert/.test(measurements.text));
+            } else if (surface === 'presentation') check('context and template sections', measurements.presentationSections === 4 && measurements.buttons > 0 && /extends/.test(measurements.text));
+            else if (surface === 'facts') {
+                check('identity and route facts', measurements.text.includes('pk_name') && measurements.text.includes('browser_'));
+                if (caseId === 'hierarchy-resource') check('unlinked resource child', measurements.children.some(item => item.text.includes('Resource, no manage page') && item.links === 0));
+                if (caseId === 'nested-ancestors') check('complete ancestor chain', measurements.text.includes('browser_parent') && measurements.text.includes('browser_child'));
+            } else if (surface === 'defaults') check('toggle exercised with defaults', facts.keyboard && measurements.defaults > 0 && measurements.hidden === 0);
+            else if (surface === 'help') check('documentation failure leaves source usable', facts.originalPageUnchanged);
+        } else if (['overflow', 'long-text'].includes(state)) {
+            check('document containment', measurements.documentWidth <= measurements.width + 1);
+            check('surface containment or labeled local scroll', measurements.rects.every(r => r.height === 0 || r.localScroll || (r.left >= -1 && r.right <= measurements.width + 1)));
+            const geometry = facts.opened ?? facts;
+            if (surface === 'permissions') check('long holder wrapping', geometry.holders.some(item => item.textLength > 80) && geometry.holders.every(item => item.width <= 193 && (item.textLength < 80 || item.lines > 1)));
+            if (surface === 'checks') check('long issue preserved', measurements.text.includes('Berechtigungsverwaltungszuständigkeitsüberprüfung'.repeat(3)));
+            if (surface === 'views') check('long class path preserved', measurements.text.includes('Berechtigungsdiagnose' + 'Berechtigungsverwaltungszuständigkeitsüberprüfung'.repeat(3)));
+            if (['facts', 'presentation'].includes(surface)) check('long route preserved', measurements.text.includes('permission_configuration_review_'.repeat(6)));
+            if (surface === 'help') check('help target geometry', geometry.help.every(item => item.width === 32 && item.height === 32 && !item.overlap));
+            check('no CSP violations', measurements.csp, []);
+        }
+        proofs[id] = {surface, measurements, assertions};
+        validateCriterion(id, caseId, proofs[id]);
+    }
+    return proofs;
 }
 function sources() {
     const files = [...cp.execFileSync('git', ['ls-files', 'src/crud_views', 'src/crud_views_guardian'], {cwd: root, encoding: 'utf8'}).trim().split('\n'),
@@ -221,11 +359,12 @@ async function inspect(page) {
     return facts;
 }
 async function capture(page, report, opts, id, facts) {
+    const criteria = await criterionProofs(page, id, facts);
     const relative = `manage-screenshots/${id}.png`, file = path.resolve(path.dirname(opts.output), relative);
     fs.mkdirSync(path.dirname(file), {recursive: true});
     await page.screenshot({path: file, fullPage: true});
     report.screenshots.push({case: id, path: relative, sha256: sha(fs.readFileSync(file))});
-    report.cases.push({id, passed: true, facts});
+    report.cases.push({id, passed: true, facts, criteria});
     console.log(`passed: ${id}`);
 }
 async function runSmoke(browser, base, report, assets, opts) {
@@ -253,10 +392,16 @@ async function runSmoke(browser, base, report, assets, opts) {
             await capture(owned.page, report, opts, `${kind}-normal-390`, facts);
         }
         await signin(owned.context, base, true);
+        const denied = [];
         for (const kind of ['core', 'guardian', 'nested']) {
-            assert.equal((await owned.context.request.get(`${base}/case/${kind}/normal/`)).status(), 403);
+            const response = await owned.context.request.get(`${base}/case/${kind}/normal/`);
+            assert.equal(response.status(), 403);
+            assert(!(await response.text()).includes('data-cv-manage'));
+            denied.push({kind, status: response.status(), diagnostics: false});
         }
-        report.cases.push({id: 'ordinary-denied', passed: true});
+        report.cases.push({id: 'ordinary-denied', passed: true, facts: {denied}, criteria: Object.fromEntries(
+            ['permissions', 'views', 'facts'].map(surface => [`${surface}.error`, {surface, measurements: {denied},
+                assertions: denied.map(item => ({name: `${item.kind} denies protected diagnostics`, actual: [item.status, item.diagnostics], expected: [403, false]}))}]))});
         await Promise.all(owned.pending);
         report.assets.push(...owned.observed); report.failures.push(...owned.failures);
     } finally {await owned.context.close();}
@@ -332,6 +477,9 @@ async function rawContract(response, page) {
             [...el.attributes].some(attr => attr.name === 'style' || /^on/i.test(attr.name) || /^javascript:/i.test(attr.value))).length,
             rows: root.querySelectorAll('[data-cv-config-row]').length, hiddenRows: root.querySelectorAll('[data-cv-config-row][hidden]').length,
             controlHidden: root.querySelector('[data-cv-defaults-control]').hasAttribute('hidden'),
+            surfaces: Object.fromEntries(Object.entries({permissions: '[data-manage-actor]', views: '#cv-manage-views details',
+                presentation: '#cv-manage-presentation [data-cv-config-row]', facts: '#cv-manage-viewset tr',
+                checks: '#cv-manage-checks-clean, #cv-manage-checks-issues', defaults: '[data-cv-default-row]', help: '[data-cv-manage-help]'}).map(([key, selector]) => [key, root.querySelectorAll(selector).length])),
             badgeTitles: [...root.querySelectorAll('[data-cv-tooltip]')].every(el => el.title && el.tagName !== 'A'),
             descriptions: [...root.querySelectorAll('#cv-manage-views summary')].every(el => document.getElementById(el.getAttribute('aria-describedby'))?.textContent.trim())};
     }, html);
@@ -373,6 +521,17 @@ async function runAll(browser, base, report, assets, opts) {
     const page = owned.page;
     try {
         for (const kind of ['core', 'guardian']) {
+            for (const count of [0, 1, 3]) for (const language of ['en', 'de']) {
+                const response = await page.goto(`${base}/case/${kind}/collections${count}/?language=${language}`);
+                assert.equal(response.status(), 200);
+                const raw = await rawContract(response, page);
+                assert.equal(await page.locator('#cv-manage-views details').count(), count);
+                assert.equal(await page.locator('#cv-manage-views details[open]').count(), 0);
+                await openDetails(page);
+                assert.equal(await toggleDefaults(page), count);
+                const facts = await geometry(page);
+                await capture(page, report, opts, `${kind}-collections${count}-${language}`, {raw, ...facts});
+            }
             for (const width of [390, 1280]) for (const language of ['en', 'de']) {
                 await page.setViewportSize({width, height: 900});
                 const response = await page.goto(`${base}/case/${kind}/normal/?language=${language}`);
@@ -448,6 +607,11 @@ async function runAll(browser, base, report, assets, opts) {
                 if (scenario === 'hidden') assert(!html.includes('holder-00-') && !html.includes('super-0-') && !html.includes('data-manage-users'));
                 if (scenario === 'zero-defaults') assert.equal(await toggleDefaults(page), 0);
                 await capture(page, report, opts, `${kind}-${scenario}`, {raw, ...facts});
+                if (scenario === 'errors') {
+                    await page.setViewportSize({width: 1280, height: 900});
+                    await capture(page, report, opts, `${kind}-errors-1280`, {raw, ...await geometry(page)});
+                    await page.setViewportSize({width: 390, height: 900});
+                }
             }
             for (const mode of ['no-js', 'missing-js']) {
                 const plain = await openContext(browser, base, report, assets, {javascript: mode !== 'no-js', missing: mode === 'missing-js'});

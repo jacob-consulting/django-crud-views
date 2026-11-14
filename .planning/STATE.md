@@ -1,25 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.33"
+current_phase_name: Structured manage page
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.30 complete, ready to plan Phase 7
-last_updated: "2026-11-13T19:43:05.613Z"
+stopped_at: Phase 06.33 context gathered; ready to plan
+last_updated: "2026-11-14T09:28:59.001Z"
 last_activity: 2026-11-13
 last_activity_desc: "Phase 06.30 shipped as PR #367"
-state_head: 01fb837779acc903cd655639f03705d7eb005908
+state_head: 9e421a066c6d132da1bb6fba12d2e905076b5c6d
 progress:
-  total_phases: 39
-  completed_phases: 38
+  total_phases: 40
+  completed_phases: 27
   total_plans: 205
   completed_plans: 205
-  percent: 97
 milestone_name: milestone
 ---
 
-Total Phases: 39
+Total Phases: 40
 
 # Project State
 
@@ -28,17 +27,17 @@ Total Phases: 39
 See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase7 — Theme-surface stability policy
+**Current focus:** Phase 06.33 — Structured manage page (#366)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.33 — Structured manage page (#366)
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
 Last activity: 2026-11-13 -- Phase 06.30 shipped as PR #367
 
-Next: $gsd-plan-phase 7. Phase06.30 complete:15/15 plans,54/54 truths, explicit human UAT passed and historical G1/G2 resolved. Tabler UAT preview remains on9000 with isolated demo data.
+Next: $gsd-plan-phase 06.33
 
 ### Phase 06.30 shipping integration — 2026-11-13
 
@@ -1530,6 +1529,7 @@ None yet.
 
 - Phase 06.31 inserted after Phase 06.30: Issue #361: developer-only manage diagnostics and explicit group setup; carry approved D-01–D-07 from the issue handover. Complete before Phase 7. (URGENT)
 - Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
+- Phase 06.33 inserted after Phase 06.32: Structured manage page (#366); approved D-01–D-30 handover, before Phase 7 theme-surface freeze (URGENT)
 
 ## Deferred Items
 
@@ -1539,6 +1539,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T17:35:16.365Z
-Stopped at: Phase 06.30 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-14T09:28:54.627Z
+Stopped at: Phase 06.33 context gathered; ready to plan
+Resume file: .planning/phases/06.33-structured-manage-page-366/06.33-CONTEXT.md

@@ -26,16 +26,53 @@
             <tbody>
                 <tr data-manage-actor>
                     <th scope="row">{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}</th>
-                    {% for cell in matrix.actor.cells %}
-                    <td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% else %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>
-                    {% endfor %}
+                    {% for cell in matrix.actor.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="badge bg-light text-dark border">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}
                 </tr>
+            </tbody>
+            <tbody data-manage-groups>
+                <tr><th scope="colgroup" colspan="{{ matrix.columns|length|add:1 }}">{% translate "Groups" %}</th></tr>
+                {% for row in matrix.groups %}
+                <tr data-holder-id="{{ row.id }}">
+                    <th scope="row">{{ row.label }} <small class="text-muted">{% blocktranslate count count=row.member_count %}{{ count }} member{% plural %}{{ count }} members{% endblocktranslate %}</small></th>
+                    {% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="badge bg-light text-dark border">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}
+                </tr>
+                {% empty %}
+                <tr><td colspan="{{ matrix.columns|length|add:1 }}">{% translate "No groups hold these permissions." %}</td></tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
+        {% if matrix.show_users %}
+        <div data-manage-users>
+            <h4 class="h6">{% translate "Users" %}</h4>
+            {% if matrix.users %}
+            <div class="table-responsive"><table class="table table-sm">
+            <thead><tr><th scope="col">{% translate "Users" %}</th>{% for column in matrix.columns %}<th scope="col">{{ column.key }}<br><small>{{ column.codename }}</small></th>{% endfor %}</tr></thead><tbody>{% for row in matrix.users %}
+<tr data-holder-id="{{ row.id }}"><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="badge bg-light text-dark border">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}</tr>
+{% endfor %}</tbody>
+            </table></div>
+            {% else %}<p>{% translate "No users hold these permissions directly." %}</p>{% endif %}
+        </div>
+        {% if matrix.users_overflow %}
+        <details data-manage-users-overflow>
+            <summary>{% blocktranslate with count=matrix.users_overflow|length %}+ {{ count }} more{% endblocktranslate %}</summary>
+            <div class="table-responsive"><table class="table table-sm">
+            <thead><tr><th scope="col">{% translate "Users" %}</th>{% for column in matrix.columns %}<th scope="col">{{ column.key }}<br><small>{{ column.codename }}</small></th>{% endfor %}</tr></thead><tbody>{% for row in matrix.users_overflow %}
+<tr data-holder-id="{{ row.id }}"><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="badge bg-light text-dark border">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}</tr>
+{% endfor %}</tbody>
+            </table></div>
+        </details>
+        {% endif %}
+        {% endif %}
         {% else %}
         <p>{% translate "No permissions configured. Review this ViewSet's permission configuration." %}</p>
         {% endif %}
+        <p>{% blocktranslate count count=matrix.superusers.count %}{{ count }} active superuser holds every permission{% plural %}{{ count }} active superusers hold every permission{% endblocktranslate %}{% if matrix.show_users and matrix.superusers.names %}: {{ matrix.superusers.names|join:", " }}{% endif %}</p>
+        {% if matrix.columns and not matrix.groups and not matrix.users %}
+        <h4 class="h6">{% translate "No direct permission holders" %}</h4>
+        <p>{% translate "Permissions inherited through groups appear in group rows. Review the access row and active-superuser count above." %}</p>
+        {% endif %}
+        <p class="text-muted">{% translate "model: model-level permission · objects: object grants; your row includes effective permissions and reachable objects" %}</p>
         {% endwith %}
         </div>
     </section>
@@ -47,22 +84,24 @@
 
     <br>
 
-    {% for view_key, view in views.items %}
+    {% block manage_views %}
+    {% for item in manage_views %}
 
-        <h4>{{ view_key }}</h4>
+        <h4>{{ item.key }}</h4>
+        <p><code>{{ item.class_path }}</code></p>
 
         <div class="table-responsive">
     <table class="table table-striped">
-            {% for section, section_data in view.items %}
+            {% for section in item.sections %}
 
                 <tr>
-                    <th scope="col" colspan="2">{{ section }}</th>
+                    <th scope="col" colspan="2">{{ section.label }}</th>
                 </tr>
 
-                {% for key, value in section_data.items %}
+                {% for entry in section.entries %}
                     <tr>
-                        <td>{{ key }}</td>
-                        <td>{{ value }}</td>
+                        <td>{{ entry.key }}</td>
+                        <td>{{ entry.value }}</td>
                     </tr>
                 {% endfor %}
             {% endfor %}
@@ -71,7 +110,9 @@
 
         <br>
 
+    {% empty %}<p>{% translate "No views registered. Review this ViewSet's registration." %}</p>
     {% endfor %}
+    {% endblock manage_views %}
 
     </div>
     <div class="col-12 col-lg-4">

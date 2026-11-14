@@ -361,9 +361,15 @@ def test_manage_view_headings_translated(client_developer: Client, cv_author):
 
     with translation.override("de"):
         response = client_developer.get("/author/manage/")
+        labels = {translation.gettext(label) for label in ("Properties", "Permissions", "Groups", "Views")}
+        actor_label = translation.gettext("Access for: %(username)s (you)") % {
+            "username": response.context["manage_permissions"]["actor"]["label"]
+        }
     doc = html.fromstring(response.content)
     headings = [h.text_content().strip() for h in doc.cssselect("h3, h4")]
-    assert {"Eigenschaften", "Berechtigungen", "Berechtigungsinhaber", "Views"} <= set(headings)
     columns = [th.text_content().strip() for th in doc.cssselect("th")]
-    assert {"Berechtigung", "Django-Berechtigung", "Zugriff"} <= set(columns)
+    assert labels <= set(headings + columns)
+    assert "Berechtigungen" in headings
+    assert actor_label in doc.cssselect("[data-manage-actor]")[0].text_content()
+    assert "view_author" in doc.cssselect("#cv-manage-permissions")[0].text_content()
     assert "pk_name" in columns

@@ -2,6 +2,9 @@ from collections import OrderedDict
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Count, Q
+from django.utils.functional import SimpleLazyObject
+from django.utils.translation import gettext as _
 from django.views import generic
 
 from crud_views.lib.ancestor_db import _check_nested_auth
@@ -125,39 +128,119 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
 
     def get_manage_permissions(self, viewset, user):
         """Prepare ordered matrix data without depending on a request instance."""
+        from django.contrib.auth import get_user_model
+        from django.contrib.auth.models import Group
+
         self._guard_manage_auth(viewset, user)
+        columns = [
+            {"key": key, "permission": permission, "codename": permission.split(".", 1)[1]}
+            for key, permission in viewset.permissions.items()
+        ]
+        groups = self._manage_direct_rows(columns, Group.objects.all(), "permissions", "name")
+        member_counts = dict(
+            Group.objects.filter(pk__in=[row["id"] for row in groups])
+            .annotate(member_count=Count("user"))
+            .values_list("pk", "member_count")
+        )
+        for row in groups:
+            row["member_count"] = member_counts[row["id"]]
+        user_model = get_user_model()
+        show_users = crud_views_settings.manage_show_users
+        users = (
+            self._manage_direct_rows(columns, user_model.objects.all(), "user_permissions", user_model.USERNAME_FIELD)
+            if show_users
+            else []
+        )
+        superusers = user_model.objects.filter(is_active=True, is_superuser=True)
         return {
-            "columns": [
-                {"key": key, "permission": permission, "codename": permission.split(".", 1)[1]}
-                for key, permission in viewset.permissions.items()
-            ],
+            "columns": columns,
             "actor": self.get_manage_actor_row(viewset, user),
-            "groups": [],
-            "users": [],
-            "show_users": crud_views_settings.manage_show_users,
-            "superusers": {"count": 0, "names": []},
-            "users_overflow": [],
+            "groups": groups,
+            "users": users[:20],
+            "show_users": show_users,
+            "superusers": {
+                "count": superusers.count(),
+                "names": list(
+                    superusers.order_by(user_model.USERNAME_FIELD, "pk").values_list(
+                        user_model.USERNAME_FIELD, flat=True
+                    )
+                )
+                if show_users
+                else [],
+            },
+            "users_overflow": users[20:],
         }
+
+    @staticmethod
+    def _manage_direct_rows(columns, queryset, relation, label_field):
+        """One query per holder kind; labels sort rows, primary keys identify them."""
+        if not columns:
+            return []
+        matching = Q()
+        for column in columns:
+            app, codename = column["permission"].split(".", 1)
+            matching |= Q(**{f"{relation}__content_type__app_label": app, f"{relation}__codename": codename})
+        holders = {}
+        for pk, label, app, codename in (
+            queryset.filter(matching)
+            .order_by(label_field, "pk")
+            .values_list("pk", label_field, f"{relation}__content_type__app_label", f"{relation}__codename")
+        ):
+            holder = holders.setdefault(pk, {"id": pk, "label": label, "grants": set()})
+            holder["grants"].add(f"{app}.{codename}")
+        return [
+            {
+                "id": holder["id"],
+                "label": holder["label"],
+                "member_count": None,
+                "cells": [
+                    {"key": col["key"], "model": col["permission"] in holder["grants"], "object_count": None}
+                    for col in columns
+                ],
+            }
+            for holder in holders.values()
+        ]
+
+    def get_manage_views(self, viewset, user):
+        """Project registered class facts directly; legacy overrides remain independent."""
+        labels = {"base": _("Navigation"), "templates": _("Templates"), "icons": _("Icons")}
+        return [
+            {
+                "key": key,
+                "class_path": data["base"]["class"],
+                "sections": [
+                    {
+                        "key": section,
+                        "label": labels[section],
+                        "entries": [{"key": name, "value": value} for name, value in entries.items()],
+                    }
+                    for section, entries in data.items()
+                ],
+            }
+            for key, data in self._get_view_data(viewset).items()
+        ]
+
+    def _get_permission_data(self):
+        _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
+        return [
+            {"viewset": key, "django": permission, "has_permission": self.request.user.has_perm(permission)}
+            for key, permission in self.cv_viewset.permissions.items()
+        ]
 
     def get_context_data(self, **kwargs):
         # nested: the permission rows and holder diagnostics read auth records, which must be on default (06.18)
         _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
         context = super().get_context_data(**kwargs)
-        permissions = self.cv_viewset.permissions
-        rows = []
-        for short, long in permissions.items():
-            rows.append({"viewset": short, "django": long, "has_permission": self.request.user.has_perm(long)})
-        views = self.get_view_data()
-        permission_holders = self.get_permission_holders()
         context.update(
             {
                 "cv": self.cv_viewset,
-                "data": rows,
-                "views": views,
-                "permission_holders": permission_holders,
+                "data": SimpleLazyObject(self._get_permission_data),
+                "views": SimpleLazyObject(self.get_view_data),
+                "permission_holders": SimpleLazyObject(self.get_permission_holders),
                 "show_users": crud_views_settings.manage_show_users,
                 "ancestor_policy": self.get_ancestor_policy_data(),
                 "manage_permissions": self.get_manage_permissions(self.cv_viewset, self.request.user),
+                "manage_views": self.get_manage_views(self.cv_viewset, self.request.user),
                 "manage_docs_base_url": self.manage_docs_base_url,
             }
         )
@@ -203,13 +286,17 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         }
 
     def get_view_data(self):
+        return self._get_view_data(self.cv_viewset)
+
+    @staticmethod
+    def _get_view_data(viewset):
         data = OrderedDict()
-        for key, view in self.cv_viewset.get_all_views().items():
+        for key, view in viewset.get_all_views().items():
             view_data = OrderedDict(
                 {
                     "base": OrderedDict(
                         {
-                            "class": str(view.__class__),
+                            "class": f"{view.__module__}.{view.__qualname__}",
                             "cv_key": view.cv_key,
                             "cv_path": view.cv_path,
                             "cv_backend_only": view.cv_backend_only,

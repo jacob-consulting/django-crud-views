@@ -119,9 +119,14 @@ def test_core_manage_legacy_whole_card_override_is_lazy(settings, client, cv_aut
     user_author_view.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
     client.force_login(user_author_view)
     cls = cv_author.get_view_class("manage")
-    counts = {"views": 0, "holders": 0}
+    counts = {"views": 0, "holders": 0, "data": 0}
     original_views = cls.get_view_data
     original_holders = cls.get_permission_holders
+    original_data = cls._get_permission_data
+
+    def permission_data(self):
+        counts["data"] += 1
+        return original_data(self)
 
     def views(self):
         counts["views"] += 1
@@ -135,9 +140,10 @@ def test_core_manage_legacy_whole_card_override_is_lazy(settings, client, cv_aut
 
     monkeypatch.setattr(cls, "get_view_data", views)
     monkeypatch.setattr(cls, "get_permission_holders", holders)
+    monkeypatch.setattr(cls, "_get_permission_data", permission_data)
     stock = client.get("/author/manage/")
     assert stock.status_code == 200
-    assert counts == {"views": 0, "holders": 0}
+    assert counts == {"views": 0, "holders": 0, "data": 0}
     from django.utils.functional import empty
 
     assert stock.context["data"]._wrapped is empty
@@ -161,7 +167,7 @@ def test_core_manage_legacy_whole_card_override_is_lazy(settings, client, cv_aut
     settings.TEMPLATES = templates
     monkeypatch.setattr(cls, "template_name", "manage-legacy.html")
     response = client.get("/author/manage/")
-    assert counts == {"views": 1, "holders": 1}
+    assert counts == {"views": 1, "holders": 1, "data": 1}
     assert isinstance(response.context["data"], list)
     assert isinstance(response.context["views"], OrderedDict)
     assert isinstance(response.context["permission_holders"], list)
@@ -172,7 +178,7 @@ def test_core_manage_legacy_whole_card_override_is_lazy(settings, client, cv_aut
     assert not doc.cssselect("#cv-manage-permissions")
     lengths = doc.cssselect("#legacy-card")[0].text_content().split("|")
     assert all(pair.split(":")[0] == pair.split(":")[1] for pair in lengths)
-    assert counts == {"views": 1, "holders": 1}
+    assert counts == {"views": 1, "holders": 1, "data": 1}
 
 
 # ── isolated routes (A08) ─────────────────────────────────────────────────────

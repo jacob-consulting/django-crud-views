@@ -72,7 +72,11 @@ def grant(group, viewset, key="view"):
     group.permissions.add(Permission.objects.get(content_type__app_label=app, codename=codename))
 
 
-def test_core_permission_card_real_request(client, cv_author, developer):
+@pytest.mark.parametrize("single_column", [False, True])
+def test_core_permission_card_real_request(client, cv_author, developer, monkeypatch, single_column):
+    if single_column:
+        permission = cv_author.permissions["view"]
+        monkeypatch.setattr(ViewSet, "permissions", property(lambda self: {"view": permission}))
     readers = Group.objects.create(name="Card readers")
     grant(readers, cv_author)
     developer.groups.add(readers)
@@ -113,6 +117,7 @@ def test_builders_use_supplied_viewset_without_request(cv_author, cv_publisher, 
     assert calls and all(cls is cv_publisher.get_view_class("manage") for cls, _ in calls)
     assert all(kw["model"] is cv_publisher.model for _, kw in calls)
     assert data["actor"] == view.get_manage_actor_row(cv_publisher, developer)
+    assert {row["key"] for row in view.get_manage_views(cv_publisher, developer)} == set(cv_publisher.get_all_views())
 
 
 @pytest.mark.parametrize("method", ["get_manage_permissions", "get_manage_actor_row"])
@@ -124,6 +129,8 @@ def test_absent_manage_fails_before_queries(no_manage_viewset, developer, django
         pytest.raises(ImproperlyConfigured, match=r"^Manage diagnostics require a registered manage view$"),
     ):
         getattr(ManageView(), method)(no_manage_viewset, developer)
+    with django_assert_num_queries(0):
+        assert ManageView().get_manage_views(no_manage_viewset, developer) == []
 
 
 def test_disabled_model_still_registers_manage(monkeypatch, cv_author, developer):

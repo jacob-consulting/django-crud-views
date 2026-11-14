@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_manage_checks.py::test_guardian_composition_scoped_silencing_and_core_count -q --junitxml=/tmp/gsd-0633-05-red2.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.493\" timestamp=\"2026-11-14T13:15:16.379225+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_manage_checks\" name=\"test_guardian_composition_scoped_silencing_and_core_count\" time=\"0.317\"><failure message=\"AssertionError: Guardian diagnostics must include this ViewSet's incomplete composition&#10;assert 'crud_views_guardian.E001' in []\">developer = &lt;User: requirement developer&gt;\n\n    def test_guardian_composition_scoped_silencing_and_core_count(developer):\n        from crud_views_guardian.lib.views import GuardianManageView\n        from crud_views_guardian.lib.viewset import GuardianViewSet\n        from tests.test1.test_guardian_composition import UnsafeUpdate\n    \n        def build(sfx):\n            parent = GuardianViewSet(model=Publisher, name=\"composeparent\" + sfx)\n            child = GuardianViewSet(\n                model=Book, name=\"composechild\" + sfx, parent=ParentViewSet(name=parent.name, attribute=\"publisher\")\n            )\n            register(UnsafeUpdate, child, fields=[\"title\"], cv_paragraph_template_code=\"Paragraph\", cv_cancel_key=\"manage\")\n            return (parent, child), []\n    \n        with isolated_routes(build) as (parent, child):\n            manage = GuardianManageView()\n            data = manage.get_manage_checks(child, developer)\n            ids = [message[\"id\"] for message in data[\"messages\"]]\n&gt;           assert \"crud_views_guardian.E001\" in ids, (\n                \"Guardian diagnostics must include this ViewSet's incomplete composition\"\n            )\nE           AssertionError: Guardian diagnostics must include this ViewSet's incomplete composition\nE           assert 'crud_views_guardian.E001' in []\n\ntests/test1/test_manage_checks.py:231: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_guardian_composition_scoped_silencing_and_core_count",
+  "targetFile": "tests/test1/test_manage_checks.py",
+  "expected": "E001 included for current invalid Guardian composition",
+  "actual": "E001 absent",
+  "reportPath": "/tmp/gsd-0633-05-red2.xml",
+  "runStartedAt": "2026-11-14T13:15:00Z",
+  "reportModifiedAt": 1794662116.8707428,
+  "semanticAssessment": "Target builder executed normally; missing E001 assertion fails. No request authorization bypass or import/fixture fault."
+}

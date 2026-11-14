@@ -209,3 +209,67 @@ def test_top_level_undeclared_permission_is_only_scoped_failure(client, develope
 def test_clean_count_is_not_augmented_by_separate_collectors(cv_author, developer, monkeypatch, count):
     monkeypatch.setattr(ViewSet, "checks", lambda self: (SimpleNamespace(messages=lambda: []) for _ in range(count)))
     assert ManageView().get_manage_checks(cv_author, developer) == {"count": count, "messages": []}
+
+
+def test_guardian_composition_scoped_silencing_and_core_count(developer):
+    from crud_views_guardian.lib.views import GuardianManageView
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.test_guardian_composition import UnsafeUpdate
+
+    def build(sfx):
+        parent = GuardianViewSet(model=Publisher, name="composeparent" + sfx)
+        child = GuardianViewSet(
+            model=Book, name="composechild" + sfx, parent=ParentViewSet(name=parent.name, attribute="publisher")
+        )
+        register(UnsafeUpdate, child, fields=["title"], cv_paragraph_template_code="Paragraph", cv_cancel_key="manage")
+        return (parent, child), []
+
+    with isolated_routes(build) as (parent, child):
+        manage = GuardianManageView()
+        data = manage.get_manage_checks(child, developer)
+        ids = [message["id"] for message in data["messages"]]
+        assert "crud_views_guardian.E001" in ids, (
+            "Guardian diagnostics must include this ViewSet's incomplete composition"
+        )
+        assert data["count"] == len(list(child.checks()))
+        assert manage.get_manage_checks(parent, developer)["messages"] == []
+        assert ManageView().get_manage_checks(child, developer)["messages"] == []
+        with override_settings(SILENCED_SYSTEM_CHECKS=["crud_views_guardian.E001"]):
+            assert manage.get_manage_checks(child, developer) == {"count": data["count"], "messages": []}
+        # Diagnostics do not make an invalid composition requestable.
+        with pytest.raises(ImproperlyConfigured, match="GuardianObjectPermissionMixin"):
+            child.get_view_class("tested")().has_permission()
+
+
+def test_core_collectors_do_not_import_optional_guardian():
+    import subprocess
+    import sys
+    import textwrap
+
+    code = textwrap.dedent("""
+        import importlib.abc
+        import sys
+        class NoGuardian(importlib.abc.MetaPathFinder):
+            def find_spec(self, fullname, *args):
+                if fullname.split(".")[0] in {"guardian", "crud_views_guardian"}:
+                    raise AssertionError("Core imported optional Guardian: " + fullname)
+        sys.meta_path.insert(0, NoGuardian())
+        from django.conf import settings
+        settings.configure(
+            SECRET_KEY="isolated-test", INSTALLED_APPS=["django.contrib.auth", "django.contrib.contenttypes", "crud_views"],
+            TEMPLATES=[{"BACKEND": "django.template.backends.django.DjangoTemplates", "APP_DIRS": True}],
+        )
+        import django
+        django.setup()
+        from django.contrib.auth.models import User
+        from crud_views.lib.viewset import ViewSet
+        from crud_views.lib.views.manage import ManageView
+        vs = ViewSet(model=User, name="isolated_checks")
+        data = ManageView().get_manage_checks(vs, None)
+        assert data["count"] > 0
+        assert not any(name.split(".")[0] in {"guardian", "crud_views_guardian"} for name in sys.modules)
+        print("CORE-CHECKS-OK")
+    """)
+    result = subprocess.run([sys.executable, "-c", code], text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
+    assert "CORE-CHECKS-OK" in result.stdout

@@ -121,3 +121,24 @@ def test_system_check_accepts_shipped_compositions():
     from django.core.checks import run_checks
 
     assert run_checks(tags=["crud_views_guardian"]) == []
+
+
+def test_scoped_composition_collector_preserves_complete_registry_findings(monkeypatch, child_viewset):
+    from crud_views.lib import viewset as registry
+    from crud_views_guardian import checks
+
+    monkeypatch.setattr(UnsafeUpdate, "cv_viewset", child_viewset)
+    monkeypatch.setattr(UnsafeList, "cv_viewset", child_viewset)
+    first = SimpleNamespace(get_all_views=lambda: {"update": UnsafeUpdate})
+    second = SimpleNamespace(get_all_views=lambda: {"list": UnsafeList})
+    safe = SimpleNamespace(get_all_views=lambda: {"update": GuardianUpdateViewPermissionRequired})
+    monkeypatch.setattr(registry, "_REGISTRY", {"first": first, "second": second, "safe": safe})
+    scoped = checks.collect_guardian_composition_checks([first])
+    assert len(scoped) == 1 and scoped[0].obj is UnsafeUpdate
+    assert checks.collect_guardian_composition_checks([safe]) == []
+    global_messages = checks.check_guardian_composition()
+    assert global_messages == checks.collect_guardian_composition_checks([first, second, safe])
+    assert [(m.id, m.obj) for m in global_messages] == [
+        ("crud_views_guardian.E001", UnsafeUpdate),
+        ("crud_views_guardian.E001", UnsafeList),
+    ]

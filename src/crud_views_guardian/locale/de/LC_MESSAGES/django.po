@@ -63,3 +63,50 @@ msgstr[1] "%(count)s Objekte"
 #: templates/crud_views/view_guardian_manage.html:31
 msgid "No permission holders found."
 msgstr "Keine Berechtigungsinhaber gefunden."
+
+#: lib/views.py
+msgid "Global model permissions are not accepted."
+msgstr "Globale Modellberechtigungen werden nicht akzeptiert."
+
+#: lib/views.py
+msgid "Guardian"
+msgstr "Guardian"
+
+#: lib/views.py
+msgid "Model permissions are accepted alongside object grants."
+msgstr ""
+"Modellberechtigungen werden zusätzlich zu Objektberechtigungen akzeptiert."
+
+#: lib/views.py
+msgid "The object's permission is checked independently of ancestor policy."
+msgstr ""
+"Die Objektberechtigung wird unabhängig von der Richtlinie für übergeordnete "
+"ViewSets geprüft."
+
+#: lib/views.py
+msgid "This view has no local Guardian object or queryset policy."
+msgstr ""
+"Diese View hat keine lokale Guardian-Richtlinie für Objekte oder QuerySets."
+
+#: lib/views.py
+msgid ""
+"Visible rows are filtered by this permission; an empty list is allowed."
+msgstr ""
+"Sichtbare Zeilen werden nach dieser Berechtigung gefiltert; eine leere Liste"
+" ist erlaubt."
+
+#: lib/views.py
+msgid "effective"
+msgstr "wirksam"
+
+#: lib/views.py
+msgid "global fallback"
+msgstr "globale Ersatzberechtigung"
+
+#: lib/views.py
+msgid "not applicable"
+msgstr "nicht anwendbar"
+
+#: lib/views.py
+msgid "strict"
+msgstr "strikt"

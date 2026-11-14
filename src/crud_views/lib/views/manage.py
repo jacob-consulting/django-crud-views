@@ -405,6 +405,40 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             for key, permission in self.cv_viewset.permissions.items()
         ]
 
+    @staticmethod
+    def _manage_check_messages(messages):
+        """Prepare Django messages without hiding collector or database failures."""
+        from django.core.checks import CRITICAL, DEBUG, ERROR, INFO, WARNING
+
+        severity = {
+            DEBUG: _("Debug"),
+            INFO: _("Info"),
+            WARNING: _("Warning"),
+            ERROR: _("Error"),
+            CRITICAL: _("Critical"),
+        }
+        return [
+            {
+                "id": message.id,
+                "severity": severity.get(message.level, str(message.level)),
+                "message": message.msg,
+                "hint": message.hint,
+            }
+            for message in messages
+            if not message.is_silenced()
+        ]
+
+    def get_manage_checks(self, viewset, user):
+        """Describe only this ViewSet's checks, separately from global startup diagnostics."""
+        from crud_views.checks import collect_ancestor_checks, collect_conditional_checks, collect_viewset_icon_checks
+
+        checks = list(viewset.checks())
+        messages = [message for check in checks for message in check.messages()]
+        messages += collect_ancestor_checks([viewset])
+        messages += collect_conditional_checks([viewset])
+        messages += collect_viewset_icon_checks([viewset])
+        return {"count": len(checks), "messages": self._manage_check_messages(messages)}
+
     def get_context_data(self, **kwargs):
         # nested: the permission rows and holder diagnostics read auth records, which must be on default (06.18)
         _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
@@ -419,6 +453,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "ancestor_policy": self.get_ancestor_policy_data(),
                 "manage_permissions": self.get_manage_permissions(self.cv_viewset, self.request.user),
                 "manage_views": self.get_manage_views(self.cv_viewset, self.request.user),
+                "manage_checks": self.get_manage_checks(self.cv_viewset, self.request.user),
                 "manage_docs_base_url": self.manage_docs_base_url,
             }
         )

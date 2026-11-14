@@ -196,6 +196,34 @@ class _ProfilePurgeConflictCreateView(CreateViewPermissionRequired):
     )
 
 
+def test_scoped_conditional_collector_preserves_cross_viewset_deduplication(monkeypatch):
+    from types import SimpleNamespace
+
+    from crud_views import checks
+    from crud_views.lib.views.manage import ManageView
+
+    first = SimpleNamespace(get_all_views=lambda: {"create": _ProfileFormsetCreateView}, checks=lambda: iter(()))
+    shared = SimpleNamespace(get_all_views=lambda: {"update": _ProfileFormsetUpdateView}, checks=lambda: iter(()))
+    other = SimpleNamespace(get_all_views=lambda: {"create": _ProfileUIFormsetCreateView})
+    monkeypatch.setattr(checks, "_REGISTRY", {"first": first, "shared": shared, "other": other})
+    scoped = checks.collect_conditional_checks([first, shared])
+    assert [m.id for m in scoped] == ["crud_views.E311"]
+    assert "with_items" in scoped[0].msg
+    assert scoped[0].obj is None
+    global_messages = checks.check_conditional()
+    assert global_messages == checks.collect_conditional_checks([first, shared, other])
+    assert len(global_messages) == 2
+    # Actual ViewSets are exercised through manage requests elsewhere; here only
+    # the conditional seam is needed to prove that obj-less findings stay scoped.
+    first.parent = None
+    first.model = None
+    first.is_resource = True
+    first.icon_header = None
+    first.name = "first"
+    data = ManageView().get_manage_checks(first, None)
+    assert [m["message"] for m in data["messages"]] == [scoped[0].msg]
+
+
 def test_fixture_formset_helper_builds():
     """The fixture formset's crispy helper builds from its layout hook."""
     wrapper = _ProfileFormsetCreateView.cv_formsets["items"]

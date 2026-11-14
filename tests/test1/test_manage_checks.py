@@ -16,12 +16,19 @@ from crud_views.lib.views.manage import ManageView
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
 from tests.test1.app.models import Book, Publisher
 from tests.test1.test_ancestor_authorization import isolated_routes
-from tests.test1.test_manage_requirements import developer, grant, register  # noqa: F401
+from tests.test1.test_manage_requirements import developer as developer
+from tests.test1.test_manage_requirements import grant, register
 
 pytestmark = pytest.mark.django_db
 
 
-def test_clean_page_counts_check_objects(client, cv_author, developer):
+def test_clean_page_counts_check_objects(client, cv_author, developer, monkeypatch):
+    # The project's AuthorContactView intentionally lacks action labels; isolate
+    # the clean-state assertion from those unrelated fixture diagnostics.
+    for view in cv_author.get_all_views().values():
+        for attr in ("cv_action_label_template_code", "cv_action_short_label_template_code"):
+            if not getattr(view, attr) and not getattr(view, attr.removesuffix("_code")):
+                monkeypatch.setattr(view, attr, "Action")
     client.force_login(developer)
     response = client.get("/author/manage/")
     assert response.status_code == 200
@@ -76,11 +83,22 @@ def test_scoped_sibling_failure_keeps_manage_admission_and_endpoint_errors(malfo
             model=Book,
             name="checkchild" + sfx,
             parent=ParentViewSet(name=parent.name, attribute="publisher"),
-            ancestor_policy=AncestorPolicy(actions={} if malformed == "action" else {
-                "tested": AncestorPermissions(nearest="missing" if malformed == "ancestor" else "view", higher="view")
-            }),
+            ancestor_policy=AncestorPolicy(
+                actions={}
+                if malformed == "action"
+                else {
+                    "tested": AncestorPermissions(
+                        nearest="missing" if malformed == "ancestor" else "view", higher="view"
+                    )
+                }
+            ),
         )
-        register(ActionViewPermissionRequired, child, cv_permission="missing" if malformed == "own" else "change")
+        register(
+            ActionViewPermissionRequired,
+            child,
+            cv_permission="missing" if malformed == "own" else "change",
+            cv_paragraph_template_code="Paragraph",
+        )
         return (parent, child), [parent, child]
 
     with isolated_routes(build) as (parent, child):
@@ -97,7 +115,11 @@ def test_scoped_sibling_failure_keeps_manage_admission_and_endpoint_errors(malfo
         assert [m["id"] for m in response.context["manage_checks"]["messages"]] == [code]
         markup = response.content.decode()
         assert code in markup and 'id="cv-manage-checks-issues"' in markup
-        expected = {"action": "Requirement unavailable; review system checks", "own": "undeclared: missing", "ancestor": "parent: missing (undeclared)"}
+        expected = {
+            "action": "Requirement unavailable; review system checks",
+            "own": "undeclared: missing",
+            "ancestor": "parent: missing (undeclared)",
+        }
         assert expected[malformed] in markup
         doc = html.fromstring(markup)
         summary = doc.get_element_by_id("cv-view-tested").find("summary")
@@ -115,6 +137,12 @@ def test_scoped_sibling_failure_keeps_manage_admission_and_endpoint_errors(malfo
 
 
 def test_icon_findings_without_obj_scope_and_exclude_global_registries(cv_author, developer, monkeypatch):
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Project-wide checks must never run on a scoped page")
+
+    for name in ("check_viewsets", "check_asset_registry", "check_asset_pipeline", "check_button_classes"):
+        monkeypatch.setattr(checks, name, forbidden)
+
     def build(sfx):
         other = ViewSet(model=Publisher, name="checkother" + sfx, icon_header="otherprefix:bad")
         return other, []
@@ -129,14 +157,18 @@ def test_icon_findings_without_obj_scope_and_exclude_global_registries(cv_author
         scoped = checks.collect_viewset_icon_checks([cv_author, other])
         assert all(m.obj is None for m in scoped)
         assert len(scoped) == 2
-        assert checks.check_icons() == checks.icon_check_messages() + checks.collect_viewset_icon_checks(list(checks._REGISTRY.values()))
+        assert checks.check_icons() == checks.icon_check_messages() + checks.collect_viewset_icon_checks(
+            list(checks._REGISTRY.values())
+        )
 
 
 @pytest.mark.parametrize("completed", [False, True])
 def test_global_ancestor_entry_preserves_completion_barrier(monkeypatch, completed):
     def build(sfx):
         parent = ViewSet(model=Publisher, name="barrierparent" + sfx)
-        child = ViewSet(model=Book, name="barrierchild" + sfx, parent=ParentViewSet(name=parent.name, attribute="publisher"))
+        child = ViewSet(
+            model=Book, name="barrierchild" + sfx, parent=ParentViewSet(name=parent.name, attribute="publisher")
+        )
         register(ActionViewPermissionRequired, child)
         return child, []
 
@@ -157,3 +189,23 @@ def test_check_builder_does_not_fabricate_clean_state(cv_author, developer, monk
     monkeypatch.setattr(ViewSet, "checks", broken)
     with pytest.raises(type(error), match=str(error)):
         ManageView().get_manage_checks(cv_author, developer)
+
+
+def test_top_level_undeclared_permission_is_only_scoped_failure(client, developer):
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="topcheck" + sfx)
+        register(ActionViewPermissionRequired, vs, cv_permission="missing", cv_paragraph_template_code="Paragraph")
+        return vs, [vs]
+
+    with isolated_routes(build) as vs:
+        client.force_login(developer)
+        response = client.get(reverse(vs.get_router_name("manage")))
+        assert response.status_code == 200
+        assert [m["id"] for m in response.context["manage_checks"]["messages"]] == ["viewset.E269"]
+        assert "undeclared: missing" in response.content.decode()
+
+
+@pytest.mark.parametrize("count", [0, 1])
+def test_clean_count_is_not_augmented_by_separate_collectors(cv_author, developer, monkeypatch, count):
+    monkeypatch.setattr(ViewSet, "checks", lambda self: (SimpleNamespace(messages=lambda: []) for _ in range(count)))
+    assert ManageView().get_manage_checks(cv_author, developer) == {"count": count, "messages": []}

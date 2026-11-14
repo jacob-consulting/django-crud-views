@@ -8,6 +8,22 @@
 
     <div class="row g-3">
     <div class="col-12 col-lg-8">
+    {% block manage_checks %}
+    {% if manage_checks.messages %}
+    <section class="mb-3">
+        <div class="d-flex justify-content-end"><a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#system-checks" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: System checks' %}" title="{% translate 'Opens in a new tab' %}">?</a></div>
+        <div class="alert alert-warning text-break" id="cv-manage-checks-issues">
+            <h3 class="h6">{% translate "Configuration issues" %}</h3>
+            <p>{% translate "Review the checks below and update this ViewSet's configuration. Open the documentation for details." %}</p>
+            <ul class="mb-0">
+            {% for check in manage_checks.messages %}
+                <li>{{ check.severity }} · {{ check.id }} · {{ check.message }}{% if check.hint %}<p>{{ check.hint }}</p>{% endif %}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </section>
+    {% endif %}
+    {% endblock manage_checks %}
     {% block permission_holders %}
     <section class="card mb-3" id="cv-manage-permissions">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -155,6 +171,14 @@
 
     </div>
     <div class="col-12 col-lg-4">
+    {% block manage_checks_clean %}
+    {% if not manage_checks.messages %}
+    <section class="mb-3">
+        <div class="d-flex justify-content-end"><a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#system-checks" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: System checks' %}" title="{% translate 'Opens in a new tab' %}">?</a></div>
+        <p class="text-break" id="cv-manage-checks-clean">{% blocktranslate count count=manage_checks.count %}✓ no issues · {{ count }} system check for this ViewSet{% plural %}✓ no issues · {{ count }} system checks for this ViewSet{% endblocktranslate %}</p>
+    </section>
+    {% endif %}
+    {% endblock manage_checks_clean %}
     <h4>{% translate "Properties" %}</h4>
 
     <div class="table-responsive">

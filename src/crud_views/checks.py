@@ -209,6 +209,11 @@ def check_ancestor_declarations(app_configs=None, **kwargs):
     completed = _url_configuration_loaded()
     with _REGISTRY_LOCK:
         viewsets = list(_REGISTRY.values())
+    return collect_ancestor_checks(viewsets, completed=completed)
+
+
+def collect_ancestor_checks(viewsets, *, completed: bool = True) -> list:
+    """Collect ancestor declarations for a supplied sequence, retaining completion semantics."""
     messages = _ancestor_structure_messages(viewsets, completed=completed)
     if completed:
         messages += _ancestor_action_messages(viewsets)
@@ -398,10 +403,14 @@ def _collect_view_findings(view, findings):
 @register(TAG)
 def check_conditional(app_configs=None, **kwargs):
     """Validate ConditionalGroup / ConditionalFormSet declarations."""
-    findings = _ConditionalFindings()
-
     with _REGISTRY_LOCK:
         viewsets = list(_REGISTRY.values())
+    return collect_conditional_checks(viewsets)
+
+
+def collect_conditional_checks(viewsets) -> list:
+    """Collect conditional findings once across all supplied ViewSets and shared forms."""
+    findings = _ConditionalFindings()
 
     for viewset in viewsets:
         for view in viewset.get_all_views().values():
@@ -592,6 +601,12 @@ def check_icons(app_configs=None, **kwargs):
 
     with _REGISTRY_LOCK:
         viewsets = list(_REGISTRY.values())
+    return messages + collect_viewset_icon_checks(viewsets)
+
+
+def collect_viewset_icon_checks(viewsets) -> list:
+    """Check view attributes only; project icon-registry diagnostics remain global."""
+    messages = []
 
     def warn(owner: str, attr: str, value: str, prefix: str) -> None:
         messages.append(

@@ -9,7 +9,11 @@ def check_guardian_composition(app_configs=None, **kwargs):
     """Parent authorization cannot replace the child object's or queryset's gate."""
     with registry._REGISTRY_LOCK:
         viewsets = list(registry._REGISTRY.values())
+    return collect_guardian_composition_checks(viewsets)
 
+
+def collect_guardian_composition_checks(viewsets) -> list:
+    """Collect child-gate composition errors only for the supplied ViewSets."""
     messages = []
     for viewset in viewsets:
         for view in viewset.get_all_views().values():

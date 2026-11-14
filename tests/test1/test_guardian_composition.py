@@ -129,6 +129,7 @@ def test_scoped_composition_collector_preserves_complete_registry_findings(monke
 
     monkeypatch.setattr(UnsafeUpdate, "cv_viewset", child_viewset)
     monkeypatch.setattr(UnsafeList, "cv_viewset", child_viewset)
+    monkeypatch.setattr(GuardianUpdateViewPermissionRequired, "cv_viewset", child_viewset)
     first = SimpleNamespace(get_all_views=lambda: {"update": UnsafeUpdate})
     second = SimpleNamespace(get_all_views=lambda: {"list": UnsafeList})
     safe = SimpleNamespace(get_all_views=lambda: {"update": GuardianUpdateViewPermissionRequired})

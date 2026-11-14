@@ -386,6 +386,13 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
 class GuardianManageView(ManageView):
     template_name = "crud_views/view_guardian_manage.html"
 
+    def get_manage_checks(self, viewset, user):
+        from crud_views_guardian.checks import collect_guardian_composition_checks
+
+        data = super().get_manage_checks(viewset, user)
+        data["messages"] += self._manage_check_messages(collect_guardian_composition_checks([viewset]))
+        return data
+
     def _guard_manage_auth(self, viewset, user):
         """Check the supplied model's configured grant routes before core diagnostics."""
         super()._guard_manage_auth(viewset, user)

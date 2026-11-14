@@ -256,7 +256,8 @@ def test_core_collectors_do_not_import_optional_guardian():
         sys.meta_path.insert(0, NoGuardian())
         from django.conf import settings
         settings.configure(
-            SECRET_KEY="isolated-test", INSTALLED_APPS=["django.contrib.auth", "django.contrib.contenttypes", "crud_views"],
+            SECRET_KEY="isolated-test",
+            INSTALLED_APPS=["django.contrib.auth", "django.contrib.contenttypes", "crud_views"],
             TEMPLATES=[{"BACKEND": "django.template.backends.django.DjangoTemplates", "APP_DIRS": True}],
         )
         import django

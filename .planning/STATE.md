@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.33"
 current_phase_name: Structured manage page
-current_plan: 4
+current_plan: 5
 status: executing
-stopped_at: Completed 06.33-03-PLAN.md
-last_updated: "2026-11-14T12:52:00Z"
+stopped_at: Completed 06.33-04-PLAN.md
+last_updated: "2026-11-14T13:07:00Z"
 last_activity: 2026-11-14
-last_activity_desc: Phase 06.33 plan 03 completed; plan 04 next
-state_head: 62bbdb35
+last_activity_desc: Phase 06.33 plan 04 completed; plan 05 next
+state_head: 479ee50f
 progress:
   total_phases: 40
   completed_phases: 27
   total_plans: 215
-  completed_plans: 208
+  completed_plans: 209
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 ## Current Position
 
 Phase: 06.33 (Structured manage page) — EXECUTING
-Current Plan: 4
+Current Plan: 5
 Total Plans in Phase: 10
 Status: Executing Phase 06.33
-Last activity: 2026-11-14 — Phase 06.33 plan 03 completed
+Last activity: 2026-11-14 — Phase 06.33 plan 04 completed
 
-Next: Continue $gsd-execute-phase 06.33 with plan 04
+Next: Continue $gsd-execute-phase 06.33 with plan 05
+
+### Phase 06.33 plan 04 execution — 2026-11-14
+
+- Guardian owning-gate descriptions, configured generic/direct-FK matrices and strict actor counts are committed. Shared policy badges/helper card replace stock Guardian tables; legacy dictionaries, lazy getters and the legacy config_table include remain compatible. Request authorization is unchanged.
+- Three classified RED/GREEN pairs. Required gates: 124 requirement/composition/group tests, 585 matrix/override/routing/content-type tests, 500 retained markup/card tests; final shared-template requirements/provenance gate 609 passed. Scoped Ruff/format/whitespace checks pass. Query growth and hidden-name protection are covered.
+- Six task commits end at 492b21b5; SUMMARY committed as 479ee50f before SDK ROADMAP progress. Three tasks, 15 source/test/evidence files, 12 minutes. Four of ten plans complete; plan 05 next. Browser, translations and broad supported-version matrix remain later-owned.
+- Targeted Markdown state edits preserve original state.json bytes and unrelated .gitkeep dirt. SDK roadmap row needed its existing stale count reconciled to 4/10. Optional WINDOWS append declined for a pre-existing rendered-table/header mismatch; no ledger edit was made and no required test was skipped. No push, merge or phase-complete claim.
 
 ### Phase 06.33 plan 03 execution — 2026-11-14
 
@@ -1017,7 +1024,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
-| 06.33 | 2 | 24min | 12min |
+| 06.33 | 4 | 43min | 10.75min |
 
 | 06.15 | 4 | - | - |
 
@@ -1033,6 +1040,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 |------|----------|-------|-------|
 | Phase 06.33 P01 | 12min | 3 tasks | 12 files |
 | Phase 06.33 P02 | 12min | 2 tasks | 6 files |
+| Phase 06.33 P03 | 7min | 2 tasks | 9 files |
+| Phase 06.33 P04 | 12min | 3 tasks | 15 files |
 | Phase 01 P01 | 7 min | 2 tasks | 9 files |
 | Phase 01 P02 | 6 min | 2 tasks | 7 files |
 | Phase 01 P03 | 4 min | 2 tasks | 7 files |
@@ -1195,6 +1204,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 - [Phase 06.33 plan 01] Resolve diagnostic auth routing against the supplied ViewSet's registered manage class; Resource diagnostics fail before reads. Pivot direct holders by PK, split users at 20, and preserve legacy getters behind request-local lazy proxies.
 - [Phase 06.33 plan 02] Describe only effective has_permission ownership automatically; custom dispatch/object/queryset gates require explicit descriptions. Reuse one generated-route projection and the request engine's nearest enforced ancestor selection. Keep unchanged extension gates inherited and verify them with native requests.
 - [Phase 06.33 plan 03] Capture constructor keys before validators and own context-action declarations before registration writes; keep W280 policy unchanged and inspect display data statically. Source labels remain independent from project declaration status; model_construct provenance is unsupported.
+- [Phase 06.33 plan 04] Describe existing Guardian gates without changing authorization; merge configured direct grants by holder PK and exact permission identity. Actor counts reuse the strict helper including its active-superuser shortcut. Shared templates own Guardian cards; legacy collections/include remain independently compatible.
 
 Decisions are logged in the PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
@@ -1567,6 +1577,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-14T12:52:00Z
-Stopped at: Completed 06.33-03-PLAN.md
+Last session: 2026-11-14T13:07:00Z
+Stopped at: Completed 06.33-04-PLAN.md
 Resume file: None

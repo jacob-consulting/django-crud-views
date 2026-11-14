@@ -1,4 +1,5 @@
 import difflib
+import inspect
 import re
 from collections.abc import Iterable
 from typing import Any
@@ -281,20 +282,19 @@ def _is_config_value(value: Any) -> bool:
 def _own_cv_annotations(klass: type) -> set[str]:
     """cv_*-prefixed names from ``klass.__annotations__``.
 
-    Handles annotation-only declarations like `cv_formsets: FormSets` (no default) that
-    never appear in vars(klass). Note `klass.__annotations__` can surface a base class's
-    annotations when ``klass`` has none of its own — harmless here, because every class in
-    the MRO is visited and the results are unioned, so a name is attributed to the class
-    that actually declares it either way. Wrapped defensively for the PEP 649 lazy path on 3.14.
+    Handles annotation-only declarations like `cv_formsets: FormSets` (no default).
+    The public API reads class-local annotations across eager and lazy Python
+    versions without depending on their private storage names.
     """
     try:
-        annotations = klass.__annotations__
+        annotations = inspect.get_annotations(klass)
     except Exception:
+        # Preserve the defensive fallback when lazy annotations cannot resolve.
         annotations = vars(klass).get("__annotations__", {})
     return {name for name in annotations if name.startswith(_CV_PREFIX)}
 
 
-def _collect_cv_names(klass: type, all_names: set[str], data_names: set[str]) -> None:
+def _collect_cv_names(klass: type, all_names: set[str], data_names: set[str], *, include_classes=False) -> None:
     """Add klass's own cv_* declarations — defaults (vars) and annotation-only — to the sets."""
     for name in _own_cv_annotations(klass):
         all_names.add(name)
@@ -302,8 +302,28 @@ def _collect_cv_names(klass: type, all_names: set[str], data_names: set[str]) ->
     for name, value in vars(klass).items():
         if name.startswith(_CV_PREFIX):
             all_names.add(name)
-            if _is_config_value(value):
+            if _is_config_value(value) or (include_classes and isinstance(value, type)):
                 data_names.add(name)
+
+
+def _project_cv_declarations(context: type, *, include_classes=False, exclude_generated=False) -> dict[str, type]:
+    """Own project data declarations, nearest owner first; shared with manage diagnostics."""
+    declarations = {}
+    for klass in context.__mro__:
+        if klass.__module__.startswith(_PACKAGE_PREFIX):
+            continue
+        for name, value in vars(klass).items():
+            if (
+                exclude_generated
+                and name == "cv_context_actions"
+                and vars(klass).get("_cv_manage_declared_context_actions") is False
+            ):
+                continue
+            if name.startswith(_CV_PREFIX) and (
+                _is_config_value(value) or (include_classes and isinstance(value, type))
+            ):
+                declarations.setdefault(name, klass)
+    return declarations
 
 
 def _registered_view_classes() -> list[type]:
@@ -383,14 +403,7 @@ class CheckUnknownAttributes(Check):
         return allow
 
     def _suspects(self) -> set[str]:
-        suspects: set[str] = set()
-        for klass in self.context.__mro__:
-            if klass.__module__.startswith(_PACKAGE_PREFIX):
-                continue  # package code defines the known-set, never suspect
-            for name, value in vars(klass).items():
-                if name.startswith(_CV_PREFIX) and _is_config_value(value):
-                    suspects.add(name)
-        return suspects
+        return set(_project_cv_declarations(self.context))
 
     def _suggestion(self, name: str, pool: set[str]) -> str:
         # pool is the data-attribute known-set — suggest real config attributes, never methods

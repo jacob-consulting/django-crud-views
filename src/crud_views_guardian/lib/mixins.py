@@ -82,6 +82,16 @@ class GuardianObjectPermissionMixin:
     cv_guardian_anonymous_behavior: str = "redirect"
 
     @classmethod
+    def cv_get_requirement(cls) -> dict:
+        """Describe the object's permission gate, without evaluating access."""
+        custom = cls._cv_requirement_is_custom()
+        return {
+            "kind": "custom" if custom else "permission",
+            "value": None if custom else cls.cv_permission,
+            "ancestor_applies": True,
+        }
+
+    @classmethod
     def _cv_cancel_target_available(cls, user, obj, rendering_view):
         if not user.is_authenticated or _guardian_inactive_actor(user):
             return False
@@ -174,6 +184,16 @@ class GuardianQuerysetMixin:
 
     cv_guardian_accept_global_perms: bool = False
     cv_guardian_anonymous_behavior: str = "redirect"
+
+    @classmethod
+    def cv_get_requirement(cls) -> dict:
+        """The permission filters visible rows; it does not require a nonempty list."""
+        custom = cls._cv_requirement_is_custom()
+        return {
+            "kind": "custom" if custom else "permission",
+            "value": None if custom else cls.cv_permission,
+            "ancestor_applies": True,
+        }
 
     @classmethod
     def _cv_cancel_target_available(cls, user, obj, rendering_view):
@@ -317,6 +337,25 @@ class GuardianParentPermissionMixin:
     # the annotation still makes the names known to the W280 unknown-attribute check.
     cv_guardian_accept_global_perms: bool
     cv_guardian_anonymous_behavior: str
+
+    @classmethod
+    def cv_get_requirement(cls) -> dict:
+        """Nested parent-only views bypass model permissions; object/list gates remain."""
+        if cls._cv_requirement_is_custom():
+            return {"kind": "custom", "value": None, "ancestor_applies": True}
+        if (
+            cls.cv_viewset is not None
+            and cls.cv_viewset.parent is not None
+            and not issubclass(cls, (GuardianObjectPermissionMixin, GuardianQuerysetMixin))
+        ):
+            return {"kind": "none", "value": None, "ancestor_applies": True}
+        # has_permission delegates only at the top level. Nested object/queryset
+        # gates still describe their independent object-loading/filtering policy.
+        if (cls.cv_viewset is None or cls.cv_viewset.parent is None) and cls._cv_requirement_is_custom(
+            after=GuardianParentPermissionMixin
+        ):
+            return {"kind": "custom", "value": None, "ancestor_applies": True}
+        return super().cv_get_requirement()
 
     @classmethod
     def _cv_cancel_target_available(cls, user, obj, rendering_view):

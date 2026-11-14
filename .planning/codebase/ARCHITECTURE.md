@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
-last_mapped_at: 2026-11-13
+last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
+last_mapped_at: 2026-11-14
 ---
-<!-- refreshed: 2026-11-13 -->
+<!-- refreshed: 2026-11-14 -->
 
 # Architecture
 
-**Analysis Date:** 2026-11-13
+**Analysis Date:** 2026-11-14
 
 ## System Overview
 
@@ -44,7 +44,7 @@ last_mapped_at: 2026-11-13
 | View registration metaclass | Registers a class with its `cv_viewset` and adopts the ViewSet model by default | `src/crud_views/lib/view/meta.py` |
 | CrudView integration base | Sibling/action resolution, context, routing, message rendering, access policy, write transaction hooks | `src/crud_views/lib/view/base.py` |
 | Django generic views | List/card/detail/create/update/delete, action, child and manage request handlers | `src/crud_views/lib/views/` |
-| Manage diagnostics | Developer-gated model-permission, permission-holder, registered-view and nested-ancestor configuration display | `src/crud_views/lib/views/manage.py` |
+| Manage diagnostics | Developer-gated structured projections for model and object grants, route/view requirements, declared configuration provenance, and ViewSet-scoped checks | `src/crud_views/lib/views/manage.py` |
 | Presentation model | Button/action grouping, context, labels, variants, visibility and metadata | `src/crud_views/lib/view/` |
 | Asset and theme delivery | Registry of app-contributed JS/CSS and theme-template tags/config | `src/crud_views/lib/assets.py`, `src/crud_views/templatetags/crud_views.py` |
 | Object detail extension | Configurable property groups, typed property resolvers, layout templates, detail view integration | `src/crud_views_object_detail/lib/` |
@@ -309,7 +309,10 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 
 1. `ManageView.dispatch()` runs nested ancestor authorization before the normal permission mixin (`src/crud_views/lib/views/manage.py`).
 2. The manage gate requires an authenticated active user, an enabled diagnostics mode, and membership in `CRUD_VIEWS_MANAGE_GROUP`; staff/superuser status and `DEBUG=True` do not independently grant access (`src/crud_views/lib/settings.py`, `src/crud_views/lib/views/manage.py`). The auto-registered action uses the same access check and hides itself when denied.
-3. Authorized pages project ViewSet permission results and declared ancestor policies; Guardian adds object-grant counts and per-view Guardian policy detail (`src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`). `cv_manage_group` creates only the configured group.
+3. Authorized pages build explicit data projections in `ManageView`: permission matrices and holder rows (`get_manage_permissions()`), generated route summaries (`get_manage_routes()`), ViewSet facts with constructor/model-Meta provenance (`get_manage_facts()`), upward hierarchy links (`get_manage_hierarchy()`), presentation values (`get_manage_presentation()`), registered view sections (`get_manage_views()`), and scoped diagnostics (`get_manage_checks()`) (`src/crud_views/lib/views/manage.py`). Templates consume these structures; they do not inspect ViewSet internals themselves.
+4. Permission descriptions come from each registered view's `cv_get_requirement()` contract. `_manage_requirement()` resolves the local permission key and, where configured, the selected nearest ancestor pair; missing or structurally unavailable metadata is returned as a presentation error. This is descriptive metadata, not an authorization decision. `get_manage_views()` also records class path, route, sectioned `cv_*` values, and source as default, inherited, ViewSet/global fallback, or explicitly set (`src/crud_views/lib/views/manage.py`, `src/crud_views/lib/view/base.py`).
+5. Core checks are deliberately scoped to the one ViewSet: `get_manage_checks()` combines its own `viewset.checks()` with collectors accepting `[viewset]` for ancestor, conditional and icon checks, then normalizes unsilenced Django messages. It does not run the global startup check registry (`src/crud_views/lib/views/manage.py`, `src/crud_views/checks.py`). `GuardianManageView` appends the Guardian composition collector for that same ViewSet (`src/crud_views_guardian/lib/views.py`, `src/crud_views_guardian/checks.py`).
+6. Guardian specializes the same projection hooks: it validates Guardian grant database routes, merges aggregated object-level grants and distinct object counts into group/user holder rows, adds strict/global-fallback policy metadata per applicable view, and exposes the helper policy (`src/crud_views_guardian/lib/views.py`). The shared actor admission and page gate remain in `ManageView`; `cv_manage_group` creates only the configured group.
 
 **ViewSet URL inclusion:**
 - Location: `src/crud_views/lib/viewset/__init__.py` (`ViewSet.urlpatterns`)
@@ -409,4 +412,4 @@ Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus glo
 
 ---
 
-*Architecture analysis: 2026-11-13*
+*Architecture analysis: 2026-11-14*

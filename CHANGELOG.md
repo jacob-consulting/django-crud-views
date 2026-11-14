@@ -6,6 +6,14 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Structured manage cards** (#366): stock core/Guardian diagnostics now render permission matrices,
+  closed view/Presentation disclosures, default/source rows and secondary cards. Existing block names and
+  legacy context shapes remain available, but stock DOM structure and visible output change. Whole-card
+  overrides keep their old output until migrated; old getter overrides feed only legacy context. Theme authors
+  should review the [migration guide](docs/migrating-1.0.md#structured-manage-cards) and
+  [public inventory](docs/reference/theme.md#structured-manage-contracts). External manage assets, requirement
+  descriptions and card-help links add no settings or authorization exceptions.
+
 - **Ordinary formset row cards:** ordinary rows now have a bordered fieldset and a singular
   model-name legend by default, including conditional and AJAX-added rows. `FormSet.row_legend`
   accepts custom text or a lazy translation; `False` (or `""`) removes the entire frame and
@@ -451,6 +459,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `collapse.toggle` returns `false` while the panel is animating and the filter toggle then leaves its state alone.
 
 ### Fixed
+
+- Read class annotations through Python's public inspection API so Python 3.15 manage diagnostics include annotation-only attributes and Guardian policies do not trigger false W280 warnings.
 
 - Invalid nested formset fields now redisplay their errors instead of raising an `AttributeError`
   while checking whether the parent row is present. Classic and compact editors retain the submitted values.

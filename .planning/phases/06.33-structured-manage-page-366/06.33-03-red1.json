@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_manage_provenance.py::test_registered_generated_actions_remain_default -q --junitxml=/tmp/0633-03-red1.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.147\" timestamp=\"2026-11-14T12:43:55.163910+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_manage_provenance\" name=\"test_registered_generated_actions_remain_default\" time=\"0.002\"><failure message=\"AssertionError: Registration-generated actions are library defaults&#10;assert None is True&#10; +  where None = &lt;built-in method get of dict object at 0x7ee24cd84e80&gt;('is_default')&#10; +    where &lt;built-in method get of dict object at 0x7ee24cd84e80&gt; = {}.get\">def test_registered_generated_actions_remain_default():\n        viewset = make_viewset()\n        view = register(viewset)\n        assert \"manage\" in view.cv_context_actions\n        entry = rows(viewset).get(\"context_actions\", {})\n&gt;       assert entry.get(\"is_default\") is True, \"Registration-generated actions are library defaults\"\nE       AssertionError: Registration-generated actions are library defaults\nE       assert None is True\nE        +  where None = &lt;built-in method get of dict object at 0x7ee24cd84e80&gt;('is_default')\nE        +    where &lt;built-in method get of dict object at 0x7ee24cd84e80&gt; = {}.get\n\ntests/test1/test_manage_provenance.py:54: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_registered_generated_actions_remain_default",
+  "targetFile": "tests/test1/test_manage_provenance.py",
+  "expected": "Registration-generated actions have is_default=True",
+  "actual": "Prepared entry lacks is_default",
+  "semanticAssessment": "Named test executed and failed on the planned missing provenance assertion, with no setup or collection fault."
+}

@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-13
-last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
+last_mapped_at: 2026-11-14
+last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-13
+**Analysis Date:** 2026-11-14
 
 ## APIs & External Services
 
@@ -24,6 +24,7 @@ last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
 - Phase 06.30 adds queryset-driven conditional groups through `QuerysetConditions` (`src/crud_views/lib/conditional/queryset.py`). It binds to a native single-select `ModelChoiceField`, reads a direct category attribute or queryset annotation, and validates against the selected object after ordinary field cleaning. This is an internal Django ORM/forms integration; it does not fetch through an external service or broaden controller support to arbitrary widgets (`src/crud_views/lib/conditional/group.py`, `docs/reference/conditional.md`).
 - Compact row borders are opt-in presentation metadata via `CompactLayout.row_border` (default `False`); legend suppression still takes precedence, and no external styling package is added (`src/crud_views/lib/formsets/compact.py`, `docs/reference/formsets.md`).
 - Manage diagnostics are gated by active authenticated membership in a configurable Django `Group`; mode `no` denies all and `debug_only` additionally requires `DEBUG=True`. The `cv_manage_group` management command creates that group but does not assign users or permissions (`src/crud_views/lib/views/manage.py`, `src/crud_views/lib/settings.py`, `src/crud_views/management/commands/cv_manage_group.py`, `docs/reference/settings.md`). Nested manage checks continue to use Django auth data on the configured default database alias (`src/crud_views/lib/views/manage.py`).
+- The manage page projects Django-backed diagnostics as structured context data: effective permission rows, ViewSet and view configuration/provenance, routes and hierarchy, ancestor policy, and ViewSet-scoped check messages (`src/crud_views/lib/views/manage.py`). It uses Django's auth/ORM, URL resolver, and system-check APIs; it does not call an external diagnostics service. Configuration values are read through static attribute inspection; requirement metadata uses the view requirement API, while routing/auth failures remain visible (`src/crud_views/lib/views/manage.py`).
 
 **Optional Django extensions:**
 - Install extras independently as `django-crud-views[workflow]`, `[polymorphic]`, `[guardian]`, or `[ordered]`; `[all]` combines them. The apps are shipped in the distribution, but each optional integration requires its corresponding third-party package and app setup (`pyproject.toml`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`).
@@ -104,4 +105,4 @@ last_mapped_commit: 9a181a30743ec643e20cbcffcc3a55e950b587e8
 
 ---
 
-*Integration audit: 2026-11-13*
+*Integration audit: 2026-11-14*

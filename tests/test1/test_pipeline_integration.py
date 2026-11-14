@@ -13,6 +13,14 @@ CORE_JS = [
     "crud_views/js/modal.js",
     "crud_views/js/toggle.js",
     "crud_views/js/tooltip.js",
+    "crud_views/js/manage.js",
+]
+CORE_CSS = [
+    "crud_views/css/property.css",
+    "crud_views/css/table.css",
+    "crud_views/css/formset.css",
+    "crud_views/css/icons.css",
+    "crud_views/css/manage.css",
 ]
 
 
@@ -100,8 +108,7 @@ def test_pack_stylesheets_concatenates_in_registry_order(asset_registry, noop_co
     packager.pack_stylesheets(package)
 
     output = (tmp_path / "out" / "main.css").read_text()
-    expected = [*(e.asset.path for e in asset_registry.collect("css") if "://" not in e.asset.path)]
-    assert expected[-1] == "pipeline_test/extra.css"
+    expected = [*CORE_CSS, "pipeline_test/extra.css"]
     assert package.sources == expected
     positions = [output.index(Path(finders.find(path)).read_text()[:40]) for path in expected]
     assert all(a < b for a, b in pairwise(positions))

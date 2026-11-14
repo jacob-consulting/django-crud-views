@@ -65,6 +65,42 @@ invalid and AJAX fragment rendering in your theme.
 No database migration is required. See the complete
 [row legend API and synchronized nested example](reference/formsets.md#row-cards-and-legends).
 
+## Structured manage cards
+
+Core and Guardian manage pages now use the [structured manage reference](reference/manage.md). This is a visible
+output and template-contract **breaking change**, even though existing block names and legacy context shapes
+remain compatible. Update CSS, DOM selectors and copied templates expecting the old flat tables.
+
+`permission_holders`, `guardian_config` and `ancestor_policy` blocks replace entire cards at their original
+positions. A project override still renders its own output; it does not automatically acquire the signed-in
+actor row, active-superuser summary, new matrix or other card enhancements. Preserve or migrate that override
+deliberately. Both `manage_checks` (main-column messages) and `manage_checks_clean` (side-column clean strip)
+are independently overridable.
+
+Stock templates consume prepared `manage_*` structures. Legacy `data`, `views` and `permission_holders` are
+lazy, retain their old shapes, and evaluate their old getter only when used. Overriding `get_view_data()` or
+`get_permission_holders()` affects those old keys only; migrate stock-card customizations to the explicit
+`get_manage_*(viewset, user)` builders. `ancestor_policy`, `guardian_config`, `cv` and `show_users` also remain.
+See the complete [block/context/builder inventory](reference/theme.md#structured-manage-contracts).
+
+The unchanged `crud_views/snippets/guardian/config_table.html` remains usable by an explicit legacy include
+with `guardian_config`; stock cards no longer include it. The theme reference provides the compatibility recipe.
+Keep Django escaping enabled for prepared strings and supplied labels. Custom output must preserve visibility
+policy and access boundaries; a template or data builder does not authorize a request.
+
+Auth-reading builders require the supplied ViewSet's registered manage class and raise
+`ImproperlyConfigured("Manage diagnostics require a registered manage view")` before diagnostic reads if it
+is truly absent, as with unsupported Resource diagnostics. `manage_views_enabled="no"` is not absence: model
+ViewSets still register AutoManageView and its URL; the mode controls availability and context actions.
+Pure configuration/route projections have no auth-read dependency. Hierarchy takes URL coordinates explicitly
+as `route_kwargs`. Normal constructor provenance is supported; Pydantic `model_construct` bypasses that record
+and is unsupported for provenance. No broader Pydantic construction guarantee is introduced.
+
+The new `cv_get_requirement()` classmethod describes configuration, not a user's access. Describe custom
+`has_permission()` gates with the same method; arbitrary `dispatch()`/`get_object()` changes cannot be inferred.
+The existing manage admission, nested guards and optional-app boundaries remain unchanged. No new setting,
+Resource manage support, another-user evaluator (#370) or configuration-dump command (#371) is included.
+
 ## Developer-only manage diagnostics
 
 Issue #361 / Roastery finding 25 / Phase 06.31 changes who may open core and Guardian manage pages.
@@ -1234,6 +1270,9 @@ ancestors or Guardian object grants. The page shows the declared ancestor policy
 pass it. Phase 06.31 supersedes the earlier setting-or-group policy; follow
 [developer-only diagnostics](#developer-only-manage-diagnostics) and
 [GuardianManageView](reference/guardian.md#guardianmanageview).
+
+That legacy dictionary remains supported. Stock output now uses the shared cards and `manage_*` context;
+see [Structured manage cards](#structured-manage-cards) before updating a copied template.
 
 #### Nested write database selection
 

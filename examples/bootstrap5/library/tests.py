@@ -5,11 +5,115 @@ from urllib.parse import parse_qs, urlsplit
 
 from django.contrib.auth import get_user_model
 from django.core import signing
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from lxml import html
 
 from library.models import Author, Book
+
+
+@override_settings(DEBUG=False)
+class DeveloperManageCardsTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from io import StringIO
+
+        from django.core.management import call_command
+
+        call_command("seed", stdout=StringIO())
+
+    def setUp(self):
+        self.assertTrue(self.client.login(username="developer", password="developer"))
+
+    def open_manage_action(self, name, kwargs=None):
+        listing = self.client.get(reverse(f"{name}-list", kwargs=kwargs))
+        self.assertEqual(listing.status_code, 200)
+        (link,) = html.fromstring(listing.content).cssselect('[cv-context-container] a[cv-key="manage"]')
+        self.assertEqual(link.get("href"), reverse(f"{name}-manage", kwargs=kwargs))
+        response = self.client.get(link.get("href"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "crud_views/view_manage.html")
+        document = html.fromstring(response.content)
+        for card in ("permissions", "views", "presentation", "viewset", "hierarchy", "urls"):
+            self.assertTrue(document.cssselect(f"#cv-manage-{card}"), card)
+        self.assertIn("developer", document.cssselect("[data-manage-actor]")[0].text_content())
+        return response, document
+
+    def test_declared_values_and_inherited_defaults_through_library_navigation(self):
+        response, document = self.open_manage_action("author")
+        facts = {row["key"]: row for row in response.context["manage_facts"]}
+        self.assertFalse(facts["icon_header"]["is_default"])
+        self.assertEqual(facts["icon_header"]["value"], "'fa-regular fa-user'")
+        self.assertTrue(facts["prefix"]["is_default"])
+        views = {row["key"]: row for row in response.context["manage_views"]}
+        entries = {row["key"]: row for section in views["delete"]["sections"] for row in section["entries"]}
+        self.assertFalse(entries["modal"]["is_default"])
+        self.assertEqual(entries["modal"]["value"], "True")
+        listing = {row["key"]: row for section in views["list"]["sections"] for row in section["entries"]}
+        self.assertTrue(listing["context_actions"]["is_default"])
+        self.assertTrue(document.cssselect("#cv-view-list [data-cv-default-row]"))
+        self.assertEqual(views["manage"]["requirement"]["kind"], "group")
+
+    def test_user_disclosure_respects_existing_setting(self):
+        from crud_views.lib.settings import crud_views_settings
+
+        for show in (False, True):
+            with self.subTest(show=show), patch.object(crud_views_settings, "manage_show_users", show):
+                response, document = self.open_manage_action("author")
+                self.assertEqual(response.context["manage_permissions"]["show_users"], show)
+                self.assertEqual(bool(document.cssselect("[data-manage-users]")), show)
+                users = response.context["manage_permissions"]["users"]
+                self.assertEqual(bool(users), show)
+
+    def test_nested_navigation_links_up_and_keeps_protected_ancestors(self):
+        from django.contrib.auth.models import Permission
+        from nested.models import Department
+
+        department = Department.objects.first()
+        kwargs = {"company_pk": department.company_id, "department_pk": department.pk}
+        response, document = self.open_manage_action("employee", kwargs)
+        parents = response.context["manage_hierarchy"]["parents"]
+        expected = [
+            reverse("department-manage", kwargs={"company_pk": department.company_id}),
+            reverse("company-manage"),
+        ]
+        self.assertEqual([row["url"] for row in parents], expected)
+        for url in expected:
+            self.assertTrue(document.xpath('//section[@id="cv-manage-hierarchy"]//a[@href=$url]', url=url))
+            self.assertEqual(self.client.get(url).status_code, 200)
+        developer = get_user_model().objects.get(username="developer")
+        developer.user_permissions.remove(
+            Permission.objects.get(content_type__app_label="nested", codename="view_company")
+        )
+        self.assertEqual(self.client.get(reverse("employee-manage", kwargs=kwargs)).status_code, 403)
+
+    def test_context_button_targets_and_project_declarations(self):
+        response, _ = self.open_manage_action("ticket")
+        presentation = response.context["manage_presentation"]
+        rows = {row["key"]: row for section in presentation["sections"] for row in section["entries"]}
+        for key in ("edit_big", "edit_pill"):
+            self.assertFalse(rows[key]["is_default"])
+            self.assertIn("ticket-update", rows[key]["points_to"])
+        detail = next(row for row in response.context["manage_views"] if row["key"] == "detail")
+        entries = {row["key"]: row for section in detail["sections"] for row in section["entries"]}
+        self.assertFalse(entries["context_actions"]["is_default"])
+        self.assertIn("edit_big", entries["context_actions"]["value"])
+
+    def test_developer_writes_stay_denied_and_ordinary_accounts_have_no_manage(self):
+        before = list(Author.objects.order_by("pk").values())
+        author = Author.objects.first()
+        for key in ("create", "update", "delete"):
+            kwargs = {} if key == "create" else {"pk": author.pk}
+            self.assertEqual(
+                self.client.post(reverse(f"author-{key}", kwargs=kwargs), {"confirm": True}).status_code, 403
+            )
+        self.assertEqual(list(Author.objects.order_by("pk").values()), before)
+        for username in ("alice", "bob"):
+            self.assertTrue(self.client.login(username=username, password=username))
+            listing = self.client.get(reverse("author-list"))
+            self.assertEqual(listing.status_code, 200)
+            self.assertFalse(html.fromstring(listing.content).cssselect('[cv-context-container] [cv-key="manage"]'))
+            self.assertEqual(self.client.get(reverse("author-manage")).status_code, 403)
 
 
 class LibraryTestCase(TestCase):

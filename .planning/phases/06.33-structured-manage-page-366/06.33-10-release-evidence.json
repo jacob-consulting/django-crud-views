@@ -1,0 +1,320 @@
+{
+  "plan": "06.33-10",
+  "captured_at": "2026-11-14T14:50:30.532449+00:00",
+  "source_head": "fcc8650d17b5974ea775519741694e6ffabc9c42",
+  "primary_runtime": {
+    "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python",
+    "python": "3.12.3",
+    "django": "6.0.10",
+    "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "ratelimit": "/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/django_ratelimit/__init__.py"
+  },
+  "checks": [
+    {
+      "name": "full_python",
+      "command": "PYTHONPATH=src .nox/tests-3-12-django-6-0/bin/python -m pytest tests -n 4 -q",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-full-python.log",
+      "log_sha256": "189f32beabf30e95eb0d089be40af3f51b83ef0a3c282ca0eb7db80460d2919e",
+      "result": "13924 passed in 466.47s (0:07:46)",
+      "output_tail": "........................................................................ [ 93%]\n........................................................................ [ 93%]\n........................................................................ [ 94%]\n........................................................................ [ 94%]\n........................................................................ [ 95%]\n........................................................................ [ 95%]\n........................................................................ [ 96%]\n........................................................................ [ 96%]\n........................................................................ [ 97%]\n........................................................................ [ 97%]\n........................................................................ [ 98%]\n........................................................................ [ 98%]\n........................................................................ [ 99%]\n........................................................................ [ 99%]\n............................                                             [100%]\n13924 passed in 466.47s (0:07:46)"
+    },
+    {
+      "name": "public_inventory",
+      "command": "PYTHONPATH=src .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_manage_release.py -n 4 -q",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-inventory.log",
+      "log_sha256": "af711f7e203751806ded8ea0c9be630af344de8962742aaf195a19694059d4db",
+      "result": "5 passed in 1.69s",
+      "output_tail": "bringing up nodes...\nbringing up nodes...\n\n.....                                                                    [100%]\n5 passed in 1.69s"
+    },
+    {
+      "name": "javascript",
+      "command": "npm test -- --maxWorkers=4",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-js.log",
+      "log_sha256": "8d70424fb55c4e834e74f3bbc7fb71d64fa93fe9fa4a1535898b7bd8abf2d408",
+      "result": "Tests  457 passed (457)",
+      "output_tail": " RUN  v5.0.5 /home/alex/projects/alex/django-crud-views\n\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\n\n Test Files  11 passed (11)\n      Tests  457 passed (457)\n   Start at  14:31:48\n   Duration  12.85s (tests 69%, environment 28%, setup 2%)\n\nEnvironment  jsdom was created 11 times \u00b7 8.47s total, 28% of tracked time\n             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)\n             learn more: https://vitest.dev/guide/improving-performance#test-environments\n"
+    },
+    {
+      "name": "javascript_integration",
+      "command": "CV_FRAGMENT_PYTHON=\"$PWD/.nox/tests-3-12-django-6-0/bin/python\" npm run test:integration -- --maxWorkers=4",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-js-integration-final.log",
+      "log_sha256": "85067c94dc0b3016401d2c059cd91714febab6e5c176fb9052b8592eace07bd8",
+      "result": "Tests  2 passed (2)",
+      "output_tail": "\n> django-crud-views-js-tests@1.0.0 test:integration\n> vitest run --config vitest.integration.config.js --maxWorkers=4\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.integration.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\n RUN  v5.0.5 /home/alex/projects/alex/django-crud-views\n\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  14:35:52\n   Duration  17.76s (tests 96%, environment 3%)\n"
+    },
+    {
+      "name": "docs",
+      "command": ".venv/bin/python -m mkdocs build --strict --site-dir /tmp/cv-0633-docs",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-docs.log",
+      "log_sha256": "20a382580d045928cb589641687cd8cdb89bc074387b40b175d7859096553288",
+      "result": "Documentation built in 2.14 seconds",
+      "output_tail": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /tmp/cv-0633-docs\nINFO    -  Documentation built in 2.14 seconds"
+    },
+    {
+      "name": "build",
+      "command": "UV_OFFLINE=1 uv build",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-build.log",
+      "log_sha256": "28a01ce44973ae919ad7700bf51ac6733a39872993e87686dac60319515ce9c5",
+      "result": "Successfully built dist/django_crud_views-0.30.0-py3-none-any.whl",
+      "output_tail": "Building source distribution...\nBuilding wheel from source distribution...\nSuccessfully built dist/django_crud_views-0.30.0.tar.gz\nSuccessfully built dist/django_crud_views-0.30.0-py3-none-any.whl"
+    },
+    {
+      "name": "browser_harness",
+      "command": "node --test tests/browser/manage-presentation.test.cjs",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-browser-harness.log",
+      "log_sha256": "0bb900a0534ed49a988bddfdbc2fc61243978a17d2bf0be560cc497ca0f0777e",
+      "result": "pass 6",
+      "output_tail": "\u2714 empty or incomplete evidence never passes (30.448512ms)\n\u2714 all 52 exact UI source IDs require passed cases and actual captures/DOM facts (6.026083ms)\n\u2714 assets, CSP, errors, sources and owned cleanup are mandatory (13.360343ms)\n\u2714 startup timeout cleans only owned process/data and retains diagnostics (299.166957ms)\n\u2714 missing executable and early startup failure are cleaned (121.907527ms)\n\u2714 missing/mismatched cached bytes and undeclared remote URLs fail closed (4.268049ms)\n\u2139 tests 6\n\u2139 suites 0\n\u2139 pass 6\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 2055.797587"
+    },
+    {
+      "name": "query_characterization",
+      "command": "PYTHONPATH=src:/tmp .nox/tests-3-12-django-6-0/bin/python -m pytest -p gsd_0633_query_probe tests/test1/test_manage_cards.py::test_holder_queries_are_batched tests/test1/test_manage_guardian.py::test_holder_queries_do_not_grow_with_holder_count -q",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-query-probe.log",
+      "log_sha256": "f38a1e0747530aa0551a6aac22a5dc0f3b6cc420025694ae60b632089390075c",
+      "result": "6 passed in 1.46s",
+      "output_tail": "......                                                                   [100%]\n6 passed in 1.46s"
+    },
+    {
+      "name": "examples",
+      "command": "PYTHONPATH=src:examples/bootstrap5 .nox/tests-3-12-django-6-0/bin/python -c 'import runpy, sys; sys.path.append(\".venv/lib/python3.12/site-packages\"); sys.argv=[\\'examples/bootstrap5/manage.py\\', \\'test\\', \\'library\\', \\'nested\\', \\'context_buttons\\', \\'guardian_demo\\', \\'project\\', \\'--parallel\\', \\'4\\']; runpy.run_path(sys.argv[0], run_name=\"__main__\")'",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-examples.log",
+      "log_sha256": "d30d0992ac26e6e76ed2c1af3972ec73739b4a9c718bb8aad307747f96569114",
+      "result": "Ran 170 tests in 21.756s\n\nOK",
+      "output_tail": "seeded label_modes\nseeded flash_messages\nseeded disabled_actions\nseeded delete_demo\nseeded theming\nDone.\n\n----------------------------------------------------------------------\nRan 170 tests in 21.756s\n\nOK\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'..."
+    },
+    {
+      "name": "examples-full",
+      "command": "PYTHONPATH=src:examples/bootstrap5 .nox/tests-3-12-django-6-0/bin/python -c 'import runpy, sys, platform, django, crud_views, json; sys.path.append(\".venv/lib/python3.12/site-packages\"); import django_ratelimit; print(json.dumps(dict(executable=sys.executable, python=platform.python_version(), django=django.get_version(), source=crud_views.__file__, ratelimit=django_ratelimit.__file__)), flush=True); sys.argv=[\"examples/bootstrap5/manage.py\", \"test\", \"examples/bootstrap5\", \"--parallel\", \"4\"]; runpy.run_path(sys.argv[0], run_name=\"__main__\")'",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-examples-full.log",
+      "log_sha256": "b0ed0499bcee6ec0bad6a0c816b30cc6ec080d6f3fee4d3f8ea930e18b84ec67",
+      "result": "Ran 370 tests in 61.072s\n\nOK",
+      "output_tail": "seeded label_modes\nseeded flash_messages\nseeded disabled_actions\nseeded delete_demo\nseeded theming\nDone.\n\n----------------------------------------------------------------------\nRan 370 tests in 61.072s\n\nOK\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'..."
+    },
+    {
+      "name": "additional_release_regressions_4-2",
+      "command": "PYTHONPATH=src .nox/tests-3-12-django-4-2/bin/python -m pytest tests/test1/test_cv_assets_command.py tests/test1/test_alerts.py -n 4 -q",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-fix-4-2.log",
+      "log_sha256": "30b87998c78d267f9fa03422ae470c1c5391beffb006f90cdcdcc94e8e6f7637",
+      "result": "53 passed in 3.06s",
+      "output_tail": "bringing up nodes...\nbringing up nodes...\n\n.....................................................                    [100%]\n53 passed in 3.06s"
+    },
+    {
+      "name": "additional_release_regressions_5-2",
+      "command": "PYTHONPATH=src .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_cv_assets_command.py tests/test1/test_alerts.py -n 4 -q",
+      "exit_code": 0,
+      "log": "/tmp/gsd-0633-10-fix-5-2.log",
+      "log_sha256": "84a68e425b7dee90825313b373bc66e1db5149fe124f58508758969dbc445408",
+      "result": "53 passed in 2.69s",
+      "output_tail": "bringing up nodes...\nbringing up nodes...\n\n.....................................................                    [100%]\n53 passed in 2.69s"
+    }
+  ],
+  "supported_series_replays": [
+    {
+      "command": "PYTHONPATH=src .nox/tests-3-12-django-4-2/bin/python -m pytest tests/test1/test_manage_cards.py tests/test1/test_manage_requirements.py tests/test1/test_manage_requirement_extensions.py tests/test1/test_manage_provenance.py tests/test1/test_manage_guardian.py tests/test1/test_manage_checks.py tests/test1/test_manage_facts.py tests/test1/test_manage_presentation.py tests/test1/test_manage_docs.py tests/test1/test_manage_locales.py tests/test1/test_guardian.py tests/test1/test_guardian_policy.py tests/test1/test_pipeline_sources.py tests/test1/test_pipeline_resolver.py tests/test1/test_pipeline_integration.py tests/test1/test_assets_bundles.py tests/test1/test_ancestor_manage.py tests/test1/test_manage_group.py tests/test1/test_authorization_templates.py tests/test1/test_ancestor_auth_databases.py tests/test1/test_guardian_content_types.py tests/test1/test_unknown_attribute_check.py tests/test1/test_icons_checks.py tests/test1/test_button_classes.py tests/test1/test_assets.py tests/test1/test_import_safety.py tests/test1/test_manage.py tests/test1/test_guardian_composition.py tests/test1/test_conditional_checks.py tests/test1/test_button_classes_templates.py tests/test1/test_theme_adoption_docs.py tests/test1/test_js_no_jquery_guard.py tests/test1/test_manage_release.py tests/test1/test_resource_viewset.py tests/test1/test_guardian_vocabulary.py -n 4 -q",
+      "started": "2026-11-14T14:42:23.941655+00:00",
+      "finished": "2026-11-14T14:43:23.819498+00:00",
+      "exit_code": 0,
+      "runtime": {
+        "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/bin/python",
+        "python": "3.12.3",
+        "django": "4.2.30",
+        "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py"
+      },
+      "log": "/tmp/gsd-0633-10-replay-4-2.log",
+      "log_sha256": "e6aae4547221129458d7a75c92a6ff1cd1dcbc4df3fccb364bf3754dc95dc5ea",
+      "result": "1633 passed, 1 skipped, 59 warnings in 58.78s",
+      "output_tail": "........................................................................ [ 88%]\n........................................................................ [ 92%]\n........................................................................ [ 96%]\n..................................................                       [100%]\n=============================== warnings summary ===============================\ntests/test1/test_manage_requirements.py: 39 warnings\ntests/test1/test_manage_requirement_extensions.py: 20 warnings\n  /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/template/base.py:1047: RemovedInDjango50Warning: The \"default.html\" templates for forms and formsets will be removed. These were proxies to the equivalent \"table.html\" templates, but the new \"div.html\" templates will be the default from Django 5.0. Transitional renderers are provided to allow you to opt-in to the new output style now. See https://docs.djangoproject.com/en/4.2/releases/4.1/ for more details\n    value = str(value)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1633 passed, 1 skipped, 59 warnings in 58.78s"
+    },
+    {
+      "command": "PYTHONPATH=src .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_cards.py tests/test1/test_manage_requirements.py tests/test1/test_manage_requirement_extensions.py tests/test1/test_manage_provenance.py tests/test1/test_manage_guardian.py tests/test1/test_manage_checks.py tests/test1/test_manage_facts.py tests/test1/test_manage_presentation.py tests/test1/test_manage_docs.py tests/test1/test_manage_locales.py tests/test1/test_guardian.py tests/test1/test_guardian_policy.py tests/test1/test_pipeline_sources.py tests/test1/test_pipeline_resolver.py tests/test1/test_pipeline_integration.py tests/test1/test_assets_bundles.py tests/test1/test_ancestor_manage.py tests/test1/test_manage_group.py tests/test1/test_authorization_templates.py tests/test1/test_ancestor_auth_databases.py tests/test1/test_guardian_content_types.py tests/test1/test_unknown_attribute_check.py tests/test1/test_icons_checks.py tests/test1/test_button_classes.py tests/test1/test_assets.py tests/test1/test_import_safety.py tests/test1/test_manage.py tests/test1/test_guardian_composition.py tests/test1/test_conditional_checks.py tests/test1/test_button_classes_templates.py tests/test1/test_theme_adoption_docs.py tests/test1/test_js_no_jquery_guard.py tests/test1/test_manage_release.py tests/test1/test_resource_viewset.py tests/test1/test_guardian_vocabulary.py -n 4 -q",
+      "started": "2026-11-14T14:43:23.877634+00:00",
+      "finished": "2026-11-14T14:44:51.049022+00:00",
+      "exit_code": 0,
+      "runtime": {
+        "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+        "python": "3.12.3",
+        "django": "5.2.19",
+        "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py"
+      },
+      "log": "/tmp/gsd-0633-10-replay-5-2.log",
+      "log_sha256": "565c56be1570f1956c3e9020abf769ae3a722bdac982c7c2291b9b21e9c50a46",
+      "result": "1633 passed, 1 skipped in 86.27s (0:01:26)",
+      "output_tail": "........................................................................ [ 57%]\n........................................................................ [ 61%]\n........................................................................ [ 66%]\n........................................................................ [ 70%]\n........................................................................ [ 74%]\n........................................................................ [ 79%]\n...................................................................s.... [ 83%]\n........................................................................ [ 88%]\n........................................................................ [ 92%]\n........................................................................ [ 96%]\n..................................................                       [100%]\n1633 passed, 1 skipped in 86.27s (0:01:26)"
+    }
+  ],
+  "declared_matrix": [
+    {
+      "python": "3.12",
+      "django": "4.2",
+      "status": "verified"
+    },
+    {
+      "python": "3.12",
+      "django": "5.2",
+      "status": "verified"
+    },
+    {
+      "python": "3.12",
+      "django": "6.0",
+      "status": "verified"
+    },
+    {
+      "python": "3.13",
+      "django": "4.2",
+      "status": "unverified"
+    },
+    {
+      "python": "3.13",
+      "django": "5.2",
+      "status": "unverified"
+    },
+    {
+      "python": "3.13",
+      "django": "6.0",
+      "status": "unverified"
+    },
+    {
+      "python": "3.14",
+      "django": "4.2",
+      "status": "excluded_by_nox"
+    },
+    {
+      "python": "3.14",
+      "django": "5.2",
+      "status": "unverified"
+    },
+    {
+      "python": "3.14",
+      "django": "6.0",
+      "status": "unverified"
+    },
+    {
+      "python": "3.15",
+      "django": "4.2",
+      "status": "excluded_by_nox"
+    },
+    {
+      "python": "3.15",
+      "django": "5.2",
+      "status": "unverified"
+    },
+    {
+      "python": "3.15",
+      "django": "6.0",
+      "status": "unverified"
+    }
+  ],
+  "browser": {
+    "status": "verified",
+    "source_hashes": 231,
+    "captures": 35,
+    "cases": 36,
+    "cleanup": [
+      {
+        "pid": 3025749,
+        "stopped": true,
+        "directory": "/tmp/cv-manage-8TkZey",
+        "databaseRemoved": true
+      }
+    ],
+    "ui_mappings": 52,
+    "receipt": ".planning/phases/06.33-structured-manage-page-366/06.33-10-browser-evidence.json",
+    "receipt_sha256": "b576bcf8dc9c910b80431d5966fe2a4975f71431292b6aafdb3624c1cc9ca665",
+    "raw_report_sha256": "f43f716daaa8f84d3f9933206987f4da8377587fa873152b844fc353b092b88e"
+  },
+  "query_measurements": [
+    {
+      "test": "tests/test1/test_manage_cards.py::test_holder_queries_are_batched[1-1]",
+      "captured_queries": [
+        5
+      ]
+    },
+    {
+      "test": "tests/test1/test_manage_cards.py::test_holder_queries_are_batched[1-21]",
+      "captured_queries": [
+        5
+      ]
+    },
+    {
+      "test": "tests/test1/test_manage_cards.py::test_holder_queries_are_batched[4-1]",
+      "captured_queries": [
+        5
+      ]
+    },
+    {
+      "test": "tests/test1/test_manage_cards.py::test_holder_queries_are_batched[4-21]",
+      "captured_queries": [
+        5
+      ]
+    },
+    {
+      "test": "tests/test1/test_manage_guardian.py::test_holder_queries_do_not_grow_with_holder_count[generic]",
+      "captured_queries": [
+        11,
+        12
+      ]
+    },
+    {
+      "test": "tests/test1/test_manage_guardian.py::test_holder_queries_do_not_grow_with_holder_count[direct]",
+      "captured_queries": [
+        11,
+        12
+      ]
+    }
+  ],
+  "distributions": {
+    "dist/django_crud_views-0.30.0-py3-none-any.whl": "711fc4ff93c9fd6384736cae4ae66c5ebb1d7f643a646ac6d97fb6ce20803d97",
+    "dist/django_crud_views-0.30.0.tar.gz": "58e4f0bd771221757d763d95b013af5b37c7961f8fd9decb42db9af04d77c7b6"
+  },
+  "state_json_sha256": "eb11b2519025ff8e20101064659a18b90d6042b7616d57bf1bca22f1eacd6a9a",
+  "additional_checks": [
+    ".venv/bin/python scripts/check_dist.py dist: both artifacts passed",
+    ".venv/bin/python -m ruff check src tests/test1/test_manage_cards.py tests/test1/test_manage_requirements.py tests/test1/test_manage_requirement_extensions.py tests/test1/test_manage_provenance.py tests/test1/test_manage_guardian.py tests/test1/test_manage_checks.py tests/test1/test_manage_facts.py tests/test1/test_manage_presentation.py tests/test1/test_manage_docs.py tests/test1/test_manage_locales.py tests/test1/test_manage_release.py tests/browser/manage_presentation_server.py: passed",
+    ".venv/bin/python -m ruff check examples/bootstrap5/library/tests.py examples/bootstrap5/guardian_demo/tests.py tests/test1/test_manage_release.py: passed",
+    ".venv/bin/python -m ruff format --check examples/bootstrap5/library/tests.py examples/bootstrap5/guardian_demo/tests.py tests/test1/test_manage_release.py: passed",
+    "git diff --check: passed",
+    "lxml parsed /tmp/cv-0633-docs/reference/manage/index.html: all11 required h2 anchors present"
+  ],
+  "limitations": [
+    "Seven compatible non-3.12 combinations are unverified: installed interpreters 3.13.15, 3.14.7 and 3.15.0rc2 have no prepared Django/pytest/xdist/Pydantic/Guardian environment; no installs were attempted.",
+    "Tests CI is active but only push main / pull_request main triggers exist; this branch is unpublished and no workflow_dispatch exists. No CI run for this source was claimed.",
+    "Existing test_assets.py::test_django6_builtin_csp_nonce_roundtrip is skipped on Django4.2/5.2: built-in CSP middleware requires Django6.0. Direct -rs probes confirmed both skips.",
+    "Django4.2 emits59 existing form-template deprecations; Vitest emits existing native-config-loader and jsdom navigation notices.",
+    "Maintainer visual comparison against approved page-v13 remains pending; automation does not approve it.",
+    "Optional WINDOWS appends declined the pre-existing table/header inconsistency; no unrelated ledger changes made."
+  ],
+  "invocation_adjustments": [
+    "The literal example command initially failed to import pre-existing django_ratelimit. Appending existing .venv site-packages after nox paths supplies it without changing primary Django or installing packages.",
+    "New example test scaffolding initially used cv_ prefixes and a generic context_buttons key; corrected to documented unprefixed keys and per-button entries. These were test errors, not production RED evidence.",
+    "Additional JS integration invocation initially lacked CV_FRAGMENT_PYTHON; rerun with the cached primary interpreter passed.",
+    "The first browser refresh passed36 behavior cases but rejected its source fingerprint because the new snippet was committed during capture. The final36-case rerun used stable HEAD and independently verified231 source hashes and35 captures."
+  ],
+  "tdd": "Task1 test-only preservation/inventory initially passed against prior implementation after correcting test scaffolding. Task2 full release found genuine phase regressions: classified4-test RED039e561f precedes GREENfcc8650d; 220 focused tests pass. No manufactured RED.",
+  "initial_full_python": {
+    "result": "3 failed, 13918 passed in462.93s",
+    "log": "/tmp/gsd-0633-10-full-python-initial.log",
+    "log_sha256": "91ec8e8e919fe99e7ffa58f9de1905859674c01cc2d4d467e3768360f9b57ce0",
+    "failures": [
+      "test_cv_assets_command.py::test_table_lists_core_and_registered",
+      "test_cv_assets_command.py::test_kind_filter",
+      "test_alerts.py::test_only_the_alert_templates_write_alert_markup"
+    ]
+  },
+  "release_fix": {
+    "red": "039e561f",
+    "green": "fcc8650d",
+    "result": "220 focused tests passed; shared warning frame/registry class restored without changing check content or authorization; CLI asset inventories include manage.js/manage.css",
+    "focused_command": "PYTHONPATH=src .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_cv_assets_command.py tests/test1/test_alerts.py tests/test1/test_manage_release.py tests/test1/test_manage_checks.py tests/test1/test_manage_locales.py tests/test1/test_authorization_templates.py -n 4 -q"
+  }
+}

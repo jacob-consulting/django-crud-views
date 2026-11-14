@@ -6,205 +6,335 @@
 
 {% block cv_content %}
 
-    <h4>{% translate "Properties" %}</h4>
-
-    <table class="table table-striped">
-
-        <tr>
-            <th scope="col">
-                Name
-            </th>
-            <td>
-                {{ cv.name }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                Prefix
-            </th>
-            <td>
-                {{ cv.prefix }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                app
-            </th>
-            <td>
-                {{ cv.app }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                pk
-            </th>
-            <td>
-                {{ cv.pk }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                pk_name
-            </th>
-            <td>
-                {{ cv.pk_name }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                parent
-            </th>
-            <td>
-                {{ cv.parent }}
-            </td>
-        </tr>
-    </table>
-
-    {% block ancestor_policy %}
-    <h4>{% translate "Ancestor policy" %}</h4>
-    <table class="table table-striped" id="cv-ancestor-policy">
-        <tr>
-            <th scope="col">{% translate "Setting" %}</th>
-            <th scope="col">{% translate "Declared" %}</th>
-            <th scope="col">{% translate "Effective" %}</th>
-        </tr>
-        {% with policy=ancestor_policy.as_ancestor %}
-        <tr>
-            <th scope="col" colspan="3">{% translate "As an ancestor of nested requests" %}</th>
-        </tr>
-        <tr>
-            <td>provider</td>
-            <td>{% if policy.provider is None %}{% translate "None (ViewSet class default)" %}{% else %}{{ policy.provider }}{% endif %}</td>
-            <td>{{ policy.effective_provider }}</td>
-        </tr>
-        <tr>
-            <td>accept_global_perms</td>
-            <td>{{ policy.accept_global_perms }}</td>
-            <td>{{ policy.accept_global_perms }}</td>
-        </tr>
-        {% endwith %}
-        <tr>
-            <th scope="col" colspan="3">{% translate "Requests to this ViewSet" %}</th>
-        </tr>
-        {% with requests=ancestor_policy.requests %}
-        {% if requests %}
-        <tr>
-            <td>cascade</td>
-            <td>{% if requests.cascade.declared is None %}{% translate "None (global setting)" %}{% else %}{{ requests.cascade.declared }}{% endif %}</td>
-            <td>{{ requests.cascade.effective }}</td>
-        </tr>
-        <tr>
-            <td>read</td>
-            <td>{% if requests.read.declared is None %}{% translate "None (global setting)" %}{% else %}nearest: {{ requests.read.declared.nearest }}, higher: {{ requests.read.declared.higher }}{% endif %}</td>
-            <td>nearest: {{ requests.read.effective.nearest }}, higher: {{ requests.read.effective.higher }}</td>
-        </tr>
-        <tr>
-            <td>write</td>
-            <td>{% if requests.write.declared is None %}{% translate "None (global setting)" %}{% else %}nearest: {{ requests.write.declared.nearest }}, higher: {{ requests.write.declared.higher }}{% endif %}</td>
-            <td>nearest: {{ requests.write.effective.nearest }}, higher: {{ requests.write.effective.higher }}</td>
-        </tr>
-        {% for key, pair in requests.actions.items %}
-        <tr>
-            <td>actions[{{ key }}]</td>
-            <td>nearest: {{ pair.nearest }}, higher: {{ pair.higher }}</td>
-            <td>nearest: {{ pair.nearest }}, higher: {{ pair.higher }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td>actions</td>
-            <td>{% translate "none declared" %}</td>
-            <td>—</td>
-        </tr>
-        {% endfor %}
-        {% else %}
-        <tr>
-            <td colspan="3">{% translate "cascade, read, write, actions — not applicable: top-level ViewSet (no ancestors)" %}</td>
-        </tr>
-        {% endif %}
-        {% endwith %}
-    </table>
-    <p>{% translate "Configuration only, not an access result for the current user. Provider and accept_global_perms apply when this ViewSet is the ancestor of a nested request; cascade, read, write and actions apply to nested requests to this ViewSet. Endpoint-local permission options are separate." %}</p>
-    {% endblock ancestor_policy %}
-
-    {% block guardian_config %}{% endblock guardian_config %}
-
-    <h4>{% translate "Permissions" %}</h4>
-
-    <table class="table table-striped">
-        <tr>
-            <th scope="col">{% translate "Permission" %}</th>
-            <th scope="col">{% translate "Django Permission" %}</th>
-            <th scope="col">{% translate "Access" %}</th>
-        </tr>
-        {% for row in data %}
-            <tr>
-                <td>
-                    {{ row.viewset }}
-                </td>
-                <td>
-                    {{ row.django }}
-                </td>
-                <td>
-                    {{ row.has_permission }}
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-
-    {% block permission_holders %}
-    <h4>{% translate "Permission Holders" %}</h4>
-    {% if permission_holders %}
-    <table class="table table-striped">
-        <tr>
-            <th scope="col">{% translate "Group" %}</th>
-            <th scope="col">{% translate "Permission" %}</th>
-            <th scope="col">{% translate "Model-level" %}</th>
-            {% if show_users %}<th scope="col">{% translate "Users" %}</th>{% endif %}
-        </tr>
-        {% for row in permission_holders %}
-        <tr>
-            <td>{{ row.group }}</td>
-            <td>{{ row.permission }}</td>
-            <td>{% if row.has_model_perm %}✓{% else %}—{% endif %}</td>
-            {% if show_users %}<td>{{ row.users|join:", " }}</td>{% endif %}
-        </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-    <p>{% translate "No permission holders found." %}</p>
+    <div class="row g-3" data-cv-manage>
+    <div class="col-12 col-lg-8">
+    {% block manage_checks %}
+    {% if manage_checks.messages %}
+    <section class="mb-3">
+        <div class="d-flex justify-content-end"><a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#system-checks" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: System checks' %}" title="{% translate 'Opens in a new tab' %}">?</a></div>
+        <div id="cv-manage-checks-issues">
+            {% cv_alert "warning" body_template="crud_views/snippets/alert/manage_checks.html" extra_tags="text-break" %}
+        </div>
+    </section>
     {% endif %}
+    {% endblock manage_checks %}
+    {% block permission_holders %}
+    <section class="card mb-3" id="cv-manage-permissions">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0">{% translate "Permissions" %}</h2>
+            <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#permissions" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Permissions' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body">
+        {% with matrix=manage_permissions %}
+        {% if matrix.columns %}
+        <div class="table-responsive" role="region" tabindex="0" aria-label="{% translate 'Permissions' %}">
+    <table class="table table-sm">
+            <thead><tr>
+                <th scope="col">{% translate "Permission" %}</th>
+                {% for column in matrix.columns %}<th scope="col">{{ column.key }}<br><small>{{ column.codename }}</small></th>{% endfor %}
+            </tr></thead>
+            <tbody>
+                <tr data-manage-actor>
+                    <th scope="row">{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}</th>
+                    {% for cell in matrix.actor.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="{% cv_button_class 'manage' 'badge-model' %}">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="{% cv_button_class 'manage' 'badge-objects' %}">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}
+                </tr>
+            </tbody>
+            <tbody data-manage-groups>
+                <tr><th scope="colgroup" colspan="{{ matrix.columns|length|add:1 }}">{% translate "Groups" %}</th></tr>
+                {% for row in matrix.groups %}
+                <tr data-holder-id="{{ row.id }}">
+                    <th scope="row">{{ row.label }} <small class="text-muted">{% blocktranslate count count=row.member_count %}{{ count }} member{% plural %}{{ count }} members{% endblocktranslate %}</small></th>
+                    {% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="{% cv_button_class 'manage' 'badge-model' %}">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="{% cv_button_class 'manage' 'badge-objects' %}">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}
+                </tr>
+                {% empty %}
+                <tr><td colspan="{{ matrix.columns|length|add:1 }}">{% translate "No groups hold these permissions." %}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+        {% if matrix.show_users %}
+        <div data-manage-users>
+            <h3 class="h6">{% translate "Users" %}</h3>
+            {% if matrix.users %}
+            <div class="table-responsive" role="region" tabindex="0" aria-label="{% translate 'Users' %}"><table class="table table-sm">
+            <thead><tr><th scope="col">{% translate "Users" %}</th>{% for column in matrix.columns %}<th scope="col">{{ column.key }}<br><small>{{ column.codename }}</small></th>{% endfor %}</tr></thead><tbody>{% for row in matrix.users %}
+<tr data-holder-id="{{ row.id }}"><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="{% cv_button_class 'manage' 'badge-model' %}">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="{% cv_button_class 'manage' 'badge-objects' %}">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}</tr>
+{% endfor %}</tbody>
+            </table></div>
+            {% else %}<p>{% translate "No users hold these permissions directly." %}</p>{% endif %}
+        </div>
+        {% if matrix.users_overflow %}
+        <details data-manage-users-overflow>
+            <summary>{% blocktranslate with count=matrix.users_overflow|length %}+ {{ count }} more{% endblocktranslate %}</summary>
+            <div class="table-responsive" role="region" tabindex="0" aria-label="{% translate 'More users' %}"><table class="table table-sm">
+            <thead><tr><th scope="col">{% translate "Users" %}</th>{% for column in matrix.columns %}<th scope="col">{{ column.key }}<br><small>{{ column.codename }}</small></th>{% endfor %}</tr></thead><tbody>{% for row in matrix.users_overflow %}
+<tr data-holder-id="{{ row.id }}"><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="{% cv_button_class 'manage' 'badge-model' %}">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="{% cv_button_class 'manage' 'badge-objects' %}">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}</tr>
+{% endfor %}</tbody>
+            </table></div>
+        </details>
+        {% endif %}
+        {% endif %}
+        {% else %}
+        <p data-manage-actor>{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}</p>
+        <p>{% translate "No permissions configured. Review this ViewSet's permission configuration." %}</p>
+        {% endif %}
+        <p>{% blocktranslate count count=matrix.superusers.count %}{{ count }} active superuser holds every permission{% plural %}{{ count }} active superusers hold every permission{% endblocktranslate %}{% if matrix.show_users and matrix.superusers.names %}: {{ matrix.superusers.names|join:", " }}{% endif %}</p>
+        {% if matrix.columns and not matrix.groups and not matrix.users %}
+        <h3 class="h6">{% translate "No direct permission holders" %}</h3>
+        <p>{% translate "Permissions inherited through groups appear in group rows. Review the access row and active-superuser count above." %}</p>
+        {% endif %}
+        <p class="text-muted">{% translate "model: model-level permission · objects: object grants; your row includes effective permissions and reachable objects" %}</p>
+        {% if manage_guardian %}<p class="text-muted">{% translate "Guardian actor counts use the strict ViewSet helper, including group grants. An active superuser reaches every object; ordinary global model permissions do not add objects." %}</p>{% endif %}
+        {% endwith %}
+        </div>
+    </section>
     {% endblock permission_holders %}
 
-    <br><hr><br>
+    {% block manage_views %}
+    <section class="card mb-3" id="cv-manage-views">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h6 mb-0">{% translate "Views" %}</h2>
+        <div class="d-flex align-items-center cv-manage-actions">
+        <label class="form-check form-switch mb-0" data-cv-defaults-control hidden>
+            <input class="form-check-input" type="checkbox" role="switch" data-cv-show-defaults aria-controls="cv-manage-views cv-manage-presentation">
+            <span class="form-check-label">{% translate "Show defaults" %}</span>
+        </label>
+        <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#views" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Views' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+    </div>
+    <div class="card-body">
+    {% for item in manage_views %}
 
-    <h3>{% translate "Views" %}</h3>
+        <details id="cv-view-{{ item.key }}">
+        <summary aria-describedby="cv-view-{{ item.key }}-requirement">
+            <strong>{{ item.key }}</strong>
+            <code>{{ item.class_path }}</code>
+            <span>{% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}</span>
+            {% if item.requirement.kind == 'permission' %}
+                {% if item.permission %}
+                    <span class="{% cv_button_class 'manage' 'badge-permission' %}" data-cv-tooltip title="{% blocktranslate with permission=item.permission %}Needs permission: {{ permission }}{% endblocktranslate %}"><span class="visually-hidden">{% translate "Permission: " %}</span>{{ item.requirement.value }}</span>
+                {% else %}
+                    <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% blocktranslate with key=item.requirement.value %}Undeclared permission key: {{ key }}{% endblocktranslate %}">{% blocktranslate with key=item.requirement.value %}undeclared: {{ key }}{% endblocktranslate %}</span>
+                {% endif %}
+            {% elif item.requirement.kind == 'group' %}
+                <span class="{% cv_button_class 'manage' 'badge-group' %}" data-cv-tooltip title="{% blocktranslate with group=item.requirement.value %}Needs group membership: {{ group }}{% endblocktranslate %}"><span class="visually-hidden">{% translate "Group: " %}</span>{{ item.requirement.value }}</span>
+            {% elif item.requirement.kind == 'custom' %}
+                <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% translate 'Custom access requirement' %}">{% translate "custom" %}</span>
+            {% elif not item.parent_only_requirement or not item.parent_requirement %}
+                <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% translate 'No own permission required' %}">{% translate "none" %}</span>
+            {% endif %}
+            {% if item.parent_requirement %}
+                {% if item.parent_requirement.permission %}
+                    <span class="{% cv_button_class 'manage' 'badge-permission' %}" data-cv-tooltip title="{% blocktranslate with permission=item.parent_requirement.permission %}Needs ancestor permission: {{ permission }}{% endblocktranslate %}">{% blocktranslate with key=item.parent_requirement.key %}parent: {{ key }}{% endblocktranslate %}</span>
+                {% else %}
+                    <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% blocktranslate with key=item.parent_requirement.key %}Undeclared ancestor permission key: {{ key }}{% endblocktranslate %}">{% blocktranslate with key=item.parent_requirement.key %}parent: {{ key }} (undeclared){% endblocktranslate %}</span>
+                {% endif %}
+            {% endif %}
+            {% if item.guardian_policy %}
+                <span data-cv-guardian-policy class="{% if not item.guardian_policy.applicable %}{% cv_button_class 'manage' 'badge-policy-na' %}{% elif item.guardian_policy.accept_global_perms %}{% cv_button_class 'manage' 'badge-policy-global' %}{% else %}{% cv_button_class 'manage' 'badge-policy-strict' %}{% endif %}" data-cv-tooltip title="{{ item.guardian_policy.tooltip }}">{{ item.guardian_policy.effective_policy }}</span>
+            {% endif %}
+            <span id="cv-view-{{ item.key }}-requirement" class="visually-hidden">
+                {% if item.requirement.kind == 'permission' and item.permission %}{% blocktranslate with permission=item.permission %}Needs permission: {{ permission }}{% endblocktranslate %}{% elif item.requirement.kind == 'group' %}{% blocktranslate with group=item.requirement.value %}Needs group membership: {{ group }}{% endblocktranslate %}{% elif item.requirement.kind == 'custom' %}{% translate "Custom access requirement" %}{% elif item.requirement.kind == 'none' %}{% translate "No own permission required" %}{% endif %}
+                {% if item.parent_requirement.permission %}{% blocktranslate with permission=item.parent_requirement.permission %}Needs ancestor permission: {{ permission }}{% endblocktranslate %}{% endif %}
+                {% if item.requirement_metadata_error %}{{ item.requirement_metadata_error }}{% endif %}
+                {% if item.guardian_policy %}{% translate "Guardian policy:" %} {{ item.guardian_policy.effective_policy }}. {{ item.guardian_policy.tooltip }}{% endif %}
+            </span>
+        </summary>
+        <p><code>{{ item.route_name }}</code> — {% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}</p>
+        {% if item.requirement_metadata_error %}<p>{{ item.requirement_metadata_error }}</p>{% endif %}
 
-    <br>
-
-    {% for view_key, view in views.items %}
-
-        <h4>{{ view_key }}</h4>
-
-        <table class="table table-striped">
-            {% for section, section_data in view.items %}
-
-                <tr>
-                    <th scope="col" colspan="2">{{ section }}</th>
+        <div class="table-responsive" role="region" tabindex="0" aria-label="{% blocktranslate with key=item.key %}View configuration: {{ key }}{% endblocktranslate %}">
+    <table class="table table-sm cv-manage-config">
+            {% for section in item.sections %}
+                <tbody>
+                <tr data-cv-section="{{ section.key }}" data-cv-default-count="{{ section.default_count }}">
+                    <th scope="colgroup" colspan="2">{{ section.label }} <span data-cv-default-count hidden>{% blocktranslate count count=section.default_count %}{{ count }} default hidden{% plural %}{{ count }} defaults hidden{% endblocktranslate %}</span></th>
                 </tr>
-
-                {% for key, value in section_data.items %}
-                    <tr>
-                        <td>{{ key }}</td>
-                        <td>{{ value }}</td>
+                {% for entry in section.entries %}
+                    <tr data-cv-config-row{% if entry.is_default %} data-cv-default-row class="{% cv_button_class 'manage' 'row-default' %}"{% endif %}>
+                        <th scope="row" class="text-nowrap">{{ entry.key }}</th>
+                        <td>{{ entry.value }} <small class="text-muted">({{ entry.source }})</small>{% if entry.declared_value %} <small>{% blocktranslate with value=entry.declared_value %}declared: {{ value }}{% endblocktranslate %}</small>{% endif %}{% if entry.unknown %} <span class="{% cv_button_class 'manage' 'badge-policy-na' %}">{% translate "unknown attribute" %}</span>{% endif %}</td>
                     </tr>
                 {% endfor %}
+                </tbody>
             {% endfor %}
         </table>
+    </div>
 
-        <br>
+        </details>
 
+    {% empty %}<p>{% translate "No views registered. Review this ViewSet's registration." %}</p>
     {% endfor %}
+    </div>
+    <div class="card-footer text-muted" data-manage-badge-key>{% translate "Blue: required permission · Magenta: required group · Green: Guardian policy. Hover a badge for details." %} {% translate "permission: own gate · group: required membership · parent: ancestor permission · none: no own permission · custom: project access requirement" %}</div>
+    </section>
+    {% endblock manage_views %}
 
+    {% block manage_presentation %}
+    <details class="card mb-3" id="cv-manage-presentation">
+        <summary class="card-header">
+            <h2 class="h6 d-inline mb-0">{% translate "Presentation" %}</h2>
+            <span>{% blocktranslate with set=manage_presentation.set_count count defaults=manage_presentation.default_count %}{{ set }} set · {{ defaults }} default · applies to all views{% plural %}{{ set }} set · {{ defaults }} defaults · applies to all views{% endblocktranslate %}</span>
+        </summary>
+        <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#presentation" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Presentation' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        <div class="card-body">
+        {% for section in manage_presentation.sections %}
+            <div class="table-responsive" role="region" tabindex="0" aria-label="{% blocktranslate with section=section.label %}Presentation: {{ section }}{% endblocktranslate %}">
+            <table class="table table-sm cv-manage-config">
+            <tbody>
+                <tr data-cv-section="{{ section.key }}" data-cv-default-count="{{ section.default_count }}">
+                    <th scope="colgroup" colspan="{% if section.key == 'context-buttons' %}4{% else %}2{% endif %}">
+                        {{ section.label }}
+                        <span data-cv-default-count hidden>{% blocktranslate count count=section.default_count %}{{ count }} default hidden{% plural %}{{ count }} defaults hidden{% endblocktranslate %}</span>
+                        {% if section.key == 'templates-and-actions' or section.key == 'label-modes' %}
+                        <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#{{ section.key }}" target="_blank" rel="noopener" aria-label="{% blocktranslate with section=section.label %}Documentation: {{ section }}{% endblocktranslate %}" title="{% translate 'Opens in a new tab' %}">?</a>
+                        {% endif %}
+                    </th>
+                </tr>
+                {% if section.key == 'context-buttons' %}
+                <tr><th scope="col">{% translate "Key" %}</th><th scope="col">{% translate "Type" %}</th><th scope="col">{% translate "Points to" %}</th><th scope="col">{% translate "Label declaration" %}</th></tr>
+                {% endif %}
+                {% for entry in section.entries %}
+                    <tr data-cv-config-row{% if entry.is_default %} data-cv-default-row class="{% cv_button_class 'manage' 'row-default' %}"{% endif %}>
+                    <th scope="row" class="text-nowrap">{{ entry.key }}</th>
+                    {% if entry.is_button %}
+                        <td><code>{{ entry.type }}</code> <small class="text-muted">({{ entry.source }})</small></td>
+                        <td>{{ entry.points_to }}</td>
+                        <td>{{ entry.label }}</td>
+                    {% elif entry.empty_buttons %}
+                        <td colspan="3">{% translate "No context buttons configured." %} <small class="text-muted">({{ entry.source }})</small></td>
+                    {% else %}
+                        <td>{{ entry.value }} <small class="text-muted">({{ entry.source }})</small>{% if entry.declared_value %} <small>{% blocktranslate with value=entry.declared_value %}declared: {{ value }}{% endblocktranslate %}</small>{% endif %}</td>
+                    {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+            </div>
+        {% endfor %}
+        <p>{% translate "Each view's context_actions decides where buttons appear. View-specific context buttons appear under Other." %}</p>
+        </div>
+    </details>
+    {% endblock manage_presentation %}
+
+
+    </div>
+    <div class="col-12 col-lg-4">
+    {% block manage_checks_clean %}
+    {% if not manage_checks.messages %}
+    <section class="mb-3">
+        <div class="d-flex justify-content-end"><a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#system-checks" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: System checks' %}" title="{% translate 'Opens in a new tab' %}">?</a></div>
+        <p class="text-break" id="cv-manage-checks-clean">{% blocktranslate count count=manage_checks.count %}✓ no issues · {{ count }} system check for this ViewSet{% plural %}✓ no issues · {{ count }} system checks for this ViewSet{% endblocktranslate %}</p>
+    </section>
+    {% endif %}
+    {% endblock manage_checks_clean %}
+    {% block manage_viewset %}
+    <section class="card mb-3" id="cv-manage-viewset">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0">{% translate "ViewSet" %}</h2>
+            <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#viewset" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: ViewSet' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body"><div class="table-responsive" role="region" tabindex="0" aria-label="{% translate 'ViewSet' %}"><table class="table table-sm cv-manage-config">
+            {% for entry in manage_facts %}
+            <tr><th scope="row">{{ entry.key }}</th><td>{% if entry.icon %}{% cv_icon entry.icon %} {% endif %}{{ entry.value }} <small class="text-muted">({{ entry.source }})</small></td></tr>
+            {% endfor %}
+        </table></div></div>
+    </section>
+    {% endblock manage_viewset %}
+
+    {% block manage_hierarchy %}
+    <section class="card mb-3" id="cv-manage-hierarchy">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0">{% translate "Hierarchy" %}</h2>
+            <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#hierarchy" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Hierarchy' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body">
+            <h3 class="h6">{% translate "Parents" %}</h3>
+            {% if manage_hierarchy.route_error %}<p>{{ manage_hierarchy.route_error }}</p>{% endif %}
+            <ul class="list-group list-group-flush">
+            {% for item in manage_hierarchy.parents %}
+                <li class="list-group-item">{% if item.url %}<a href="{{ item.url }}">{{ item.name }}</a>{% else %}{{ item.name }}{% endif %}<br><code>{{ item.model }}</code>{% if item.route_error %}<br>{{ item.route_error }}{% endif %}</li>
+            {% empty %}{% if not manage_hierarchy.route_error %}<li class="list-group-item">{% translate "— top level" %}</li>{% endif %}{% endfor %}
+            </ul>
+            <h3 class="h6">{% translate "Children" %}</h3>
+            <ul class="list-group list-group-flush">
+            {% for item in manage_hierarchy.children %}
+                <li class="list-group-item" data-manage-child>{{ item.name }}<br><code>{{ item.model }}</code><br>
+                    {% if item.resource %}{% translate "Resource, no manage page" %}{% else %}<code>{{ item.route_name }}</code> → {% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}{% endif %}
+                </li>
+            {% empty %}<li class="list-group-item">{% translate "No child ViewSets" %}</li>{% endfor %}
+            </ul>
+            <p>{% translate "To open a child's manage page, open its list under a parent object and use its manage action." %}</p>
+        </div>
+    </section>
+    {% endblock manage_hierarchy %}
+
+    {% block manage_urls %}
+    <section class="card mb-3" id="cv-manage-urls">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0">{% translate "URL names" %}</h2>
+            <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#url-names" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: URL names' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body"><div class="table-responsive" role="region" tabindex="0" aria-label="{% translate 'URL names' %}"><table class="table table-sm">
+            <thead><tr><th scope="col">{% translate "Name" %}</th><th scope="col">{% translate "route (relative to where the ViewSet is included)" %}</th></tr></thead>
+            <tbody>{% for item in manage_routes %}<tr><th scope="row"><code>{{ item.name }}</code></th><td>{% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}</td></tr>
+            {% empty %}<tr><td colspan="2">{% translate "No views registered. Review this ViewSet's registration." %}</td></tr>{% endfor %}</tbody>
+        </table></div></div>
+    </section>
+    {% endblock manage_urls %}
+
+    {% block ancestor_policy %}
+    <section class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0">{% translate "Ancestor policy" %}</h2>
+            <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#ancestor-policy" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Ancestor policy' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body"><div class="table-responsive" role="region" tabindex="0" aria-label="{% translate 'Ancestor policy' %}">
+        <table class="table table-sm cv-manage-config" id="cv-ancestor-policy">
+            <thead><tr><th scope="col">{% translate "Setting" %}</th><th scope="col">{% translate "Effective" %}</th></tr></thead>
+            <tbody>
+            <tr><th scope="colgroup" colspan="2">{% translate "As an ancestor of nested requests" %}</th></tr>
+            {% with policy=manage_ancestor_policy.as_ancestor %}
+            <tr><th scope="row">provider</th><td><span data-policy-value>{{ policy.effective_provider }}</span>{% if policy.provider is None %} <small data-policy-source>{% translate "inherited" %}: {% translate "ViewSet class default" %}</small>{% endif %}</td></tr>
+            <tr><th scope="row">accept_global_perms</th><td><span data-policy-value>{{ policy.accept_global_perms }}</span></td></tr>
+            {% endwith %}
+            <tr><th scope="colgroup" colspan="2">{% translate "Requests to this ViewSet" %}</th></tr>
+            {% with requests=manage_ancestor_policy.requests %}
+            {% if requests %}
+            <tr><th scope="row">cascade</th><td><span data-policy-value>{{ requests.cascade.effective }}</span>{% if requests.cascade.declared is None %} <small data-policy-source>{% translate "inherited" %}: CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE</small>{% endif %}</td></tr>
+            <tr><th scope="row">read</th><td><span data-policy-value>nearest: {{ requests.read.effective.nearest }}, higher: {{ requests.read.effective.higher }}</span>{% if requests.read.declared is None %} <small data-policy-source>{% translate "inherited" %}: CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS</small>{% endif %}</td></tr>
+            <tr><th scope="row">write</th><td><span data-policy-value>nearest: {{ requests.write.effective.nearest }}, higher: {{ requests.write.effective.higher }}</span>{% if requests.write.declared is None %} <small data-policy-source>{% translate "inherited" %}: CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS</small>{% endif %}</td></tr>
+            {% for key, pair in requests.actions.items %}
+            <tr><th scope="row">actions[{{ key }}]</th><td><span data-policy-value>nearest: {{ pair.nearest }}, higher: {{ pair.higher }}</span></td></tr>
+            {% empty %}<tr><th scope="row">actions</th><td><span data-policy-value>{% translate "none declared" %}</span></td></tr>{% endfor %}
+            {% else %}<tr><td colspan="2">{% translate "cascade, read, write, actions — not applicable: top-level ViewSet (no ancestors)" %}</td></tr>{% endif %}
+            {% endwith %}
+            </tbody>
+        </table>
+        </div>
+        <p>{% translate "Configuration only, not an access result for the current user. Provider and accept_global_perms apply when this ViewSet is the ancestor of a nested request; cascade, read, write and actions apply to nested requests to this ViewSet. Endpoint-local permission options are separate." %}</p>
+        </div>
+    </section>
+    {% endblock ancestor_policy %}
+
+    {% block guardian_config %}
+    {% if manage_guardian %}
+    <section class="card mb-3" id="cv-manage-guardian">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0">{% translate "Guardian" %}</h2>
+            <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#guardian" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Guardian' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body">
+            <p><code>GuardianViewSet.get_objects_for_user()</code> — {% translate "strict" %}</p>
+            <p>{% translate "GuardianViewSet.get_objects_for_user() is independent of local view policies and always strict: global model permissions are not accepted." %}</p>
+            <p>{% translate "Object and group grants count. An active superuser reaches every object; an inactive user reaches none." %}</p>
+        </div>
+    </section>
+    {% endif %}
+    {% endblock guardian_config %}
+
+    </div>
+    </div>
 {% endblock cv_content %}
 
 

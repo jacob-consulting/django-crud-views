@@ -93,6 +93,24 @@ def _pks(queryset):
     return sorted(obj.pk for obj in queryset)
 
 
+def test_manage_matrix_uses_configured_content_type(ct_routes, monkeypatch):
+    from crud_views.lib.settings import crud_views_settings
+    from crud_views_guardian.lib.views import GuardianManageView
+
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", True)
+    car = Car.objects.create(name="Managed car", doors=4)
+    actor = User.objects.create_user(username="ct matrix actor")
+    group = Group.objects.create(name="ct matrix group")
+    actor.groups.add(group)
+    for holder in (actor, group):
+        assign_perm("app.view_vehicle", holder, car)
+    routes = ct_routes()
+    data = GuardianManageView().get_manage_permissions(routes.viewset, actor)
+    assert next(c for c in data["columns"] if c["key"] == "view")["permission"] == "app.view_vehicle"
+    for row in (data["actor"], data["users"][0], data["groups"][0]):
+        assert next(c for c in row["cells"] if c["key"] == "view")["object_count"] == 1
+
+
 @pytest.mark.parametrize("path_kind", ["helper", "request"])
 def test_configured_base_content_type_registered_access(ct_routes, client, path_kind):
     granted = Car.objects.create(name="Granted Car", doors=4)

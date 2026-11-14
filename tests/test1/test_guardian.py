@@ -1,5 +1,3 @@
-import re
-
 import pytest
 
 from tests.lib.helper.guardian import user_guardian_object_perm
@@ -755,28 +753,36 @@ def test_guardian_manage_context_has_guardian_config(client_guardian_developer, 
 
 
 @pytest.mark.django_db
-def test_guardian_manage_config_renders_in_an_alert(client_guardian_developer, cv_guardian_author):
-    """#250: the guardian config table is the body of a warning alert from tags/alert.html."""
-    content = re.sub(r"\s+", " ", client_guardian_developer.get("/guardian_author/manage/").content.decode())
-    match = re.search(
-        r'class="alert alert-warning" role="alert">.*?(<table class="table table-striped mb-0">.*?</table>)', content
-    )
-    assert match
-    table = match.group(1)
-    rows = dict(re.findall(r"<tr> <td>(.*?)</td> <td>(.*?)</td> </tr>", table))
-    # phase 06.18: the declared ancestor policy rows replace the removed parent fields
-    assert rows["parent_viewset"] == "None"
-    assert rows["ancestor_policy.provider"] == "guardian"
-    assert rows["ancestor_policy.accept_global_perms"] == "False"
-    assert "strict" in rows["GuardianViewSet.get_objects_for_user()"]
-    assert "cv_guardian_parent_permission" not in table
-    assert "cv_guardian_parent_create_permission" not in table
-    # remaining local diagnostics: a separate table after the alert, per view, never inside the ancestor rows
-    local = content[match.end() :]
-    assert "<h4>Global permission fallback</h4>" in local
-    assert "<tr> <td>create</td> <td>—</td> <td>not applicable</td> </tr>" in local
-    assert "<tr> <td>detail</td> <td>False</td> <td>strict: object and group grants only</td> </tr>" in local
-    assert "cv_guardian_accept_global_perms" not in rows
+def test_guardian_manage_shared_cards_avoid_legacy_queries(client_guardian_developer, cv_guardian_author, monkeypatch):
+    from lxml import html
+
+    from tests.test1.test_manage_cards import TableWrappers
+
+    response = client_guardian_developer.get("/guardian_author/manage/")
+    doc = html.fromstring(response.content)
+    assert len(doc.xpath("//*[@id='cv-manage-permissions']")) == 1, "Guardian uses the shared Permissions card"
+    assert len(doc.xpath("//*[@id='cv-manage-guardian']")) == 1
+    card = doc.get_element_by_id("cv-manage-guardian")
+    assert "card" in card.get("class").split() and not card.xpath("ancestor-or-self::*[@role='alert']")
+    assert "GuardianViewSet.get_objects_for_user()" in card.text_content()
+    assert "global model permissions are not accepted" in card.text_content()
+    assert "active superuser" in card.text_content()
+    for duplicate in ("parent_viewset", "ancestor_policy.provider", "ancestor_policy.accept_global_perms"):
+        assert duplicate not in card.text_content()
+    assert not doc.xpath("//h4[text()='Global permission fallback']")
+    assert all(TableWrappers(response.content.decode()).tables)
+    for key, policy in (("create", "not applicable"), ("detail", "strict")):
+        badge = doc.get_element_by_id("cv-view-" + key).xpath("./summary/*[@data-cv-guardian-policy]")[0]
+        assert badge.text_content().strip() == policy
+        assert badge.get("title") and "data-cv-tooltip" in badge.attrib
+    cls = cv_guardian_author.get_view_class("manage")
+
+    def forbidden(self):
+        raise AssertionError("Stock Guardian page evaluated a legacy getter")
+
+    for name in ("get_view_data", "get_permission_holders", "_get_permission_data"):
+        monkeypatch.setattr(cls, name, forbidden)
+    assert client_guardian_developer.get("/guardian_author/manage/").status_code == 200
 
 
 @pytest.mark.django_db

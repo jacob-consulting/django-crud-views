@@ -361,6 +361,7 @@ def events(monkeypatch):
     original_get_object = CrudView.get_object
     original_enabled = CrudView.cv_action_enabled.__func__
     original_holders = ManageView.get_permission_holders
+    original_matrix = ManageView.get_manage_permissions
 
     def tables(model, provider):
         recorded.append(("auth", model.__name__, provider))
@@ -386,6 +387,10 @@ def events(monkeypatch):
         recorded.append(("holders", self.cv_viewset.name))
         return original_holders(self)
 
+    def matrix(self, viewset, user):
+        recorded.append(("matrix", viewset.name))
+        return original_matrix(self, viewset, user)
+
     if original_tables is not None:
         monkeypatch.setattr(ancestor_db, "_auth_tables", tables)
     monkeypatch.setattr(ViewSet, "permissions", property(permissions))
@@ -393,6 +398,7 @@ def events(monkeypatch):
     monkeypatch.setattr(CrudView, "get_object", get_object)
     monkeypatch.setattr(CrudView, "cv_action_enabled", classmethod(enabled))
     monkeypatch.setattr(ManageView, "get_permission_holders", holders)
+    monkeypatch.setattr(ManageView, "get_manage_permissions", matrix)
     return recorded
 
 
@@ -718,13 +724,14 @@ def test_nested_manage_member_reaches_context_and_rejects_auth_routing(adb, worl
     events.clear()
     assert client.get(_manage_url(adb, viewset)).status_code == 200
     auth_at = [index for index, event in enumerate(events) if event[0] == "auth"]
-    assert auth_at and ("holders", viewset.name) in events[auth_at[0] :]
+    assert auth_at and ("matrix", viewset.name) in events[auth_at[0] :]
     routes.read[Permission] = "shard"
     events.clear()
     with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
         client.get(_manage_url(adb, viewset))
     _assert_refused_without_auth_reads(sql)
     assert ("holders", viewset.name) not in events
+    assert ("matrix", viewset.name) not in events
 
 
 def test_guardian_manage_holders_refuse_a_shard_grant_route(adb, world, routes, events):
@@ -746,6 +753,32 @@ def test_guardian_manage_holders_refuse_a_shard_grant_route(adb, world, routes, 
     view.request.user = User.objects.get(username="aa_gm")
     with pytest.raises(ImproperlyConfigured, match=REFUSED):
         view.get_permission_holders()
+
+
+@pytest.mark.parametrize("table", CORE + GENERIC + DIRECT)
+@pytest.mark.parametrize("warm", [False, True])
+@pytest.mark.parametrize("builder", ["get_manage_permissions", "get_manage_actor_row", "get_manage_views"])
+def test_guardian_builders_guard_supplied_nested_model_before_queries(adb, routes, table, warm, builder):
+    from crud_views_guardian.lib.views import GuardianManageView
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+
+    # Only diagnostic builders run: no fake request or dynamic schema is required.
+    def build(sfx):
+        vs = GuardianViewSet(
+            model=Shelf,
+            name="aadirectmanage" + sfx,
+            parent=ParentViewSet(name=adb.none.name, attribute="name"),
+        )
+        return vs, []
+
+    with isolated_routes(build) as vs:
+        actor = User.objects.create_user(username="guarded builder", is_superuser=True)
+        if warm:
+            assert vs.permissions
+        routes.read[TABLES[table]] = "shard"
+        with captured() as sql, pytest.raises(ImproperlyConfigured, match=REFUSED):
+            getattr(GuardianManageView(), builder)(vs, actor)
+        _assert_refused_without_auth_reads(sql)
 
 
 def test_top_level_guardian_and_manage_keep_their_routing(adb, world, routes, monkeypatch):

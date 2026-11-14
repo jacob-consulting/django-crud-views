@@ -1,0 +1,1096 @@
+{
+  "mode": "auto",
+  "engine": "/home/alex/.codex/gsd-core/bin/lib/ui-consideration-probe.cjs",
+  "date": "2026-11-14",
+  "note": "Authored acceptance criteria, not completed implementation verification. Parent requested pre-checker run; rerun after checker revisions.",
+  "elements": [
+    {
+      "id": "permissions",
+      "text": "Permission matrix table rows and labels for actor, group and optional user holders.",
+      "elements": [
+        "list-collection",
+        "static-content"
+      ]
+    },
+    {
+      "id": "views",
+      "text": "Views card list with native disclosure controls, requirement labels and diagnostic rows.",
+      "elements": [
+        "list-collection",
+        "interactive-control",
+        "static-content"
+      ]
+    },
+    {
+      "id": "presentation",
+      "text": "Presentation disclosure control and context button target table with labels.",
+      "elements": [
+        "list-collection",
+        "interactive-control",
+        "static-content"
+      ]
+    },
+    {
+      "id": "facts",
+      "text": "Side cards contain identity, rendered header icons, ancestor navigation, URL rows, policy and Guardian labels.",
+      "elements": [
+        "list-collection",
+        "media",
+        "nav",
+        "static-content"
+      ]
+    },
+    {
+      "id": "checks",
+      "text": "Checks strip or alert lists check messages and labels.",
+      "elements": [
+        "list-collection",
+        "static-content"
+      ]
+    },
+    {
+      "id": "help",
+      "text": "Documentation link buttons navigate externally, with labeled tooltips.",
+      "elements": [
+        "interactive-control",
+        "nav",
+        "static-content"
+      ]
+    },
+    {
+      "id": "defaults",
+      "text": "Show defaults form switch control and label reveal or hide default rows.",
+      "elements": [
+        "form",
+        "interactive-control",
+        "static-content",
+        "list-collection"
+      ]
+    }
+  ],
+  "proposals": [
+    {
+      "id": "permissions",
+      "kinds": [
+        "list-collection",
+        "static-content"
+      ],
+      "categories": [
+        "empty",
+        "loading",
+        "error",
+        "populated",
+        "partial",
+        "overflow",
+        "zero-one-many",
+        "long-text"
+      ]
+    },
+    {
+      "id": "views",
+      "kinds": [
+        "list-collection",
+        "interactive-control",
+        "static-content"
+      ],
+      "categories": [
+        "empty",
+        "loading",
+        "error",
+        "populated",
+        "partial",
+        "overflow",
+        "zero-one-many",
+        "long-text"
+      ]
+    },
+    {
+      "id": "presentation",
+      "kinds": [
+        "list-collection",
+        "interactive-control",
+        "static-content"
+      ],
+      "categories": [
+        "empty",
+        "loading",
+        "error",
+        "populated",
+        "partial",
+        "overflow",
+        "zero-one-many",
+        "long-text"
+      ]
+    },
+    {
+      "id": "facts",
+      "kinds": [
+        "list-collection",
+        "media",
+        "nav",
+        "static-content"
+      ],
+      "categories": [
+        "empty",
+        "loading",
+        "error",
+        "populated",
+        "partial",
+        "overflow",
+        "zero-one-many",
+        "long-text"
+      ]
+    },
+    {
+      "id": "checks",
+      "kinds": [
+        "list-collection",
+        "static-content"
+      ],
+      "categories": [
+        "empty",
+        "loading",
+        "error",
+        "populated",
+        "partial",
+        "overflow",
+        "zero-one-many",
+        "long-text"
+      ]
+    },
+    {
+      "id": "help",
+      "kinds": [
+        "interactive-control",
+        "nav",
+        "static-content"
+      ],
+      "categories": [
+        "loading",
+        "error",
+        "overflow",
+        "long-text"
+      ]
+    },
+    {
+      "id": "defaults",
+      "kinds": [
+        "form",
+        "interactive-control",
+        "static-content",
+        "list-collection"
+      ],
+      "categories": [
+        "empty",
+        "loading",
+        "error",
+        "populated",
+        "partial",
+        "overflow",
+        "zero-one-many",
+        "long-text"
+      ]
+    }
+  ],
+  "resolutions": [
+    {
+      "requirement_id": "permissions",
+      "category": "empty",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+      "reason": null
+    },
+    {
+      "requirement_id": "permissions",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+      "reason": null
+    },
+    {
+      "requirement_id": "permissions",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+      "reason": null
+    },
+    {
+      "requirement_id": "permissions",
+      "category": "populated",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+      "reason": null
+    },
+    {
+      "requirement_id": "permissions",
+      "category": "partial",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+      "reason": null
+    },
+    {
+      "requirement_id": "permissions",
+      "category": "overflow",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+      "reason": null
+    },
+    {
+      "requirement_id": "permissions",
+      "category": "zero-one-many",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+      "reason": null
+    },
+    {
+      "requirement_id": "permissions",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+      "reason": null
+    },
+    {
+      "requirement_id": "views",
+      "category": "empty",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+      "reason": null
+    },
+    {
+      "requirement_id": "views",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+      "reason": null
+    },
+    {
+      "requirement_id": "views",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+      "reason": null
+    },
+    {
+      "requirement_id": "views",
+      "category": "populated",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+      "reason": null
+    },
+    {
+      "requirement_id": "views",
+      "category": "partial",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+      "reason": null
+    },
+    {
+      "requirement_id": "views",
+      "category": "overflow",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+      "reason": null
+    },
+    {
+      "requirement_id": "views",
+      "category": "zero-one-many",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+      "reason": null
+    },
+    {
+      "requirement_id": "views",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+      "reason": null
+    },
+    {
+      "requirement_id": "presentation",
+      "category": "empty",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+      "reason": null
+    },
+    {
+      "requirement_id": "presentation",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+      "reason": null
+    },
+    {
+      "requirement_id": "presentation",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+      "reason": null
+    },
+    {
+      "requirement_id": "presentation",
+      "category": "populated",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+      "reason": null
+    },
+    {
+      "requirement_id": "presentation",
+      "category": "partial",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+      "reason": null
+    },
+    {
+      "requirement_id": "presentation",
+      "category": "overflow",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+      "reason": null
+    },
+    {
+      "requirement_id": "presentation",
+      "category": "zero-one-many",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+      "reason": null
+    },
+    {
+      "requirement_id": "presentation",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+      "reason": null
+    },
+    {
+      "requirement_id": "facts",
+      "category": "empty",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+      "reason": null
+    },
+    {
+      "requirement_id": "facts",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+      "reason": null
+    },
+    {
+      "requirement_id": "facts",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+      "reason": null
+    },
+    {
+      "requirement_id": "facts",
+      "category": "populated",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+      "reason": null
+    },
+    {
+      "requirement_id": "facts",
+      "category": "partial",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+      "reason": null
+    },
+    {
+      "requirement_id": "facts",
+      "category": "overflow",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+      "reason": null
+    },
+    {
+      "requirement_id": "facts",
+      "category": "zero-one-many",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+      "reason": null
+    },
+    {
+      "requirement_id": "facts",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+      "reason": null
+    },
+    {
+      "requirement_id": "checks",
+      "category": "empty",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+      "reason": null
+    },
+    {
+      "requirement_id": "checks",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+      "reason": null
+    },
+    {
+      "requirement_id": "checks",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+      "reason": null
+    },
+    {
+      "requirement_id": "checks",
+      "category": "populated",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+      "reason": null
+    },
+    {
+      "requirement_id": "checks",
+      "category": "partial",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+      "reason": null
+    },
+    {
+      "requirement_id": "checks",
+      "category": "overflow",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+      "reason": null
+    },
+    {
+      "requirement_id": "checks",
+      "category": "zero-one-many",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+      "reason": null
+    },
+    {
+      "requirement_id": "checks",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+      "reason": null
+    },
+    {
+      "requirement_id": "help",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+      "reason": null
+    },
+    {
+      "requirement_id": "help",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+      "reason": null
+    },
+    {
+      "requirement_id": "help",
+      "category": "overflow",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+      "reason": null
+    },
+    {
+      "requirement_id": "help",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+      "reason": null
+    },
+    {
+      "requirement_id": "defaults",
+      "category": "empty",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+      "reason": null
+    },
+    {
+      "requirement_id": "defaults",
+      "category": "loading",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+      "reason": null
+    },
+    {
+      "requirement_id": "defaults",
+      "category": "error",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+      "reason": null
+    },
+    {
+      "requirement_id": "defaults",
+      "category": "populated",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+      "reason": null
+    },
+    {
+      "requirement_id": "defaults",
+      "category": "partial",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+      "reason": null
+    },
+    {
+      "requirement_id": "defaults",
+      "category": "overflow",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+      "reason": null
+    },
+    {
+      "requirement_id": "defaults",
+      "category": "zero-one-many",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+      "reason": null
+    },
+    {
+      "requirement_id": "defaults",
+      "category": "long-text",
+      "status": "resolved",
+      "verification": "explicit",
+      "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+      "reason": null
+    }
+  ],
+  "report": {
+    "items": [
+      {
+        "requirement_id": "permissions",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+        "reason": null,
+        "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "permissions",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "permissions",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "permissions",
+        "category": "populated",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+        "reason": null,
+        "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+      },
+      {
+        "requirement_id": "permissions",
+        "category": "partial",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+        "reason": null,
+        "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+      },
+      {
+        "requirement_id": "permissions",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "permissions",
+        "category": "zero-one-many",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+        "reason": null,
+        "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+      },
+      {
+        "requirement_id": "permissions",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "views",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+        "reason": null,
+        "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "views",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "views",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "views",
+        "category": "populated",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+        "reason": null,
+        "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+      },
+      {
+        "requirement_id": "views",
+        "category": "partial",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+        "reason": null,
+        "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+      },
+      {
+        "requirement_id": "views",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "views",
+        "category": "zero-one-many",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+        "reason": null,
+        "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+      },
+      {
+        "requirement_id": "views",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "presentation",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+        "reason": null,
+        "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "presentation",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "presentation",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "presentation",
+        "category": "populated",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+        "reason": null,
+        "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+      },
+      {
+        "requirement_id": "presentation",
+        "category": "partial",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+        "reason": null,
+        "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+      },
+      {
+        "requirement_id": "presentation",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "presentation",
+        "category": "zero-one-many",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+        "reason": null,
+        "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+      },
+      {
+        "requirement_id": "presentation",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "facts",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+        "reason": null,
+        "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "facts",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "facts",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "facts",
+        "category": "populated",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+        "reason": null,
+        "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+      },
+      {
+        "requirement_id": "facts",
+        "category": "partial",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+        "reason": null,
+        "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+      },
+      {
+        "requirement_id": "facts",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "facts",
+        "category": "zero-one-many",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+        "reason": null,
+        "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+      },
+      {
+        "requirement_id": "facts",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "checks",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+        "reason": null,
+        "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "checks",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "checks",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "checks",
+        "category": "populated",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+        "reason": null,
+        "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+      },
+      {
+        "requirement_id": "checks",
+        "category": "partial",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+        "reason": null,
+        "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+      },
+      {
+        "requirement_id": "checks",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "checks",
+        "category": "zero-one-many",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+        "reason": null,
+        "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+      },
+      {
+        "requirement_id": "checks",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "help",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "help",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "help",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "help",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "defaults",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Permissions retain the actor row and superuser count and use the documented empty-vocabulary/holder copy; Views and Presentation use their empty-collection copy; side facts show top-level/no-children/Resource states, missing icon retains its textual value; no check messages yields the clean strip. The switch remains valid when zero default rows exist.",
+        "reason": null,
+        "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "defaults",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "All diagnostic content arrives in the server HTML; there are no per-card asynchronous requests or loading placeholders. Navigation uses native browser loading. The defaults switch is hidden until initialized, so all rows remain readable while JS is unavailable; native disclosures and help links already work.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "defaults",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Scoped configuration failures render the documented alert, severity, ID and message; missing optional target metadata uses the documented fallback. Authorization/database/request failures keep existing host error handling and never become clean checks or zero grants. Missing JS leaves rows visible and disclosures functional; external documentation failures stay in the new tab and do not alter the manage page.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "defaults",
+        "category": "populated",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "A populated matrix renders actor, Groups, optional Users, all permission columns, group sizes and superuser count. Each registered view has one collapsed summary and ordered sections; Presentation renders all D-21 sections. Side facts show complete identity, hierarchy, routes and policy. Check failures are listed separately with severity/ID. Toggling defaults changes only visibility.",
+        "reason": null,
+        "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+      },
+      {
+        "requirement_id": "defaults",
+        "category": "partial",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Model-only, object-only and combined permission cells remain distinct; absence of a grant uses the documented dash. Annotation-only view data shows not declared, inherited values retain sources, and a wholly hidden section retains its count. Missing context targets use the documented fallback. Core omits Guardian-only content, Resource children omit routes, absent icons retain textual identity. A partly available script never hides rows before initialization.",
+        "reason": null,
+        "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+      },
+      {
+        "requirement_id": "defaults",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "At 390px and 1280px, opened and closed disclosures produce no document-level horizontal overflow. Tables scroll only within labeled keyboard-accessible responsive wrappers; summaries, help headers, facts and check messages wrap. Nonwrapping 192px keys stay inside the local scroll region; controls reflow without overlapping.",
+        "reason": null,
+        "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "defaults",
+        "category": "zero-one-many",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Plural-aware counts handle zero and one across matrix badges, members, superusers, check and default counts. Zero collections use the specified empty states; one view/child/check keeps the same structure. Users 0/1/20/21 prove disclosure absent through 20 and exactly one remainder at 21; multiple views and children stack vertically. Zero defaults makes the switch a harmless no-op.",
+        "reason": null,
+        "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+      },
+      {
+        "requirement_id": "defaults",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Long and German labels, usernames, group names, check messages, routes and dotted class paths wrap without loss or document overflow at 390px. Keys never wrap and remain available in local table scroll. Only diagnostic repr is shortened to 200 characters plus ellipsis; identifiers and class paths are not truncated. Switch/help targets and focus outlines remain visible.",
+        "reason": null,
+        "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+      }
+    ],
+    "coverage": {
+      "applicable": 52,
+      "resolved": 52,
+      "unresolved": 0,
+      "unclassified": 0,
+      "byVerification": {
+        "explicit": 52,
+        "backstop": 0
+      }
+    }
+  }
+}
+

@@ -133,6 +133,15 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "form:icon-host": "{name_class}",
     "language:toggle": "btn btn-outline-secondary",
     "object-detail:property-detail": "btn btn-link p-0 ms-1 align-baseline text-muted",
+    "manage:badge-model": "badge bg-secondary",
+    "manage:badge-objects": "badge bg-light text-dark border",
+    "manage:badge-permission": "badge bg-primary",
+    "manage:badge-group": "badge cv-manage-badge-group",
+    "manage:badge-policy-global": "badge bg-success",
+    "manage:badge-policy-strict": "badge bg-success",
+    "manage:badge-policy-na": "badge bg-secondary",
+    "manage:row-default": "cv-manage-default",
+    "manage:help": "btn btn-sm btn-outline-secondary",
 }
 
 REMOVED_SETTINGS: dict[str, str] = {

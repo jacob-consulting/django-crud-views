@@ -107,6 +107,14 @@ class ViewSet(BaseModel):
 
     _views: dict[str, type[CrudView]] = PrivateAttr(default_factory=empty_dict)
     _default_permissions: OrderedDict[str, str] | None = PrivateAttr(default=None)
+    _manage_constructor_fields: frozenset[str] = PrivateAttr(default_factory=frozenset)
+
+    def __init__(self, **data):
+        # Validators fill prefix/pk and may add subclass defaults. Preserve only caller input.
+        # model_construct bypasses __init__ and is unsupported for declaration provenance.
+        supplied = frozenset(data)
+        super().__init__(**data)
+        self._manage_constructor_fields = supplied
 
     def __repr__(self):
         return f"ViewSet({self.name})"
@@ -346,6 +354,8 @@ class ViewSet(BaseModel):
     def register_view_class(self, key: str, view_class: type[CrudView]):
         cv_raise(key not in self._views, f"key {key} already registered at {self}")
         self._views[key] = view_class
+        if "_cv_manage_declared_context_actions" not in vars(view_class):
+            view_class._cv_manage_declared_context_actions = "cv_context_actions" in vars(view_class)
         # add manage view to context actions; copy-on-write because the list may be
         # shared with the settings singleton or sibling view classes
         if crud_views_settings.manage_views_enabled != "no" and not self.is_resource:

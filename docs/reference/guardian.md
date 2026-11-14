@@ -646,27 +646,24 @@ the direct URL. See [Manage diagnostics](settings.md#manage-diagnostics) for the
 `migrate` then `cv_manage_group` setup. The group-only command preserves grants and memberships; use Django admin
 or application setup to assign memberships.
 
-Every manage page, core and Guardian, shows an **Ancestor policy** table: the ViewSet's declared values next to
-the effective ones. "As an ancestor of nested requests" lists `provider` and `accept_global_perms`; "Requests to
-this ViewSet" lists `cascade`, the `read` and `write` pairs and each exact `actions` entry, or states that they
-do not apply to a top-level ViewSet. A template reads the same values from the `ancestor_policy` context entry
-(`as_ancestor` and `requests`; `requests` is `None` at top level). It is configuration only, not an access result
-for the current user.
+Core and Guardian share the [structured manage cards](manage.md). The **Permissions** matrix shows
+**Access for: username (you)** first: effective model permissions and strict object counts including group grants.
+Group and optional User rows show direct model/object grants, using Guardian's configured generic or direct-FK
+grant models. Groups show member counts; active-superuser counts are always visible and names follow
+`CRUD_VIEWS_MANAGE_SHOW_USERS` (default `False`). Users fold after 20 rows.
 
-In addition, GuardianManageView adds:
+**Ancestor policy** shows setting and effective value, with an inherited marker, rather than a separate declared
+column. The two parts describe this ViewSet as an ancestor and requests to this ViewSet. It is configuration
+only, not an access result. **Hierarchy** supplies parent/child routes; links go upwards using current coordinates.
 
-**Guardian Configuration** — the `guardian_config` context entry:
+The compact **Guardian** card shows `get_objects_for_user` with its fixed strict policy:
+`{"policy": "strict", "accept_global_perms": False, "use_groups": True}`. Strict excludes global model-permission
+fallback and includes group grants; it retains Guardian's active-superuser all-object shortcut. It does not
+mean an active superuser needs explicit object grants.
 
-- `parent_viewset` — the parent ViewSet's name with its effective ancestor provider and whether it adds the model
-  fallback, e.g. `publisher (ancestor provider: guardian + model fallback)`; `None` at top level
-- `ancestor_policy` — this ViewSet's effective ancestor `provider` and `accept_global_perms`, the same values as
-  the core entry
-- `get_objects_for_user` — the helper's fixed strict policy (object and group grants only)
-
-The removed `cv_guardian_parent_permission` and `cv_guardian_parent_create_permission` rows are gone.
-
-**Global permission fallback** — one row per registered view with its own `cv_guardian_accept_global_perms` and the
-effective policy:
+**Views** has closed disclosures, each with its real class, route, requirement and Guardian policy badge.
+The expanded Guardian section includes `guardian_mixin` and the effective policy. The former separate
+**Global permission fallback** table is replaced by these badges and rows:
 
 | Effective policy | When |
 |---|---|
@@ -674,10 +671,11 @@ effective policy:
 | global fallback | the same, with the flag `True` |
 | not applicable | the view never consults the flag: a plain or manage view, or a create view (top-level or nested); ancestors use the ancestor policy instead |
 
-The values come from each view class, never from the ViewSet. Below the table the page states that
-`get_objects_for_user()` is independent of these view policies and always strict.
+The values come from each view class, never from the ViewSet. `get_objects_for_user()` is independent of
+these endpoint policies. Nested Guardian create describes its ancestor requirement; detail/update/delete
+retain their own object gate in addition to ancestors.
 
-A template that overrides the manage page reads the values from the context: `guardian_config.get_objects_for_user`
+A legacy template that overrides the manage page can still read `guardian_config.get_objects_for_user`, which
 holds `{"policy": "strict", "accept_global_perms": False, "use_groups": True}`, and each `views.<key>.guardian_policy`
 holds `global_fallback_applicable`, `cv_guardian_accept_global_perms` (`None` when not applicable) and
 `effective_policy` (`"strict"`, `"global fallback"` or `"not applicable"`). The `guardian_config` key
@@ -687,14 +685,16 @@ Manage-group membership is independent of ordinary model and object permissions.
 Read endpoint and additionally passes normal ancestor authorization: membership does not bypass the ancestors,
 and an ancestor grant does not bypass the manage mode, active-account requirement or group membership.
 
-Current-user diagnostic results describe the signed-in account. To inspect Alice's results, temporarily add Alice
+The actor row describes the signed-in account. To inspect Alice's results, temporarily add Alice
 to the manage group, sign in as Alice, inspect, then remove the membership. Alice can open diagnostics during
 that interval; the developer account does not impersonate her. Configuration tables remain configuration, rather
 than proof of a particular user's access.
 
-**Permission Holders** — extends the standard group listing with an "Objects (guardian)" column showing how many objects each group has per-object access to.
-
-**Views table** — each registered view shows a `guardian_mixin` row listing which guardian mixins are active (`ObjectPermissionMixin`, `QuerysetMixin`, `ParentMixin`).
+Stock cards consume `manage_permissions`, `manage_views`, `manage_guardian` and the shared prepared context.
+Legacy getter overrides affect only the legacy keys. The unchanged
+`crud_views/snippets/guardian/config_table.html` is retained for explicit old project includes with
+`guardian_config`, but is no longer included by stock templates. See the
+[full contracts and compatibility include](theme.md#structured-manage-contracts) before migrating an override.
 
 GuardianManageView is wired automatically by `GuardianViewSet.register()` — no manual configuration required.
 

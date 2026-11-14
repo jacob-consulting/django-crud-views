@@ -90,7 +90,8 @@ def test_empty_registry_output_unchanged(asset_registry):
     assert "/static/crud_views/js/modal.js" in html
     assert "/static/crud_views/js/toggle.js" in html
     assert "/static/crud_views/js/tooltip.js" in html
-    assert html.count("<script") == 7
+    assert "/static/crud_views/js/manage.js" in html
+    assert html.count("<script") == 8
 
 
 def test_asset_normalization(asset_registry):
@@ -256,12 +257,12 @@ def test_no_nonce_output_byte_identical(asset_registry):
 
 def test_nonce_rendered_on_all_script_tags(asset_registry):
     html = _render_ctx("cv_js", {"request": _request(csp_nonce="abc123")})
-    assert html.count('nonce="abc123"') == 7  # all 7 core scripts
+    assert html.count('nonce="abc123"') == 8  # all 8 core scripts
 
 
 def test_nonce_rendered_on_link_tags(asset_registry):
     html = _render_ctx("cv_css", {"request": _request(csp_nonce="abc123")})
-    assert html.count('nonce="abc123"') == 4  # property, table, formset, icons css
+    assert html.count('nonce="abc123"') == 5  # property, table, formset, icons, manage css
 
 
 def test_sri_attributes_rendered(asset_registry):
@@ -350,5 +351,5 @@ def test_django6_builtin_csp_nonce_roundtrip(asset_registry):
     match = re.search(r'nonce="([^"]+)"', rendered["html"])
     assert match, rendered["html"]
     nonce = match.group(1)
-    assert rendered["html"].count(f'nonce="{nonce}"') == 7  # same nonce on all 7 core scripts
+    assert rendered["html"].count(f'nonce="{nonce}"') == 8  # same nonce on all 8 core scripts
     assert f"'nonce-{nonce}'" in response["Content-Security-Policy"]

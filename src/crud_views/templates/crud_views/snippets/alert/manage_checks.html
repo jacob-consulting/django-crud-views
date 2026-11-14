@@ -1,0 +1,8 @@
+{% load i18n %}
+<h2 class="h6">{% translate "Configuration issues" %}</h2>
+<p>{% translate "Review the checks below and update this ViewSet's configuration. Open the documentation for details." %}</p>
+<ul class="mb-0">
+{% for check in manage_checks.messages %}
+    <li>{{ check.severity }} · {{ check.id }} · {{ check.message }}{% if check.hint %}<p>{{ check.hint }}</p>{% endif %}</li>
+{% endfor %}
+</ul>

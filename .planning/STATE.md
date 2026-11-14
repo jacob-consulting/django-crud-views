@@ -5,30 +5,30 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.30 complete, ready to plan Phase 7
-last_updated: "2026-11-13T19:43:05.613Z"
-last_activity: 2026-11-13
-last_activity_desc: "Phase 06.30 shipped as PR #367"
-state_head: 01fb837779acc903cd655639f03705d7eb005908
+stopped_at: Phase 06.33 complete, ready to plan Phase 7
+last_updated: "2026-11-14T22:15:01.948Z"
+last_activity: 2026-11-14
+last_activity_desc: "Phase 06.33 shipped as PR #373"
+state_head: 614bed44008eb052c91b7945fc27ec819c8fda43
 progress:
-  total_phases: 39
-  completed_phases: 38
-  total_plans: 205
-  completed_plans: 205
-  percent: 97
+  total_phases: 40
+  completed_phases: 27
+  total_plans: 215
+  completed_plans: 215
+  percent: 68
 milestone_name: milestone
 ---
 
-Total Phases: 39
+Total Phases: 40
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-13)
+See: .planning/PROJECT.md (updated 2026-11-14)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase7 — Theme-surface stability policy
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
@@ -36,9 +36,102 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-13 -- Phase 06.30 shipped as PR #367
+Last activity: 2026-11-14 -- Phase 06.33 shipped as PR #373
 
-Next: $gsd-plan-phase 7. Phase06.30 complete:15/15 plans,54/54 truths, explicit human UAT passed and historical G1/G2 resolved. Tabler UAT preview remains on9000 with isolated demo data.
+Next: $gsd-ship 06.33; Phase 7 is ready for planning.
+
+### Phase 06.33 completion — 2026-11-14
+
+- User explicitly passed the core/Guardian desktop and 390px visual UAT. UAT 1/1 passed; canonical verification status passed and combined completion predicate passed with zero blockers. All ten plans are complete.
+- Existing source-bound acceptance remains current; seven unavailable runtime combinations and older-browser behavior remain unverified.
+- Completion scanner warnings concern template-relative/generated paths, command strings and intentionally prose-only requirements. No formal requirement IDs invented. No learnings or stale phase handoffs found.
+- Original state.json and unrelated local changes preserved. Shipping is the next requested action.
+
+### Phase 06.33 post-execution verification — 2026-11-14 (before visual UAT)
+
+- Canonical owner status human_needed: 4/5 deduplicated roadmap outcomes verified, all 82 PLAN clauses accounted for, behavior-unverified 0, no implementation blockers. One visual readability/hierarchy judgment remains in 06.33-UAT.md.
+- All eight review findings fixed and independently re-reviewed clean; zero open dispositions. Nyquist covers 25/25 tasks, security closes 21 threats (20 mitigated plus the authored accepted low risk), and UI audit scores 24/24 with no active warnings.
+- Post-review release evidence supersedes plan 09/10 receipts: 13,950 primary Python passes; cached Django 4.2/5.2 each 1,659 passes plus one existing Django-6-only CSP skip and 53 extra checks; examples 370; JavaScript 457 plus 2 integration. Browser acceptance: 50 cases, 52 criterion-specific mappings, 1,071 assertions, 49 captures. Strict docs, Ruff, formatting, builds and source hashes pass.
+- Seven unavailable compatible Python/Django environments and older-browser behavior remain explicitly unverified. Fresh verifier checks add 73 Python, 2 JavaScript and one harness-negative pass. Prior-phase regression and parent UAT gap-closure gates pass.
+- Original state.json and unrelated .gitkeep dirt preserved; port 9000 remains stopped. No phase completion, publication, push or merge. Next: $gsd-verify-work 06.33.
+
+### Phase 06.33 plan 10 execution — 2026-11-14
+
+- Added seven real core/Guardian example tests and five live public-contract/shared-alert tests. Developer read-only behavior, Alice/Bob denial, nested ancestor gates, signed-in strict Guardian counts and documented blocks/context/registry/requirements pass.
+- Full primary Python: 13,924 passed in 466.47s with four workers on Python 3.12.3 / Django 6.0.10. Complete examples370, required example selection170, JavaScript457 plus integration2, strict docs/11 anchors, Ruff/format, wheel/sdist validation all pass.
+- Exact 35-module cached Django4.2.30/5.2.19 replays each pass1,633 with one existing Django6-only CSP skip; additional affected alert/CLI gates pass53 each. Seven compatible non-3.12 combinations remain explicitly unverified because prepared test environments and an invokable CI trigger for this unpublished branch are unavailable. No installs or inferred passes.
+- Initial broad gate found three phase regressions. Classified four-test RED precedes the shared cv_alert body/include correction and explicit CLI manage-asset inventory synchronization. Focused220 then full and cached-series gates pass. No setting, authorization, schema or public API change.
+- Fresh browser acceptance after the template correction passes36 cases/52 UI mappings/35 captures,231 source hashes and590 observed asset responses with restrictive CSP and verified owned cleanup. Receipt06.33-10 supersedes09; human comparison against page-v13 remains pending. Query counts remain core5 and Guardian11→12 across larger holder fixtures.
+- Four task/evidence commits end at c1fbba0d; SUMMARY committed as2528e13e before SDK ROADMAP progress. Two tasks, ten task/evidence files, about25 minutes. All10/10 plans executed; phase remains awaiting owner verification and human UAT.
+- Original state.json checksum and unrelated .gitkeep dirt preserved. Existing ratelimit dependency reused without replacing primary Django. No developer database changes, port9000 restart, push, merge, publication or phase-complete claim. Optional WINDOWS append declined the existing table/header inconsistency; limits are recorded in SUMMARY/deferred-items.
+
+### Phase 06.33 plan 09 execution — 2026-11-14
+
+- Added 114 core and 10 Guardian German messages with matching compiled catalogs. Source extraction, semantic PO/MO metadata/plural/placeholder comparisons and actual German requests pass. Two classified RED records cover missing messages and retained actor identity for empty vocabulary.
+- Disposable authenticated stock browser fixture uses normal developer/ancestor gates, pinned cached Bootstrap/Font Awesome assets, literal strict CSP and source/served-asset hashes. All 36 named cases / 52 UI mappings / 35 captures pass in Chromium 149.0.7827.55. Final smoke passes 3; harness negative controls pass 6. Source hashes (230), screenshots and owned cleanup independently verified.
+- Final shared-template/core/Guardian selection: 725 passed in 42.80s with four workers on Python 3.12.3 / Django 6.0.10. An ordered nine-test isolation probe passes after correcting test-only Pydantic PrivateAttr restoration. Ruff format/check and whitespace pass.
+- Bounded fixes: accessible descriptions stay within table scroll regions, stock help contrast meets 4.5:1, empty vocabulary retains the translated actor. Minimum measured new-content text contrast is 4.500693575059644:1. Inherited Bootstrap heading responsiveness is recorded separately; exact new-content sizes/weights, help/disclosure geometry, keyboard focus and no-JS behavior pass.
+- Five task commits end at 1956417a; SUMMARY/evidence/validation committed as cb7124bc before ROADMAP progress. Three tasks, 13 task/evidence files, approximately 22 minutes. Nine of ten plans complete; plan 10 owns supported-version/full release checks. Human visual comparison remains end-of-phase UAT.
+- Explicit empty displayed-view / zero-default boundary fixtures follow admitted dispatch without fabricated permission/check data. No dependencies, developer DB changes, port 9000 disruption, stubs or skipped required checks. Targeted Markdown updates preserve original state.json checksum and unrelated .gitkeep dirt. Optional WINDOWS append declined the existing table/header mismatch. No push, merge, publication or phase-complete claim.
+
+### Phase 06.33 plan 08 execution — 2026-11-14
+
+- Indexed manage reference supplies all eleven rendered help targets; derived subclasses replace every help base. Public block/context/builder inventories match live source and context, including both checks blocks, request-free guard boundaries, constructor provenance, empty-extends fallback and explicit declared_value.
+- Paired Breaking changelog/migration covers stock DOM and whole-card output changes, lazy legacy getters and retained Guardian config-table includes. Strict Guardian global-fallback exclusion preserves the active-superuser shortcut. Executable theme/legacy recipes, exact 111/129 class counts, external JS lifecycle/default behavior and both German catalog paths are documented.
+- Classified RED/GREEN for tasks 1/3; final required docs gate 37 passed. Shared documentation regression: 572 passed in 21.71s on Python 3.12.3 / Django 6.0.10, four workers. Strict MkDocs, all 11 actual generated anchors, scoped Ruff/format and whitespace pass.
+- Five task commits end at 61b4b3d3; SUMMARY/validation committed as 6bdded39 before ROADMAP progress. Three tasks, 13 task/evidence files, approximately eleven minutes. Eight of ten plans complete; plan 09 owns German/browser acceptance and plan 10 the supported-version/full release matrix.
+- No production changes, dependencies, settings, stubs or skipped required checks. Targeted Markdown state updates preserve original state.json checksum and unrelated .gitkeep dirt; SDK ROADMAP succeeded and stale table reconciled to 8/10. No push, merge, publication or phase-complete claim.
+
+### Phase 06.33 plan 07 execution — 2026-11-14
+
+- One progressive Show defaults switch controls Views and Presentation through external manage.js/CSS. Native disclosures, translated hidden counts, focus and unenhanced values are preserved. Shared core/Guardian markup has labeled keyboard-scrollable tables, semantic headings, help targets and registry-owned default styles; both checks blocks and permission_holders remain intact.
+- Four classified RED records cover the initializer, accessibility/registry markup, existing asset inventory drift and a final default-style regression. Task gates: 10 JS/486 Python, 669 Python, and 81 asset/pipeline tests plus 10 JS. Final combined gate: 972 passed in 46.77s on Python 3.12.3 / Django 6.0.10, four workers; scoped Ruff/format/whitespace pass. Retained German heading selector follows h2/h3 without weakening its assertions.
+- Eight task/fix commits end at 903fec99; SUMMARY/validation committed as 2c23bdc2 before ROADMAP progress. Three tasks, 18 source/test/evidence files, approximately twelve implementation minutes. Seven of ten plans complete; plan 08 next. No new dependencies or authorization changes.
+- Decision: registered default-row class owns value muting. Presentation help remains summary's sibling; scoped details-content styling keeps it visible when closed, while its body remains folded. Isolated Chromium confirms a 32×32 target; older engines lacking this pseudo-element expose help when expanded. Plan 09 retains measured browser/German/contrast ownership, plan 10 the supported-version/full acceptance matrix.
+- Targeted Markdown updates preserve original state.json checksum and unrelated .gitkeep dirt. SDK ROADMAP update succeeded; stale table reconciled to 7/10. Optional WINDOWS recording declined on existing table/header disagreement. No stubs, skipped required verification, push, merge or phase-complete claim.
+
+### Phase 06.33 plan 06 execution — 2026-11-14
+
+- Explicit identity/hierarchy/routes/ancestor/Presentation data and cards are committed. Upward URLs use supplied coordinates with zero object queries; Django simplify_regex handles generated/contributed routes, including in a fresh no-admin/admindocs process. Properties and two-column ancestor assertions migrated together.
+- Both tasks have classified RED/GREEN evidence. Task 1 selection 523 passed; task 2 initial selection 530; final combined 708 passed on Python 3.12.3 / Django 6.0.10 with four workers. Scoped Ruff/format/whitespace checks pass. No active git hook is configured; normal commits used without bypass flags.
+- Four task commits end at a0a12755; SUMMARY/validation committed as 7a055dcd before ROADMAP progress. Two tasks, eight source/test/evidence files, twelve minutes. Six of ten plans complete; plan 07 next. Browser, default switching, translations and supported-version matrix remain with their later owners.
+- Decision: Presentation statically describes unchanged built-in button implementations; changed renderers use a type/template fallback without evaluating access or labels. Empty extends preserves its actual runtime fallback plus explicit declared_value. Existing row/default/count markers and both checks blocks survive; plan 07 owns final placement/style.
+- Targeted Markdown state edits preserve original state.json bytes and unrelated .gitkeep dirt. SDK roadmap update succeeded; stale table count reconciled to 6/10. No new stubs, skipped required verification, push, merge or phase-complete claim.
+
+### Phase 06.33 plan 05 execution — 2026-11-14
+
+- Scoped ancestor/conditional/icon/Guardian composition collectors, checks builders and escaped main issues/side clean states are committed. Check counts include only materialized ViewSet.checks objects; all messages honor Django silencing. Global registry checks, URLconf completion, cross-ViewSet deduplication and request gates remain intact.
+- Both tasks have classified RED/GREEN evidence. Task 1 selection 583 passed, expanded completion/structure gate 714; task 2 selection 61; final combined gate 762 passed on Python 3.12.3 / Django 6.0.10 with four workers. Scoped Ruff/format/whitespace pass. No active git hook is configured; commits used normal git behavior without bypass flags.
+- Four task commits end at 07501823; SUMMARY/validation committed as 3fe29494 before ROADMAP progress. Two tasks, ten source/test/evidence files, ten minutes. Five of ten plans complete; plan 06 next. Browser, translations and supported-version matrix remain with later owners.
+- Decision: separate manage_checks and additive manage_checks_clean blocks preserve their main/side positions and avoid wrapping unrelated cards. Plan 08 should document both names. No new stubs or skipped required checks. Targeted Markdown state edits preserve original state.json bytes and unrelated .gitkeep dirt; stale ROADMAP count reconciled to 5/10 after successful SDK update. No push, merge or phase-complete claim.
+
+### Phase 06.33 plan 04 execution — 2026-11-14
+
+- Guardian owning-gate descriptions, configured generic/direct-FK matrices and strict actor counts are committed. Shared policy badges/helper card replace stock Guardian tables; legacy dictionaries, lazy getters and the legacy config_table include remain compatible. Request authorization is unchanged.
+- Three classified RED/GREEN pairs. Required gates: 124 requirement/composition/group tests, 585 matrix/override/routing/content-type tests, 500 retained markup/card tests; final shared-template requirements/provenance gate 609 passed. Scoped Ruff/format/whitespace checks pass. Query growth and hidden-name protection are covered.
+- Six task commits end at 492b21b5; SUMMARY committed as 479ee50f before SDK ROADMAP progress. Three tasks, 15 source/test/evidence files, 12 minutes. Four of ten plans complete; plan 05 next. Browser, translations and broad supported-version matrix remain later-owned.
+- Targeted Markdown state edits preserve original state.json bytes and unrelated .gitkeep dirt. SDK roadmap row needed its existing stale count reconciled to 4/10. Optional WINDOWS append declined for a pre-existing rendered-table/header mismatch; no ledger edit was made and no required test was skipped. No push, merge or phase-complete claim.
+
+### Phase 06.33 plan 03 execution — 2026-11-14
+
+- Constructor/pre-registration declaration provenance and shared W280 project discovery committed. Static ordered configuration rows exclude descriptors, retain full class paths, cap escaped repr and show independent default/source/unknown metadata. Views card includes docs help, badge key and server default counts for plan 07.
+- Both tasks have classified RED/GREEN evidence. Final gates: 71 constructor/discovery/Resource/Guardian vocabulary tests and 550 shared-template/core/ancestor/Guardian/override tests pass on Python 3.12.3 / Django 6.0.10 with four workers. Scoped Ruff/format/whitespace pass; one translation-variable shadow was fixed before the final gates.
+- Four task commits end at cc7a181d; SUMMARY committed as 62bbdb35 before SDK roadmap progress. Two tasks, nine source/test/evidence files, seven minutes of recorded execution. Three of ten plans complete; plan 04 next. model_construct provenance remains explicitly unsupported; public documentation belongs to plan 08.
+- Targeted Markdown state/session edits preserve original state.json bytes and unrelated .gitkeep dirt. Guardian-specific enriched metadata and later UI/browser/release work remain with their owners. No push, merge or phase-complete claim.
+
+### Phase 06.33 plan 02 execution — 2026-11-14
+
+- Gate-owned cv_get_requirement metadata, bounded has_permission-owner custom detection, shared generated routes and nearest enforced ancestor badges committed. Collapsed summaries retain actual class/route identity and accessible nonlink requirements; malformed display metadata remains explicit while endpoint errors and authorization remain unchanged.
+- Core request inventory and all fourteen inherited extension classes covered. Final combined gate: 608 passed on Python 3.12.3 / Django 6.0.10 with four workers; scoped Ruff and whitespace checks pass. Task 1 has verified RED/GREEN; test-only task 2 characterizes already-inherited behavior without a fabricated RED or redundant implementation.
+- Three task commits end at 8a5495a5; SUMMARY committed as c26e77bf before progress updates. Two tasks, six changed source/test/evidence files, approximately twelve minutes. Plan 03 is next; Guardian descriptions remain plan 04 and route-card reuse remains plan 06.
+- SDK roadmap update succeeded; targeted Markdown progress/session edits preserve original state.json bytes. Unrelated .gitkeep dirt remains untouched. No push, merge, broad-matrix or phase-complete claim.
+
+### Phase 06.33 plan 01 execution — 2026-11-14
+
+- Core Permissions card, explicit ViewSet/user builders, batched PK-based direct holders, group/superuser counts, hidden-user protection and exactly-20 user folding committed. Core stock rendering evaluates no legacy getter; locmem overrides evaluate each legacy key once with retained shapes.
+- Nine manage theme keys and exact documentation guards: 111 core defaults, 129 with workflow. Required gates pass 483 (including post-commit tracer replay), 514 and final combined 657 tests on Python 3.12.3 / Django 6.0.10 with four workers. Scoped Ruff and whitespace checks pass.
+- Six task commits end at bd809111; SUMMARY committed as 505b098a before progress updates. One of ten plans complete; Guardian stock migration, richer view metadata, remaining cards, assets, German/browser acceptance and broad matrix remain with their later owners.
+- Root-guard extraction error was halted and resolved by the orchestrator. SDK roadmap updated successfully; Markdown progress/session updates preserve pre-existing state.json bytes because SDK state mutations publish that file. Unrelated .gitkeep dirt preserved. No push, merge or phase-complete claim.
 
 ### Phase 06.30 shipping integration — 2026-11-13
 
@@ -949,7 +1042,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 194
+- Total plans completed: 204
 
 - Total plans completed: 186
 - Average duration: -
@@ -994,9 +1087,11 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.28 | 1 | - | - |
 | 06.29 | 2 | - | - |
 | 06.30 | 15 | - | - |
+| 06.33 | 10 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
+| 06.33 | 8 | 88min | 11min |
 
 | 06.15 | 4 | - | - |
 
@@ -1010,6 +1105,14 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
+| Phase 06.33 P01 | 12min | 3 tasks | 12 files |
+| Phase 06.33 P02 | 12min | 2 tasks | 6 files |
+| Phase 06.33 P03 | 7min | 2 tasks | 9 files |
+| Phase 06.33 P04 | 12min | 3 tasks | 15 files |
+| Phase 06.33 P05 | 10min | 2 tasks | 10 files |
+| Phase 06.33 P06 | 12min | 2 tasks | 8 files |
+| Phase 06.33 P08 | 11min | 3 tasks | 13 files |
+| Phase 06.33 P09 | 22min | 3 tasks | 13 files |
 | Phase 01 P01 | 7 min | 2 tasks | 9 files |
 | Phase 01 P02 | 6 min | 2 tasks | 7 files |
 | Phase 01 P03 | 4 min | 2 tasks | 7 files |
@@ -1168,6 +1271,12 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.33 plan 01] Resolve diagnostic auth routing against the supplied ViewSet's registered manage class; Resource diagnostics fail before reads. Pivot direct holders by PK, split users at 20, and preserve legacy getters behind request-local lazy proxies.
+- [Phase 06.33 plan 02] Describe only effective has_permission ownership automatically; custom dispatch/object/queryset gates require explicit descriptions. Reuse one generated-route projection and the request engine's nearest enforced ancestor selection. Keep unchanged extension gates inherited and verify them with native requests.
+- [Phase 06.33 plan 03] Capture constructor keys before validators and own context-action declarations before registration writes; keep W280 policy unchanged and inspect display data statically. Source labels remain independent from project declaration status; model_construct provenance is unsupported.
+- [Phase 06.33 plan 04] Describe existing Guardian gates without changing authorization; merge configured direct grants by holder PK and exact permission identity. Actor counts reuse the strict helper including its active-superuser shortcut. Shared templates own Guardian cards; legacy collections/include remain independently compatible.
+- [Phase 06.33 plan 06] Reverse only upward hierarchy links from explicit required URL kwargs. Static built-in button descriptions never evaluate rendering/access. Preserve the existing empty-extends fallback and its explicit empty declaration; retain shared default-row markers and both checks blocks.
 
 Decisions are logged in the PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
@@ -1530,6 +1639,7 @@ None yet.
 
 - Phase 06.31 inserted after Phase 06.30: Issue #361: developer-only manage diagnostics and explicit group setup; carry approved D-01–D-07 from the issue handover. Complete before Phase 7. (URGENT)
 - Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
+- Phase 06.33 inserted after Phase 06.32: Structured manage page (#366); approved D-01–D-30 handover, before Phase 7 theme-surface freeze (URGENT)
 
 ## Deferred Items
 
@@ -1539,6 +1649,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-13T17:35:16.365Z
-Stopped at: Phase 06.30 complete, ready to plan Phase 7
+Last session: 2026-11-14T22:12:46.723278+00:00
+Stopped at: Phase 06.33 complete, ready to plan Phase 7
 Resume file: None

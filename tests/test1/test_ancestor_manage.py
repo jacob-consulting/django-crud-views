@@ -340,12 +340,18 @@ def _flat(response) -> str:
     return re.sub(r"\s+", " ", response.content.decode())
 
 
-def _policy_table(response) -> dict[str, tuple[str, str]]:
-    """``setting -> (declared, effective)`` rows of the rendered ancestor policy table."""
-    match = re.search(r'<table class="table table-striped" id="cv-ancestor-policy">(.*?)</table>', _flat(response))
-    assert match, "ancestor policy table missing"
-    rows = re.findall(r"<tr> <td>(.*?)</td> <td>(.*?)</td> <td>(.*?)</td> </tr>", match.group(1))
-    return {name: (declared, effective) for name, declared, effective in rows}
+def _policy_table(response) -> dict[str, tuple[str, bool]]:
+    """Effective values and independent inherited markers from a two-column table."""
+    from lxml import html
+
+    table = html.fromstring(response.content).get_element_by_id("cv-ancestor-policy")
+    assert len(table.xpath("./thead/tr/th")) == 2
+    rows = {}
+    for row in table.xpath(".//tr[th[@scope='row']]"):
+        assert len(row) == 2
+        value = row.xpath(".//*[@data-policy-value]")[0].text_content().strip()
+        rows[row[0].text_content().strip()] = (value, bool(row.xpath(".//*[@data-policy-source]")))
+    return rows
 
 
 def _member_with_chain(kind, world, username):
@@ -373,12 +379,12 @@ def test_manage_reports_declared_none_next_to_effective_defaults(routes, world, 
         "requests": DEFAULT_REQUESTS,
     }
     rows = _policy_table(response)
-    assert rows["provider"] == ("None (ViewSet class default)", "model")
-    assert rows["accept_global_perms"] == ("False", "False")
-    assert rows["cascade"] == ("None (global setting)", "True")
-    assert rows["read"] == ("None (global setting)", "nearest: view, higher: view")
-    assert rows["write"] == ("None (global setting)", "nearest: change, higher: view")
-    assert rows["actions"] == ("none declared", "—")
+    assert rows["provider"] == ("model", True)
+    assert rows["accept_global_perms"] == ("False", False)
+    assert rows["cascade"] == ("True", True)
+    assert rows["read"] == ("nearest: view, higher: view", True)
+    assert rows["write"] == ("nearest: change, higher: view", True)
+    assert rows["actions"] == ("none declared", False)
     assert "Configuration only" in _flat(response)
 
 
@@ -400,8 +406,8 @@ def test_manage_effective_defaults_follow_the_global_settings_while_declared_sta
     assert requests["write"] == {"declared": None, "effective": {"nearest": "change", "higher": "change"}}
     assert requests["read"] == DEFAULT_REQUESTS["read"]
     rows = _policy_table(response)
-    assert rows["cascade"] == ("None (global setting)", "False")
-    assert rows["write"] == ("None (global setting)", "nearest: change, higher: change")
+    assert rows["cascade"] == ("False", True)
+    assert rows["write"] == ("nearest: change, higher: change", True)
 
 
 @pytest.mark.django_db
@@ -429,9 +435,9 @@ def test_manage_reports_explicit_request_declarations(routes, world, mode):
         "actions": {"approve": {"nearest": "delete", "higher": "view"}},
     }
     rows = _policy_table(response)
-    assert rows["cascade"] == ("False", "False")
-    assert rows["read"] == ("nearest: change, higher: view", "nearest: change, higher: view")
-    assert rows["actions[approve]"] == ("nearest: delete, higher: view", "nearest: delete, higher: view")
+    assert rows["cascade"] == ("False", False)
+    assert rows["read"] == ("nearest: change, higher: view", False)
+    assert rows["actions[approve]"] == ("nearest: delete, higher: view", False)
     assert "actions" not in rows  # the "none declared" row is only for an empty map
 
 
@@ -448,7 +454,7 @@ def test_top_level_manage_reports_request_scope_not_applicable(routes, world, mo
         "requests": None,
     }
     rows = _policy_table(response)
-    assert rows["provider"] == ("None (ViewSet class default)", provider)
+    assert rows["provider"] == (provider, True)
     assert "cascade" not in rows and "read" not in rows
     assert "not applicable: top-level ViewSet" in _flat(response)
 
@@ -481,23 +487,31 @@ def test_guardian_manage_separates_ancestor_fallback_from_local_view_fallback(ro
     }
     assert dict(views["detail"]["guardian_policy"])["effective_policy"] == "strict"
     assert leaf.context["guardian_config"]["get_objects_for_user"]["accept_global_perms"] is False
-    content = _flat(leaf)
-    assert "<tr> <td>create</td> <td>—</td> <td>not applicable</td> </tr>" in content
-    assert "<tr> <td>detail</td> <td>False</td> <td>strict: object and group grants only</td> </tr>" in content
-    assert _policy_table(leaf)["accept_global_perms"] == ("False", "False")
+    from lxml import html
+
+    doc = html.fromstring(leaf.content)
+    create_summary = doc.get_element_by_id("cv-view-create").find("summary")
+    assert create_summary.xpath("./span[@data-cv-guardian-policy]")[0].text_content().strip() == "not applicable"
+    assert "parent: change" in create_summary.text_content()
+    assert not create_summary.xpath(".//span[@title='No own permission required']")
+    detail_summary = doc.get_element_by_id("cv-view-detail").find("summary")
+    assert detail_summary.xpath("./span[@data-cv-guardian-policy]")[0].text_content().strip() == "strict"
+    assert "parent: view" in detail_summary.text_content()
+    assert _policy_table(leaf)["accept_global_perms"] == ("False", False)
 
     mid = client.get(_mid_manage(chain, world.penguin.pk))
     assert mid.status_code == 200
     assert mid.context["ancestor_policy"]["as_ancestor"]["accept_global_perms"] is True
-    assert _policy_table(mid)["accept_global_perms"] == ("True", "True")
+    assert _policy_table(mid)["accept_global_perms"] == ("True", False)
     # its parent (the Publisher) has no ancestor fallback although the Book detail is locally permissive
     assert mid.context["guardian_config"]["parent_viewset"] == f"{chain.grand.name} (ancestor provider: guardian)"
     assert dict(mid.context["views"]["detail"]["guardian_policy"])["effective_policy"] == "global fallback"
-    mid_content = _flat(mid)
-    assert (
-        "<tr> <td>detail</td> <td>True</td> <td>global fallback: model permissions accepted</td> </tr>" in mid_content
-    )
-    assert "strict: object and group grants only; global model permissions are not accepted" in mid_content
+    mid_doc = html.fromstring(mid.content)
+    badge = mid_doc.get_element_by_id("cv-view-detail").xpath("./summary/span[@data-cv-guardian-policy]")[0]
+    assert badge.text_content().strip() == "global fallback"
+    helper = mid_doc.get_element_by_id("cv-manage-guardian").text_content()
+    assert "global model permissions are not accepted" in helper
+    assert "active superuser reaches every object" in helper
 
 
 @pytest.mark.django_db

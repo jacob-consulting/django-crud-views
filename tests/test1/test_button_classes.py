@@ -26,6 +26,15 @@ from crud_views.lib.button_classes import (
 from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
 EXPECTED_KEYS = {
+    "manage:badge-model",
+    "manage:badge-objects",
+    "manage:badge-permission",
+    "manage:badge-group",
+    "manage:badge-policy-global",
+    "manage:badge-policy-strict",
+    "manage:badge-policy-na",
+    "manage:row-default",
+    "manage:help",
     *(f"form:column-{width}" for width in range(1, 13)),
     *(f"{loc}:{slot}" for loc in ("context", "list") for slot in ("primary", "secondary", "tertiary", "danger")),
     "card:primary",
@@ -116,7 +125,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 102
+    assert len(EXPECTED_KEYS) == 111
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -131,13 +140,82 @@ def test_numbered_column_defaults(width):
     assert get_button_class("form", f"column-{width}") == f"col-md-{width}"
 
 
+def test_manage_registry_defaults_and_overrides():
+    defaults = {
+        "badge-model": "badge bg-secondary",
+        "badge-objects": "badge bg-light text-dark border",
+        "badge-permission": "badge bg-primary",
+        "badge-group": "badge cv-manage-badge-group",
+        "badge-policy-global": "badge bg-success",
+        "badge-policy-strict": "badge bg-success",
+        "badge-policy-na": "badge bg-secondary",
+        "row-default": "cv-manage-default",
+        "help": "btn btn-sm btn-outline-secondary",
+    }
+    assert {key: value for key, value in DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")} == {
+        f"manage:{key}": value for key, value in defaults.items()
+    }
+    for key, value in defaults.items():
+        assert get_button_class("manage", key) == value
+    register_button_classes({"manage:help": "theme-help"})
+    assert get_button_class("manage", "help") == "theme-help"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"manage:help": "project-help"}):
+        assert get_button_class("manage", "help") == "project-help"
+        assert not [m for m in button_class_check_messages() if m.id == "crud_views.W362"]
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"manage:undeclared": "invalid"}):
+        assert [m for m in button_class_check_messages() if m.id == "crud_views.W362"]
+
+
+@pytest.mark.parametrize(
+    "slot",
+    [
+        "badge-model",
+        "badge-objects",
+        "badge-permission",
+        "badge-group",
+        "badge-policy-global",
+        "badge-policy-strict",
+        "badge-policy-na",
+        "row-default",
+        "help",
+    ],
+)
+def test_every_manage_class_family_preserves_override_precedence(slot):
+    register_button_classes({f"manage:{slot}": "theme-value"})
+    assert get_button_class("manage", slot) == "theme-value"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={f"manage:{slot}": "project-value"}):
+        assert get_button_class("manage", slot) == "project-value"
+        assert not [m for m in button_class_check_messages() if m.id == "crud_views.W362"]
+
+
+@pytest.mark.django_db
+def test_core_manage_card_resolves_registry_classes(client, cv_author, user_author_view):
+    from django.contrib.auth.models import Group
+    from lxml import html
+
+    from crud_views.lib.settings import crud_views_settings
+
+    user_author_view.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    client.force_login(user_author_view)
+    register_button_classes({"manage:badge-model": "theme-model", "manage:help": "theme-help"})
+    response = client.get("/author/manage/")
+    doc = html.fromstring(response.content)
+    assert doc.cssselect("#cv-manage-permissions .theme-model")
+    assert doc.cssselect("#cv-manage-permissions a.theme-help")
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"manage:badge-model": "project-model"}):
+        doc = html.fromstring(client.get("/author/manage/").content)
+        assert doc.cssselect("#cv-manage-permissions .project-model")
+        assert doc.cssselect("#cv-manage-permissions a.theme-help")
+        assert not doc.cssselect("#cv-manage-permissions .theme-model")
+
+
 def test_workflow_app_defaults_lifecycle(monkeypatch):
     from crud_views.apps import CrudViewsConfig
     from crud_views_workflow.apps import CrudViewsWorkflowConfig
 
     core = dict(DEFAULT_BUTTON_CLASSES)
     workflow = dict(CrudViewsWorkflowConfig.crud_views_button_class_defaults)
-    assert len(core) == 102
+    assert len(core) == 111
     assert len(workflow) == 18
     transitions = {key: value for key, value in workflow.items() if key.startswith("workflow:transition-")}
     assert transitions == {
@@ -145,7 +223,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
         for variant in ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark")
     }
     assert bc._get_default_button_classes() == core | workflow
-    assert len(get_button_classes()) == 120
+    assert len(get_button_classes()) == 129
     register_button_classes({"workflow:badge-purple": "theme-purple"})
     seen = []
     original_ready = CrudViewsConfig.ready
@@ -271,7 +349,7 @@ class ThemeConfig(AppConfig):
     name = "badge_theme_probe"
     path = "."
     def ready(self):
-        assert len(bc._get_default_button_classes()) == 120
+        assert len(bc._get_default_button_classes()) == 129
         bc.register_button_classes({"workflow:badge-info": "theme-info"})
         seen.append(bc.get_button_class("workflow", "badge-info"))
 theme.ThemeConfig = ThemeConfig
@@ -284,11 +362,11 @@ settings.configure(
     CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"},
 )
 from crud_views.lib import button_classes as bc
-assert len(bc.DEFAULT_BUTTON_CLASSES) == 102
+assert len(bc.DEFAULT_BUTTON_CLASSES) == 111
 assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
 django.setup()
 assert seen == ["theme-info"]
-assert len(bc._get_default_button_classes()) == 120
+assert len(bc._get_default_button_classes()) == 129
 assert bc.get_button_class("workflow", "badge-info") == "theme-info"
 assert bc.get_button_class("workflow", "badge-light") == "project-light"
 """

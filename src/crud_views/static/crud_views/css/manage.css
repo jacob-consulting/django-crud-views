@@ -1,0 +1,139 @@
+[data-cv-manage] {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+[data-cv-manage] > *,
+[data-cv-manage] .card,
+[data-cv-manage] .card-body,
+[data-cv-manage] details {
+    min-width: 0;
+}
+
+[data-cv-manage] summary,
+[data-cv-manage] td,
+[data-cv-manage] code,
+[data-cv-manage] .list-group-item {
+    overflow-wrap: anywhere;
+}
+
+[data-cv-manage] summary {
+    position: relative;
+    min-height: 44px;
+    padding: 8px;
+    cursor: pointer;
+}
+
+/* Keep absolutely positioned accessible descriptions inside their scroll region. */
+[data-cv-manage] .table-responsive {
+    position: relative;
+}
+
+[data-cv-manage] .cv-manage-config th[scope="row"] {
+    width: 192px;
+    min-width: 192px;
+    white-space: nowrap;
+}
+
+[data-cv-manage] .cv-manage-config td {
+    min-width: 160px;
+}
+
+/* Holder names wrap independently of intentionally fixed configuration keys. */
+[data-cv-manage] #cv-manage-permissions th[scope="row"] {
+    width: 160px;
+    min-width: 120px;
+    max-width: 192px;
+    overflow-wrap: anywhere;
+}
+
+[data-cv-manage] th,
+[data-cv-manage] small,
+[data-cv-manage] .badge,
+[data-cv-manage] .card-footer {
+    font-size: 14px;
+}
+
+[data-cv-manage] small,
+[data-cv-manage] .badge {
+    font-weight: 400;
+}
+
+[data-cv-manage] code {
+    font-size: inherit;
+    color: inherit;
+}
+
+[data-cv-manage] th,
+[data-cv-manage] strong,
+[data-cv-manage] .h6 {
+    font-weight: 600;
+}
+
+[data-cv-manage] th {
+    color: var(--bs-secondary-text-emphasis, #495057);
+}
+
+[data-cv-manage] .h6 {
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+[data-cv-manage] .card-header,
+[data-cv-manage] .cv-manage-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+[data-cv-manage] [data-cv-manage-help] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 50%;
+    margin-inline-start: 8px;
+}
+
+/* Stock outline-secondary is below 4.5:1 on Bootstrap's tinted card header. */
+[data-cv-manage] [data-cv-manage-help].btn-outline-secondary {
+    --bs-btn-color: var(--bs-secondary-text-emphasis, #495057);
+}
+
+[data-cv-manage] .cv-manage-default td {
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+[data-cv-manage] #cv-manage-presentation {
+    position: relative;
+}
+
+[data-cv-manage] #cv-manage-presentation > summary {
+    padding-inline-end: 56px;
+}
+
+[data-cv-manage] #cv-manage-presentation > [data-cv-manage-help] {
+    position: absolute;
+    inset-block-start: 8px;
+    inset-inline-end: 8px;
+}
+
+/* Keep the summary's sibling help available while only the diagnostic body folds. */
+[data-cv-manage] #cv-manage-presentation::details-content {
+    content-visibility: visible;
+}
+
+[data-cv-manage] #cv-manage-presentation:not([open]) > .card-body {
+    display: none;
+}
+
+[data-cv-manage] .cv-manage-badge-group {
+    background-color: #a61e6a;
+    color: #fff;
+}
+
+[data-cv-manage] [hidden] {
+    display: none !important;
+}

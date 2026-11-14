@@ -162,3 +162,36 @@ def test_removed_cv_parent_key_warns():
     messages = _w280(RemovedParentKeyView)
     assert [m.id for m in messages] == ["viewset.W280"]
     assert "cv_parent_key" in messages[0].msg
+
+
+def test_diagnostic_class_discovery_does_not_broaden_w280():
+    from crud_views.lib.check import _collect_cv_names, _project_cv_declarations
+
+    class Explosive:
+        def __get__(self, instance, owner=None):
+            raise AssertionError("Diagnostics must not evaluate descriptors")
+
+    class ProjectView(CrudView):
+        cv_custom_class = dict
+        cv_custom_descriptor = Explosive()
+        cv_custom_property = property(lambda self: 1)
+        cv_custom_method = staticmethod(lambda: 1)
+        cv_custom_data = 1
+        cv_check_ignore_attributes = {"cv_custom_data"}
+
+    all_names, data_names = set(), set()
+    _collect_cv_names(ProjectView, all_names, data_names)
+    assert "cv_custom_class" not in data_names
+    _collect_cv_names(ProjectView, all_names, data_names, include_classes=True)
+    assert "cv_custom_class" in data_names
+    assert not {"cv_custom_descriptor", "cv_custom_property", "cv_custom_method"} & data_names
+    assert "cv_custom_class" in _project_cv_declarations(ProjectView, include_classes=True)
+    assert _w280(ProjectView) == []
+
+
+def test_package_prefix_stays_library_for_unknown_discovery():
+    class ThemeView(CrudView):
+        cv_theme_only = 1
+
+    ThemeView.__module__ = "crud_views_theme.views"
+    assert _w280(ThemeView) == []

@@ -16,6 +16,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: templates/crud_views/view_manage.html
+msgid "Blue: required permission · Magenta: required group · Green: Guardian policy. Hover a badge for details."
+msgstr "Blau: erforderliche Berechtigung · Magenta: erforderliche Gruppe · Grün: Guardian-Richtlinie. Details erscheinen beim Überfahren eines Abzeichens."
+
 #: lib/crispy/form.py:35
 msgid "Save"
 msgstr "Speichern"
@@ -391,3 +395,556 @@ msgstr "Keine Berechtigungsinhaber gefunden."
 #: templates/crud_views/view_manage.html:114
 msgid "Views"
 msgstr "Views"
+
+#: lib/views/manage.py
+#, python-format
+msgid "%(count)s active superuser holds every permission"
+msgid_plural "%(count)s active superusers hold every permission"
+msgstr[0] "%(count)s aktiver Superuser besitzt jede Berechtigung"
+msgstr[1] "%(count)s aktive Superuser besitzen jede Berechtigung"
+
+#: lib/views/manage.py
+#, python-format
+msgid "%(count)s default hidden"
+msgid_plural "%(count)s defaults hidden"
+msgstr[0] "%(count)s Standardwert ausgeblendet"
+msgstr[1] "%(count)s Standardwerte ausgeblendet"
+
+#: lib/views/manage.py
+#, python-format
+msgid "%(count)s member"
+msgid_plural "%(count)s members"
+msgstr[0] "%(count)s Mitglied"
+msgstr[1] "%(count)s Mitglieder"
+
+#: lib/views/manage.py
+#, python-format
+msgid "%(count)s object"
+msgid_plural "%(count)s objects"
+msgstr[0] "%(count)s Objekt"
+msgstr[1] "%(count)s Objekte"
+
+#: lib/views/manage.py
+#, python-format
+msgid "%(set)s set · %(defaults)s default · applies to all views"
+msgid_plural "%(set)s set · %(defaults)s defaults · applies to all views"
+msgstr[0] "%(set)s gesetzt · %(defaults)s Standardwert · gilt für alle Views"
+msgstr[1] "%(set)s gesetzt · %(defaults)s Standardwerte · gilt für alle Views"
+
+#: lib/views/manage.py
+#, python-format
+msgid "+ %(count)s more"
+msgstr "+ %(count)s weitere"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Access for: %(username)s (you)"
+msgstr "Zugriff für: %(username)s (Sie)"
+
+#: lib/views/manage.py
+msgid "Ancestor policy"
+msgstr "Richtlinie für übergeordnete ViewSets"
+
+#: lib/views/manage.py
+msgid "As an ancestor of nested requests"
+msgstr "Als übergeordnetes ViewSet verschachtelter Anfragen"
+
+#: lib/views/manage.py
+msgid "Children"
+msgstr "Untergeordnete ViewSets"
+
+#: lib/views/manage.py
+msgid "Configuration issues"
+msgstr "Konfigurationsprobleme"
+
+#: lib/views/manage.py
+msgid ""
+"Configuration only, not an access result for the current user. Provider and "
+"accept_global_perms apply when this ViewSet is the ancestor of a nested "
+"request; cascade, read, write and actions apply to nested requests to this "
+"ViewSet. Endpoint-local permission options are separate."
+msgstr ""
+"Nur Konfiguration, kein Zugriffsergebnis für den aktuellen Benutzer. "
+"Provider und accept_global_perms gelten, wenn dieses ViewSet einer "
+"verschachtelten Anfrage übergeordnet ist; cascade, read, write und actions "
+"gelten für verschachtelte Anfragen an dieses ViewSet. Lokale "
+"Berechtigungsoptionen der Endpunkte sind davon unabhängig."
+
+#: lib/views/manage.py
+msgid "Context buttons"
+msgstr "Kontextschaltflächen"
+
+#: lib/views/manage.py
+msgid "Critical"
+msgstr "Kritisch"
+
+#: lib/views/manage.py
+msgid "Custom access requirement"
+msgstr "Benutzerdefinierte Zugriffsanforderung"
+
+#: lib/views/manage.py
+msgid "Debug"
+msgstr "Debug"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Documentation: %(section)s"
+msgstr "Dokumentation: %(section)s"
+
+#: lib/views/manage.py
+msgid "Documentation: Ancestor policy"
+msgstr "Dokumentation: Richtlinie für übergeordnete ViewSets"
+
+#: lib/views/manage.py
+msgid "Documentation: Guardian"
+msgstr "Dokumentation: Guardian"
+
+#: lib/views/manage.py
+msgid "Documentation: Hierarchy"
+msgstr "Dokumentation: Hierarchie"
+
+#: lib/views/manage.py
+msgid "Documentation: Permissions"
+msgstr "Dokumentation: Berechtigungen"
+
+#: lib/views/manage.py
+msgid "Documentation: Presentation"
+msgstr "Dokumentation: Darstellung"
+
+#: lib/views/manage.py
+msgid "Documentation: System checks"
+msgstr "Dokumentation: Systemprüfungen"
+
+#: lib/views/manage.py
+msgid "Documentation: URL names"
+msgstr "Dokumentation: URL-Namen"
+
+#: lib/views/manage.py
+msgid "Documentation: ViewSet"
+msgstr "Dokumentation: ViewSet"
+
+#: lib/views/manage.py
+msgid "Documentation: Views"
+msgstr "Dokumentation: Views"
+
+#: lib/views/manage.py
+msgid "Dynamic/custom label"
+msgstr "Dynamische/benutzerdefinierte Beschriftung"
+
+#: lib/views/manage.py
+msgid ""
+"Each view's context_actions decides where buttons appear. View-specific "
+"context buttons appear under Other."
+msgstr ""
+"context_actions jeder View bestimmt, wo Schaltflächen erscheinen. View-"
+"spezifische Kontextschaltflächen stehen unter Sonstiges."
+
+#: lib/views/manage.py
+msgid "Effective"
+msgstr "Wirksam"
+
+#: lib/views/manage.py
+msgid "Error"
+msgstr "Fehler"
+
+#: lib/views/manage.py
+msgid "Group: "
+msgstr "Gruppe: "
+
+#: lib/views/manage.py
+msgid "Groups"
+msgstr "Gruppen"
+
+#: lib/views/manage.py
+msgid "Guardian"
+msgstr "Guardian"
+
+#: lib/views/manage.py
+msgid ""
+"Guardian actor counts use the strict ViewSet helper, including group grants."
+" An active superuser reaches every object; ordinary global model permissions"
+" do not add objects."
+msgstr ""
+"Die Guardian-Zählung für den Benutzer verwendet die strikte ViewSet-"
+"Hilfsmethode einschließlich Gruppenberechtigungen. Ein aktiver Superuser "
+"erreicht jedes Objekt; gewöhnliche globale Modellberechtigungen fügen keine "
+"Objekte hinzu."
+
+#: lib/views/manage.py
+msgid "Guardian policy:"
+msgstr "Guardian-Richtlinie:"
+
+#: lib/views/manage.py
+msgid ""
+"GuardianViewSet.get_objects_for_user() is independent of local view policies"
+" and always strict: global model permissions are not accepted."
+msgstr ""
+"GuardianViewSet.get_objects_for_user() ist unabhängig von lokalen View-"
+"Richtlinien und immer strikt: Globale Modellberechtigungen werden nicht "
+"akzeptiert."
+
+#: lib/views/manage.py
+msgid "Hierarchy"
+msgstr "Hierarchie"
+
+#: lib/views/manage.py
+msgid "Icons"
+msgstr "Symbole"
+
+#: lib/views/manage.py
+msgid "Info"
+msgstr "Information"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Inline template: %(code)s"
+msgstr "Inline-Vorlage: %(code)s"
+
+#: lib/views/manage.py
+msgid "Key"
+msgstr "Schlüssel"
+
+#: lib/views/manage.py
+msgid "Label declaration"
+msgstr "Beschriftungsdeklaration"
+
+#: lib/views/manage.py
+msgid "Label modes"
+msgstr "Beschriftungsmodi"
+
+#: lib/views/manage.py
+msgid "More users"
+msgstr "Weitere Benutzer"
+
+#: lib/views/manage.py
+msgid "Name"
+msgstr "Name"
+
+#: lib/views/manage.py
+msgid "Navigation"
+msgstr "Navigation"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Needs ancestor permission: %(permission)s"
+msgstr "Benötigt Berechtigung beim übergeordneten ViewSet: %(permission)s"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Needs group membership: %(group)s"
+msgstr "Benötigt Gruppenmitgliedschaft: %(group)s"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Needs permission: %(permission)s"
+msgstr "Benötigt Berechtigung: %(permission)s"
+
+#: lib/views/manage.py
+msgid "No child ViewSets"
+msgstr "Keine untergeordneten ViewSets"
+
+#: lib/views/manage.py
+msgid "No context buttons configured."
+msgstr "Keine Kontextschaltflächen konfiguriert."
+
+#: lib/views/manage.py
+msgid "No direct permission holders"
+msgstr "Keine direkten Berechtigungsinhaber"
+
+#: lib/views/manage.py
+msgid "No groups hold these permissions."
+msgstr "Keine Gruppen besitzen diese Berechtigungen."
+
+#: lib/views/manage.py
+msgid "No own permission required"
+msgstr "Keine eigene Berechtigung erforderlich"
+
+#: lib/views/manage.py
+msgid "No permission or object grant"
+msgstr "Keine Modell- oder Objektberechtigung"
+
+#: lib/views/manage.py
+msgid ""
+"No permissions configured. Review this ViewSet's permission configuration."
+msgstr ""
+"Keine Berechtigungen konfiguriert. Prüfen Sie die Berechtigungskonfiguration"
+" dieses ViewSets."
+
+#: lib/views/manage.py
+msgid "No users hold these permissions directly."
+msgstr "Keine Benutzer besitzen diese Berechtigungen direkt."
+
+#: lib/views/manage.py
+msgid "No views registered. Review this ViewSet's registration."
+msgstr ""
+"Keine Views registriert. Prüfen Sie die Registrierung dieses ViewSets."
+
+#: lib/views/manage.py
+msgid ""
+"Object and group grants count. An active superuser reaches every object; an "
+"inactive user reaches none."
+msgstr ""
+"Objekt- und Gruppenberechtigungen zählen. Ein aktiver Superuser erreicht "
+"jedes Objekt; ein inaktiver Benutzer keines."
+
+#: lib/views/manage.py
+msgid "Opens in a new tab"
+msgstr "Öffnet in einem neuen Tab"
+
+#: lib/views/manage.py
+msgid "Other"
+msgstr "Sonstiges"
+
+#: lib/views/manage.py
+msgid "Parents"
+msgstr "Übergeordnete ViewSets"
+
+#: lib/views/manage.py
+msgid "Permission: "
+msgstr "Berechtigung: "
+
+#: lib/views/manage.py
+msgid ""
+"Permissions inherited through groups appear in group rows. Review the access"
+" row and active-superuser count above."
+msgstr ""
+"Über Gruppen geerbte Berechtigungen erscheinen in den Gruppenzeilen. Prüfen "
+"Sie die Zugriffszeile und die Anzahl aktiver Superuser oben."
+
+#: lib/views/manage.py
+msgid "Points to"
+msgstr "Verweist auf"
+
+#: lib/views/manage.py
+msgid "Presentation"
+msgstr "Darstellung"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Presentation: %(section)s"
+msgstr "Darstellung: %(section)s"
+
+#: lib/views/manage.py
+msgid "Requests to this ViewSet"
+msgstr "Anfragen an dieses ViewSet"
+
+#: lib/views/manage.py
+msgid "Requirement unavailable; review system checks"
+msgstr "Anforderung nicht verfügbar; Systemprüfungen prüfen"
+
+#: lib/views/manage.py
+msgid "Resource, no manage page"
+msgstr "Resource, keine Verwaltungsseite"
+
+#: lib/views/manage.py
+msgid ""
+"Review the checks below and update this ViewSet's configuration. Open the "
+"documentation for details."
+msgstr ""
+"Prüfen Sie die folgenden Meldungen und aktualisieren Sie die Konfiguration "
+"dieses ViewSets. Einzelheiten finden Sie in der Dokumentation."
+
+#: lib/views/manage.py
+msgid "Route unavailable; review system checks"
+msgstr "Route nicht verfügbar; Systemprüfungen prüfen"
+
+#: lib/views/manage.py
+msgid "Setting"
+msgstr "Einstellung"
+
+#: lib/views/manage.py
+msgid "Show defaults"
+msgstr "Standardwerte anzeigen"
+
+#: lib/views/manage.py
+msgid "Target unavailable; review this button's configuration."
+msgstr ""
+"Ziel nicht verfügbar; prüfen Sie die Konfiguration dieser Schaltfläche."
+
+#: lib/views/manage.py
+msgid "Target view label"
+msgstr "Beschriftung der Ziel-View"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Template: %(template)s"
+msgstr "Vorlage: %(template)s"
+
+#: lib/views/manage.py
+msgid "Templates"
+msgstr "Vorlagen"
+
+#: lib/views/manage.py
+msgid "Templates and actions"
+msgstr "Vorlagen und Aktionen"
+
+#: lib/views/manage.py
+msgid ""
+"To open a child's manage page, open its list under a parent object and use "
+"its manage action."
+msgstr ""
+"Um die Verwaltungsseite eines untergeordneten ViewSets zu öffnen, öffnen Sie"
+" dessen Liste unter einem übergeordneten Objekt und verwenden Sie dessen "
+"Verwaltungsaktion."
+
+#: lib/views/manage.py
+msgid "Type"
+msgstr "Typ"
+
+#: lib/views/manage.py
+msgid "URL names"
+msgstr "URL-Namen"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Undeclared ancestor permission key: %(key)s"
+msgstr ""
+"Nicht deklarierter Berechtigungsschlüssel des übergeordneten ViewSets: "
+"%(key)s"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Undeclared permission key: %(key)s"
+msgstr "Nicht deklarierter Berechtigungsschlüssel: %(key)s"
+
+#: lib/views/manage.py
+#, python-format
+msgid "View configuration: %(key)s"
+msgstr "View-Konfiguration: %(key)s"
+
+#: lib/views/manage.py
+msgid "ViewSet"
+msgstr "ViewSet"
+
+#: lib/views/manage.py
+msgid "ViewSet class default"
+msgstr "Standardwert der ViewSet-Klasse"
+
+#: lib/views/manage.py
+msgid "Warning"
+msgstr "Warnung"
+
+#: lib/views/manage.py
+msgid ""
+"cascade, read, write, actions — not applicable: top-level ViewSet (no "
+"ancestors)"
+msgstr ""
+"cascade, read, write, actions — nicht anwendbar: ViewSet auf oberster Ebene "
+"(keine übergeordneten ViewSets)"
+
+#: lib/views/manage.py
+msgid "custom"
+msgstr "benutzerdefiniert"
+
+#: lib/views/manage.py
+#, python-format
+msgid "custom button: %(type)s · template: %(template)s"
+msgstr "Benutzerdefinierte Schaltfläche: %(type)s · Vorlage: %(template)s"
+
+#: lib/views/manage.py
+#, python-format
+msgid "declared: %(value)s"
+msgstr "deklariert: %(value)s"
+
+#: lib/views/manage.py
+msgid "default"
+msgstr "Standardwert"
+
+#: lib/views/manage.py
+msgid "from ViewSet"
+msgstr "vom ViewSet"
+
+#: lib/views/manage.py
+msgid "global setting"
+msgstr "globale Einstellung"
+
+#: lib/views/manage.py
+msgid "inherited"
+msgstr "geerbt"
+
+#: lib/views/manage.py
+msgid "model"
+msgstr "Modell"
+
+#: lib/views/manage.py
+msgid "model Meta"
+msgstr "Modell-Meta"
+
+#: lib/views/manage.py
+msgid ""
+"model: model-level permission · objects: object grants; your row includes "
+"effective permissions and reachable objects"
+msgstr ""
+"Modell: Berechtigung auf Modellebene · Objekte: Objektberechtigungen; Ihre "
+"Zeile enthält wirksame Berechtigungen und erreichbare Objekte"
+
+#: lib/views/manage.py
+msgid "none"
+msgstr "keine"
+
+#: lib/views/manage.py
+msgid "none declared"
+msgstr "keine deklariert"
+
+#: lib/views/manage.py
+msgid "not declared"
+msgstr "nicht deklariert"
+
+#: lib/views/manage.py
+#, python-format
+msgid "parent: %(key)s"
+msgstr "übergeordnet: %(key)s"
+
+#: lib/views/manage.py
+#, python-format
+msgid "parent: %(key)s (undeclared)"
+msgstr "übergeordnet: %(key)s (nicht deklariert)"
+
+#: lib/views/manage.py
+msgid ""
+"permission: own gate · group: required membership · parent: ancestor "
+"permission · none: no own permission · custom: project access requirement"
+msgstr ""
+"Berechtigung: eigene Prüfung · Gruppe: erforderliche Mitgliedschaft · "
+"übergeordnet: Berechtigung des übergeordneten ViewSets · keine: keine eigene"
+" Berechtigung · benutzerdefiniert: Zugriffsanforderung des Projekts"
+
+#: lib/views/manage.py
+msgid "route (relative to where the ViewSet is included)"
+msgstr "Route (relativ zum Einbindungspunkt des ViewSets)"
+
+#: lib/views/manage.py
+msgid "set"
+msgstr "gesetzt"
+
+#: lib/views/manage.py
+msgid "strict"
+msgstr "strikt"
+
+#: lib/views/manage.py
+msgid "toggles the list filter"
+msgstr "schaltet den Listenfilter um"
+
+#: lib/views/manage.py
+msgid "top level, never shown"
+msgstr "oberste Ebene, wird nie angezeigt"
+
+#: lib/views/manage.py
+#, python-format
+msgid "undeclared: %(key)s"
+msgstr "nicht deklariert: %(key)s"
+
+#: lib/views/manage.py
+msgid "unknown attribute"
+msgstr "unbekanntes Attribut"
+
+#: lib/views/manage.py
+msgid "— top level"
+msgstr "— oberste Ebene"
+
+#: lib/views/manage.py
+#, python-format
+msgid "✓ no issues · %(count)s system check for this ViewSet"
+msgid_plural "✓ no issues · %(count)s system checks for this ViewSet"
+msgstr[0] "✓ keine Probleme · %(count)s Systemprüfung für dieses ViewSet"
+msgstr[1] "✓ keine Probleme · %(count)s Systemprüfungen für dieses ViewSet"

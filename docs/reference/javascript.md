@@ -17,12 +17,32 @@ The scripts render in this order from `{% cv_js %}` (and `cv_sources("js")` for 
 | `modal.js` | nothing | `cv.adapters.modal` |
 | `toggle.js` | nothing | nothing |
 | `tooltip.js` | nothing | `cv.adapters.tooltip` (does nothing without it) |
+| `manage.js` | nothing | nothing |
 | object-detail `tabs.js` (extension) | nothing | `cv.adapters.tab`, at initialization/disposal; absent entry is a no-op |
 
 The namespace is resolved when an adapter is called, not when the script loads. Bootstrap's bundle and selected-theme
 wiring must be ready before initialization, including immediate initialization on an already-ready document;
 call-time resolution does not schedule a retry. Bootstrap must also be present for its own data-API components. jQuery is
 needed only on pages with formsets and by jQuery-based extensions, see [jQuery](#jquery).
+
+## Manage defaults
+
+The external `crud_views/js/manage.js` script enhances the shared core/Guardian diagnostic page. It binds a
+delegated `change` handler on each `[data-cv-manage]` root before hiding default rows and revealing the
+`[data-cv-show-defaults]` switch. One switch controls both Views and Presentation. Counts are translated in
+server markup; the script changes visibility rather than building HTML. It leaves native disclosures and focus
+in place, has **no persistence**, and neither evaluates permissions nor fetches data.
+
+Initialization runs at `DOMContentLoaded`, immediately when the document is already ready, and on
+`cv:modal:loaded`. `cv.initManageDefaults(root)` supports explicit initialization of a newly inserted root;
+initializing the same page twice is harmless. A page without the matching control stays fully readable.
+The script has no direct third-party-global dependency. Marked tooltips remain owned by the existing
+tooltip adapter; `manage.js` does not initialize or dispose them.
+
+The companion external `crud_views/css/manage.css` scopes layout, responsive tables, focus/help controls and
+registered default styling to the manage page. **Without JavaScript**, all values remain visible after opening
+native disclosures and the nonfunctional switch stays hidden. No inline script, handler or style is required.
+See [manage behavior](manage.md#views) and [theme contracts](theme.md#structured-manage-contracts).
 
 ## `cv.adapters`
 

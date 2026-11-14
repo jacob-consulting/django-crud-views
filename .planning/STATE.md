@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.33"
 current_phase_name: Structured manage page
-current_plan: 5
+current_plan: 6
 status: executing
-stopped_at: Completed 06.33-04-PLAN.md
-last_updated: "2026-11-14T13:07:00Z"
+stopped_at: Completed 06.33-05-PLAN.md
+last_updated: "2026-11-14T13:18:07Z"
 last_activity: 2026-11-14
-last_activity_desc: Phase 06.33 plan 04 completed; plan 05 next
-state_head: 479ee50f
+last_activity_desc: Phase 06.33 plan 05 completed; plan 06 next
+state_head: 3fe29494
 progress:
   total_phases: 40
   completed_phases: 27
   total_plans: 215
-  completed_plans: 209
+  completed_plans: 210
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 ## Current Position
 
 Phase: 06.33 (Structured manage page) — EXECUTING
-Current Plan: 5
+Current Plan: 6
 Total Plans in Phase: 10
 Status: Executing Phase 06.33
-Last activity: 2026-11-14 — Phase 06.33 plan 04 completed
+Last activity: 2026-11-14 — Phase 06.33 plan 05 completed
 
-Next: Continue $gsd-execute-phase 06.33 with plan 05
+Next: Continue $gsd-execute-phase 06.33 with plan 06
+
+### Phase 06.33 plan 05 execution — 2026-11-14
+
+- Scoped ancestor/conditional/icon/Guardian composition collectors, checks builders and escaped main issues/side clean states are committed. Check counts include only materialized ViewSet.checks objects; all messages honor Django silencing. Global registry checks, URLconf completion, cross-ViewSet deduplication and request gates remain intact.
+- Both tasks have classified RED/GREEN evidence. Task 1 selection 583 passed, expanded completion/structure gate 714; task 2 selection 61; final combined gate 762 passed on Python 3.12.3 / Django 6.0.10 with four workers. Scoped Ruff/format/whitespace pass. No active git hook is configured; commits used normal git behavior without bypass flags.
+- Four task commits end at 07501823; SUMMARY/validation committed as 3fe29494 before ROADMAP progress. Two tasks, ten source/test/evidence files, ten minutes. Five of ten plans complete; plan 06 next. Browser, translations and supported-version matrix remain with later owners.
+- Decision: separate manage_checks and additive manage_checks_clean blocks preserve their main/side positions and avoid wrapping unrelated cards. Plan 08 should document both names. No new stubs or skipped required checks. Targeted Markdown state edits preserve original state.json bytes and unrelated .gitkeep dirt; stale ROADMAP count reconciled to 5/10 after successful SDK update. No push, merge or phase-complete claim.
 
 ### Phase 06.33 plan 04 execution — 2026-11-14
 
@@ -1577,6 +1584,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-14T13:07:00Z
-Stopped at: Completed 06.33-04-PLAN.md
+Last session: 2026-11-14T13:18:07Z
+Stopped at: Completed 06.33-05-PLAN.md
 Resume file: None

@@ -597,6 +597,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     def _manage_view_entry(view, name, value, declarations, unknown, missing):
         owner = declarations.get(name)
         source = _("default") if owner is None else (_("set") if owner is view else _("inherited"))
+        declared_value = value
         # Only known, request-independent fallback paths. Empty/False are values, not missing data.
         field = name.removeprefix("cv_")
         layered = {
@@ -612,13 +613,13 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             viewset_value = getattr(view.cv_viewset, field)
             value = CrudView.cv_first_inline_keys.__func__(view, value, field)
             source = _("from ViewSet") if viewset_value is not None else _("global setting")
-        elif value is None and field in {"icon_header", "context_buttons", "extends_template"}:
-            viewset_field = "extends" if field == "extends_template" else field
-            value = getattr(view.cv_viewset, viewset_field)
+        elif field == "extends_template" and not value:
+            resolver = SimpleNamespace(cv_viewset=view.cv_viewset, cv_extends_template=value)
+            value = CrudView.cv_get_extends_template(resolver)
+            source = _("from ViewSet") if view.cv_viewset.extends else _("global setting")
+        elif value is None and field in {"icon_header", "context_buttons"}:
+            value = getattr(view.cv_viewset, field)
             source = _("from ViewSet")
-            if field == "extends_template" and value is None:
-                value = crud_views_settings.extends
-                source = _("global setting")
         if value is missing:
             display = _("not declared")
             source = _("not declared")
@@ -628,13 +629,16 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             display = repr(value)
             if len(display) > 200:
                 display = display[:200] + "…"
-        return {
+        row = {
             "key": field,
             "value": display,
             "source": source,
             "is_default": owner is None,
             "unknown": name in unknown,
         }
+        if field == "extends_template" and declared_value == "":
+            row["declared_value"] = "''"
+        return row
 
     def _get_permission_data(self):
         _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)

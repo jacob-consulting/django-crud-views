@@ -92,6 +92,21 @@ def test_explicit_none_and_empty_have_independent_source(icon, expected, source)
     assert entry["source"] == source
 
 
+@pytest.mark.parametrize(
+    "view_value,viewset_value,source",
+    [(None, "", "global setting"), ("", "project/base.html", "from ViewSet"), ("", "", "global setting")],
+)
+def test_empty_extends_matches_native_resolution(view_value, viewset_value, source):
+    viewset = make_viewset(extends=viewset_value)
+    view = register(viewset, cv_extends_template=view_value)
+    entry = rows(viewset)["extends_template"]
+    assert entry["value"] == repr(view().cv_get_extends_template())
+    assert entry["source"] == source
+    assert entry["is_default"] is False
+    if view_value == "":
+        assert entry["declared_value"] == "''"
+
+
 class BeforeGuardian(GuardianViewSet):
     @model_validator(mode="before")
     @classmethod

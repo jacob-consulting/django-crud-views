@@ -688,6 +688,9 @@ def test_manage_override_shows_mixed_policy_only_when_authorized(
     rows = {row["key"]: row for row in response.context["manage_views"]}
     assert rows["detail"]["guardian_policy"]["effective_policy"] == "global fallback"
     assert rows["list"]["guardian_policy"]["effective_policy"] == "strict"
+    for key, policy in (("detail", "global fallback"), ("list", "strict")):
+        badge = doc.get_element_by_id("cv-view-" + key).xpath("./summary/span[@data-cv-guardian-policy]")[0]
+        assert badge.text_content().strip() == policy
 
 
 @pytest.mark.django_db

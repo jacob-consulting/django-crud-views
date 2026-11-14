@@ -73,6 +73,7 @@
         <p>{% translate "Permissions inherited through groups appear in group rows. Review the access row and active-superuser count above." %}</p>
         {% endif %}
         <p class="text-muted">{% translate "model: model-level permission · objects: object grants; your row includes effective permissions and reachable objects" %}</p>
+        {% if manage_guardian %}<p class="text-muted">{% translate "Guardian actor counts use the strict ViewSet helper, including group grants. An active superuser reaches every object; ordinary global model permissions do not add objects." %}</p>{% endif %}
         {% endwith %}
         </div>
     </section>
@@ -102,7 +103,7 @@
                 <span class="{% cv_button_class 'manage' 'badge-group' %}" data-cv-tooltip title="{% blocktranslate with group=item.requirement.value %}Needs group membership: {{ group }}{% endblocktranslate %}"><span class="visually-hidden">{% translate "Group: " %}</span>{{ item.requirement.value }}</span>
             {% elif item.requirement.kind == 'custom' %}
                 <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% translate 'Custom access requirement' %}">{% translate "custom" %}</span>
-            {% else %}
+            {% elif not item.parent_only_requirement or not item.parent_requirement %}
                 <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% translate 'No own permission required' %}">{% translate "none" %}</span>
             {% endif %}
             {% if item.parent_requirement %}
@@ -112,10 +113,14 @@
                     <span class="{% cv_button_class 'manage' 'badge-policy-na' %}" data-cv-tooltip title="{% blocktranslate with key=item.parent_requirement.key %}Undeclared ancestor permission key: {{ key }}{% endblocktranslate %}">{% blocktranslate with key=item.parent_requirement.key %}parent: {{ key }} (undeclared){% endblocktranslate %}</span>
                 {% endif %}
             {% endif %}
+            {% if item.guardian_policy %}
+                <span data-cv-guardian-policy class="{% if not item.guardian_policy.applicable %}{% cv_button_class 'manage' 'badge-policy-na' %}{% elif item.guardian_policy.accept_global_perms %}{% cv_button_class 'manage' 'badge-policy-global' %}{% else %}{% cv_button_class 'manage' 'badge-policy-strict' %}{% endif %}" data-cv-tooltip title="{{ item.guardian_policy.tooltip }}">{{ item.guardian_policy.effective_policy }}</span>
+            {% endif %}
             <span id="cv-view-{{ item.key }}-requirement" class="visually-hidden">
                 {% if item.requirement.kind == 'permission' and item.permission %}{% blocktranslate with permission=item.permission %}Needs permission: {{ permission }}{% endblocktranslate %}{% elif item.requirement.kind == 'group' %}{% blocktranslate with group=item.requirement.value %}Needs group membership: {{ group }}{% endblocktranslate %}{% elif item.requirement.kind == 'custom' %}{% translate "Custom access requirement" %}{% elif item.requirement.kind == 'none' %}{% translate "No own permission required" %}{% endif %}
                 {% if item.parent_requirement.permission %}{% blocktranslate with permission=item.parent_requirement.permission %}Needs ancestor permission: {{ permission }}{% endblocktranslate %}{% endif %}
                 {% if item.requirement_metadata_error %}{{ item.requirement_metadata_error }}{% endif %}
+                {% if item.guardian_policy %}{% translate "Guardian policy:" %} {{ item.guardian_policy.effective_policy }}. {{ item.guardian_policy.tooltip }}{% endif %}
             </span>
         </summary>
         <p><code>{{ item.route_name }}</code> — {% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}</p>
@@ -274,7 +279,21 @@
     <p>{% translate "Configuration only, not an access result for the current user. Provider and accept_global_perms apply when this ViewSet is the ancestor of a nested request; cascade, read, write and actions apply to nested requests to this ViewSet. Endpoint-local permission options are separate." %}</p>
     {% endblock ancestor_policy %}
 
-    {% block guardian_config %}{% endblock guardian_config %}
+    {% block guardian_config %}
+    {% if manage_guardian %}
+    <section class="card mb-3" id="cv-manage-guardian">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="h6 mb-0">{% translate "Guardian" %}</h3>
+            <a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#guardian" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Guardian' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body">
+            <p><code>GuardianViewSet.get_objects_for_user()</code> — {% translate "strict" %}</p>
+            <p>{% translate "GuardianViewSet.get_objects_for_user() is independent of local view policies and always strict: global model permissions are not accepted." %}</p>
+            <p>{% translate "Object and group grants count. An active superuser reaches every object; an inactive user reaches none." %}</p>
+        </div>
+    </section>
+    {% endif %}
+    {% endblock guardian_config %}
 
     </div>
     </div>

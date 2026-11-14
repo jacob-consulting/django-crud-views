@@ -1,4 +1,3 @@
-
 import pytest
 
 from tests.lib.helper.guardian import user_guardian_object_perm

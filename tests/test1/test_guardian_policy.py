@@ -509,6 +509,8 @@ def _assert_policy_row(content, view_key, accept, effective):
     assert rows["effective_policy"].startswith(effective)
     if accept is not None:
         assert rows["guardian_accept_global_perms"].startswith(str(accept))
+        expected_help = "Model permissions are accepted" if accept else "Global model permissions are not accepted"
+        assert expected_help in badge.get("title")
     assert badge.get("title")
     assert effective in detail.get_element_by_id(summary.get("aria-describedby")).text_content()
 

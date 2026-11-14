@@ -475,6 +475,9 @@ class GuardianManageView(ManageView):
             applicable = self._guardian_global_fallback_applicable(view)
             accept = bool(getattr(view, "cv_guardian_accept_global_perms", False)) if applicable else None
             effective = (_("global fallback") if accept else _("strict")) if applicable else _("not applicable")
+            row["parent_only_requirement"] = (
+                viewset.parent is not None and issubclass(view, GuardianParentPermissionMixin) and not applicable
+            )
             row["guardian_policy"] = {
                 "applicable": applicable,
                 "accept_global_perms": accept,
@@ -487,6 +490,13 @@ class GuardianManageView(ManageView):
                     else _("This view has no local Guardian object or queryset policy.")
                 ),
             }
+            if applicable:
+                policy_help = (
+                    _("Model permissions are accepted alongside object grants.")
+                    if accept
+                    else _("Global model permissions are not accepted.")
+                )
+                row["guardian_policy"]["tooltip"] = policy_help + " " + row["guardian_policy"]["tooltip"]
             section = next((s for s in row["sections"] if s["key"] == "guardian"), None)
             if section is None:
                 section = {"key": "guardian", "label": _("Guardian"), "entries": [], "default_count": 0}

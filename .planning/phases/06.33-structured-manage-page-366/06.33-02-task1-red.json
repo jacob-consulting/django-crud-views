@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_manage_requirements.py -q --junitxml=/tmp/gsd-0633-02-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.100\" timestamp=\"2026-11-14T12:29:20.732446+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_manage_requirements\" name=\"test_requirement_contract_exists_without_viewset\" time=\"0.001\"><failure message=\"AssertionError: Views must describe their owning requirement without evaluating access&#10;assert False&#10; +  where False = callable(None)\">def test_requirement_contract_exists_without_viewset():\n        describe = getattr(DetailView, \"cv_get_requirement\", None)\n&gt;       assert callable(describe), \"Views must describe their owning requirement without evaluating access\"\nE       AssertionError: Views must describe their owning requirement without evaluating access\nE       assert False\nE        +  where False = callable(None)\n\ntests/test1/test_manage_requirements.py:10: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_requirement_contract_exists_without_viewset",
+  "targetFile": "tests/test1/test_manage_requirements.py",
+  "expected": "Callable requirement description API",
+  "actual": "callable(None) is false",
+  "semanticAssessment": "Target executed and failed the planned assertion because the classmethod is absent"
+}

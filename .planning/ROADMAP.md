@@ -59,6 +59,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 
 - [x] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance. (completed 2026-11-13)
 - [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
+- [ ] **Phase 06.33: Structured manage page (#366) (INSERTED)** - approved D-01–D-30 issue handover; permission matrix, collapsible views and switchable defaults.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1895,6 +1896,54 @@ Plans:
 **Wave 1**
 - [x] 06.32-01-PLAN.md — Workflow transition metadata rendering, regression coverage, and documentation
 
+### Phase 06.33: Structured manage page (#366) (INSERTED)
+
+**Goal:** Developers can read permissions and view configuration at a glance on structured, responsive core and Guardian manage pages, with project-set values distinguished from defaults.
+**Source:** [Issue #366 — gsd-handover](https://github.com/jacob-consulting/django-crud-views/issues/366#gsd-handover), revised 2026-11-14; approved decisions D-01–D-30 and the complete acceptance criteria are authoritative. Carry them into planning without reopening settled choices absent a concrete conflict; the approved page-v13 mockup is linked from the issue.
+**Requirements:** Prepare presentation-ready data in Python for stock Bootstrap 5 cards: holder × permission matrix with the signed-in user's effective model permissions and strict Guardian object counts, conditional user rows, group sizes and active-superuser count; collapsible views with real class paths, requirement/Guardian badges, effective values, curated and Other sections, and one Show defaults switch shared with Presentation. Preserve project-declaration provenance for registered view attributes and constructor-supplied ViewSet fields. Add the small public requirement-description classmethod beside each owning gate, with request tests proving descriptions match enforcement. Include scoped system checks (including separately registered checks and silencing), ViewSet identity, upward-linked hierarchy, readable relative routes, context-button targets and ancestor-policy cards. Preserve nested authorization before auth/grant queries, existing template blocks and lazy legacy context shapes; support existing Guardian template overrides. Use registry-backed classes, accessible marked tooltips, external JavaScript/CSS compatible with CSP, a per-card manage documentation page with tested anchors and a subclassable docs base URL, both German locales, migration guidance and the Bootstrap 5 example.
+**Depends on:** Phase 06.31 (developer-only manage diagnostics); Phase 06.32 precedes this phase in roadmap order only.
+**Ordering:** Complete before Phase 7 freezes the public theme surface; inventory the final manage blocks, context contracts, class keys and requirement-description API.
+**Scope exclusions:** No change to manage access, impersonation, another-user access evaluation or trace (#370), editing, new settings, tabs, Resource manage pages, broad reference-documentation expansion or downstream tabler-test adoption. Keep the user-row data method user-parameterized and the requirement method reusable for #370 without implementing that follow-up.
+**Success Criteria**:
+
+1. Core and Guardian pages render the approved cards without sideways overflow at 390 px, including full nested ancestor facts and usable collapsible Views/Presentation.
+2. Permission matrices correctly distinguish effective signed-in access, direct holders and Guardian grants; user visibility, group counts, superuser disclosure and authorization ordering follow the handover.
+3. View and ViewSet set/default provenance, resolved values, real class paths, Other attributes and requirement descriptions pass the issue's data and request-level cases; defaults hide with JavaScript and remain visible without it.
+4. Scoped checks, hierarchy, routes, context-button targets, registry overrides, accessible badges and documentation anchors satisfy the issue acceptance criteria; no inline scripts, event handlers or styles are introduced.
+5. Existing template overrides replace their cards, legacy context stays lazy and compatible, Guardian data survives template replacement, and documentation, migration notes, locales and the example are updated.
+
+**Plans:** 0/10 plans executed
+
+Plans:
+**Wave 1**
+- [ ] 06.33-01-PLAN.md
+- [ ] TBD (run $gsd-plan-phase 06.33 to break down)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.33-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.33-03-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.33-04-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.33-05-PLAN.md
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 06.33-06-PLAN.md
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [ ] 06.33-07-PLAN.md
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [ ] 06.33-08-PLAN.md
+- [ ] 06.33-09-PLAN.md
+
+**Wave 9** *(blocked on Wave 8 completion)*
+- [ ] 06.33-10-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1923,6 +1972,8 @@ Phase 06.24 must also settle before this freeze; include the opt-in compact form
 rendering and nested composition contracts (#347).
 Phase 06.32 must also settle before this freeze; include its transition metadata and
 `workflow:transition-<variant>` class keys (#362) in the stability review.
+Phase 06.33 must also settle before this freeze; include its manage template/context compatibility,
+`manage:*` class keys and public requirement-description API (#366) in the stability review.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -2017,4 +2068,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
 | 06.31. Developer-only manage diagnostics (#361) | 6/6 | Complete | 2026-11-13 |
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
+| 06.33. Structured manage page (#366) | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

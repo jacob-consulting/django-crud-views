@@ -107,3 +107,26 @@ def test_manage_german_requests_load_compiled_messages(request, fixture, client,
     assert "pk_name" in html
     if fixture == "cv_guardian_author":
         assert "Globale Modellberechtigungen werden nicht akzeptiert." in html
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+def test_empty_manage_vocabulary_retains_translated_actor(request, fixture, client, django_user_model, monkeypatch):
+    from django.contrib.auth.models import Group
+    from lxml import html as html_parser
+
+    from crud_views.lib.settings import crud_views_settings
+
+    viewset = request.getfixturevalue(fixture)
+    actor = django_user_model.objects.create_user(username="empty-vocabulary-developer")
+    actor.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    monkeypatch.setattr(viewset, "_default_permissions", {})
+    client.force_login(actor)
+    with translation.override("de"):
+        response = client.get(reverse(viewset.get_router_name("manage")))
+    assert response.status_code == 200
+    root = html_parser.fromstring(response.content)
+    rows = root.cssselect("[data-manage-actor]")
+    assert len(rows) == 1
+    assert "Zugriff für: empty-vocabulary-developer (Sie)" in rows[0].text_content()
+    assert "Keine Berechtigungen konfiguriert." in root.text_content()

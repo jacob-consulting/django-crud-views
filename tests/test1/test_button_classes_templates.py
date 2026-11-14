@@ -20,6 +20,32 @@ from crud_views.lib.view.label_mode import LABEL_MODES
 from crud_views_workflow.apps import CrudViewsWorkflowConfig
 from tests.lib.helper.user import user_viewset_permission
 
+
+@pytest.mark.django_db
+def test_manage_default_rows_and_help_resolve_project_classes(client, cv_author, user_author_view):
+    from django.contrib.auth.models import Group
+
+    from crud_views.lib.settings import crud_views_settings
+
+    user_author_view.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    client.force_login(user_author_view)
+    with override_settings(
+        CRUD_VIEWS_BUTTON_CLASSES={
+            "manage:row-default": "project-default",
+            "manage:help": "project-help",
+            "manage:badge-permission": "project-permission",
+            "manage:badge-group": "project-group",
+        }
+    ):
+        doc = html.fromstring(client.get("/author/manage/").content)
+    rows = doc.cssselect("[data-cv-default-row]")
+    assert rows and all(row.get("class") == "project-default" for row in rows)
+    assert doc.cssselect("#cv-manage-views .project-group")
+    assert doc.cssselect("#cv-manage-views .project-permission")
+    links = doc.cssselect("a[data-cv-manage-help]")
+    assert links and all(link.get("class") == "project-help" for link in links)
+
+
 SRC = Path(__file__).resolve().parents[2] / "src"
 TOKEN = re.compile(r"(?<![\w-])btn(?:-[\w-]+)?(?![\w-])")
 LITERAL = re.compile(r"""\{%\s*cv_button_class\s+(["'])([^"']+)\1\s+(["'])([^"']+)\3""")

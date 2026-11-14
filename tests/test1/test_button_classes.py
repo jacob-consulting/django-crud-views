@@ -166,6 +166,28 @@ def test_manage_registry_defaults_and_overrides():
         assert [m for m in button_class_check_messages() if m.id == "crud_views.W362"]
 
 
+@pytest.mark.parametrize(
+    "slot",
+    [
+        "badge-model",
+        "badge-objects",
+        "badge-permission",
+        "badge-group",
+        "badge-policy-global",
+        "badge-policy-strict",
+        "badge-policy-na",
+        "row-default",
+        "help",
+    ],
+)
+def test_every_manage_class_family_preserves_override_precedence(slot):
+    register_button_classes({f"manage:{slot}": "theme-value"})
+    assert get_button_class("manage", slot) == "theme-value"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={f"manage:{slot}": "project-value"}):
+        assert get_button_class("manage", slot) == "project-value"
+        assert not [m for m in button_class_check_messages() if m.id == "crud_views.W362"]
+
+
 @pytest.mark.django_db
 def test_core_manage_card_resolves_registry_classes(client, cv_author, user_author_view):
     from django.contrib.auth.models import Group

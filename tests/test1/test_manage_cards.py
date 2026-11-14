@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+from django.urls import reverse
 from lxml import html as html_parser
 
 from crud_views.lib.resource import Resource
@@ -18,6 +19,72 @@ from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
 from crud_views.lib.viewset.path_regs import PrimaryKeys
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.mark.parametrize("viewset_fixture", ["cv_author", "cv_guardian_author"])
+def test_manage_accessible_layout_and_csp(request, viewset_fixture, client, developer, monkeypatch):
+    viewset = request.getfixturevalue(viewset_fixture)
+    monkeypatch.setattr(viewset.get_view_class("manage"), "manage_docs_base_url", "https://docs.example/manage/")
+    client.force_login(developer)
+    response = client.get(reverse(viewset.get_router_name("manage")))
+    assert response.status_code == 200
+    doc = html_parser.fromstring(response.content)
+    root = doc.cssselect("[data-cv-manage]")[0]
+    wrappers = root.cssselect(".table-responsive")
+    assert wrappers and all(el.get("aria-label") and el.get("tabindex") == "0" for el in wrappers)
+    assert all(el.get("role") == "region" for el in wrappers)
+    assert all(th.get("scope") in {"col", "row", "colgroup", "rowgroup"} for th in root.cssselect("th"))
+    for el in doc.iter():
+        assert not any(name.lower().startswith("on") or name.lower() == "style" for name in el.attrib)
+        assert not any(value.strip().lower().startswith("javascript:") for value in el.attrib.values())
+        if el.tag == "script":
+            assert el.get("src") and not (el.text or "").strip()
+    assert not root.cssselect("details[open], summary a, summary button, summary input, summary select")
+    assert not root.cssselect("tr[data-cv-config-row][hidden]")
+    controls = root.cssselect("[data-cv-show-defaults]")
+    assert len(controls) == 1 and controls[0].getparent().get("hidden") is not None
+    assert controls[0].get("aria-controls") == "cv-manage-views cv-manage-presentation"
+    assert "Show defaults" in controls[0].getparent().text_content()
+    allowed = {
+        "permissions",
+        "views",
+        "presentation",
+        "viewset",
+        "hierarchy",
+        "url-names",
+        "ancestor-policy",
+        "guardian",
+        "system-checks",
+        "templates-and-actions",
+        "label-modes",
+    }
+    help_links = root.cssselect("a[data-cv-manage-help]")
+    assert len(help_links) >= 10
+    for link in help_links:
+        assert link.get("href").startswith("https://docs.example/manage/#")
+        assert link.get("href").split("#")[1] in allowed
+        assert link.get("target") == "_blank" and link.get("rel") == "noopener"
+        assert link.get("aria-label").startswith("Documentation: ")
+        assert "new tab" in link.get("title", "") and link.text_content().strip() == "?"
+    main, side = root.cssselect(":scope > div")
+    assert [el.get("id") for el in main if el.get("id")] == [
+        "cv-manage-permissions",
+        "cv-manage-views",
+        "cv-manage-presentation",
+    ]
+    assert [el.get("id") for el in side if el.get("id")] == [
+        "cv-manage-viewset",
+        "cv-manage-hierarchy",
+        "cv-manage-urls",
+        *(["cv-manage-guardian"] if viewset_fixture == "cv_guardian_author" else []),
+    ]
+    presentation = root.cssselect("#cv-manage-presentation")[0]
+    assert presentation.cssselect(":scope > summary") and presentation.cssselect(":scope > a[data-cv-manage-help]")
+    for summary in root.cssselect("#cv-manage-views summary"):
+        description = doc.get_element_by_id(summary.get("aria-describedby"))
+        assert description.text_content().strip()
+        assert all(el.get("title") for el in summary.cssselect("[data-cv-tooltip]"))
+    assert all("cv-manage-default" in row.get("class", "") for row in root.cssselect("[data-cv-default-row]"))
 
 
 class TableWrappers(HTMLParser):

@@ -237,6 +237,17 @@ async function runSmoke(browser, base, report, assets, opts) {
             assert.equal(response.headers()['content-security-policy'], CSP);
             await owned.page.evaluate(() => document.fonts.ready);
             const facts = await inspect(owned.page);
+            facts.codeColors = await owned.page.locator('[data-cv-manage] code').evaluateAll(elements => elements.map(el => ({
+                color: getComputedStyle(el).color, parent: getComputedStyle(el.parentElement).color,
+            })));
+            assert(facts.codeColors.length && facts.codeColors.every(item => item.color === item.parent), 'Diagnostic code must inherit neutral theme text');
+            const headingColor = await owned.page.locator('h1').evaluate(el => getComputedStyle(el).color);
+            await owned.context.route('**/manage-theme.css', route => route.fulfill({contentType: 'text/css', body: '[data-cv-manage] code { color: rgb(20, 30, 40); }'}));
+            const theme = await owned.page.addStyleTag({url: base + '/manage-theme.css'});
+            assert(await owned.page.locator('[data-cv-manage] code').evaluateAll(elements => elements.every(el => getComputedStyle(el).color === 'rgb(20, 30, 40)')));
+            assert.equal(await owned.page.locator('h1').evaluate(el => getComputedStyle(el).color), headingColor);
+            await theme.evaluate(el => el.remove());
+            facts.themeOverride = true;
             const required = await owned.page.locator('link[rel=stylesheet],script[src]').evaluateAll(elements => elements.map(el => el.href || el.src));
             report.requiredAssets.push(...required);
             await capture(owned.page, report, opts, `${kind}-normal-390`, facts);

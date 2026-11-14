@@ -609,9 +609,18 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             "form_actions_label_mode",
             "inaccessible_actions",
         }
-        if value is None and field in layered:
+        if field == "inaccessible_actions" and inspect.getattr_static(
+            view, "cv_get_inaccessible_actions"
+        ) is inspect.getattr_static(ManageView, "cv_get_inaccessible_actions"):
+            value = ManageView.cv_get_inaccessible_actions()
+            source = "ManageView.cv_get_inaccessible_actions"
+        elif value is None and field in layered:
             viewset_value = getattr(view.cv_viewset, field)
-            value = CrudView.cv_first_inline_keys.__func__(view, value, field)
+            value = (
+                CrudView.cv_get_inaccessible_actions.__func__(view)
+                if field == "inaccessible_actions"
+                else CrudView.cv_first_inline_keys.__func__(view, value, field)
+            )
             source = _("from ViewSet") if viewset_value is not None else _("global setting")
         elif field == "extends_template" and not value:
             resolver = SimpleNamespace(cv_viewset=view.cv_viewset, cv_extends_template=value)

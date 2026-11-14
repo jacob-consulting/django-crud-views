@@ -107,6 +107,28 @@ def test_empty_extends_matches_native_resolution(view_value, viewset_value, sour
         assert entry["declared_value"] == "''"
 
 
+@pytest.mark.parametrize("viewset_class", [ViewSet, GuardianViewSet])
+@pytest.mark.parametrize("layer", ["setting", "viewset"])
+def test_manage_fixed_hide_policy(viewset_class, layer, monkeypatch):
+    monkeypatch.setattr(crud_views_settings, "inaccessible_actions", "disable")
+    vs = make_viewset(viewset_class, **({"inaccessible_actions": "disable"} if layer == "viewset" else {}))
+    view = vs.get_all_views()["manage"]
+    entry = rows(vs, "manage")["inaccessible_actions"]
+    assert entry["value"] == repr(view.cv_get_inaccessible_actions()) == "'hide'"
+    assert entry["source"] == "ManageView.cv_get_inaccessible_actions"
+
+
+def test_manage_config_does_not_execute_custom_hide_policy():
+    class ProjectManage(ManageView):
+        @classmethod
+        def cv_get_inaccessible_actions(cls):
+            pytest.fail("Static configuration must not execute project hooks")
+
+    vs = make_viewset()
+    view = register(vs, base=ProjectManage, key="custom-manage")
+    assert ManageView()._manage_view_sections(view)
+
+
 class BeforeGuardian(GuardianViewSet):
     @model_validator(mode="before")
     @classmethod

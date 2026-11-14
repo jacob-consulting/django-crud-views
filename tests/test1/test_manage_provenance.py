@@ -119,3 +119,79 @@ def test_before_validator_generated_input_is_not_a_constructor_declaration():
     viewset = make_viewset(BeforeGuardian)
     assert viewset.icon_header == "injected"
     assert "icon_header" not in viewset._manage_constructor_fields
+
+
+def test_complete_static_inventory_and_fixed_sections():
+    class Explosive:
+        def __get__(self, instance, owner=None):
+            raise AssertionError("Descriptors must not run")
+
+    class Inventory(ListView):
+        cv_annotation_only: str
+        cv_custom_class = Author
+        cv_bad_spelling = "<script>bad</script>"
+        cv_allowed = "fine"
+        cv_check_ignore_attributes = {"cv_allowed"}
+        cv_descriptor = Explosive()
+        cv_header_template = Explosive()
+        cv_custom_property = property(lambda self: 1)
+        cv_custom_method = staticmethod(lambda: 1)
+        cv_long = list(range(100))
+
+    viewset = make_viewset()
+    register(viewset, base=Inventory)
+    prepared = next(item for item in ManageView().get_manage_views(viewset, None) if item["key"] == "list")
+    assert [section["key"] for section in prepared["sections"]] == ["navigation", "templates", "icons", "other"]
+    data = rows(viewset)
+    assert data["annotation_only"]["value"] == "not declared"
+    assert data["annotation_only"]["is_default"] is True
+    assert data["custom_class"]["value"] == "tests.test1.app.models.Author"
+    assert data["custom_class"]["unknown"] is False  # W280 deliberately excludes classes
+    assert data["bad_spelling"]["unknown"] is True
+    assert data["allowed"]["unknown"] is False
+    assert data["long"]["value"] == repr(Inventory.cv_long)[:200] + "…"
+    assert not {"viewset", "descriptor", "header_template", "custom_property", "custom_method"} & data.keys()
+    assert {"context_buttons", "modal", "pk", "object", "key", "path"} <= data.keys()
+    all_keys = [entry["key"] for section in prepared["sections"] for entry in section["entries"]]
+    assert len(all_keys) == len(set(all_keys))
+    other = prepared["sections"][-1]
+    assert [entry["key"] for entry in other["entries"]] == sorted(entry["key"] for entry in other["entries"])
+    for section in prepared["sections"]:
+        assert section["default_count"] == sum(entry["is_default"] for entry in section["entries"])
+
+
+@pytest.mark.parametrize("value", [None, [], (), {}, False])
+def test_fallback_values_preserve_explicit_empty_and_false(value):
+    viewset = make_viewset(list_actions_inline=["detail"])
+    register(viewset, cv_list_actions_inline=value)
+    entry = rows(viewset)["list_actions_inline"]
+    assert entry["value"] == repr(["detail"] if value is None else value)
+    assert entry["is_default"] is False
+    assert entry["source"] == ("from ViewSet" if value is None else "set")
+
+
+def test_settings_fallback_and_class_path_are_complete(monkeypatch):
+    monkeypatch.setattr(crud_views_settings, "context_actions_inline", ["detail"])
+    value = type("Long" + "Name" * 70, (), {"__module__": "project.classes"})
+    viewset = make_viewset()
+    register(viewset, cv_custom_class=value, cv_context_actions_inline=None)
+    data = rows(viewset)
+    assert data["custom_class"]["value"] == f"{value.__module__}.{value.__qualname__}"
+    assert len(data["custom_class"]["value"]) > 200
+    assert data["context_actions_inline"]["source"] == "global setting"
+    assert data["context_actions_inline"]["value"] == "['detail']"
+    assert data["context_actions_inline"]["is_default"] is False
+
+
+def test_declaring_values_does_not_reorder_rows():
+    viewset = make_viewset()
+    view = register(viewset)
+    before = rows(viewset)
+    view.cv_modal = True
+    view.cv_home_key = "detail"
+    view.cv_icon_header = "book"
+    after = rows(viewset)
+    assert list(before) == list(after)
+    assert "modal" in before, "Noncurated data attributes must be present in Other"
+    assert before["modal"]["is_default"] is True
+    assert after["modal"]["is_default"] is False

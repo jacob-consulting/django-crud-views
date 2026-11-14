@@ -281,3 +281,34 @@ def test_stock_render_does_not_evaluate_legacy_getters(client, cv_author, develo
     for row in rows:
         view = cv_author.get_view_class(row["key"])
         assert row["class_path"] == f"{view.__module__}.{view.__qualname__}"
+
+
+def test_views_inventory_markup_and_docs(client, cv_author, developer, monkeypatch):
+    cls = cv_author.get_view_class("list")
+    monkeypatch.setattr(cls, "cv_unusual_value", "<script>injected</script>", raising=False)
+    monkeypatch.setattr(cv_author.get_view_class("manage"), "manage_docs_base_url", "https://docs.example/manage/")
+    client.force_login(developer)
+    response = client.get("/author/manage/")
+    doc = html_parser.fromstring(response.content)
+    card = doc.cssselect("#cv-manage-views")
+    assert card, "Views must have a whole-card wrapper"
+    assert card[0].cssselect('a[href="https://docs.example/manage/#views"][rel="noopener"]')
+    assert not card[0].cssselect("summary a, summary button, summary input")
+    assert not card[0].cssselect("details[open], tr[hidden]")
+    assert card[0].cssselect("[data-cv-default-row]")
+    assert card[0].cssselect("[data-cv-default-count][hidden]")
+    assert card[0].cssselect("[data-manage-badge-key]")
+    for item in response.context["manage_views"]:
+        view = doc.cssselect(f"#cv-view-{item['key']}")[0]
+        headings = view.cssselect("[data-cv-section]")
+        assert len(headings) == len(item["sections"])
+        for section, heading in zip(item["sections"], headings, strict=True):
+            assert int(heading.get("data-cv-default-count")) == section["default_count"]
+        assert all(
+            not row.cssselect("th")[0].text_content().strip().startswith("cv_")
+            for row in view.cssselect("tr[data-cv-config-row]")
+        )
+    rendered = response.content.decode()
+    assert "<script>injected</script>" not in rendered
+    assert "&lt;script&gt;injected&lt;/script&gt;" in rendered
+    assert "unknown attribute" in card[0].text_content()

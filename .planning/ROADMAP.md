@@ -1912,12 +1912,11 @@ Plans:
 4. Scoped checks, hierarchy, routes, context-button targets, registry overrides, accessible badges and documentation anchors satisfy the issue acceptance criteria; no inline scripts, event handlers or styles are introduced.
 5. Existing template overrides replace their cards, legacy context stays lazy and compatible, Guardian data survives template replacement, and documentation, migration notes, locales and the example are updated.
 
-**Plans:** 9/10 plans executed
+**Plans:** 10/10 plans executed
 
 Plans:
 **Wave 1**
 - [x] 06.33-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 06.33 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.33-02-PLAN.md
@@ -1942,7 +1941,7 @@ Plans:
 - [x] 06.33-09-PLAN.md
 
 **Wave 9** *(blocked on Wave 8 completion)*
-- [ ] 06.33-10-PLAN.md
+- [x] 06.33-10-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 
@@ -2068,5 +2067,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
 | 06.31. Developer-only manage diagnostics (#361) | 6/6 | Complete | 2026-11-13 |
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
-| 06.33. Structured manage page (#366) | 9/10 | In progress | - |
+| 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

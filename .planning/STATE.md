@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.33"
 current_phase_name: Structured manage page
 current_plan: 10
-status: executing
-stopped_at: Completed 06.33-09-PLAN.md
-last_updated: "2026-11-14T14:25:00Z"
+status: verifying
+stopped_at: Completed 06.33-10-PLAN.md; phase verification and human visual UAT pending
+last_updated: "2026-11-14T14:52:29Z"
 last_activity: 2026-11-14
-last_activity_desc: Phase 06.33 plan 09 completed; plan 10 next
-state_head: cb7124bc
+last_activity_desc: Phase 06.33 plan 10 completed; owner verification and human visual UAT pending
+state_head: 2528e13e
 progress:
   total_phases: 40
   completed_phases: 27
   total_plans: 215
-  completed_plans: 214
+  completed_plans: 215
 milestone_name: milestone
 ---
 
@@ -31,13 +31,23 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 
 ## Current Position
 
-Phase: 06.33 (Structured manage page) — EXECUTING
+Phase: 06.33 (Structured manage page) — AWAITING VERIFICATION
 Current Plan: 10
 Total Plans in Phase: 10
-Status: Executing Phase 06.33
-Last activity: 2026-11-14 — Phase 06.33 plan 09 completed
+Status: All ten plans executed; phase verification and human visual UAT pending
+Last activity: 2026-11-14 — Phase 06.33 plan 10 completed
 
-Next: Continue $gsd-execute-phase 06.33 with plan 10
+Next: Owner phase verification, then maintainer visual UAT; do not mark phase complete from automation alone
+
+### Phase 06.33 plan 10 execution — 2026-11-14
+
+- Added seven real core/Guardian example tests and five live public-contract/shared-alert tests. Developer read-only behavior, Alice/Bob denial, nested ancestor gates, signed-in strict Guardian counts and documented blocks/context/registry/requirements pass.
+- Full primary Python: 13,924 passed in 466.47s with four workers on Python 3.12.3 / Django 6.0.10. Complete examples370, required example selection170, JavaScript457 plus integration2, strict docs/11 anchors, Ruff/format, wheel/sdist validation all pass.
+- Exact 35-module cached Django4.2.30/5.2.19 replays each pass1,633 with one existing Django6-only CSP skip; additional affected alert/CLI gates pass53 each. Seven compatible non-3.12 combinations remain explicitly unverified because prepared test environments and an invokable CI trigger for this unpublished branch are unavailable. No installs or inferred passes.
+- Initial broad gate found three phase regressions. Classified four-test RED precedes the shared cv_alert body/include correction and explicit CLI manage-asset inventory synchronization. Focused220 then full and cached-series gates pass. No setting, authorization, schema or public API change.
+- Fresh browser acceptance after the template correction passes36 cases/52 UI mappings/35 captures,231 source hashes and590 observed asset responses with restrictive CSP and verified owned cleanup. Receipt06.33-10 supersedes09; human comparison against page-v13 remains pending. Query counts remain core5 and Guardian11→12 across larger holder fixtures.
+- Four task/evidence commits end at c1fbba0d; SUMMARY committed as2528e13e before SDK ROADMAP progress. Two tasks, ten task/evidence files, about25 minutes. All10/10 plans executed; phase remains awaiting owner verification and human UAT.
+- Original state.json checksum and unrelated .gitkeep dirt preserved. Existing ratelimit dependency reused without replacing primary Django. No developer database changes, port9000 restart, push, merge, publication or phase-complete claim. Optional WINDOWS append declined the existing table/header inconsistency; limits are recorded in SUMMARY/deferred-items.
 
 ### Phase 06.33 plan 09 execution — 2026-11-14
 

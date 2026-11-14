@@ -283,6 +283,11 @@ async function geometry(page) {
                 overlap: !!titleRect && rect.left < titleRect.right && rect.right > titleRect.left && rect.top < titleRect.bottom && rect.bottom > titleRect.top};
         });
         return {width: innerWidth, documentWidth: document.documentElement.scrollWidth, textStyles, wrappers, help,
+            holders: [...root.querySelectorAll('#cv-manage-permissions th[scope=row]')].filter(visible).map(el => {
+                const range = document.createRange(); range.selectNodeContents(el);
+                return {width: el.getBoundingClientRect().width, wrap: getComputedStyle(el).overflowWrap,
+                    textLength: el.textContent.trim().length, lines: new Set([...range.getClientRects()].map(rect => rect.top)).size};
+            }),
             heading: {size: parseFloat(getComputedStyle(document.querySelector('h1')).fontSize), weight: getComputedStyle(document.querySelector('h1')).fontWeight},
             keys: [...root.querySelectorAll('.cv-manage-config th[scope=row]')].filter(visible).map(el => ({width: el.getBoundingClientRect().width, wrap: getComputedStyle(el).whiteSpace})),
             summaries: [...root.querySelectorAll('summary')].filter(visible).map(el => ({height: el.getBoundingClientRect().height, controls: el.querySelectorAll('a,button,input,select').length})),
@@ -293,6 +298,7 @@ async function geometry(page) {
             text: root.textContent};
     });
     assert(facts.documentWidth <= facts.width + 1, `Overflow: ${facts.documentWidth}/${facts.width}`);
+    assert(facts.holders.every(el => el.width <= 193 && el.wrap === 'anywhere' && (el.textLength < 80 || el.lines > 1)), `Holder labels must wrap: ${JSON.stringify(facts.holders)}`);
     assert(facts.scopes && facts.wrappers.every(el => el.label && el.role === 'region' && el.tab === 0));
     assert(facts.wrappers.every(el => el.scrollWidth <= el.width + 1 || el.scroll > 0), 'Table cannot scroll locally');
     assert(facts.keys.every(el => el.width >= 191 && el.wrap === 'nowrap'));

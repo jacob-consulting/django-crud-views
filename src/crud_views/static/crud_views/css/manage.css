@@ -40,6 +40,14 @@
     min-width: 160px;
 }
 
+/* Holder names wrap independently of intentionally fixed configuration keys. */
+[data-cv-manage] #cv-manage-permissions th[scope="row"] {
+    width: 160px;
+    min-width: 120px;
+    max-width: 192px;
+    overflow-wrap: anywhere;
+}
+
 [data-cv-manage] th,
 [data-cv-manage] small,
 [data-cv-manage] .badge,

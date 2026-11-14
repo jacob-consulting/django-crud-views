@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.33"
 current_phase_name: Structured manage page
-current_plan: 6
+current_plan: 7
 status: executing
-stopped_at: Completed 06.33-05-PLAN.md
-last_updated: "2026-11-14T13:18:07Z"
+stopped_at: Completed 06.33-06-PLAN.md
+last_updated: "2026-11-14T13:34:04Z"
 last_activity: 2026-11-14
-last_activity_desc: Phase 06.33 plan 05 completed; plan 06 next
-state_head: 3fe29494
+last_activity_desc: Phase 06.33 plan 06 completed; plan 07 next
+state_head: 7a055dcd
 progress:
   total_phases: 40
   completed_phases: 27
   total_plans: 215
-  completed_plans: 210
+  completed_plans: 211
 milestone_name: milestone
 ---
 
@@ -32,12 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 ## Current Position
 
 Phase: 06.33 (Structured manage page) — EXECUTING
-Current Plan: 6
+Current Plan: 7
 Total Plans in Phase: 10
 Status: Executing Phase 06.33
-Last activity: 2026-11-14 — Phase 06.33 plan 05 completed
+Last activity: 2026-11-14 — Phase 06.33 plan 06 completed
 
-Next: Continue $gsd-execute-phase 06.33 with plan 06
+Next: Continue $gsd-execute-phase 06.33 with plan 07
+
+### Phase 06.33 plan 06 execution — 2026-11-14
+
+- Explicit identity/hierarchy/routes/ancestor/Presentation data and cards are committed. Upward URLs use supplied coordinates with zero object queries; Django simplify_regex handles generated/contributed routes, including in a fresh no-admin/admindocs process. Properties and two-column ancestor assertions migrated together.
+- Both tasks have classified RED/GREEN evidence. Task 1 selection 523 passed; task 2 initial selection 530; final combined 708 passed on Python 3.12.3 / Django 6.0.10 with four workers. Scoped Ruff/format/whitespace checks pass. No active git hook is configured; normal commits used without bypass flags.
+- Four task commits end at a0a12755; SUMMARY/validation committed as 7a055dcd before ROADMAP progress. Two tasks, eight source/test/evidence files, twelve minutes. Six of ten plans complete; plan 07 next. Browser, default switching, translations and supported-version matrix remain with their later owners.
+- Decision: Presentation statically describes unchanged built-in button implementations; changed renderers use a type/template fallback without evaluating access or labels. Empty extends preserves its actual runtime fallback plus explicit declared_value. Existing row/default/count markers and both checks blocks survive; plan 07 owns final placement/style.
+- Targeted Markdown state edits preserve original state.json bytes and unrelated .gitkeep dirt. SDK roadmap update succeeded; stale table count reconciled to 6/10. No new stubs, skipped required verification, push, merge or phase-complete claim.
 
 ### Phase 06.33 plan 05 execution — 2026-11-14
 
@@ -1031,7 +1039,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
-| 06.33 | 4 | 43min | 10.75min |
+| 06.33 | 6 | 65min | 10.83min |
 
 | 06.15 | 4 | - | - |
 
@@ -1049,6 +1057,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.33 P02 | 12min | 2 tasks | 6 files |
 | Phase 06.33 P03 | 7min | 2 tasks | 9 files |
 | Phase 06.33 P04 | 12min | 3 tasks | 15 files |
+| Phase 06.33 P05 | 10min | 2 tasks | 10 files |
+| Phase 06.33 P06 | 12min | 2 tasks | 8 files |
 | Phase 01 P01 | 7 min | 2 tasks | 9 files |
 | Phase 01 P02 | 6 min | 2 tasks | 7 files |
 | Phase 01 P03 | 4 min | 2 tasks | 7 files |
@@ -1212,6 +1222,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 - [Phase 06.33 plan 02] Describe only effective has_permission ownership automatically; custom dispatch/object/queryset gates require explicit descriptions. Reuse one generated-route projection and the request engine's nearest enforced ancestor selection. Keep unchanged extension gates inherited and verify them with native requests.
 - [Phase 06.33 plan 03] Capture constructor keys before validators and own context-action declarations before registration writes; keep W280 policy unchanged and inspect display data statically. Source labels remain independent from project declaration status; model_construct provenance is unsupported.
 - [Phase 06.33 plan 04] Describe existing Guardian gates without changing authorization; merge configured direct grants by holder PK and exact permission identity. Actor counts reuse the strict helper including its active-superuser shortcut. Shared templates own Guardian cards; legacy collections/include remain independently compatible.
+- [Phase 06.33 plan 06] Reverse only upward hierarchy links from explicit required URL kwargs. Static built-in button descriptions never evaluate rendering/access. Preserve the existing empty-extends fallback and its explicit empty declaration; retain shared default-row markers and both checks blocks.
 
 Decisions are logged in the PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
@@ -1584,6 +1595,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-14T13:18:07Z
-Stopped at: Completed 06.33-05-PLAN.md
+Last session: 2026-11-14T13:34:04Z
+Stopped at: Completed 06.33-06-PLAN.md
 Resume file: None

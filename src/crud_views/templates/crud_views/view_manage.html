@@ -6,8 +6,78 @@
 
 {% block cv_content %}
 
+    <div class="row g-3">
+    <div class="col-12 col-lg-8">
+    {% block permission_holders %}
+    <section class="card mb-3" id="cv-manage-permissions">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="h6 mb-0">{% translate "Permissions" %}</h3>
+            <a class="btn btn-sm btn-outline-secondary" href="{{ manage_docs_base_url }}#permissions" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Permissions' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body">
+        {% with matrix=manage_permissions %}
+        {% if matrix.columns %}
+        <div class="table-responsive">
+    <table class="table table-sm">
+            <thead><tr>
+                <th scope="col">{% translate "Permission" %}</th>
+                {% for column in matrix.columns %}<th scope="col">{{ column.key }}<br><small>{{ column.codename }}</small></th>{% endfor %}
+            </tr></thead>
+            <tbody>
+                <tr data-manage-actor>
+                    <th scope="row">{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}</th>
+                    {% for cell in matrix.actor.cells %}
+                    <td data-permission="{{ cell.key }}">{% if cell.model %}<span class="badge bg-secondary">{% translate "model" %}</span>{% else %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        {% else %}
+        <p>{% translate "No permissions configured. Review this ViewSet's permission configuration." %}</p>
+        {% endif %}
+        {% endwith %}
+        </div>
+    </section>
+    {% endblock permission_holders %}
+
+    <br><hr><br>
+
+    <h3>{% translate "Views" %}</h3>
+
+    <br>
+
+    {% for view_key, view in views.items %}
+
+        <h4>{{ view_key }}</h4>
+
+        <div class="table-responsive">
+    <table class="table table-striped">
+            {% for section, section_data in view.items %}
+
+                <tr>
+                    <th scope="col" colspan="2">{{ section }}</th>
+                </tr>
+
+                {% for key, value in section_data.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
+    </div>
+
+        <br>
+
+    {% endfor %}
+
+    </div>
+    <div class="col-12 col-lg-4">
     <h4>{% translate "Properties" %}</h4>
 
+    <div class="table-responsive">
     <table class="table table-striped">
 
         <tr>
@@ -59,9 +129,11 @@
             </td>
         </tr>
     </table>
+    </div>
 
     {% block ancestor_policy %}
     <h4>{% translate "Ancestor policy" %}</h4>
+    <div class="table-responsive">
     <table class="table table-striped" id="cv-ancestor-policy">
         <tr>
             <th scope="col">{% translate "Setting" %}</th>
@@ -123,88 +195,14 @@
         {% endif %}
         {% endwith %}
     </table>
+    </div>
     <p>{% translate "Configuration only, not an access result for the current user. Provider and accept_global_perms apply when this ViewSet is the ancestor of a nested request; cascade, read, write and actions apply to nested requests to this ViewSet. Endpoint-local permission options are separate." %}</p>
     {% endblock ancestor_policy %}
 
     {% block guardian_config %}{% endblock guardian_config %}
 
-    <h4>{% translate "Permissions" %}</h4>
-
-    <table class="table table-striped">
-        <tr>
-            <th scope="col">{% translate "Permission" %}</th>
-            <th scope="col">{% translate "Django Permission" %}</th>
-            <th scope="col">{% translate "Access" %}</th>
-        </tr>
-        {% for row in data %}
-            <tr>
-                <td>
-                    {{ row.viewset }}
-                </td>
-                <td>
-                    {{ row.django }}
-                </td>
-                <td>
-                    {{ row.has_permission }}
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-
-    {% block permission_holders %}
-    <h4>{% translate "Permission Holders" %}</h4>
-    {% if permission_holders %}
-    <table class="table table-striped">
-        <tr>
-            <th scope="col">{% translate "Group" %}</th>
-            <th scope="col">{% translate "Permission" %}</th>
-            <th scope="col">{% translate "Model-level" %}</th>
-            {% if show_users %}<th scope="col">{% translate "Users" %}</th>{% endif %}
-        </tr>
-        {% for row in permission_holders %}
-        <tr>
-            <td>{{ row.group }}</td>
-            <td>{{ row.permission }}</td>
-            <td>{% if row.has_model_perm %}✓{% else %}—{% endif %}</td>
-            {% if show_users %}<td>{{ row.users|join:", " }}</td>{% endif %}
-        </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-    <p>{% translate "No permission holders found." %}</p>
-    {% endif %}
-    {% endblock permission_holders %}
-
-    <br><hr><br>
-
-    <h3>{% translate "Views" %}</h3>
-
-    <br>
-
-    {% for view_key, view in views.items %}
-
-        <h4>{{ view_key }}</h4>
-
-        <table class="table table-striped">
-            {% for section, section_data in view.items %}
-
-                <tr>
-                    <th scope="col" colspan="2">{{ section }}</th>
-                </tr>
-
-                {% for key, value in section_data.items %}
-                    <tr>
-                        <td>{{ key }}</td>
-                        <td>{{ value }}</td>
-                    </tr>
-                {% endfor %}
-            {% endfor %}
-        </table>
-
-        <br>
-
-    {% endfor %}
-
+    </div>
+    </div>
 {% endblock cv_content %}
 
 

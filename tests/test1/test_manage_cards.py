@@ -1,8 +1,8 @@
 """Prepared core manage diagnostics and their real request adapter."""
 
-from uuid import uuid4
-from html.parser import HTMLParser
 import re
+from html.parser import HTMLParser
+from uuid import uuid4
 
 import pytest
 from django.contrib.auth.models import Group, Permission
@@ -11,7 +11,7 @@ from django.core.exceptions import ImproperlyConfigured
 from crud_views.lib.resource import Resource
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views.manage import ManageView
-from crud_views.lib.viewset import ViewSet, _REGISTRY, _REGISTRY_LOCK
+from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
 from crud_views.lib.viewset.path_regs import PrimaryKeys
 
 pytestmark = pytest.mark.django_db
@@ -78,7 +78,7 @@ def test_core_permission_card_real_request(client, cv_author, developer):
     assert response.status_code == 200
     html = response.content.decode()
     assert 'id="cv-manage-permissions"' in html, "The admitted request must render the Permissions card"
-    actor = re.search(r'<tr data-manage-actor.*?</tr>', html, re.S).group()
+    actor = re.search(r"<tr data-manage-actor.*?</tr>", html, re.S).group()
     assert "(you)" in actor
     assert re.search(r'data-permission="view".*?class="badge[^\"]*">model</span>', actor, re.S)
     assert "<script>developer</script>" not in html
@@ -116,8 +116,9 @@ def test_builders_use_supplied_viewset_without_request(cv_author, cv_publisher, 
 def test_absent_manage_fails_before_queries(no_manage_viewset, developer, django_assert_num_queries, method):
     assert "manage" not in no_manage_viewset.get_all_views()
     assert callable(getattr(ManageView(), method, None)), "Explicit builder must exist"
-    with django_assert_num_queries(0), pytest.raises(
-        ImproperlyConfigured, match="^Manage diagnostics require a registered manage view$"
+    with (
+        django_assert_num_queries(0),
+        pytest.raises(ImproperlyConfigured, match=r"^Manage diagnostics require a registered manage view$"),
     ):
         getattr(ManageView(), method)(no_manage_viewset, developer)
 

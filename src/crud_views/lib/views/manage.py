@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import ImproperlyConfigured
 from django.views import generic
 
 from crud_views.lib.ancestor_db import _check_nested_auth
@@ -10,6 +11,7 @@ from crud_views.lib.view import CrudView
 
 class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     template_name = "crud_views/view_manage.html"
+    manage_docs_base_url = "https://django-crud-views.readthedocs.io/en/stable/reference/manage/"
 
     cv_pk: bool = False  # does not need primary key
     cv_key = "manage"
@@ -101,6 +103,42 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 )
         return rows
 
+    def _guard_manage_auth(self, viewset, user):
+        """Use the supplied ViewSet's routing contract before reading diagnostic auth data."""
+        manage_class = viewset.get_all_views().get("manage")
+        if manage_class is None:
+            raise ImproperlyConfigured("Manage diagnostics require a registered manage view")
+        _check_nested_auth(manage_class, actor=user, model=viewset.model)
+
+    def get_manage_actor_row(self, viewset, user):
+        """The supplied actor's effective grants; this does not authorize a request."""
+        self._guard_manage_auth(viewset, user)
+        return {
+            "id": user.pk,
+            "label": user.get_username(),
+            "member_count": None,
+            "cells": [
+                {"key": key, "model": user.has_perm(permission), "object_count": None}
+                for key, permission in viewset.permissions.items()
+            ],
+        }
+
+    def get_manage_permissions(self, viewset, user):
+        """Prepare ordered matrix data without depending on a request instance."""
+        self._guard_manage_auth(viewset, user)
+        return {
+            "columns": [
+                {"key": key, "permission": permission, "codename": permission.split(".", 1)[1]}
+                for key, permission in viewset.permissions.items()
+            ],
+            "actor": self.get_manage_actor_row(viewset, user),
+            "groups": [],
+            "users": [],
+            "show_users": crud_views_settings.manage_show_users,
+            "superusers": {"count": 0, "names": []},
+            "users_overflow": [],
+        }
+
     def get_context_data(self, **kwargs):
         # nested: the permission rows and holder diagnostics read auth records, which must be on default (06.18)
         _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
@@ -119,6 +157,8 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "permission_holders": permission_holders,
                 "show_users": crud_views_settings.manage_show_users,
                 "ancestor_policy": self.get_ancestor_policy_data(),
+                "manage_permissions": self.get_manage_permissions(self.cv_viewset, self.request.user),
+                "manage_docs_base_url": self.manage_docs_base_url,
             }
         )
         return context

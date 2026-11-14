@@ -179,128 +179,93 @@
     </section>
     {% endif %}
     {% endblock manage_checks_clean %}
-    <h4>{% translate "Properties" %}</h4>
+    {% block manage_viewset %}
+    <section class="card mb-3" id="cv-manage-viewset">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="h6 mb-0">{% translate "ViewSet" %}</h3>
+            <a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#viewset" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: ViewSet' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body"><div class="table-responsive"><table class="table table-sm">
+            {% for entry in manage_facts %}
+            <tr><th scope="row">{{ entry.key }}</th><td>{% if entry.icon %}{% cv_icon entry.icon %} {% endif %}{{ entry.value }} <small class="text-muted">({{ entry.source }})</small></td></tr>
+            {% endfor %}
+        </table></div></div>
+    </section>
+    {% endblock manage_viewset %}
 
-    <div class="table-responsive">
-    <table class="table table-striped">
+    {% block manage_hierarchy %}
+    <section class="card mb-3" id="cv-manage-hierarchy">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="h6 mb-0">{% translate "Hierarchy" %}</h3>
+            <a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#hierarchy" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Hierarchy' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body">
+            <h4 class="h6">{% translate "Parents" %}</h4>
+            {% if manage_hierarchy.route_error %}<p>{{ manage_hierarchy.route_error }}</p>{% endif %}
+            <ul class="list-group list-group-flush">
+            {% for item in manage_hierarchy.parents %}
+                <li class="list-group-item">{% if item.url %}<a href="{{ item.url }}">{{ item.name }}</a>{% else %}{{ item.name }}{% endif %}<br><code>{{ item.model }}</code>{% if item.route_error %}<br>{{ item.route_error }}{% endif %}</li>
+            {% empty %}{% if not manage_hierarchy.route_error %}<li class="list-group-item">{% translate "— top level" %}</li>{% endif %}{% endfor %}
+            </ul>
+            <h4 class="h6">{% translate "Children" %}</h4>
+            <ul class="list-group list-group-flush">
+            {% for item in manage_hierarchy.children %}
+                <li class="list-group-item" data-manage-child>{{ item.name }}<br><code>{{ item.model }}</code><br>
+                    {% if item.resource %}{% translate "Resource, no manage page" %}{% else %}<code>{{ item.route_name }}</code> → {% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}{% endif %}
+                </li>
+            {% empty %}<li class="list-group-item">{% translate "No child ViewSets" %}</li>{% endfor %}
+            </ul>
+            <p>{% translate "To open a child's manage page, open its list under a parent object and use its manage action." %}</p>
+        </div>
+    </section>
+    {% endblock manage_hierarchy %}
 
-        <tr>
-            <th scope="col">
-                Name
-            </th>
-            <td>
-                {{ cv.name }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                Prefix
-            </th>
-            <td>
-                {{ cv.prefix }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                app
-            </th>
-            <td>
-                {{ cv.app }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                pk
-            </th>
-            <td>
-                {{ cv.pk }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                pk_name
-            </th>
-            <td>
-                {{ cv.pk_name }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="col">
-                parent
-            </th>
-            <td>
-                {{ cv.parent }}
-            </td>
-        </tr>
-    </table>
-    </div>
+    {% block manage_urls %}
+    <section class="card mb-3" id="cv-manage-urls">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="h6 mb-0">{% translate "URL names" %}</h3>
+            <a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#url-names" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: URL names' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body"><div class="table-responsive"><table class="table table-sm">
+            <thead><tr><th scope="col">{% translate "Name" %}</th><th scope="col">{% translate "route (relative to where the ViewSet is included)" %}</th></tr></thead>
+            <tbody>{% for item in manage_routes %}<tr><th scope="row"><code>{{ item.name }}</code></th><td>{% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}</td></tr>
+            {% empty %}<tr><td colspan="2">{% translate "No views registered. Review this ViewSet's registration." %}</td></tr>{% endfor %}</tbody>
+        </table></div></div>
+    </section>
+    {% endblock manage_urls %}
 
     {% block ancestor_policy %}
-    <h4>{% translate "Ancestor policy" %}</h4>
-    <div class="table-responsive">
-    <table class="table table-striped" id="cv-ancestor-policy">
-        <tr>
-            <th scope="col">{% translate "Setting" %}</th>
-            <th scope="col">{% translate "Declared" %}</th>
-            <th scope="col">{% translate "Effective" %}</th>
-        </tr>
-        {% with policy=ancestor_policy.as_ancestor %}
-        <tr>
-            <th scope="col" colspan="3">{% translate "As an ancestor of nested requests" %}</th>
-        </tr>
-        <tr>
-            <td>provider</td>
-            <td>{% if policy.provider is None %}{% translate "None (ViewSet class default)" %}{% else %}{{ policy.provider }}{% endif %}</td>
-            <td>{{ policy.effective_provider }}</td>
-        </tr>
-        <tr>
-            <td>accept_global_perms</td>
-            <td>{{ policy.accept_global_perms }}</td>
-            <td>{{ policy.accept_global_perms }}</td>
-        </tr>
-        {% endwith %}
-        <tr>
-            <th scope="col" colspan="3">{% translate "Requests to this ViewSet" %}</th>
-        </tr>
-        {% with requests=ancestor_policy.requests %}
-        {% if requests %}
-        <tr>
-            <td>cascade</td>
-            <td>{% if requests.cascade.declared is None %}{% translate "None (global setting)" %}{% else %}{{ requests.cascade.declared }}{% endif %}</td>
-            <td>{{ requests.cascade.effective }}</td>
-        </tr>
-        <tr>
-            <td>read</td>
-            <td>{% if requests.read.declared is None %}{% translate "None (global setting)" %}{% else %}nearest: {{ requests.read.declared.nearest }}, higher: {{ requests.read.declared.higher }}{% endif %}</td>
-            <td>nearest: {{ requests.read.effective.nearest }}, higher: {{ requests.read.effective.higher }}</td>
-        </tr>
-        <tr>
-            <td>write</td>
-            <td>{% if requests.write.declared is None %}{% translate "None (global setting)" %}{% else %}nearest: {{ requests.write.declared.nearest }}, higher: {{ requests.write.declared.higher }}{% endif %}</td>
-            <td>nearest: {{ requests.write.effective.nearest }}, higher: {{ requests.write.effective.higher }}</td>
-        </tr>
-        {% for key, pair in requests.actions.items %}
-        <tr>
-            <td>actions[{{ key }}]</td>
-            <td>nearest: {{ pair.nearest }}, higher: {{ pair.higher }}</td>
-            <td>nearest: {{ pair.nearest }}, higher: {{ pair.higher }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td>actions</td>
-            <td>{% translate "none declared" %}</td>
-            <td>—</td>
-        </tr>
-        {% endfor %}
-        {% else %}
-        <tr>
-            <td colspan="3">{% translate "cascade, read, write, actions — not applicable: top-level ViewSet (no ancestors)" %}</td>
-        </tr>
-        {% endif %}
-        {% endwith %}
-    </table>
-    </div>
-    <p>{% translate "Configuration only, not an access result for the current user. Provider and accept_global_perms apply when this ViewSet is the ancestor of a nested request; cascade, read, write and actions apply to nested requests to this ViewSet. Endpoint-local permission options are separate." %}</p>
+    <section class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="h6 mb-0">{% translate "Ancestor policy" %}</h3>
+            <a class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#ancestor-policy" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Ancestor policy' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
+        <div class="card-body"><div class="table-responsive">
+        <table class="table table-sm" id="cv-ancestor-policy">
+            <thead><tr><th scope="col">{% translate "Setting" %}</th><th scope="col">{% translate "Effective" %}</th></tr></thead>
+            <tbody>
+            <tr><th scope="colgroup" colspan="2">{% translate "As an ancestor of nested requests" %}</th></tr>
+            {% with policy=manage_ancestor_policy.as_ancestor %}
+            <tr><th scope="row">provider</th><td><span data-policy-value>{{ policy.effective_provider }}</span>{% if policy.provider is None %} <small data-policy-source>{% translate "inherited" %}: {% translate "ViewSet class default" %}</small>{% endif %}</td></tr>
+            <tr><th scope="row">accept_global_perms</th><td><span data-policy-value>{{ policy.accept_global_perms }}</span></td></tr>
+            {% endwith %}
+            <tr><th scope="colgroup" colspan="2">{% translate "Requests to this ViewSet" %}</th></tr>
+            {% with requests=manage_ancestor_policy.requests %}
+            {% if requests %}
+            <tr><th scope="row">cascade</th><td><span data-policy-value>{{ requests.cascade.effective }}</span>{% if requests.cascade.declared is None %} <small data-policy-source>{% translate "inherited" %}: CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE</small>{% endif %}</td></tr>
+            <tr><th scope="row">read</th><td><span data-policy-value>nearest: {{ requests.read.effective.nearest }}, higher: {{ requests.read.effective.higher }}</span>{% if requests.read.declared is None %} <small data-policy-source>{% translate "inherited" %}: CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS</small>{% endif %}</td></tr>
+            <tr><th scope="row">write</th><td><span data-policy-value>nearest: {{ requests.write.effective.nearest }}, higher: {{ requests.write.effective.higher }}</span>{% if requests.write.declared is None %} <small data-policy-source>{% translate "inherited" %}: CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS</small>{% endif %}</td></tr>
+            {% for key, pair in requests.actions.items %}
+            <tr><th scope="row">actions[{{ key }}]</th><td><span data-policy-value>nearest: {{ pair.nearest }}, higher: {{ pair.higher }}</span></td></tr>
+            {% empty %}<tr><th scope="row">actions</th><td><span data-policy-value>{% translate "none declared" %}</span></td></tr>{% endfor %}
+            {% else %}<tr><td colspan="2">{% translate "cascade, read, write, actions — not applicable: top-level ViewSet (no ancestors)" %}</td></tr>{% endif %}
+            {% endwith %}
+            </tbody>
+        </table>
+        </div>
+        <p>{% translate "Configuration only, not an access result for the current user. Provider and accept_global_perms apply when this ViewSet is the ancestor of a nested request; cascade, read, write and actions apply to nested requests to this ViewSet. Endpoint-local permission options are separate." %}</p>
+        </div>
+    </section>
     {% endblock ancestor_policy %}
 
     {% block guardian_config %}

@@ -1,10 +1,10 @@
 import inspect
-import re
 from collections import OrderedDict
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Count, Q
+from django.urls import NoReverseMatch, reverse
 from django.utils.functional import SimpleLazyObject
 from django.utils.translation import gettext as _
 from django.views import generic
@@ -222,6 +222,8 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
 
     def get_manage_routes(self, viewset, user):
         """One display projection of generated routes; never reverse example object URLs."""
+        from django.contrib.admindocs.views import simplify_regex
+
         views = viewset.get_all_views()
         if not views:
             return []
@@ -237,13 +239,96 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 {
                     "key": key,
                     "name": name,
-                    "route": re.sub(r"\(\?P<([^>]+)>[^)]+\)", r"<\1>", pattern).removeprefix("^").removesuffix("$")
-                    if pattern is not None
-                    else None,
+                    "route": simplify_regex(pattern) if pattern is not None else None,
                     "route_error": None if pattern is not None else _("Route unavailable; review system checks"),
                 }
             )
         return rows
+
+    @staticmethod
+    def _manage_display(value):
+        if isinstance(value, type):
+            return f"{value.__module__}.{value.__qualname__}"
+        display = repr(value)
+        return display[:200] + "…" if len(display) > 200 else display
+
+    def _manage_field(self, viewset, key, value, source=None):
+        is_default = key not in viewset._manage_constructor_fields
+        return {
+            "key": key,
+            "value": self._manage_display(value),
+            "source": source or (_("default") if is_default else _("set")),
+            "is_default": is_default,
+        }
+
+    def get_manage_facts(self, viewset, user):
+        """Effective identity with constructor provenance independent of value source."""
+        rows = []
+        for key in (
+            "name",
+            "prefix",
+            "pk",
+            "pk_name",
+            "app",
+            "model",
+            "parent",
+            "verbose_name",
+            "verbose_name_plural",
+            "ordering",
+            "icon_header",
+        ):
+            value = getattr(viewset, key)
+            source = None
+            if key in {"verbose_name", "verbose_name_plural", "ordering"} and value is None:
+                value = getattr(viewset.model._meta, key, None)
+                source = _("model Meta")
+            elif key == "pk" and key not in viewset._manage_constructor_fields:
+                source = _("model Meta")
+            row = self._manage_field(viewset, key, value, source)
+            if key in {"verbose_name", "verbose_name_plural"}:
+                row["value"] = str(value)
+            if key == "icon_header":
+                row["icon"] = value
+            rows.append(row)
+        return rows
+
+    def _manage_hierarchy_item(self, viewset, user):
+        route = next((row for row in self.get_manage_routes(viewset, user) if row["key"] == "manage"), None)
+        return {
+            "name": viewset.name,
+            "model": self._manage_display(viewset.model),
+            "resource": viewset.is_resource,
+            "route_name": route["name"] if route else None,
+            "route": route["route"] if route else None,
+            "route_error": route["route_error"] if route else None,
+            "url": None,
+        }
+
+    def get_manage_hierarchy(self, viewset, user, *, route_kwargs=None):
+        """Only upward links, using supplied URL coordinates and no object reads."""
+        from crud_views.lib.ancestors import _walk_ancestors
+        from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK
+
+        data = {"parents": [], "children": [], "route_error": None}
+        try:
+            chain = _walk_ancestors(viewset)
+        except (ImproperlyConfigured, ViewSetError):
+            chain = []
+            data["route_error"] = _("Route unavailable; review system checks")
+        for _edge, parent in chain:
+            item = self._manage_hierarchy_item(parent, user)
+            if item["route_name"] and not item["route_error"]:
+                try:
+                    required = parent.get_parent_url_args()
+                    if all(key in (route_kwargs or {}) for key in required):
+                        item["url"] = reverse(item["route_name"], kwargs={key: route_kwargs[key] for key in required})
+                except (NoReverseMatch, ImproperlyConfigured, ViewSetError):
+                    item["route_error"] = _("Route unavailable; review system checks")
+            data["parents"].append(item)
+        with _REGISTRY_LOCK:
+            children = [child for child in _REGISTRY.values() if child.parent and child.parent.name == viewset.name]
+        data["children"] = [self._manage_hierarchy_item(child, user) for child in children]
+        return data
 
     def _manage_requirement(self, viewset, user, view):
         """Resolve presentation metadata narrowly; auth/database failures remain visible."""
@@ -454,12 +539,21 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "manage_permissions": self.get_manage_permissions(self.cv_viewset, self.request.user),
                 "manage_views": self.get_manage_views(self.cv_viewset, self.request.user),
                 "manage_checks": self.get_manage_checks(self.cv_viewset, self.request.user),
+                "manage_facts": self.get_manage_facts(self.cv_viewset, self.request.user),
+                "manage_hierarchy": self.get_manage_hierarchy(
+                    self.cv_viewset, self.request.user, route_kwargs=self.kwargs
+                ),
+                "manage_routes": self.get_manage_routes(self.cv_viewset, self.request.user),
+                "manage_ancestor_policy": self.get_manage_ancestor_policy(self.cv_viewset, self.request.user),
                 "manage_docs_base_url": self.manage_docs_base_url,
             }
         )
         return context
 
     def get_ancestor_policy_data(self) -> dict:
+        return self.get_manage_ancestor_policy(self.cv_viewset, None)
+
+    def get_manage_ancestor_policy(self, viewset, user) -> dict:
         """The ViewSet's declared ancestor policy, for display (phase 06.18).
 
         Configuration only, not an authorization result: nothing is evaluated for the actor and no ancestor is
@@ -475,7 +569,6 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         """
         from crud_views.lib.ancestors import _READ, _WRITE, _effective_cascade, _effective_pair, _effective_provider
 
-        viewset = self.cv_viewset
         policy = viewset.ancestor_policy
 
         def pair(value):

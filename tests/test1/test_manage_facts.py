@@ -16,7 +16,7 @@ from lxml import html
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views import ListView
 from crud_views.lib.views.manage import ManageView
-from crud_views.lib.viewset import ParentViewSet, ViewSet, _REGISTRY, _REGISTRY_LOCK
+from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet, ViewSet
 from tests.test1.app.models import Book, BookNote, Publisher
 from tests.test1.test_manage_cards import ManageResource
 
@@ -60,10 +60,15 @@ def test_identity_builder_effective_values_and_constructor_sources():
 @pytest.mark.django_db
 def test_hierarchy_uses_only_explicit_coordinates_and_never_samples(django_assert_num_queries):
     root = make(prefix="facts-root", pk_name="root_id")
-    mid = make(Book, prefix="facts-mid", pk_name="book_id",
-               parent=ParentViewSet(name=root.name, attribute="publisher", pk_name="owner_pk"))
-    leaf = make(BookNote, prefix="facts-leaf",
-                parent=ParentViewSet(name=mid.name, attribute="book", pk_name="volume_pk"))
+    mid = make(
+        Book,
+        prefix="facts-mid",
+        pk_name="book_id",
+        parent=ParentViewSet(name=root.name, attribute="publisher", pk_name="owner_pk"),
+    )
+    leaf = make(
+        BookNote, prefix="facts-leaf", parent=ParentViewSet(name=mid.name, attribute="book", pk_name="volume_pk")
+    )
     resource = make(ManageResource, parent=ParentViewSet(name=leaf.name))
     module = ModuleType("facts_urls")
     module.urlpatterns = root.urlpatterns + mid.urlpatterns + leaf.urlpatterns
@@ -110,7 +115,9 @@ def test_routes_execute_without_admin_or_admindocs_installed():
     env["PYTHONPATH"] = str(Path(__file__).resolve().parents[2] / "src")
     code = """
 from django.conf import settings
-settings.configure(SECRET_KEY="facts", INSTALLED_APPS=["django.contrib.auth", "django.contrib.contenttypes", "crud_views"])
+settings.configure(
+    SECRET_KEY="facts", INSTALLED_APPS=["django.contrib.auth", "django.contrib.contenttypes", "crud_views"]
+)
 import django
 django.setup()
 from django.contrib.auth.models import Group, AnonymousUser
@@ -144,4 +151,3 @@ def test_identity_cards_replace_properties_and_spacers(client, django_user_model
     assert not doc.xpath("//br[following-sibling::*[1][self::hr] and following-sibling::*[2][self::br]]")
     assert not doc.cssselect("#cv-manage-hierarchy [data-manage-child] a")
     assert "route (relative to where the ViewSet is included)" in doc.cssselect("#cv-manage-urls")[0].text_content()
-

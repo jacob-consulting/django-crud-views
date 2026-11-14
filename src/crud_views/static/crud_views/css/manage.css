@@ -41,6 +41,11 @@
     font-size: 14px;
 }
 
+[data-cv-manage] small,
+[data-cv-manage] .badge {
+    font-weight: 400;
+}
+
 [data-cv-manage] code {
     font-size: inherit;
 }
@@ -49,6 +54,10 @@
 [data-cv-manage] strong,
 [data-cv-manage] .h6 {
     font-weight: 600;
+}
+
+[data-cv-manage] th {
+    color: var(--bs-secondary-text-emphasis, #495057);
 }
 
 [data-cv-manage] .h6 {
@@ -62,7 +71,7 @@
     gap: 8px;
 }
 
-[data-cv-manage] .cv-manage-help {
+[data-cv-manage] [data-cv-manage-help] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -70,6 +79,34 @@
     height: 32px;
     flex: 0 0 32px;
     border-radius: 50%;
+    margin-inline-start: 8px;
+}
+
+[data-cv-manage] .cv-manage-default td {
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+[data-cv-manage] #cv-manage-presentation {
+    position: relative;
+}
+
+[data-cv-manage] #cv-manage-presentation > summary {
+    padding-inline-end: 56px;
+}
+
+[data-cv-manage] #cv-manage-presentation > [data-cv-manage-help] {
+    position: absolute;
+    inset-block-start: 8px;
+    inset-inline-end: 8px;
+}
+
+/* Keep the summary's sibling help available while only the diagnostic body folds. */
+[data-cv-manage] #cv-manage-presentation::details-content {
+    content-visibility: visible;
+}
+
+[data-cv-manage] #cv-manage-presentation:not([open]) > .card-body {
+    display: none;
 }
 
 [data-cv-manage] .cv-manage-badge-group {

@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Structured manage diagnostics with permission holders, strict Guardian object counts, declaration provenance, scoped checks, accessible defaults/help, German locales and migration contracts — Phase 06.33
+
 <!-- Inferred from the existing codebase (0.30.0 + unreleased). -->
 
 - ✓ ViewSet → CrudView registry with auto-generated URL patterns, nested parent/child ViewSets — existing
@@ -217,6 +219,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Resolve transition presentation on copied actions with eight workflow-owned variant keys and the existing icon helper | Keeps optional-app imports safe, preserves exact submit-label fallbacks and avoids a new rendering abstraction | Validated (Phase 06.32) |
 
+| Prepare manage diagnostics after authorization with bounded queries and preserve lazy legacy template contracts | Keeps diagnostic data traceable without changing enforcement or breaking existing overrides | Validated (Phase 06.33) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -235,4 +239,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-13 after completing Phases 06.30, 06.31 and 06.32*
+*Last updated: 2026-11-14 after completing Phase 06.33*

@@ -59,7 +59,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 
 - [x] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance. (completed 2026-11-13)
 - [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
-- [ ] **Phase 06.33: Structured manage page (#366) (INSERTED)** - approved D-01–D-30 issue handover; permission matrix, collapsible views and switchable defaults.
+- [x] **Phase 06.33: Structured manage page (#366) (INSERTED)** - approved D-01–D-30 issue handover; permission matrix, collapsible views and switchable defaults. (completed 2026-11-14)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1912,7 +1912,7 @@ Plans:
 4. Scoped checks, hierarchy, routes, context-button targets, registry overrides, accessible badges and documentation anchors satisfy the issue acceptance criteria; no inline scripts, event handlers or styles are introduced.
 5. Existing template overrides replace their cards, legacy context stays lazy and compatible, Guardian data survives template replacement, and documentation, migration notes, locales and the example are updated.
 
-**Plans:** 10/10 plans executed
+**Plans:** 10/10 plans complete
 
 Plans:
 **Wave 1**

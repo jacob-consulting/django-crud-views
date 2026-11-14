@@ -349,7 +349,11 @@ class GuardianParentPermissionMixin:
             and not issubclass(cls, (GuardianObjectPermissionMixin, GuardianQuerysetMixin))
         ):
             return {"kind": "none", "value": None, "ancestor_applies": True}
-        if cls._cv_requirement_is_custom(after=GuardianParentPermissionMixin):
+        # has_permission delegates only at the top level. Nested object/queryset
+        # gates still describe their independent object-loading/filtering policy.
+        if (cls.cv_viewset is None or cls.cv_viewset.parent is None) and cls._cv_requirement_is_custom(
+            after=GuardianParentPermissionMixin
+        ):
             return {"kind": "custom", "value": None, "ancestor_applies": True}
         return super().cv_get_requirement()
 

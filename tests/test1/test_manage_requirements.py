@@ -171,6 +171,72 @@ def test_guardian_parent_delegation_describes_intervening_custom_gate(client, dj
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("listing", [False, True], ids=["object", "queryset"])
+@pytest.mark.parametrize("described", [False, True])
+def test_nested_guardian_describes_active_gate_not_bypassed_override(
+    client, developer, simple_templates, listing, described
+):
+    from guardian.shortcuts import assign_perm
+
+    from crud_views_guardian.lib.mixins import (
+        GuardianObjectPermissionMixin,
+        GuardianParentPermissionMixin,
+        GuardianQuerysetMixin,
+    )
+
+    calls = []
+
+    def unused_gate(self):
+        calls.append(self)
+        return False
+
+    def build(sfx):
+        parent = GuardianViewSet(model=Publisher, name="bypassedparent" + sfx)
+        vs = GuardianViewSet(
+            model=Book, name="bypassedchild" + sfx, parent=ParentViewSet(name=parent.name, attribute="publisher")
+        )
+        custom = type(
+            "CustomChild",
+            (GuardianQuerysetMixin, core.ListViewPermissionRequired)
+            if listing
+            else (GuardianObjectPermissionMixin, core.DetailViewPermissionRequired),
+            {"__module__": __name__, "has_permission": unused_gate},
+        )
+        if described:
+            custom.cv_get_requirement = classmethod(
+                lambda cls: {"kind": "group", "value": "explicit project description", "ancestor_applies": True}
+            )
+        wrapped = type("WrappedCustomChild", (GuardianParentPermissionMixin, custom), {"__module__": __name__})
+        view = register(wrapped, vs, template_name="requirement.html")
+        return (parent, vs, view), [parent, vs]
+
+    with isolated_routes(build) as (parent, vs, view):
+        pub = Publisher.objects.create(name="Bypassed gate parent")
+        obj = Book.objects.create(title="Visible with object grant", publisher=pub)
+        kwargs = {parent.name + "_pk": pub.pk}
+        if not listing:
+            kwargs[vs.pk_name] = obj.pk
+        url = reverse(vs.get_router_name("tested"), kwargs=kwargs)
+        client.force_login(developer)
+        assert client.get(url).status_code == 403
+        assign_perm(parent.permissions["view"], developer, pub)
+        ungranted = client.get(url)
+        assert ungranted.status_code == (200 if listing else 403)
+        if listing:
+            assert list(ungranted.context["object_list"]) == []
+        assign_perm(vs.permissions["view"], developer, obj)
+        response = client.get(url)
+        assert response.status_code == 200
+        assert (list(response.context["object_list"]) if listing else [response.context["object"]]) == [obj]
+        assert calls == [], "Nested parent gate bypasses the downstream has_permission override"
+        assert view.cv_get_requirement() == {
+            "kind": "group" if described else "permission",
+            "value": "explicit project description" if described else "view",
+            "ancestor_applies": True,
+        }
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("base,key", CORE_CASES, ids=[cls.__name__ for cls, _ in CORE_CASES])
 def test_core_descriptions_match_native_requests(base, key, client, django_user_model, simple_templates):
     def build(sfx):

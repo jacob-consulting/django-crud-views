@@ -183,3 +183,15 @@ No revision conflict arose. Explicit unsupported boundaries do not defer an appr
 | C3-A4 | 06.1; catalog owner 09.1 | Heading migration uses current gettext results before the new German catalog; identifiers remain literal and new-message translation completeness is still mandatory in 09.1. |
 
 Counts remain 10 plans, 25 tasks, 9 waves and all 52 UI criteria. No new scope, implementation evidence, revision conflict or deferred actionable finding.
+
+## Review round 4 — c978e95e
+
+| Finding | Executable owner | Disposition |
+|---|---|---|
+| C4-A1 | 01.1 | Local Resource model/fixture follows the existing pattern, uses a unique owned registry name and teardown; no imported module-scoped fixture or reused author/t2_item name. |
+| C4-A2 | 01.1–2 | Explicitly accept the presentation-only one-task test_manage verification interval; task 2 closes it before any plan/full-suite completion claim. |
+| C4-A3 | 03.1, 10.2 | Existing Resource construction and Guardian vocabulary modules run in the immediate gate and both cached-series replays. |
+| C4-A4 | 04.1–3 | Targeted data/override evidence in tasks 1–2; task 3 is the required retained-markup completion gate. No unnecessary duplicate full replays. |
+| C4-A5 | 09.1 | Compiled catalogs must match PO translations/plurals/contexts/semantic metadata and load through Django; cross-compiler byte identity is not required. |
+
+All five LOW findings have executable dispositions; counts remain 10 plans, 25 tasks, 9 waves. The existing Resource fixture reference in earlier coverage means the pattern, not shared pytest fixture availability. Advisory pattern-map wording is outside this revision's ownership and creates no new implementation scope.

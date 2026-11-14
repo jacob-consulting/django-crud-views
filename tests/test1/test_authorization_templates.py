@@ -106,6 +106,75 @@ def native(settings):
     yield
 
 
+@pytest.mark.django_db
+def test_core_manage_legacy_whole_card_override_is_lazy(settings, client, cv_author, user_author_view, monkeypatch):
+    """Each old context collection remains overridable and evaluates once, only when read."""
+    from collections import OrderedDict
+
+    from django.contrib.auth.models import Group
+    from lxml import html
+
+    from crud_views.lib.settings import crud_views_settings
+
+    user_author_view.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    client.force_login(user_author_view)
+    cls = cv_author.get_view_class("manage")
+    counts = {"views": 0, "holders": 0}
+    original_views = cls.get_view_data
+    original_holders = cls.get_permission_holders
+
+    def views(self):
+        counts["views"] += 1
+        result = original_views(self)
+        result["override"] = OrderedDict()
+        return result
+
+    def holders(self):
+        counts["holders"] += 1
+        return [*original_holders(self), {"group": "override", "permission": "view"}]
+
+    monkeypatch.setattr(cls, "get_view_data", views)
+    monkeypatch.setattr(cls, "get_permission_holders", holders)
+    stock = client.get("/author/manage/")
+    assert stock.status_code == 200
+    assert counts == {"views": 0, "holders": 0}
+    from django.utils.functional import empty
+
+    assert stock.context["data"]._wrapped is empty
+    templates = copy.deepcopy(settings.TEMPLATES)
+    templates[0]["APP_DIRS"] = False
+    templates[0]["OPTIONS"]["loaders"] = [
+        (
+            "django.template.loaders.locmem.Loader",
+            {
+                "manage-legacy.html": (
+                    '{% extends "crud_views/view_manage.html" %}{% block permission_holders %}'
+                    '<section id="legacy-card">{{ data|length }}:{{ data|length }}|'
+                    "{{ views|length }}:{{ views|length }}|"
+                    "{{ permission_holders|length }}:{{ permission_holders|length }}</section>{% endblock %}"
+                )
+            },
+        ),
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader",
+    ]
+    settings.TEMPLATES = templates
+    monkeypatch.setattr(cls, "template_name", "manage-legacy.html")
+    response = client.get("/author/manage/")
+    assert counts == {"views": 1, "holders": 1}
+    assert isinstance(response.context["data"], list)
+    assert isinstance(response.context["views"], OrderedDict)
+    assert isinstance(response.context["permission_holders"], list)
+    assert "override" in response.context["views"]
+    assert response.context["permission_holders"][-1]["group"] == "override"
+    doc = html.fromstring(response.content)
+    assert len(doc.cssselect(".col-lg-8 > #legacy-card")) == 1
+    assert not doc.cssselect("#cv-manage-permissions")
+    lengths = doc.cssselect("#legacy-card")[0].text_content().split("|")
+    assert all(pair.split(":")[0] == pair.split(":")[1] for pair in lengths)
+    assert counts == {"views": 1, "holders": 1}
+
+
 # ── isolated routes (A08) ─────────────────────────────────────────────────────
 
 

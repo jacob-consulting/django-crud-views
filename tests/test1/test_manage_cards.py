@@ -7,6 +7,9 @@ from uuid import uuid4
 import pytest
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import ImproperlyConfigured
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
+from lxml import html as html_parser
 
 from crud_views.lib.resource import Resource
 from crud_views.lib.settings import crud_views_settings
@@ -134,3 +137,140 @@ def test_disabled_model_still_registers_manage(monkeypatch, cv_author, developer
     finally:
         with _REGISTRY_LOCK:
             del _REGISTRY[name]
+
+
+def test_direct_holders_are_pivoted_by_pk(cv_author, developer, django_user_model, monkeypatch):
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", True)
+    shared = Group.objects.create(name="Shared label")
+    other = Group.objects.create(name="Other holder")
+    user = django_user_model.objects.create_user(username=shared.name)
+    member = django_user_model.objects.create_user(username="Only inherited")
+    member.groups.add(shared)
+    grant(shared, cv_author, "view")
+    grant(shared, cv_author, "change")
+    grant(other, cv_author, "add")
+    user.user_permissions.add(*shared.permissions.all())
+    view = cv_author.get_view_class("manage")()
+    matrix = view.get_manage_permissions(cv_author, developer)
+    assert len(matrix["groups"]) == 2, "Direct group grants must form holder rows"
+    rows = {row["id"]: row for row in matrix["groups"]}
+    assert set(rows) == {shared.pk, other.pk}
+    assert rows[shared.pk]["member_count"] == 1
+    assert {c["key"] for c in rows[shared.pk]["cells"] if c["model"]} == {"view", "change"}
+    assert all(c["object_count"] is None for row in rows.values() for c in row["cells"])
+    assert [(row["id"], row["label"]) for row in matrix["users"]] == [(user.pk, shared.name)]
+    before_cells = rows[shared.pk]["cells"]
+    shared.name = "Renamed holder"
+    shared.save(update_fields=["name"])
+    user.username = "Renamed user"
+    user.save(update_fields=["username"])
+    renamed = view.get_manage_permissions(cv_author, developer)
+    assert next(row for row in renamed["groups"] if row["id"] == shared.pk)["cells"] == before_cells
+    assert renamed["users"][0]["id"] == user.pk
+    assert renamed["users"][0]["cells"] == matrix["users"][0]["cells"]
+    assert renamed["users"][0]["label"] == "Renamed user"
+
+
+@pytest.mark.parametrize("count", [0, 1, 20, 21])
+def test_users_fold_after_twenty(client, cv_author, developer, django_user_model, monkeypatch, count):
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", True)
+    app, codename = cv_author.permissions["view"].split(".")
+    perm = Permission.objects.get(content_type__app_label=app, codename=codename)
+    for i in range(count):
+        holder = django_user_model.objects.create_user(username=f"Direct {i:02}")
+        holder.user_permissions.add(perm)
+    client.force_login(developer)
+    response = client.get("/author/manage/")
+    doc = html_parser.fromstring(response.content)
+    rows = doc.cssselect("[data-manage-users] tbody tr[data-holder-id]")
+    assert len(rows) == min(count, 20)
+    overflow = doc.cssselect("[data-manage-users-overflow]")
+    assert bool(overflow) == (count > 20)
+    if overflow:
+        assert overflow[0].cssselect("summary")[0].text_content().strip() == "+ 1 more"
+        assert len(overflow[0].cssselect("table thead th")) == len(cv_author.permissions) + 1
+        assert len(overflow[0].cssselect("tbody tr")) == 1
+        assert not overflow[0].get("open")
+    assert not doc.cssselect("tbody > details")
+    assert all(TableWrappers(response.content.decode()).tables)
+    if count == 0:
+        assert "No users hold these permissions directly." in doc.text_content()
+
+
+def test_hidden_users_and_active_superuser_counts(client, cv_author, developer, django_user_model, monkeypatch):
+    active = django_user_model.objects.create_user(username="Secret superuser", is_superuser=True)
+    django_user_model.objects.create_user(username="Inactive root", is_superuser=True, is_active=False)
+    direct = django_user_model.objects.create_user(username="Secret direct")
+    direct.user_permissions.add(Permission.objects.get(codename="view_author", content_type__app_label="app"))
+    client.force_login(developer)
+    for show in [False, True]:
+        monkeypatch.setattr(crud_views_settings, "manage_show_users", show)
+        response = client.get("/author/manage/")
+        html = response.content.decode()
+        matrix = response.context["manage_permissions"]
+        assert matrix["superusers"]["count"] == 1
+        assert matrix["superusers"]["names"] == ([active.username] if show else [])
+        assert ("Secret superuser" in html) is show
+        assert ("Secret direct" in html) is show
+        assert ("data-manage-users" in html) is show
+        assert "Inactive root" not in html
+        assert "1 active superuser holds every permission" in html
+
+
+@pytest.mark.parametrize("holder_count", [1, 21])
+@pytest.mark.parametrize("column_count", [1, 4])
+def test_holder_queries_are_batched(cv_author, developer, monkeypatch, django_user_model, holder_count, column_count):
+    permissions = dict(list(cv_author.permissions.items())[:column_count])
+    monkeypatch.setattr(ViewSet, "permissions", property(lambda self: permissions))
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", True)
+    for i in range(holder_count):
+        group = Group.objects.create(name=f"Batch {i:02}")
+        holder = django_user_model.objects.create_user(username=f"Batch {i:02}")
+        for key in permissions:
+            grant(group, cv_author, key)
+        holder.groups.add(group)
+        holder.user_permissions.add(*group.permissions.all())
+    # Warm only actor backend caches; holder lookups and aggregates remain measured.
+    developer.get_all_permissions()
+    with CaptureQueriesContext(connection) as captured:
+        matrix = ManageView().get_manage_permissions(cv_author, developer)
+    assert len(matrix["groups"]) == holder_count
+    assert len(matrix["users"]) + len(matrix["users_overflow"]) == holder_count
+    assert len(captured) == 5  # groups, users, member aggregate, superuser count, superuser names
+    assert sum("COUNT(" in query["sql"].upper() for query in captured) == 2
+
+
+def test_empty_and_custom_vocabulary(client, cv_author, developer, monkeypatch):
+    perm = Permission.objects.create(
+        content_type=Permission.objects.get(codename="view_author", content_type__app_label="app").content_type,
+        codename="audit_author",
+        name="Audit author",
+    )
+    group = Group.objects.create(name="Auditors")
+    group.permissions.add(perm)
+    monkeypatch.setattr(ViewSet, "permissions", property(lambda self: {"audit": "app.audit_author"}))
+    matrix = ManageView().get_manage_permissions(cv_author, developer)
+    assert matrix["columns"] == [{"key": "audit", "permission": "app.audit_author", "codename": "audit_author"}]
+    assert matrix["groups"][0]["cells"] == [{"key": "audit", "model": True, "object_count": None}]
+    monkeypatch.setattr(ViewSet, "permissions", property(lambda self: {}))
+    client.force_login(developer)
+    response = client.get("/author/manage/")
+    assert "No permissions configured." in response.content.decode()
+    assert response.context["manage_permissions"]["groups"] == []
+
+
+def test_stock_render_does_not_evaluate_legacy_getters(client, cv_author, developer, monkeypatch):
+    def forbidden(*args):
+        raise AssertionError("Stock core rendering must not evaluate a legacy getter")
+
+    cls = cv_author.get_view_class("manage")
+    monkeypatch.setattr(cls, "get_view_data", forbidden)
+    monkeypatch.setattr(cls, "get_permission_holders", forbidden)
+    client.force_login(developer)
+    response = client.get("/author/manage/")
+    assert response.status_code == 200
+    rows = response.context["manage_views"]
+    assert {row["key"] for row in rows} == set(cv_author.get_all_views())
+    for row in rows:
+        view = cv_author.get_view_class(row["key"])
+        assert row["class_path"] == f"{view.__module__}.{view.__qualname__}"

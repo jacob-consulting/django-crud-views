@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group
 from django.template.loader import get_template
 from django.template.loader_tags import BlockNode
 from django.urls import reverse
+from lxml import html
 
 from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES
 from crud_views.lib.settings import crud_views_settings
@@ -66,3 +67,21 @@ def test_requirement_fields_match_documented_contract(request, fixture):
     assert requirements["manage"]["kind"] == "group"
     assert requirements["manage"]["value"] == crud_views_settings.manage_group
     assert requirements["update"]["value"] == "change"
+
+
+@pytest.mark.django_db
+def test_manage_checks_use_shared_alert_frame(client, cv_author, developer, settings):
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {"alert:warning": "project-checks-alert"}
+    client.force_login(developer)
+    response = client.get(reverse(cv_author.get_router_name("manage")))
+    assert response.status_code == 200
+    # The registered fixture's unlabeled AuthorContactView produces genuine scoped findings.
+    assert response.context["manage_checks"]["messages"]
+    issues = html.fromstring(response.content).get_element_by_id("cv-manage-checks-issues")
+    frames = issues.xpath('.//*[@role="alert"]')
+    assert len(frames) == 1
+    (frame,) = frames
+    assert "project-checks-alert" in frame.get("class").split()
+    assert frame.xpath(".//h2")[0].text_content() == "Configuration issues"
+    for message in response.context["manage_checks"]["messages"]:
+        assert message["id"] in frame.text_content()

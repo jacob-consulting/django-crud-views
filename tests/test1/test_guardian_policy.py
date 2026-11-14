@@ -494,12 +494,23 @@ def _flat(response):
     return re.sub(r"\s+", " ", response.content.decode())
 
 
-def _policy_row(view_key, accept_cell, effective_text):
-    import re
+def _assert_policy_row(content, view_key, accept, effective):
+    from lxml import html
 
-    return re.compile(
-        rf"<tr> <td>{re.escape(view_key)}</td> <td>{re.escape(accept_cell)}</td> <td>{re.escape(effective_text)}</td>"
-    )
+    detail = html.fromstring(content).get_element_by_id("cv-view-" + view_key)
+    summary = detail.find("summary")
+    assert not summary.xpath(".//a|.//button|.//input")
+    badge = summary.xpath("./span[@data-cv-guardian-policy]")[0]
+    assert badge.text_content().strip() == effective
+    rows = {
+        row.find("th").text_content(): row.find("td").text_content().strip()
+        for row in detail.xpath(".//tr[@data-cv-config-row]")
+    }
+    assert rows["effective_policy"].startswith(effective)
+    if accept is not None:
+        assert rows["guardian_accept_global_perms"].startswith(str(accept))
+    assert badge.get("title")
+    assert effective in detail.get_element_by_id(summary.get("aria-describedby")).text_content()
 
 
 @pytest.mark.django_db
@@ -559,15 +570,16 @@ def test_manage_html_names_each_views_policy_and_the_strict_helper(pol, client):
     client.force_login(_manager())
     content = _flat(_manage(client, pol.pub_vs))
 
-    assert "Global permission fallback" in content
-    assert _policy_row("list", "False", "strict: object and group grants only").search(content)
-    assert _policy_row("detail", "True", "global fallback: model permissions accepted").search(content)
-    assert _policy_row("update", "—", "not applicable").search(content)
-    assert _policy_row("create", "—", "not applicable").search(content)
-    assert _policy_row("manage", "—", "not applicable").search(content)
+    assert "Global permission fallback" not in content
+    _assert_policy_row(content, "list", False, "strict")
+    _assert_policy_row(content, "detail", True, "global fallback")
+    _assert_policy_row(content, "update", None, "not applicable")
+    _assert_policy_row(content, "create", None, "not applicable")
+    _assert_policy_row(content, "manage", None, "not applicable")
     # the helper is reported separately and as strict, never as sharing a view's fallback
-    assert "GuardianViewSet.get_objects_for_user() is independent of these view policies and always strict" in content
-    assert "strict: object and group grants only; global model permissions are not accepted" in content
+    assert "GuardianViewSet.get_objects_for_user() is independent of local view policies and always strict" in content
+    assert "global model permissions are not accepted" in content
+    assert "active superuser reaches every object" in content
 
 
 @pytest.mark.django_db
@@ -576,8 +588,8 @@ def test_manage_html_reports_parent_none_create_as_not_applicable(pol, client, p
     client.force_login(_manager())
     content = _flat(_manage(client, pol.free_vs, parent_pk=a.pk))
 
-    assert _policy_row("create", "—", "not applicable").search(content)
-    assert _policy_row("list", "False", "strict: object and group grants only").search(content)
+    _assert_policy_row(content, "create", None, "not applicable")
+    _assert_policy_row(content, "list", False, "strict")
 
 
 # ── the reported policies match actual access ─────────────────────────────────
@@ -701,7 +713,7 @@ def test_group_member_sees_policy_rows_under_group_gate(pol, client, manage_mode
 
     assert response.status_code == 200
     assert _views_policy(response)["detail"] == _policy(applicable=True, accept=True)
-    assert _policy_row("detail", "True", "global fallback: model permissions accepted").search(_flat(response))
+    _assert_policy_row(_flat(response), "detail", True, "global fallback")
 
 
 # ── Phase 6.3: exact configured keys and immutable helper authority ──────────

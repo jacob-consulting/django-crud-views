@@ -481,9 +481,16 @@ def test_guardian_manage_separates_ancestor_fallback_from_local_view_fallback(ro
     }
     assert dict(views["detail"]["guardian_policy"])["effective_policy"] == "strict"
     assert leaf.context["guardian_config"]["get_objects_for_user"]["accept_global_perms"] is False
-    content = _flat(leaf)
-    assert "<tr> <td>create</td> <td>—</td> <td>not applicable</td> </tr>" in content
-    assert "<tr> <td>detail</td> <td>False</td> <td>strict: object and group grants only</td> </tr>" in content
+    from lxml import html
+
+    doc = html.fromstring(leaf.content)
+    create_summary = doc.get_element_by_id("cv-view-create").find("summary")
+    assert create_summary.xpath("./span[@data-cv-guardian-policy]")[0].text_content().strip() == "not applicable"
+    assert "parent: change" in create_summary.text_content()
+    assert not create_summary.xpath(".//span[@title='No own permission required']")
+    detail_summary = doc.get_element_by_id("cv-view-detail").find("summary")
+    assert detail_summary.xpath("./span[@data-cv-guardian-policy]")[0].text_content().strip() == "strict"
+    assert "parent: view" in detail_summary.text_content()
     assert _policy_table(leaf)["accept_global_perms"] == ("False", "False")
 
     mid = client.get(_mid_manage(chain, world.penguin.pk))
@@ -493,11 +500,12 @@ def test_guardian_manage_separates_ancestor_fallback_from_local_view_fallback(ro
     # its parent (the Publisher) has no ancestor fallback although the Book detail is locally permissive
     assert mid.context["guardian_config"]["parent_viewset"] == f"{chain.grand.name} (ancestor provider: guardian)"
     assert dict(mid.context["views"]["detail"]["guardian_policy"])["effective_policy"] == "global fallback"
-    mid_content = _flat(mid)
-    assert (
-        "<tr> <td>detail</td> <td>True</td> <td>global fallback: model permissions accepted</td> </tr>" in mid_content
-    )
-    assert "strict: object and group grants only; global model permissions are not accepted" in mid_content
+    mid_doc = html.fromstring(mid.content)
+    badge = mid_doc.get_element_by_id("cv-view-detail").xpath("./summary/span[@data-cv-guardian-policy]")[0]
+    assert badge.text_content().strip() == "global fallback"
+    helper = mid_doc.get_element_by_id("cv-manage-guardian").text_content()
+    assert "global model permissions are not accepted" in helper
+    assert "active superuser reaches every object" in helper
 
 
 @pytest.mark.django_db

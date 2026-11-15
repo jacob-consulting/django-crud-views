@@ -215,7 +215,7 @@ def test_plain_ancestry_login_uses_exact_response_and_no_lookup(discard):
         assert not [s for s in result.steps if s.kind == "ancestor_lookup"]
 
 
-@pytest.mark.django_db(transaction=True)
+@pytest.mark.django_db(transaction=True, databases=["default", "shard"])
 @pytest.mark.parametrize("ending", ["allowed", "denied", "error", "database-error"])
 def test_default_rollback_preserves_outer_savepoint_and_callbacks(ending):
     callbacks = []

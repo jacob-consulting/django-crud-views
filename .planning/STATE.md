@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.35"
 current_phase_name: "Resource manage pages with cv_access parity (#372)"
-current_plan: "05"
+current_plan: "06"
 status: executing
-stopped_at: "Completed 06.35-04-PLAN.md; ready for plans 05/06"
-last_updated: "2026-11-15T18:40:00Z"
+stopped_at: "Completed 06.35-05-PLAN.md; ready for plan 06"
+last_updated: "2026-11-15T18:49:21Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 06.35 plan 04 complete; C07 65 passed and C08 377 passed; complete Resource UI/CLI parity proven; theme/docs and locale handoffs remain with plans 05/06; 3 plans remain
-state_head: 6f886ea7
+last_activity_desc: Phase 06.35 plan 05 complete; C09 36 passed and C10 360 passed; strict docs build passed; all 15 H01 theme/docs handoffs closed; locale and release acceptance remain with plans 06/07
+state_head: e1be255a
 progress:
   total_phases: 42
   completed_phases: 27
   total_plans: 232
-  completed_plans: 229
+  completed_plans: 230
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.35 (Resource manage pages with cv_access parity (#372)) — IN PROGRESS
-Current Plan: 05
+Current Plan: 06
 Total Plans in Phase: 7
-Status: Executing (4/7 plans complete)
-Last activity: 2026-11-15 — Plan 04 committed; Resource form/actor and complete UI/CLI parity proven; C07 65 passed, C08 377 passed
+Status: Executing (5/7 plans complete)
+Last activity: 2026-11-15 — Plan 05 committed; Resource documentation/migration and exact theme inventories verified; C09 36 passed, C10 360 passed, strict MkDocs build passed
 
 Next: $gsd-execute-phase 06.35
+
+### Phase 06.35 plan 05 completion — 2026-11-15
+
+- Resource/manage guidance now documents registration, developer/ancestor gates, metadata/provenance, explicit mapping and loader boundaries, selected actors and UI/CLI parity. The custom-manage-key Breaking entry has a paired executable migration recipe.
+- Exact live inventories cover Resource/model/Guardian contexts, blocks, facts and Presentation sections; 20 manage / 122 core / 140 workflow keys include the approved Resource badge. All fifteen inherited H01 theme/docs failures assigned05 now pass. Locale remains assigned06.
+- C09: 36 passed (2.68s), four workers; final C10: 360 passed (28.57s), two workers; strict MkDocs build passed (1.39s). Scoped lint/format/whitespace pass; no skips, dependencies or runtime changes.
+- Duration: approximately 9 minutes; 2 tasks; RED/GREEN commits 4ae68c47, 7f7b5ec0, c9d6d9f9, 6bb29222; summary e1be255a. Two plans remain; no phase completion claimed. Unrelated state.json edits preserved.
 
 ### Phase 06.35 plan 04 completion — 2026-11-15
 

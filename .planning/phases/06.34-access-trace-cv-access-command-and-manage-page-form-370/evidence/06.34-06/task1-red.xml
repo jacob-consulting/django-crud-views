@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.905" timestamp="2026-11-15T06:02:58.993794+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_access_trace_command" name="test_command_is_discoverable" time="0.003"><failure message="AssertionError: cv_access must be a discoverable Django command&#10;assert 'cv_access' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}&#10; +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()">def test_command_is_discoverable():
+&gt;       assert "cv_access" in get_commands(), "cv_access must be a discoverable Django command"
+E       AssertionError: cv_access must be a discoverable Django command
+E       assert 'cv_access' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}
+E        +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()
+
+tests/test1/test_access_trace_command.py:20: AssertionError</failure></testcase></testsuite></testsuites>

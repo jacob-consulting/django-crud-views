@@ -40,14 +40,29 @@ def test_resource_reads_identity_state_and_counts(case):
     def build(sfx):
         parent = ViewSet(model=Publisher, name="resourceparent" + sfx)
         register(ListViewPermissionRequired, parent)
-        vs = ViewSet(model=ExternalItem, name="external" + sfx,
-                     parent=ParentViewSet(name=parent.name),
-                     ancestor_policy=AncestorPolicy(actions={"tested": AncestorPermissions(nearest="view", higher="view")}),
-                     resource_permissions={"view": "app.view_publisher", "change": "app.change_publisher"})
-        base = ListViewPermissionRequired if case == "list" else ActionViewPermissionRequired if case == "action" else DetailViewPermissionRequired
+        vs = ViewSet(
+            model=ExternalItem,
+            name="external" + sfx,
+            parent=ParentViewSet(name=parent.name),
+            ancestor_policy=AncestorPolicy(actions={"tested": AncestorPermissions(nearest="view", higher="view")}),
+            resource_permissions={"view": "app.view_publisher", "change": "app.change_publisher"},
+        )
+        base = (
+            ListViewPermissionRequired
+            if case == "list"
+            else ActionViewPermissionRequired
+            if case == "action"
+            else DetailViewPermissionRequired
+        )
         combined = type("ResourceEndpoint", (ResourceViewMixin, base), {"__module__": __name__})
-        register(combined, vs, get=explode, post=explode, cv_action=explode,
-                 cv_action_enabled=classmethod(lambda cls, user, obj: case != "disabled"))
+        register(
+            combined,
+            vs,
+            get=explode,
+            post=explode,
+            cv_action=explode,
+            cv_action_enabled=classmethod(lambda cls, user, obj: case != "disabled"),
+        )
         return (parent, vs), [parent, vs]
 
     user = _user("external actor", superuser=True)

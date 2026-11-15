@@ -130,6 +130,14 @@ def serve(directory):
     class BrowserResource(Resource):
         pk: str
 
+        @classmethod
+        def cv_get_items(cls, **kwargs):
+            raise AssertionError("Manage must not list Resource items")
+
+        @classmethod
+        def cv_get_item(cls, pk, **kwargs):
+            raise AssertionError("Manage must not fetch a Resource item")
+
     collections = {}
     for kind, cls in (("core", ViewSet), ("guardian", GuardianViewSet)):
         for count in (0, 1, 3):
@@ -146,7 +154,19 @@ def serve(directory):
             vs.context_buttons = [ContextButton(key=f"button{index}", key_target="manage") for index in range(count)]
             collections[kind, count] = vs
 
-    ViewSet(model=BrowserResource, name="browser_resource", parent=ParentViewSet(name=parent.name))
+    viewsets["resource"] = ViewSet(
+        model=BrowserResource,
+        name="browser_resource_standalone",
+        prefix="resource",
+        resource_permissions={"view": "app.view_author", "add": "app.add_author"},
+    )
+    viewsets["resource-nested"] = ViewSet(
+        model=BrowserResource,
+        name="browser_resource",
+        prefix="resource-child",
+        parent=ParentViewSet(name=parent.name),
+        resource_permissions={"view": "app.view_author", "add": "app.add_author"},
+    )
     viewsets.update(nested=leaf, hierarchy=parent)
 
     # Ordinary and Guardian views keep their actual dispatch, membership and ancestor gates.
@@ -175,6 +195,7 @@ def serve(directory):
             "normal",
             "errors",
             "empty",
+            "none",
             "holders0",
             "holders1",
             "holders20",
@@ -211,13 +232,27 @@ def serve(directory):
                 stack.enter_context(
                     patch.object(vs, "context_buttons", [ContextButton(key="broken", key_target="absent")])
                 )
-            if scenario == "empty":
+            if scenario in {"empty", "none"}:
                 stack.enter_context(patch.object(type(vs), "checks", lambda self: []))
-                stack.enter_context(patch.object(vs, "_default_permissions", {}))
+                stack.enter_context(
+                    patch.object(
+                        vs,
+                        "resource_permissions" if vs.is_resource else "_default_permissions",
+                        None if scenario == "none" else {},
+                    )
+                )
                 stack.enter_context(patch.object(vs, "context_buttons", []))
             if scenario == "no-holders":
-                stack.enter_context(patch.object(vs, "_default_permissions", {"delete": "app.delete_author"}))
+                stack.enter_context(
+                    patch.object(
+                        vs,
+                        "resource_permissions" if vs.is_resource else "_default_permissions",
+                        {"delete": "app.delete_author"},
+                    )
+                )
             kwargs = {"browser_parent_pk": publisher.pk, "browser_child_pk": book.pk} if kind == "nested" else {}
+            if kind == "resource-nested":
+                kwargs = {"browser_parent_pk": publisher.pk}
             response = view.as_view()(request, **kwargs)
             # Explicit template-contract boundary cases: zero registered display rows / no default rows.
             # Data and authorization still come from the real request; no mocked permissions or checks.

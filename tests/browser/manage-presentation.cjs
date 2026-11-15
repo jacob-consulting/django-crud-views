@@ -87,7 +87,9 @@ function requiredCases(selection) {
         ...[390, 1280].flatMap(width => ['en', 'de'].map(language => `${kind}-layout-${language}-${width}`)),
         ...['errors', 'errors-1280', 'empty', 'no-holders', 'holders0', 'holders1', 'holders20', 'holders21', 'hidden', 'zero-defaults', 'no-js', 'missing-js'].map(state => `${kind}-${state}`),
         ...[0, 1, 3].flatMap(count => ['en', 'de'].map(language => `${kind}-collections${count}-${language}`)),
-    ]), 'nested-ancestors', 'hierarchy-resource', 'documentation-failure'];
+    ]), ...['resource', 'resource-nested'].flatMap(kind => [390, 1280].flatMap(width =>
+        ['en', 'de'].flatMap(language => ['layout', 'empty', 'none', 'no-holders'].map(state => `${kind}-${state}-${language}-${width}`)))),
+    'nested-ancestors', 'hierarchy-resource', 'documentation-failure'];
 }
 function validateAssets(required, observed) {
     assert(required.length > 0, 'No required assets');
@@ -254,7 +256,7 @@ async function criterionProofs(page, caseId, facts) {
             } else if (surface === 'presentation') check('context and template sections', measurements.presentationSections === 4 && measurements.buttons > 0 && /extends/.test(measurements.text));
             else if (surface === 'facts') {
                 check('identity and route facts', measurements.text.includes('pk_name') && measurements.text.includes('browser_'));
-                if (caseId === 'hierarchy-resource') check('unlinked resource child', measurements.children.some(item => item.text.includes('Resource, no manage page') && item.links === 0));
+                if (caseId === 'hierarchy-resource') check('unlinked resource route', measurements.children.some(item => item.text.includes('browser_resource-manage') && item.text.includes('/parent/<browser_parent_pk>/resource-child/manage/') && item.links === 0));
                 if (caseId === 'nested-ancestors') check('complete ancestor chain', measurements.text.includes('browser_parent') && measurements.text.includes('browser_child'));
             } else if (surface === 'defaults') check('toggle exercised with defaults', facts.keyboard && measurements.defaults > 0 && measurements.hidden === 0);
             else if (surface === 'help') check('documentation failure leaves source usable', facts.originalPageUnchanged);
@@ -638,8 +640,52 @@ async function runAll(browser, base, report, assets, opts) {
                 for (const href of await page.locator('#cv-manage-hierarchy a:not([data-cv-manage-help])').evaluateAll(links => links.map(el => el.href))) {
                     assert.equal((await owned.context.request.get(href)).status(), 200);
                 }
-            } else assert(facts.text.includes('Resource, no manage page') && facts.text.includes('browser_child'));
+            } else {
+                assert(facts.text.includes('browser_resource-manage') && facts.text.includes('/parent/<browser_parent_pk>/resource-child/manage/') && facts.text.includes('browser_child'));
+                assert.equal(await page.locator('#cv-manage-hierarchy [data-manage-child] a').count(), 0);
+            }
             await capture(page, report, opts, kind === 'nested' ? 'nested-ancestors' : 'hierarchy-resource', facts);
+        }
+        for (const kind of ['resource', 'resource-nested']) for (const width of [390, 1280]) for (const language of ['en', 'de']) {
+            await page.setViewportSize({width, height: 900});
+            for (const state of ['layout', 'empty', 'none', 'no-holders']) {
+                const response = await page.goto(`${base}/case/${kind}/${state === 'layout' ? 'normal' : state}/?language=${language}`);
+                assert.equal(response.status(), 200, `${kind}/${state}/${language}`);
+                const raw = await rawContract(response, page);
+                const closed = await geometry(page);
+                await openDetails(page);
+                assert(await toggleDefaults(page) > 0);
+                await page.locator('[data-cv-show-defaults]').press('Space');
+                const opened = await geometry(page);
+                assert(opened.text.includes('BrowserResource') && opened.text.includes('resource_permissions'));
+                const links = await page.locator('#cv-manage-hierarchy a:not([data-cv-manage-help])').evaluateAll(els => els.map(el => el.href));
+                assert.equal(links.length, kind === 'resource-nested' ? 1 : 0);
+                for (const href of links) assert.equal((await owned.context.request.get(href)).status(), 200);
+                const matrix = page.locator('#cv-manage-permissions');
+                const text = await matrix.innerText();
+                const badges = await matrix.locator('.badge.bg-info.text-dark').evaluateAll(els => els.map(el => ({
+                    text: el.textContent.trim(), background: getComputedStyle(el).backgroundColor, color: getComputedStyle(el).color,
+                })));
+                if (state === 'layout') {
+                    assert.equal(opened.counts.users, 20); assert.equal(opened.counts.overflow, 1);
+                    assert.equal(await page.locator('[data-manage-users-overflow] details[open], details[data-manage-users-overflow][open]').count(), 1);
+                    assert(badges.length >= 24 && badges.every(badge => badge.text === (language === 'de' ? 'Ressource' : 'resource') && badge.background === 'rgb(13, 202, 240)' && badge.color === 'rgb(33, 37, 41)'));
+                    assert(text.includes(language === 'de'
+                        ? 'Ressource: explizit zugeordnete Django-Berechtigung; keine Berechtigungen für einzelne Elemente.'
+                        : 'resource: explicitly mapped Django permission; no per-item grants.'));
+                } else if (state === 'empty' || state === 'none') {
+                    assert.equal(await matrix.locator('[data-permission]').count(), 0);
+                    assert(text.includes(language === 'de' ? 'Keine Ressourcen-Berechtigungen deklariert' : 'No Resource permissions declared'));
+                    assert(text.includes(language === 'de' ? 'View-Einschränkungen gelten gesondert.' : 'custom view restrictions apply separately.'));
+                    assert(!text.includes('No permissions configured.') && !text.includes('Keine Berechtigungen konfiguriert.'));
+                    assert.equal(badges.length, 0);
+                } else {
+                    assert(text.includes('delete_author'));
+                    assert(text.includes(language === 'de' ? 'Keine direkten Berechtigungsinhaber' : 'No direct permission holders'));
+                    assert.equal(opened.counts.users, 0); assert.equal(opened.counts.overflow, 0);
+                }
+                await capture(page, report, opts, `${kind}-${state}-${language}-${width}`, {raw, closed, opened, badges, links, keyboard: true});
+            }
         }
         const before = page.url();
         // Simulate an unavailable documentation host without making a network request.

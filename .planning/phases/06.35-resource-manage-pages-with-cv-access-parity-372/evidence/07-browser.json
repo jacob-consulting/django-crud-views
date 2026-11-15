@@ -1,0 +1,4122 @@
+{
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/manage-presentation.cjs",
+    "--python",
+    ".nox/tests-3-12-django-5-2/bin/python",
+    "--case",
+    "all",
+    "--output",
+    "/tmp/cv-0635-resource-manage-browser.json"
+  ],
+  "started": "2026-11-15T18:59:55.586Z",
+  "finished": "2026-11-15T19:01:23.617Z",
+  "status": "passed",
+  "browser": {
+    "playwright": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromium": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "version": "149.0.7827.55"
+  },
+  "server": {
+    "ready": 40991,
+    "database": "/tmp/cv-manage-Kh4Ewe/database-9svapa6i/manage.sqlite3",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "versions": {
+      "Django": "5.2.19",
+      "django-guardian": "3.5.2"
+    },
+    "modules": {
+      "crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+      "crud_views_guardian": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py"
+    },
+    "origins": {
+      "crud_views/view_manage.html": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/view_manage.html",
+      "crud_views/view_guardian_manage.html": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/templates/crud_views/view_guardian_manage.html",
+      "manage/page.html": "/home/alex/projects/alex/django-crud-views/tests/browser/templates/manage/page.html"
+    },
+    "csp": "default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
+  },
+  "sources": {
+    "head": "e5c867e05fc2ffd1e0b59832440147ee9c85c45e",
+    "files": {
+      "src/crud_views/__init__.py": "3a56ad144140e2db6a49222257c8dd13eb2adca1b9ceeda19c2e01e26cd6177b",
+      "src/crud_views/apps.py": "6f703360e9e76a87ae9d65b772390f13a8e298fa0d3e6b193286c802d9584b34",
+      "src/crud_views/checks.py": "02b04af99952cdbdb6e22ab81ab5f74e85e0b49e08450f130869d759c45e29aa",
+      "src/crud_views/lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views/lib/access_trace.py": "c34e508930ae11a0d9c85580bb1cadbdccca05c587d3c44570ae38b9a84892b5",
+      "src/crud_views/lib/access_trace_runner.py": "eddeb4585fd28f7530b5382ab7779bc5cb9afdffeda4810c69ed62155e3b191e",
+      "src/crud_views/lib/ancestor_db.py": "8554d32cbb84809e49e8e5dc5b7421657ad75b1a0f81a59966323a7cd0d9cad2",
+      "src/crud_views/lib/ancestor_policy.py": "122938364ef0a762e34b9fe7bc85d9d5442a3f96d17e5e3a8685d49c3bab8d42",
+      "src/crud_views/lib/ancestors.py": "6ea88f8c4eeff02402af390f5447a7a4290b0f48f4531d31467c462be97f614d",
+      "src/crud_views/lib/assets.py": "815fabd2b3616d6efb5ca04074fc7f362d88005abec53f096d34478f6dc2797b",
+      "src/crud_views/lib/breadcrumb.py": "675d281efae8d7b900766fe300b9ddde5a904c041737ea6575b6f18d3206b74c",
+      "src/crud_views/lib/button_classes.py": "adaf6095128f387faa9870e74b92cb117f4a64102b9e0ba3edfdfec7069dafcc",
+      "src/crud_views/lib/check.py": "6f0e03f8dd87d26b3589b2b68dffb8d97e463d12d8e114a9c07ef542a2ba57d6",
+      "src/crud_views/lib/conditional/__init__.py": "bb875e2fd013694b190dfbda334e13d152f1d0a8fddb94d4d41f636ed3dd2c10",
+      "src/crud_views/lib/conditional/formset.py": "b25a46c6016d3916f0c2dff18c771de89f8f5ff14cbd60208bca4f9cab3b6041",
+      "src/crud_views/lib/conditional/group.py": "071b40e341848ef321ffff3bc7f3eeb5bec46421e5d0296fccd4eb6fc982ca7c",
+      "src/crud_views/lib/conditional/layout.py": "a53296853d6c0740a63a554b1a3bbe8037c5f8b56a359be0160c7a49172e12e9",
+      "src/crud_views/lib/conditional/queryset.py": "8b559200240ecb497d1608836c7cb47284c9b3a483f6cb0a7bd95c33f8a999a0",
+      "src/crud_views/lib/conditional/toggle.py": "d17a25f28e702b11f0effabc8b5a5d3a7c515f08a2563261691e7027624d81a2",
+      "src/crud_views/lib/context_processor.py": "bea45802c524ba57c04ed475e4c657e29977a98047e741e8b79cbc0e1fc9627d",
+      "src/crud_views/lib/crispy/__init__.py": "7f30859793d38108ed31bc2a295b53a2c90be61ffeba89d92cb57a794f24f74e",
+      "src/crud_views/lib/crispy/actions.py": "03e506fdc0f3a7567014c2f3fd8d5cb4b4e2337a6a99fadfaf182cfa23d97867",
+      "src/crud_views/lib/crispy/buttons.py": "1d7092ef2be94c63e834a612adb8a8121242f22525a459af022776abc1245fba",
+      "src/crud_views/lib/crispy/form.py": "b3adea0be60b969703df43f1b2975842a1291eb9dfb32ae73f4a54f32716c9d8",
+      "src/crud_views/lib/crispy/table.py": "cce837dc72c088cda909d94ff2c741c8c2a33786de3cd855f807c6a246eef1f3",
+      "src/crud_views/lib/deletion.py": "91b3464f8337006d79b839e4af344dd223fcf12e2ee536f14d0545c3f36280b6",
+      "src/crud_views/lib/exceptions.py": "0072a39d98525f445939f027d76568b32388ecd5302cc59d36c8a270731d2e96",
+      "src/crud_views/lib/formsets/__init__.py": "2fdf0da93267781d818af1dc00344083d2d2579508390c6a682ad86c92a26e72",
+      "src/crud_views/lib/formsets/compact.py": "28fd041d458042c08d9921ed45ce5d124fd975ab28a28b4de9959be227c4d5a4",
+      "src/crud_views/lib/formsets/formsets.py": "4c2f1b51c221ef9ca31b5549282caab57d3d9508dbab69bdefba0514170e7e99",
+      "src/crud_views/lib/formsets/inline_formset.py": "55f5866844e04df5efe2ec5b550ae1252e970220b0901dc6631e8be0fb024195",
+      "src/crud_views/lib/formsets/layout.py": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937",
+      "src/crud_views/lib/formsets/mixins.py": "a7c424b9e86a9aef3cecd094c2680fe9dcd47607257e5fef1e9742f2e6f0985c",
+      "src/crud_views/lib/formsets/render_tree.py": "0bfbec6894742354778668b4d4eacc22d38c4fca8514c565aa2cc1d7a14b57d1",
+      "src/crud_views/lib/icons.py": "d7d74cebf3e940a6a0d92cdc7ce0948f092f3601f8ab541c413df63498a7e763",
+      "src/crud_views/lib/lazy.py": "5403c2570fffd2898aade7fe2f4d243840140f53f4a8ebc8387fd5aeb3c9ef20",
+      "src/crud_views/lib/messages.py": "df20fd99388998e58bd12a29c8acae311ea2a99ce781a043c6dc8043c563fc4f",
+      "src/crud_views/lib/ordered.py": "d9e582df3b182b380eda282e8c198d0c2c22f4345090046fa5e4842fdfc029f8",
+      "src/crud_views/lib/pipeline.py": "d675c2091eed75b65dec51e33a2d3c81b4d556a7bb6f859f398bb68116fd0f35",
+      "src/crud_views/lib/resource.py": "691d02e246ecfa486e546ee66b818d0a6a6deefbb2062e6335642d1ca90b797d",
+      "src/crud_views/lib/session.py": "f44b8a4fc249afc9ad3db6c62e552f85d4925d4029e6f4349008c66966c74d74",
+      "src/crud_views/lib/settings.py": "87cdc74bb6028f446d0c9242dd664f1df2d7bb1c7e59f1d46e3f45baee86fee0",
+      "src/crud_views/lib/table/__init__.py": "a338bdccef6068cd9892579146a38a203b8f9338a32fdd985d4a142a46289545",
+      "src/crud_views/lib/table/attrs.py": "32fa50e24f9fb81aa4ee1d71702279573c5c586f6e1a1f3c44db90fd04f89564",
+      "src/crud_views/lib/table/columns.py": "c7170fe7ac6df56e1dd55ed0e2e0dc8c7ab75fe6f4a630eaa00a63e685adae4c",
+      "src/crud_views/lib/table/table.py": "e2f426920be9c778ba57c45f3f18043016df078baa1b037ab8744e048ce841b8",
+      "src/crud_views/lib/vendor.py": "ea903c796bc4238e5932e5de52bfe1bc4261ccf53d6f2683ae7f22dd277da09c",
+      "src/crud_views/lib/view/__init__.py": "12348de5ba48918ca6b4e7693720e07164e60388ee4dcc0d39dac3e3281d8255",
+      "src/crud_views/lib/view/action_menu.py": "f39bb30b71d706012341f9f3ee4abdf299b2d2a28ffa18da279284a072745602",
+      "src/crud_views/lib/view/base.py": "7b8114bfec5d37cfe1df4bc9a8e41af626d4f261a7471e3df47e894da3c963e1",
+      "src/crud_views/lib/view/button_data.py": "f251e3018884511b69dd8fa5d0aa357f432e7e522da67794a0afb54ea29f9eff",
+      "src/crud_views/lib/view/buttons.py": "e7ba4108f7f237ea6e5fc49a7e711dd60bf104681f5b41619fa640e740d8eef4",
+      "src/crud_views/lib/view/cancel.py": "2346062872e6d8e2c606aca91a81c39469f9873c90a93e59fe857d66c821e8af",
+      "src/crud_views/lib/view/card.py": "1aa942b39ae0a5e6b20daa5037d0801a4fa2cd95a906cfdac74bedb2373cb61e",
+      "src/crud_views/lib/view/context.py": "ee871ad35b3bbf412c4af227555ccad92d34499e048557b20820bc3cfd2b44a3",
+      "src/crud_views/lib/view/label_mode.py": "0b3f31dc9c283cb2b47cd4ae59935732c6922d70d88e4dffdd830e420e0da2f7",
+      "src/crud_views/lib/view/meta.py": "03401c7898839d0f1a4429e8ed0d6941c43ef6614aada7e716afca8f79c2bb82",
+      "src/crud_views/lib/view/variant.py": "7f71fd0349b0b59435b577ecd668d19aefeb40488d859957e98f4e0d3067ff58",
+      "src/crud_views/lib/view/visibility.py": "18548c82f58c12af2dda45ed3d8b8bf97256dca045a4730067230af313754ef5",
+      "src/crud_views/lib/views/__init__.py": "40246cf27ab811885e7de3fba049b221067114650f3ae3da90d96e4a66f1540e",
+      "src/crud_views/lib/views/action.py": "ee60e630d92c99fecfcfbe6cea6369439d1327474cd8f7f0c5f69ac654861765",
+      "src/crud_views/lib/views/action_ordered.py": "1dbe889377365407287e8c4b26b27ef80e0eb650e01c47f60c78d64a081cd4b9",
+      "src/crud_views/lib/views/card.py": "abf5cd2c0f460a11e5696e606e3db5f4402c4a3a44c0b13e69d169b7d4d7110a",
+      "src/crud_views/lib/views/child.py": "f6e06d0e4f1f56f55e5b8153fe700364e9a43b5838fd54514f65c90130b9fecb",
+      "src/crud_views/lib/views/create.py": "44b79b5438348db547086c30dd1a82ef2b280ee6f25392965aca53180b57e314",
+      "src/crud_views/lib/views/delete.py": "e6d87b497ad34ca413bc5ab89215dcb93912ed65b4ae6151bb5ad56be0655e35",
+      "src/crud_views/lib/views/detail.py": "039cc0aedc07fbe7739393e4765bdb8d2270db1fdd08d8077e584abed86f38ed",
+      "src/crud_views/lib/views/form.py": "6e9c1191da2165f8e0a6f5e367994dd0d7e5dfa106c66118fa59ed94a53c1925",
+      "src/crud_views/lib/views/list.py": "339cc419a04105580fba50e0795debc4dd5f2eb526c7754dd7827f8b45426aa3",
+      "src/crud_views/lib/views/manage.py": "dbe2849666b2a49d22e4dcddaba60e80d57a0f9042aecea506a3d1d55117436c",
+      "src/crud_views/lib/views/mixins.py": "2c4ad51e4d3e097053306b3234c09546541128ea2312ae9d34b6f1fc96dd8e50",
+      "src/crud_views/lib/views/update.py": "bd9b274bc616f25c40f1d7ac964f48666f4d860a6d1f039c6f0798f7090a1dc7",
+      "src/crud_views/lib/viewset/__init__.py": "c9533d9a00a0d05014a16875cbd252e2aeeab67b507a9fb44d697aefe468ec07",
+      "src/crud_views/lib/viewset/parentviewset.py": "1b7525686dcaaed2a6003a3efa324156ba0100600af40d15a2d57c6312e88981",
+      "src/crud_views/lib/viewset/path_regs.py": "48e8810979f535d39dfaf7ecaa44513256f81dd683727ffb237f37e3a7b61bed",
+      "src/crud_views/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views/locale/de/LC_MESSAGES/django.mo": "6038e53d812a55c88e87a8031e31dff40ce66a2c694011aa484d632a8a852982",
+      "src/crud_views/locale/de/LC_MESSAGES/django.po": "b282c246216b3ad6776679e32f65ae0944ec1d7f684fea8b99f8b507fedcc6b5",
+      "src/crud_views/management/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views/management/commands/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views/management/commands/crud_views_show.py": "ce0b8b62e4b48afa81970cc8f5895e3d6986164712ec96259db02d672f93afc4",
+      "src/crud_views/management/commands/cv_access.py": "2604abe787f6a8a781599d0e0dcb66828215c6456159f9302ff6733fcc2ef855",
+      "src/crud_views/management/commands/cv_assets.py": "38269d26f2fad4a052ef34a6e3497efe7b4abecd7f0741fd89cbb32e8a3963d6",
+      "src/crud_views/management/commands/cv_manage_group.py": "06d98379e4cd6b5bc2539a8a679880f445b2bf5e4d428a334208c85ac3c0c663",
+      "src/crud_views/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views/static/crud_views/css/formset.css": "a874e3f1a8f26520087adcdc5e4839f2befaccea462350a75d04e88f2231a630",
+      "src/crud_views/static/crud_views/css/icons.css": "1330b06fd3850f4b8567e1fd0c44cd2dc942d1d547d5ac9de1902467105db255",
+      "src/crud_views/static/crud_views/css/manage.css": "da593f9dc2f3c69385a96fd13ef734f5d6549292b388a9d4659beff7c0f09808",
+      "src/crud_views/static/crud_views/css/property.css": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
+      "src/crud_views/static/crud_views/css/table.css": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
+      "src/crud_views/static/crud_views/js/adapters.js": "06eed642fdf55daa7aa6afea2099f25c69ac153062d926c707e34c74316eaf2b",
+      "src/crud_views/static/crud_views/js/formset.js": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
+      "src/crud_views/static/crud_views/js/list.filter.js": "86600d74a66dcd586a6eb749369b858a19e365b21f9ff17646b79457805810a3",
+      "src/crud_views/static/crud_views/js/manage.js": "c790b4176e86fed8ab8ce1ca12b497208990133cf804afe65b93d737335a9fe9",
+      "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+      "src/crud_views/static/crud_views/js/toggle.js": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
+      "src/crud_views/static/crud_views/js/tooltip.js": "69212dee6b30d655c08dbfeb2e423ede582c8b9ecf10358d64bf5d9196e62802",
+      "src/crud_views/static/crud_views/js/viewset.js": "f3a411cc7b779a88e40a86e8189eafcc8e9c965e47503f94cad218b7b9fd5367",
+      "src/crud_views/templates/crud_views/columns/actions.html": "6a37475842a165cc5a976c545964578935a544a62703c2885e568c4905af7c04",
+      "src/crud_views/templates/crud_views/columns/child.html": "bed04279a64ac06ab9e29069adbe4e9b9990fb56295798416bcd5d0e4a3914ef",
+      "src/crud_views/templates/crud_views/columns/naturalday.html": "d50d5f9ace73de54206b6fa67b437e792fcd9786a6499db56ac35aab30fa1570",
+      "src/crud_views/templates/crud_views/columns/naturaltime.html": "8a0732b1ac54480ed4fd1786fd7b3b4f1b20c1a5e4b01d87f37611842f8e5eb0",
+      "src/crud_views/templates/crud_views/columns/uuid.html": "4dc81e94369b9bd9fbaa31037bc69459eca19d9d59e27cef5e93f9f952c4e42b",
+      "src/crud_views/templates/crud_views/conditional/toggle_group.html": "f44b5921e9e6d40643772c441545a9ad0af2c7e8c5969115db67a4585ee385e1",
+      "src/crud_views/templates/crud_views/crispy/bootstrap5_column.html": "01bcd7b74a4937e011ab384d8bec8a20372fd1b9c170f0d00975bb6e6d1bd390",
+      "src/crud_views/templates/crud_views/crispy/bootstrap5_formactions.html": "d5862d3b1c072b1692a2fdb5f04ccf4ed94f623e0189527f31e49830e781b318",
+      "src/crud_views/templates/crud_views/formsets/compact_headings.html": "2f4b3b5133ee315a8c25c99e20bb6c4ad034c2d7a223d5daccdd7d55fe6ccfd0",
+      "src/crud_views/templates/crud_views/formsets/control.html": "eed84cc006d4de94bddf442c366f2faf32d3ab135872e4631fb58f30338d974e",
+      "src/crud_views/templates/crud_views/formsets/formset.html": "1327b125392f4f82d5a14319c79bf487e4609aebbb8da566a146bc9fdf93acfa",
+      "src/crud_views/templates/crud_views/formsets/formsets.html": "1c6f6e86aff72847f044a62963cfb9fa41489a4d511578d13273c4ade1e83626",
+      "src/crud_views/templates/crud_views/includes/access_trace.html": "49b70fb3d36ba862830c18de1932b13257e46987513b256686fbb605182293c0",
+      "src/crud_views/templates/crud_views/modal/content.html": "0c537498854336c1ff8179f5d8f87df0e567beab72ba8a57c50c7d3651b02257",
+      "src/crud_views/templates/crud_views/modal/shell.html": "bc5b91977d517671b9c246cbbbce5a813a0d8bc10caf36f8c78f214df15328ee",
+      "src/crud_views/templates/crud_views/shared/config.html": "1608b5d2c1759d04e9e19a2d4f8fd3d20c42b9e54e73f78623482af874fcf84c",
+      "src/crud_views/templates/crud_views/shared/css.html": "7c3b0ababf5f91a31eb59c3869f99433f43707a73d91c4c152d11937da21b472",
+      "src/crud_views/templates/crud_views/shared/js.html": "4f0b588e75949cb512e63124bf1dbddfc163ec7c68c158303300de19274d0adc",
+      "src/crud_views/templates/crud_views/snippets/action/card.html": "f6ce30f9bd32204cd443501f6520abc8a846cba2b17b2a647a90bd7fe7568076",
+      "src/crud_views/templates/crud_views/snippets/action/child.html": "25b6bf694a78585fa5b5dc9951404fc7b11e4129c140ccb8b9b4c05e66d6b74a",
+      "src/crud_views/templates/crud_views/snippets/action/create.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
+      "src/crud_views/templates/crud_views/snippets/action/create_select.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
+      "src/crud_views/templates/crud_views/snippets/action/delete.html": "f11bfedcb940cf4e9e66d72365df78c1b5b150143376e313d8fdd4b86510e470",
+      "src/crud_views/templates/crud_views/snippets/action/detail.html": "2a8598396ddd85658889c66c0bfac527d2584a2eacb6d7a6c92c785bbb42cac2",
+      "src/crud_views/templates/crud_views/snippets/action/down.html": "d870aecb4779afc228bd9f76a11cab288f13eb244be1d06dd11e0e1bbd5256c2",
+      "src/crud_views/templates/crud_views/snippets/action/list.html": "6a37ed5128648dda0028a8a1634cd5cbde4e0d2a41cd866429e077c2c9b4d285",
+      "src/crud_views/templates/crud_views/snippets/action/manage.html": "ad3e9c4a567210fc1dfd7a6e96dbd28d7d14509a870886be35c886fbca5472fa",
+      "src/crud_views/templates/crud_views/snippets/action/up.html": "ea6e1314731a3a455126e60e2a2059a16f3fca8a9b697d989ca6562fca721241",
+      "src/crud_views/templates/crud_views/snippets/action/update.html": "6df05761fedaa7bacc15b42b9cacb598b84d4ac4e89d2bc2bbace1f9bec67109",
+      "src/crud_views/templates/crud_views/snippets/action_short/card.html": "dd72cb5d651c2a25325d7775355947adeae05bc4572ffdce0009bf829dcb595e",
+      "src/crud_views/templates/crud_views/snippets/action_short/child.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+      "src/crud_views/templates/crud_views/snippets/action_short/create.html": "10938e4c6fca6be20b952d70aa239b108b43ab8cb44e0a852aa2755a4c04a7e5",
+      "src/crud_views/templates/crud_views/snippets/action_short/create_select.html": "10938e4c6fca6be20b952d70aa239b108b43ab8cb44e0a852aa2755a4c04a7e5",
+      "src/crud_views/templates/crud_views/snippets/action_short/delete.html": "51cae84830ba25c4e2a57071d336ebb66e31cc6902d3f75ae90c5a44486387a5",
+      "src/crud_views/templates/crud_views/snippets/action_short/detail.html": "eeff18bf82e460e5fa82d61abf4c42ebb99f2aaf544b931bb25ec46b66a02742",
+      "src/crud_views/templates/crud_views/snippets/action_short/down.html": "e3d0bf81cdb2e41d437138074fc2396a3861ddc66403d71e2ba5200c41023ce1",
+      "src/crud_views/templates/crud_views/snippets/action_short/list.html": "8a0676d6ed965d5676dadc7d6861e4b76ac48d642a2404239368aeecd2c4500c",
+      "src/crud_views/templates/crud_views/snippets/action_short/manage.html": "38a5c8921c1016b55373c4837483999b18f385ca7950322e125a2fd6b7c518f4",
+      "src/crud_views/templates/crud_views/snippets/action_short/up.html": "0845d744333345c8510e7ac7c6db3f3d0763dcb19f87f4e5ed25a994473c1d5b",
+      "src/crud_views/templates/crud_views/snippets/action_short/update.html": "92f489142d26cf89432829af2d2e6cfa17913d4c590843ea6194c82a7cf03775",
+      "src/crud_views/templates/crud_views/snippets/alert/list.html": "ecb12fdbd7010f73ab50ea400c0c55c7c1ea1ccf3d9e1b84fa5acba0826d324f",
+      "src/crud_views/templates/crud_views/snippets/alert/manage_checks.html": "e9eda7b92a7c6856d84e04d8110d3a65d8fd024cf78bb6b55d2dc3a770b42390",
+      "src/crud_views/templates/crud_views/snippets/alert/text.html": "086dad1784cd3cf16be3beec0c15d969a44ce93bbc15c3f52916a6b5cec89850",
+      "src/crud_views/templates/crud_views/snippets/card_order.html": "a39139996b232b3cc15ac83a942032c1a61ce23293b181d35b4d10c00f6888c3",
+      "src/crud_views/templates/crud_views/snippets/delete/protected_objects.html": "bf8fd0b973823e4f8c75a2d08e2ab956fddb1fd6a46c5c6364d28af107388a93",
+      "src/crud_views/templates/crud_views/snippets/delete/protection_errors.html": "5efd8f4091c16c0aa9e37875650fd4a902f4449f8d50786f8bc9722e57f38f6d",
+      "src/crud_views/templates/crud_views/snippets/delete/related_objects.html": "fd3b90a726130924512a556f924bc120bdce384a4f854d804e502d15d82fbddb",
+      "src/crud_views/templates/crud_views/snippets/delete/related_objects_tree.html": "8156c1128fbacd12c30399034bdb6f96198419d8a1f9a3f2f35f50ed08107f81",
+      "src/crud_views/templates/crud_views/snippets/form_frame.html": "d8b31e2b1c08c82fecb6c3b194b755717fd3be5768387ac46a40bd88e809214b",
+      "src/crud_views/templates/crud_views/snippets/header/card.html": "f6ce30f9bd32204cd443501f6520abc8a846cba2b17b2a647a90bd7fe7568076",
+      "src/crud_views/templates/crud_views/snippets/header/create.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+      "src/crud_views/templates/crud_views/snippets/header/create_select.html": "524e0a718ec06dc3c0033019c6b7768a66b65048c9c73c68ff8cb916f3c46175",
+      "src/crud_views/templates/crud_views/snippets/header/delete.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+      "src/crud_views/templates/crud_views/snippets/header/detail.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+      "src/crud_views/templates/crud_views/snippets/header/filter.html": "0afb1a1647011c07847a0ba4ec7c09ae11861a8ead12ff4a94161c8c1c87cef2",
+      "src/crud_views/templates/crud_views/snippets/header/list.html": "f6ce30f9bd32204cd443501f6520abc8a846cba2b17b2a647a90bd7fe7568076",
+      "src/crud_views/templates/crud_views/snippets/header/manage.html": "486170fa79570c3e2377056b0c6e486e71dc362ad8391cf96d604cb4e01b5bb6",
+      "src/crud_views/templates/crud_views/snippets/header/update.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
+      "src/crud_views/templates/crud_views/snippets/language_selector.html": "f91d1e2d178e9261a160d7d10be7f1762f04d3575902833fd3bd4f1ae31753d1",
+      "src/crud_views/templates/crud_views/snippets/message/create.html": "eb9112cf2ff2eaff593fb6ec1c4dc15c84b90efd524aef940e44e7ff951023ae",
+      "src/crud_views/templates/crud_views/snippets/message/delete.html": "01066fa8e25a15709b8aad629b901165d5f8baf048a671dd103c4b9fcf618bba",
+      "src/crud_views/templates/crud_views/snippets/message/down.html": "1f8fb28c1d411139d22351ca263c0eecfa2106ed22be1d96de8eeeb15d0fe55d",
+      "src/crud_views/templates/crud_views/snippets/message/up.html": "dac90c8e2065bec674efeb5ed06842607e3e6b8d37aa598ad0a5f7193b6be664",
+      "src/crud_views/templates/crud_views/snippets/message/update.html": "a398c1b2c49ccd4664d99d854739d42557aa68304a0ea0f0e6d8bd67ce8dc1b8",
+      "src/crud_views/templates/crud_views/snippets/pagination.html": "bb4d05aa38179b686e35cfd2c2edf3b30fa15ecc6340614aa13f51430e73cc41",
+      "src/crud_views/templates/crud_views/snippets/paragraph/card.html": "dbe46becca8ab4b2bf6cfcd84d0674e759f40d8f7de4bee7f82e90265b1a0e49",
+      "src/crud_views/templates/crud_views/snippets/paragraph/create.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
+      "src/crud_views/templates/crud_views/snippets/paragraph/create_select.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
+      "src/crud_views/templates/crud_views/snippets/paragraph/delete.html": "722c89c496429c8577d6de149592d48e16a9622456ccbfef4f61083c841399d4",
+      "src/crud_views/templates/crud_views/snippets/paragraph/detail.html": "edd2cee0b1d9d2665038352917219ebd39fbc233306926b2d51ea5044fbd4300",
+      "src/crud_views/templates/crud_views/snippets/paragraph/list.html": "6a37ed5128648dda0028a8a1634cd5cbde4e0d2a41cd866429e077c2c9b4d285",
+      "src/crud_views/templates/crud_views/snippets/paragraph/manage.html": "1b6a3258aa68f8f3009065a9b2571d685a815bbf9772014ef21f5e345a8deb90",
+      "src/crud_views/templates/crud_views/snippets/paragraph/update.html": "b94fd77bb4865c802f18f9d3f72fb62401973d5850ac2a8caa70d6b346a7a7df",
+      "src/crud_views/templates/crud_views/table/bootstrap5.html": "8c48a7ddf8e4371a658be490191957f9b44e7fba9f0dfc978f3321b531dcae10",
+      "src/crud_views/templates/crud_views/tags/actions_menu.html": "6bd0ef03a4469dd909918ee21bb8a6757fb26b6b209d40304a33ef5d16aa3280",
+      "src/crud_views/templates/crud_views/tags/actions_menu_item.html": "f2a71de627fe880acb80180efc2aed4f5b8f61fcbfb8ab3456b6c0cb702a8ff6",
+      "src/crud_views/templates/crud_views/tags/actions_menu_item_label.html": "beba4593a7b9c866f12caefb9a4c004f025b0fe703a3130d2b9fd8f645eed226",
+      "src/crud_views/templates/crud_views/tags/actions_menu_toggle.html": "c15435b084f5d167a2a9305aa49efd2a39f0e05da734c09d377cd6aae4d8811d",
+      "src/crud_views/templates/crud_views/tags/alert.html": "c57505c5e36a4718b8288aa9adc8c4cde6f05eb6b97e489d91ff4f050c8906cb",
+      "src/crud_views/templates/crud_views/tags/breadcrumb.html": "bb8963ef632dcc4fc07aa2be75f3a41a7adf62b9fe17d8465ed591bdac63ee17",
+      "src/crud_views/templates/crud_views/tags/button/action.html": "55ea449a22f7181f02845052cee8195a5099430d1ba08582b69e111705d577d1",
+      "src/crud_views/templates/crud_views/tags/button/container.html": "524bb64924a4640d74fdcb33201364d7a04b3d0c7cf328d9206819cee283e8bb",
+      "src/crud_views/templates/crud_views/tags/button/form.html": "a4c6bbdf1d6188aca56bccb70deaa0c5e6b0810abcea6877d7c78ba6f76a8e35",
+      "src/crud_views/templates/crud_views/tags/button/menu_item.html": "9e70642f738fd52f9f467f2b6db662b31dfeaf9a96dd29865706dadf5ad8353e",
+      "src/crud_views/templates/crud_views/tags/button/menu_item_label.html": "6227ebf44cad2fd0b20872db6560a7a86bd205375335acd6d744672238d5eb14",
+      "src/crud_views/templates/crud_views/tags/card.html": "7c5caf2e4164d459fc768ae72c5586d26aaf3ed2a021f4afa0366d2cde7d6c24",
+      "src/crud_views/templates/crud_views/tags/card_action.html": "54a65f67c7c97f491ff7ff365eac6997f086363a520f6c469549444166c719a1",
+      "src/crud_views/templates/crud_views/tags/context_action.html": "8271c13e0e1f8a27d13acea182b996d8f866f79b4de2b8451396b80ea9066271",
+      "src/crud_views/templates/crud_views/tags/context_action_filter.html": "82338275d6557be63636e93814a0f9e7f554f3bfc9f08320b3280f9c75c5f4e5",
+      "src/crud_views/templates/crud_views/tags/context_actions.html": "5e5b1a8f48e517e1f91a5947cb33812a57a25deaef38f0d8ffcc1a965d3a74ba",
+      "src/crud_views/templates/crud_views/tags/cv_config.html": "5a2b50239e3d8fea6418080492b54e8934290db44a437800b34df22297d2a218",
+      "src/crud_views/templates/crud_views/tags/form.html": "b299cf3816dd7be9b05bfce61f1b1fbb91e01694e85eced67e59a85cc3b0db9f",
+      "src/crud_views/templates/crud_views/tags/list_action.html": "c492ae7f2bace9cb92f6c125425e037d5bfdada45cd1e544205752cb7f4a1b75",
+      "src/crud_views/templates/crud_views/tags/list_action_form.html": "56eddc71105e7b64ea88374b47139c9c14fb0b4602c0d20aaf7448ca572521cf",
+      "src/crud_views/templates/crud_views/tags/list_filter.html": "89cbba89119e1cfca3a143cd6340e25ff443930e46b5a2da685bbf4d62471e39",
+      "src/crud_views/templates/crud_views/tags/list_filter.inner.html": "5466b5a465915cdf17b409c3d0c9b447d0d5f849d456eaf74e17e5d6b209ec80",
+      "src/crud_views/templates/crud_views/tags/messages.html": "4b8b21e64caee17f40ef560af6c331cbb7021e844f4351c08fa833f21dca71a8",
+      "src/crud_views/templates/crud_views/view_card.content.html": "1ade75a2e558efc8bd897827b049b42677cc251607a34988db0f94e81e73c5f3",
+      "src/crud_views/templates/crud_views/view_card.html": "7ee735f84f99cb7ae8326a8d045edb4f27c27818b48e551a7dd99234e14c38ba",
+      "src/crud_views/templates/crud_views/view_create.content.html": "fe4cf5292da4298f6f18a7dc37f1f91f8816c34abf8bfd864fbfba03d005eb3c",
+      "src/crud_views/templates/crud_views/view_create.html": "1b3ce2d65024033c88d0b2501ecb5bb6d9519131f75d0d9725a4f635a1e3fa37",
+      "src/crud_views/templates/crud_views/view_custom_form.content.html": "fe4cf5292da4298f6f18a7dc37f1f91f8816c34abf8bfd864fbfba03d005eb3c",
+      "src/crud_views/templates/crud_views/view_custom_form.html": "6e31bf64186d4d403c9c85496549d4e2a217f22dae475ce01426705ae7a0047c",
+      "src/crud_views/templates/crud_views/view_delete.content.html": "b2ddee65ef2af278cf677714a2032b16e007a287ba9896dafaa738478567759e",
+      "src/crud_views/templates/crud_views/view_delete.html": "fc47508f209880d9a99367fbf15b32d74ea888f2f9bbac1302509cb2504e04e7",
+      "src/crud_views/templates/crud_views/view_detail.content.html": "5e44e81611e3e84bf8d2bde46cbafd4a9c394c7828fa83942e29cdc351774dbb",
+      "src/crud_views/templates/crud_views/view_detail.html": "fc47508f209880d9a99367fbf15b32d74ea888f2f9bbac1302509cb2504e04e7",
+      "src/crud_views/templates/crud_views/view_detail_custom.html": "7d69dd42cb1980a18bed8ae5c4bbed04c360ee5d0fa47cdadd079c74a57cd9f3",
+      "src/crud_views/templates/crud_views/view_list.content.html": "e7bb9c2a86fcd683831f04e2c05d84b9578170ee7dfe2e2b3ccb14a29dc91b4f",
+      "src/crud_views/templates/crud_views/view_list.html": "c984a14518a31f9e6754c8a71b2a1a5ae951e6daa593d2840011e702a1035604",
+      "src/crud_views/templates/crud_views/view_list_table.content.html": "e864007c5c54db8f79de498f28dad2e850e58b6da4b377d6bc52a8da1fd03428",
+      "src/crud_views/templates/crud_views/view_list_table.filter.html": "c65530927db56cb678357ffde4e08ff570e29dba289cc9f2d621f07575b678ea",
+      "src/crud_views/templates/crud_views/view_list_table.html": "77f014792b74f822879019fbe0fa07e02ef807011950a9ff5fab3fa7c0fec7c2",
+      "src/crud_views/templates/crud_views/view_manage.html": "ade71546347bc8f07284ba748e54dcecf5d3f4309b470f292f2a669cb1949ea1",
+      "src/crud_views/templates/crud_views/view_update.content.html": "fe4cf5292da4298f6f18a7dc37f1f91f8816c34abf8bfd864fbfba03d005eb3c",
+      "src/crud_views/templates/crud_views/view_update.html": "6e31bf64186d4d403c9c85496549d4e2a217f22dae475ce01426705ae7a0047c",
+      "src/crud_views/templatetags/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views/templatetags/crud_views.py": "6f15b31248dd18370011b4973484df0f9c8272db191cf0da89ba74626ce7ca4a",
+      "src/crud_views/templatetags/crud_views_formsets.py": "2d1f5eb1bb614965dc15c1cd078f96b4d324cd5b77f536b6364347cb45885dc8",
+      "src/crud_views_guardian/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views_guardian/apps.py": "0ba2babfa16a252062da72175393b5138ee18b650b56cb98fac8f45236187782",
+      "src/crud_views_guardian/checks.py": "730c5101601f0070851f6bbd61477f3bc234a21829e4c5bac7980732152732a3",
+      "src/crud_views_guardian/lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views_guardian/lib/ancestors.py": "e6f2b2ce5464b2fae5954c51b0e927d1075be6873e9052847d8f568bf2e83071",
+      "src/crud_views_guardian/lib/mixins.py": "9038111470e42cf695abe732c816099ff7fb97c8c63911376e25e5f2cc5d7787",
+      "src/crud_views_guardian/lib/views.py": "f069f7a301c393d3e4fb1f857e64ab4671c6f75a54e6f931cb86da4728891c72",
+      "src/crud_views_guardian/lib/viewset.py": "ac08108f61a7586d99824cf7f28e29c5c29fb4f023d9d964ee6c058c095829a6",
+      "src/crud_views_guardian/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views_guardian/locale/de/LC_MESSAGES/django.mo": "3f5045491455829c5aaf013b085691d8d5b625f18aaed92a73c434413640f3cb",
+      "src/crud_views_guardian/locale/de/LC_MESSAGES/django.po": "399ba84d992489c432a0b55e814c10a4790294e87717b7b44d4991e52f2bc6d6",
+      "src/crud_views_guardian/templates/crud_views/snippets/guardian/config_table.html": "47ab0db7a67f35489a314f1b9737270928ac84979fe78c83aa159bcd2a051208",
+      "src/crud_views_guardian/templates/crud_views/view_guardian_manage.html": "ef8a7936796dd849cf403535ef403161ee0cb486676a7108415c7d0d4606d07b",
+      "tests/browser/manage_presentation_server.py": "15ebfc14334aed8c8f9da7f8aead0a497ab48ea880ba69d3a012ce0fb12b74d0",
+      "tests/browser/manage-presentation.cjs": "2448624f330c54633271677294d6a73255d894e0b2ec7280e8c2aeb7e1b206a4",
+      "tests/browser/templates/manage/page.html": "11c3833b69868158cd065b852b20213df654ac5d9279a8474cf575ce3df92980",
+      "tests/test1/app/models.py": "ef81d1f6f12fd7e517d726fc7e2813e407fcfbfa8a89b412f3e24c5491176347",
+      "tests/test1/conftest.py": "f636780fba0963e423ff50bb9dd1d76996d561a46ccc02477b0777039ed35863"
+    }
+  },
+  "preflight": {
+    "status": "passed",
+    "assets": [
+      {
+        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+        "sha256": "3c8f27e6009ccfd710a905e6dcf12d0ee3c6f2ac7da05b0572d3e0d12e736fc8",
+        "integrity": "sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+        "sha256": "74005d7c17d4a02f2f25404ec0655d9bc2fdaa53166874c87d7b7eec69d9088a",
+        "integrity": "sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+        "sha256": "0833b2e9c3a26c258476c46266e6877fc75218625162e0460be9a3a098a61c6c",
+        "integrity": "sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+        "sha256": "d7236a19bf23cbb2027280e8f51dc99d6c45976a2ed60de73382b034b18a2b68",
+        "integrity": null
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.ttf",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.ttf",
+        "sha256": "808443ae6c8204395add8543da8a90a60b9376fb0f87ed8e8ea37d109596d805",
+        "integrity": null
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+        "sha256": "e3456d1283b9d75337a773dfd147bf908fd02c01b4bf48576d8603a69b13cbe5",
+        "integrity": null
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.ttf",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.ttf",
+        "sha256": "54cf6086f7bb21f9d072ad494a19b4681fa516dd0a14cee52da01d3651a913a3",
+        "integrity": null
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+        "sha256": "aa75998623a391e61c6901794ace832e3ecdd288b56d608f21bea0411acc0b8e",
+        "integrity": null
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.ttf",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.ttf",
+        "sha256": "d2f0593540b0e33ba6de255a54f272d466e31144806956bea8cfdbf7edffc9bd",
+        "integrity": null
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-v4compatibility.woff2",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-v4compatibility.woff2",
+        "sha256": "0ce9033c69dc714f5f45ef9bf17d55e4c46bcdfad6799a4e92b38e7781bf86bd",
+        "integrity": null
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-v4compatibility.ttf",
+        "file": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-v4compatibility.ttf",
+        "sha256": "30f6abf6baa425825828793d6dfad1fb63765d0e5abaa7af6feafb9bfcece5a0",
+        "integrity": null
+      }
+    ]
+  },
+  "cleanup": [
+    {
+      "pid": 273873,
+      "stopped": true,
+      "directory": "/tmp/cv-manage-Kh4Ewe",
+      "databaseRemoved": true
+    }
+  ],
+  "failures": [],
+  "ui": {
+    "permissions.empty": [
+      "core-empty",
+      "core-no-holders",
+      "guardian-empty",
+      "guardian-no-holders"
+    ],
+    "permissions.loading": [
+      "core-no-js",
+      "core-missing-js",
+      "guardian-no-js",
+      "guardian-missing-js"
+    ],
+    "permissions.error": [
+      "ordinary-denied"
+    ],
+    "permissions.populated": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "permissions.partial": [
+      "guardian-layout-en-390"
+    ],
+    "permissions.overflow": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "permissions.zero-one-many": [
+      "core-holders0",
+      "core-holders1",
+      "core-holders20",
+      "core-holders21",
+      "guardian-holders0",
+      "guardian-holders1",
+      "guardian-holders20",
+      "guardian-holders21"
+    ],
+    "permissions.long-text": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "views.empty": [
+      "core-empty",
+      "guardian-empty"
+    ],
+    "views.loading": [
+      "core-no-js",
+      "core-missing-js",
+      "guardian-no-js",
+      "guardian-missing-js"
+    ],
+    "views.error": [
+      "ordinary-denied"
+    ],
+    "views.populated": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "views.partial": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "views.overflow": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "views.zero-one-many": [
+      "core-collections0-en",
+      "core-collections0-de",
+      "core-collections1-en",
+      "core-collections1-de",
+      "core-collections3-en",
+      "core-collections3-de",
+      "guardian-collections0-en",
+      "guardian-collections0-de",
+      "guardian-collections1-en",
+      "guardian-collections1-de",
+      "guardian-collections3-en",
+      "guardian-collections3-de"
+    ],
+    "views.long-text": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "presentation.empty": [
+      "core-empty",
+      "guardian-empty"
+    ],
+    "presentation.loading": [
+      "core-no-js",
+      "core-missing-js",
+      "guardian-no-js",
+      "guardian-missing-js"
+    ],
+    "presentation.error": [
+      "core-errors",
+      "guardian-errors"
+    ],
+    "presentation.populated": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "presentation.partial": [
+      "core-errors",
+      "guardian-errors"
+    ],
+    "presentation.overflow": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "presentation.zero-one-many": [
+      "core-collections0-en",
+      "core-collections0-de",
+      "core-collections1-en",
+      "core-collections1-de",
+      "core-collections3-en",
+      "core-collections3-de",
+      "guardian-collections0-en",
+      "guardian-collections0-de",
+      "guardian-collections1-en",
+      "guardian-collections1-de",
+      "guardian-collections3-en",
+      "guardian-collections3-de"
+    ],
+    "presentation.long-text": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "facts.empty": [
+      "core-empty",
+      "guardian-empty"
+    ],
+    "facts.loading": [
+      "core-no-js",
+      "core-missing-js",
+      "guardian-no-js",
+      "guardian-missing-js"
+    ],
+    "facts.error": [
+      "ordinary-denied"
+    ],
+    "facts.populated": [
+      "nested-ancestors",
+      "hierarchy-resource"
+    ],
+    "facts.partial": [
+      "hierarchy-resource"
+    ],
+    "facts.overflow": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "facts.zero-one-many": [
+      "core-collections0-en",
+      "core-collections0-de",
+      "core-collections1-en",
+      "core-collections1-de",
+      "core-collections3-en",
+      "core-collections3-de",
+      "guardian-collections0-en",
+      "guardian-collections0-de",
+      "guardian-collections1-en",
+      "guardian-collections1-de",
+      "guardian-collections3-en",
+      "guardian-collections3-de"
+    ],
+    "facts.long-text": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "checks.empty": [
+      "core-empty",
+      "guardian-empty"
+    ],
+    "checks.loading": [
+      "core-no-js",
+      "core-missing-js",
+      "guardian-no-js",
+      "guardian-missing-js"
+    ],
+    "checks.error": [
+      "core-errors",
+      "guardian-errors"
+    ],
+    "checks.populated": [
+      "core-errors",
+      "guardian-errors"
+    ],
+    "checks.partial": [
+      "core-errors",
+      "guardian-errors"
+    ],
+    "checks.overflow": [
+      "core-errors",
+      "core-errors-1280",
+      "guardian-errors",
+      "guardian-errors-1280"
+    ],
+    "checks.zero-one-many": [
+      "core-collections0-en",
+      "core-collections0-de",
+      "core-collections1-en",
+      "core-collections1-de",
+      "core-collections3-en",
+      "core-collections3-de",
+      "guardian-collections0-en",
+      "guardian-collections0-de",
+      "guardian-collections1-en",
+      "guardian-collections1-de",
+      "guardian-collections3-en",
+      "guardian-collections3-de"
+    ],
+    "checks.long-text": [
+      "core-errors",
+      "core-errors-1280",
+      "guardian-errors",
+      "guardian-errors-1280"
+    ],
+    "defaults.empty": [
+      "core-zero-defaults",
+      "guardian-zero-defaults"
+    ],
+    "defaults.loading": [
+      "core-no-js",
+      "core-missing-js",
+      "guardian-no-js",
+      "guardian-missing-js"
+    ],
+    "defaults.error": [
+      "core-no-js",
+      "core-missing-js",
+      "guardian-no-js",
+      "guardian-missing-js"
+    ],
+    "defaults.populated": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "defaults.partial": [
+      "core-no-js",
+      "core-missing-js",
+      "guardian-no-js",
+      "guardian-missing-js"
+    ],
+    "defaults.overflow": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "defaults.zero-one-many": [
+      "core-collections0-en",
+      "core-collections0-de",
+      "core-collections1-en",
+      "core-collections1-de",
+      "core-collections3-en",
+      "core-collections3-de",
+      "guardian-collections0-en",
+      "guardian-collections0-de",
+      "guardian-collections1-en",
+      "guardian-collections1-de",
+      "guardian-collections3-en",
+      "guardian-collections3-de"
+    ],
+    "defaults.long-text": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "help.loading": [
+      "core-no-js",
+      "core-missing-js",
+      "guardian-no-js",
+      "guardian-missing-js"
+    ],
+    "help.error": [
+      "documentation-failure"
+    ],
+    "help.overflow": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ],
+    "help.long-text": [
+      "core-layout-en-390",
+      "core-layout-de-390",
+      "core-layout-en-1280",
+      "core-layout-de-1280",
+      "guardian-layout-en-390",
+      "guardian-layout-de-390",
+      "guardian-layout-en-1280",
+      "guardian-layout-de-1280"
+    ]
+  },
+  "screenshots": [
+    {
+      "case": "core-normal-390",
+      "path": "manage-screenshots/core-normal-390.png",
+      "sha256": "bb42554b9c72af7bb9b7f298a8dba25934b255f4a478bdd035c885e4577d19d8"
+    },
+    {
+      "case": "guardian-normal-390",
+      "path": "manage-screenshots/guardian-normal-390.png",
+      "sha256": "5b8e17d49c5f924ec638f418811e239ff1d71351ec6aaff5be2627965768919f"
+    },
+    {
+      "case": "core-collections0-en",
+      "path": "manage-screenshots/core-collections0-en.png",
+      "sha256": "e817466b37f3e2ed9a1bca386ef5b744ef6e9b1a14fdfafa95a1a75123b78745"
+    },
+    {
+      "case": "core-collections0-de",
+      "path": "manage-screenshots/core-collections0-de.png",
+      "sha256": "4eabe816124ac9afa3399c897a3b4d740bb0bacc470e6a59ceae3ccfdf6521e1"
+    },
+    {
+      "case": "core-collections1-en",
+      "path": "manage-screenshots/core-collections1-en.png",
+      "sha256": "09bb358ec9fdae7ef934f0b215dafe3f15b9178221636f16573beb4d12589daa"
+    },
+    {
+      "case": "core-collections1-de",
+      "path": "manage-screenshots/core-collections1-de.png",
+      "sha256": "e34733fbdc5499e66d54cc0d37df8ace2ebe9dadee13b69d58192c78652612ff"
+    },
+    {
+      "case": "core-collections3-en",
+      "path": "manage-screenshots/core-collections3-en.png",
+      "sha256": "e7b66270ee7e5f743e18fecc437142ba9e434a6f6be15a3382f0b0444f01a16d"
+    },
+    {
+      "case": "core-collections3-de",
+      "path": "manage-screenshots/core-collections3-de.png",
+      "sha256": "7f1778d1570cd9f67275a1357e2255de32843e0532ead9142c8dc55ac800d294"
+    },
+    {
+      "case": "core-layout-en-390",
+      "path": "manage-screenshots/core-layout-en-390.png",
+      "sha256": "fed0a96c992130c92e7fa17f50b332a607550882ad3959b19bb6bd9f187b5658"
+    },
+    {
+      "case": "core-layout-de-390",
+      "path": "manage-screenshots/core-layout-de-390.png",
+      "sha256": "1601ee0657ab3032bac8df8a1cdc52ce262cd98849ee98dbd0418515a0682fef"
+    },
+    {
+      "case": "core-layout-en-1280",
+      "path": "manage-screenshots/core-layout-en-1280.png",
+      "sha256": "7955e68d9beba7385a7e354dc91beb356afc5c379f26f688004eeb101e0880c7"
+    },
+    {
+      "case": "core-layout-de-1280",
+      "path": "manage-screenshots/core-layout-de-1280.png",
+      "sha256": "e87f3d4c2806a954eff87161fbd2c6a7f76088139e6923a93116f955203fa106"
+    },
+    {
+      "case": "core-errors",
+      "path": "manage-screenshots/core-errors.png",
+      "sha256": "0ccd7fb8e6e9a9b246639ef367dccd80977d2a291586c1c52738d05be4f70fad"
+    },
+    {
+      "case": "core-errors-1280",
+      "path": "manage-screenshots/core-errors-1280.png",
+      "sha256": "16f02d9f8747d49b6c6a8f4b067e9c08d0490ee5b689feb0b9f1afa458e853e3"
+    },
+    {
+      "case": "core-empty",
+      "path": "manage-screenshots/core-empty.png",
+      "sha256": "78b3f9aeafe2a4443a458749df7b8118aa0d3414423570740b722d73c103c381"
+    },
+    {
+      "case": "core-no-holders",
+      "path": "manage-screenshots/core-no-holders.png",
+      "sha256": "879f6e858fd1c571267f4dd1e647a0e348ff22f81975e56fd1ed22b7c2f5c324"
+    },
+    {
+      "case": "core-holders0",
+      "path": "manage-screenshots/core-holders0.png",
+      "sha256": "d462884087563c58a6abfaa0612e8df71ee3b2e76381e109bc748a5ede3695c6"
+    },
+    {
+      "case": "core-holders1",
+      "path": "manage-screenshots/core-holders1.png",
+      "sha256": "0d440c5c8225bc487bc50cbbad21bc03439a061fb0b22fa395741b6ae726b4be"
+    },
+    {
+      "case": "core-holders20",
+      "path": "manage-screenshots/core-holders20.png",
+      "sha256": "260212f4020dc8545d45a8f6d73cbc52e6c894097ad1554fcea816d9be13a4f1"
+    },
+    {
+      "case": "core-holders21",
+      "path": "manage-screenshots/core-holders21.png",
+      "sha256": "f7f65ef53948f3028672b2871457ab966cd4735a82b37651da5432cf683afce5"
+    },
+    {
+      "case": "core-hidden",
+      "path": "manage-screenshots/core-hidden.png",
+      "sha256": "741b0938781c4e30e77f452d6bb6d7346797be7acc222385682f4ad8341b8cb7"
+    },
+    {
+      "case": "core-zero-defaults",
+      "path": "manage-screenshots/core-zero-defaults.png",
+      "sha256": "3c07a3bea14a38c9a6ae394e3dd386488441d697f9a5d5bd0f9691ae51870e3d"
+    },
+    {
+      "case": "core-no-js",
+      "path": "manage-screenshots/core-no-js.png",
+      "sha256": "2533c8aeddfd2a5a4274712e1bf705209f2fc2b14788da977ecfa33eb180e299"
+    },
+    {
+      "case": "core-missing-js",
+      "path": "manage-screenshots/core-missing-js.png",
+      "sha256": "2533c8aeddfd2a5a4274712e1bf705209f2fc2b14788da977ecfa33eb180e299"
+    },
+    {
+      "case": "guardian-collections0-en",
+      "path": "manage-screenshots/guardian-collections0-en.png",
+      "sha256": "6da5d92553ef0d883ba3f8b5a24a20fc043f1fa7fbd4a3824d8962dd5ddb26f6"
+    },
+    {
+      "case": "guardian-collections0-de",
+      "path": "manage-screenshots/guardian-collections0-de.png",
+      "sha256": "1175d3d428fe03a3fd081f6758ff5ed7ab45206e9ce11ed0909951459f852a15"
+    },
+    {
+      "case": "guardian-collections1-en",
+      "path": "manage-screenshots/guardian-collections1-en.png",
+      "sha256": "d9152ed946dd1de108060e60a2880953ad7823a06764a2c8811ff24faaa79ed7"
+    },
+    {
+      "case": "guardian-collections1-de",
+      "path": "manage-screenshots/guardian-collections1-de.png",
+      "sha256": "4865857a76db17f6292cf7facebacba6118c5e8a82c66167d78c0e4115b0ac9f"
+    },
+    {
+      "case": "guardian-collections3-en",
+      "path": "manage-screenshots/guardian-collections3-en.png",
+      "sha256": "d215c837ad745affe7df2f8c927daf7f411be84d286d4300a0279edcd837c20d"
+    },
+    {
+      "case": "guardian-collections3-de",
+      "path": "manage-screenshots/guardian-collections3-de.png",
+      "sha256": "70524cefcab32847abe0f71428d751312a6f8706af5b29fe087d229cb46d62cd"
+    },
+    {
+      "case": "guardian-layout-en-390",
+      "path": "manage-screenshots/guardian-layout-en-390.png",
+      "sha256": "8256c0894183ad1c7df225a262c41aee03530bf227eb89f5123a36b6287ab68b"
+    },
+    {
+      "case": "guardian-layout-de-390",
+      "path": "manage-screenshots/guardian-layout-de-390.png",
+      "sha256": "f23750ac8dd6669b1c814a852dfc70fa37ede198f6bac59f840fd22f30a88fa7"
+    },
+    {
+      "case": "guardian-layout-en-1280",
+      "path": "manage-screenshots/guardian-layout-en-1280.png",
+      "sha256": "418397cb88466bce6ba60c34ac2a1f5d6aacc6d579580f2f2e127383aa470578"
+    },
+    {
+      "case": "guardian-layout-de-1280",
+      "path": "manage-screenshots/guardian-layout-de-1280.png",
+      "sha256": "38a67fab64c750afd4206504ef5b6b5b08d5abf40fbf61c795ee911443d40fd4"
+    },
+    {
+      "case": "guardian-errors",
+      "path": "manage-screenshots/guardian-errors.png",
+      "sha256": "282d511d39299ef0055c08c79156daa9da03e93c9abb01465290a9cde16f3db9"
+    },
+    {
+      "case": "guardian-errors-1280",
+      "path": "manage-screenshots/guardian-errors-1280.png",
+      "sha256": "e49300cb9e6c51f87498dbeab163340c9c97238dae014c783b61c513b2972a9e"
+    },
+    {
+      "case": "guardian-empty",
+      "path": "manage-screenshots/guardian-empty.png",
+      "sha256": "7ecef33358f7d5a52d95cad3ba757df2c17e87e37f40c82080c8baeefa37c43d"
+    },
+    {
+      "case": "guardian-no-holders",
+      "path": "manage-screenshots/guardian-no-holders.png",
+      "sha256": "058c0d015e53cb58e630f27392c8bdcce69aeef312626c65b6350d1cf9b57b86"
+    },
+    {
+      "case": "guardian-holders0",
+      "path": "manage-screenshots/guardian-holders0.png",
+      "sha256": "12536c1b35486aebb4a4997d02b063b3645e7212ab2bc009506a5596444103fc"
+    },
+    {
+      "case": "guardian-holders1",
+      "path": "manage-screenshots/guardian-holders1.png",
+      "sha256": "1be26c74ab92c69c90fb0fcfcc1cc8c649a9b339ba63999ddd9cf12d436c8362"
+    },
+    {
+      "case": "guardian-holders20",
+      "path": "manage-screenshots/guardian-holders20.png",
+      "sha256": "286f68fdfeb0ab77d1e9c175569ab692c0d453f99a847e88d03c76aba7ba8c10"
+    },
+    {
+      "case": "guardian-holders21",
+      "path": "manage-screenshots/guardian-holders21.png",
+      "sha256": "0f0a9c6d5286c005f0dd4564398957d8dbea093452f8c6e3f15430e8d0119c93"
+    },
+    {
+      "case": "guardian-hidden",
+      "path": "manage-screenshots/guardian-hidden.png",
+      "sha256": "bc91b1b3dc4f84f0e3a37033b5c03ffdeec2b831ee2ff3e10f7d10f80d8015a9"
+    },
+    {
+      "case": "guardian-zero-defaults",
+      "path": "manage-screenshots/guardian-zero-defaults.png",
+      "sha256": "5eb6e73b9369d7acb67416ef9d4074d9b656a9b367c8720b6fc2ebd2c70bf8f0"
+    },
+    {
+      "case": "guardian-no-js",
+      "path": "manage-screenshots/guardian-no-js.png",
+      "sha256": "68de25b0e56c0175411e169cb0c50c1469e3d3e262ef028d7e25f2817a552fe2"
+    },
+    {
+      "case": "guardian-missing-js",
+      "path": "manage-screenshots/guardian-missing-js.png",
+      "sha256": "68de25b0e56c0175411e169cb0c50c1469e3d3e262ef028d7e25f2817a552fe2"
+    },
+    {
+      "case": "nested-ancestors",
+      "path": "manage-screenshots/nested-ancestors.png",
+      "sha256": "57f69e7b710921b199b987c37b79c098a0c3532fc1454a4ddad8ebe5afc28c2c"
+    },
+    {
+      "case": "hierarchy-resource",
+      "path": "manage-screenshots/hierarchy-resource.png",
+      "sha256": "a6f5ca083e031bf92ecada85bc941efca65a99b03c99d35435bbcf423b7f4885"
+    },
+    {
+      "case": "resource-layout-en-390",
+      "path": "manage-screenshots/resource-layout-en-390.png",
+      "sha256": "affb3fc10a3e1b89e6ab8865278988f6c347628f4d35bfa283bfd222ebbe2aba"
+    },
+    {
+      "case": "resource-empty-en-390",
+      "path": "manage-screenshots/resource-empty-en-390.png",
+      "sha256": "38e80f5d465532418c6481dd0063bf843b37377af95c430da93f5794c2e40fee"
+    },
+    {
+      "case": "resource-none-en-390",
+      "path": "manage-screenshots/resource-none-en-390.png",
+      "sha256": "a55787a8e6ece462629c443351fcf0c08e81cda67f27ab21b47bf45cea7bfc81"
+    },
+    {
+      "case": "resource-no-holders-en-390",
+      "path": "manage-screenshots/resource-no-holders-en-390.png",
+      "sha256": "60a28a52d1de02716c04db41df9ba1c27e19c8217bf56b3e7c7e35641cdae0eb"
+    },
+    {
+      "case": "resource-layout-de-390",
+      "path": "manage-screenshots/resource-layout-de-390.png",
+      "sha256": "6d30ef1e4d9b9d8caa430add4b5f78ecb5ef23d3098c622c6e96b88ab04fa4c0"
+    },
+    {
+      "case": "resource-empty-de-390",
+      "path": "manage-screenshots/resource-empty-de-390.png",
+      "sha256": "741cbb8468676ae1be7dd717518e4998d1f3754a4407e65168b294d31f497f72"
+    },
+    {
+      "case": "resource-none-de-390",
+      "path": "manage-screenshots/resource-none-de-390.png",
+      "sha256": "7ceaf43fa1c00143b5be6bfc3bf5449c9a6f731e3862801b7d241b571874d840"
+    },
+    {
+      "case": "resource-no-holders-de-390",
+      "path": "manage-screenshots/resource-no-holders-de-390.png",
+      "sha256": "db9e39f23d6054f1a43a6e4f14726c20aa8511518650ff55a698c97a0b95c4c3"
+    },
+    {
+      "case": "resource-layout-en-1280",
+      "path": "manage-screenshots/resource-layout-en-1280.png",
+      "sha256": "03d21f5ad858bc25919a8ab3dd46a7ab14e6ef78a27e9c15c6b0ae48edc81c9f"
+    },
+    {
+      "case": "resource-empty-en-1280",
+      "path": "manage-screenshots/resource-empty-en-1280.png",
+      "sha256": "66ab9a50d926428b5ebe6405526bbc98509d3f9bb51bafb4b7c83901b5b4da69"
+    },
+    {
+      "case": "resource-none-en-1280",
+      "path": "manage-screenshots/resource-none-en-1280.png",
+      "sha256": "c186459e340b911dc6c18e4fa2dbf366e9528f16fe983b639f7994084680f824"
+    },
+    {
+      "case": "resource-no-holders-en-1280",
+      "path": "manage-screenshots/resource-no-holders-en-1280.png",
+      "sha256": "261db0342256412dd6b8c521901654e087c2ca95728a98ddd38b21437237966a"
+    },
+    {
+      "case": "resource-layout-de-1280",
+      "path": "manage-screenshots/resource-layout-de-1280.png",
+      "sha256": "7a8d83172e3579eea3478d86e74692fd3e07e2e7480d6d21d1155697ee6f2f35"
+    },
+    {
+      "case": "resource-empty-de-1280",
+      "path": "manage-screenshots/resource-empty-de-1280.png",
+      "sha256": "c98fe89f52caf77a358af1a2a66359a2660ffe368e89b0a9a2b416d3d40b59f2"
+    },
+    {
+      "case": "resource-none-de-1280",
+      "path": "manage-screenshots/resource-none-de-1280.png",
+      "sha256": "0a9c39351dbc12440fc96ba6b6a24f3a25f2a81e763766ba626ce76f701a7989"
+    },
+    {
+      "case": "resource-no-holders-de-1280",
+      "path": "manage-screenshots/resource-no-holders-de-1280.png",
+      "sha256": "c56d6688d268003b6663bdaea5754e81dad75452375cf88b92597644a0f355f9"
+    },
+    {
+      "case": "resource-nested-layout-en-390",
+      "path": "manage-screenshots/resource-nested-layout-en-390.png",
+      "sha256": "e9ae7cd9cf07d55118e908c2aa962b9c081253fef6c0be43a69960a3a6abbf02"
+    },
+    {
+      "case": "resource-nested-empty-en-390",
+      "path": "manage-screenshots/resource-nested-empty-en-390.png",
+      "sha256": "d2f1d7d2d9b11cb09293756d1c05f0c768c2693eeb8209368672532f48a170e2"
+    },
+    {
+      "case": "resource-nested-none-en-390",
+      "path": "manage-screenshots/resource-nested-none-en-390.png",
+      "sha256": "22042bccd9ccfc3946f488c7874660420c84922219a4ff5cad6fe54113b060b4"
+    },
+    {
+      "case": "resource-nested-no-holders-en-390",
+      "path": "manage-screenshots/resource-nested-no-holders-en-390.png",
+      "sha256": "2f38b0c7d07d0b8f4f7a95d0b3207de9ddc9a0363c6cdc57cb7e384ba2928acc"
+    },
+    {
+      "case": "resource-nested-layout-de-390",
+      "path": "manage-screenshots/resource-nested-layout-de-390.png",
+      "sha256": "f89cc0a3ed5c28f21efe6a26ff7c47ee7494450226f6be8265d39c8b645fc274"
+    },
+    {
+      "case": "resource-nested-empty-de-390",
+      "path": "manage-screenshots/resource-nested-empty-de-390.png",
+      "sha256": "49fb13242321120c9b2552f59cd6644e85579cf54d64cbcac2995a52e92708ec"
+    },
+    {
+      "case": "resource-nested-none-de-390",
+      "path": "manage-screenshots/resource-nested-none-de-390.png",
+      "sha256": "7308d05f2ada19978bd3aa37df45fc47e25ba1e682fb808fa66504837e874e4b"
+    },
+    {
+      "case": "resource-nested-no-holders-de-390",
+      "path": "manage-screenshots/resource-nested-no-holders-de-390.png",
+      "sha256": "825136d74c88519085e23b43f65f2a569b14218667f5de572bd9a7ba1252b5e8"
+    },
+    {
+      "case": "resource-nested-layout-en-1280",
+      "path": "manage-screenshots/resource-nested-layout-en-1280.png",
+      "sha256": "a0913162d1dca96b62391ee14d2d1442bb020ef7c8da72f99ea64c3716cfe694"
+    },
+    {
+      "case": "resource-nested-empty-en-1280",
+      "path": "manage-screenshots/resource-nested-empty-en-1280.png",
+      "sha256": "0b70c1e91e177b9755a6fe5c4917058e7b4860a97c91007d445af4867c56dbaa"
+    },
+    {
+      "case": "resource-nested-none-en-1280",
+      "path": "manage-screenshots/resource-nested-none-en-1280.png",
+      "sha256": "a99c44f699b1e3456e4c330662505880a7cb5a760dff45b6449b1574455230c9"
+    },
+    {
+      "case": "resource-nested-no-holders-en-1280",
+      "path": "manage-screenshots/resource-nested-no-holders-en-1280.png",
+      "sha256": "1dbfbb6c96fbaec9f2743f26cfc39477b93001fc3adbc2ea554072db72e24449"
+    },
+    {
+      "case": "resource-nested-layout-de-1280",
+      "path": "manage-screenshots/resource-nested-layout-de-1280.png",
+      "sha256": "20de956e3c06c22d1cedcd64d15f86d55c85fad56219284725ca483a4e77a73c"
+    },
+    {
+      "case": "resource-nested-empty-de-1280",
+      "path": "manage-screenshots/resource-nested-empty-de-1280.png",
+      "sha256": "ec13408ad5ffdfa5969cf89c6bc5d98cdc826ecb832f78f6d832c1a6a1660731"
+    },
+    {
+      "case": "resource-nested-none-de-1280",
+      "path": "manage-screenshots/resource-nested-none-de-1280.png",
+      "sha256": "20eaed29befd7d56ef05e57a31026b786a2f4bdb2620040fe39fbabbba7dbc95"
+    },
+    {
+      "case": "resource-nested-no-holders-de-1280",
+      "path": "manage-screenshots/resource-nested-no-holders-de-1280.png",
+      "sha256": "687da3136a32b483748d57242292b758b752f9b0a3217276398d016df03c050f"
+    },
+    {
+      "case": "documentation-failure",
+      "path": "manage-screenshots/documentation-failure.png",
+      "sha256": "d43205e0387634a519a99214f108ef38213bc673ab2bac14cc68778b60d7b932"
+    }
+  ],
+  "full_report": {
+    "path": "/tmp/cv-0635-resource-manage-browser.json",
+    "sha256": "83ca5c3bf1411abd7843d241782761033e9c776df75275a99a49c5ac83130e35"
+  },
+  "cases": [
+    {
+      "id": "core-normal-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": null,
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-normal-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": null,
+        "csp": []
+      }
+    },
+    {
+      "id": "ordinary-denied",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.error",
+        "views.error",
+        "facts.error"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": null,
+        "documentWidth": null,
+        "counts": null,
+        "csp": null
+      }
+    },
+    {
+      "id": "core-collections0-en",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 0,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-collections0-de",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 0,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-collections1-en",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 1,
+          "hidden": 1,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-collections1-de",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 1,
+          "hidden": 1,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-collections3-en",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 3,
+          "hidden": 3,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-collections3-de",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 3,
+          "hidden": 3,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-layout-en-390",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.populated",
+        "permissions.overflow",
+        "permissions.long-text",
+        "views.populated",
+        "views.partial",
+        "views.overflow",
+        "views.long-text",
+        "presentation.populated",
+        "presentation.overflow",
+        "presentation.long-text",
+        "facts.overflow",
+        "facts.long-text",
+        "defaults.populated",
+        "defaults.overflow",
+        "defaults.long-text",
+        "help.overflow",
+        "help.long-text"
+      ],
+      "facts": {
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-layout-de-390",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.populated",
+        "permissions.overflow",
+        "permissions.long-text",
+        "views.populated",
+        "views.partial",
+        "views.overflow",
+        "views.long-text",
+        "presentation.populated",
+        "presentation.overflow",
+        "presentation.long-text",
+        "facts.overflow",
+        "facts.long-text",
+        "defaults.populated",
+        "defaults.overflow",
+        "defaults.long-text",
+        "help.overflow",
+        "help.long-text"
+      ],
+      "facts": {
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-layout-en-1280",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.populated",
+        "permissions.overflow",
+        "permissions.long-text",
+        "views.populated",
+        "views.partial",
+        "views.overflow",
+        "views.long-text",
+        "presentation.populated",
+        "presentation.overflow",
+        "presentation.long-text",
+        "facts.overflow",
+        "facts.long-text",
+        "defaults.populated",
+        "defaults.overflow",
+        "defaults.long-text",
+        "help.overflow",
+        "help.long-text"
+      ],
+      "facts": {
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 102,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-layout-de-1280",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.populated",
+        "permissions.overflow",
+        "permissions.long-text",
+        "views.populated",
+        "views.partial",
+        "views.overflow",
+        "views.long-text",
+        "presentation.populated",
+        "presentation.overflow",
+        "presentation.long-text",
+        "facts.overflow",
+        "facts.long-text",
+        "defaults.populated",
+        "defaults.overflow",
+        "defaults.long-text",
+        "help.overflow",
+        "help.long-text"
+      ],
+      "facts": {
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 102,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-errors",
+      "passed": true,
+      "criterion_ids": [
+        "presentation.error",
+        "presentation.partial",
+        "checks.error",
+        "checks.populated",
+        "checks.partial",
+        "checks.overflow",
+        "checks.long-text"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 102,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-errors-1280",
+      "passed": true,
+      "criterion_ids": [
+        "checks.overflow",
+        "checks.long-text"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 102,
+          "hidden": 102,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-empty",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.empty",
+        "views.empty",
+        "presentation.empty",
+        "facts.empty",
+        "checks.empty"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 10,
+          "hidden": 10,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-no-holders",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.empty"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 102,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-holders0",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 102,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-holders1",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 102,
+          "users": 1,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-holders20",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 102,
+          "users": 20,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-holders21",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 102,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-hidden",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 102,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-zero-defaults",
+      "passed": true,
+      "criterion_ids": [
+        "defaults.empty"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 0,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-no-js",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.loading",
+        "views.loading",
+        "presentation.loading",
+        "facts.loading",
+        "checks.loading",
+        "defaults.loading",
+        "defaults.error",
+        "defaults.partial",
+        "help.loading"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "core-missing-js",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.loading",
+        "views.loading",
+        "presentation.loading",
+        "facts.loading",
+        "checks.loading",
+        "defaults.loading",
+        "defaults.error",
+        "defaults.partial",
+        "help.loading"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 102,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-collections0-en",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 0,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-collections0-de",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 0,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-collections1-en",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 1,
+          "hidden": 1,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-collections1-de",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 1,
+          "hidden": 1,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-collections3-en",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 3,
+          "hidden": 3,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-collections3-de",
+      "passed": true,
+      "criterion_ids": [
+        "views.zero-one-many",
+        "presentation.zero-one-many",
+        "facts.zero-one-many",
+        "checks.zero-one-many",
+        "defaults.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 3,
+          "hidden": 3,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-layout-en-390",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.populated",
+        "permissions.partial",
+        "permissions.overflow",
+        "permissions.long-text",
+        "views.populated",
+        "views.partial",
+        "views.overflow",
+        "views.long-text",
+        "presentation.populated",
+        "presentation.overflow",
+        "presentation.long-text",
+        "facts.overflow",
+        "facts.long-text",
+        "defaults.populated",
+        "defaults.overflow",
+        "defaults.long-text",
+        "help.overflow",
+        "help.long-text"
+      ],
+      "facts": {
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-layout-de-390",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.populated",
+        "permissions.overflow",
+        "permissions.long-text",
+        "views.populated",
+        "views.partial",
+        "views.overflow",
+        "views.long-text",
+        "presentation.populated",
+        "presentation.overflow",
+        "presentation.long-text",
+        "facts.overflow",
+        "facts.long-text",
+        "defaults.populated",
+        "defaults.overflow",
+        "defaults.long-text",
+        "help.overflow",
+        "help.long-text"
+      ],
+      "facts": {
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-layout-en-1280",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.populated",
+        "permissions.overflow",
+        "permissions.long-text",
+        "views.populated",
+        "views.partial",
+        "views.overflow",
+        "views.long-text",
+        "presentation.populated",
+        "presentation.overflow",
+        "presentation.long-text",
+        "facts.overflow",
+        "facts.long-text",
+        "defaults.populated",
+        "defaults.overflow",
+        "defaults.long-text",
+        "help.overflow",
+        "help.long-text"
+      ],
+      "facts": {
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 104,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-layout-de-1280",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.populated",
+        "permissions.overflow",
+        "permissions.long-text",
+        "views.populated",
+        "views.partial",
+        "views.overflow",
+        "views.long-text",
+        "presentation.populated",
+        "presentation.overflow",
+        "presentation.long-text",
+        "facts.overflow",
+        "facts.long-text",
+        "defaults.populated",
+        "defaults.overflow",
+        "defaults.long-text",
+        "help.overflow",
+        "help.long-text"
+      ],
+      "facts": {
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 104,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-errors",
+      "passed": true,
+      "criterion_ids": [
+        "presentation.error",
+        "presentation.partial",
+        "checks.error",
+        "checks.populated",
+        "checks.partial",
+        "checks.overflow",
+        "checks.long-text"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 104,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-errors-1280",
+      "passed": true,
+      "criterion_ids": [
+        "checks.overflow",
+        "checks.long-text"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 104,
+          "hidden": 104,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-empty",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.empty",
+        "views.empty",
+        "presentation.empty",
+        "facts.empty",
+        "checks.empty"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 10,
+          "hidden": 10,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-no-holders",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.empty"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 104,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-holders0",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 104,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-holders1",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 104,
+          "users": 1,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-holders20",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 104,
+          "users": 20,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-holders21",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.zero-one-many"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 104,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-hidden",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 104,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-zero-defaults",
+      "passed": true,
+      "criterion_ids": [
+        "defaults.empty"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 0,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-no-js",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.loading",
+        "views.loading",
+        "presentation.loading",
+        "facts.loading",
+        "checks.loading",
+        "defaults.loading",
+        "defaults.error",
+        "defaults.partial",
+        "help.loading"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "guardian-missing-js",
+      "passed": true,
+      "criterion_ids": [
+        "permissions.loading",
+        "views.loading",
+        "presentation.loading",
+        "facts.loading",
+        "checks.loading",
+        "defaults.loading",
+        "defaults.error",
+        "defaults.partial",
+        "help.loading"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 104,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "nested-ancestors",
+      "passed": true,
+      "criterion_ids": [
+        "facts.populated"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 57,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "hierarchy-resource",
+      "passed": true,
+      "criterion_ids": [
+        "facts.populated",
+        "facts.partial"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 57,
+          "users": 1,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-layout-en-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          }
+        ],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-empty-en-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 10,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-none-en-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 55,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-no-holders-en-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-layout-de-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          }
+        ],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-empty-de-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 10,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-none-de-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 55,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-no-holders-de-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-layout-en-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          }
+        ],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-empty-en-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 10,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-none-en-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 55,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-no-holders-en-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-layout-de-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          }
+        ],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-empty-de-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 10,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-none-de-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 55,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-no-holders-de-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-layout-en-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          }
+        ],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-empty-en-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 10,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-none-en-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 55,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-no-holders-en-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-layout-de-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          }
+        ],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-empty-de-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 10,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-none-de-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 55,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-no-holders-de-390",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 390,
+        "documentWidth": 390,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-layout-en-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "resource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          }
+        ],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-empty-en-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 10,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-none-en-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 55,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-no-holders-en-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-layout-de-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          },
+          {
+            "text": "Ressource",
+            "background": "rgb(13, 202, 240)",
+            "color": "rgb(33, 37, 41)"
+          }
+        ],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 20,
+          "overflow": 1
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-empty-de-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 10,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-none-de-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 55,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "resource-nested-no-holders-de-1280",
+      "passed": true,
+      "criterion_ids": [],
+      "facts": {
+        "badges": [],
+        "links": [
+          "http://127.0.0.1:40991/parent/manage/"
+        ],
+        "keyboard": true
+      },
+      "geometry": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "counts": {
+          "defaults": 57,
+          "hidden": 0,
+          "users": 0,
+          "overflow": 0
+        },
+        "csp": []
+      }
+    },
+    {
+      "id": "documentation-failure",
+      "passed": true,
+      "criterion_ids": [
+        "help.error"
+      ],
+      "facts": {},
+      "geometry": {
+        "width": null,
+        "documentWidth": null,
+        "counts": null,
+        "csp": null
+      }
+    }
+  ]
+}

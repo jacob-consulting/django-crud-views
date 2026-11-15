@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.214" timestamp="2026-11-15T18:51:20.810210+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_manage_locales" name="test_resource_messages_are_extracted_and_compiled" time="0.042"><failure message="AssertionError: assert {'Resource': ...eclared', ...} == {'Resource': ...lariert', ...}&#10;  &#10;  Differing items:&#10;  {'resource': 'resource'} != {'resource': 'Ressource'}&#10;[+4 more lines; full report in element text]">def test_resource_messages_are_extracted_and_compiled():
+        extracted = {msgid for msgid, _, _ in messages("crud_views")}
+        assert RESOURCE_MESSAGES.keys() &lt;= extracted
+        with (ROOT / "src/crud_views/locale/de/LC_MESSAGES/django.mo").open("rb") as stream:
+            catalog = gettext.GNUTranslations(stream)
+&gt;       assert {message: catalog.gettext(message) for message in RESOURCE_MESSAGES} == RESOURCE_MESSAGES
+E       AssertionError: assert {'Resource': ...eclared', ...} == {'Resource': ...lariert', ...}
+E         
+E         Differing items:
+E         {'resource': 'resource'} != {'resource': 'Ressource'}
+E         {'resource: explicitly mapped Django permission; no per-item grants. The access row includes effective permissions.': 'resource: explicitly mapped Django permission; no per-item grants. The access row includes effective permissions.'} != {'resource: explicitly mapped Django permission; no per-item grants. The access row includes effective permissions.': ...go-Berechtigung; keine Berechtigungen für einzelne Elemente. Die Zugriffszeile enthält die effektiven Berechtigungen.'}
+E         {'Resource': 'Resource'} != {...
+E         
+E         ...Full output truncated, use '-vv' to show
+
+tests/test1/test_manage_locales.py:55: AssertionError</failure></testcase></testsuite></testsuites>

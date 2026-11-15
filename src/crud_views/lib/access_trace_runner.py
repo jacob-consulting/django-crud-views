@@ -180,7 +180,8 @@ def _resolve_trace_user(identifier):
     manager = model._default_manager
     try:
         return manager.get(**{model.USERNAME_FIELD: identifier})
-    except model.DoesNotExist:
+    except (model.DoesNotExist, ValidationError, ValueError, TypeError):
+        # A typed USERNAME_FIELD may reject an otherwise valid primary key.
         pass
     try:
         pk = model._meta.pk.to_python(identifier)

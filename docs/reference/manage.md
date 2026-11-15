@@ -205,6 +205,8 @@ python manage.py cv_access /author/list/ sam --as-json | jq
 
 Replace paths/users with your project's routes and accounts. Users are loaded fresh from the project's user
 model; username matches take precedence over primary keys, including numeric usernames. Supply either a user
+selector accepted by the username field or the primary key; a username conversion failure still permits the
+primary-key lookup. Unknown selectors produce normal command/form feedback. Supply either a user
 or `--anonymous`, never both. Full URLs are reduced to their path: host, query and fragment do not affect tracing.
 The extracted URI path is decoded once, as for a Django request, including URLs returned by `reverse()`.
 Literal plus signs stay unchanged; encoded question marks, hashes and percent signs remain path content.

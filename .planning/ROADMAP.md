@@ -2011,12 +2011,21 @@ Plans:
 **Plans:** 0/7 plans executed
 
 Plans:
+**Wave 1**
 - [ ] 06.35-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.35-02-PLAN.md
 - [ ] 06.35-03-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.35-04-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06.35-05-PLAN.md
 - [ ] 06.35-06-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06.35-07-PLAN.md
 
 ### Phase 7: Theme-surface stability policy

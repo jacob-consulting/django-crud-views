@@ -23,7 +23,12 @@ SOURCES = {
         "templates/crud_views/view_manage.html",
         "templates/crud_views/includes/access_trace.html",
     ],
-    "crud_views_guardian": ["lib/views.py", "templates/crud_views/view_guardian_manage.html"],
+    "crud_views_guardian": [
+        "lib/views.py",
+        "lib/mixins.py",
+        "lib/ancestors.py",
+        "templates/crud_views/view_guardian_manage.html",
+    ],
 }
 
 

@@ -1,7 +1,7 @@
 # Design: ViewSet configuration command and JSON contract (#371)
 
 **Date:** 2026-11-15
-**Status:** Discussion decisions approved; builder check passed; written design awaiting maintainer approval.
+**Status:** Approved by the maintainer on 2026-11-15, including the GSD handover and A-01–A-04; ready for GSD planning against completed #372.
 **Issue:** https://github.com/jacob-consulting/django-crud-views/issues/371
 **Deliverable:** Design and explicit GSD handover. No feature implementation or phase allocation in this discussion.
 
@@ -213,11 +213,11 @@ Out of scope: building the future skill, whole-project full dumps, configuration
 permission engine, browser redesign, migration of all builders to Pydantic, S3 integration, new write
 capabilities, or changes to `cv_access`, `cv_manage_group` or the placeholder `crud_views_show` command.
 
-## Engineering defaults proposed by the author
+## Engineering defaults supplied by the author and approved with this design
 
 The maintainer approved D-01–D-09 in the discussion. The following concrete details make the handover
-actionable but are author choices, not separately attributed user requests. They are included for review
-with this written design.
+actionable but are author choices, not separately attributed user requests. The maintainer approved them
+as part of the complete written design on 2026-11-15.
 
 ### A-01: Selection and catalogue loading
 
@@ -396,8 +396,8 @@ document how downstream overrides participate. Arbitrary malformed override data
 ### Planning inputs and author choices
 
 Read this entire design, including A-01–A-04 and acceptance items 1–10. The author choices are concrete
-defaults proposed for approval with the document, not a record of additional maintainer utterances.
-After approval they belong to the design baseline; exact internal function placement, Pydantic class
+defaults approved with the document, not a record of additional maintainer utterances.
+They belong to the design baseline; exact internal function placement, Pydantic class
 names, nested wire fields not fixed above and test organization remain bounded builder discretion.
 
 Canonical supporting references:
@@ -422,8 +422,11 @@ Separate command-owned errors from pre-command Django startup behavior. Verify a
 ### Current state and next workflow
 
 The discussion decisions are approved. A fresh builder reviewer returned "nothing important left" on
-2026-11-15; maintainer approval of the complete written design is still pending.
-No application code, phase state, implementation plan or issue body was changed by this design draft;
+2026-11-15. The maintainer then explicitly approved the complete written design and GSD handover,
+including A-01–A-04. This document is ready for GSD planning against completed #372.
+No application code, phase state, implementation plan or issue body was changed by this design work;
 no application tests have been run as acceptance evidence. The requested output is this GSD handover.
+The brainstorming workflow's writing-plans skill was consulted after approval; the user's explicit GSD
+handover destination takes precedence over creating a separate Superpowers implementation plan here.
 Do not create a phase/worktree or execute the feature merely because the design is approved. Surface
 concrete conflicts with settled decisions instead of silently broadening or narrowing the scope.

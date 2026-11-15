@@ -2008,7 +2008,7 @@ Plans:
 4. Existing default-off access checks support non-object views, object identifiers, missing items and nested coordinates. UI traces match `cv_access --as-json` for the same inputs and fixture state, and command text/HTML communicate equivalent diagnostic facts and limitations.
 5. Focused and relevant regression coverage, translated strings, Resource/manage/theme documentation and changelog are complete; fake Resource fixtures require no live S3 access, and broad pytest verification uses multiple workers.
 
-**Plans:** 5/7 plans executed
+**Plans:** 6/7 plans executed
 
 Plans:
 **Wave 1**
@@ -2023,7 +2023,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [x] 06.35-05-PLAN.md
-- [ ] 06.35-06-PLAN.md
+- [x] 06.35-06-PLAN.md
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06.35-07-PLAN.md

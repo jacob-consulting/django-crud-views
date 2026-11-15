@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.35"
 current_phase_name: "Resource manage pages with cv_access parity (#372)"
-current_plan: "06"
+current_plan: "07"
 status: executing
-stopped_at: "Completed 06.35-05-PLAN.md; ready for plan 06"
-last_updated: "2026-11-15T18:49:21Z"
+stopped_at: "Completed 06.35-06-PLAN.md; ready for plan 07"
+last_updated: "2026-11-15T18:56:50Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 06.35 plan 05 complete; C09 36 passed and C10 360 passed; strict docs build passed; all 15 H01 theme/docs handoffs closed; locale and release acceptance remain with plans 06/07
-state_head: e1be255a
+last_activity_desc: Phase 06.35 plan 06 complete; C11 135 passed and C12 374 passed; six compiled German messages and real bilingual Resource output verified; final H01 locale handoff closed; release acceptance remains with plan 07
+state_head: 922af8aa
 progress:
   total_phases: 42
   completed_phases: 27
   total_plans: 232
-  completed_plans: 230
+  completed_plans: 231
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.35 (Resource manage pages with cv_access parity (#372)) — IN PROGRESS
-Current Plan: 06
+Current Plan: 07
 Total Plans in Phase: 7
-Status: Executing (5/7 plans complete)
-Last activity: 2026-11-15 — Plan 05 committed; Resource documentation/migration and exact theme inventories verified; C09 36 passed, C10 360 passed, strict MkDocs build passed
+Status: Executing (6/7 plans complete)
+Last activity: 2026-11-15 — Plan 06 committed; six German Resource messages compiled and bilingual output verified; C11 135 passed and C12 374 passed
 
 Next: $gsd-execute-phase 06.35
+
+### Phase 06.35 plan 06 completion — 2026-11-15
+
+- Six Resource captions, badges, metadata/empty-state/legend messages have matching German PO/MO entries. Existing source inventories and semantic plural/placeholder checks remain intact; final H01 locale handoff is closed.
+- Thirty-two independent real-request cases each exercise both languages: all four badge sites with 21 direct holders, declared/inherited metadata, Show defaults, empty maps, nested routes, escaping, no-read sentinels, and complete per-path/per-row UI/CLI trace equality.
+- C11: 135 passed (3.89s); final C12: 374 passed (10.25s), four workers. Scoped Ruff/format/whitespace pass. No skips, dependencies or runtime code changes.
+- Duration: approximately 6 minutes; 2 tasks; task commits b5aa201c, 102ecaa0, ef7ba0b4, 5ab3a83f; summary f1fa6c89 and duration correction 922af8aa. One plan remains; no phase completion claimed. Unrelated state.json/config/.gitkeep/review-input changes preserved.
 
 ### Phase 06.35 plan 05 completion — 2026-11-15
 

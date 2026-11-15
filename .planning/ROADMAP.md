@@ -2045,10 +2045,27 @@ Plans:
 4. Complete, partial and failed version-1 results validate against explicit Pydantic models and their generated schema. Unsupported, null, undeclared and unavailable values remain distinct; section failures preserve good data and produce the defined 0/1/2 exit behavior.
 5. Text/JSON semantic parity, force-color-safe JSON/schema, English/German output, valid subclass overrides, page contracts and normal query costs have regression coverage. Documentation and translations cover the full approved acceptance list; broad pytest runs use multiple workers.
 
-**Plans:** 0 plans
+**Plans:** 7 plans
 
 Plans:
-- [ ] TBD (run $gsd-plan-phase 06.36 to break down)
+**Wave 1**
+- [ ] 06.36-01-PLAN.md — Catalogue tracer and typed core inspection through shared builders
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.36-02-PLAN.md — Complete bounded values, provenance, customization and selected-view scope
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.36-03-PLAN.md — Actor/holder diagnostics, Guardian counts and static Resource routing coverage
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.36-04-PLAN.md — Partial failures, exit precedence and safe text/JSON rendering
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.36-05-PLAN.md — Independent generated-schema validation and exact preservation checks
+- [ ] 06.36-06-PLAN.md — Command/customization documentation, German catalogs and release notes
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 06.36-07-PLAN.md — Dependency-floor, installed-distribution and final regression evidence
 
 ### Phase 7: Theme-surface stability policy
 

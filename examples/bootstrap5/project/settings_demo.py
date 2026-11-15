@@ -9,6 +9,7 @@ from project.settings import *  # noqa: F403  # NOSONAR S2208
 from project.settings import BASE_DIR, MIDDLEWARE
 
 DEBUG = False
+CRUD_VIEWS_MANAGE_ACCESS_TRACE = False
 SECRET_KEY = os.environ["SECRET_KEY"]
 
 _host = os.environ.get("RENDER_EXTERNAL_HOSTNAME", "")

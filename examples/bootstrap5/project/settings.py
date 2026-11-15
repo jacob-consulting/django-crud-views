@@ -139,6 +139,8 @@ CRUD_VIEWS_EXTENDS = "project/crud_views.html"
 CRUD_VIEWS_BREADCRUMB_PREFIX = [{"title": _("Home"), "url_name": "home"}]
 # the view title in project/crud_views.html is the page h1; the package's headings render as h2
 CRUD_VIEWS_HEADER_LEVEL = 1
+# Enable the Access check forms on local manage pages.
+CRUD_VIEWS_MANAGE_ACCESS_TRACE = True
 # form buttons (save, delete, cancel, filter apply / reset) show icon and text; merged per location, so the
 # toolbar, row and card buttons keep their package floors
 CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": "both"}

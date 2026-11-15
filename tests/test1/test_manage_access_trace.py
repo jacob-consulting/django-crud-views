@@ -1,10 +1,13 @@
 """Opt-in diagnostics preserve the hosting viewer and use a separate trace actor."""
 
 import json
+from pathlib import Path
 
 import pytest
 from django.contrib.auth.models import Group
 from django.urls import reverse
+from django.test import override_settings
+from django.template.loader import render_to_string
 from lxml import html
 
 from crud_views.lib.access_trace import AccessStep, AccessTrace
@@ -363,3 +366,83 @@ def test_selected_guardian_row_reuses_strict_counts_once(
     assert calls == [developer.pk, actor.pk]
     cell = next(c for c in response.context["manage_permissions"]["actor"]["cells"] if c["key"] == "view")
     assert cell["model"] is True and cell["object_count"] == 1
+
+
+TRACE_CLASSES = {
+    "allowed": "badge bg-success",
+    "passed": "badge bg-success",
+    "denied": "badge bg-danger",
+    "not_found": "badge bg-warning text-dark",
+    "login_redirect": "badge bg-warning text-dark",
+    "error": "badge bg-warning text-dark",
+    "no_such_route": "badge bg-warning text-dark",
+    "not_evaluated": "badge bg-warning text-dark",
+    "skipped": "badge bg-secondary",
+    "not_reached": "badge bg-secondary",
+}
+
+
+@pytest.mark.parametrize("result", list(TRACE_CLASSES))
+def test_every_result_uses_registry_and_semantic_wording(result):
+    from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES
+
+    key = "manage:trace-" + result.replace("_", "-")
+    assert DEFAULT_BUTTON_CLASSES.get(key) == TRACE_CLASSES[result]
+    trace = AccessTrace(path="/example/", outcome=result,
+                        steps=[AccessStep(1, "own_permission", result=result)]).to_dict()
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "project-trace-status"}):
+        doc = html.fromstring(render_to_string("crud_views/includes/access_trace.html", {"trace": trace}))
+    badges = doc.cssselect("[data-cv-trace-result]")
+    assert len(badges) == 2
+    assert all(badge.get("class") == "project-trace-status" for badge in badges)
+    assert all(badge.text_content().strip().lower() == result.replace("_", " ") for badge in badges)
+
+
+def test_enabled_card_form_help_disclosure_and_csp_contract(client, host, developer, enabled, monkeypatch):
+    monkeypatch.setattr(host.get_view_class("manage"), "manage_docs_base_url", "https://docs.example/manage/")
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"manage:trace-allowed": "project-allowed",
+                                                    "form:submit": "project-submit", "manage:help": "project-help"}):
+        response = submit(client, host, developer, cv_access_mode="viewset", cv_access_user=developer.username)
+    doc = html.fromstring(response.content)
+    card = doc.cssselect("#cv-manage-access-trace")[0]
+    assert card.getprevious().get("id") == "cv-manage-permissions"
+    assert card.getnext().get("id") == "cv-manage-views"
+    forms = card.cssselect("form")
+    assert len(forms) == 2 and all(form.get("method").lower() == "get" for form in forms)
+    assert [form.cssselect('input[name="cv_access_mode"]')[0].get("value") for form in forms] == ["viewset", "path"]
+    assert all(form.cssselect('input[name="cv_access_user"][required]') for form in forms)
+    assert all(form.cssselect('button[type="submit"].project-submit') for form in forms)
+    assert not card.cssselect("select, datalist, input[type=checkbox], input[type=radio]")
+    inputs = card.cssselect("input:not([type=hidden])")
+    ids = [node.get("id") for node in inputs]
+    assert len(ids) == len(set(ids)) and all(ids)
+    assert all(len(card.cssselect(f'label[for="{identity}"]')) == 1 for identity in ids)
+    assert len([el.get("id") for el in doc.cssselect("[id]")]) == len(set(el.get("id") for el in doc.cssselect("[id]")))
+    link = card.cssselect("a[data-cv-manage-help]")[0]
+    assert link.get("href") == "https://docs.example/manage/#access-check"
+    assert link.get("target") == "_blank" and link.get("rel") == "noopener"
+    assert link.get("aria-label") == "Documentation: Access check" and "new tab" in link.get("title")
+    assert link.get("class") == "project-help" and link.text_content().strip() == "?"
+    assert card.cssselect("details > summary") and not card.cssselect("details[open], summary a, summary input, summary button")
+    assert card.cssselect("summary .project-allowed")
+    for node in doc.iter():
+        assert not any(name.lower().startswith("on") or name.lower() == "style" for name in node.attrib)
+        if node.tag == "script":
+            assert node.get("src") and not (node.text or "").strip()
+    for region in doc.cssselect(".table-responsive"):
+        assert region.get("role") == "region" and region.get("tabindex") == "0" and region.get("aria-label")
+    assert all(th.get("scope") for th in doc.cssselect("th"))
+    css = Path("src/crud_views/static/crud_views/css/manage.css").read_text()
+    assert "[data-cv-manage] #cv-manage-access-trace" in css and "overflow-wrap: anywhere" in css
+
+
+def test_partial_renders_provenance_counts_and_zero_counts():
+    trace = AccessTrace(path="/path/", decided_by=3,
+                        plan=[{"kind": "ancestor_gate", "source": "ancestor_policy.read", "permission": "app.view_book"}],
+                        steps=[AccessStep(1, "list_filter", result="passed", counts={"visible": 0, "total": 5}),
+                               AccessStep(2, "list_filter", result="passed", counts={"visible": 0, "total": None}),
+                               AccessStep(3, "own_permission", result="denied", provider="model", how="no_permission",
+                                          object={"model": "app.book", "pk": "2"})]).to_dict()
+    text = html.fromstring(render_to_string("crud_views/includes/access_trace.html", {"trace": trace})).text_content()
+    for expected in ["ancestor_policy.read", "app.view_book", "sees 0 of 5 objects", "0 rows", "model", "app.book", "decided at step 3"]:
+        assert expected in text

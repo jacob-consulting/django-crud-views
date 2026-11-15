@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_safety.py::test_inherited_django_login_mixin_has_deciding_evidence -n 2 -q --junitxml=/tmp/06-34-04-login-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"1.299\" timestamp=\"2026-11-15T05:46:15.743206+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_access_trace_safety\" name=\"test_inherited_django_login_mixin_has_deciding_evidence\" time=\"0.312\"><failure message=\"AssertionError: assert None is not None&#10; +  where None = AccessTrace(path='/loginonly5b4255d4/1/tested/', route='loginonly5b4255d4-tested', view='tests.test1.test_manage_requi...ot traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced'], version=1).decided_by\">@pytest.mark.django_db\n    def test_inherited_django_login_mixin_has_deciding_evidence():\n        from django.contrib.auth.mixins import LoginRequiredMixin\n    \n        class LoginOnly(LoginRequiredMixin, DetailView):\n            pass\n    \n        def build(sfx):\n            vs = ViewSet(model=Publisher, name=\"loginonly\" + sfx)\n            register(LoginOnly, vs, get=explode)\n            return vs, [vs]\n    \n        with isolated_routes(build) as vs:\n            result = trace(_url(vs, \"tested\", pk=1), AnonymousUser())\n            assert result.outcome == \"login_redirect\"\n&gt;           assert result.decided_by is not None\nE           AssertionError: assert None is not None\nE            +  where None = AccessTrace(path='/loginonly5b4255d4/1/tested/', route='loginonly5b4255d4-tested', view='tests.test1.test_manage_requi...ot traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced'], version=1).decided_by\n\ntests/test1/test_access_trace_safety.py:205: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_inherited_django_login_mixin_has_deciding_evidence",
+  "targetFile": "tests/test1/test_access_trace_safety.py",
+  "expected": "LoginRequiredMixin refusal has a deciding actor-admission observation",
+  "actual": "login_redirect outcome has decided_by=None",
+  "reportPath": "/tmp/06-34-04-login-red.xml",
+  "runStartedAt": "2026-11-15T05:46:15.743206+00:00",
+  "reportModifiedAt": "2026-11-15T05:46:17.041662+00:00",
+  "semanticAssessment": "The real inherited LoginRequiredMixin dispatched and returned the recognized redirect; only the absent deciding evidence assertion fails."
+}

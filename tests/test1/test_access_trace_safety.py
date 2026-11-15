@@ -188,6 +188,28 @@ def test_custom_handle_no_permission_redirect_is_opaque():
 
 
 @pytest.mark.django_db
+def test_inherited_django_login_mixin_has_deciding_evidence():
+    from django.contrib.auth.mixins import LoginRequiredMixin
+
+    class LoginOnly(LoginRequiredMixin, DetailView):
+        pass
+
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="loginonly" + sfx)
+        register(LoginOnly, vs, get=explode)
+        return vs, [vs]
+
+    with isolated_routes(build) as vs:
+        result = trace(_url(vs, "tested", pk=1), AnonymousUser())
+        assert result.outcome == "login_redirect"
+        assert result.decided_by is not None
+        step = result.steps[result.decided_by - 1]
+        assert step.kind == "actor_admission"
+        assert step.source == "django.contrib.auth.mixins.AccessMixin.handle_no_permission"
+        assert step.result == "denied"
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("discard", [False, True])
 def test_plain_ancestry_login_uses_exact_response_and_no_lookup(discard):
     class Plain(ListView):

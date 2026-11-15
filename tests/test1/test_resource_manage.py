@@ -58,7 +58,8 @@ def test_resource_manage_model_query_preservation(request, fixture, client, djan
     clear_ct_cache()
     previous_permissions = vs._default_permissions
     with monkeypatch.context() as cache_patch:
-        cache_patch.setattr(vs, "_default_permissions", None)
+        # PrivateAttr lives outside __dict__; setattr teardown would delete it.
+        cache_patch.setitem(vs.__pydantic_private__, "_default_permissions", None)
         with CaptureQueriesContext(connection) as queries:
             response = client.get(reverse(vs.get_router_name("manage")))
     assert response.status_code == 200

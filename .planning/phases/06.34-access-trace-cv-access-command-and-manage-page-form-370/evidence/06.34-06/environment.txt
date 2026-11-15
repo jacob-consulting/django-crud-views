@@ -1,0 +1,3 @@
+3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]
+5.2.19
+/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py

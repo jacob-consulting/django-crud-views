@@ -278,6 +278,9 @@ tracing. Check `version` before consuming the result. Codes are stable English i
 All step fields are present, with null for inapplicable data. Plan rows use a subset of these descriptive fields
 without a step number; plans describe intended requirements, not evidence that a gate ran. Permission codenames
 may stay null for unreached requirements even when their keys/source are known.
+The stock Django permission hook reports the permission it already read from the library's cached property.
+Overridden `get_permission_required()` hooks or `permission_required` properties remain opaque: the trace
+records their gate result without evaluating another requirement source or calling the hook again.
 
 | Field | Meaning |
 |---|---|

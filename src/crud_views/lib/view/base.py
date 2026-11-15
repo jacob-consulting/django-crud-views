@@ -1227,6 +1227,16 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
             return response
         return super().dispatch(request, *args, **kwargs)
 
+    def _cv_recorded_permission(self):
+        # The stock Django hook already read our cached property during the real check.
+        # Custom hooks/properties are opaque: never evaluate a second permission source.
+        if (
+            type(self).get_permission_required is PermissionRequiredMixin.get_permission_required
+            and type(self).permission_required is CrudViewPermissionRequiredMixin.permission_required
+        ):
+            return self.__dict__.get("permission_required")
+        return None
+
     def _cv_ancestor_actor_response(self, *, protected: bool):
         """Actor admission of a nested permission-required request, before any ancestor lookup.
 
@@ -1261,7 +1271,7 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
                 "actor_admission",
                 result="passed" if allowed else "denied",
                 key=self.cv_permission,
-                permission=self.permission_required,
+                permission=self._cv_recorded_permission(),
                 provider="core",
                 source="CrudViewPermissionRequiredMixin._cv_ancestor_actor_response",
             )
@@ -1282,7 +1292,7 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
                 self,
                 "own_permission",
                 key=self.cv_permission,
-                permission=self.permission_required,
+                permission=self._cv_recorded_permission(),
                 provider="core",
                 result="passed" if allowed else "denied",
                 source="CrudViewPermissionRequiredMixin.has_permission",

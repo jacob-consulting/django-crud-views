@@ -168,3 +168,91 @@ def test_gate_signatures_unchanged():
 
     assert str(inspect.signature(CrudViewPermissionRequiredMixin.has_permission)) == "(self)"
     assert list(inspect.signature(DetailViewPermissionRequired.cv_action_enabled).parameters) == ["user", "obj"]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("early", [False, True])
+@pytest.mark.parametrize("unused_property", ["raising", "cached"])
+def test_requirement_hook_runs_once_without_reading_unused_property(
+    early, unused_property, monkeypatch, django_assert_num_queries
+):
+    from django.contrib.auth.models import AnonymousUser
+
+    from crud_views.lib.views import ListViewPermissionRequired
+
+    calls = []
+
+    def requirements(self):
+        calls.append("requirements")
+        # A dynamic requirement must not be called a second time for reporting.
+        return () if calls.count("requirements") == 1 else ("app.different_permission",)
+
+    def permission(self):
+        raise AssertionError("unused permission property was read")
+
+    def check(perms):
+        calls.append(("check", tuple(perms)))
+        return not perms
+
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="requirementhook" + sfx)
+        attrs = {"get_permission_required": requirements, "cv_permission": "custom"}
+        if unused_property == "raising":
+            attrs["permission_required"] = property(permission)
+        view = register(ListViewPermissionRequired, vs, **attrs)
+        return view, [vs]
+
+    with isolated_routes(build) as view:
+        for recorder in (None, AccessRecorder()):
+            calls.clear()
+            actor = AnonymousUser()
+            monkeypatch.setattr(actor, "has_perms", check)
+            instance = view()
+            instance.setup(RequestFactory().get("/"))
+            instance.request.user = actor
+            if unused_property == "cached":
+                instance.__dict__["permission_required"] = "app.unused_permission"
+            with recording(recorder), django_assert_num_queries(0):
+                if early:
+                    assert instance._cv_ancestor_actor_response(protected=False) is None
+                else:
+                    assert instance.has_permission()
+            assert calls == ["requirements", ("check", ())]
+            if recorder:
+                step = recorder.steps[0]
+                assert step.permission is None
+
+
+@pytest.mark.django_db
+def test_custom_requirements_keep_real_and_traced_request_outcomes(client):
+    from django.http import HttpResponse
+
+    from crud_views.lib.views import ListViewPermissionRequired
+
+    calls = []
+
+    def requirements(self):
+        calls.append(True)
+        return ()
+
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="customrequirement" + sfx)
+        register(
+            ListViewPermissionRequired,
+            vs,
+            cv_permission="custom",
+            get_permission_required=requirements,
+            get=lambda self, request: HttpResponse(),
+        )
+        return vs, [vs]
+
+    with isolated_routes(build) as vs:
+        url = _url(vs, "tested")
+        for recorder in (None, AccessRecorder()):
+            calls.clear()
+            with recording(recorder):
+                assert client.get(url).status_code == 200
+            assert calls == [True]
+        calls.clear()
+        assert trace_access(url, None).outcome == "allowed"
+        assert calls == [True]

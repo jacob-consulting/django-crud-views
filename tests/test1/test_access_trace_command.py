@@ -361,3 +361,12 @@ def test_fixed_styles_only_color_json_keys_and_result_values(command, monkeypatc
     for value, color in zip(values, [32, 31, 33, 2, 2, 2], strict=True):
         assert f'\x1b[{color}m"{value}"\x1b[0m' in output
         assert f'\x1b[36m"message"\x1b[0m: "{value}"' in output
+
+
+def test_real_help_is_translatable_plain_text(process_env):
+    result = run_process(process_env, "--help")
+    assert result.returncode == 0, result.stderr
+    assert result.stderr == ""
+    assert "Trace whether a user may open a project URL" in result.stdout
+    for option in ["--anonymous", "--as-json", "--no-color", "--force-color"]:
+        assert option in result.stdout

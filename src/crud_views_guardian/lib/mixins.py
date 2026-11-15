@@ -41,13 +41,21 @@ def _guardian_actor_response(view):
     user = view.request.user
     if not user.is_authenticated:
         behavior = getattr(view, "cv_guardian_anonymous_behavior", "redirect")
+        _record_guardian_actor(
+            view,
+            "not_found" if behavior == "404" else "denied",
+            "_guardian_actor_response",
+            f"anonymous policy: {behavior}",
+        )
         if behavior == "404":
             raise Http404
         if behavior == "403":
             raise PermissionDenied
         return view.handle_no_permission()  # redirect to login
     if _guardian_inactive_actor(user):
+        _record_guardian_actor(view, "denied", "_guardian_actor_response", "inactive actor")
         raise PermissionDenied
+    _record_guardian_actor(view, "passed", "_guardian_actor_response")
     return None
 
 
@@ -487,6 +495,15 @@ class GuardianParentPermissionMixin:
     def _guardian_validate_child_composition(self):
         error = self._guardian_child_composition_error()
         if error:
+            recorder = get_recorder()
+            if recorder is not None:
+                recorder.record(
+                    self,
+                    "validation",
+                    source="GuardianParentPermissionMixin._guardian_validate_child_composition",
+                    result="error",
+                    exception={"class": "ImproperlyConfigured", "message": error},
+                )
             raise ImproperlyConfigured(error)
 
     def has_permission(self):
@@ -509,14 +526,28 @@ class GuardianParentPermissionMixin:
             # cv_get_parent_object() hook, as the pre-06.18 dispatch did with its own lookup). Object child views
             # (detail/update/delete) carry a row and are gated in get_object() with that row, so they must NOT also
             # be gated here with the parent (that would invoke cv_action_enabled with the wrong object type).
-            if not self.cv_object and not self.cv_action_enabled(request.user, _resolved_parent(self)):
-                raise PermissionDenied
+            if not self.cv_object:
+                parent = _resolved_parent(self)
+                enabled = self.cv_action_enabled(request.user, parent)
+                recorder = get_recorder()
+                if recorder is not None:
+                    recorder.record(
+                        self,
+                        "action_state",
+                        object=_object_identity(parent),
+                        result="passed" if enabled else "denied",
+                        source="GuardianParentPermissionMixin.dispatch",
+                    )
+                if not enabled:
+                    raise PermissionDenied
             return super().dispatch(request, *args, **kwargs)
         # top-level: the guard does nothing, so Guardian's actor rules apply here
         if not request.user.is_authenticated:
             return self._guardian_deny_anonymous()
         if _guardian_inactive_actor(request.user):
+            _record_guardian_actor(self, "denied", "GuardianParentPermissionMixin.dispatch", "inactive actor")
             raise PermissionDenied  # before any None-policy, method or fragment handling (D-11)
+        _record_guardian_actor(self, "passed", "GuardianParentPermissionMixin.dispatch")
         return super().dispatch(request, *args, **kwargs)
 
     def _cv_ancestor_actor_response(self, *, protected: bool):

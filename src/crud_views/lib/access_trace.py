@@ -68,7 +68,7 @@ class AccessRecorder:
         """Record scalar facts once per owner and identical report, never cache a gate."""
         viewset = getattr(owner, "cv_viewset", None)
         if viewset is not None:
-            facts.setdefault("viewset", viewset.name)
+            facts.setdefault("viewset", getattr(viewset, "name", None))
         if isinstance(owner, type):
             # A class is not a request identity. Each classmethod report belongs
             # to a distinct invocation, even for the same class and actor.

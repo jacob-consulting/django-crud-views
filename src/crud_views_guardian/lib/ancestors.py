@@ -27,6 +27,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from crud_views.lib.access_trace import _object_identity, get_recorder
+
 if TYPE_CHECKING:
     from django.db.models import Model
 
@@ -72,10 +74,30 @@ def _guardian_ancestor_has_permission(
     viewset: GuardianViewSet, user, permission: str, obj: Model, *, view: CrudView | None
 ) -> bool:
     """Whether ``user`` satisfies the Guardian ancestor gate ``permission`` on the resolved ancestor ``obj``."""
-    from crud_views_guardian.lib.mixins import _guardian_inactive_actor
+    from crud_views_guardian.lib.mixins import _guardian_grant_how, _guardian_inactive_actor
 
+    how = None
     if not getattr(user, "is_authenticated", False) or _guardian_inactive_actor(user):
-        return False
-    if viewset.ancestor_policy.accept_global_perms and user.has_perm(permission):
-        return True
-    return _request_checker(view, user).has_perm(permission, obj)
+        allowed = False
+    elif viewset.ancestor_policy.accept_global_perms and user.has_perm(permission):
+        allowed = True
+        how = _guardian_grant_how(user, "model fallback")
+    else:
+        allowed = _request_checker(view, user).has_perm(permission, obj)
+        if allowed:
+            how = _guardian_grant_how(user, "object grant")
+    recorder = get_recorder()
+    if recorder is not None:
+        recorder.record(
+            view if view is not None else object(),
+            "object_grant",
+            viewset=viewset.name,
+            object=_object_identity(obj),
+            permission=permission,
+            provider="guardian",
+            source="ancestor_policy.accept_global_perms",
+            result="passed" if allowed else "denied",
+            how=how,
+            message=f"model fallback enabled: {viewset.ancestor_policy.accept_global_perms}",
+        )
+    return allowed

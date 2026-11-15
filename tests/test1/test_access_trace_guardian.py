@@ -436,10 +436,10 @@ def test_actor_refusal_is_deciding_before_any_lookup_or_count(nested, base, beha
     def build(sfx):
         if nested:
             ns, routed = nested_routes(sfx, base=base, cv_guardian_anonymous_behavior=behavior)
-            outer, inner, leaf, view, key = ns
+            outer, inner, leaf, _view, key = ns
             kwargs = {outer.name + "_pk": 9999, inner.name + "_pk": 9999}
         else:
-            (leaf, view), routed = local_routes(sfx, base=base, cv_guardian_anonymous_behavior=behavior)
+            (leaf, _view), routed = local_routes(sfx, base=base, cv_guardian_anonymous_behavior=behavior)
             key, kwargs = "tested", {}
         if base is GuardianDetailViewPermissionRequired:
             kwargs["pk"] = 9999
@@ -454,3 +454,77 @@ def test_actor_refusal_is_deciding_before_any_lookup_or_count(nested, base, beha
         assert deciding.kind == "actor_admission"
         assert len([s for s in result.steps if s.kind == "actor_admission"]) == 1
         assert not any(s.kind in {"ancestor_lookup", "object_lookup", "list_filter"} for s in result.steps)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("ancestor_fallback,local_fallback", [(False, True), (True, False), (True, True)])
+def test_ancestor_and_local_fallback_policies_are_independent(ancestor_fallback, local_fallback):
+    pub = Publisher.objects.create(name="outer")
+    book = Book.objects.create(title="inner", publisher=pub)
+    note = BookNote.objects.create(book=book, note="private")
+    user = _user("independent", (Book, "view"), (BookNote, "view"))
+    with isolated_routes(
+        lambda s: nested_routes(
+            s,
+            base=GuardianDetailViewPermissionRequired,
+            fallback=ancestor_fallback,
+            cv_guardian_accept_global_perms=local_fallback,
+        )
+    ) as (outer, inner, leaf, _view, key):
+        outer.assign_perm("view", user, pub)
+        result = trace_access(
+            _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk, "pk": note.pk}), user
+        )
+        assert result.outcome == ("allowed" if ancestor_fallback and local_fallback else "denied")
+        ancestor = [s for s in result.steps if s.kind == "object_grant" and s.viewset == inner.name]
+        assert len(ancestor) == 1 and ancestor[0].how == ("model fallback" if ancestor_fallback else None)
+        local = [s for s in result.steps if s.kind == "own_permission"]
+        assert len(local) == 1
+        assert local[0].result == ("not_reached" if not ancestor_fallback else "passed" if local_fallback else "denied")
+        assert local[0].how == ("model fallback" if ancestor_fallback and local_fallback else None)
+
+
+@pytest.mark.django_db
+def test_parent_state_denial_prevents_list_filter_counts():
+    pub = Publisher.objects.create(name="outer")
+    book = Book.objects.create(title="inner", publisher=pub)
+    user = _user("disabled list", superuser=True)
+    with isolated_routes(
+        lambda s: nested_routes(
+            s,
+            base=GuardianListViewPermissionRequired,
+            cv_action_enabled=classmethod(lambda *args: False),
+            get_queryset=explode,
+        )
+    ) as (outer, inner, leaf, _view, key):
+        result = trace_access(_url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk}), user)
+        assert result.outcome == "denied"
+        deciding = result.steps[result.decided_by - 1]
+        assert deciding.kind == "action_state" and deciding.object == {"model": "app.book", "pk": str(book.pk)}
+        assert not any(s.kind == "list_filter" for s in result.steps)
+
+
+@pytest.mark.django_db
+def test_repeated_object_gates_execute_again_but_identical_reports_deduplicate(monkeypatch):
+    import guardian.core
+
+    obj = Publisher.objects.create(name="repeat")
+    checker = Mock()
+    checker.has_perm.side_effect = [True, True, False]
+    monkeypatch.setattr(guardian.core, "ObjectPermissionChecker", Mock(return_value=checker))
+    user = _user("repeat")
+    base = type("LocalDetail", (GuardianObjectPermissionMixin, DetailViewPermissionRequired), {})
+    with isolated_routes(lambda s: local_routes(s, base=base)) as (_vs, view):
+        instance = view()
+        request = RequestFactory().get("/")
+        request.user = user
+        instance.setup(request, pk=obj.pk)
+        recorder = AccessRecorder()
+        with recording(recorder):
+            assert instance.get_object().pk == obj.pk
+            assert instance.get_object().pk == obj.pk
+            with pytest.raises(PermissionDenied):
+                instance.get_object()
+        assert checker.has_perm.call_count == 3
+        assert [s.result for s in recorder.steps if s.kind == "own_permission"] == ["passed", "denied"]
+        assert len([s for s in recorder.steps if s.kind == "action_state"]) == 1

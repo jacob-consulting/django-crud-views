@@ -77,6 +77,8 @@ def test_planned_and_reached_ancestor_gates(rows, cascade, outer_none, inner_non
         assert later and all(s.result == "not_reached" for s in later)
         assert all(s.permission is None for s in later)
         assert any(s.kind == "own_permission" and s.key == "view" for s in later)
+        own = next(s for s in later if s.kind == "own_permission")
+        assert own.object == {"model": "app.booknote", "pk": str(rows[2].pk)}
         assert any(s.kind == "action_state" for s in later)
 
 

@@ -1,0 +1,218 @@
+bringing up nodes...
+bringing up nodes...
+
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+______ test_enabled_help_anchor_and_setting_contract[cv_guardian_author] _______
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_enabled_help_anchor_and_setting_contract[cv_guardian_author]>>
+fixture = 'cv_guardian_author'
+client = <django.test.client.Client object at 0x7d4b384a0fe0>
+developer = <User: docs-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d4b384a18b0>
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    def test_enabled_help_anchor_and_setting_contract(request, fixture, client, developer, monkeypatch):
+        host = request.getfixturevalue(fixture)
+        assert CrudViewsSettings.model_fields["manage_access_trace"].default is False
+>       assert "| CRUD_VIEWS_MANAGE_ACCESS_TRACE |" in reference("settings")
+E       AssertionError: assert '| CRUD_VIEWS_MANAGE_ACCESS_TRACE |' in '# Settings\n\n## Basic settings\n\nAll keys below are flat, module-level Django settings (set them in `settings.py`),...estarts.\n- The first access requires migrations to have run (the `Permission` and `ContentType` tables must exist).\n'
+E        +  where '# Settings\n\n## Basic settings\n\nAll keys below are flat, module-level Django settings (set them in `settings.py`),...estarts.\n- The first access requires migrations to have run (the `Permission` and `ContentType` tables must exist).\n' = reference('settings')
+
+tests/test1/test_access_trace_docs.py:75: AssertionError
+___________________ test_documented_schema_and_command_codes ___________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cv_author = ViewSet(author), developer = <User: docs-developer>
+
+    @pytest.mark.django_db
+    def test_documented_schema_and_command_codes(cv_author, developer):
+        out, err = StringIO(), StringIO()
+        path = reverse(cv_author.get_router_name("manage"))
+        call_command("cv_access", path, developer.username, as_json=True, no_color=True, stdout=out, stderr=err)
+        data = json.loads(out.getvalue())
+        assert data == trace_access(path, developer).to_dict()
+        assert not err.getvalue() and "\x1b" not in out.getvalue()
+        assert data["version"] == 1
+>       assert set(re.findall(r"^\| `(\w+)` \|", section("Version 1 document"), re.M)) == set(data)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_access_trace_docs.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+title = 'Version 1 document'
+
+    def section(title):
+>       return reference().split(f"### {title}\n", 1)[1].split("\n### ", 1)[0]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_access_trace_docs.py:33: IndexError
+___________ test_enabled_help_anchor_and_setting_contract[cv_author] ___________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_enabled_help_anchor_and_setting_contract[cv_author]>>
+fixture = 'cv_author'
+client = <django.test.client.Client object at 0x765b78df70e0>
+developer = <User: docs-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x765b78df6f00>
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    def test_enabled_help_anchor_and_setting_contract(request, fixture, client, developer, monkeypatch):
+        host = request.getfixturevalue(fixture)
+        assert CrudViewsSettings.model_fields["manage_access_trace"].default is False
+>       assert "| CRUD_VIEWS_MANAGE_ACCESS_TRACE |" in reference("settings")
+E       AssertionError: assert '| CRUD_VIEWS_MANAGE_ACCESS_TRACE |' in '# Settings\n\n## Basic settings\n\nAll keys below are flat, module-level Django settings (set them in `settings.py`),...estarts.\n- The first access requires migrations to have run (the `Permission` and `ContentType` tables must exist).\n'
+E        +  where '# Settings\n\n## Basic settings\n\nAll keys below are flat, module-level Django settings (set them in `settings.py`),...estarts.\n- The first access requires migrations to have run (the `Permission` and `ContentType` tables must exist).\n' = reference('settings')
+
+tests/test1/test_access_trace_docs.py:75: AssertionError
+________ test_documented_custom_boundary_has_unknown_inner_origin[True] ________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+inner_denies = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("inner_denies", [True, False])
+    def test_documented_custom_boundary_has_unknown_inner_origin(inner_denies):
+        calls = []
+    
+        class Inner(DetailViewPermissionRequired):
+            def has_permission(self):
+                calls.append("inner")
+                return not inner_denies
+    
+        class Outer(Inner):
+            def has_permission(self):
+                calls.append("outer")
+                result = super().has_permission()
+                return result if inner_denies else False
+    
+        def build(suffix):
+            vs = ViewSet(model=Publisher, name="docboundary" + suffix)
+            register(Outer, vs)
+            return vs, [vs]
+    
+        with isolated_routes(build) as vs:
+            trace = trace_access(_url(vs, "tested", pk=1), _user("boundary"))
+        decision = trace.steps[trace.decided_by - 1]
+        assert trace.outcome == "denied" and calls == ["outer", "inner"]
+        assert decision.kind == "custom_gate" and decision.how == "observed_boundary"
+        assert decision.source == f"{Outer.__module__}.{Outer.__qualname__}.has_permission"
+        assert "inner" in decision.message and "unknown" in decision.message
+>       text = section("Custom method boundaries")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_access_trace_docs.py:117: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+title = 'Custom method boundaries'
+
+    def section(title):
+>       return reference().split(f"### {title}\n", 1)[1].split("\n### ", 1)[0]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_access_trace_docs.py:33: IndexError
+___________ test_documented_counts_are_before_context_parent_scoping ___________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+client = <django.test.client.Client object at 0x765b78df79e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x765b78df6c30>
+
+    @pytest.mark.django_db
+    def test_documented_counts_are_before_context_parent_scoping(client, monkeypatch):
+        parents = [Publisher.objects.create(name=str(i)) for i in range(2)]
+        books = [Book.objects.create(title=str(i), publisher=parents[i % 2]) for i in range(4)]
+        user = _user("count docs")
+    
+        def build(suffix):
+            parent = GuardianViewSet(model=Publisher, name="docparent" + suffix)
+            child = GuardianViewSet(model=Book, name="docchild" + suffix, parent=ParentViewSet(name=parent.name, attribute="publisher"))
+            register(GuardianListViewPermissionRequired, child, cv_key="list")
+            return (parent, child), [parent, child]
+    
+        with isolated_routes(build) as (parent, child):
+            parent.assign_perm("view", user, parents[0])
+            for book in books[:3]:
+                child.assign_perm("view", user, book)
+            original = GuardianViewSet.get_queryset
+            monkeypatch.setattr(GuardianViewSet, "get_queryset", lambda self, view: Book.objects.all() if self is child else original(self, view))
+            path = _url(child, "list", **{parent.name + "_pk": parents[0].pk})
+            trace = trace_access(path, user)
+            assert [s.counts for s in trace.steps if s.kind == "list_filter"] == [{"total": 4, "visible": 3}]
+            client.force_login(user)
+            response = client.get(path)
+            assert response.status_code == 200
+            assert {obj.pk for obj in response.context["object_list"]} == {books[0].pk, books[2].pk}
+>       text = section("List count boundary")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_access_trace_docs.py:147: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+title = 'List count boundary'
+
+    def section(title):
+>       return reference().split(f"### {title}\n", 1)[1].split("\n### ", 1)[0]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_access_trace_docs.py:33: IndexError
+_______ test_documented_custom_boundary_has_unknown_inner_origin[False] ________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+inner_denies = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("inner_denies", [True, False])
+    def test_documented_custom_boundary_has_unknown_inner_origin(inner_denies):
+        calls = []
+    
+        class Inner(DetailViewPermissionRequired):
+            def has_permission(self):
+                calls.append("inner")
+                return not inner_denies
+    
+        class Outer(Inner):
+            def has_permission(self):
+                calls.append("outer")
+                result = super().has_permission()
+                return result if inner_denies else False
+    
+        def build(suffix):
+            vs = ViewSet(model=Publisher, name="docboundary" + suffix)
+            register(Outer, vs)
+            return vs, [vs]
+    
+        with isolated_routes(build) as vs:
+            trace = trace_access(_url(vs, "tested", pk=1), _user("boundary"))
+        decision = trace.steps[trace.decided_by - 1]
+        assert trace.outcome == "denied" and calls == ["outer", "inner"]
+        assert decision.kind == "custom_gate" and decision.how == "observed_boundary"
+        assert decision.source == f"{Outer.__module__}.{Outer.__qualname__}.has_permission"
+        assert "inner" in decision.message and "unknown" in decision.message
+>       text = section("Custom method boundaries")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_access_trace_docs.py:117: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+title = 'Custom method boundaries'
+
+    def section(title):
+>       return reference().split(f"### {title}\n", 1)[1].split("\n### ", 1)[0]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_access_trace_docs.py:33: IndexError
+=========================== short test summary info ============================
+FAILED tests/test1/test_access_trace_docs.py::test_enabled_help_anchor_and_setting_contract[cv_guardian_author]
+FAILED tests/test1/test_access_trace_docs.py::test_documented_schema_and_command_codes
+FAILED tests/test1/test_access_trace_docs.py::test_enabled_help_anchor_and_setting_contract[cv_author]
+FAILED tests/test1/test_access_trace_docs.py::test_documented_custom_boundary_has_unknown_inner_origin[True]
+FAILED tests/test1/test_access_trace_docs.py::test_documented_counts_are_before_context_parent_scoping
+FAILED tests/test1/test_access_trace_docs.py::test_documented_custom_boundary_has_unknown_inner_origin[False]
+6 failed in 1.87s

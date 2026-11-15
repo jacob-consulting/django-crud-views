@@ -1,0 +1,705 @@
+bringing up nodes...
+bringing up nodes...
+
+FFF.FF.FFFFF..FF..........F............................................. [ 22%]
+................................................................F....... [ 44%]
+.....F.........F................................FFF..................... [ 67%]
+...............................................................F........ [ 89%]
+..................................                                       [100%]
+=================================== FAILURES ===================================
+_ test_rendered_public_surface_matches_documentation[viewset-False-cv_author] __
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_rendered_public_surface_matches_documentation[viewset-False-cv_author]>>
+fixture = 'cv_author'
+client = <django.test.client.Client object at 0x75b27b67a600>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b67b290>
+enabled = False, mode = 'viewset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    @pytest.mark.parametrize("enabled", [False, True])
+    @pytest.mark.parametrize("mode", ["viewset", "path"])
+    def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", enabled)
+        client.force_login(developer)
+        response = client.get(reverse(viewset.get_router_name("manage")), {
+            "cv_access_mode": mode, "cv_access_user": developer.username, "cv_access_path": "/missing/"
+        })
+        assert response.status_code == 200
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
+        documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
+        if fixture == "cv_author":
+            documented_context.remove("manage_guardian")
+>       assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
+E       AssertionError: assert {'manage_acce...erarchy', ...} == {'manage_ance...issions', ...}
+E         
+E         Extra items in the left set:
+E         'manage_access_trace'
+E         Use -v to get more diff
+
+tests/test1/test_manage_release.py:48: AssertionError
+_ test_rendered_public_surface_matches_documentation[viewset-False-cv_guardian_author] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_rendered_public_surface_matches_documentation[viewset-False-cv_guardian_author]>>
+fixture = 'cv_guardian_author'
+client = <django.test.client.Client object at 0x75b27b6287d0>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b789b20>
+enabled = False, mode = 'viewset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    @pytest.mark.parametrize("enabled", [False, True])
+    @pytest.mark.parametrize("mode", ["viewset", "path"])
+    def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", enabled)
+        client.force_login(developer)
+        response = client.get(reverse(viewset.get_router_name("manage")), {
+            "cv_access_mode": mode, "cv_access_user": developer.username, "cv_access_path": "/missing/"
+        })
+        assert response.status_code == 200
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
+        documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
+        if fixture == "cv_author":
+            documented_context.remove("manage_guardian")
+>       assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
+E       AssertionError: assert {'manage_acce...uardian', ...} == {'manage_ance...erarchy', ...}
+E         
+E         Extra items in the left set:
+E         'manage_access_trace'
+E         Use -v to get more diff
+
+tests/test1/test_manage_release.py:48: AssertionError
+__ test_rendered_public_surface_matches_documentation[viewset-True-cv_author] __
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_rendered_public_surface_matches_documentation[viewset-True-cv_author]>>
+fixture = 'cv_author'
+client = <django.test.client.Client object at 0x75b27b45bb00>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b67af30>
+enabled = True, mode = 'viewset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    @pytest.mark.parametrize("enabled", [False, True])
+    @pytest.mark.parametrize("mode", ["viewset", "path"])
+    def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", enabled)
+        client.force_login(developer)
+        response = client.get(reverse(viewset.get_router_name("manage")), {
+            "cv_access_mode": mode, "cv_access_user": developer.username, "cv_access_path": "/missing/"
+        })
+        assert response.status_code == 200
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
+        documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
+        if fixture == "cv_author":
+            documented_context.remove("manage_guardian")
+>       assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
+E       AssertionError: assert {'manage_acce...erarchy', ...} == {'manage_ance...issions', ...}
+E         
+E         Extra items in the left set:
+E         'manage_access_trace'
+E         Use -v to get more diff
+
+tests/test1/test_manage_release.py:48: AssertionError
+_ test_rendered_public_surface_matches_documentation[viewset-True-cv_guardian_author] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_rendered_public_surface_matches_documentation[viewset-True-cv_guardian_author]>>
+fixture = 'cv_guardian_author'
+client = <django.test.client.Client object at 0x75b27b4c34d0>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b4d3920>
+enabled = True, mode = 'viewset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    @pytest.mark.parametrize("enabled", [False, True])
+    @pytest.mark.parametrize("mode", ["viewset", "path"])
+    def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", enabled)
+        client.force_login(developer)
+        response = client.get(reverse(viewset.get_router_name("manage")), {
+            "cv_access_mode": mode, "cv_access_user": developer.username, "cv_access_path": "/missing/"
+        })
+        assert response.status_code == 200
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
+        documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
+        if fixture == "cv_author":
+            documented_context.remove("manage_guardian")
+>       assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
+E       AssertionError: assert {'manage_acce...uardian', ...} == {'manage_ance...erarchy', ...}
+E         
+E         Extra items in the left set:
+E         'manage_access_trace'
+E         Use -v to get more diff
+
+tests/test1/test_manage_release.py:48: AssertionError
+___ test_rendered_public_surface_matches_documentation[path-False-cv_author] ___
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_rendered_public_surface_matches_documentation[path-False-cv_author]>>
+fixture = 'cv_author'
+client = <django.test.client.Client object at 0x75b27b4c2180>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b4c2990>
+enabled = False, mode = 'path'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    @pytest.mark.parametrize("enabled", [False, True])
+    @pytest.mark.parametrize("mode", ["viewset", "path"])
+    def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", enabled)
+        client.force_login(developer)
+        response = client.get(reverse(viewset.get_router_name("manage")), {
+            "cv_access_mode": mode, "cv_access_user": developer.username, "cv_access_path": "/missing/"
+        })
+        assert response.status_code == 200
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
+        documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
+        if fixture == "cv_author":
+            documented_context.remove("manage_guardian")
+>       assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
+E       AssertionError: assert {'manage_acce...erarchy', ...} == {'manage_ance...issions', ...}
+E         
+E         Extra items in the left set:
+E         'manage_access_trace'
+E         Use -v to get more diff
+
+tests/test1/test_manage_release.py:48: AssertionError
+_ test_rendered_public_surface_matches_documentation[path-False-cv_guardian_author] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_rendered_public_surface_matches_documentation[path-False-cv_guardian_author]>>
+fixture = 'cv_guardian_author'
+client = <django.test.client.Client object at 0x75b27b473ef0>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b4e5c40>
+enabled = False, mode = 'path'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    @pytest.mark.parametrize("enabled", [False, True])
+    @pytest.mark.parametrize("mode", ["viewset", "path"])
+    def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", enabled)
+        client.force_login(developer)
+        response = client.get(reverse(viewset.get_router_name("manage")), {
+            "cv_access_mode": mode, "cv_access_user": developer.username, "cv_access_path": "/missing/"
+        })
+        assert response.status_code == 200
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
+        documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
+        if fixture == "cv_author":
+            documented_context.remove("manage_guardian")
+>       assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
+E       AssertionError: assert {'manage_acce...uardian', ...} == {'manage_ance...erarchy', ...}
+E         
+E         Extra items in the left set:
+E         'manage_access_trace'
+E         Use -v to get more diff
+
+tests/test1/test_manage_release.py:48: AssertionError
+___ test_rendered_public_surface_matches_documentation[path-True-cv_author] ____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_rendered_public_surface_matches_documentation[path-True-cv_author]>>
+fixture = 'cv_author'
+client = <django.test.client.Client object at 0x75b27b34dac0>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b34d250>
+enabled = True, mode = 'path'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    @pytest.mark.parametrize("enabled", [False, True])
+    @pytest.mark.parametrize("mode", ["viewset", "path"])
+    def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", enabled)
+        client.force_login(developer)
+        response = client.get(reverse(viewset.get_router_name("manage")), {
+            "cv_access_mode": mode, "cv_access_user": developer.username, "cv_access_path": "/missing/"
+        })
+        assert response.status_code == 200
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
+        documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
+        if fixture == "cv_author":
+            documented_context.remove("manage_guardian")
+>       assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
+E       AssertionError: assert {'manage_acce...erarchy', ...} == {'manage_ance...issions', ...}
+E         
+E         Extra items in the left set:
+E         'manage_access_trace'
+E         Use -v to get more diff
+
+tests/test1/test_manage_release.py:48: AssertionError
+_ test_rendered_public_surface_matches_documentation[path-True-cv_guardian_author] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_rendered_public_surface_matches_documentation[path-True-cv_guardian_author]>>
+fixture = 'cv_guardian_author'
+client = <django.test.client.Client object at 0x75b27b3315e0>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b331b50>
+enabled = True, mode = 'path'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    @pytest.mark.parametrize("enabled", [False, True])
+    @pytest.mark.parametrize("mode", ["viewset", "path"])
+    def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", enabled)
+        client.force_login(developer)
+        response = client.get(reverse(viewset.get_router_name("manage")), {
+            "cv_access_mode": mode, "cv_access_user": developer.username, "cv_access_path": "/missing/"
+        })
+        assert response.status_code == 200
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
+        documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
+        if fixture == "cv_author":
+            documented_context.remove("manage_guardian")
+>       assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
+E       AssertionError: assert {'manage_acce...uardian', ...} == {'manage_ance...erarchy', ...}
+E         
+E         Extra items in the left set:
+E         'manage_access_trace'
+E         Use -v to get more diff
+
+tests/test1/test_manage_release.py:48: AssertionError
+_______ test_access_builder_public_signature_without_request[cv_author] ________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_access_builder_public_signature_without_request[cv_author]>>
+fixture = 'cv_author', developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b330f50>
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    def test_access_builder_public_signature_without_request(request, fixture, developer, monkeypatch):
+        viewset = request.getfixturevalue(fixture)
+        instance = viewset.get_view_class("manage")()
+        assert not hasattr(instance, "request")
+        signature = inspect.signature(ManageView.get_manage_access_trace)
+        assert str(signature) == "(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)"
+>       assert str(signature) in (ROOT / "docs/reference/theme.md").read_text()
+E       AssertionError: assert '(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)' in '# Custom themes (bring your own theme)\n\ncrud_views ships one theme, **bootstrap5** (the `crud_views` app). The look...rship; browser/translation\nacceptance must verify the rendered locale rather than infer it from a catalog filename.\n'
+E        +  where '(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)' = str(<Signature (self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)>)
+E        +  and   '# Custom themes (bring your own theme)\n\ncrud_views ships one theme, **bootstrap5** (the `crud_views` app). The look...rship; browser/translation\nacceptance must verify the rendered locale rather than infer it from a catalog filename.\n' = read_text()
+E        +    where read_text = (PosixPath('/home/alex/projects/alex/django-crud-views') / 'docs/reference/theme.md').read_text
+
+tests/test1/test_manage_release.py:89: AssertionError
+___ test_access_builder_public_signature_without_request[cv_guardian_author] ___
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_access_builder_public_signature_without_request[cv_guardian_author]>>
+fixture = 'cv_guardian_author', developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b3bee10>
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    def test_access_builder_public_signature_without_request(request, fixture, developer, monkeypatch):
+        viewset = request.getfixturevalue(fixture)
+        instance = viewset.get_view_class("manage")()
+        assert not hasattr(instance, "request")
+        signature = inspect.signature(ManageView.get_manage_access_trace)
+        assert str(signature) == "(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)"
+>       assert str(signature) in (ROOT / "docs/reference/theme.md").read_text()
+E       AssertionError: assert '(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)' in '# Custom themes (bring your own theme)\n\ncrud_views ships one theme, **bootstrap5** (the `crud_views` app). The look...rship; browser/translation\nacceptance must verify the rendered locale rather than infer it from a catalog filename.\n'
+E        +  where '(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)' = str(<Signature (self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)>)
+E        +  and   '# Custom themes (bring your own theme)\n\ncrud_views ships one theme, **bootstrap5** (the `crud_views` app). The look...rship; browser/translation\nacceptance must verify the rendered locale rather than infer it from a catalog filename.\n' = read_text()
+E        +    where read_text = (PosixPath('/home/alex/projects/alex/django-crud-views') / 'docs/reference/theme.md').read_text
+
+tests/test1/test_manage_release.py:89: AssertionError
+______________ test_shared_trace_partial_theme_recipe[cv_author] _______________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_shared_trace_partial_theme_recipe[cv_author]>>
+fixture = 'cv_author'
+client = <django.test.client.Client object at 0x75b27b3bf2f0>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b3bf4a0>
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    def test_shared_trace_partial_theme_recipe(request, fixture, client, developer, monkeypatch):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", True)
+>       published = recipe(ROOT / "docs/reference/theme.md", "### Shared access trace partial")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_manage_release.py:132: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/theme.md')
+section = '### Shared access trace partial', language = 'django'
+
+    def recipe(path, section, language="django"):
+        text = path.read_text()
+>       assert text.count(section) == 1, f"Missing or duplicated section: {section}"
+E       AssertionError: Missing or duplicated section: ### Shared access trace partial
+E       assert 0 == 1
+E        +  where 0 = <built-in method count of str object at 0x3a49d160>('### Shared access trace partial')
+E        +    where <built-in method count of str object at 0x3a49d160> = '# Custom themes (bring your own theme)\n\ncrud_views ships one theme, **bootstrap5** (the `crud_views` app). The look...rship; browser/translation\nacceptance must verify the rendered locale rather than infer it from a catalog filename.\n'.count
+
+tests/test1/test_heading_docs.py:37: AssertionError
+__________ test_shared_trace_partial_theme_recipe[cv_guardian_author] __________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_shared_trace_partial_theme_recipe[cv_guardian_author]>>
+fixture = 'cv_guardian_author'
+client = <django.test.client.Client object at 0x75b27b34e330>
+developer = <User: release-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27b34f0b0>
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    def test_shared_trace_partial_theme_recipe(request, fixture, client, developer, monkeypatch):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", True)
+>       published = recipe(ROOT / "docs/reference/theme.md", "### Shared access trace partial")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_manage_release.py:132: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/theme.md')
+section = '### Shared access trace partial', language = 'django'
+
+    def recipe(path, section, language="django"):
+        text = path.read_text()
+>       assert text.count(section) == 1, f"Missing or duplicated section: {section}"
+E       AssertionError: Missing or duplicated section: ### Shared access trace partial
+E       assert 0 == 1
+E        +  where 0 = <built-in method count of str object at 0x3a4ecb70>('### Shared access trace partial')
+E        +    where <built-in method count of str object at 0x3a4ecb70> = '# Custom themes (bring your own theme)\n\ncrud_views ships one theme, **bootstrap5** (the `crud_views` app). The look...rship; browser/translation\nacceptance must verify the rendered locale rather than infer it from a catalog filename.\n'.count
+
+tests/test1/test_heading_docs.py:37: AssertionError
+____________ test_manage_public_inventory_matches_rendered_context _____________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+client = <django.test.client.Client object at 0x75b27b2591c0>
+cv_guardian_author = ViewSet(guardian_author)
+developer = <User: docs-developer>
+
+    @pytest.mark.django_db
+    def test_manage_public_inventory_matches_rendered_context(client, cv_guardian_author, developer):
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        template = (ROOT / "src/crud_views/templates/crud_views/view_manage.html").read_text()
+        blocks = set(re.findall(r"{% block (\w+) %}", template)) - {"cv_content"}
+        documented_blocks = set(re.findall(r"^\| `(\w+)` \|", text.split("### Prepared manage context", 1)[0], re.M))
+>       assert documented_blocks == blocks
+E       AssertionError: assert {'ancestor_po...ntation', ...} == {'ancestor_po...erarchy', ...}
+E         
+E         Extra items in the right set:
+E         'manage_access_trace'
+E         Use -v to get more diff
+
+tests/test1/test_manage_docs.py:96: AssertionError
+________________________ test_default_table_is_complete ________________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+    def test_default_table_is_complete():
+        assert len(EXPECTED_KEYS) == 111
+>       assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
+E       AssertionError: assert {'alert:close...success', ...} == {'alert:close...success', ...}
+E         
+E         Extra items in the left set:
+E         'manage:trace-not-reached'
+E         'manage:trace-skipped'
+E         'manage:trace-denied'
+E         'manage:trace-passed'
+E         'manage:trace-error'...
+E         
+E         ...Full output truncated, use '-vv' to show
+
+tests/test1/test_button_classes.py:129: AssertionError
+_________________ test_manage_registry_defaults_and_overrides __________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+    def test_manage_registry_defaults_and_overrides():
+        defaults = {
+            "badge-model": "badge bg-secondary",
+            "badge-objects": "badge bg-light text-dark border",
+            "badge-permission": "badge bg-primary",
+            "badge-group": "badge cv-manage-badge-group",
+            "badge-policy-global": "badge bg-success",
+            "badge-policy-strict": "badge bg-success",
+            "badge-policy-na": "badge bg-secondary",
+            "row-default": "cv-manage-default",
+            "help": "btn btn-sm btn-outline-secondary",
+        }
+>       assert {key: value for key, value in DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")} == {
+            f"manage:{key}": value for key, value in defaults.items()
+        }
+E       AssertionError: assert {'manage:badg...e-group', ...} == {'manage:badg...e-group', ...}
+E         
+E         Omitting 9 identical items, use -vv to show
+E         Left contains 10 more items:
+E         {'manage:trace-allowed': 'badge bg-success',
+E          'manage:trace-denied': 'badge bg-danger',
+E          'manage:trace-error': 'badge bg-warning text-dark',
+E          'manage:trace-login-redirect': 'badge bg-warning text-dark',...
+E         
+E         ...Full output truncated, use '-vv' to show
+
+tests/test1/test_button_classes.py:155: AssertionError
+_____________________ test_workflow_app_defaults_lifecycle _____________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75b27acf15e0>
+
+    def test_workflow_app_defaults_lifecycle(monkeypatch):
+        from crud_views.apps import CrudViewsConfig
+        from crud_views_workflow.apps import CrudViewsWorkflowConfig
+    
+        core = dict(DEFAULT_BUTTON_CLASSES)
+        workflow = dict(CrudViewsWorkflowConfig.crud_views_button_class_defaults)
+>       assert len(core) == 111
+E       AssertionError: assert 121 == 111
+E        +  where 121 = len({'heading:size-1': 'h1', 'heading:size-2': 'h2', 'heading:size-3': 'h3', 'heading:size-4': 'h4', ...})
+
+tests/test1/test_button_classes.py:218: AssertionError
+________________ test_workflow_app_defaults_fresh_setup[False] _________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+workflow_first = False
+
+    @pytest.mark.parametrize("workflow_first", [False, True])
+    def test_workflow_app_defaults_fresh_setup(workflow_first):
+        # Isolate model registration and ready ordering from the already-populated pytest registry.
+        source = """
+    import sys
+    from types import ModuleType
+    import django
+    from django.apps import AppConfig
+    from django.conf import settings
+    
+    theme = ModuleType("badge_theme_probe")
+    theme.__file__ = "badge_theme_probe.py"
+    sys.modules[theme.__name__] = theme
+    seen = []
+    class ThemeConfig(AppConfig):
+        name = "badge_theme_probe"
+        path = "."
+        def ready(self):
+            assert len(bc._get_default_button_classes()) == 129
+            bc.register_button_classes({"workflow:badge-info": "theme-info"})
+            seen.append(bc.get_button_class("workflow", "badge-info"))
+    theme.ThemeConfig = ThemeConfig
+    providers = ["crud_views_workflow", "badge_theme_probe.ThemeConfig"]
+    if not WORKFLOW_FIRST:
+        providers.reverse()
+    settings.configure(
+        SECRET_KEY="probe",
+        INSTALLED_APPS=["django.contrib.auth", "django.contrib.contenttypes", "crud_views", *providers],
+        CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"},
+    )
+    from crud_views.lib import button_classes as bc
+    assert len(bc.DEFAULT_BUTTON_CLASSES) == 111
+    assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
+    django.setup()
+    assert seen == ["theme-info"]
+    assert len(bc._get_default_button_classes()) == 129
+    assert bc.get_button_class("workflow", "badge-info") == "theme-info"
+    assert bc.get_button_class("workflow", "badge-light") == "project-light"
+    """
+        result = subprocess.run(
+            [sys.executable, "-c", f"WORKFLOW_FIRST = {workflow_first!r}\n" + source],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 30, in <module>
+E         AssertionError
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python', '-c', 'WORK...e=1, stdout='', stderr='Traceback (most recent call last):\n  File "<string>", line 30, in <module>\nAssertionError\n').returncode
+
+tests/test1/test_button_classes.py:379: AssertionError
+_________________ test_workflow_app_defaults_fresh_setup[True] _________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+workflow_first = True
+
+    @pytest.mark.parametrize("workflow_first", [False, True])
+    def test_workflow_app_defaults_fresh_setup(workflow_first):
+        # Isolate model registration and ready ordering from the already-populated pytest registry.
+        source = """
+    import sys
+    from types import ModuleType
+    import django
+    from django.apps import AppConfig
+    from django.conf import settings
+    
+    theme = ModuleType("badge_theme_probe")
+    theme.__file__ = "badge_theme_probe.py"
+    sys.modules[theme.__name__] = theme
+    seen = []
+    class ThemeConfig(AppConfig):
+        name = "badge_theme_probe"
+        path = "."
+        def ready(self):
+            assert len(bc._get_default_button_classes()) == 129
+            bc.register_button_classes({"workflow:badge-info": "theme-info"})
+            seen.append(bc.get_button_class("workflow", "badge-info"))
+    theme.ThemeConfig = ThemeConfig
+    providers = ["crud_views_workflow", "badge_theme_probe.ThemeConfig"]
+    if not WORKFLOW_FIRST:
+        providers.reverse()
+    settings.configure(
+        SECRET_KEY="probe",
+        INSTALLED_APPS=["django.contrib.auth", "django.contrib.contenttypes", "crud_views", *providers],
+        CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"},
+    )
+    from crud_views.lib import button_classes as bc
+    assert len(bc.DEFAULT_BUTTON_CLASSES) == 111
+    assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
+    django.setup()
+    assert seen == ["theme-info"]
+    assert len(bc._get_default_button_classes()) == 129
+    assert bc.get_button_class("workflow", "badge-info") == "theme-info"
+    assert bc.get_button_class("workflow", "badge-light") == "project-light"
+    """
+        result = subprocess.run(
+            [sys.executable, "-c", f"WORKFLOW_FIRST = {workflow_first!r}\n" + source],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 30, in <module>
+E         AssertionError
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python', '-c', 'WORK...e=1, stdout='', stderr='Traceback (most recent call last):\n  File "<string>", line 30, in <module>\nAssertionError\n').returncode
+
+tests/test1/test_button_classes.py:379: AssertionError
+_______________ test_documented_default_key_count_matches_table ________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+    def test_documented_default_key_count_matches_table():
+        document = (Path(__file__).resolve().parents[2] / "docs/reference/buttons.md").read_text()
+        counts = re.findall(r"The default table has (\d+) keys\b", document)
+        assert len(counts) == 1, "Expected exactly one canonical default-key count sentence"
+>       assert int(counts[0]) == len(DEFAULT_BUTTON_CLASSES)
+E       AssertionError: assert 111 == 121
+E        +  where 111 = int('111')
+E        +  and   121 = len({'heading:size-1': 'h1', 'heading:size-2': 'h2', 'heading:size-3': 'h3', 'heading:size-4': 'h4', ...})
+
+tests/test1/test_button_classes.py:386: AssertionError
+_______________________ test_workflow_presentation_docs ________________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+    def test_workflow_presentation_docs():
+        from django.db import models
+    
+        from crud_views_workflow.apps import CrudViewsWorkflowConfig
+        from crud_views_workflow.lib import WorkflowModelMixin
+    
+        class States(models.TextChoices):
+            SUCCESS = "success", '<img src=x onerror="bad"> & success'
+            PURPLE = "purple", "Purple"
+            WARNING = "warning", "Warning"
+            DARK = "dark", "Dark"
+            UNMAPPED = "unmapped", "Unmapped"
+    
+        class Example(WorkflowModelMixin):
+            STATE_CHOICES = States
+            STATE_BADGES = {state: state.value for state in States if state != States.UNMAPPED}
+    
+        model = Example()
+    
+        def badge(state):
+            return html.fromstring(model.get_state_badge(state))
+    
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={}):
+            assert badge(States.PURPLE).get("class") == "badge rounded-pill text-bg-purple"
+            assert badge(States.UNMAPPED).get("class") == "badge rounded-pill text-bg-info"
+            _python("### Optional workflow classes")["ready"](None)
+            assert bc.get_button_class("workflow", "transition-success") == "btn btn-success-lt"
+            assert badge(States.SUCCESS).get("class") == "badge bg-success-lt"
+            assert badge(States.PURPLE).get("class") == "badge custom-purple"
+            assert badge(States.UNMAPPED).get("class") == "badge bg-info-lt"
+            overrides = _python("### Project workflow classes", WORKFLOW)["CRUD_VIEWS_BUTTON_CLASSES"]
+            with override_settings(CRUD_VIEWS_BUTTON_CLASSES=overrides):
+                assert bc.get_button_class("workflow", "transition-success") == "btn project-confirm"
+                assert bc.get_button_class("workflow", "transition-danger") == "btn project-cancel"
+                for state, classes in (
+                    (States.SUCCESS, "badge project-success"),
+                    (States.PURPLE, "badge project-purple"),
+                    (States.WARNING, ""),
+                    (States.DARK, ""),
+                ):
+                    node = badge(state)
+                    assert node.get("class") == classes
+                    assert node.text_content() == state.label
+                    assert len(node) == 0
+                assert bc.get_button_class("workflow", "history-table") == "table table-striped"
+            assert badge(States.SUCCESS).get("class") == "badge bg-success-lt"
+    
+        text = BUTTONS.read_text()
+        section = text.split("### Optional workflow defaults\n", 1)[1].split("\n### ", 1)[0]
+        documented = dict(re.findall(r"^\| `(workflow:[^`]+)` \| `([^`]+)` \|$", section, re.M))
+        assert documented == CrudViewsWorkflowConfig.crud_views_button_class_defaults
+        manage_defaults = dict(re.findall(r"^\| `(manage:[^`]+)` \| `([^`]+)` \|$", text, re.M))
+>       assert manage_defaults == {
+            key: value for key, value in bc.DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")
+        }
+E       AssertionError: assert {'manage:badg...e-group', ...} == {'manage:badg...e-group', ...}
+E         
+E         Omitting 9 identical items, use -vv to show
+E         Right contains 10 more items:
+E         {'manage:trace-allowed': 'badge bg-success',
+E          'manage:trace-denied': 'badge bg-danger',
+E          'manage:trace-error': 'badge bg-warning text-dark',
+E          'manage:trace-login-redirect': 'badge bg-warning text-dark',...
+E         
+E         ...Full output truncated, use '-vv' to show
+
+tests/test1/test_theme_adoption_docs.py:298: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[viewset-False-cv_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[viewset-False-cv_guardian_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[viewset-True-cv_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[viewset-True-cv_guardian_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[path-False-cv_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[path-False-cv_guardian_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[path-True-cv_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[path-True-cv_guardian_author]
+FAILED tests/test1/test_manage_release.py::test_access_builder_public_signature_without_request[cv_author]
+FAILED tests/test1/test_manage_release.py::test_access_builder_public_signature_without_request[cv_guardian_author]
+FAILED tests/test1/test_manage_release.py::test_shared_trace_partial_theme_recipe[cv_author]
+FAILED tests/test1/test_manage_release.py::test_shared_trace_partial_theme_recipe[cv_guardian_author]
+FAILED tests/test1/test_manage_docs.py::test_manage_public_inventory_matches_rendered_context
+FAILED tests/test1/test_button_classes.py::test_default_table_is_complete - A...
+FAILED tests/test1/test_button_classes.py::test_manage_registry_defaults_and_overrides
+FAILED tests/test1/test_button_classes.py::test_workflow_app_defaults_lifecycle
+FAILED tests/test1/test_button_classes.py::test_workflow_app_defaults_fresh_setup[False]
+FAILED tests/test1/test_button_classes.py::test_workflow_app_defaults_fresh_setup[True]
+FAILED tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table
+FAILED tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs
+20 failed, 302 passed in 30.88s

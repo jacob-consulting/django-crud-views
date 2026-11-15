@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "block": false,
+  "verdict": "RED_EVIDENCE_OK",
+  "reason": "target_test_failed",
+  "evidence": {
+    "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_locales.py tests/test1/test_manage_locales.py::test_extraction_multiline_template_context_plural -n 2 -q --junitxml=.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-09/red.xml",
+    "exit_code": 1,
+    "target_test": "test_notices_are_assembled_once_and_reach_every_real_output[cv_author]",
+    "tests": 3,
+    "pass": 0,
+    "fail": 3,
+    "failing_tests": [
+      "tests.test1.test_access_trace_locales#test_notices_are_assembled_once_and_reach_every_real_output[cv_guardian_author]",
+      "tests.test1.test_access_trace_locales#test_notices_are_assembled_once_and_reach_every_real_output[cv_author]",
+      "tests.test1.test_manage_locales#test_extraction_multiline_template_context_plural"
+    ],
+    "matched_test": "tests.test1.test_access_trace_locales#test_notices_are_assembled_once_and_reach_every_real_output[cv_author]",
+    "format": "junit",
+    "report_errors": []
+  },
+  "record": {
+    "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_locales.py tests/test1/test_manage_locales.py::test_extraction_multiline_template_context_plural -n 2 -q --junitxml=.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-09/red.xml",
+    "exit_code": 1,
+    "failing_test": "tests.test1.test_access_trace_locales#test_notices_are_assembled_once_and_reach_every_real_output[cv_author]",
+    "target_test": "test_notices_are_assembled_once_and_reach_every_real_output[cv_author]",
+    "expected": "literal German notice in real trace",
+    "actual": "English fallback remains under de",
+    "verdict": "RED_EVIDENCE_OK",
+    "reason": "target_test_failed"
+  },
+  "message": "RED evidence verified: target test \"test_notices_are_assembled_once_and_reach_every_real_output[cv_author]\" failed as expected (exit 1). GREEN authorized."
+}

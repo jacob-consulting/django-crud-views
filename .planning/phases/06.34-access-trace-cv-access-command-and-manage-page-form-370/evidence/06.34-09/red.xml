@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="1.575" timestamp="2026-11-15T06:43:23.287900+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_access_trace_locales" name="test_notices_are_assembled_once_and_reach_every_real_output[cv_guardian_author]" time="0.529"><failure message="AssertionError: assert 'Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt' in ['other middleware and URL decorators are not traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced', 'Allowed means this user may open the page; handler-phase checks are not evaluated.']">client = &lt;django.test.client.Client object at 0x79f47aeab050&gt;
+host = ViewSet(guardian_author), developer = &lt;User: diagnostic developer&gt;
+enabled = None
+
+    def test_notices_are_assembled_once_and_reach_every_real_output(client, host, developer, enabled):
+        path = "/author/manage/"
+        documents = {}
+        for language, notice in NOTICES.items():
+            with translation.override(language):
+                trace = trace_access(path, developer)
+                data = trace.to_dict()
+&gt;               assert notice in data["untraced"]
+E               AssertionError: assert 'Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt' in ['other middleware and URL decorators are not traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced', 'Allowed means this user may open the page; handler-phase checks are not evaluated.']
+
+tests/test1/test_access_trace_locales.py:43: AssertionError</failure></testcase><testcase classname="tests.test1.test_access_trace_locales" name="test_notices_are_assembled_once_and_reach_every_real_output[cv_author]" time="0.470"><failure message="AssertionError: assert 'Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt' in ['other middleware and URL decorators are not traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced', 'Allowed means this user may open the page; handler-phase checks are not evaluated.']">client = &lt;django.test.client.Client object at 0x7e70a363cd40&gt;
+host = ViewSet(author), developer = &lt;User: diagnostic developer&gt;, enabled = None
+
+    def test_notices_are_assembled_once_and_reach_every_real_output(client, host, developer, enabled):
+        path = "/author/manage/"
+        documents = {}
+        for language, notice in NOTICES.items():
+            with translation.override(language):
+                trace = trace_access(path, developer)
+                data = trace.to_dict()
+&gt;               assert notice in data["untraced"]
+E               AssertionError: assert 'Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt' in ['other middleware and URL decorators are not traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced', 'Allowed means this user may open the page; handler-phase checks are not evaluated.']
+
+tests/test1/test_access_trace_locales.py:43: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_locales" name="test_extraction_multiline_template_context_plural" time="0.003"><failure message="AssertionError: assert [('Open', '', 'verb')] == [('%(count)s ..., '', 'verb')]&#10;  &#10;  At index 0 diff: ('Open', '', 'verb') != ('%(count)s row', '%(count)s rows', 'rows')&#10;  Right contains one more item: ('Open', '', 'verb')&#10;  Use -v to get more diff">tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3249/popen-gw0/test_extraction_multiline_temp0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7e70a363cda0&gt;
+
+    def test_extraction_multiline_template_context_plural(tmp_path, monkeypatch):
+        source = '''{% load i18n %}{% translate "Open" context "verb" %}
+    {% blocktranslate trimmed count count=items|length context "rows" %}
+        {{ count }} row
+    {% plural %}
+        {{ count }} rows
+    {% endblocktranslate %}'''
+&gt;       assert extract_fixture(tmp_path, monkeypatch, source, "html") == [
+            ("%(count)s row", "%(count)s rows", "rows"), ("Open", "", "verb")
+        ]
+E       AssertionError: assert [('Open', '', 'verb')] == [('%(count)s ..., '', 'verb')]
+E         
+E         At index 0 diff: ('Open', '', 'verb') != ('%(count)s row', '%(count)s rows', 'rows')
+E         Right contains one more item: ('Open', '', 'verb')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:92: AssertionError</failure></testcase></testsuite></testsuites>

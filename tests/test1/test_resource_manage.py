@@ -93,7 +93,7 @@ def test_resource_manage_tracer(client, django_user_model):
         response = client.get(url)
         assert response.status_code == 200
         assert response.context["manage_permissions"]["actor"]["cells"] == [
-            {"key": "view", "model": False, "object_count": 0}
+            {"key": "view", "model": False, "object_count": None}
         ]
         doc = html.fromstring(response.content)
         assert doc.cssselect("#cv-manage-permissions, #cv-manage-views, #cv-manage-urls")

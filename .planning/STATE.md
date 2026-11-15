@@ -1,24 +1,25 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.35"
-current_phase_name: "Resource manage pages with cv_access parity (#372)"
-current_plan: "07"
-status: verifying
-stopped_at: "Completed 06.35-07-PLAN.md; independent phase audits/reviews/verifier pending"
-last_updated: "2026-11-15T19:49:31Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.35 complete, ready to plan Phase 7
+last_updated: "2026-11-15T20:20:58.750Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 06.35 plan 07 complete; browser 82 cases and final normal/recorder 15226 passed each; 4.2/6.0 focused 902 passed each; 7/7 plans executed; independent phase verification pending
-state_head: f91adf19
+last_activity_desc: Phase 06.35 complete, transitioned to Phase 7
+state_head: af2946cdcebbd61fccfef8a55e89a4d56544e4ea
 progress:
   total_phases: 42
-  completed_phases: 27
+  completed_phases: 41
   total_plans: 232
   completed_plans: 232
+  percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 41
+Total Phases: 42
 
 # Project State
 
@@ -27,17 +28,24 @@ Total Phases: 41
 See: .planning/PROJECT.md (updated 2026-11-15)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.35 — Resource manage pages with cv_access parity (#372)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.35 (Resource manage pages with cv_access parity (#372)) — IN PROGRESS
-Current Plan: 07
-Total Plans in Phase: 7
-Status: Verifying (7/7 plans executed; independent phase audits/reviews/verifier pending)
-Last activity: 2026-11-15 — Plan 07 committed; browser and final-source complete normal/recorder plus cached compatibility gates passed
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: 0
+Status: Ready to plan
+Last activity: 2026-11-15 — Phase 06.35 complete, transitioned to Phase 7
 
-Next: Complete parent-owned phase 06.35 security audit, code/UI review and canonical verification
+Next: $gsd-discuss-phase 7
+
+### Phase 06.35 completion — 2026-11-15
+
+- All 7 plans/14 tasks complete. Canonical verification passed with fresh fingerprint: 5/5 roadmap truths and all 20 plan refinements verified; 8 independent targeted checks passed. No new approval checkpoint required by approved plan07.
+- Final source full normal and recorder suites each15226 passes+1 existing Django6-only skip; cached4.2/6.0 each902 passes; browser82cases/81captures. Independent validation516 Python+9 harness checks, additional regressions457 JS+2 integration+370 examples+14 presentation-config checks pass.
+- Nyquist14/14, security14/14 threats closed, deep code reviewzero findings. UI21/24 has three inherited nonblocking polish recommendations. Seven unavailable runtime combinations and four historical external-Tabler checks remain unverified; no subjective human endorsement or installed-distribution acceptance claimed.
+- Completion scanner warnings are command-string/phase-relative evidence paths and deliberately prose-only requirements, not missing implementation. Existing local state.json/config/.gitkeep/review-input edits preserved. No pushes/publication. Phase7 is next.
 
 ### Phase 06.35 plan 07 completion — 2026-11-15
 
@@ -1157,7 +1165,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 216
+- Total plans completed: 223
 
 - Total plans completed: 186
 - Average duration: -
@@ -1204,6 +1212,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.30 | 15 | - | - |
 | 06.33 | 10 | - | - |
 | 06.34 | 12 | - | - |
+| 06.35 | 7 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1767,6 +1776,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T19:49:31Z
-Stopped at: Completed 06.35-07-PLAN.md; independent phase audits/reviews/verifier pending
+Last session: 2026-11-15T20:21:44Z
+Stopped at: Phase 06.35 complete, ready to plan Phase 7
 Resume file: None

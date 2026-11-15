@@ -61,7 +61,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
 - [x] **Phase 06.33: Structured manage page (#366) (INSERTED)** - approved D-01–D-30 issue handover; permission matrix, collapsible views and switchable defaults. (completed 2026-11-14)
 - [x] **Phase 06.34: Access trace: cv_access command and manage page form (#370) (INSERTED)** - approved D-01–D-23 design; real authorization trace, shell command and opt-in manage form. (completed 2026-11-15)
-- [ ] **Phase 06.35: Resource manage pages with cv_access parity (#372) (INSERTED)** - approved D-01–D-07 handover; shared ManageView, Resource permission badges, and UI/CLI trace parity.
+- [x] **Phase 06.35: Resource manage pages with cv_access parity (#372) (INSERTED)** - approved D-01–D-07 handover; shared ManageView, Resource permission badges, and UI/CLI trace parity. (completed 2026-11-15)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2008,7 +2008,7 @@ Plans:
 4. Existing default-off access checks support non-object views, object identifiers, missing items and nested coordinates. UI traces match `cv_access --as-json` for the same inputs and fixture state, and command text/HTML communicate equivalent diagnostic facts and limitations.
 5. Focused and relevant regression coverage, translated strings, Resource/manage/theme documentation and changelog are complete; fake Resource fixtures require no live S3 access, and broad pytest verification uses multiple workers.
 
-**Plans:** 7/7 plans executed
+**Plans:** 7/7 plans complete
 
 Plans:
 **Wave 1**

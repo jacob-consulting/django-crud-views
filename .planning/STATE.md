@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.36"
-current_phase_name: ViewSet configuration CLI and versioned JSON contract
+current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
 current_plan: Not started
-status: planning
-stopped_at: Phase 06.36 context gathered
-last_updated: "2026-11-15T21:54:13.157Z"
+status: executing
+stopped_at: Phase 06.36 plan-review convergence complete in 2 cycles; ready to execute
+last_updated: "2026-11-15T23:04:08.159Z"
 last_activity: 2026-11-15
-last_activity_desc: "Phase 06.35 shipped as PR #376"
-state_head: 1cebea0f70d05b7bc3b162abaad5b0dee485eacd
+last_activity_desc: Phase 06.36 plans converged in 2 review cycles; 7 plans/6 waves; no unresolved findings
+state_head: 983d946435db43f08db01d96a3b16b946bf7eeaf
 progress:
   total_phases: 43
   completed_phases: 41
-  total_plans: 232
+  total_plans: 239
   completed_plans: 232
   percent: 95
 milestone_name: milestone
@@ -32,13 +32,13 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 
 ## Current Position
 
-Phase: 06.36 — ViewSet configuration CLI and versioned JSON contract (#371)
+Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — READY TO EXECUTE
 Current Plan: Not started
-Total Plans in Phase: 0
-Status: Ready to plan
-Last activity: 2026-11-15 — Phase 06.35 shipped as PR #376
+Total Plans in Phase: 7
+Status: Ready to execute
+Last activity: 2026-11-15 — Phase 06.36 plans converged in 2 review cycles; 7 plans/6 waves; no unresolved findings
 
-Next: $gsd-plan-phase 06.36
+Next: $gsd-execute-phase 06.36
 
 ### Phase 06.35 completion — 2026-11-15
 
@@ -1777,6 +1777,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T21:54:07.798Z
-Stopped at: Phase 06.36 context gathered
-Resume file: .planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/06.36-CONTEXT.md
+Last session: 2026-11-15T23:04:02.936Z
+Stopped at: Phase 06.36 plan-review convergence complete in 2 cycles; ready to execute
+Resume file: .planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/06.36-REVIEWS.md

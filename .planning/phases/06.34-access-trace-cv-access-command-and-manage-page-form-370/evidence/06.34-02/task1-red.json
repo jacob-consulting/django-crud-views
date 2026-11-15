@@ -7,7 +7,7 @@
   "expected": "validation owns missing action error",
   "actual": "custom_gate owns error",
   "reportPath": "/tmp/06-34-02-red1.xml",
-  "runStartedAt": "2026-11-15T05:14:00Z",
+  "runStartedAt": "2026-11-15T05:12:36.387138+00:00",
   "reportModifiedAt": "2026-11-15T05:12:38.699075+00:00",
   "semanticAssessment": "Target executed and failed its kind assertion: missing validation observation; initial fixture typo corrected before valid RED."
 }

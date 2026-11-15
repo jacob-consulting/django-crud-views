@@ -6,5 +6,8 @@
   "targetFile": "tests/test1/test_manage_access_trace.py",
   "expected": "200 with field feedback for malformed URL",
   "actual": "500 from urllib URL normalization",
-  "semanticAssessment": "Real request reached target assertion: 500 != 200; traceback proves malformed URL escaped new adapter."
+  "semanticAssessment": "Real request reached target assertion: 500 != 200; traceback proves malformed URL escaped new adapter.",
+  "reportPath": ".planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-07/path-red.xml",
+  "runStartedAt": "2026-11-15T06:22:29.448997+00:00",
+  "reportModifiedAt": "2026-11-15T06:22:30.925511+00:00"
 }

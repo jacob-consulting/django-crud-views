@@ -6,5 +6,8 @@
   "targetFile": "tests/test1/test_manage_access_trace.py",
   "expected": "selected actor row id equals chosen actor",
   "actual": "viewer row retained: 1 != 2",
-  "semanticAssessment": "Named test reached selection assertion; selected actor was resolved but matrix not replaced."
+  "semanticAssessment": "Named test reached selection assertion; selected actor was resolved but matrix not replaced.",
+  "reportPath": ".planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-07/task2-red.xml",
+  "runStartedAt": "2026-11-15T06:17:07.196869+00:00",
+  "reportModifiedAt": "2026-11-15T06:17:08.626954+00:00"
 }

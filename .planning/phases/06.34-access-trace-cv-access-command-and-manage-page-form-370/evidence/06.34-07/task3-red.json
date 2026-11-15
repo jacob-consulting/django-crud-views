@@ -6,5 +6,8 @@
   "targetFile": "tests/test1/test_manage_access_trace.py",
   "expected": "declared allowed badge class",
   "actual": "manage:trace-allowed is missing",
-  "semanticAssessment": "Named test failed its registry value assertion for the planned key; no collection or fixture fault."
+  "semanticAssessment": "Named test failed its registry value assertion for the planned key; no collection or fixture fault.",
+  "reportPath": ".planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-07/task3-red.xml",
+  "runStartedAt": "2026-11-15T06:20:30.238107+00:00",
+  "reportModifiedAt": "2026-11-15T06:20:31.469567+00:00"
 }

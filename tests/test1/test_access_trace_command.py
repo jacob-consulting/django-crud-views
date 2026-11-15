@@ -1,7 +1,16 @@
 """The command formats the shared trace; real processes exercise Django's CLI boundary."""
 
+import errno
 import json
+import os
+import pty
+import re
+import subprocess
+import sys
+import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
+from pathlib import Path
 
 import pytest
 from django.core.management import call_command, get_commands
@@ -176,3 +185,178 @@ def test_route_configuration_error_is_a_trace(command, monkeypatch):
     assert data["outcome"] == "error"
     assert data["steps"][-1]["exception"] == {"class": "ImproperlyConfigured", "message": "broken route configuration"}
     assert stderr == ""
+
+
+ANSI = re.compile(r"\x1b\[[0-9;]*m")
+
+
+@pytest.fixture(scope="module")
+def process_env():
+    with tempfile.TemporaryDirectory(prefix="cv-access-command-") as directory:
+        env = {
+            **os.environ,
+            "CV_TRACE_CLI_DATABASE": str(Path(directory) / "command.sqlite3"),
+            "TERM": "xterm",
+            "DJANGO_COLORS": "nocolor",
+        }
+        result = subprocess.run(
+            [sys.executable, "-m", "tests.test1.access_trace_cli_fixture", "--prepare"],
+            env=env,
+            text=True,
+            capture_output=True,
+            timeout=30,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        yield env
+    assert not Path(directory).exists()
+
+
+def run_process(env, *args, tty=False):
+    argv = [sys.executable, "-m", "tests.test1.access_trace_cli_fixture", *args]
+    if not tty:
+        return subprocess.run(argv, env=env, text=True, capture_output=True, timeout=30)
+    master, slave = pty.openpty()
+
+    def read_terminal():
+        chunks = []
+        while True:
+            try:
+                data = os.read(master, 65536)
+            except OSError as exc:
+                if exc.errno == errno.EIO:
+                    break
+                raise
+            if not data:
+                break
+            chunks.append(data)
+        return b"".join(chunks).decode().replace("\r\n", "\n")
+
+    try:
+        with subprocess.Popen(argv, env=env, stdout=slave, stderr=subprocess.PIPE, text=True) as process:
+            os.close(slave)
+            slave = None
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                output = pool.submit(read_terminal)
+                try:
+                    _, stderr = process.communicate(timeout=30)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.communicate()
+                    raise
+                return subprocess.CompletedProcess(argv, process.returncode, output.result(timeout=5), stderr)
+    finally:
+        os.close(master)
+        if slave is not None:
+            os.close(slave)
+
+
+@pytest.mark.parametrize("as_json", [False, True])
+@pytest.mark.parametrize(
+    "tty,flag,colored",
+    [(False, None, False), (False, "--force-color", True), (True, None, True), (True, "--no-color", False)],
+)
+def test_real_pipe_and_terminal_color_controls(process_env, as_json, tty, flag, colored):
+    args = ["/protected/", "sam"] + (["--as-json"] if as_json else []) + ([flag] if flag else [])
+    result = run_process(process_env, *args, tty=tty)
+    assert result.returncode == 1, result.stderr
+    assert result.stderr == ""
+    assert bool(ANSI.search(result.stdout)) is colored
+    plain = ANSI.sub("", result.stdout)
+    baseline = run_process(process_env, *args[:2], *(["--as-json"] if as_json else []))
+    assert plain == baseline.stdout
+    if as_json:
+        assert json.loads(plain)["outcome"] == "denied"
+    if colored:
+        for code, word in [
+            (32, '"passed"' if as_json else "Passed"),
+            (31, '"denied"' if as_json else "Denied"),
+            (2, '"not_reached"' if as_json else "Not reached"),
+        ]:
+            assert f"\x1b[{code}m{word}\x1b[0m" in result.stdout
+        if as_json:
+            assert '\x1b[36m"version"\x1b[0m:' in result.stdout
+
+
+@pytest.mark.parametrize(
+    "path,actor,outcome,code",
+    [
+        ("/plain/", "sam", "allowed", 0),
+        ("/protected/", "sam", "denied", 1),
+        ("/missing/", "sam", "not_found", 1),
+        ("/protected/", "--anonymous", "login_redirect", 1),
+        ("/absent/", "sam", "no_such_route", 2),
+        ("/broken/", "sam", "error", 2),
+    ],
+)
+@pytest.mark.parametrize("as_json", [False, True])
+def test_real_process_outcomes(process_env, path, actor, outcome, code, as_json):
+    result = run_process(process_env, path, actor, *(["--as-json"] if as_json else []))
+    assert result.returncode == code, result.stderr
+    assert not ANSI.search(result.stdout + result.stderr)
+    if as_json:
+        assert json.loads(result.stdout)["outcome"] == outcome
+        assert result.stderr == ""
+    elif outcome == "no_such_route":
+        assert result.stdout == ""
+        assert len(result.stderr.splitlines()) == 1
+    else:
+        assert result.stderr == ""
+        assert "Steps:" in result.stdout
+
+
+@pytest.mark.parametrize(
+    "args,code",
+    [
+        ([], 2),
+        (["/plain/"], 2),
+        (["/plain/", "sam", "--anonymous"], 2),
+        (["/plain/", "missing\nactor", "--as-json"], 2),
+        (["/plain/", "sam", "--no-color", "--force-color"], 1),
+    ],
+)
+def test_real_process_invocation_errors(process_env, args, code):
+    result = run_process(process_env, *args)
+    assert result.returncode == code
+    assert result.stdout == ""
+    assert result.stderr
+    assert "Traceback" not in result.stderr
+    if "missing\nactor" in args:
+        assert len(result.stderr.splitlines()) == 1
+
+
+def test_real_terminal_json_preserves_escaped_values(process_env):
+    result = run_process(process_env, "/broken/", "sam", "--as-json", tty=True)
+    assert result.returncode == 2
+    assert '\x1b[33m"error"\x1b[0m' in result.stdout
+    plain = ANSI.sub("", result.stdout)
+    assert plain == run_process(process_env, "/broken/", "sam", "--as-json").stdout
+    data = json.loads(plain)
+    assert data["steps"][-1]["exception"]["message"] == 'quoted "value" \\ café 雪\nline\t\x1b[31m'
+
+
+def test_real_full_url_anonymous_and_username_collision(process_env):
+    result = run_process(process_env, "https://invalid.example/plain/?ignored=1#fragment", "--anonymous", "--as-json")
+    assert result.returncode == 0
+    assert json.loads(result.stdout)["path"] == "/plain/"
+    assert json.loads(result.stdout)["user"]["anonymous"] is True
+    for selector, pk in [("sam", "1"), ("1", "2"), ("3", "3")]:
+        result = run_process(process_env, "/plain/", selector, "--as-json")
+        assert result.returncode == 0
+        assert json.loads(result.stdout)["user"]["pk"] == pk
+
+
+def test_fixed_styles_only_color_json_keys_and_result_values(command, monkeypatch):
+    values = ["passed", "denied", "error", "skipped", "not_reached", "not_evaluated"]
+    trace = AccessTrace(
+        path="/",
+        outcome="allowed",
+        steps=[AccessStep(index, "custom_gate", result=value, message=value) for index, value in enumerate(values, 1)],
+    )
+    monkeypatch.setattr(command, "trace_access", lambda *args: trace)
+    code, output, stderr = invoke("/", "--anonymous", "--as-json", "--force-color")
+    assert code == 0
+    assert stderr == ""
+    assert json.loads(ANSI.sub("", output)) == trace.to_dict()
+    for value, color in zip(values, [32, 31, 33, 2, 2, 2], strict=True):
+        assert f'\x1b[{color}m"{value}"\x1b[0m' in output
+        assert f'\x1b[36m"message"\x1b[0m: "{value}"' in output

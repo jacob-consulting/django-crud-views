@@ -1,6 +1,6 @@
 {
-  "cycle": 3,
-  "reviewed_plan_commit": "30bde96d",
+  "cycle": 4,
+  "reviewed_plan_commit": "1f30417f",
   "effective_authority": "intel",
   "authority_reason": "Runtime auto-upgrades configured grep when intel.enabled=true. API-SURFACE.md:5 declares empty extraction; api-map.json absent. Supplemental local citations are lexical/existence evidence only, never signature verification.",
   "seam_classifications": {
@@ -25,6 +25,7 @@
     "06.34-06-PLAN.md:66": "New `Command`, with `add_arguments`/`handle`, and private `_format_text`, `_format_json`, `_color_json` in cv_access.py. New command flags: `--anonymous`, `--as-json`; reuse Django `--no-color`/`--force-color`, add no custom color flag. New test-only process helper owns its temporary database and routes and calls Command.run_from_argv. Reuse plan 01's version-1 schema unchanged. Existing references: `cv_assets.Command`, `cv_manage_group.Command`, Django BaseCommand/CommandError/termcolors; no dependency additions.",
     "06.34-06-PLAN.md:85": "Per D-12/D-13, add BaseCommand with required path, optional positional user, --anonymous mutually exclusive with supplied user, and --as-json. Set requires_system_checks=[] so misconfigured routes reach trace error reporting. Share resolve_trace_user's USERNAME_FIELD-first resolution and core path normalization; never fetch URLs. Call trace_access once, then format only its result. Exit 0 allowed; 1 denied/not_found/login_redirect; 2 usage/unknown actor/no_such_route/error. Return no truthy value from handle; after writing once, use SystemExit for mapped nonzero outcomes. Wrong invocation and unknown actor produce stderr diagnostics and no trace document; unknown actor has one line and exit 2. Text no-route likewise has one-line diagnostic and exit 2; JSON no-route prints one versioned trace to stdout, with any human message confined to stderr. Other text includes header, plan, steps, reason, limitations and final may open the page wording for allowed. JSON is exactly AccessTrace.to_dict, never a separate schema. Tests assert routing configuration failures remain trace errors and command is independent of web setting.",
     "06.34-06-PLAN.md:82": "    - Every actual trace with --as-json emits exactly one document, including no-route/error, without extra stdout diagnostics.",
+    "06.34-09-PLAN.md:109": "Addresses review concern C3-02 per D-16, D-21 and D-23: for the same real route and actor, assemble traces separately under translation.override('en') and translation.override('de'). Assert exact membership in AccessTrace.to_dict()['untraced']: English \"other middleware and URL decorators are not traced\" and German \"Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt\". Assert these exact localized notices in parsed real cv_access --as-json output, actual command text and the rendered core/Guardian trace card under each locale. Compare schema keys and stable kind/result/outcome codes across locales and verify serializing an already assembled trace under the other locale preserves its stored strings. Do not use translated expected-value lookups or fabricated dictionaries that could conceal missing compiled catalog entries; hard-code the two expected notice strings in these assertions.",
     "06.34-10-PLAN.md:78": "New three test-only browser files and two evidence JSON paths listed above. Browser CLI accepts `--python`, `--case smoke|all`, `--output`, and `--verify <receipt>` (read-only source/evidence verification). Reuse existing `CV_MANAGE_ASSETS_DIR`, `CV_MANAGE_PLAYWRIGHT`, `CV_MANAGE_CHROMIUM` cached runtime conventions; no new production flags/assets/dependencies. Browser server must own only its temporary database, loopback random port and child process. Existing helpers and tests/browser/templates/manage/page.html are read-only references. Screenshot artifacts live beside the receipt in an executor-created `06.34-browser-captures/` directory with exact relative filenames and hashes enumerated in the receipt; directory is generated evidence, not a production asset.",
     "06.34-10-PLAN.md:108": "    <automated>node --test tests/browser/access-trace.test.cjs && PYTHONPATH=src:. node tests/browser/access-trace.cjs --python .nox/tests-3-12-django-6-0/bin/python --case all --output .planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-10-browser-evidence.json</automated>",
     "06.34-10-PLAN.md:130": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests -n 4 -q && CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests -n 4 -q && for PHASE_PY in .nox/tests-3-12-django-4-2/bin/python .nox/tests-3-12-django-6-0/bin/python; do PYTHONPATH=src:. \"$PHASE_PY\" -c 'import pathlib, crud_views; assert pathlib.Path(crud_views.__file__).resolve().is_relative_to(pathlib.Path(\"src\").resolve())' || exit 1; PYTHONPATH=src:. \"$PHASE_PY\" -m pytest tests/test1/test_access_trace*.py tests/test1/test_manage_access_trace.py tests/test1/test_manage_release.py tests/test1/test_manage_locales.py tests/test1/test_ancestor_costs.py tests/test1/test_authorization_templates.py tests/test1/test_import_safety.py -n 4 -q || exit 1; done && .venv/bin/python -m mkdocs build --strict --site-dir /tmp/cv-0634-docs && .venv/bin/python -m ruff check src tests/test1/test_access_trace*.py tests/test1/test_manage_access_trace.py tests/test1/test_manage_locales.py tests/test1/test_manage_release.py tests/test1/test_button_classes.py tests/test1/test_theme_adoption_docs.py tests/test1/access_trace_cli_fixture.py tests/conftest.py tests/test1/conftest.py tests/browser/access_trace_server.py noxfile.py && .venv/bin/python -m ruff format --check src tests/test1/test_access_trace*.py tests/test1/test_manage_access_trace.py tests/test1/test_manage_locales.py tests/test1/test_manage_release.py tests/test1/test_button_classes.py tests/test1/test_theme_adoption_docs.py tests/test1/access_trace_cli_fixture.py tests/conftest.py tests/test1/conftest.py tests/browser/access_trace_server.py noxfile.py && npm test -- tests/js/manage.test.js --maxWorkers=4 && node tests/browser/access-trace.cjs --verify .planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-10-browser-evidence.json</automated>",
@@ -37,8 +38,8 @@
     "06.34-05-PLAN.md:102": "  <read_first>noxfile.py; .github/workflows/tests.yml; tests/conftest.py; tests/test1/test_access_trace_recorder.py</read_first>",
     "06.34-05-PLAN.md:119": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_ci.py -n 2 -q && for PHASE_PY in .nox/tests-3-12-django-4-2/bin/python .nox/tests-3-12-django-5-2/bin/python .nox/tests-3-12-django-6-0/bin/python; do PYTHONPATH=src:. \"$PHASE_PY\" -c 'import pathlib, crud_views; assert pathlib.Path(crud_views.__file__).resolve().is_relative_to(pathlib.Path(\"src\").resolve())' || exit 1; PYTHONPATH=src:. \"$PHASE_PY\" -m pytest tests/test1/test_access_trace_grid.py tests/test1/test_access_trace_middleware.py tests/test1/test_access_trace_limits.py tests/test1/test_access_trace_recorder.py tests/test1/test_import_safety.py -n 4 -q || exit 1; done</automated>",
     "06.34-01-PLAN.md:77": "No dependency installation or runtime upgrades. Use current-source cached Django 5.2 commands below; the default .venv's Django 6.1 is not the supported-series acceptance runtime. Before the first cached-interpreter run, execute: `PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -c 'import pathlib, crud_views; assert pathlib.Path(crud_views.__file__).resolve().is_relative_to(pathlib.Path(\"src\").resolve())'`. Tests introduced by a task are created before its verification command. Start behavior changes with failing tests; preserve existing assertions. Broad runs use four workers; focused selections use two. Record measured runtime and split a slow selection if it exceeds 60 seconds; do not weaken coverage. Calibration: factor 1, zero samples, confidence low. Do not edit shared planning state, approved decisions, or unrelated files.",
-    "06.34-01-PLAN.md:118": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace.py tests/test1/test_ancestor_costs.py -n 2 -q</automated>",
-    "06.34-01-PLAN.md:144": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_recorder.py tests/test1/test_ancestor_costs.py -n 2 -q && CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_recorder.py tests/test1/test_ancestor_costs.py -n 2 -q</automated>",
+    "06.34-01-PLAN.md:121": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace.py tests/test1/test_ancestor_costs.py -n 2 -q</automated>",
+    "06.34-01-PLAN.md:147": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_recorder.py tests/test1/test_ancestor_costs.py -n 2 -q && CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_recorder.py tests/test1/test_ancestor_costs.py -n 2 -q</automated>",
     "06.34-02-PLAN.md:77": "No dependency installation or runtime upgrades. Use current-source cached Django 5.2 commands below; the default .venv's Django 6.1 is not the supported-series acceptance runtime. Before the first cached-interpreter run, execute: `PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -c 'import pathlib, crud_views; assert pathlib.Path(crud_views.__file__).resolve().is_relative_to(pathlib.Path(\"src\").resolve())'`. Tests introduced by a task are created before its verification command. Start behavior changes with failing tests; preserve existing assertions. Broad runs use four workers; focused selections use two. Record measured runtime and split a slow selection if it exceeds 60 seconds; do not weaken coverage. Calibration: factor 1, zero samples, confidence low. Do not edit shared planning state, approved decisions, or unrelated files.",
     "06.34-02-PLAN.md:104": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_ancestors.py tests/test1/test_ancestor_costs.py -n 2 -q && CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_ancestor_authorization.py tests/test1/test_ancestor_operations.py -n 2 -q</automated>",
     "06.34-02-PLAN.md:128": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_resources.py tests/test1/test_resource_viewset.py tests/test1/test_import_safety.py -n 2 -q</automated>",
@@ -57,14 +58,14 @@
     "06.34-06-PLAN.md:119": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_command.py -n 2 -q</automated>",
     "06.34-07-PLAN.md:78": "No dependency installation or runtime upgrades. Use current-source cached Django 5.2 commands below; the default .venv's Django 6.1 is not the supported-series acceptance runtime. Before the first cached-interpreter run, execute: `PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -c 'import pathlib, crud_views; assert pathlib.Path(crud_views.__file__).resolve().is_relative_to(pathlib.Path(\"src\").resolve())'`. Tests introduced by a task are created before its verification command. Start behavior changes with failing tests; preserve existing assertions. Broad runs use four workers; focused selections use two. Record measured runtime and split a slow selection if it exceeds 60 seconds; do not weaken coverage. Calibration: factor 1, zero samples, confidence low. Do not edit shared planning state, approved decisions, or unrelated files.",
     "06.34-07-PLAN.md:101": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_access_trace.py tests/test1/test_manage_group.py -n 2 -q</automated>",
-    "06.34-07-PLAN.md:127": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_access_trace.py tests/test1/test_manage_guardian.py tests/test1/test_authorization_templates.py -n 2 -q</automated>",
-    "06.34-07-PLAN.md:153": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_access_trace.py tests/test1/test_manage_cards.py tests/test1/test_button_classes_templates.py -n 2 -q</automated>",
+    "06.34-07-PLAN.md:128": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_access_trace.py tests/test1/test_manage_guardian.py tests/test1/test_authorization_templates.py -n 2 -q</automated>",
+    "06.34-07-PLAN.md:154": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_access_trace.py tests/test1/test_manage_cards.py tests/test1/test_button_classes_templates.py -n 2 -q</automated>",
     "06.34-08-PLAN.md:80": "No dependency installation or runtime upgrades. Use current-source cached Django 5.2 commands below; the default .venv's Django 6.1 is not the supported-series acceptance runtime. Before the first cached-interpreter run, execute: `PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -c 'import pathlib, crud_views; assert pathlib.Path(crud_views.__file__).resolve().is_relative_to(pathlib.Path(\"src\").resolve())'`. Tests introduced by a task are created before its verification command. Start behavior changes with failing tests; preserve existing assertions. Broad runs use four workers; focused selections use two. Record measured runtime and split a slow selection if it exceeds 60 seconds; do not weaken coverage. Calibration: factor 1, zero samples, confidence low. Do not edit shared planning state, approved decisions, or unrelated files.",
     "06.34-08-PLAN.md:103": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_docs.py -n 2 -q</automated>",
     "06.34-08-PLAN.md:148": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_release.py tests/test1/test_button_classes.py tests/test1/test_theme_adoption_docs.py tests/test1/test_manage_docs.py tests/test1/test_access_trace_docs.py tests/test1/test_authorization_templates.py -n 2 -q</automated>",
     "06.34-09-PLAN.md:67": "No dependency installation or runtime upgrades. Use current-source cached Django 5.2 commands below; the default .venv's Django 6.1 is not the supported-series acceptance runtime. Before the first cached-interpreter run, execute: `PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -c 'import pathlib, crud_views; assert pathlib.Path(crud_views.__file__).resolve().is_relative_to(pathlib.Path(\"src\").resolve())'`. Tests introduced by a task are created before its verification command. Start behavior changes with failing tests; preserve existing assertions. Broad runs use four workers; focused selections use two. Record measured runtime and split a slow selection if it exceeds 60 seconds; do not weaken coverage. Calibration: factor 1, zero samples, confidence low. Do not edit shared planning state, approved decisions, or unrelated files.",
-    "06.34-09-PLAN.md:87": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_locales.py -n 2 -q</automated>",
-    "06.34-09-PLAN.md:113": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_locales.py tests/test1/test_manage_locales.py -n 2 -q</automated>",
+    "06.34-09-PLAN.md:89": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_locales.py -n 2 -q</automated>",
+    "06.34-09-PLAN.md:118": "    <automated>PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_locales.py tests/test1/test_manage_locales.py -n 2 -q</automated>",
     "06.34-10-PLAN.md:82": "No dependency installation or runtime upgrades. Use current-source cached Django 5.2 commands below; the default .venv's Django 6.1 is not the supported-series acceptance runtime. Before the first cached-interpreter run, execute: `PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -c 'import pathlib, crud_views; assert pathlib.Path(crud_views.__file__).resolve().is_relative_to(pathlib.Path(\"src\").resolve())'`. Tests introduced by a task are created before its verification command. Start behavior changes with failing tests; preserve existing assertions. Broad runs use four workers; focused selections use two. Record measured runtime and split a slow selection if it exceeds 60 seconds; do not weaken coverage. Calibration: factor 1, zero samples, confidence low. Do not edit shared planning state, approved decisions, or unrelated files.",
     "06.34-01-PLAN.md:62": "@.planning/PROJECT.md",
     "06.34-02-PLAN.md:62": "@.planning/PROJECT.md",
@@ -91,15 +92,15 @@
     "06.34-03-PLAN.md:57": "@.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-01-PLAN.md",
     "06.34-04-PLAN.md:64": "@.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-01-PLAN.md",
     "06.34-06-PLAN.md:61": "@.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-01-PLAN.md",
-    "06.34-01-PLAN.md:217": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-01-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
+    "06.34-01-PLAN.md:234": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-01-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
     "06.34-02-PLAN.md:211": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-02-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
     "06.34-03-PLAN.md:195": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-03-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
     "06.34-04-PLAN.md:224": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-04-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
     "06.34-05-PLAN.md:174": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-05-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
     "06.34-06-PLAN.md:174": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-06-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
-    "06.34-07-PLAN.md:210": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-07-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
+    "06.34-07-PLAN.md:225": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-07-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
     "06.34-08-PLAN.md:221": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-08-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
-    "06.34-09-PLAN.md:167": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-09-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
+    "06.34-09-PLAN.md:186": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-09-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
     "06.34-10-PLAN.md:187": "Create `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-10-SUMMARY.md` with changed symbols, exact checks, outcomes, timings and honest limitations. Never mark planned checks as passed without execution.",
     "06.34-10-PLAN.md:11": "  - .planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-10-browser-evidence.json",
     "06.34-10-PLAN.md:37": "    - path: .planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-10-browser-evidence.json",
@@ -167,8 +168,9 @@
     "06.34-04-PLAN.md:94": "Per D-03, D-06, D-08, D-09 and D-11, observe each instance's actual bound has_permission/get_object/dispatch callable, including a library-owned outer callable: a project override can lie below it in the MRO. Retain and invoke that bound callable exactly once per actual call with unchanged arguments and super semantics. Locate the defining class of that callable rather than selecting a project class from the MRO. Compare event cursors only at boundaries actually entered through these instance observers. A refusal with new terminal library/custom evidence keeps that evidence and is not duplicated by outer observers. A has_permission False, raised refusal or direct 403/404 without new terminal evidence produces one custom_gate using the boundary projection above; earlier passing events do not suppress it. This covers super-pass/override-deny but does not identify which unobserved super implementation denied. Do not globally patch classes, generate registered subclasses, replay gates, inspect stack/traceback frames or instrument individual super calls. For inherited Django AccessMixin.handle_no_permission, a bounded instance observer may retain the actual returned redirect object as login evidence; do not reimplement its rule or infer login merely from status/URL text. Custom handle_no_permission overrides remain opaque unless actual recorded login evidence exists. Map actual response 403\u2192denied, 404\u2192not_found, observed login redirect\u2192login_redirect. Allowed requires the stub to have completed successfully and a successful response with no terminal denial. Early 2xx without stub, arbitrary redirect, 405/5xx, non-HTTP returns or swallowed terminal failure become error with UnsupportedTraceResponse class/message and response status; never fabricate success or login. Keep raised exception class/message but no traceback. Expand safety tests to outer savepoints, callback suppression, exceptions after writes, fresh permission/prefetch caches, alias collision, nested contexts and memory stores. Exception normalization must occur after exiting atomic even for database errors. Reapply the instance stub after custom setup as well as before it; test a setup override that assigns get, so dispatch cannot accidentally call that real handler.",
     "06.34-01-PLAN.md:73": "New production modules: `access_trace.py` owns `AccessStep`, `AccessTrace`, `AccessRecorder`, `recording(recorder)`, `get_recorder()`, `trace_access(path, user)` and `resolve_trace_user(identifier)`. The last two lazily delegate to the runner; gate owners import only the observation module. New runner owns private `_TraceRequest`, `_MemorySession`, `_MemoryMessages`, `_normalize_path`, `_fresh_actor`, `_run_trace`, `_handler_stub`, and `_resolve_trace_user` helpers. `AccessRecorder.record(owner, kind, **facts)` is internal observation, never a permission predicate; `capture_filter(owner, before, after)` retains lazy queryset references privately. New test-only environment flag `CV_ACCESS_RECORD_REQUESTS=1` and fixture `record_access_requests` live in existing root `tests/conftest.py`, covering every pytest subtree. New test files are listed above; `src/crud_views/lib/view/base.py` and conftest are existing edit targets. Existing source references, not new APIs: `CrudView`, `CrudViewPermissionRequiredMixin.has_permission`, `cv_get_requirement`, `cv_get_action_object`, `cv_action_enabled`.",
     "06.34-01-PLAN.md:83": "Private observation additions: `AccessRecorder.capture_login_response(owner, response)` retains actual login response identity until assembly, then clears it; no response enters the public scalar projection. Classmethod gate reporting uses one fresh opaque owner token per invocation, retained privately for that recorder's lifetime. It never deduplicates separate classmethod invocations by class or actor PK. Instance gate reports retain the view instance as owner, deduplicating repeated identical object/state reports within that instance only. Neither mechanism changes gate signatures or adds an ambient request-scope framework.",
-    "06.34-01-PLAN.md:80": "Freeze the version-1 public scalar projection before other plans consume it. AccessTrace.to_dict() emits exactly: version=1, path, route, view, user, outcome, decided_by, plan, steps, untraced. User fields: pk (string or null), username (string or null), active (bool), anonymous (bool). Outcome codes: allowed, denied, not_found, login_redirect, error, no_such_route. decided_by is a 1-based steps.n or null. Every AccessStep serializes n, kind, viewset, object, key, permission, group, provider, source, result, how, message, exception, counts; absent values are null. object is {model,pk}, with pk stringified without calling object.__str__/repr; exception is {class,message}; counts is {visible,total}, with total null for Resource. Results: passed, denied, not_found, skipped, not_reached, not_evaluated, error. Kind codes include route, login_middleware, validation, actor_admission, ancestor_lookup, ancestor_gate, own_permission, object_lookup, object_grant, list_filter, action_state, manage_gate, custom_gate, limitation. Plan entries are {kind,viewset,object,key,permission,group,provider,source}; unreached full permission may be null when expanding it would perform a protected read. Stable codes are separate from translated messages. untraced always contains \"other middleware and URL decorators are not traced\". Result never stores users, model instances, querysets, requests, responses or tracebacks. Private recorder state is discarded after assembly.",
-    "06.34-01-PLAN.md:112": "    - No model representation appears in AccessTrace.to_dict; UUID/int PKs serialize as strings.",
+    "06.34-01-PLAN.md:80": "Freeze the version-1 public scalar projection before other plans consume it. AccessTrace.to_dict() emits exactly: version=1, path, route, view, user, outcome, decided_by, plan, steps, untraced. User fields: pk (string or null), username (string or null), active (bool), anonymous (bool). Outcome codes: allowed, denied, not_found, login_redirect, error, no_such_route. decided_by is a 1-based steps.n or null. Every AccessStep serializes n, kind, viewset, object, key, permission, group, provider, source, result, how, message, exception, counts; absent values are null. object is {model,pk}, with pk stringified without calling object.__str__/repr; exception is {class,message}; counts is {visible,total}, with total null for Resource. Results: passed, denied, not_found, skipped, not_reached, not_evaluated, error. Kind codes include route, login_middleware, validation, actor_admission, ancestor_lookup, ancestor_gate, own_permission, object_lookup, object_grant, list_filter, action_state, manage_gate, custom_gate, limitation. Plan entries are {kind,viewset,object,key,permission,group,provider,source}; unreached full permission may be null when expanding it would perform a protected read. Stable codes are separate from translated messages. untraced contains localized explanatory strings, always including the notice whose literal English msgid is \"other middleware and URL decorators are not traced\"; its serialized value uses the language active when the runner assembles the trace. The notice is prose, not a stable code, and no additional schema field is introduced. Result never stores users, model instances, querysets, requests, responses or tracebacks. Private recorder state is discarded after assembly.",
+    "06.34-01-PLAN.md:108": "Addresses review concern C3-02 per D-16, D-21 and D-23: assemble the mandatory untraced notice in the runner through a literal gettext call under the active language, storing the resulting string in the existing untraced list. AccessTrace.to_dict serializes that stored string without translating again; the command and page consume the same notice. Pin the exact English notice in the real trace schema test under translation.override('en'); plan 09 owns the compiled German value and exact English/German real-output assertions. Keep the stable schema and codes unchanged and access_trace.py free of Django imports.",
+    "06.34-01-PLAN.md:114": "    - No model representation appears in AccessTrace.to_dict; UUID/int PKs serialize as strings.",
     "06.34-05-PLAN.md:81": "    - Actors include authenticated inactive under AllowAllUsersModelBackend, not silently anonymous.",
     "06.34-06-PLAN.md:27": "      provides: \"New discoverable BaseCommand and bounded text/JSON formatters\"",
     "06.34-08-PLAN.md:14": "  - CHANGELOG.md",
@@ -187,12 +189,12 @@
     "06.34-10-PLAN.md:66": "@CLAUDE.md",
     "06.34-07-PLAN.md:17": "  - \"Manage-page Access check card behind CRUD_VIEWS_MANAGE_ACCESS_TRACE = False\"",
     "06.34-07-PLAN.md:74": "Existing settings adds `CrudViewsSettings.manage_access_trace` from `CRUD_VIEWS_MANAGE_ACCESS_TRACE`, default False. Existing ManageView gains request-independent `get_manage_access_trace(viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)`; private GET adapter resolves typed input. New always-present context key `manage_access_trace`: None when disabled; enabled mapping fields `mode`, `user_input`, `pk_input`, `path_input`, `error`, `actor`, `rows`, `trace`. Each row: `key`, `path`, `instruction`, `trace`; actor uses plan 01 scalar user projection. New template block `manage_access_trace`. GET parameters: `cv_access_mode` (viewset/path), `cv_access_user`, `cv_access_pk`, `cv_access_path`; both forms have separate labelled user inputs, no anonymous control or picker. Ten new class keys: `manage:trace-allowed`, `manage:trace-denied`, `manage:trace-not-found`, `manage:trace-login-redirect`, `manage:trace-error`, `manage:trace-no-such-route`, `manage:trace-passed`, `manage:trace-skipped`, `manage:trace-not-reached`, `manage:trace-not-evaluated`. New partial and test paths above; existing CSS/button registry/template/manage/settings are edit targets. No new JavaScript or Guardian template fork.",
-    "06.34-01-PLAN.md:135": "Per D-02, D-05, D-06 and D-19, implement module-level ContextVar default None with token reset in finally. Use request/view-local owner identity plus logical kind/subject/requirement and result for report deduplication; do not memoize enforcement or hide changed terminal results. Keep queryset references private and unevaluated; record/capture methods may not count, format or access deferred model fields. Guard optional fact construction before touching metadata. Add test-only autouse record_access_requests when CV_ACCESS_RECORD_REQUESTS equals 1, encompassing real Client and direct calls and yielding/resetting per test. Nested trace_access uses its own recorder and restores that external recorder. Add focused proof that the switch actually observes a known gate and that separate request/view owners do not coalesce. No production Django setting, gate driver, response replacement or byte-comparison harness.",
+    "06.34-01-PLAN.md:138": "Per D-02, D-05, D-06 and D-19, implement module-level ContextVar default None with token reset in finally. Use request/view-local owner identity plus logical kind/subject/requirement and result for report deduplication; do not memoize enforcement or hide changed terminal results. Keep queryset references private and unevaluated; record/capture methods may not count, format or access deferred model fields. Guard optional fact construction before touching metadata. Add test-only autouse record_access_requests when CV_ACCESS_RECORD_REQUESTS equals 1, encompassing real Client and direct calls and yielding/resetting per test. Nested trace_access uses its own recorder and restores that external recorder. Add focused proof that the switch actually observes a known gate and that separate request/view owners do not coalesce. No production Django setting, gate driver, response replacement or byte-comparison harness.",
     "06.34-05-PLAN.md:38": "      via: \"Second full pytest run activates CV_ACCESS_RECORD_REQUESTS\"",
     "06.34-05-PLAN.md:104": "    - Every supported existing tests session executes the complete tests directory again with CV_ACCESS_RECORD_REQUESTS=1.",
     "06.34-05-PLAN.md:109": "Per D-19 and D-20, add an explicit second session.run pytest tests -n auto invocation to existing nox tests(session,django), passing CV_ACCESS_RECORD_REQUESTS=1 and PYTHONPATH=src:. through the subprocess env mapping. Addresses A-05: set PYTHONPATH=src:. on the normal invocation too; explicitly set CV_ACCESS_RECORD_REQUESTS=0 there so an inherited shell flag cannot turn both runs on. Both invocations must select the same checkout source, full tests directory, worker policy and session.posargs; preserve existing coverage arguments/report names/accounting; disable coverage collection for the second invocation so existing XML remains authoritative. Update the workflow's test step label/comment to identify both full runs, preserving supported skip rules and examples jobs. Do not invoke nox locally when that would install/upgrade packages: validate wiring through focused source/argument assertions and direct cached commands. Create test_access_trace_ci.py to verify full tests directory, exact recorder flag and absence of selective replacement. Run grid/middleware/limits/recorder/import-safety on all three cached interpreters after source-origin assertions. Complete full-suite normal/on runs are final plan 10 gates, with no exemption for preexisting query/order assertions.",
     "06.34-10-PLAN.md:120": "Per D-19/D-20/D-21, run the entire tests directory normally and again with CV_ACCESS_RECORD_REQUESTS=1 on cached supported Django 5.2, using four workers and PYTHONPATH=src:. (from the repository root). Both runs include all existing tests, exact query counts and ordering; fix regressions at their owning production/test fixture source without weakening inherited assertions. Preserve failed command evidence and rerun only affected checks plus required whole-suite gates after fixes. Run the full new trace/command/web/grid/locales suites plus existing manage release, authorization templates, ancestor costs and import-safety on cached 4.2 and 6.0, recording source-origin and real versions. Do not install other Python/Django runtimes; explicitly list unavailable declared-compatible combinations as unverified. Run strict docs, targeted lint/format, existing manage JavaScript regression and browser receipt source verification. Write JSON evidence with each exact command, environment, source identity, start/end, status/counts/skips and limitation; never infer pass from an absent tool or old receipt. Ensure test-only subprocess/TTY fixtures and installed/absent login middleware branches ran. If any product/UI code changed after browser capture, rerun task 1 before accepting source verification. Leave final phase status and human UAT to the orchestrator.",
-    "06.34-01-PLAN.md:167": "| T-06.34-02 | Information disclosure | ContextVar and scalar schema | high | mitigate | Task 2 isolates nested/concurrent contexts; Task 1 excludes object contents and persistent request stores. |",
+    "06.34-01-PLAN.md:170": "| T-06.34-02 | Information disclosure | ContextVar and scalar schema | high | mitigate | Task 2 isolates nested/concurrent contexts; Task 1 excludes object contents and persistent request stores. |",
     "06.34-01-PLAN.md:106": "  Addresses review concern A-01: explicitly instrument CrudView._cv_ancestor_actor_response's all-none/no-rule return and CrudViewPermissionRequiredMixin._cv_ancestor_actor_response's all-none active return and actual PermissionRequiredMixin.has_permission(self) result. Record actor_admission with owning method/source and the evaluated full permission for that early check, after _check_nested_auth and the existing permission lookup; do not call the overridable has_permission or the backend a second time. Protected branches delegate unchanged to _protected_actor_response, whose reporting belongs to plan 02. Later has_permission still owns its own_permission/action_state events. Tests cover no-rule admission, actual early grant/refusal and unchanged query/order; the recorder does not invent a custom override call on this unbound path. Addresses A-07 through the translation/import contract above.",
     "06.34-02-PLAN.md:96": "Addresses A-08: add two separate relationship failures. A two-level ancestor belonging to a different outer parent fails _resolve_ancestor as ancestor_lookup, with the deeper lookup/local gates not reached. A one-level leaf belonging to a different resolved parent fails CrudView.get_object as object_lookup after successful ancestor lookup/gates; include a queryset override omitting parent filtering so _validate_child_parent remains exercised. Assert decided_by names the correct step and no later action state runs. Existing base.py reporting from 01 must encompass the complete get_object including relationship validation; do not relocate the leaf failure to the ancestor engine.",
     "06.34-06-PLAN.md:108": "    - Stripping terminal ANSI yields the same parseable JSON with quotes/backslashes/unicode intact; DJANGO_COLORS cannot redefine the fixed roles.",
@@ -207,7 +209,7 @@
     "06.34-04-PLAN.md:122": "Per D-23, discover configured middleware classes and select Django LoginRequiredMiddleware or subclasses only through a guarded import. Instantiate selected classes with a harmless get_response and invoke their actual process_view using the original resolved callback, args and kwargs in configured order, before dispatch. First returned response wins; record each reached result. Do not invoke unrelated middleware or the decorated callback. Keep route resolution as prerequisite evidence, then login as the first authorization check; planning failures cannot preempt it. Test subclass returning denial/error, callback login_required=False/login_url/redirect_field_name metadata, multiple entries, absence, and Django's real build_absolute_uri behavior under the fixed synthetic origin without overriding settings. Every result including no-route/error carries the untraced middleware/decorator notice.",
     "06.34-02-PLAN.md:145": "Addresses A-01/A-04: ManageView._cv_ancestor_actor_response delegates to _protected_actor_response, instrumented by task 1; do not duplicate its actor admission. _cv_manage_allowed is a classmethod used by both has_permission and cv_has_access: allocate one fresh private opaque report owner token for each invocation only when recording, per 01. All branches in that invocation share that token; independent calls never share a class/PK-based dedup key. Record computed branch facts once (inactive, disabled mode or membership result), retaining no user/request in the result. Verify same-class same-user projections across two requests, two distinct actors and direct cv_has_access calls remain independent while repeated instance lookups still deduplicate. No middleware, rendering observer, signature change or extra group query.",
     "06.34-02-PLAN.md:73": "New tests: the three artifact paths. Existing edit targets: `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/access_trace_runner.py` (created in 01), `src/crud_views/lib/resource.py`, `src/crud_views/lib/views/manage.py`. Add private runner `_plan_gates(view)` and `_merge_plan(recorder, plan)` only; retain plan 01 schema. Existing source references: `_validate_ancestor_structure`, `_requirement_source`, `_operation_requirements`, `_selected_gates`, `_effective_provider`, `_authorize_ancestors`, `_resolve_ancestor`, `cv_get_requirement`, `ResourceViewMixin.get_object/get_queryset`, `ManageView._cv_manage_allowed`. None is a new public signature.",
-    "06.34-01-PLAN.md:131": "    - The external test switch records actual ordinary Client and direct RequestFactory gate calls without extra queries.",
+    "06.34-01-PLAN.md:134": "    - The external test switch records actual ordinary Client and direct RequestFactory gate calls without extra queries.",
     "06.34-02-PLAN.md:120": "Per D-02, D-05, D-10 and D-22, report successful/missing native cv_get_item loading from ResourceViewMixin and preserve its leaf-module import boundary. Use the already implemented stub's real get_queryset and len of the returned list for counts visible with total null. Preserve loader arguments, parent kwargs and actual state gate order. Test readable external-loader stand-ins under the selected actor, missing item, disabled state and nested ancestry; never call a Resource action handler. Record only Resource class/model identity and PK, never item labels, mappings or repr. No Resource manage registration.",
     "06.34-04-PLAN.md:69": "New tests listed above. Existing plan-01 runner gains private `_observe_custom_methods`, `_observe_denial_response`, `_run_login_middleware`, `_classify_response`, `_add_limitations`, and exception `UnsupportedTraceResponse`. This is internal scaffolding, not new public extension hooks. No application middleware, Resource, workflow or registered view class changes. `not_evaluated` and all result fields consume plan 01's schema; no additional setting or HTTP method argument.",
     "06.34-07-PLAN.md:18": "  - \"Reuse user-parameterized matrix and requirement APIs; support per-ViewSet and arbitrary-path checks with registry-backed CSP-compatible markup\"",
@@ -215,17 +217,18 @@
     "06.34-07-PLAN.md:97": "    - Arbitrary path mode preserves the current ViewSet's matrix actor and hosting viewer identity.",
     "06.34-07-PLAN.md:108": "  <name>Task 2: Complete per-ViewSet outcomes, selected actor row and route boundaries</name>",
     "06.34-07-PLAN.md:113": "    - Per-ViewSet mode replaces only manage_permissions.actor using the existing explicit-user override.",
-    "06.34-07-PLAN.md:117": "Per D-14, D-17 and D-24, add the this-ViewSet GET form, mode=viewset, typed user and optional object PK. On valid selection use existing get_manage_actor_row(self.cv_viewset, actor) once to replace only the actor row; retain viewer-driven groups/users/other builders, strict Guardian object counts and legacy behavior. Enumerate get_all_views in registration order including backend and POST-only entries. Build URLs through real names/reverse and only declared parent kwargs from the hosting URL plus supplied own PK. Do not infer ancestry from objects or concatenate display regex. cv_pk views without own PK say needs an object pk; missing child redirect/polymorphic content-type/custom route coordinates say use the path field, rather than aborting the table. For reverse converter failures render bounded per-row path guidance and retain all rows. Each executable row calls the same trace function and expands via native details, including the POST-only limitation from 04. Parametrize both forms across core/Guardian, username/PK/collision/unknown, nested multi-parent routes and tampered extra GET coordinates.",
-    "06.34-07-PLAN.md:130": "  <done>The per-ViewSet query delivers complete linkable outcomes and the selected actor's existing matrix projection.</done>",
+    "06.34-07-PLAN.md:117": "Per D-14, D-17 and D-24, add the this-ViewSet GET form, mode=viewset, typed user and optional object PK. On valid selection use existing get_manage_actor_row(self.cv_viewset, actor) once to replace only the actor row; retain viewer-driven groups/users/other builders, strict Guardian object counts and legacy behavior. Enumerate get_all_views in registration order including backend and POST-only entries. Build URLs through real names/reverse and only declared parent kwargs from the hosting URL plus supplied own PK when the view's route requires it. Do not infer ancestry from objects or concatenate display regex. Addresses review concern C3-03: follow ViewSet.get_path_pk's cv_object signal for the standard own-PK segment, using the ViewSet's pk_name and actual reverse requirements; object routes without own PK say needs an object pk. List/create/manage routes must not require or receive an unused own PK. Missing child redirect/polymorphic content-type/custom route coordinates say use the path field, rather than aborting the table. For reverse converter failures, including a supplied malformed own PK, render bounded per-row path guidance and retain all rows. Each executable row calls the same trace function and expands via native details, including the POST-only limitation from 04. Parametrize both forms across core/Guardian, username/PK/collision/unknown, nested multi-parent routes and tampered extra GET coordinates. In the existing manage tests, cover detail/update/delete object routes with absent and valid own PK, list/create/manage routes with and without a supplied own PK, child redirect/polymorphic/custom extra-coordinate routes, and invalid own-PK converter values; assert each row's trace or distinct needs-PK/use-path guidance and unchanged row inventory.",
+    "06.34-07-PLAN.md:131": "  <done>The per-ViewSet query delivers complete linkable outcomes and the selected actor's existing matrix projection.</done>",
+    "06.34-07-PLAN.md:216": "| C3-03 Own-PK routing signal | LOW | Task 2 uses cv_object, the ViewSet pk_name and real reversal requirements; route-category tests distinguish object, non-object, extra-coordinate and converter-failure rows while retaining the existing complete inventory and per-row guidance. |",
     "06.34-08-PLAN.md:94": "Addresses review concerns N-01/N-02 per D-08/D-07: add the bounded meanings directly to the main manage.md command/trace reference. A custom_gate source names the class/method of the actual observed bound callable, how=observed_boundary, and its message states that the inner denying implementation is unknown. Inner super calls and multiple project overrides are opaque; even an inherited library method may be the observed boundary for an uninstrumented refusal below it. Never describe that class as a proven inner culprit or select an arbitrary project definer. Guardian n/m are pre-context counts: total is the actual pre-Guardian queryset, visible is the final get_queryset return. They do not include later _scope_child_queryset parent scoping, pagination or rendering filters; a project override omitting the parent filter can yield more traced rows than the page renders. Default ViewSet querysets already carry parent filtering. Keep the approved sees n of m output, with this explicit documented meaning. Add test_access_trace_docs cases that generate a real multi-override trace and a nested-list trace, verify the documented source/how/message and count semantics against the outputs, and require the corresponding explanation in the reference. Do not duplicate gate evaluation or build a second runtime to generate examples.",
-    "06.34-09-PLAN.md:105": "Addresses A-06: assert compiled German viewer '(Sie)' wording survives in both matrix layouts for default/no-selection, unknown selection and arbitrary-path mode; valid per-ViewSet selection renders the distinct translated checked-actor wording for other actors and selected self. These assertions exercise both inherited templates and actual row data, without adding a Guardian-owned message.",
+    "06.34-09-PLAN.md:107": "Addresses A-06: assert compiled German viewer '(Sie)' wording survives in both matrix layouts for default/no-selection, unknown selection and arbitrary-path mode; valid per-ViewSet selection renders the distinct translated checked-actor wording for other actors and selected self. These assertions exercise both inherited templates and actual row data, without adding a Guardian-owned message.",
     "06.34-01-PLAN.md:85": "Translation contract (A-07): keep access_trace.py importable before Django settings/apps exist, with standard-library module imports only; translate presentation centrally in the runner/command, using direct gettext-family calls with literal msgids/context and named `%(name)s` interpolation after translation. Use ngettext/npgettext for plural choice, formatting numeric display values through named string substitutions. No computed/f-string/format-template msgids. Plan 09 expands and tests the extractor for singular/plural/contextual and lazy variants plus imported Django translation-module calls; stable codes remain untranslated.",
-    "06.34-01-PLAN.md:114": "    - The early all-none check has actor_admission evidence with the real requirement, without duplicate permission evaluation or fabricated custom ownership.",
+    "06.34-01-PLAN.md:117": "    - The early all-none check has actor_admission evidence with the real requirement, without duplicate permission evaluation or fabricated custom ownership.",
     "06.34-02-PLAN.md:202": "| A-08 Relationship mismatch attribution | MEDIUM | Task 1 separately asserts ancestor_lookup for a two-level mismatch and object_lookup for a leaf mismatch. |",
     "06.34-07-PLAN.md:114": "    - Every get_all_views registration is present; missing own PK and extra route args have distinct instructions; nested parents come only from host kwargs.",
     "06.34-10-PLAN.md:98": "Per D-14\u2013D-16, D-21 and D-24, create a bounded phase-specific harness using existing exported preflight/asset/startOwned/cleanup helpers. Copy only necessary server bootstrap conventions into the new fixture, configure an owned temporary SQLite DB and real registered core/Guardian/nested manage views with trace setting toggle, developer viewer, separate actors, PK/username collision and hostile long strings. No fake trace results. Prove default-off ignores parameters, enable both form modes, submit actual GET forms, copy/reload result URLs, assert chosen actor and unchanged signed-in viewer, trace a parent the viewer cannot access, unknown-user no-result, needs-PK/extra-args instructions and POST-only limitation. Across desktop (1280px) and 390px, en/de and core/Guardian, measure document scrollWidth against viewport, control label association/focus, native summary toggling via Enter/Space with JS disabled, responsive trace-region scrolling and long path/class/error wrapping. Capture allowed/denied/error/counts/not-reached/not-evaluated displays, semantic words plus registry override classes, help anchor and new-tab rel/title/aria behavior with local intercepted docs responses. Inspect actual CSP response, loaded assets and browser console; allow no inline style/script/on* and no unlisted network fetches. Reuse installed cached Playwright/Chromium and audited local asset bytes; if unavailable, record environment-blocked rather than install or claim success. Receipt includes exact case IDs, measured assertions, screenshots, actual versions, source/asset hashes and owned cleanup. Negative harness tests reject missing cases, false measurements, stale source and failed cleanup. Preserve existing phase-06.33 fixture and evidence.",
     "06.34-03-PLAN.md:31": "      via: \"Record actual local branches and capture_filter lazy references\"",
-    "06.34-01-PLAN.md:136": "  Addresses A-03/A-04: import the recorder lazily inside record_access_requests, after the test project's pytest_configure has configured Django, never at root conftest module scope. Implement the private classmethod invocation-token rule above and test two actors, same actor across separate calls/requests, and nested recorder restoration. Retain token objects until recorder cleanup to prevent identity reuse; do not retain actor objects or infer request identity from a class. This makes unrelated projection calls independent without instrumenting rendering or adding request middleware. Add an isolated-process recorder import smoke before settings configuration and prove flag-enabled collection succeeds. Implement capture_login_response as a private identity-only store for the actual owning response; it is observation data, never a signal to bypass a gate.",
+    "06.34-01-PLAN.md:139": "  Addresses A-03/A-04: import the recorder lazily inside record_access_requests, after the test project's pytest_configure has configured Django, never at root conftest module scope. Implement the private classmethod invocation-token rule above and test two actors, same actor across separate calls/requests, and nested recorder restoration. Retain token objects until recorder cleanup to prevent identity reuse; do not retain actor objects or infer request identity from a class. This makes unrelated projection calls independent without instrumenting rendering or adding request middleware. Add an isolated-process recorder import smoke before settings configuration and prove flag-enabled collection succeeds. Implement capture_login_response as a private identity-only store for the actual owning response; it is observation data, never a signal to bypass a gate.",
     "06.34-03-PLAN.md:24": "    - \"Nested Guardian create reports its parent and state requirements without introducing a child-add gate.\"",
     "06.34-03-PLAN.md:38": "Explain Guardian grants, list filtering and parent-only create access.",
     "06.34-03-PLAN.md:104": "  <name>Task 2: Preserve parent-only create composition and ancestor grant ownership</name>",
@@ -237,12 +240,13 @@
     "06.34-04-PLAN.md:91": "    - Session save/create/delete/flush/cycle_key/update and message add/update never invoke configured storage.",
     "06.34-05-PLAN.md:85": "Per D-20, create one readable parametrized Cartesian grid: plain, core permission-required, Guardian object, Guardian list, nested Guardian create, manage, Resource, two-level cascade on, two-level cascade off; cross anonymous, authenticated inactive, no-rights, model-permission, object-grant and active-superuser actors. Add mixed model/Guardian ancestry coverage and a manage-member success case; retain nonmember-superuser manage denial. Isolate registry/vocabulary/URL caches with existing finally fixtures. Use real GET-capable representatives that render successfully and the inactive-admitting backend, reload actors between observations, and assert expected status/outcome plus first deciding and untouched gates. Inactive plain admission and gated Guardian list denial follow current code. Add supplemental missing ancestor/object, error, no-route, not-evaluated and actual login middleware cases, retaining separate POST-only tests from 04. Include the expected case count/set so curated omissions or skips cannot masquerade as a full grid.",
     "06.34-07-PLAN.md:110": "  <read_first>src/crud_views/lib/viewset/__init__.py; src/crud_views_guardian/lib/views.py; src/crud_views/lib/views/child.py; src/crud_views_polymorphic/lib/create.py; tests/test1/test_manage_guardian.py</read_first>",
+    "06.34-07-PLAN.md:123": "    - cv_object detail/update/delete routes require the own PK; list/create/manage routes reverse with their actual required kwargs even when an optional PK was supplied. Extra-coordinate and converter-failure rows retain use-path guidance; missing own-PK rows retain needs-PK guidance, including nested parent kwargs from the host URL.",
     "06.34-08-PLAN.md:114": "Per D-05, D-07\u2013D-11 and D-21\u2013D-23, link denial guidance to the manage trace reference. Describe actual Guardian list admission/filtering and n/m counts, strict matrix counts versus endpoint fallback, parent-only create, inactive plain exceptions and ordered ancestor failure. Document real Resource loaders under the traced user, row counts and possible external reads. State default DB rollback/savepoint guarantee, no saved session/messages, but no cross-database/external-service/process-cache sandbox. Describe synthetic http://localhost, empty query, absent headers/body/project middleware context, opaque custom methods, arbitrary-response unsupported errors and POST-only authorization-only adaptation. Enumerate workflow transition submit permission, nested-list page-build database check, delete-preview page-build check, and form/action/workflow write checks as not evaluated. Repeat other middleware/URL decorators untraced and real LoginRequiredMiddleware/subclass exception. Add concise Added changelog entry for command/default-off card; no version bump, no claim that all side effects are impossible. Extend the docs tests from task 1 with these reference-link and limitation obligations in this task; task 1's first verification covers only its own completed sections.",
     "06.34-05-PLAN.md:111": "Extend test_access_trace_ci.py to inspect both session.run argument/env mappings: equal PYTHONPATH=src:., normal flag 0 versus recorded flag 1, same tests/worker/posargs selection, coverage only on the normal run. Add a session source-origin probe using that same PYTHONPATH which logs crud_views.__file__ and asserts it is below the checkout src directory before either run. This is a bounded nox wiring check, not a local install. The second complete run's extra CI time is accepted by D-19.",
     "06.34-06-PLAN.md:13": "  - \"Deliver cv_access <path> <user> with anonymous support, versioned JSON, terminal color handling and specified exit codes\"",
     "06.34-06-PLAN.md:42": "Expose the shared trace through cv_access text and JSON.",
     "06.34-08-PLAN.md:90": "Per D-12\u2013D-16, D-21 and D-24, add ## Access check (anchor access-check) and ## cv_access sections to manage.md. Document text/JSON examples from the real command, all six outcomes, 0/1/2 codes, unknown/usage versus trace stdout/stderr behavior, username-first collisions, anonymous CLI, full URL path-only normalization, terminal/piped/no/force color and version-1 fields/codes. Explain both forms, no user picker, PK/collision semantics in each, nested parents, backend/POST-only rows, needs-PK/use-path guidance and actor-row replacement. Add False setting default and opt-in existence/access disclosure; CLI is unaffected. Reword signed-in-account diagnosis to recommend tracing first while retaining sign-in fallback. Remove now-false no-trace/no-form statements. Tests parse an actual trace document, validate documented schema/code sets, verify setting default and help anchor/base behavior; do not merely assert words exist.",
-    "06.34-07-PLAN.md:143": "Per D-16, implement the ten declared class keys with Bootstrap defaults: allowed/passed badge bg-success; denied badge bg-danger; not-found/login-redirect/error/no-such-route/not-evaluated badge bg-warning text-dark; skipped/not-reached badge bg-secondary. Use cv_button_class resolution in the shared partial/card and test sentinel overrides for all keys. Give labels unique associated IDs across the two forms, scoped table headers, responsive focusable region wrappers and text meaning independent of color. Use native details/summary without nested controls; all disclosure works with JS disabled. Add only scoped [data-cv-manage] CSS needed for wrapping long path/class/error content at 390px. Help links target #access-check under the existing base, use the existing new-tab accessible pattern. Translate all new labels and explanatory prose; catalog completion belongs to 09. Preserve external assets and old block overrides.",
+    "06.34-07-PLAN.md:144": "Per D-16, implement the ten declared class keys with Bootstrap defaults: allowed/passed badge bg-success; denied badge bg-danger; not-found/login-redirect/error/no-such-route/not-evaluated badge bg-warning text-dark; skipped/not-reached badge bg-secondary. Use cv_button_class resolution in the shared partial/card and test sentinel overrides for all keys. Give labels unique associated IDs across the two forms, scoped table headers, responsive focusable region wrappers and text meaning independent of color. Use native details/summary without nested controls; all disclosure works with JS disabled. Add only scoped [data-cv-manage] CSS needed for wrapping long path/class/error content at 390px. Help links target #access-check under the existing base, use the existing new-tab accessible pattern. Translate all new labels and explanatory prose; catalog completion belongs to 09. Preserve external assets and old block overrides.",
     "06.34-02-PLAN.md:92": "Per D-02, D-04\u2013D-06 and D-17, observe existing validation, actor response, each actual lookup and selected gate. Catch only to report and immediately re-raise unchanged exceptions. Retain auth/database guards before permission vocabulary/provider access. Build planned key/source/identity rows using existing pure helpers and cv_get_requirement; no querysets, permission-map expansion or permission predicates in the planner. Retain planner exceptions as unavailable metadata, then let real dispatch decide outcome. Enrich reached events with already-computed full permissions and merge unvisited own/state/ancestor gates after the deciding event. Do not infer that inactive plain all-none requests must deny. Test missing ancestor, child-parent mismatch, missing action declaration, missing mapped permission and nondefault auth/queryset routing with earlier failure precedence.",
     "06.34-02-PLAN.md:143": "Per D-02, D-05, D-06 and D-17, instrument _cv_manage_allowed's actual early branches, nested auth guard and membership result. Record group, effective mode in source/message, provider none and actual result without a second group query. Keep has_permission and cv_has_access signatures and meanings unchanged. A missing recorder must avoid diagnostic payload work. Cover all enabled modes, DEBUG combinations, anonymous/inactive, member/nonmember, custom group and nested ancestor denial; verify no local group check after earlier denial.",
     "06.34-04-PLAN.md:139": "  <read_first>src/crud_views/lib/views/action.py; src/crud_views/lib/views/delete.py; src/crud_views/lib/views/mixins.py; src/crud_views_workflow/lib/views.py; src/crud_views/lib/view/base.py</read_first>",
@@ -250,7 +254,7 @@
     "06.34-04-PLAN.md:146": "Per D-03, D-14 and D-22, implement the documented instance-local whitelist adaptation and explanatory step. Preserve actual method-sensitive custom dispatch responses using task 1 classification. Add family-based limitation detection using existing core MRO/classes and class-module inspection for optional workflow ancestry so core does not import optional apps. Workflow: transition permissions checked on submit. Nested list: database configuration checked when page is built. Delete: delete-preview configuration checked when page is built. Nested forms/actions/workflow writes: database configuration checked on submit. Include applicable notes even if an earlier gate denied; do not imply any check executed. Exercise all four families with exploding get/get_context_data/form/POST hooks and assert no calls. Output wording for allowed is may open the page, with the method limitation where applicable. No transition permission enumeration or real preview/render construction.",
     "06.34-01-PLAN.md:17": "  - \"Real dispatch with a stub handler; always roll back the default-database transaction\"",
     "06.34-01-PLAN.md:34": "      provides: \"New path/user dispatch runner and fresh actor resolution\"",
-    "06.34-01-PLAN.md:166": "| T-06.34-01 | Elevation of privilege | Core reporter and stub | high | mitigate | Tasks 1\u20132 preserve real dispatch/order and prove cost-neutral external recording. |",
+    "06.34-01-PLAN.md:169": "| T-06.34-01 | Elevation of privilege | Core reporter and stub | high | mitigate | Tasks 1\u20132 preserve real dispatch/order and prove cost-neutral external recording. |",
     "06.34-02-PLAN.md:89": "    - Invalid plan metadata does not preempt a login or custom-dispatch refusal.",
     "06.34-04-PLAN.md:40": "      to: Resolved view instance dispatch",
     "06.34-04-PLAN.md:79": "Authorization is observed, transport is not replayed. For an explicit POST-only whitelist, copy and add GET on the instance only to reach the stub; never alter the class or execute POST. Include a not_evaluated method/handler limitation. A project dispatch that independently rejects synthetic GET remains an error/unsupported result; do not claim method-sensitive parity. Host is always the synthetic http://localhost from plan 01; the supplied URL's host is discarded. No headers/body/application middleware context is invented. The mockup's object title is excluded per D-05. Plain inactive and Guardian list outcomes follow real gates, resolving the design's shorthand in favor of D-11/D-20.",
@@ -271,11 +275,11 @@
     "06.34-08-PLAN.md:9": "  - docs/reference/settings.md",
     "06.34-08-PLAN.md:15": "  - docs/reference/theme.md",
     "06.34-08-PLAN.md:42": "    - from: docs/reference/theme.md",
-    "06.34-01-PLAN.md:113": "    - Public gate signatures and existing core query assertions remain unchanged; trace never invokes real get.",
-    "06.34-01-PLAN.md:108": "Addresses review concern N-02 per D-03, D-07 and D-22: keep counts at the actual get_queryset return boundary before context construction. Do not call _scope_child_queryset, get_context_data or any rendering method from the trace to make the counts resemble rendered rows. Add a nested core-list fixture whose override returns children from two parents and bypasses the default parent filter. With an admitted actor, assert the trace counts both parents' returned rows, while a separate real GET has only the selected parent's rows in its object_list context; both outcomes remain allowed. An exploding context hook on the trace case proves no context work ran. Also retain the default-queryset case where counts already respect the parent filter. Plan 03 tests Guardian's precise pre-filter/final-return pair; plan 08 documents that these are pre-context queryset counts, distinct from the nested-list database-check limitation. No runtime parent-scoping correction or extra normal-request query is authorized.",
+    "06.34-01-PLAN.md:116": "    - Public gate signatures and existing core query assertions remain unchanged; trace never invokes real get.",
+    "06.34-01-PLAN.md:110": "Addresses review concern N-02 per D-03, D-07 and D-22: keep counts at the actual get_queryset return boundary before context construction. Do not call _scope_child_queryset, get_context_data or any rendering method from the trace to make the counts resemble rendered rows. Add a nested core-list fixture whose override returns children from two parents and bypasses the default parent filter. With an admitted actor, assert the trace counts both parents' returned rows, while a separate real GET has only the selected parent's rows in its object_list context; both outcomes remain allowed. An exploding context hook on the trace case proves no context work ran. Also retain the default-queryset case where counts already respect the parent filter. Plan 03 tests Guardian's precise pre-filter/final-return pair; plan 08 documents that these are pre-context queryset counts, distinct from the nested-list database-check limitation. No runtime parent-scoping correction or extra normal-request query is authorized.",
     "06.34-07-PLAN.md:44": "      to: get_manage_actor_row(viewset,user)",
     "06.34-01-PLAN.md:29": "    - \"List counts describe actual get_queryset output before context-time parent scoping; no page-building method is called to adjust them.\"",
-    "06.34-01-PLAN.md:179": "- List counts describe actual get_queryset output before context-time parent scoping; no page-building method is called to adjust them.",
+    "06.34-01-PLAN.md:182": "- List counts describe actual get_queryset output before context-time parent scoping; no page-building method is called to adjust them.",
     "06.34-08-PLAN.md:212": "| N-02 Pre-context nested-list count documentation | LOW | Tasks 1\u20132 explain exact pre-Guardian/final-get_queryset counts versus context-time parent scoping, test real output, and distinguish this limit from the later database check. |",
     "06.34-08-PLAN.md:116": "Addresses review concerns N-01/N-02: in guardian.md and nested.md, link to task 1's custom-boundary explanation and spell out that nested-list counts precede context-time parent scoping. Explain the missing-parent-filter override case separately from D-22's unevaluated nested-list database validation: the former concerns count meaning, the latter a later configuration check. Do not imply changing counts repairs either boundary or that the trace renders the page. Extend the owning docs tests to require these distinct explanations and valid reference links while retaining the task-1 actual-output assertions.",
     "06.34-04-PLAN.md:71": "Custom-step projection uses existing fields only: `source` is the fully qualified defining class plus method name of the actual bound callable observed on entry; `how` is the stable value `observed_boundary`; `message` explains that this boundary returned/raised the refusal and the inner denying implementation is unknown. These are boundary facts, not a claim that the named class originated the refusal. An inherited library callable may be the observed boundary for an uninstrumented project override beneath it. D-08's method/class/result and opaque-project-code contract is preserved without claiming inner-frame visibility.",
@@ -283,7 +287,7 @@
     "06.34-02-PLAN.md:123": "    - Native loaders, their request.user and kwargs are observed directly.",
     "06.34-08-PLAN.md:92": "Addresses H-03: task 1's new docs tests cover only these completed manage/settings/schema/anchor sections. Run test_manage_docs and all theme inventory checks only in task 3, after their tables and expected totals exist. Preserve the eleven default-off anchors in the existing test unchanged; extend new test_access_trace_docs enabled-card coverage to assert those anchors plus access-check across core/Guardian. Update manage.md's anchor-preservation wording to distinguish the eleven unconditional anchors from the opt-in access-check anchor, without renaming existing headings.",
     "06.34-08-PLAN.md:136": "Per D-16, D-17 and D-21, extend the exact Structured manage contracts tables with manage_access_trace context (None disabled, documented enabled mapping/row shapes), manage_access_trace block, shared partial, explicit-user builder signature and all ten trace class keys/defaults. Document scalar public trace entry point/result projection and preserve the existing public/private classification. Extend test_manage_release to render core/Guardian with tracing disabled and enabled in both modes and compare exact live key/block/class sets to the tables; do not filter away the new entries or weaken equality. Verify request-independent builder calls on an instance without request, and inherited Guardian actor-row semantics. Theme examples should demonstrate overriding the shared card/partial rather than fork Guardian rendering.",
-    "06.34-07-PLAN.md:140": "    - Help uses manage_docs_base_url plus access-check anchor with established target/rel/title/aria contracts.",
+    "06.34-07-PLAN.md:141": "    - Help uses manage_docs_base_url plus access-check anchor with established target/rel/title/aria contracts.",
     "06.34-04-PLAN.md:24": "    - \"Custom denial has one observed method/class boundary, including super-then-deny; unseen inner override ownership is explicitly unknown and arbitrary redirects are not called login redirects.\"",
     "06.34-04-PLAN.md:27": "    - \"POST-only registered views can be diagnosed for authorization with an explicit method/handler limitation; all four handler-phase families remain visibly unevaluated.\"",
     "06.34-04-PLAN.md:87": "    - Override returns False, raises PermissionDenied/Http404, returns direct 403/404, or denies after passing super: exactly one custom terminal step naming the observed method boundary with explicit inner-owner uncertainty.",
@@ -319,8 +323,8 @@
     "06.34-01-PLAN.md:43": "    - from: src/crud_views/lib/access_trace.py",
     "06.34-01-PLAN.md:52": "Output: src/crud_views/lib/access_trace.py, src/crud_views/lib/access_trace_runner.py, tests/test1/test_access_trace.py, tests/test1/test_access_trace_recorder.py.",
     "06.34-01-PLAN.md:95": "  <files>src/crud_views/lib/access_trace.py, src/crud_views/lib/access_trace_runner.py, src/crud_views/lib/view/base.py, tests/test1/test_access_trace.py</files>",
-    "06.34-01-PLAN.md:126": "  <files>src/crud_views/lib/access_trace.py, tests/conftest.py, tests/test1/test_access_trace_recorder.py</files>",
-    "06.34-01-PLAN.md:127": "  <read_first>tests/conftest.py; tests/test1/conftest.py; tests/test1/test_ancestor_costs.py; src/crud_views/lib/access_trace.py</read_first>",
+    "06.34-01-PLAN.md:129": "  <files>src/crud_views/lib/access_trace.py, tests/conftest.py, tests/test1/test_access_trace_recorder.py</files>",
+    "06.34-01-PLAN.md:130": "  <read_first>tests/conftest.py; tests/test1/conftest.py; tests/test1/test_ancestor_costs.py; src/crud_views/lib/access_trace.py</read_first>",
     "06.34-02-PLAN.md:38": "      to: src/crud_views/lib/access_trace.py",
     "06.34-02-PLAN.md:44": "      to: src/crud_views/lib/access_trace.py",
     "06.34-03-PLAN.md:30": "      to: src/crud_views/lib/access_trace.py",
@@ -352,8 +356,8 @@
     "06.34-02-PLAN.md:37": "    - from: src/crud_views/lib/ancestors.py",
     "06.34-02-PLAN.md:41": "      to: src/crud_views/lib/ancestors.py",
     "06.34-07-PLAN.md:13": "  - src/crud_views/lib/button_classes.py",
-    "06.34-07-PLAN.md:135": "  <files>src/crud_views/lib/button_classes.py, src/crud_views/static/crud_views/css/manage.css, src/crud_views/templates/crud_views/includes/access_trace.html, src/crud_views/templates/crud_views/view_manage.html, tests/test1/test_manage_access_trace.py</files>",
-    "06.34-07-PLAN.md:136": "  <read_first>src/crud_views/lib/button_classes.py; src/crud_views/static/crud_views/css/manage.css; tests/test1/test_manage_cards.py; tests/test1/test_button_classes_templates.py</read_first>",
+    "06.34-07-PLAN.md:136": "  <files>src/crud_views/lib/button_classes.py, src/crud_views/static/crud_views/css/manage.css, src/crud_views/templates/crud_views/includes/access_trace.html, src/crud_views/templates/crud_views/view_manage.html, tests/test1/test_manage_access_trace.py</files>",
+    "06.34-07-PLAN.md:137": "  <read_first>src/crud_views/lib/button_classes.py; src/crud_views/static/crud_views/css/manage.css; tests/test1/test_manage_cards.py; tests/test1/test_button_classes_templates.py</read_first>",
     "06.34-02-PLAN.md:11": "  - src/crud_views/lib/resource.py",
     "06.34-02-PLAN.md:43": "    - from: src/crud_views/lib/resource.py",
     "06.34-02-PLAN.md:112": "  <files>src/crud_views/lib/resource.py, tests/test1/test_access_trace_resources.py</files>",
@@ -408,7 +412,7 @@
     "06.34-10-PLAN.md:72": "@superpowers/specs/2026-11-14-access-trace-design.md",
     "06.34-07-PLAN.md:68": "@superpowers/specs/2026-11-14-access-trace-mockup.html",
     "06.34-10-PLAN.md:90": "  <read_first>tests/browser/manage-presentation.cjs; tests/browser/manage_presentation_server.py; tests/browser/manage-presentation.test.cjs; tests/browser/templates/manage/page.html; superpowers/specs/2026-11-14-access-trace-mockup.html</read_first>",
-    "06.34-07-PLAN.md:181": "Run form/security/registry tests for both inherited page variants. Expected staged failures after 07: test_button_classes exact inventories/count sentence and test_theme_adoption_docs close in 08-3; test_manage_docs theme inventories and test_manage_release close in 08-3; new message coverage in test_manage_locales closes in 09. Do not run those dependent gates as this plan's task completion checks, weaken them, or treat them as unexplained regressions. Default-off help-anchor assertions remain unchanged; enabled links are covered separately. New catalog copy is intentionally completed before final full-suite acceptance.",
+    "06.34-07-PLAN.md:182": "Run form/security/registry tests for both inherited page variants. Expected staged failures after 07: test_button_classes exact inventories/count sentence and test_theme_adoption_docs close in 08-3; test_manage_docs theme inventories and test_manage_release close in 08-3; new message coverage in test_manage_locales closes in 09. Do not run those dependent gates as this plan's task completion checks, weaken them, or treat them as unexplained regressions. Default-off help-anchor assertions remain unchanged; enabled links are covered separately. New catalog copy is intentionally completed before final full-suite acceptance.",
     "06.34-08-PLAN.md:195": "| H-02 Exact registry test/documentation ownership | HIGH | Task 3 owns test_button_classes.py and test_theme_adoption_docs.py, every exact 121/139/19 assertion and neighboring docs totals/default mappings. |",
     "06.34-08-PLAN.md:140": "Addresses A-11: replace theme.md's statements that #370 is future capability with the actual opt-in trace and command contract, preserving #371 as a follow-up. Update its neighboring all-nine-manage-keys description and complete registration list to nineteen, including all ten new keys. Audit the adjacent builder/actor prose for obsolete viewer-only claims while retaining default viewer behavior, public headings and table grammar. Addresses H-03: only now run the whole existing test_manage_docs module and all owned registry/docs inventory modules. Catalog-completeness tests remain in 09.",
     "06.34-08-PLAN.md:196": "| H-03 Premature theme inventory verification | HIGH | Task 1 runs only its completed docs tests; task 3 runs test_manage_docs and all registry/theme inventories after their owning edits. |",
@@ -440,7 +444,7 @@
     "06.34-06-PLAN.md:9": "  - tests/test1/test_access_trace_command.py",
     "06.34-06-PLAN.md:28": "    - path: tests/test1/test_access_trace_command.py",
     "06.34-06-PLAN.md:36": "    - from: tests/test1/test_access_trace_command.py",
-    "06.34-09-PLAN.md:96": "  <read_first>tests/test1/test_manage_locales.py; tests/test1/test_manage_access_trace.py; tests/test1/test_access_trace_command.py</read_first>",
+    "06.34-09-PLAN.md:98": "  <read_first>tests/test1/test_manage_locales.py; tests/test1/test_manage_access_trace.py; tests/test1/test_access_trace_command.py</read_first>",
     "06.34-08-PLAN.md:10": "  - tests/test1/test_access_trace_docs.py",
     "06.34-08-PLAN.md:36": "    - path: tests/test1/test_access_trace_docs.py",
     "06.34-08-PLAN.md:51": "Output: tests/test1/test_access_trace_docs.py.",
@@ -459,7 +463,7 @@
     "06.34-09-PLAN.md:27": "    - path: tests/test1/test_access_trace_locales.py",
     "06.34-09-PLAN.md:34": "      to: tests/test1/test_access_trace_locales.py",
     "06.34-09-PLAN.md:42": "Output: tests/test1/test_access_trace_locales.py.",
-    "06.34-09-PLAN.md:95": "  <files>tests/test1/test_access_trace_locales.py</files>",
+    "06.34-09-PLAN.md:97": "  <files>tests/test1/test_access_trace_locales.py</files>",
     "06.34-02-PLAN.md:14": "  - tests/test1/test_access_trace_manage.py",
     "06.34-02-PLAN.md:34": "    - path: tests/test1/test_access_trace_manage.py",
     "06.34-04-PLAN.md:10": "  - tests/test1/test_access_trace_middleware.py",
@@ -470,7 +474,7 @@
     "06.34-02-PLAN.md:32": "    - path: tests/test1/test_access_trace_resources.py",
     "06.34-04-PLAN.md:9": "  - tests/test1/test_access_trace_safety.py",
     "06.34-04-PLAN.md:29": "    - path: tests/test1/test_access_trace_safety.py",
-    "06.34-07-PLAN.md:145": "Addresses H-02 ownership: these ten keys are new and disjoint from the 111 current core defaults and eighteen workflow defaults, yielding 121 core, 139 combined and nineteen manage keys. Plan 08 task 3 explicitly owns tests/test1/test_button_classes.py, tests/test1/test_theme_adoption_docs.py and matching docs totals/default tables; do not weaken those exact guards or silently edit them here. Keep this task's focused runtime/template checks; full inventory checks run after publication in 08. Existing form:submit and manage:help keys style the form controls/help; do not add further keys beyond the declared ten.",
+    "06.34-07-PLAN.md:146": "Addresses H-02 ownership: these ten keys are new and disjoint from the 111 current core defaults and eighteen workflow defaults, yielding 121 core, 139 combined and nineteen manage keys. Plan 08 task 3 explicitly owns tests/test1/test_button_classes.py, tests/test1/test_theme_adoption_docs.py and matching docs totals/default tables; do not weaken those exact guards or silently edit them here. Keep this task's focused runtime/template checks; full inventory checks run after publication in 08. Existing form:submit and manage:help keys style the form controls/help; do not add further keys beyond the declared ten.",
     "06.34-08-PLAN.md:18": "  - tests/test1/test_button_classes.py",
     "06.34-07-PLAN.md:12": "  - tests/test1/test_manage_access_trace.py",
     "06.34-07-PLAN.md:34": "    - path: tests/test1/test_manage_access_trace.py",
@@ -481,9 +485,9 @@
     "06.34-08-PLAN.md:19": "  - tests/test1/test_theme_adoption_docs.py",
     "06.34-01-PLAN.md:32": "      provides: \"New shared scalar result/recorder and public trace_access entry point\"",
     "06.34-01-PLAN.md:45": "      via: \"Lazy trace_access(path,user) delegation avoids an import cycle\"",
-    "06.34-01-PLAN.md:121": "  <done>The core detail happy and denial paths are runnable through trace_access with production rollback and scalar evidence.</done>",
+    "06.34-01-PLAN.md:124": "  <done>The core detail happy and denial paths are runnable through trace_access with production rollback and scalar evidence.</done>",
     "06.34-05-PLAN.md:35": "      via: \"Compare real HTTP outcome with trace_access\"",
-    "06.34-09-PLAN.md:103": "Per D-16/D-21/D-24, add translation.override('de') request/command tests that clear only test translation caches, render both form modes, and inspect actual compiled output. Include allowed, denied, not-found, error, needs-PK/use-path, no-route, not-reached/not-evaluated and plural row counts across core/Guardian. Assert unique translated labels, escaped hostile text and unmodified permission/source/code fields. Reuse real trace fixtures rather than building fabricated dictionaries.",
+    "06.34-09-PLAN.md:105": "Per D-16/D-21/D-24, add translation.override('de') request/command tests that clear only test translation caches, render both form modes, and inspect actual compiled output. Include allowed, denied, not-found, error, needs-PK/use-path, no-route, not-reached/not-evaluated and plural row counts across core/Guardian. Assert unique translated labels, escaped hostile text and unmodified permission/source/code fields. Reuse real trace fixtures rather than building fabricated dictionaries.",
     "06.34-07-PLAN.md:119": "Addresses A-06: in BOTH permission-matrix layouts in view_manage.html, use the existing enabled result mapping to distinguish a successful viewset-mode selection from the viewer row. For a selected actor render the translatable 'Access for: %(username)s (checked below)' equivalent via blocktranslate, including when the selected actor happens to be the viewer. Otherwise preserve the current '(you)' wording exactly: disabled, no submission, invalid/unknown selection and arbitrary-path mode retain the viewer row. Do not introduce another context flag or compare unrelated identity objects in the template. Test both layouts on core/Guardian pages for selected other actor, selected self and every unchanged viewer state; plan 09 supplies compiled German assertions for both labels."
   },
   "symbols": [
@@ -505,7 +509,8 @@
       "plan_occurrences": [
         "06.34-06-PLAN.md:66",
         "06.34-06-PLAN.md:82",
-        "06.34-06-PLAN.md:85"
+        "06.34-06-PLAN.md:85",
+        "06.34-09-PLAN.md:109"
       ]
     },
     {
@@ -694,8 +699,8 @@
       ],
       "plan_occurrences": [
         "06.34-01-PLAN.md:77",
-        "06.34-01-PLAN.md:118",
-        "06.34-01-PLAN.md:144",
+        "06.34-01-PLAN.md:121",
+        "06.34-01-PLAN.md:147",
         "06.34-02-PLAN.md:77",
         "06.34-02-PLAN.md:104",
         "06.34-02-PLAN.md:128",
@@ -715,15 +720,15 @@
         "06.34-06-PLAN.md:119",
         "06.34-07-PLAN.md:78",
         "06.34-07-PLAN.md:101",
-        "06.34-07-PLAN.md:127",
-        "06.34-07-PLAN.md:153",
+        "06.34-07-PLAN.md:128",
+        "06.34-07-PLAN.md:154",
         "06.34-08-PLAN.md:80",
         "06.34-08-PLAN.md:103",
         "06.34-08-PLAN.md:125",
         "06.34-08-PLAN.md:148",
         "06.34-09-PLAN.md:67",
-        "06.34-09-PLAN.md:87",
-        "06.34-09-PLAN.md:113",
+        "06.34-09-PLAN.md:89",
+        "06.34-09-PLAN.md:118",
         "06.34-10-PLAN.md:82",
         "06.34-10-PLAN.md:130"
       ]
@@ -830,7 +835,7 @@
       "verdict": "SKIPPED_NEW",
       "reason": "Declared new member or CLI flag",
       "plan_occurrences": [
-        "06.34-01-PLAN.md:217"
+        "06.34-01-PLAN.md:234"
       ]
     },
     {
@@ -884,7 +889,7 @@
       "verdict": "SKIPPED_NEW",
       "reason": "Declared new member or CLI flag",
       "plan_occurrences": [
-        "06.34-07-PLAN.md:210"
+        "06.34-07-PLAN.md:225"
       ]
     },
     {
@@ -902,7 +907,7 @@
       "verdict": "SKIPPED_NEW",
       "reason": "Declared new member or CLI flag",
       "plan_occurrences": [
-        "06.34-09-PLAN.md:167"
+        "06.34-09-PLAN.md:186"
       ]
     },
     {
@@ -1204,8 +1209,10 @@
       "reason": "Declared new member or CLI flag",
       "plan_occurrences": [
         "06.34-01-PLAN.md:80",
-        "06.34-01-PLAN.md:112",
-        "06.34-06-PLAN.md:85"
+        "06.34-01-PLAN.md:108",
+        "06.34-01-PLAN.md:114",
+        "06.34-06-PLAN.md:85",
+        "06.34-09-PLAN.md:109"
       ]
     },
     {
@@ -1309,8 +1316,8 @@
       "reason": "Declared new API/helper/schema/test switch in Artifacts this phase produces (plans 01/02/04/06/07)",
       "plan_occurrences": [
         "06.34-01-PLAN.md:73",
-        "06.34-01-PLAN.md:135",
-        "06.34-01-PLAN.md:144",
+        "06.34-01-PLAN.md:138",
+        "06.34-01-PLAN.md:147",
         "06.34-02-PLAN.md:104",
         "06.34-02-PLAN.md:153",
         "06.34-03-PLAN.md:97",
@@ -1403,8 +1410,8 @@
         "hardBlock": false
       },
       "plan_occurrences": [
-        "06.34-01-PLAN.md:135",
-        "06.34-01-PLAN.md:167"
+        "06.34-01-PLAN.md:138",
+        "06.34-01-PLAN.md:170"
       ]
     },
     {
@@ -1914,7 +1921,7 @@
         "hardBlock": false
       },
       "plan_occurrences": [
-        "06.34-01-PLAN.md:131"
+        "06.34-01-PLAN.md:134"
       ]
     },
     {
@@ -2003,9 +2010,27 @@
         "06.34-07-PLAN.md:108",
         "06.34-07-PLAN.md:113",
         "06.34-07-PLAN.md:117",
-        "06.34-07-PLAN.md:130",
+        "06.34-07-PLAN.md:131",
+        "06.34-07-PLAN.md:216",
         "06.34-08-PLAN.md:94",
-        "06.34-09-PLAN.md:105"
+        "06.34-09-PLAN.md:107"
+      ]
+    },
+    {
+      "symbol": "ViewSet.get_path_pk",
+      "kind": "identifier",
+      "verdict": "UNCHECKABLE",
+      "reason": "Effective intel adapter has no populated api-map; Python, CLI and non-JS references cannot be established by its empty index.",
+      "severity": {
+        "severity": "INFO",
+        "hardBlock": false
+      },
+      "supplemental_declaration_candidates": [
+        "src/crud_views/lib/viewset/path_regs.py:13",
+        "src/crud_views/lib/viewset/__init__.py:418"
+      ],
+      "plan_occurrences": [
+        "06.34-07-PLAN.md:117"
       ]
     },
     {
@@ -2351,7 +2376,8 @@
       "reason": "Declared new artifact src/crud_views/lib/access_trace.py",
       "plan_occurrences": [
         "06.34-01-PLAN.md:73",
-        "06.34-01-PLAN.md:85"
+        "06.34-01-PLAN.md:85",
+        "06.34-01-PLAN.md:108"
       ]
     },
     {
@@ -2496,7 +2522,7 @@
       "plan_occurrences": [
         "06.34-01-PLAN.md:80",
         "06.34-01-PLAN.md:106",
-        "06.34-01-PLAN.md:114",
+        "06.34-01-PLAN.md:117",
         "06.34-02-PLAN.md:94",
         "06.34-03-PLAN.md:84",
         "06.34-04-PLAN.md:98"
@@ -2648,7 +2674,7 @@
       "verdict": "SKIPPED_NEW",
       "reason": "Declared new API/helper/schema/test switch in Artifacts this phase produces (plans 01/02/04/06/07)",
       "plan_occurrences": [
-        "06.34-01-PLAN.md:136",
+        "06.34-01-PLAN.md:139",
         "06.34-02-PLAN.md:94"
       ]
     },
@@ -2698,6 +2724,8 @@
         "06.34-04-PLAN.md:91",
         "06.34-05-PLAN.md:85",
         "06.34-07-PLAN.md:110",
+        "06.34-07-PLAN.md:117",
+        "06.34-07-PLAN.md:123",
         "06.34-08-PLAN.md:114",
         "06.34-10-PLAN.md:98"
       ]
@@ -2770,7 +2798,8 @@
       "plan_occurrences": [
         "06.34-06-PLAN.md:13",
         "06.34-06-PLAN.md:42",
-        "06.34-08-PLAN.md:90"
+        "06.34-08-PLAN.md:90",
+        "06.34-09-PLAN.md:109"
       ]
     },
     {
@@ -2878,7 +2907,7 @@
         "src/crud_views_object_detail/templatetags/crud_views_object_detail.py:138"
       ],
       "plan_occurrences": [
-        "06.34-07-PLAN.md:143"
+        "06.34-07-PLAN.md:144"
       ]
     },
     {
@@ -3001,26 +3030,10 @@
         "tests/test1/test_ancestor_redirect.py:157"
       ],
       "plan_occurrences": [
-        "06.34-01-PLAN.md:105"
-      ]
-    },
-    {
-      "symbol": "cv_pk",
-      "kind": "identifier",
-      "verdict": "UNCHECKABLE",
-      "reason": "Effective intel adapter has no populated api-map; Python, CLI and non-JS references cannot be established by its empty index.",
-      "severity": {
-        "severity": "INFO",
-        "hardBlock": false
-      },
-      "supplemental_declaration_candidates": [
-        "src/crud_views/lib/views/manage.py:30",
-        "src/crud_views/lib/views/card.py:21",
-        "src/crud_views/lib/views/list.py:23",
-        "tests/test1/test_ancestor_redirect.py:158"
-      ],
-      "plan_occurrences": [
-        "06.34-07-PLAN.md:117"
+        "06.34-01-PLAN.md:105",
+        "06.34-07-PLAN.md:117",
+        "06.34-07-PLAN.md:123",
+        "06.34-07-PLAN.md:216"
       ]
     },
     {
@@ -3088,6 +3101,8 @@
         "06.34-04-PLAN.md:139",
         "06.34-04-PLAN.md:142",
         "06.34-04-PLAN.md:146",
+        "06.34-07-PLAN.md:117",
+        "06.34-07-PLAN.md:123",
         "06.34-08-PLAN.md:114"
       ]
     },
@@ -3112,7 +3127,7 @@
         "06.34-01-PLAN.md:17",
         "06.34-01-PLAN.md:34",
         "06.34-01-PLAN.md:105",
-        "06.34-01-PLAN.md:166",
+        "06.34-01-PLAN.md:169",
         "06.34-02-PLAN.md:89",
         "06.34-02-PLAN.md:92",
         "06.34-03-PLAN.md:62",
@@ -3394,7 +3409,7 @@
       ],
       "plan_occurrences": [
         "06.34-01-PLAN.md:105",
-        "06.34-01-PLAN.md:113",
+        "06.34-01-PLAN.md:116",
         "06.34-04-PLAN.md:94",
         "06.34-04-PLAN.md:146"
       ]
@@ -3442,7 +3457,7 @@
         "tests/test1/od/test_object_detail_view.py:126"
       ],
       "plan_occurrences": [
-        "06.34-01-PLAN.md:108"
+        "06.34-01-PLAN.md:110"
       ]
     },
     {
@@ -3569,8 +3584,8 @@
       "plan_occurrences": [
         "06.34-01-PLAN.md:29",
         "06.34-01-PLAN.md:105",
-        "06.34-01-PLAN.md:108",
-        "06.34-01-PLAN.md:179",
+        "06.34-01-PLAN.md:110",
+        "06.34-01-PLAN.md:182",
         "06.34-02-PLAN.md:73",
         "06.34-02-PLAN.md:120",
         "06.34-03-PLAN.md:62",
@@ -3951,7 +3966,8 @@
         "06.34-04-PLAN.md:122",
         "06.34-07-PLAN.md:93",
         "06.34-07-PLAN.md:114",
-        "06.34-07-PLAN.md:117"
+        "06.34-07-PLAN.md:117",
+        "06.34-07-PLAN.md:123"
       ]
     },
     {
@@ -4058,7 +4074,7 @@
         "tests/test1/test_manage_docs.py:76"
       ],
       "plan_occurrences": [
-        "06.34-07-PLAN.md:140"
+        "06.34-07-PLAN.md:141"
       ]
     },
     {
@@ -4275,8 +4291,8 @@
         "06.34-01-PLAN.md:29",
         "06.34-01-PLAN.md:105",
         "06.34-01-PLAN.md:106",
-        "06.34-01-PLAN.md:108",
-        "06.34-01-PLAN.md:179",
+        "06.34-01-PLAN.md:110",
+        "06.34-01-PLAN.md:182",
         "06.34-03-PLAN.md:84",
         "06.34-04-PLAN.md:24",
         "06.34-04-PLAN.md:27",
@@ -4431,7 +4447,7 @@
         "hardBlock": false
       },
       "plan_occurrences": [
-        "06.34-01-PLAN.md:108",
+        "06.34-01-PLAN.md:110",
         "06.34-03-PLAN.md:88"
       ]
     },
@@ -4626,6 +4642,28 @@
       ]
     },
     {
+      "symbol": "pk_name",
+      "kind": "identifier",
+      "verdict": "UNCHECKABLE",
+      "reason": "Effective intel adapter has no populated api-map; Python, CLI and non-JS references cannot be established by its empty index.",
+      "severity": {
+        "severity": "INFO",
+        "hardBlock": false
+      },
+      "supplemental_declaration_candidates": [
+        "src/crud_views/lib/resource.py:163",
+        "src/crud_views/lib/viewset/parentviewset.py:18",
+        "src/crud_views/lib/viewset/__init__.py:79",
+        "tests/test1/test_fragment_authorization.py:661",
+        "tests/test1/test_fragment_authorization.py:748",
+        "tests/test1/test_fragment_authorization.py:865"
+      ],
+      "plan_occurrences": [
+        "06.34-07-PLAN.md:117",
+        "06.34-07-PLAN.md:216"
+      ]
+    },
+    {
       "symbol": "preflight",
       "kind": "identifier",
       "verdict": "UNCHECKABLE",
@@ -4671,7 +4709,7 @@
         "tests/test1/conftest.py:43"
       ],
       "plan_occurrences": [
-        "06.34-01-PLAN.md:136"
+        "06.34-01-PLAN.md:139"
       ]
     },
     {
@@ -4681,8 +4719,8 @@
       "reason": "Declared new API/helper/schema/test switch in Artifacts this phase produces (plans 01/02/04/06/07)",
       "plan_occurrences": [
         "06.34-01-PLAN.md:73",
-        "06.34-01-PLAN.md:135",
-        "06.34-01-PLAN.md:136"
+        "06.34-01-PLAN.md:138",
+        "06.34-01-PLAN.md:139"
       ]
     },
     {
@@ -5801,8 +5839,8 @@
         "06.34-01-PLAN.md:43",
         "06.34-01-PLAN.md:52",
         "06.34-01-PLAN.md:95",
-        "06.34-01-PLAN.md:126",
-        "06.34-01-PLAN.md:127",
+        "06.34-01-PLAN.md:129",
+        "06.34-01-PLAN.md:130",
         "06.34-02-PLAN.md:38",
         "06.34-02-PLAN.md:44",
         "06.34-03-PLAN.md:30",
@@ -5895,8 +5933,8 @@
       ],
       "plan_occurrences": [
         "06.34-07-PLAN.md:13",
-        "06.34-07-PLAN.md:135",
         "06.34-07-PLAN.md:136",
+        "06.34-07-PLAN.md:137",
         "06.34-08-PLAN.md:134"
       ]
     },
@@ -6187,8 +6225,8 @@
       ],
       "plan_occurrences": [
         "06.34-07-PLAN.md:14",
-        "06.34-07-PLAN.md:135",
-        "06.34-07-PLAN.md:136"
+        "06.34-07-PLAN.md:136",
+        "06.34-07-PLAN.md:137"
       ]
     },
     {
@@ -6202,7 +6240,7 @@
         "06.34-07-PLAN.md:41",
         "06.34-07-PLAN.md:52",
         "06.34-07-PLAN.md:85",
-        "06.34-07-PLAN.md:135",
+        "06.34-07-PLAN.md:136",
         "06.34-09-PLAN.md:75"
       ]
     },
@@ -6224,7 +6262,7 @@
         "06.34-07-PLAN.md:85",
         "06.34-07-PLAN.md:86",
         "06.34-07-PLAN.md:109",
-        "06.34-07-PLAN.md:135",
+        "06.34-07-PLAN.md:136",
         "06.34-08-PLAN.md:40"
       ]
     },
@@ -6484,7 +6522,7 @@
         "hardBlock": false
       },
       "plan_occurrences": [
-        "06.34-07-PLAN.md:181"
+        "06.34-07-PLAN.md:182"
       ]
     },
     {
@@ -6511,7 +6549,7 @@
         "hardBlock": false
       },
       "plan_occurrences": [
-        "06.34-07-PLAN.md:181",
+        "06.34-07-PLAN.md:182",
         "06.34-08-PLAN.md:92",
         "06.34-08-PLAN.md:140",
         "06.34-08-PLAN.md:196"
@@ -6527,7 +6565,7 @@
         "hardBlock": false
       },
       "plan_occurrences": [
-        "06.34-07-PLAN.md:181"
+        "06.34-07-PLAN.md:182"
       ]
     },
     {
@@ -6553,7 +6591,7 @@
         "hardBlock": false
       },
       "plan_occurrences": [
-        "06.34-07-PLAN.md:181",
+        "06.34-07-PLAN.md:182",
         "06.34-08-PLAN.md:136"
       ]
     },
@@ -6567,7 +6605,7 @@
         "hardBlock": false
       },
       "plan_occurrences": [
-        "06.34-07-PLAN.md:181",
+        "06.34-07-PLAN.md:182",
         "06.34-08-PLAN.md:138"
       ]
     },
@@ -6727,8 +6765,8 @@
       "plan_occurrences": [
         "06.34-01-PLAN.md:12",
         "06.34-01-PLAN.md:73",
-        "06.34-01-PLAN.md:126",
-        "06.34-01-PLAN.md:127",
+        "06.34-01-PLAN.md:129",
+        "06.34-01-PLAN.md:130",
         "06.34-05-PLAN.md:37",
         "06.34-05-PLAN.md:102",
         "06.34-10-PLAN.md:48",
@@ -6780,7 +6818,7 @@
         "tests/test1/conftest.py:1"
       ],
       "plan_occurrences": [
-        "06.34-01-PLAN.md:127",
+        "06.34-01-PLAN.md:130",
         "06.34-04-PLAN.md:115",
         "06.34-06-PLAN.md:104",
         "06.34-10-PLAN.md:130"
@@ -6805,7 +6843,7 @@
         "06.34-01-PLAN.md:35",
         "06.34-01-PLAN.md:52",
         "06.34-01-PLAN.md:95",
-        "06.34-01-PLAN.md:118",
+        "06.34-01-PLAN.md:121",
         "06.34-04-PLAN.md:106"
       ]
     },
@@ -6850,7 +6888,7 @@
         "06.34-06-PLAN.md:103",
         "06.34-06-PLAN.md:104",
         "06.34-06-PLAN.md:119",
-        "06.34-09-PLAN.md:96"
+        "06.34-09-PLAN.md:98"
       ]
     },
     {
@@ -6927,8 +6965,8 @@
         "06.34-09-PLAN.md:34",
         "06.34-09-PLAN.md:42",
         "06.34-09-PLAN.md:63",
-        "06.34-09-PLAN.md:95",
-        "06.34-09-PLAN.md:113"
+        "06.34-09-PLAN.md:97",
+        "06.34-09-PLAN.md:118"
       ]
     },
     {
@@ -6968,8 +7006,8 @@
         "06.34-01-PLAN.md:13",
         "06.34-01-PLAN.md:37",
         "06.34-01-PLAN.md:52",
-        "06.34-01-PLAN.md:126",
-        "06.34-01-PLAN.md:144",
+        "06.34-01-PLAN.md:129",
+        "06.34-01-PLAN.md:147",
         "06.34-05-PLAN.md:102",
         "06.34-05-PLAN.md:119"
       ]
@@ -7065,9 +7103,9 @@
         "tests/test1/test_ancestor_costs.py:1"
       ],
       "plan_occurrences": [
-        "06.34-01-PLAN.md:118",
-        "06.34-01-PLAN.md:127",
-        "06.34-01-PLAN.md:144",
+        "06.34-01-PLAN.md:121",
+        "06.34-01-PLAN.md:130",
+        "06.34-01-PLAN.md:147",
         "06.34-02-PLAN.md:104",
         "06.34-03-PLAN.md:97",
         "06.34-10-PLAN.md:130"
@@ -7122,7 +7160,7 @@
         "tests/test1/test_authorization_templates.py:1"
       ],
       "plan_occurrences": [
-        "06.34-07-PLAN.md:127",
+        "06.34-07-PLAN.md:128",
         "06.34-08-PLAN.md:148",
         "06.34-10-PLAN.md:130"
       ]
@@ -7140,7 +7178,7 @@
         "tests/test1/test_button_classes.py:1"
       ],
       "plan_occurrences": [
-        "06.34-07-PLAN.md:145",
+        "06.34-07-PLAN.md:146",
         "06.34-08-PLAN.md:18",
         "06.34-08-PLAN.md:72",
         "06.34-08-PLAN.md:133",
@@ -7162,8 +7200,8 @@
         "tests/test1/test_button_classes_templates.py:1"
       ],
       "plan_occurrences": [
-        "06.34-07-PLAN.md:136",
-        "06.34-07-PLAN.md:153"
+        "06.34-07-PLAN.md:137",
+        "06.34-07-PLAN.md:154"
       ]
     },
     {
@@ -7248,10 +7286,10 @@
         "06.34-07-PLAN.md:85",
         "06.34-07-PLAN.md:101",
         "06.34-07-PLAN.md:109",
-        "06.34-07-PLAN.md:127",
-        "06.34-07-PLAN.md:135",
-        "06.34-07-PLAN.md:153",
-        "06.34-09-PLAN.md:96",
+        "06.34-07-PLAN.md:128",
+        "06.34-07-PLAN.md:136",
+        "06.34-07-PLAN.md:154",
+        "06.34-09-PLAN.md:98",
         "06.34-10-PLAN.md:130"
       ]
     },
@@ -7269,8 +7307,8 @@
       ],
       "plan_occurrences": [
         "06.34-07-PLAN.md:86",
-        "06.34-07-PLAN.md:136",
-        "06.34-07-PLAN.md:153"
+        "06.34-07-PLAN.md:137",
+        "06.34-07-PLAN.md:154"
       ]
     },
     {
@@ -7324,7 +7362,7 @@
       ],
       "plan_occurrences": [
         "06.34-07-PLAN.md:110",
-        "06.34-07-PLAN.md:127"
+        "06.34-07-PLAN.md:128"
       ]
     },
     {
@@ -7345,9 +7383,9 @@
         "06.34-09-PLAN.md:63",
         "06.34-09-PLAN.md:74",
         "06.34-09-PLAN.md:75",
-        "06.34-09-PLAN.md:87",
-        "06.34-09-PLAN.md:96",
-        "06.34-09-PLAN.md:113",
+        "06.34-09-PLAN.md:89",
+        "06.34-09-PLAN.md:98",
+        "06.34-09-PLAN.md:118",
         "06.34-10-PLAN.md:130"
       ]
     },
@@ -7420,7 +7458,7 @@
         "tests/test1/test_theme_adoption_docs.py:1"
       ],
       "plan_occurrences": [
-        "06.34-07-PLAN.md:145",
+        "06.34-07-PLAN.md:146",
         "06.34-08-PLAN.md:19",
         "06.34-08-PLAN.md:72",
         "06.34-08-PLAN.md:133",
@@ -7488,8 +7526,8 @@
         "06.34-01-PLAN.md:32",
         "06.34-01-PLAN.md:45",
         "06.34-01-PLAN.md:73",
-        "06.34-01-PLAN.md:121",
-        "06.34-01-PLAN.md:135",
+        "06.34-01-PLAN.md:124",
+        "06.34-01-PLAN.md:138",
         "06.34-05-PLAN.md:35",
         "06.34-06-PLAN.md:35",
         "06.34-06-PLAN.md:85"
@@ -7525,7 +7563,9 @@
         "tests/test1/test_ancestor_redirect.py:125"
       ],
       "plan_occurrences": [
-        "06.34-09-PLAN.md:103"
+        "06.34-01-PLAN.md:108",
+        "06.34-09-PLAN.md:105",
+        "06.34-09-PLAN.md:109"
       ]
     },
     {
@@ -7554,6 +7594,8 @@
       "plan_occurrences": [
         "06.34-01-PLAN.md:105",
         "06.34-04-PLAN.md:91",
+        "06.34-07-PLAN.md:117",
+        "06.34-07-PLAN.md:123",
         "06.34-08-PLAN.md:138"
       ]
     },
@@ -8016,6 +8058,7 @@
       "verdict": "SKIPPED_NEW",
       "reason": "Explicit version-1 schema or web context mapping; created in plans 01/07",
       "plan_occurrences": [
+        "06.34-01-PLAN.md:80",
         "06.34-07-PLAN.md:74"
       ]
     },
@@ -8134,6 +8177,13 @@
       "verdict": "UNCHECKABLE",
       "reason": "Signatures cannot be verified with grep/intel; no typed authority is configured.",
       "plan_occurrence": "06.34-01-PLAN.md:106"
+    },
+    {
+      "symbol": "translation.override('en')",
+      "kind": "signature/call",
+      "verdict": "UNCHECKABLE",
+      "reason": "Signatures cannot be verified with grep/intel; no typed authority is configured.",
+      "plan_occurrence": "06.34-01-PLAN.md:108"
     },
     {
       "symbol": "_plan_gates(view)",
@@ -8448,7 +8498,28 @@
       "kind": "signature/call",
       "verdict": "UNCHECKABLE",
       "reason": "Signatures cannot be verified with grep/intel; no typed authority is configured.",
-      "plan_occurrence": "06.34-09-PLAN.md:103"
+      "plan_occurrence": "06.34-09-PLAN.md:105"
+    },
+    {
+      "symbol": "translation.override('en')",
+      "kind": "signature/call",
+      "verdict": "UNCHECKABLE",
+      "reason": "Signatures cannot be verified with grep/intel; no typed authority is configured.",
+      "plan_occurrence": "06.34-09-PLAN.md:109"
+    },
+    {
+      "symbol": "translation.override('de')",
+      "kind": "signature/call",
+      "verdict": "UNCHECKABLE",
+      "reason": "Signatures cannot be verified with grep/intel; no typed authority is configured.",
+      "plan_occurrence": "06.34-09-PLAN.md:109"
+    },
+    {
+      "symbol": "AccessTrace.to_dict()",
+      "kind": "signature/call",
+      "verdict": "SKIPPED_NEW",
+      "reason": "New declared member",
+      "plan_occurrence": "06.34-09-PLAN.md:109"
     },
     {
       "symbol": "pathlib.Path(crud_views.__file__)",
@@ -8553,16 +8624,18 @@
         "Guardian pre-filter / visible counts",
         "login middleware / other middleware untraced",
         "observed bound class/method with unknown inner owner versus D-08 opacity",
-        "pre-context Guardian total/final counts versus D-07 actual querysets"
+        "pre-context Guardian total/final counts versus D-07 actual querysets",
+        "localized human untraced notice with stable schema/codes",
+        "actual cv_object own-PK route signal and declared reverse kwargs"
       ],
       "verdict": "No contradiction found. Detailed technical restrictions and metadata exclusions implement the locked decision meanings; no deferred/discretionary prose used as authority.",
       "current_cycle_evidence": [
-        "06.34-CONTEXT.md:54",
-        "06.34-CONTEXT.md:56",
-        "06.34-04-PLAN.md:71",
-        "06.34-04-PLAN.md:96",
-        "06.34-03-PLAN.md:88",
-        "06.34-08-PLAN.md:94"
+        "06.34-01-PLAN.md:80",
+        "06.34-01-PLAN.md:108",
+        "06.34-07-PLAN.md:117",
+        "06.34-07-PLAN.md:123",
+        "06.34-09-PLAN.md:81",
+        "06.34-09-PLAN.md:109"
       ]
     }
   ]

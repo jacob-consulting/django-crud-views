@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_commit: 892d3fc5adaab1660fe6812b937328efa5d71350
 last_mapped_at: 2026-11-15
 ---
 # Coding Conventions
@@ -157,5 +157,11 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - Make collection opt-in through `CV_ACCESS_RECORD_REQUESTS=1`. The external autouse fixture in `tests/conftest.py` imports the recorder lazily after Django setup, clears it on teardown, and yields `None` when disabled. Preserve import-before-settings safety (`tests/conftest.py`, `tests/test1/test_access_trace_recorder.py`).
 - For nox wiring changes, keep complete normal and actual-recorder runs on the same freshly installed distribution, with explicit `PYTHONPATH=""` and recorder values `0` then `1`. Update the executable wiring assertions and installed-origin probe together (`noxfile.py`, `tests/test1/test_access_trace_ci.py`, `.github/workflows/tests.yml`).
 - Keep access trace tests split by contract: recorder/context safety (`tests/test1/test_access_trace_recorder.py`), trace behavior and gate fidelity (`tests/test1/test_access_trace.py`, `tests/test1/test_access_trace_*.py`), command behavior (`tests/test1/test_access_trace_command.py`), and manage form/presentation (`tests/test1/test_manage_access_trace.py`).
+
+## Resource Manage Test Isolation (Phase 06.35)
+
+- When temporarily changing a Pydantic `PrivateAttr`, patch its actual `__pydantic_private__` storage with `monkeypatch.setitem`; attribute-based teardown can target `__dict__` and delete the cache entry instead of restoring it (`tests/test1/test_resource_manage.py::test_resource_manage_model_query_preservation`, `tests/test1/test_manage_locales.py::test_empty_manage_vocabulary_retains_translated_actor`).
+- For a query baseline that depends on a cold shared ViewSet vocabulary, set the cache to the cold value only around the measured request and restore it with pytest. Clear Django `ContentType` and Guardian vocabulary caches explicitly where they affect that baseline; do not depend on xdist worker scheduling (`tests/test1/test_resource_manage.py`).
+- Keep Django 4.2 `AdminEmailHandler` out of foreign-database SQL captures in refusal tests. Its `ExceptionReporter` can repr frame-local querysets after refusal, making diagnostic rendering look like package SQL. Reuse `_no_admin_email_report` from `tests/test1/test_ancestor_databases.py` in nested refusal tests (`tests/test1/test_resource_manage_nested.py`).
 
 *Convention analysis: 2026-11-15*

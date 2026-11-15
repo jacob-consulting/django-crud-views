@@ -31,6 +31,32 @@ SOURCES = {
     ],
 }
 
+RESOURCE_MESSAGES = {
+    "Resource": "Ressource",
+    "resource": "Ressource",
+    "Resource metadata": "Ressourcen-Metadaten",
+    "No Resource permissions declared": "Keine Ressourcen-Berechtigungen deklariert",
+    "Developer-group access, ancestor checks and custom view restrictions apply separately.": (
+        "Zugriff über die Entwicklergruppe, Prüfungen übergeordneter ViewSets und eigene "
+        "View-Einschränkungen gelten gesondert."
+    ),
+    (
+        "resource: explicitly mapped Django permission; no per-item grants. "
+        "The access row includes effective permissions."
+    ): (
+        "Ressource: explizit zugeordnete Django-Berechtigung; keine Berechtigungen für einzelne Elemente. "
+        "Die Zugriffszeile enthält die effektiven Berechtigungen."
+    ),
+}
+
+
+def test_resource_messages_are_extracted_and_compiled():
+    extracted = {msgid for msgid, _, _ in messages("crud_views")}
+    assert RESOURCE_MESSAGES.keys() <= extracted
+    with (ROOT / "src/crud_views/locale/de/LC_MESSAGES/django.mo").open("rb") as stream:
+        catalog = gettext.GNUTranslations(stream)
+    assert {message: catalog.gettext(message) for message in RESOURCE_MESSAGES} == RESOURCE_MESSAGES
+
 
 @pytest.mark.parametrize(
     "name,args,expected",

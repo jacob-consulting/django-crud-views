@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_commit: 892d3fc5adaab1660fe6812b937328efa5d71350
 last_mapped_at: 2026-11-15
 ---
 # Codebase Structure
@@ -13,6 +13,7 @@ django-crud-views/
 ├── src/
 │   ├── crud_views/                    # Core Django app
 │   │   ├── lib/                        # ViewSet, CBVs, authorization, forms and support
+│   │   │   ├── resource.py             # Non-ORM Resource contract and view adapter
 │   │   ├── management/commands/        # Package Django commands, including cv_access
 │   │   ├── templates/crud_views/       # Core Bootstrap 5 templates and partials
 │   │   └── static/crud_views/          # Core CSS/JavaScript
@@ -56,6 +57,12 @@ django-crud-views/
 - Contains: `ViewSet`, `ParentViewSet`, and PK path registrations.
 - Key files: `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/viewset/parentviewset.py`, `src/crud_views/lib/viewset/path_regs.py`.
 - Guidance: Add URL shape or sibling lookup behavior to ViewSet APIs rather than embedding it in consumer URLconfs.
+
+**`src/crud_views/lib/resource.py`:**
+- Purpose: Define the non-ORM row contract and adapt existing CRUD views to Resource rows.
+- Contains: Pydantic `Resource`, Resource `_meta` compatibility, `cv_get_items`/`cv_get_item` hooks and `ResourceViewMixin`.
+- Key files: `src/crud_views/lib/resource.py`, Resource-specific ViewSet registration and validation in `src/crud_views/lib/viewset/__init__.py`.
+- Guidance: Keep this module a leaf; it must not import `crud_views.lib.viewset` (including submodules), because importing the viewset package imports `Resource` back. Put `ResourceViewMixin` first in view bases. Implement parent filtering in the Resource loader, since Resource collections are not ORM-scoped.
 
 **`src/crud_views/lib/view/` and `src/crud_views/lib/views/`:**
 - Purpose: Separate shared view integration from individual request handlers.
@@ -128,6 +135,7 @@ django-crud-views/
 
 **Core Logic:**
 - `src/crud_views/lib/view/meta.py`: Import-time CrudView registration.
+- `src/crud_views/lib/resource.py`: Pydantic Resource and ResourceViewMixin for non-ORM list/detail views.
 - `src/crud_views/lib/view/base.py`: Shared CrudView contract and permission integration.
 - `src/crud_views/lib/ancestors.py`: Nested route authorization and child queryset scope.
 - `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py`: Access trace recording and execution.
@@ -162,6 +170,13 @@ django-crud-views/
 - Shared behavior: `src/crud_views/lib/view/base.py` or a focused mixin/module under `src/crud_views/lib/view/`.
 - Operation-specific behavior: corresponding module under `src/crud_views/lib/views/`.
 - Tests: a feature-focused `tests/test1/test_<feature>.py`.
+
+**New Resource-backed view:**
+- Resource type and metadata: subclass `Resource` in the consumer application and implement `cv_get_items`; optionally override `cv_get_item` for direct lookup.
+- ViewSet: construct a regular `ViewSet` with that Resource and an explicit `resource_permissions` mapping when using permission-required views. Registration supplies the manage view; Resource create/update/delete CBVs are unsupported, and Resources cannot be parents.
+- View composition: put `ResourceViewMixin` first in view bases, followed by the appropriate existing list/detail/action view classes.
+- Manage behavior: `src/crud_views/lib/views/manage.py` reads metadata and declared permission strings, but does not call Resource loaders. Extend the projection there only for metadata or diagnostics that can avoid enumerating external Resource rows.
+- Tests: `tests/test1/test_resource_manage_nested.py`, Resource-focused tests in `tests/test1/`, and access trace parity coverage in `tests/test1/test_access_trace*.py`.
 
 **New authorization gate or trace fact:**
 - Enforcement: existing owning gate in `src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, or provider implementation under `src/crud_views_guardian/lib/`.

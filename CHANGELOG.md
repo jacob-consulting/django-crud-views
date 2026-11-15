@@ -6,6 +6,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Resource manage registration** (#372): automatic registration now owns `cv_key="manage"` on Resource
+  ViewSets. A later manual registration with that key raises the existing duplicate-key error. Select an
+  importable `ManageView` subclass through `manage_view_class` before construction and remove the duplicate;
+  use a separate key for unrelated endpoints. See the [migration recipe](docs/migrating-1.0.md#resource-manage-registration).
+
 - **Structured manage cards** (#366): stock core/Guardian diagnostics now render permission matrices,
   closed view/Presentation disclosures, default/source rows and secondary cards. Existing block names and
   legacy context shapes remain available, but stock DOM structure and visible output change. Whole-card
@@ -627,6 +632,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- **Resource manage pages** (#372): Resource ViewSets use the shared developer-only manage page, including
+  nested model/Guardian ancestry, metadata provenance, explicit permission mappings and real hierarchy routes.
+  Built-in inspection never calls Resource item/list loaders. The new `manage:badge-resource` key defaults to
+  `badge bg-info text-dark`; Resource labels mean mapped Django permissions, not per-item grants. Existing
+  opt-in access forms and `cv_access` share URL identifiers, selected-actor tracing and JSON/exit contracts;
+  explicitly submitted checks may read Resource data and cannot roll back external effects.
 
 - **Access traces** (#370): `cv_access` explains a user's CRUD URL authorization with ordered checks, versioned
   JSON and explicit diagnostic limits. The shared core/Guardian Access check card is opt-in through

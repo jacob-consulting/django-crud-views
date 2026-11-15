@@ -119,6 +119,8 @@ class ManageResource(Resource):
 def no_manage_viewset():
     name = "manage_no_class_" + uuid4().hex
     viewset = ViewSet(model=ManageResource, name=name, resource_permissions={"view": "app.view_author"})
+    # Deliberately exercise the missing-class guard despite automatic registration.
+    del viewset._views["manage"]
     try:
         yield viewset
     finally:

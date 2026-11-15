@@ -1453,3 +1453,35 @@ msgstr ""
 #: lib/views/manage.py
 msgid "use the path field"
 msgstr "verwenden Sie das Pfadfeld"
+
+#: templates/crud_views/view_manage.html
+msgid "Resource"
+msgstr "Ressource"
+
+#: templates/crud_views/view_manage.html
+msgid "resource"
+msgstr "Ressource"
+
+#: lib/views/manage.py
+msgid "Resource metadata"
+msgstr "Ressourcen-Metadaten"
+
+#: templates/crud_views/view_manage.html
+msgid "No Resource permissions declared"
+msgstr "Keine Ressourcen-Berechtigungen deklariert"
+
+#: templates/crud_views/view_manage.html
+msgid ""
+"Developer-group access, ancestor checks and custom view restrictions apply "
+"separately."
+msgstr ""
+"Zugriff über die Entwicklergruppe, Prüfungen übergeordneter ViewSets und eigene "
+"View-Einschränkungen gelten gesondert."
+
+#: templates/crud_views/view_manage.html
+msgid ""
+"resource: explicitly mapped Django permission; no per-item grants. "
+"The access row includes effective permissions."
+msgstr ""
+"Ressource: explizit zugeordnete Django-Berechtigung; keine Berechtigungen für "
+"einzelne Elemente. Die Zugriffszeile enthält die effektiven Berechtigungen."

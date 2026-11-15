@@ -1,0 +1,4 @@
+s                                                                        [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test1/test_assets.py:333: built-in CSP middleware requires Django 6.0
+1 skipped in 0.09s

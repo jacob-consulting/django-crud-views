@@ -84,7 +84,11 @@ def test_hierarchy_uses_only_explicit_coordinates_and_never_samples(django_asser
         assert missing["parents"][0]["url"] is None
         assert data["children"][0]["name"] == resource.name
         assert data["children"][0]["resource"] is True
-        assert data["children"][0]["route"] is None
+        assert data["children"][0]["route_name"] == resource.get_router_name("manage")
+        assert data["children"][0]["route"] == (
+            f"/facts-root/<owner_pk>/facts-mid/<volume_pk>/facts-leaf/<{leaf.name}_pk>/{resource.prefix}/manage/"
+        )
+        assert data["children"][0]["route_error"] is None
         assert data["children"][0]["url"] is None
         assert builder(root, AnonymousUser())["parents"] == []
         assert builder(root, AnonymousUser())["children"][0]["route_name"] == mid.get_router_name("manage")
@@ -99,6 +103,9 @@ def test_shared_route_projection_contributed_empty_and_malformed():
     summary = next(r for r in manage.get_manage_views(viewset, None) if r["key"] == "list")
     assert (summary["route"], summary["route_error"]) == (route["route"], route["route_error"])
     empty = make(ManageResource)
+    assert [row["key"] for row in manage.get_manage_routes(empty, None)] == ["manage"]
+    assert [row["key"] for row in manage.get_manage_views(empty, None)] == ["manage"]
+    empty._views.clear()
     assert manage.get_manage_routes(empty, None) == manage.get_manage_views(empty, None) == []
     broken = make(parent=ParentViewSet(name="missing_parent"))
     register(broken)

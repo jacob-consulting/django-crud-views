@@ -210,10 +210,8 @@ class ViewSet(BaseModel):
             )
             _REGISTRY[self.name] = self
 
-        # ManageView is model/session tooling — not supported for Resources (spec §5.4)
-        if not self.is_resource:
-            base = self.get_manage_view_class()
-            _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})
+        base = self.get_manage_view_class()
+        _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})
 
         return self
 
@@ -358,7 +356,7 @@ class ViewSet(BaseModel):
             view_class._cv_manage_declared_context_actions = "cv_context_actions" in vars(view_class)
         # add manage view to context actions; copy-on-write because the list may be
         # shared with the settings singleton or sibling view classes
-        if crud_views_settings.manage_views_enabled != "no" and not self.is_resource:
+        if crud_views_settings.manage_views_enabled != "no":
             actions = view_class.cv_context_actions
             if isinstance(actions, list) and "manage" not in actions and view_class.cv_key != "manage":
                 view_class.cv_context_actions = [*actions, "manage"]

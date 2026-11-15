@@ -1,0 +1,109 @@
+
+> django-crud-views-js-tests@1.0.0 test
+> vitest run --reporter=dot
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /home/alex/projects/alex/django-crud-views
+
+······························································stdout | tests/js/modal.test.js > composed formset conditional and modal listeners > stops fetch when a real child reorder fails
+form |
+form |
+error |
+
+··········································stdout | tests/js/modal.test.js > composed formset conditional and modal listeners > reorders an orderable formset with no delete capability before serialization
+form |
+form |
+
+·stderr | tests/js/manage.test.js > manage defaults > leaves all values visible and control hidden if binding fails
+Error: binding failed
+    at HTMLDivElement.<anonymous> (/home/alex/projects/alex/django-crud-views/tests/js/manage.test.js:94:77)
+    at HTMLDivElement.addEventListener (file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/spy.DDMXghXv.js:353:40)
+    at eval (eval at load (/home/alex/projects/alex/django-crud-views/tests/js/manage.test.js:24:50), <anonymous>:35:18)
+    at Array.forEach (<anonymous>)
+    at initManageDefaults (eval at load (/home/alex/projects/alex/django-crud-views/tests/js/manage.test.js:24:50), <anonymous>:25:15)
+    at Proxy.eval (eval at load (/home/alex/projects/alex/django-crud-views/tests/js/manage.test.js:24:50), <anonymous>:47:57)
+    at Proxy.callTheUserObjectsOperation (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+    at innerInvokeEventListeners (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:378:16)
+    at invokeEventListeners (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:320:3)
+    at DocumentImpl._dispatch (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:269:9)
+
+··················································stdout | tests/js/modal.test.js > composed formset conditional and modal listeners > serializes final owning-form row order and management before modal fetch
+form |
+down |
+form |
+form |
+form |
+form |
+form |
+
+················stdout | tests/js/modal.test.js > composed formset conditional and modal listeners > replaces 422 content once, tears down old controls while attached and supports close then reopen
+form |
+form |
+
+··············stderr | tests/js/formset.test.js > formset.js > CrudViewsFormset > blocks the submit when reordering fails outright
+crud_views formset.js: reorder failed Error: broken reorder
+    at CrudViewsFormset.<anonymous> (/home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:505:87)
+    at CrudViewsFormset.reorder_formsets (file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/spy.DDMXghXv.js:353:40)
+    at Proxy.CrudViewsFormset.onSubmit (eval at loadScript (/home/alex/projects/alex/django-crud-views/tests/js/helpers/load.js:42:5), <anonymous>:542:27)
+    at Proxy.callTheUserObjectsOperation (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+    at innerInvokeEventListeners (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:378:16)
+    at invokeEventListeners (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:320:3)
+    at HTMLFormElementImpl._dispatch (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:269:9)
+    at HTMLFormElementImpl.dispatchEvent (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:137:17)
+    at Proxy.dispatchEvent (/home/alex/projects/alex/django-crud-views/node_modules/jsdom/lib/generated/idl/EventTarget.js:226:20)
+    at /home/alex/projects/alex/django-crud-views/tests/js/formset.test.js:507:18
+
+···········stdout | tests/js/modal.test.js > composed formset conditional and modal listeners > replaces 422 content once, tears down old controls while attached and supports close then reopen
+form |
+delete |
+
+stdout | tests/js/modal.test.js > composed formset conditional and modal listeners > replaces 422 content once, tears down old controls while attached and supports close then reopen
+form |
+delete |
+
+··············stdout | tests/js/modal.test.js > composed formset conditional and modal listeners > emits one outer widget event while initializing all nested actions and conditional controls
+form |
+add |
+form |
+form |
+form |
+form |
+highlight book-None-0-2
+highlight book-notes-None-0-0
+form |
+delete |
+
+····················stdout | tests/js/modal.test.js > composed formset conditional and modal listeners > ignores an outstanding Add response after its owning form is replaced
+form |
+add |
+
+·······························stderr | tests/js/modal.test.js > modal.js > cvModalOpen > falls back to full-page navigation on a network error
+Error: offline
+    at /home/alex/projects/alex/django-crud-views/tests/js/modal.test.js:284:23
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:1632:35
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:2801:26
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:3333:10)
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:3276:10)
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:3904:64
+
+····························································································································································Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+········································
+
+ Test Files  11 passed (11)
+      Tests  457 passed (457)
+   Start at  20:11:02
+   Duration  12.45s (tests 62%, environment 34%, setup 3%, transform 1%, import 1%)
+
+    Isolate  11 workers spawned · ~1.10s startup each (spawn + environment, per file)
+             at least ~630ms faster with isolate: false — reuses workers across files instead of one per file
+

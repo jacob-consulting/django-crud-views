@@ -11,6 +11,48 @@ Each card's **?** link opens its section here in a new tab. Links are keyboard f
 accessible name, and use `target="_blank" rel="noopener"`. Requirement badges are not links: use the Views
 help link and its footer key. Native disclosure summaries remain a single keyboard/click target.
 
+## Resource manage pages
+
+Model and Resource ViewSets automatically register the same `ManageView`, using the existing
+`manage_view_class` selection and manage settings. Standalone routes have the usual `prefix/manage/` shape;
+nested Resource routes include the model ancestors' coordinates before that prefix. The registered URL name
+is available from `viewset.get_router_name("manage")`. Both kinds still register the route in
+`manage_views_enabled="no"` mode; that mode denies admission and suppresses automatic manage actions.
+Staff and superusers still need developer-group membership. Nested Resource pages enforce the existing
+[ancestor authorization](nested.md#ancestor-authorization) and default-database restrictions, including
+[Guardian model ancestors](guardian.md#guardianmanageview). Resources remain leaves, without Guardian item grants.
+
+Opening the built-in page does not call `cv_get_item()` or `cv_get_items()` for identity, permissions,
+configuration, checks, hierarchy or route descriptions. Parent-model and auth-table reads are legitimate.
+This is a built-in boundary, not a sandbox: custom checks, builders, templates or manage overrides can run
+project code and perform external I/O. Keep inherited developer and ancestor gates when customizing.
+
+The ViewSet card labels the backing class **Resource** and shows effective names, ordering and PK provenance
+as **Resource metadata** when inherited. Resource-only facts are `app_label`, `pk_field` and `pk_type`.
+Metadata `app_label` is distinct from ViewSet `app`, the URL namespace; `pk_field`/`pk_type` describe the
+Resource while `pk`/`pk_name` describe URL configuration. Presentation's existing Other section shows
+`resource_permissions`, preserving omitted versus explicit `None`, empty and populated declarations.
+
+Permission columns come only from `resource_permissions`; no model ContentType or default permission set is
+invented for a Resource. **resource** means an explicitly mapped Django permission, with no per-item grants.
+It appears for effective actor permissions and direct group/user holders, including overflow rows. The existing
+visibility policy still applies. The theme key is `manage:badge-resource`, default `badge bg-info text-dark`;
+[standard class overrides](buttons.md#the-class-table), including an empty override, retain the visible label.
+An omitted/`None`/empty mapping has zero columns and says **No Resource permissions declared**. Developer-group
+access, ancestor checks and custom view restrictions apply separately; an empty map does not imply public access.
+
+The opt-in Access check uses the same existing URL identifiers as `cv_access`; no Resource identifier scheme
+is added. Submitted list/object checks can execute the real loaders with the selected actor after ancestor
+checks. Supply the URL PK for object rows, or the path field for extra route arguments. Path-like identifiers
+retain their existing routing/decoding rules. The hosting developer's request and session remain unchanged;
+only a valid this-ViewSet selection changes the matrix actor. Path mode retains the hosting actor's matrix.
+For the same URL, selected actor and data state, UI and CLI share the complete trace: outcome, deciding step,
+ordered observations, counts, errors and limitations, including checks of Resource manage URLs themselves.
+The `resource` badge is presentation, not a new trace `provider`: providers still identify the actual gate
+(for example `core`, `guardian` or `none`). Version-1 JSON keys and command exit/stream contracts below remain
+unchanged. Explicit tracing may read external data; rollback cannot undo external reads or project side effects.
+See [diagnostic limits](#diagnostic-limits) and [Resource limitations](resources.md#limitations).
+
 ## System checks
 
 Checks run for this ViewSet on page load. With no messages, the side strip says
@@ -97,9 +139,9 @@ Constructor declaration provenance does not support Pydantic `model_construct`, 
 
 Parents show the full chain upwards. Their manage links use coordinates already present in the current URL;
 no sample object is fetched. If required coordinates are unavailable, the route remains descriptive.
-Children show model, manage URL name and relative pattern without links. To open a child's manage page,
-open its list under a parent object and use the manage action. A Resource child says “Resource, no manage page”.
-No Resource manage route is introduced. See [Nested ViewSets](nested.md).
+Children show the backing model or Resource class, actual manage URL name and relative pattern without links.
+To open a child's manage page, open its list under a parent object and use the manage action. No child object
+or parent coordinates are invented. See [Nested ViewSets](nested.md).
 
 ## URL names
 
@@ -297,7 +339,7 @@ records their gate result without evaluating another requirement source or calli
 | `key` | Requirement, action or limitation key, or null. |
 | `permission` | Full permission codename, or null. |
 | `group` | Required group name, or null. |
-| `provider` | Owning permission provider, such as `model`, `guardian` or `none`, or null. |
+| `provider` | Owning permission provider, such as `core`, `guardian` or `none`, or null. |
 | `source` | Requirement declaration or observed callable provenance, or null. |
 | `result` | Step result code, or null. |
 | `how` | Observed branch explanation code, or null; not a second permission decision. |
@@ -365,7 +407,8 @@ Steps with `result=not_evaluated` identify applicable handler-phase checks:
 These limits are distinct from [pre-context list counts](#list-count-boundary); changing a count does not execute
 the later database check. Allowed means **may open the page**, not permission to perform every submit operation.
 Real Resource `cv_get_item()` / `cv_get_items()` loaders run under the fresh traced user, including external reads,
-missing-item and action-state behavior; Resource lists report row counts. No Resource manage page is created.
+missing-item and action-state behavior; Resource lists report row counts. Resource manage pages are registered
+automatically; only explicitly submitted checks run these loaders, not ordinary page inspection.
 
 When installed, Django's `LoginRequiredMiddleware` or its subclass runs its real `process_view()` with the
 resolved view. The rest of the middleware chain does not run: **other middleware and URL decorators are not traced**.

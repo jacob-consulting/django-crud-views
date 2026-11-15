@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Resource manage pages reuse existing registration, developer/ancestor/database guards, metadata and matrices without implicit Resource reads; full UI/`cv_access` parity, German catalogs and theme/migration contracts — Phase 06.35; canonical verification passed, seven unavailable runtime combinations and four external-theme checks remain unverified.
+
 - ✓ Access tracing through real authorization gates, `cv_access`, opt-in manage forms and German documentation — Phase 06.34; canonical verification and maintainer visual UAT passed. Seven unavailable runtime combinations remain unverified.
 
 - ✓ Structured manage diagnostics with permission holders, strict Guardian object counts, declaration provenance, scoped checks, accessible defaults/help, German locales and migration contracts — Phase 06.33
@@ -223,6 +225,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Prepare manage diagnostics after authorization with bounded queries and preserve lazy legacy template contracts | Keeps diagnostic data traceable without changing enforcement or breaking existing overrides | Validated (Phase 06.33) |
 
+| Reuse the shared ManageView and diagnostic runner for Resources; add only bounded registration, metadata and presentation branches | Avoid a second diagnostics implementation and preserve model/Guardian queries, permissions and trace contracts | Validated (Phase 06.35) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -241,4 +245,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-15 after Phase 06.34*
+*Last updated: 2026-11-15 after Phase 06.35*

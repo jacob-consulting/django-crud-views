@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_commit: 892d3fc5adaab1660fe6812b937328efa5d71350
 last_mapped_at: 2026-11-15
 ---
 <!-- refreshed: 2026-11-15 -->
@@ -12,20 +12,20 @@ last_mapped_at: 2026-11-15
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │ Consumer declarations                                       │
-│ ViewSets + CrudView subclasses                              │
+│ Model ViewSets or Resource ViewSets + CrudView subclasses   │
 │ `src/crud_views/lib/viewset/` `src/crud_views/lib/view/`    │
 └──────────────────────────────┬──────────────────────────────┘
                                │ class creation registers views
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ Routing and request behavior                                │
+│ Routing, manage metadata, and request behavior               │
 │ `src/crud_views/lib/views/` `src/crud_views/lib/ancestors.py`│
 └────────────┬─────────────────────┬──────────────────────────┘
              │                     │
              ▼                     ▼
 ┌──────────────────────┐  ┌──────────────────────────────────┐
-│ Django auth / ORM    │  │ Presentation and integrations    │
-│ core or Guardian     │  │ templates, forms, tables, assets │
+│ ORM or Resource      │  │ Presentation and integrations    │
+│ model/Guardian auth  │  │ templates, forms, tables, assets │
 └──────────────────────┘  └──────────────────────────────────┘
 ```
 
@@ -39,6 +39,7 @@ last_mapped_at: 2026-11-15
 | CRUD request handlers | Implements list/detail/create/update/delete/action and manage request lifecycles | `src/crud_views/lib/views/` |
 | Nested authorization | Validates ancestry, resolves parent objects, applies inherited permission policy, and scopes child querysets | `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_policy.py` |
 | Developer manage diagnostics | Projects ViewSet permissions, routes, checks, configuration and optional access traces | `src/crud_views/lib/views/manage.py` |
+| Non-ORM Resource support | Adapts Pydantic row classes to list/detail CRUD views and declares explicit permission metadata | `src/crud_views/lib/resource.py`, `src/crud_views/lib/viewset/__init__.py` |
 | Access trace engine | Records authorization results in context-local storage and dispatches a bounded synthetic request | `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py` |
 | Guardian extension | Replaces core permission provider and adds object-grant querying and Guardian-specific management | `src/crud_views_guardian/lib/` |
 | Optional feature apps | Add object-detail presentation, FSM workflow and polymorphic creation flows | `src/crud_views_object_detail/lib/`, `src/crud_views_workflow/lib/`, `src/crud_views_polymorphic/lib/` |
@@ -53,6 +54,8 @@ last_mapped_at: 2026-11-15
 - Django generic views own the standard HTTP/form lifecycle; package mixins add registration, permission, nested-object, and presentation behavior.
 - Authorization normally runs in the request path. Access tracing observes reports emitted by those gates and does not run a second policy evaluator.
 - Optional integrations are separate installable Django apps and keep provider-specific behavior out of the core path.
+- Resource ViewSets use an explicit permission map and application-owned row loaders; they are leaves beneath model ViewSets and do not support ORM writes.
+- Manage diagnostics project declarations and authorization metadata without loading Resource rows.
 
 ## Layers
 
@@ -77,6 +80,13 @@ last_mapped_at: 2026-11-15
 - Depends on: Django auth/ORM and, in the optional extension, django-guardian.
 - Used by: Django URL dispatch.
 
+**Resource data:**
+- Purpose: Render non-ORM rows through existing CRUD handlers while preserving package routing and permission gates.
+- Location: `src/crud_views/lib/resource.py` and Resource-aware branches in `src/crud_views/lib/viewset/__init__.py`.
+- Contains: Pydantic `Resource`, duck-typed `_meta`, `cv_get_items`/`cv_get_item` hooks and `ResourceViewMixin`.
+- Depends on: Application-provided row loaders and an explicit `resource_permissions` map; no ContentType permission discovery or database router lookup is used for the Resource model.
+- Used by: Resource list/detail/action views; system checks reject ORM create/update/delete views and Resource parents.
+
 **Presentation and support:**
 - Purpose: Build forms, action data, table/formset layouts, templates and static asset behavior.
 - Location: `src/crud_views/lib/`, `src/crud_views/templates/`, `src/crud_views/static/`.
@@ -99,6 +109,13 @@ last_mapped_at: 2026-11-15
 2. Django resolves the route to a registered view class; class registration happened through `CrudViewMetaClass` (`src/crud_views/lib/view/meta.py`).
 3. The view's dispatch and mixins execute ancestor checks, local permission gates, object lookup, and the inherited Django handler (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/views/`).
 4. The handler constructs context/form/table data and renders a package or consumer-overridden template (`src/crud_views/templates/crud_views/`).
+
+### Resource Manage Projection
+
+1. `ViewSet.register()` determines whether the declaration wraps a `Resource`, chooses its manage class, registers it, and creates the automatic manage view (`src/crud_views/lib/viewset/__init__.py`). `GuardianViewSet` replaces that auto-created class with `GuardianManageView` and rejects Resource models (`src/crud_views_guardian/lib/viewset.py`).
+2. `ManageView` builds effective facts from Resource `_meta`/ViewSet overrides, routes, checks, hierarchy and the explicit permission map (`src/crud_views/lib/views/manage.py`).
+3. Permission matrix holder rows query Django groups and users against the declared permission codenames; actor rows use `user.has_perm`. Resource rows have no Resource-object grant counts. This matrix is a manage-page projection and does not invoke `cv_get_items` or `cv_get_item`.
+4. Ordinary Resource list/detail requests call `ResourceViewMixin.get_queryset()` or `.get_object()`. Resource `cv_access` traces share the same core recorder and gate path, with object lookup reported by the mixin (`src/crud_views/lib/resource.py`, `src/crud_views/lib/access_trace_runner.py`).
 
 ### Nested Request Path
 
@@ -132,6 +149,11 @@ last_mapped_at: 2026-11-15
 - Examples: `src/crud_views/lib/ancestor_policy.py`, enforcement in `src/crud_views/lib/ancestors.py`.
 - Pattern: Declare policy on the child ViewSet; enforcement resolves the real parent chain during requests.
 
+**Resource / ResourceViewMixin:**
+- Purpose: Adapt externally stored or computed rows to the existing ViewSet and CRUD view contracts.
+- Examples: `src/crud_views/lib/resource.py`, `src/crud_views/lib/viewset/__init__.py`.
+- Pattern: Define Pydantic fields and `Meta`, implement `cv_get_items`, optionally override `cv_get_item`, and put `ResourceViewMixin` first in view bases. Use `resource_permissions` for permission-required views. Nested Resource ViewSets may have model ancestors, but Resources remain leaves and the app owns parent-based filtering inside its loader.
+
 **AccessTrace / AccessRecorder:**
 - Purpose: Return an explainable projection of gates encountered during one authorization attempt.
 - Examples: `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py`.
@@ -164,6 +186,11 @@ last_mapped_at: 2026-11-15
 - Triggers: GET submission when `CRUD_VIEWS_MANAGE_ACCESS_TRACE` is enabled and the hosting manage request passes its normal checks.
 - Responsibilities: Run path or ViewSet traces for the explicitly selected user and project route coordinates.
 
+**Resource declaration:**
+- Location: `src/crud_views/lib/resource.py` and `src/crud_views/lib/viewset/__init__.py`.
+- Triggers: Consumer imports a `Resource` subclass and constructs a `ViewSet(model=ResourceSubclass, ...)`.
+- Responsibilities: Supply metadata and row loading; ViewSet registration adds the standard manage route and checks the allowed view compositions.
+
 ## Architectural Constraints
 
 - **Threading/context:** The ViewSet registry is module-level and guarded by a `threading.Lock`; trace recorder state uses `ContextVar` so concurrent request contexts do not share one recorder (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/access_trace.py`).
@@ -171,6 +198,7 @@ last_mapped_at: 2026-11-15
 - **Trace scope:** Only resolved CrudView routes are traced. The diagnostic request is synthetic GET to `http://localhost`; host-dependent rules, other middleware/decorators, and handler-phase checks are not reproduced (`src/crud_views/lib/access_trace_runner.py`).
 - **Import-time registration:** Import order matters because view classes register with ViewSets during class construction (`src/crud_views/lib/view/meta.py`).
 - **Nested URL shape:** Parent PK arguments belong to URL ancestry while the target ViewSet's PK belongs to the child route (`src/crud_views/lib/viewset/parentviewset.py`, `src/crud_views/lib/viewset/path_regs.py`).
+- **Resource boundary:** Resource rows are application-owned, are loaded only by Resource view mixins, and cannot be used as ViewSet parents. Resource requests still resolve declared model ancestors first; nested filtering of Resource items remains the loader's responsibility (`src/crud_views/lib/resource.py`, `src/crud_views/lib/ancestors.py`). Guardian does not support Resource ViewSets, but a Guardian model ViewSet can be an ancestor of a Resource leaf.
 - **Optional integrations:** Guardian, workflow, object-detail and polymorphic packages are separate Django apps with provider-specific behavior (`src/crud_views_guardian/`, `src/crud_views_workflow/`, `src/crud_views_object_detail/`, `src/crud_views_polymorphic/`).
 
 ## Anti-Patterns
@@ -207,6 +235,7 @@ last_mapped_at: 2026-11-15
 **Logging:** No shared request logger is imposed; Django and consumer applications own logging configuration.
 **Validation:** ViewSet declaration checks and Django system checks are implemented in `src/crud_views/lib/check.py`, `src/crud_views/checks.py`, and extension check modules.
 **Authentication:** Local permissions use Django auth; nested checks use `src/crud_views/lib/ancestors.py`; per-object permissions are added by `src/crud_views_guardian/lib/mixins.py`.
+**Manage metadata:** `src/crud_views/lib/views/manage.py` derives model metadata from `_meta` or Resource metadata, then overlays ViewSet labels. Resource permission keys come from `resource_permissions`; manage matrix queries holders for those declared model permission strings and does not enumerate Resource objects.
 **Presentation:** Context and action projections are prepared by `src/crud_views/lib/view/` and rendered by overridable templates under `src/crud_views/templates/`.
 
 ---

@@ -27,6 +27,7 @@ from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
 EXPECTED_KEYS = {
     "manage:badge-model",
+    "manage:badge-resource",
     "manage:badge-objects",
     "manage:badge-permission",
     "manage:badge-group",
@@ -135,7 +136,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 121
+    assert len(EXPECTED_KEYS) == 122
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -153,6 +154,7 @@ def test_numbered_column_defaults(width):
 def test_manage_registry_defaults_and_overrides():
     defaults = {
         "badge-model": "badge bg-secondary",
+        "badge-resource": "badge bg-info text-dark",
         "badge-objects": "badge bg-light text-dark border",
         "badge-permission": "badge bg-primary",
         "badge-group": "badge cv-manage-badge-group",
@@ -172,7 +174,7 @@ def test_manage_registry_defaults_and_overrides():
         "trace-not-reached": "badge bg-secondary",
         "trace-not-evaluated": "badge bg-warning text-dark",
     }
-    assert len(defaults) == 19
+    assert len(defaults) == 20
     assert {key: value for key, value in DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")} == {
         f"manage:{key}": value for key, value in defaults.items()
     }
@@ -191,6 +193,7 @@ def test_manage_registry_defaults_and_overrides():
     "slot",
     [
         "badge-model",
+        "badge-resource",
         "badge-objects",
         "badge-permission",
         "badge-group",
@@ -217,6 +220,8 @@ def test_every_manage_class_family_preserves_override_precedence(slot):
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={f"manage:{slot}": "project-value"}):
         assert get_button_class("manage", slot) == "project-value"
         assert not [m for m in button_class_check_messages() if m.id == "crud_views.W362"]
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={f"manage:{slot}": ""}):
+        assert get_button_class("manage", slot) == ""
 
 
 @pytest.mark.django_db
@@ -246,7 +251,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
 
     core = dict(DEFAULT_BUTTON_CLASSES)
     workflow = dict(CrudViewsWorkflowConfig.crud_views_button_class_defaults)
-    assert len(core) == 121
+    assert len(core) == 122
     assert len(workflow) == 18
     transitions = {key: value for key, value in workflow.items() if key.startswith("workflow:transition-")}
     assert transitions == {
@@ -254,7 +259,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
         for variant in ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark")
     }
     assert bc._get_default_button_classes() == core | workflow
-    assert len(get_button_classes()) == 139
+    assert len(get_button_classes()) == 140
     register_button_classes({"workflow:badge-purple": "theme-purple"})
     seen = []
     original_ready = CrudViewsConfig.ready
@@ -380,7 +385,7 @@ class ThemeConfig(AppConfig):
     name = "badge_theme_probe"
     path = "."
     def ready(self):
-        assert len(bc._get_default_button_classes()) == 139
+        assert len(bc._get_default_button_classes()) == 140
         bc.register_button_classes({"workflow:badge-info": "theme-info"})
         seen.append(bc.get_button_class("workflow", "badge-info"))
 theme.ThemeConfig = ThemeConfig
@@ -393,11 +398,11 @@ settings.configure(
     CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"},
 )
 from crud_views.lib import button_classes as bc
-assert len(bc.DEFAULT_BUTTON_CLASSES) == 121
+assert len(bc.DEFAULT_BUTTON_CLASSES) == 122
 assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
 django.setup()
 assert seen == ["theme-info"]
-assert len(bc._get_default_button_classes()) == 139
+assert len(bc._get_default_button_classes()) == 140
 assert bc.get_button_class("workflow", "badge-info") == "theme-info"
 assert bc.get_button_class("workflow", "badge-light") == "project-light"
 """

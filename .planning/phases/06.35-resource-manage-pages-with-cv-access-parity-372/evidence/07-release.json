@@ -1,0 +1,48 @@
+{
+  "head": "d78758219c4226a922697557a9e38ef7e61b45d2",
+  "python": "3.12.3",
+  "source_binding": "PYTHONPATH=src:.",
+  "workers": 4,
+  "results": [
+    {
+      "mode": "normal",
+      "django": "5.2.19",
+      "receipt": "07-full-normal.txt",
+      "passed": 15226,
+      "skipped": 1,
+      "seconds": 404.83,
+      "exit": 0,
+      "sha256": "b6c61a0731b99733753d7a060cc5bf76eb8822909e32c372643eb8bc7f8e72dd"
+    },
+    {
+      "mode": "recorder",
+      "django": "5.2.19",
+      "receipt": "07-full-recorder.txt",
+      "passed": 15226,
+      "skipped": 1,
+      "seconds": 406.02,
+      "exit": 0,
+      "sha256": "0c9cc0c6a707f6e713e8322193ab0bf8d39754154f44d7df248fd86b7395326c"
+    },
+    {
+      "mode": "focused",
+      "django": "4.2.30",
+      "receipt": "07-django42.txt",
+      "passed": 902,
+      "skipped": 0,
+      "seconds": 37.6,
+      "exit": 0,
+      "sha256": "d824cc24d882a349d125fae610f126884a80d4560e4facebe039c02ff0ec0e7b"
+    },
+    {
+      "mode": "focused",
+      "django": "6.0.10",
+      "receipt": "07-django60.txt",
+      "passed": 902,
+      "skipped": 0,
+      "seconds": 47.99,
+      "exit": 0,
+      "sha256": "6217ae3ab3fee5f16b467fd4201a63e9c919c2141a49f93b08ea7c831d732cc8"
+    }
+  ]
+}

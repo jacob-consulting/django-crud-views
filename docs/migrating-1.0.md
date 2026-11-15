@@ -65,6 +65,35 @@ invalid and AJAX fragment rendering in your theme.
 No database migration is required. See the complete
 [row legend API and synchronized nested example](reference/formsets.md#row-cards-and-legends).
 
+## Resource manage registration
+
+Issue #372 automatically registers the shared `ManageView` for Resource ViewSets. A Resource ViewSet that
+previously registered a later class with `cv_key="manage"` now hits the existing duplicate-key error: automatic
+registration owns that key. Remove the later duplicate registration and select an importable `ManageView`
+subclass through `manage_view_class` **before constructing** the Resource ViewSet. Keep the inherited developer
+and ancestor gates; overriding diagnostic output must not bypass them.
+
+For example, define `ProjectManageView(ManageView)` in `myapp/manage.py` without a `cv_viewset` declaration,
+then select that class when constructing the ViewSet:
+
+```python
+from crud_views.lib.viewset import ViewSet
+from myapp.resources import ProjectResource
+from myapp.manage import ProjectManageView
+
+cv_resource = ViewSet(
+    model=ProjectResource,
+    name="projectresource",
+    manage_view_class="myapp.manage.ProjectManageView",
+)
+```
+
+Use a separate, non-reserved key for an unrelated custom endpoint. No compatibility shim preserves a second
+`manage` registration. Resource routes/actions now follow the same settings as model ViewSets, including
+registration in `manage_views_enabled="no"` mode with admission denied and automatic manage actions omitted.
+See [Resource manage guidance](reference/manage.md#resource-manage-pages) for the no-implicit-loader boundary
+and explicit access tracing; Resource write, leaf-only and Guardian-item limitations remain.
+
 ## Structured manage cards
 
 Core and Guardian manage pages now use the [structured manage reference](reference/manage.md). This is a visible
@@ -90,16 +119,18 @@ policy and access boundaries; a template or data builder does not authorize a re
 
 Auth-reading builders require the supplied ViewSet's registered manage class and raise
 `ImproperlyConfigured("Manage diagnostics require a registered manage view")` before diagnostic reads if it
-is truly absent, as with unsupported Resource diagnostics. `manage_views_enabled="no"` is not absence: model
-ViewSets still register AutoManageView and its URL; the mode controls availability and context actions.
+is truly absent, for example in a deliberately incomplete registration. `manage_views_enabled="no"` is not
+absence: both model and Resource ViewSets still register AutoManageView and its URL; the mode controls
+availability and context actions.
 Pure configuration/route projections have no auth-read dependency. Hierarchy takes URL coordinates explicitly
 as `route_kwargs`. Normal constructor provenance is supported; Pydantic `model_construct` bypasses that record
 and is unsupported for provenance. No broader Pydantic construction guarantee is introduced.
 
 The new `cv_get_requirement()` classmethod describes configuration, not a user's access. Describe custom
 `has_permission()` gates with the same method; arbitrary `dispatch()`/`get_object()` changes cannot be inferred.
-The existing manage admission, nested guards and optional-app boundaries remain unchanged. No new setting,
-Resource manage support, another-user evaluator (#370) or configuration-dump command (#371) is included.
+The existing manage admission, nested guards and optional-app boundaries remain unchanged. Resource support
+is described above; the opt-in another-user evaluator (#370) is documented in
+[Access check](reference/manage.md#access-check). A configuration-dump command (#371) is not included.
 
 ## Developer-only manage diagnostics
 

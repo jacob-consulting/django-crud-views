@@ -5,21 +5,21 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.34 complete, ready to plan Phase 7
-last_updated: "2026-11-15T11:35:40.853Z"
+stopped_at: Phase 06.35 complete, ready to plan Phase 7
+last_updated: "2026-11-15T20:20:58.750Z"
 last_activity: 2026-11-15
-last_activity_desc: "Phase 06.34 shipped as PR #374"
-state_head: 7c52bf683bead2089844368d1728a732938ca590
+last_activity_desc: "Phase 06.35 shipped as PR #376"
+state_head: af2946cdcebbd61fccfef8a55e89a4d56544e4ea
 progress:
-  total_phases: 41
-  completed_phases: 27
-  total_plans: 225
-  completed_plans: 225
-  percent: 66
+  total_phases: 42
+  completed_phases: 41
+  total_plans: 232
+  completed_plans: 232
+  percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 41
+Total Phases: 42
 
 # Project State
 
@@ -36,9 +36,66 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-15 -- Phase 06.34 shipped as PR #374
+Last activity: 2026-11-15 — Phase 06.35 shipped as PR #376
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.35 completion — 2026-11-15
+
+- All 7 plans/14 tasks complete. Canonical verification passed with fresh fingerprint: 5/5 roadmap truths and all 20 plan refinements verified; 8 independent targeted checks passed. No new approval checkpoint required by approved plan07.
+- Final source full normal and recorder suites each15226 passes+1 existing Django6-only skip; cached4.2/6.0 each902 passes; browser82cases/81captures. Independent validation516 Python+9 harness checks, additional regressions457 JS+2 integration+370 examples+14 presentation-config checks pass.
+- Nyquist14/14, security14/14 threats closed, deep code reviewzero findings. UI21/24 has three inherited nonblocking polish recommendations. Seven unavailable runtime combinations and four historical external-Tabler checks remain unverified; no subjective human endorsement or installed-distribution acceptance claimed.
+- Completion scanner warnings are command-string/phase-relative evidence paths and deliberately prose-only requirements, not missing implementation. Existing local state.json/config/.gitkeep/review-input edits preserved. No pushes/publication. Phase7 is next.
+
+### Phase 06.35 plan 07 completion — 2026-11-15
+
+- Existing browser harness now requires 32 Resource scenarios while preserving all 52 prior criterion IDs: 82 cases and 81 screenshots passed in 88.031s. Executor visual inspection and DOM evidence cover en/de at 390/1280, badges, overflow, defaults, empty states and real hierarchy routes; no maintainer visual approval is implied.
+- Final source d7875821: complete Django 5.2 normal 15226 passed + 1 existing skip (404.83s), recorder 15226 passed + 1 existing skip (406.02s); cached Django 4.2/6.0 focused 902 passed each (37.60s/47.99s), four workers. The skip is the existing Django6-only CSP case; seven unavailable supported runtime combinations remain explicitly unexecuted.
+- Two demonstrated test-isolation defects fixed with RED/GREEN: correct Pydantic private-cache restoration and reuse existing Django 4.2 diagnostic reporter isolation. No production changes or weakened assertions. Both full modes were repeated after the final test-source edit; core/Guardian query totals remain exactly 9/21.
+- Duration: approximately 51 minutes; 2 tasks; task/evidence commits e5c867e0, 5ce02f5c, 633cb045, ac75e4a5, 523ad9f7, d7875821, 611cc273; committed summary f91adf19. ROADMAP SDK reports 7/7 and In Progress, complete=false. All H01 handoffs closed; independent phase audits/reviews/verifier remain pending. Unrelated state.json/config/.gitkeep/review-input changes preserved.
+
+### Phase 06.35 plan 06 completion — 2026-11-15
+
+- Six Resource captions, badges, metadata/empty-state/legend messages have matching German PO/MO entries. Existing source inventories and semantic plural/placeholder checks remain intact; final H01 locale handoff is closed.
+- Thirty-two independent real-request cases each exercise both languages: all four badge sites with 21 direct holders, declared/inherited metadata, Show defaults, empty maps, nested routes, escaping, no-read sentinels, and complete per-path/per-row UI/CLI trace equality.
+- C11: 135 passed (3.89s); final C12: 374 passed (10.25s), four workers. Scoped Ruff/format/whitespace pass. No skips, dependencies or runtime code changes.
+- Duration: approximately 6 minutes; 2 tasks; task commits b5aa201c, 102ecaa0, ef7ba0b4, 5ab3a83f; summary f1fa6c89 and duration correction 922af8aa. One plan remains; no phase completion claimed. Unrelated state.json/config/.gitkeep/review-input changes preserved.
+
+### Phase 06.35 plan 05 completion — 2026-11-15
+
+- Resource/manage guidance now documents registration, developer/ancestor gates, metadata/provenance, explicit mapping and loader boundaries, selected actors and UI/CLI parity. The custom-manage-key Breaking entry has a paired executable migration recipe.
+- Exact live inventories cover Resource/model/Guardian contexts, blocks, facts and Presentation sections; 20 manage / 122 core / 140 workflow keys include the approved Resource badge. All fifteen inherited H01 theme/docs failures assigned05 now pass. Locale remains assigned06.
+- C09: 36 passed (2.68s), four workers; final C10: 360 passed (28.57s), two workers; strict MkDocs build passed (1.39s). Scoped lint/format/whitespace pass; no skips, dependencies or runtime changes.
+- Duration: approximately 9 minutes; 2 tasks; RED/GREEN commits 4ae68c47, 7f7b5ec0, c9d6d9f9, 6bb29222; summary e1be255a. Two plans remain; no phase completion claimed. Unrelated state.json edits preserved.
+
+### Phase 06.35 plan 04 completion — 2026-11-15
+
+- 207 Resource integration cases prove default-off/idle boundaries, username-first and PK selection, complete host/session preservation, every executable ViewSet row and path form, standalone/core/Guardian ancestry, and English/German JSON/text/HTML parity.
+- Stock manage developer/ancestor gates, disabled/debug-only modes, safe error/actor rendering, contributed paths, explicit reads and local database rollback preserve existing contracts. No production changes, new output messages or dependency installations were needed.
+- C07: 65 passed (4.02s); C08: 377 passed (19.73s), four workers. Scoped Ruff/format/whitespace pass. Existing H01 theme/docs/locale handoffs remain assigned to plans 05/06; plan 07 owns release acceptance.
+- Duration: approximately 10 minutes; 2 tasks; task commits 2e5f6ccd and 58f5fed9; summary 6f886ea7. Three plans remain; no phase completion claimed. Unrelated state.json edits preserved.
+
+### Phase 06.35 plan 03 completion — 2026-11-15
+
+- Resource-only facts app_label/pk_field/pk_type and Presentation.other.resource_permissions preserve model/Guardian shapes and provenance. Actual Resource child routes and upward coordinate links render without item reads; both H01 facts handoffs are closed.
+- All matrix row kinds, direct/effective grants, default/custom/empty badge classes, hidden users, escaping and empty-map copy pass. Exact new schema and four msgids are handed to plans 05/06 in the summary.
+- C05: 52 passed (final 2.09s); C06: 196 passed (13.90s), four workers. Original 9/21 model/Guardian query counts remain intact; the inherited baseline now explicitly clears shared vocabulary/Guardian caches to remove test-order dependence.
+- Duration: approximately 9 minutes; 2 tasks; RED/GREEN commits 60d469a2, e46f23a6, 0b3ccdbb, 5d546230; summary 89b22400. No phase completion claimed. Four plans remain; unrelated state.json edits preserved.
+
+### Phase 06.35 plan 02 completion — 2026-11-15
+
+- 122 new real-request cases cover standalone and core/Guardian nested Resource manage admission, both cascade modes, denial order, all-none ancestry, actual sibling toolbar links, and default/shard routing with colliding identities. Both Resource loaders remain unused by manage requests.
+- No production changes were needed. Reached auth/model read routes are guarded; unused auth write routes and Guardian tables remain untouched. Model manage query replay remains owned by plans 03/07.
+- C03: 145 passed in 13.82s; C04: 563 passed in 36.08s; both with four workers. Scoped Ruff/format/whitespace pass. No skipped cases or new blockers. Existing H01 handoffs remain with plans 03/05/06.
+- Duration: approximately 7 minutes; 2 tasks; task commits 0218b029 and 5491e556; summary commit 530305fb. STATE.md updated directly; unrelated state.json and working-tree edits preserved. Five plans remain.
+
+### Phase 06.35 plan 01 completion — 2026-11-15
+
+- Automatic Resource manage registration reuses the existing ManageView without controller changes. Resource identity and badge render without either Resource loader; a separate granted actor proves mapped-permission display.
+- Existing ManageView always hides denied actions under both general action policies. Core/Guardian query baselines remain 9/21 SQL statements with exact table-count checks.
+- C01: 3 passed; C02: 172 passed with four workers. H01 deliberately remains failing: 18 expected failures, 205 passed. Routes belong to 03-01/C05, inventory/docs to 05-02/C10, and missing Resource/resource translations to 06-01/C11. Exact nodes and assertions are in 06.35-01-SUMMARY.md and evidence/01-h01.txt. No full-suite or phase completion claimed.
+- Duration: approximately 6 minutes; 2 tasks; 7 production/test files. Task commits: 4d1d07f5, 5bbc0244, 4a4b25b5. Summary: 5e952537. Requirements are approved prose, not formal requirement IDs.
+- Existing state.json and unrelated working-tree edits preserved; STATE.md updated directly by orchestrator instruction.
 
 ### Phase 06.34 UAT completion — 2026-11-15
 
@@ -1108,7 +1165,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 216
+- Total plans completed: 223
 
 - Total plans completed: 186
 - Average duration: -
@@ -1155,6 +1212,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.30 | 15 | - | - |
 | 06.33 | 10 | - | - |
 | 06.34 | 12 | - | - |
+| 06.35 | 7 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1708,6 +1766,7 @@ None yet.
 - Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
 - Phase 06.33 inserted after Phase 06.32: Structured manage page (#366); approved D-01–D-30 handover, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.34 inserted after Phase 06.33: Access trace: cv_access command and manage page form (#370); approved design D-01–D-23 (URGENT)
+- Phase 06.35 inserted after Phase 06.34: Approved issue #372; corrected from initial 06.25.2 at maintainer request; D-01–D-07 context captured
 
 ## Deferred Items
 
@@ -1717,6 +1776,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15
-Stopped at: Phase 06.34 complete, ready to plan Phase 7
+Last session: 2026-11-15T20:21:44Z
+Stopped at: Phase 06.35 complete, ready to plan Phase 7
 Resume file: None

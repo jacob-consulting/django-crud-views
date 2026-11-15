@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_manage_docs.py::test_resource_manage_guidance_and_migration -q --junitxml=.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/evidence/05-docs-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.170\" timestamp=\"2026-11-15T18:42:26.553169+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_manage_docs\" name=\"test_resource_manage_guidance_and_migration\" time=\"0.003\"><failure message=\"AssertionError: assert 'Resource, no manage page' not in '# Manage di..._view.md).\\n'&#10;  &#10;  'Resource, no manage page' is contained here:&#10;    ild says \u201cResource, no manage page\u201d.&#10;    No Resource manage route is introduced. See [Nested ViewSets](nested.md).&#10;    &#10;    ## URL names&#10;    ...&#10;  &#10;  ...Full output truncated, use '-vv' to show\">def test_resource_manage_guidance_and_migration():\n        manage = REFERENCE.read_text()\n        resources = (ROOT / \"docs/reference/resources.md\").read_text()\n        migration = (ROOT / \"docs/migrating-1.0.md\").read_text()\n        release = (ROOT / \"CHANGELOG.md\").read_text().split(\"## Unreleased\", 1)[1].split(\"\\n## \", 1)[0]\n        for obsolete in (\"Resource, no manage page\", \"No Resource manage route is introduced\", \"No `ManageView`\"):\n&gt;           assert obsolete not in manage + resources\nE           AssertionError: assert 'Resource, no manage page' not in '# Manage di..._view.md).\\n'\nE             \nE             'Resource, no manage page' is contained here:\nE               ild says \u201cResource, no manage page\u201d.\nE               No Resource manage route is introduced. See [Nested ViewSets](nested.md).\nE               \nE               ## URL names\nE               ...\nE             \nE             ...Full output truncated, use '-vv' to show\n\ntests/test1/test_manage_docs.py:162: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_resource_manage_guidance_and_migration",
+  "targetFile": "tests/test1/test_manage_docs.py",
+  "expected": "No obsolete Resource manage exclusion",
+  "actual": "Resource, no manage page remains in hierarchy guidance",
+  "reportPath": ".planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/evidence/05-docs-red.xml",
+  "runStartedAt": "2026-11-15T18:42:17Z",
+  "reportModifiedAt": 1794768146.7232614,
+  "semanticAssessment": "Target executed and failed on the planned obsolete Resource exclusion assertion; no fixture or collection error."
+}

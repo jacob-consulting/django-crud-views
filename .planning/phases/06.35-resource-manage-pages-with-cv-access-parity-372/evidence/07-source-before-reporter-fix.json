@@ -1,0 +1,7 @@
+{
+  "head": "ac75e4a5c63374541d2e2681d475fdcbddc13d0f",
+  "recorded": "2026-11-15T19:12:31.321802+00:00",
+  "source_sha256": "781ce6b8e5b59d54d87c1a9c7b6a98800c135c0c921118a070efebaad6e63f49",
+  "files": 732,
+  "binding": "PYTHONPATH=src:."
+}

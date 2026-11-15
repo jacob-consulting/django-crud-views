@@ -1,0 +1,511 @@
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 23%]
+........................................................................ [ 31%]
+........................................................................ [ 39%]
+........................................................................ [ 47%]
+.............................................F..............F........... [ 55%]
+....................................................................F... [ 63%]
+..F..................................................................... [ 71%]
+........................................................................ [ 79%]
+........................................................................ [ 87%]
+........................................................................ [ 95%]
+......................................                                   [100%]
+=================================== FAILURES ===================================
+_________ test_nested_resource_manage_databases[core-parent-queryset] __________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x742a5b2390d0>
+database_world = namespace(publisher=<Publisher: default publisher>, book=<Book: default book>, shelf=<Shelf: default shelf>)
+database_routes = namespace(read={}, write={}, calls=[('read', <class 'django.contrib.sessions.models.Session'>, None), ('read', <class 'django.contrib.auth.models.User'>, None)])
+manage_events = [('queryset', 'rmpubfcc6c6ed')], kind = 'core'
+case = 'parent-queryset'
+
+    @pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+    @pytest.mark.parametrize(
+        "kind,case",
+        [(kind, case) for kind in ("core", "guardian") for case in DATABASE_CASES]
+        + [("guardian", case) for case in GUARDIAN_CASES],
+    )
+    def test_nested_resource_manage_databases(monkeypatch, database_world, database_routes, manage_events, kind, case):
+        world, routes = database_world, database_routes
+        # The reused fixture creates genuinely colliding rows and auth metadata on both aliases.
+        assert Publisher.objects.using("shard").get(pk=world.publisher.pk).name == "shard publisher"
+        actor = auth_db._manage_member("resource database developer")
+        local = case.startswith("local-")
+        depth = 2 if case == "earlier-denial" else 1
+    
+        def build(sfx):
+            return _build_chain(sfx, kind=kind, depth=depth, none=local)
+    
+        with isolated_routes(build) as chain:
+            if case not in {"earlier-denial", "shard-grant", "wrong-contenttype"} and not local:
+                _grant(kind, actor, Publisher, world.publisher)
+            if case == "shard-grant":
+                auth_db._shard_object_grant(actor, Publisher, world.publisher.pk)
+            elif case == "wrong-contenttype":
+                # Identical object_pk is insufficient: a Book grant cannot authorize Publisher.
+                from guardian.shortcuts import assign_perm
+    
+                wrong = Book.objects.create(pk=world.publisher.pk, publisher=world.publisher, title="Same pk, other model")
+                assign_perm("app.view_book", actor, wrong)
+            coordinates = {f"{chain.grand.name}_pk": world.publisher.pk}
+            if depth == 2:
+                coordinates[f"{chain.mid.name}_pk"] = world.book.pk
+            url = _url(chain.leaf, "manage", **coordinates)
+            client = _client(actor)
+            selected_table = None
+            if case in {"explicit-default", "parent-queryset"}:
+                original = ViewSet.get_queryset
+    
+                def queryset(self, view):
+                    qs = original(self, view)
+                    return qs.using("default" if case == "explicit-default" else "shard") if self is chain.grand else qs
+    
+                monkeypatch.setattr(ViewSet, "get_queryset", queryset)
+            if case in {"explicit-default", "parent-router"}:
+                routes.read[Publisher] = "shard"
+            elif case == "earlier-denial":
+                routes.read[Book] = "shard"
+            elif case == "actor-database":
+                routes.read[auth_db.User] = "shard"
+            elif case in {"actor-hint", "object-hint"}:
+                selected_table = Permission if case == "actor-hint" else auth_db.UserObjectPermission
+                hint_type = auth_db.User if case == "actor-hint" else Publisher
+                routes.read[selected_table] = lambda hints: (
+                    "shard" if isinstance(hints.get("instance"), hint_type) else None
+                )
+            elif case.startswith(("auth-read-", "local-read-")):
+                selected_table = auth_db.TABLES[case.removeprefix("auth-read-").removeprefix("local-read-")]
+                routes.read[selected_table] = "shard"
+            elif case == "auth-write-unreached":
+                for table in auth_db.CORE + (auth_db.GENERIC if kind == "guardian" else []):
+                    routes.write[auth_db.TABLES[table]] = "shard"
+            elif case == "local-unused-grant-routes":
+                for table in auth_db.GENERIC:
+                    routes.read[auth_db.TABLES[table]] = "shard"
+    
+            # The GET reads existing auth records; a write-only route is not a reached
+            # authorization consumer. All-none ancestry also leaves Guardian tables unused.
+            allowed = case in {"default", "explicit-default", "auth-write-unreached", "local-unused-grant-routes"}
+            denied = case in {"earlier-denial", "shard-grant", "wrong-contenttype"}
+            manage_events.clear()
+            routes.calls.clear()
+            with captured() as queries:
+                if allowed or denied:
+                    response = client.get(url)
+                    assert response.status_code == (200 if allowed else 403)
+                else:
+                    with pytest.raises(ImproperlyConfigured, match=auth_db.REFUSED):
+                        client.get(url)
+            shard_sql = _sql(queries.shard)
+            assert not [event for event in manage_events if event[0] == "load"]
+            # Only the session's deliberately shard-routed actor may be loaded there.
+>           assert auth_db._foreign_sql(queries.shard) == []
+E           assert ['SELECT "app...ASC LIMIT 21'] == []
+E             
+E             Left contains one more item: 'SELECT "app_publisher"."id", "app_publisher"."name" FROM "app_publisher" WHERE "app_publisher"."id" = 41 ORDER BY "app_publisher"."name" ASC LIMIT 21'
+E             Use -v to get more diff
+
+tests/test1/test_resource_manage_nested.py:321: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    django.request:log.py:246 Internal Server Error: /rmpubfcc6c6ed/41/rmitemfcc6c6ed/manage/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 52, in dispatch
+    response = self._cv_ancestor_guard()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 342, in _cv_ancestor_guard
+    return _authorize_ancestors(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py", line 504, in _authorize_ancestors
+    obj = _resolve_ancestor(view, edge, ancestor, outer)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py", line 447, in _resolve_ancestor
+    _require_default_alias(queryset.db, view=view, operation=f"ancestor ViewSet {ancestor.name!r} queryset")
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestor_db.py", line 70, in _require_default_alias
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: ViewSet 'rmitemfcc6c6ed' view 'manage': ancestor ViewSet 'rmpubfcc6c6ed' queryset selected database 'shard'; nested ViewSets support only the 'default' database (the selection is not rerouted)
+__________ test_nested_resource_manage_databases[core-parent-router] ___________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x742a59ede510>
+database_world = namespace(publisher=<Publisher: default publisher>, book=<Book: default book>, shelf=<Shelf: default shelf>)
+database_routes = namespace(read={<class 'tests.test1.app.models.Publisher'>: 'shard'}, write={}, calls=[('read', <class 'django.contrib...'read', <class 'tests.test1.app.models.Publisher'>, None), ('read', <class 'tests.test1.app.models.Publisher'>, None)])
+manage_events = [('queryset', 'rmpubd9193d10')], kind = 'core'
+case = 'parent-router'
+
+    @pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+    @pytest.mark.parametrize(
+        "kind,case",
+        [(kind, case) for kind in ("core", "guardian") for case in DATABASE_CASES]
+        + [("guardian", case) for case in GUARDIAN_CASES],
+    )
+    def test_nested_resource_manage_databases(monkeypatch, database_world, database_routes, manage_events, kind, case):
+        world, routes = database_world, database_routes
+        # The reused fixture creates genuinely colliding rows and auth metadata on both aliases.
+        assert Publisher.objects.using("shard").get(pk=world.publisher.pk).name == "shard publisher"
+        actor = auth_db._manage_member("resource database developer")
+        local = case.startswith("local-")
+        depth = 2 if case == "earlier-denial" else 1
+    
+        def build(sfx):
+            return _build_chain(sfx, kind=kind, depth=depth, none=local)
+    
+        with isolated_routes(build) as chain:
+            if case not in {"earlier-denial", "shard-grant", "wrong-contenttype"} and not local:
+                _grant(kind, actor, Publisher, world.publisher)
+            if case == "shard-grant":
+                auth_db._shard_object_grant(actor, Publisher, world.publisher.pk)
+            elif case == "wrong-contenttype":
+                # Identical object_pk is insufficient: a Book grant cannot authorize Publisher.
+                from guardian.shortcuts import assign_perm
+    
+                wrong = Book.objects.create(pk=world.publisher.pk, publisher=world.publisher, title="Same pk, other model")
+                assign_perm("app.view_book", actor, wrong)
+            coordinates = {f"{chain.grand.name}_pk": world.publisher.pk}
+            if depth == 2:
+                coordinates[f"{chain.mid.name}_pk"] = world.book.pk
+            url = _url(chain.leaf, "manage", **coordinates)
+            client = _client(actor)
+            selected_table = None
+            if case in {"explicit-default", "parent-queryset"}:
+                original = ViewSet.get_queryset
+    
+                def queryset(self, view):
+                    qs = original(self, view)
+                    return qs.using("default" if case == "explicit-default" else "shard") if self is chain.grand else qs
+    
+                monkeypatch.setattr(ViewSet, "get_queryset", queryset)
+            if case in {"explicit-default", "parent-router"}:
+                routes.read[Publisher] = "shard"
+            elif case == "earlier-denial":
+                routes.read[Book] = "shard"
+            elif case == "actor-database":
+                routes.read[auth_db.User] = "shard"
+            elif case in {"actor-hint", "object-hint"}:
+                selected_table = Permission if case == "actor-hint" else auth_db.UserObjectPermission
+                hint_type = auth_db.User if case == "actor-hint" else Publisher
+                routes.read[selected_table] = lambda hints: (
+                    "shard" if isinstance(hints.get("instance"), hint_type) else None
+                )
+            elif case.startswith(("auth-read-", "local-read-")):
+                selected_table = auth_db.TABLES[case.removeprefix("auth-read-").removeprefix("local-read-")]
+                routes.read[selected_table] = "shard"
+            elif case == "auth-write-unreached":
+                for table in auth_db.CORE + (auth_db.GENERIC if kind == "guardian" else []):
+                    routes.write[auth_db.TABLES[table]] = "shard"
+            elif case == "local-unused-grant-routes":
+                for table in auth_db.GENERIC:
+                    routes.read[auth_db.TABLES[table]] = "shard"
+    
+            # The GET reads existing auth records; a write-only route is not a reached
+            # authorization consumer. All-none ancestry also leaves Guardian tables unused.
+            allowed = case in {"default", "explicit-default", "auth-write-unreached", "local-unused-grant-routes"}
+            denied = case in {"earlier-denial", "shard-grant", "wrong-contenttype"}
+            manage_events.clear()
+            routes.calls.clear()
+            with captured() as queries:
+                if allowed or denied:
+                    response = client.get(url)
+                    assert response.status_code == (200 if allowed else 403)
+                else:
+                    with pytest.raises(ImproperlyConfigured, match=auth_db.REFUSED):
+                        client.get(url)
+            shard_sql = _sql(queries.shard)
+            assert not [event for event in manage_events if event[0] == "load"]
+            # Only the session's deliberately shard-routed actor may be loaded there.
+>           assert auth_db._foreign_sql(queries.shard) == []
+E           assert ['SELECT "app...ASC LIMIT 21'] == []
+E             
+E             Left contains one more item: 'SELECT "app_publisher"."id", "app_publisher"."name" FROM "app_publisher" WHERE "app_publisher"."id" = 41 ORDER BY "app_publisher"."name" ASC LIMIT 21'
+E             Use -v to get more diff
+
+tests/test1/test_resource_manage_nested.py:321: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    django.request:log.py:246 Internal Server Error: /rmpubd9193d10/41/rmitemd9193d10/manage/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 52, in dispatch
+    response = self._cv_ancestor_guard()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 342, in _cv_ancestor_guard
+    return _authorize_ancestors(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py", line 504, in _authorize_ancestors
+    obj = _resolve_ancestor(view, edge, ancestor, outer)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py", line 447, in _resolve_ancestor
+    _require_default_alias(queryset.db, view=view, operation=f"ancestor ViewSet {ancestor.name!r} queryset")
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestor_db.py", line 70, in _require_default_alias
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: ViewSet 'rmitemd9193d10' view 'manage': ancestor ViewSet 'rmpubd9193d10' queryset selected database 'shard'; nested ViewSets support only the 'default' database (the selection is not rerouted)
+_______ test_nested_resource_manage_databases[guardian-parent-queryset] ________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x742a59da4350>
+database_world = namespace(publisher=<Publisher: default publisher>, book=<Book: default book>, shelf=<Shelf: default shelf>)
+database_routes = namespace(read={}, write={}, calls=[('read', <class 'django.contrib.sessions.models.Session'>, None), ('read', <class 'django.contrib.auth.models.User'>, None)])
+manage_events = [('queryset', 'rmpub7a5c4386')], kind = 'guardian'
+case = 'parent-queryset'
+
+    @pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+    @pytest.mark.parametrize(
+        "kind,case",
+        [(kind, case) for kind in ("core", "guardian") for case in DATABASE_CASES]
+        + [("guardian", case) for case in GUARDIAN_CASES],
+    )
+    def test_nested_resource_manage_databases(monkeypatch, database_world, database_routes, manage_events, kind, case):
+        world, routes = database_world, database_routes
+        # The reused fixture creates genuinely colliding rows and auth metadata on both aliases.
+        assert Publisher.objects.using("shard").get(pk=world.publisher.pk).name == "shard publisher"
+        actor = auth_db._manage_member("resource database developer")
+        local = case.startswith("local-")
+        depth = 2 if case == "earlier-denial" else 1
+    
+        def build(sfx):
+            return _build_chain(sfx, kind=kind, depth=depth, none=local)
+    
+        with isolated_routes(build) as chain:
+            if case not in {"earlier-denial", "shard-grant", "wrong-contenttype"} and not local:
+                _grant(kind, actor, Publisher, world.publisher)
+            if case == "shard-grant":
+                auth_db._shard_object_grant(actor, Publisher, world.publisher.pk)
+            elif case == "wrong-contenttype":
+                # Identical object_pk is insufficient: a Book grant cannot authorize Publisher.
+                from guardian.shortcuts import assign_perm
+    
+                wrong = Book.objects.create(pk=world.publisher.pk, publisher=world.publisher, title="Same pk, other model")
+                assign_perm("app.view_book", actor, wrong)
+            coordinates = {f"{chain.grand.name}_pk": world.publisher.pk}
+            if depth == 2:
+                coordinates[f"{chain.mid.name}_pk"] = world.book.pk
+            url = _url(chain.leaf, "manage", **coordinates)
+            client = _client(actor)
+            selected_table = None
+            if case in {"explicit-default", "parent-queryset"}:
+                original = ViewSet.get_queryset
+    
+                def queryset(self, view):
+                    qs = original(self, view)
+                    return qs.using("default" if case == "explicit-default" else "shard") if self is chain.grand else qs
+    
+                monkeypatch.setattr(ViewSet, "get_queryset", queryset)
+            if case in {"explicit-default", "parent-router"}:
+                routes.read[Publisher] = "shard"
+            elif case == "earlier-denial":
+                routes.read[Book] = "shard"
+            elif case == "actor-database":
+                routes.read[auth_db.User] = "shard"
+            elif case in {"actor-hint", "object-hint"}:
+                selected_table = Permission if case == "actor-hint" else auth_db.UserObjectPermission
+                hint_type = auth_db.User if case == "actor-hint" else Publisher
+                routes.read[selected_table] = lambda hints: (
+                    "shard" if isinstance(hints.get("instance"), hint_type) else None
+                )
+            elif case.startswith(("auth-read-", "local-read-")):
+                selected_table = auth_db.TABLES[case.removeprefix("auth-read-").removeprefix("local-read-")]
+                routes.read[selected_table] = "shard"
+            elif case == "auth-write-unreached":
+                for table in auth_db.CORE + (auth_db.GENERIC if kind == "guardian" else []):
+                    routes.write[auth_db.TABLES[table]] = "shard"
+            elif case == "local-unused-grant-routes":
+                for table in auth_db.GENERIC:
+                    routes.read[auth_db.TABLES[table]] = "shard"
+    
+            # The GET reads existing auth records; a write-only route is not a reached
+            # authorization consumer. All-none ancestry also leaves Guardian tables unused.
+            allowed = case in {"default", "explicit-default", "auth-write-unreached", "local-unused-grant-routes"}
+            denied = case in {"earlier-denial", "shard-grant", "wrong-contenttype"}
+            manage_events.clear()
+            routes.calls.clear()
+            with captured() as queries:
+                if allowed or denied:
+                    response = client.get(url)
+                    assert response.status_code == (200 if allowed else 403)
+                else:
+                    with pytest.raises(ImproperlyConfigured, match=auth_db.REFUSED):
+                        client.get(url)
+            shard_sql = _sql(queries.shard)
+            assert not [event for event in manage_events if event[0] == "load"]
+            # Only the session's deliberately shard-routed actor may be loaded there.
+>           assert auth_db._foreign_sql(queries.shard) == []
+E           assert ['SELECT "app...ASC LIMIT 21'] == []
+E             
+E             Left contains one more item: 'SELECT "app_publisher"."id", "app_publisher"."name" FROM "app_publisher" WHERE "app_publisher"."id" = 41 ORDER BY "app_publisher"."name" ASC LIMIT 21'
+E             Use -v to get more diff
+
+tests/test1/test_resource_manage_nested.py:321: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    django.request:log.py:246 Internal Server Error: /rmpub7a5c4386/41/rmitem7a5c4386/manage/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 52, in dispatch
+    response = self._cv_ancestor_guard()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 342, in _cv_ancestor_guard
+    return _authorize_ancestors(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py", line 504, in _authorize_ancestors
+    obj = _resolve_ancestor(view, edge, ancestor, outer)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py", line 447, in _resolve_ancestor
+    _require_default_alias(queryset.db, view=view, operation=f"ancestor ViewSet {ancestor.name!r} queryset")
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestor_db.py", line 70, in _require_default_alias
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: ViewSet 'rmitem7a5c4386' view 'manage': ancestor ViewSet 'rmpub7a5c4386' queryset selected database 'shard'; nested ViewSets support only the 'default' database (the selection is not rerouted)
+________ test_nested_resource_manage_databases[guardian-parent-router] _________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x742a59f950a0>
+database_world = namespace(publisher=<Publisher: default publisher>, book=<Book: default book>, shelf=<Shelf: default shelf>)
+database_routes = namespace(read={<class 'tests.test1.app.models.Publisher'>: 'shard'}, write={}, calls=[('read', <class 'django.contrib...'read', <class 'tests.test1.app.models.Publisher'>, None), ('read', <class 'tests.test1.app.models.Publisher'>, None)])
+manage_events = [('queryset', 'rmpub17210e5a')], kind = 'guardian'
+case = 'parent-router'
+
+    @pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+    @pytest.mark.parametrize(
+        "kind,case",
+        [(kind, case) for kind in ("core", "guardian") for case in DATABASE_CASES]
+        + [("guardian", case) for case in GUARDIAN_CASES],
+    )
+    def test_nested_resource_manage_databases(monkeypatch, database_world, database_routes, manage_events, kind, case):
+        world, routes = database_world, database_routes
+        # The reused fixture creates genuinely colliding rows and auth metadata on both aliases.
+        assert Publisher.objects.using("shard").get(pk=world.publisher.pk).name == "shard publisher"
+        actor = auth_db._manage_member("resource database developer")
+        local = case.startswith("local-")
+        depth = 2 if case == "earlier-denial" else 1
+    
+        def build(sfx):
+            return _build_chain(sfx, kind=kind, depth=depth, none=local)
+    
+        with isolated_routes(build) as chain:
+            if case not in {"earlier-denial", "shard-grant", "wrong-contenttype"} and not local:
+                _grant(kind, actor, Publisher, world.publisher)
+            if case == "shard-grant":
+                auth_db._shard_object_grant(actor, Publisher, world.publisher.pk)
+            elif case == "wrong-contenttype":
+                # Identical object_pk is insufficient: a Book grant cannot authorize Publisher.
+                from guardian.shortcuts import assign_perm
+    
+                wrong = Book.objects.create(pk=world.publisher.pk, publisher=world.publisher, title="Same pk, other model")
+                assign_perm("app.view_book", actor, wrong)
+            coordinates = {f"{chain.grand.name}_pk": world.publisher.pk}
+            if depth == 2:
+                coordinates[f"{chain.mid.name}_pk"] = world.book.pk
+            url = _url(chain.leaf, "manage", **coordinates)
+            client = _client(actor)
+            selected_table = None
+            if case in {"explicit-default", "parent-queryset"}:
+                original = ViewSet.get_queryset
+    
+                def queryset(self, view):
+                    qs = original(self, view)
+                    return qs.using("default" if case == "explicit-default" else "shard") if self is chain.grand else qs
+    
+                monkeypatch.setattr(ViewSet, "get_queryset", queryset)
+            if case in {"explicit-default", "parent-router"}:
+                routes.read[Publisher] = "shard"
+            elif case == "earlier-denial":
+                routes.read[Book] = "shard"
+            elif case == "actor-database":
+                routes.read[auth_db.User] = "shard"
+            elif case in {"actor-hint", "object-hint"}:
+                selected_table = Permission if case == "actor-hint" else auth_db.UserObjectPermission
+                hint_type = auth_db.User if case == "actor-hint" else Publisher
+                routes.read[selected_table] = lambda hints: (
+                    "shard" if isinstance(hints.get("instance"), hint_type) else None
+                )
+            elif case.startswith(("auth-read-", "local-read-")):
+                selected_table = auth_db.TABLES[case.removeprefix("auth-read-").removeprefix("local-read-")]
+                routes.read[selected_table] = "shard"
+            elif case == "auth-write-unreached":
+                for table in auth_db.CORE + (auth_db.GENERIC if kind == "guardian" else []):
+                    routes.write[auth_db.TABLES[table]] = "shard"
+            elif case == "local-unused-grant-routes":
+                for table in auth_db.GENERIC:
+                    routes.read[auth_db.TABLES[table]] = "shard"
+    
+            # The GET reads existing auth records; a write-only route is not a reached
+            # authorization consumer. All-none ancestry also leaves Guardian tables unused.
+            allowed = case in {"default", "explicit-default", "auth-write-unreached", "local-unused-grant-routes"}
+            denied = case in {"earlier-denial", "shard-grant", "wrong-contenttype"}
+            manage_events.clear()
+            routes.calls.clear()
+            with captured() as queries:
+                if allowed or denied:
+                    response = client.get(url)
+                    assert response.status_code == (200 if allowed else 403)
+                else:
+                    with pytest.raises(ImproperlyConfigured, match=auth_db.REFUSED):
+                        client.get(url)
+            shard_sql = _sql(queries.shard)
+            assert not [event for event in manage_events if event[0] == "load"]
+            # Only the session's deliberately shard-routed actor may be loaded there.
+>           assert auth_db._foreign_sql(queries.shard) == []
+E           assert ['SELECT "app...ASC LIMIT 21'] == []
+E             
+E             Left contains one more item: 'SELECT "app_publisher"."id", "app_publisher"."name" FROM "app_publisher" WHERE "app_publisher"."id" = 41 ORDER BY "app_publisher"."name" ASC LIMIT 21'
+E             Use -v to get more diff
+
+tests/test1/test_resource_manage_nested.py:321: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    django.request:log.py:246 Internal Server Error: /rmpub17210e5a/41/rmitem17210e5a/manage/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/lib/python3.12/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 52, in dispatch
+    response = self._cv_ancestor_guard()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 342, in _cv_ancestor_guard
+    return _authorize_ancestors(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py", line 504, in _authorize_ancestors
+    obj = _resolve_ancestor(view, edge, ancestor, outer)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestors.py", line 447, in _resolve_ancestor
+    _require_default_alias(queryset.db, view=view, operation=f"ancestor ViewSet {ancestor.name!r} queryset")
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/ancestor_db.py", line 70, in _require_default_alias
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: ViewSet 'rmitem17210e5a' view 'manage': ancestor ViewSet 'rmpub17210e5a' queryset selected database 'shard'; nested ViewSets support only the 'default' database (the selection is not rerouted)
+=========================== short test summary info ============================
+FAILED tests/test1/test_resource_manage_nested.py::test_nested_resource_manage_databases[core-parent-queryset]
+FAILED tests/test1/test_resource_manage_nested.py::test_nested_resource_manage_databases[core-parent-router]
+FAILED tests/test1/test_resource_manage_nested.py::test_nested_resource_manage_databases[guardian-parent-queryset]
+FAILED tests/test1/test_resource_manage_nested.py::test_nested_resource_manage_databases[guardian-parent-router]
+4 failed, 898 passed in 37.22s

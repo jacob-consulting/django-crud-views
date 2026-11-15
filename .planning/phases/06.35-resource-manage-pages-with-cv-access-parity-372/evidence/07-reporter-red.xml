@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.004" timestamp="2026-11-15T19:29:03.455061+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_resource_manage_nested" name="test_nested_resource_manage_databases[core-parent-queryset]" time="0.791"><failure message="assert ['SELECT &quot;app...ASC LIMIT 21'] == []&#10;  &#10;  Left contains one more item: 'SELECT &quot;app_publisher&quot;.&quot;id&quot;, &quot;app_publisher&quot;.&quot;name&quot; FROM &quot;app_publisher&quot; WHERE &quot;app_publisher&quot;.&quot;id&quot; = 41 ORDER BY &quot;app_publisher&quot;.&quot;name&quot; ASC LIMIT 21'&#10;  Use -v to get more diff">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7907d3bde480&gt;
+database_world = namespace(publisher=&lt;Publisher: default publisher&gt;, book=&lt;Book: default book&gt;, shelf=&lt;Shelf: default shelf&gt;)
+database_routes = namespace(read={}, write={}, calls=[('read', &lt;class 'django.contrib.sessions.models.Session'&gt;, None), ('read', &lt;class 'django.contrib.auth.models.User'&gt;, None)])
+manage_events = [('queryset', 'rmpub2e6c249a')], kind = 'core'
+case = 'parent-queryset'
+
+    @pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+    @pytest.mark.parametrize(
+        "kind,case",
+        [(kind, case) for kind in ("core", "guardian") for case in DATABASE_CASES]
+        + [("guardian", case) for case in GUARDIAN_CASES],
+    )
+    def test_nested_resource_manage_databases(monkeypatch, database_world, database_routes, manage_events, kind, case):
+        world, routes = database_world, database_routes
+        # The reused fixture creates genuinely colliding rows and auth metadata on both aliases.
+        assert Publisher.objects.using("shard").get(pk=world.publisher.pk).name == "shard publisher"
+        actor = auth_db._manage_member("resource database developer")
+        local = case.startswith("local-")
+        depth = 2 if case == "earlier-denial" else 1
+    
+        def build(sfx):
+            return _build_chain(sfx, kind=kind, depth=depth, none=local)
+    
+        with isolated_routes(build) as chain:
+            if case not in {"earlier-denial", "shard-grant", "wrong-contenttype"} and not local:
+                _grant(kind, actor, Publisher, world.publisher)
+            if case == "shard-grant":
+                auth_db._shard_object_grant(actor, Publisher, world.publisher.pk)
+            elif case == "wrong-contenttype":
+                # Identical object_pk is insufficient: a Book grant cannot authorize Publisher.
+                from guardian.shortcuts import assign_perm
+    
+                wrong = Book.objects.create(pk=world.publisher.pk, publisher=world.publisher, title="Same pk, other model")
+                assign_perm("app.view_book", actor, wrong)
+            coordinates = {f"{chain.grand.name}_pk": world.publisher.pk}
+            if depth == 2:
+                coordinates[f"{chain.mid.name}_pk"] = world.book.pk
+            url = _url(chain.leaf, "manage", **coordinates)
+            client = _client(actor)
+            selected_table = None
+            if case in {"explicit-default", "parent-queryset"}:
+                original = ViewSet.get_queryset
+    
+                def queryset(self, view):
+                    qs = original(self, view)
+                    return qs.using("default" if case == "explicit-default" else "shard") if self is chain.grand else qs
+    
+                monkeypatch.setattr(ViewSet, "get_queryset", queryset)
+            if case in {"explicit-default", "parent-router"}:
+                routes.read[Publisher] = "shard"
+            elif case == "earlier-denial":
+                routes.read[Book] = "shard"
+            elif case == "actor-database":
+                routes.read[auth_db.User] = "shard"
+            elif case in {"actor-hint", "object-hint"}:
+                selected_table = Permission if case == "actor-hint" else auth_db.UserObjectPermission
+                hint_type = auth_db.User if case == "actor-hint" else Publisher
+                routes.read[selected_table] = lambda hints: (
+                    "shard" if isinstance(hints.get("instance"), hint_type) else None
+                )
+            elif case.startswith(("auth-read-", "local-read-")):
+                selected_table = auth_db.TABLES[case.removeprefix("auth-read-").removeprefix("local-read-")]
+                routes.read[selected_table] = "shard"
+            elif case == "auth-write-unreached":
+                for table in auth_db.CORE + (auth_db.GENERIC if kind == "guardian" else []):
+                    routes.write[auth_db.TABLES[table]] = "shard"
+            elif case == "local-unused-grant-routes":
+                for table in auth_db.GENERIC:
+                    routes.read[auth_db.TABLES[table]] = "shard"
+    
+            # The GET reads existing auth records; a write-only route is not a reached
+            # authorization consumer. All-none ancestry also leaves Guardian tables unused.
+            allowed = case in {"default", "explicit-default", "auth-write-unreached", "local-unused-grant-routes"}
+            denied = case in {"earlier-denial", "shard-grant", "wrong-contenttype"}
+            manage_events.clear()
+            routes.calls.clear()
+            with captured() as queries:
+                if allowed or denied:
+                    response = client.get(url)
+                    assert response.status_code == (200 if allowed else 403)
+                else:
+                    with pytest.raises(ImproperlyConfigured, match=auth_db.REFUSED):
+                        client.get(url)
+            shard_sql = _sql(queries.shard)
+            assert not [event for event in manage_events if event[0] == "load"]
+            # Only the session's deliberately shard-routed actor may be loaded there.
+&gt;           assert auth_db._foreign_sql(queries.shard) == []
+E           assert ['SELECT "app...ASC LIMIT 21'] == []
+E             
+E             Left contains one more item: 'SELECT "app_publisher"."id", "app_publisher"."name" FROM "app_publisher" WHERE "app_publisher"."id" = 41 ORDER BY "app_publisher"."name" ASC LIMIT 21'
+E             Use -v to get more diff
+
+tests/test1/test_resource_manage_nested.py:321: AssertionError</failure></testcase></testsuite></testsuites>

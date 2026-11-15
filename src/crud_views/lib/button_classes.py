@@ -134,6 +134,7 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "language:toggle": "btn btn-outline-secondary",
     "object-detail:property-detail": "btn btn-link p-0 ms-1 align-baseline text-muted",
     "manage:badge-model": "badge bg-secondary",
+    "manage:badge-resource": "badge bg-info text-dark",
     "manage:badge-objects": "badge bg-light text-dark border",
     "manage:badge-permission": "badge bg-primary",
     "manage:badge-group": "badge cv-manage-badge-group",

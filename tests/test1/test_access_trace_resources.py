@@ -86,4 +86,4 @@ def test_resource_reads_identity_state_and_counts(case):
                 assert result.decided_by == lookups[0].n
             else:
                 assert lookups[0].object == {"model": "resources.externalitem", "pk": "one"}
-        assert not vs.is_view_registered("manage")
+        assert vs.is_view_registered("manage")

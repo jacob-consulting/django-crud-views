@@ -151,3 +151,69 @@ def test_manage_breaking_change_has_paired_migration():
     section = migration.split("## Structured manage cards\n", 1)[1].split("\n## ", 1)[0]
     for boundary in ("model_construct", "registered manage", 'manage_views_enabled="no"', "#370", "#371"):
         assert boundary in section
+
+
+def test_resource_manage_guidance_and_migration():
+    manage = REFERENCE.read_text()
+    resources = (ROOT / "docs/reference/resources.md").read_text()
+    migration = (ROOT / "docs/migrating-1.0.md").read_text()
+    release = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased", 1)[1].split("\n## ", 1)[0]
+    for obsolete in (
+        "Resource, no manage page",
+        "No Resource manage route is introduced",
+        "No Resource manage page is created",
+        "No `ManageView`",
+    ):
+        assert obsolete not in manage + resources
+    section = manage.split("## Resource manage pages\n", 1)[1].split("\n## ", 1)[0]
+    for contract in (
+        "manage_view_class",
+        "cv_get_item()",
+        "cv_get_items()",
+        "resource_permissions",
+        "No Resource permissions declared",
+        "app_label",
+        "pk_field",
+        "pk_type",
+        "manage:badge-resource",
+        "badge bg-info text-dark",
+        "per-item grants",
+        "selected actor",
+        "provider",
+        "external",
+        "custom",
+    ):
+        assert contract in section
+    assert "## Manage diagnostics\n" in resources
+    section = migration.split("## Resource manage registration\n", 1)[1].split("\n## ", 1)[0]
+    for contract in ('cv_key="manage"', "manage_view_class", "ManageView", "duplicate", "ancestor"):
+        assert contract in section
+    assert "unsupported Resource diagnostics" not in migration
+    assert "Resource manage support, another-user evaluator" not in migration
+    assert "**Resource manage pages** (#372)" in release.split("### Added", 1)[1]
+    breaking = release.split("### Breaking", 1)[1].split("\n### ", 1)[0]
+    assert "docs/migrating-1.0.md#resource-manage-registration" in breaking
+
+
+def test_resource_manage_migration_example_preserves_registration_gates(monkeypatch):
+    from crud_views.lib.viewset import ViewSet
+    from tests.test1.test_resource_manage import ManageItem
+
+    class ProjectManageView(ManageView):
+        manage_docs_base_url = "https://docs.example.test/manage/"
+
+    monkeypatch.setattr(
+        __import__(__name__, fromlist=["ProjectManageView"]), "ProjectManageView", ProjectManageView, raising=False
+    )
+    code = recipe(ROOT / "docs/migrating-1.0.md", "## Resource manage registration", language="python")
+    # Execute the published constructor with a deterministic Resource and importable local subclass.
+    code = code.replace("from myapp.resources import ProjectResource", "")
+    code = code.replace("from myapp.manage import ProjectManageView", "")
+    code = code.replace("myapp.manage.ProjectManageView", __name__ + ".ProjectManageView")
+    namespace = {"ProjectResource": ManageItem, "ProjectManageView": ProjectManageView}
+    exec(code, namespace)
+    viewset = namespace["cv_resource"]
+    assert isinstance(viewset, ViewSet)
+    assert issubclass(viewset.get_view_class("manage"), ProjectManageView)
+    assert viewset.get_view_class("manage").has_permission == ManageView.has_permission
+    assert viewset.get_view_class("manage").dispatch == ManageView.dispatch

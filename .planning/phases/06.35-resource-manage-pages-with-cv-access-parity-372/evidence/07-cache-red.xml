@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.618" timestamp="2026-11-15T19:11:38.724437+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_resource_manage" name="test_resource_manage_model_query_preservation[cv_author]" time="0.442"><failure message="AssertionError: Restore shared vocabulary cache&#10;assert &lt;object object at 0x737d30d7b840&gt; is None&#10; +  where &lt;object object at 0x737d30d7b840&gt; = getattr(ViewSet(author), '_default_permissions', &lt;object object at 0x737d30d7b840&gt;)&#10; +    where &lt;object object at 0x737d30d7b840&gt; = object()">request = &lt;FixtureRequest for &lt;Function test_resource_manage_model_query_preservation[cv_author]&gt;&gt;
+fixture = 'cv_author'
+client = &lt;django.test.client.Client object at 0x737d2c442510&gt;
+django_user_model = &lt;class 'django.contrib.auth.models.User'&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x737d2c4417c0&gt;
+
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    def test_resource_manage_model_query_preservation(request, fixture, client, django_user_model, monkeypatch):
+        vs = request.getfixturevalue(fixture)
+        actor = make_developer(django_user_model, "baseline developer")
+        # Login/setup are outside measurement; the actual request resolves a fresh actor.
+        client.force_login(actor)
+        # Shared ViewSet fixtures retain vocabulary caches across tests. Reproduce the
+        # original cold baseline independently of worker scheduling, then restore it.
+        ContentType.objects.clear_cache()
+        clear_ct_cache()
+        previous_permissions = vs._default_permissions
+        with monkeypatch.context() as cache_patch:
+            cache_patch.setattr(vs, "_default_permissions", None)
+            with CaptureQueriesContext(connection) as queries:
+                response = client.get(reverse(vs.get_router_name("manage")))
+        assert response.status_code == 200
+        counts = Counter(table for query in queries for table in set(re.findall(r'(?:FROM|JOIN) "([^"]+)"', query["sql"])))
+        expected = {
+            "auth_group": 3,
+            "auth_group_permissions": 2,
+            "auth_permission": 4,
+            "auth_user": 2,
+            "auth_user_groups": 2,
+            "auth_user_user_permissions": 1,
+            "django_content_type": 5,
+            "django_session": 1,
+        }
+        if fixture == "cv_guardian_author":
+            expected.update(
+                app_author=5,
+                auth_group=9,
+                auth_permission=15,
+                auth_user_groups=8,
+                django_content_type=11,
+                guardian_groupobjectpermission=6,
+                guardian_userobjectpermission=5,
+            )
+        assert len(queries) == (21 if fixture == "cv_guardian_author" else 9)
+        assert counts == expected
+&gt;       assert getattr(vs, "_default_permissions", object()) is previous_permissions, "Restore shared vocabulary cache"
+E       AssertionError: Restore shared vocabulary cache
+E       assert &lt;object object at 0x737d30d7b840&gt; is None
+E        +  where &lt;object object at 0x737d30d7b840&gt; = getattr(ViewSet(author), '_default_permissions', &lt;object object at 0x737d30d7b840&gt;)
+E        +    where &lt;object object at 0x737d30d7b840&gt; = object()
+
+tests/test1/test_resource_manage.py:88: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_commit: 892d3fc5adaab1660fe6812b937328efa5d71350
 last_mapped_at: 2026-11-15
 ---
 # Codebase Concerns
@@ -70,6 +70,12 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 - Cause: permission checks are reached during construction of visible actions for objects.
 - Improvement path: profile large list/card pages and consider request-scoped checker reuse only if query counts are material; `tests/test1/test_ancestor_costs.py` pins current ancestor query budgets.
 
+**Resource list/detail manage-action admission check:**
+- Problem: Resource list/detail views that inherit context actions may project the `manage` action. With manage mode enabled, its access check runs nested authorization and a developer-group membership query for each authenticated active actor, even when the default hide policy keeps the action invisible; access-recorder mode also records a `manage_gate` event.
+- Files: `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/settings.py`, `docs/reference/resources.md`
+- Cause: Resource views use the same manage action and gate as model ViewSets to preserve action parity.
+- Improvement path: retain parity and profile real Resource list/detail pages before considering a cached gate or altered action projection. Model and Guardian manage-page query baselines remain unchanged (9 and 21 statements); phase 06.35 records this Resource-path delta.
+
 ## Fragile Areas
 
 **ViewSet registration, URL routing, and metaclass integration:**
@@ -118,7 +124,13 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 - Files: `src/crud_views/lib/views/manage.py`, `src/crud_views/management/commands/cv_manage_group.py`, `src/crud_views/lib/settings.py`, `src/crud_views_guardian/lib/views.py`
 - Why fragile: manage-page access and action visibility share a policy involving mode, active authentication, group membership, and nested ancestor checks. The group setup command creates only the configured group; it intentionally does not grant permissions or change memberships. Staff and superusers still require group membership when group-gated mode is active.
 - Safe modification: preserve the distinction between page access, manage-action visibility, and Django permissions. Keep `cv_manage_group` idempotent and group-only, and test top-level and nested requests plus mode changes when changing the policy.
-- Test coverage: `tests/test1/test_manage.py`, `tests/test1/test_manage_group.py`, `tests/test1/test_ancestor_manage.py`, `tests/test1/test_guardian.py`, and `tests/test1/test_authorization_matrix.py`. Phase 06.31 verification passed its must-haves and final review disposition reports zero open findings. The documented setup boundary is intentional.
+- Test coverage: `tests/test1/test_manage.py`, `tests/test1/test_manage_group.py`, `tests/test1/test_ancestor_manage.py`, `tests/test1/test_guardian.py`, `tests/test1/test_authorization_matrix.py`, and `tests/test1/test_resource_manage*.py`. Phase 06.35 passed 5/5 verification truths with zero active deep-review findings; it preserves the model/Guardian query baselines and explicitly documents the additional Resource toolbar gate. The documented setup boundary is intentional.
+
+**Manage-page inherited mobile polish:**
+- Files: `src/crud_views/templates/crud_views/view_manage.html`, `src/crud_views/static/crud_views/css/manage.css`
+- Why fragile: the shared page can show very tall holder rows for long names, local configuration tables have a weak horizontal-scroll cue, and child-opening guidance appears on childless Resource leaves.
+- Safe modification: if adjusting the shared layout, preserve full holder identity, keyboard access and scrollable labeled regions; render child guidance only when children exist. These are nonblocking inherited UI recommendations, not Resource authorization or data defects.
+- Test coverage: stock Bootstrap browser evidence is retained in `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-UI-REVIEW.md`; downstream themes and assistive-technology behavior are outside that evidence.
 
 **Workflow transition button presentation:**
 - Files: `src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`
@@ -183,9 +195,15 @@ None independently confirmed.
 - Priority: Medium
 
 **Cross-environment and browser scope:**
-- What's not tested: phase 06.34 release evidence covers Python 3.12 with Django 4.2/5.2/6.0; seven supported runtime pairs lack prepared environments: Python 3.13 × Django 4.2/5.2/6.0, Python 3.14 × Django 5.2/6.0, and Python 3.15 × Django 5.2/6.0. Browser evidence for the access trace covers Chromium only; Firefox, WebKit, older engines, installed external themes, and assistive-technology behavior are not certified. Python 3.14/3.15 with Django 4.2 are unsupported pairs, not missing runs.
-- Files: `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`, `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-REGRESSION.md`, `tests/browser/access-trace.cjs`
-- Risk: behavior outside recorded runtime/browser environments remains unestablished; this is a verification boundary, not a confirmed defect. Phase 06.34 verification is passed at 36/36, and the human visual UAT is complete and passed in `06.34-UAT.md`. The verification report's original pending-human-review prose and final-acceptance summaries are historical snapshots.
+- What's not tested: phase 06.35 release evidence covers Python 3.12 with Django 4.2/5.2/6.0; seven supported runtime pairs lack prepared environments: Python 3.13 × Django 4.2/5.2/6.0, Python 3.14 × Django 5.2/6.0, and Python 3.15 × Django 5.2/6.0. Phase 06.35's retained manage-presentation browser evidence covers cached Chromium only; Firefox, WebKit, older engines, installed downstream themes, and assistive-technology behavior are not certified. Python 3.14/3.15 with Django 4.2 are unsupported pairs, not missing runs.
+- Files: `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-VERIFICATION.md`, `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-REGRESSION.md`, `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-UI-REVIEW.md`, `tests/browser/manage-presentation.cjs`
+- Risk: behavior outside recorded runtime/browser environments remains unestablished; this is a verification boundary, not a confirmed defect. Phase 06.35 passed all 5 verification truths. Its UI review's three recommendations are inherited, nonblocking polish observations; no new human approval requirement is identified.
+- Priority: Low
+
+**Historical external Tabler fixture unavailable:**
+- What's not tested: four unchanged theme-adoption configuration checks could not run because their recorded external interpreter at `/home/alex/projects/alex/tabler-test/.venv` lacks `pytest-xdist`; the test harness intentionally removes runtime overrides, so substituting a different interpreter would not validate the recorded fixture.
+- Files: `tests/browser/theme-adoption-config.test.cjs`, `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-REGRESSION.md`
+- Risk: those historical external-theme checks remain unverified. The failure is environmental and does not demonstrate a product regression or blocker.
 - Priority: Low
 
 **Access-trace project-specific dispatch behavior:**
@@ -210,7 +228,7 @@ Phase 06.30 is verified at 54/54 must-haves in `.planning/phases/06.30-queryset-
 
 Phase 06.31's seeded example command had a critical rollback defect during review; the final implementation wraps user/group/permission setup and feature seeding in a transaction, and `.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-REVIEW-DISPOSITION.md` records the finding fixed with zero open findings. The incident is closed, not a current vulnerability. Phase 06.32's workflow variant/icon integration is verified at 7/7 must-haves in `.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-VERIFICATION.md`; its declared registry and asset prerequisites are intentional.
 
-Phase 06.34's access trace is verified at 36/36 in `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`; the current UAT record in `06.34-UAT.md` is complete with the human visual check passed. Earlier verification prose about pending human review and the review disposition's pending UI re-audit note predate refreshed captures and UAT; they are historical, not open findings. Seven unavailable runtime pairs remain an explicit coverage gap. The four code-review findings and six UI warnings are recorded as fixed; no active phase review blocker remains.
+Phase 06.34's access trace is verified at 36/36 in `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`; its current UAT record is complete with the human visual check passed. Phase 06.35 is verified at 5/5 in `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-VERIFICATION.md`; its deep review records zero findings and its security audit closes all 14 threats. Seven unavailable runtime pairs and four historical external Tabler checks remain explicit verification boundaries, with no product blocker inferred. The inherited UI review recommendations are nonblocking polish. Earlier phase-report failures and fixed review findings are historical, not current defects.
 
 ---
 

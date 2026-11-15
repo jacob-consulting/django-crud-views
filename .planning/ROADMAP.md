@@ -61,6 +61,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
 - [x] **Phase 06.33: Structured manage page (#366) (INSERTED)** - approved D-01–D-30 issue handover; permission matrix, collapsible views and switchable defaults. (completed 2026-11-14)
 - [x] **Phase 06.34: Access trace: cv_access command and manage page form (#370) (INSERTED)** - approved D-01–D-23 design; real authorization trace, shell command and opt-in manage form. (completed 2026-11-15)
+- [x] **Phase 06.35: Resource manage pages with cv_access parity (#372) (INSERTED)** - approved D-01–D-07 handover; shared ManageView, Resource permission badges, and UI/CLI trace parity. (completed 2026-11-15)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1990,6 +1991,42 @@ Plans:
 
 **Wave 9** *(blocked on Wave 8 completion)*
 - [x] 06.34-10-PLAN.md
+
+### Phase 06.35: Resource manage pages with cv_access parity (#372) (INSERTED)
+
+**Goal:** Developers can inspect standalone and model-nested Resource ViewSets through the existing manage page without implicit Resource reads, and obtain equivalent access diagnostics through the UI and `cv_access`.
+**Source:** [Issue #372 — approved GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/372#gsd-handover), approved 2026-11-15; [local design](../superpowers/specs/2026-11-15-resource-manage-page-design.md). Carry approved decisions D-01–D-07 and acceptance criteria into planning without reopening them absent a concrete conflict.
+**Requirements:** Extend the existing `ManageView`, automatically register Resource manage routes/actions using existing settings, and preserve developer-group access, ancestor authorization and nested database restrictions. Support standalone Resources and Resources below model-based ViewSets, including Guardian model ancestors without Resource object grants. Opening the built-in page must not invoke the Resource item/list loaders; parent-model and auth-table reads remain legitimate. Show Resource identity, metadata provenance, `resource_permissions`, empty mappings and hierarchy routes using existing cards and data builders. Add the approved `resource` permission label across actor/group/user/overflow rows with theme key `manage:badge-resource` and Bootstrap default `badge bg-info text-dark`. Reuse the opt-in access form and existing identifier contract. Prove UI/`cv_access` parity for matching URL, inspected actor and data state, covering text/JSON/HTML, outcomes, deciding steps, observations, errors and limitations, including new Resource manage URLs. Preserve model/Guardian behavior, command contracts and template extension points; update documentation, German translations, theme inventory and changelog, with migration guidance if a Breaking entry is added.
+**Depends on:** Phase 06.33 (#366 structured manage page) and Phase 06.34 (#370 access tracing), both merged upstream.
+**Ordering:** Assigned phase 06.35 by the maintainer, following phases 06.33/06.34 and before Phase 7 freezes the affected theme surface.
+**Scope exclusions:** Separate Resource manage class, Resource-as-parent support, Resource Guardian integration, S3 browsing/connectivity tools or dependencies, new write capabilities, new identifier conventions, authorization redesign, a new tracing engine, and #371's configuration-dump command.
+**Success Criteria:**
+
+1. Standalone and model-nested Resource manage pages and actions work under existing manage modes, developer-group rules, ancestor policy and nested database boundaries; empty mappings do not cause invalid manage permission checks.
+2. An authorized default page renders with both Resource loaders configured to fail if invoked; denied requests do not reach Resource loaders or holder diagnostics.
+3. Resource identity, declared/default metadata, explicit permissions, empty-state text, hierarchy routes and the approved themed permission badges render accurately in English and German while preserving model/Guardian behavior.
+4. Existing default-off access checks support non-object views, object identifiers, missing items and nested coordinates. UI traces match `cv_access --as-json` for the same inputs and fixture state, and command text/HTML communicate equivalent diagnostic facts and limitations.
+5. Focused and relevant regression coverage, translated strings, Resource/manage/theme documentation and changelog are complete; fake Resource fixtures require no live S3 access, and broad pytest verification uses multiple workers.
+
+**Plans:** 7/7 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.35-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.35-02-PLAN.md
+- [x] 06.35-03-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.35-04-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.35-05-PLAN.md
+- [x] 06.35-06-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.35-07-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 

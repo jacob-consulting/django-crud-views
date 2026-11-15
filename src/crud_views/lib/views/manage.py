@@ -308,6 +308,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     def get_manage_facts(self, viewset, user):
         """Effective identity with constructor provenance independent of value source."""
         rows = []
+        metadata_source = _("Resource metadata") if viewset.is_resource else _("model Meta")
         for key in (
             "name",
             "prefix",
@@ -325,15 +326,18 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             source = None
             if key in {"verbose_name", "verbose_name_plural", "ordering"} and value is None:
                 value = getattr(viewset.model._meta, key, None)
-                source = _("model Meta")
+                source = metadata_source
             elif key == "pk" and key not in viewset._manage_constructor_fields:
-                source = _("model Meta")
+                source = metadata_source
             row = self._manage_field(viewset, key, value, source)
             if key in {"verbose_name", "verbose_name_plural"}:
                 row["value"] = str(value)
             if key == "icon_header":
                 row["icon"] = value
             rows.append(row)
+        if viewset.is_resource:
+            for key in ("app_label", "pk_field", "pk_type"):
+                rows.append(self._manage_field(viewset, key, getattr(viewset.model._meta, key), metadata_source))
         return rows
 
     def _manage_hierarchy_item(self, viewset, user):
@@ -515,6 +519,10 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "entries": [self._manage_field(viewset, "manage_view_class", viewset.get_manage_view_class(), source)],
             }
         )
+        if viewset.is_resource:
+            sections[-1]["entries"].append(
+                self._manage_field(viewset, "resource_permissions", viewset.resource_permissions)
+            )
         for section in sections:
             section["default_count"] = sum(entry["is_default"] for entry in section["entries"])
         entries = [entry for section in sections for entry in section["entries"]]

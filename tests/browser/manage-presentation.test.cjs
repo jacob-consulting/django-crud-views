@@ -32,6 +32,19 @@ test('all 52 exact UI source IDs require passed cases and actual captures/DOM fa
         const report = valid(); mutate(report); assert.throws(() => validateEvidence(report, 'all'));
     }
 });
+test('Resource layouts and empty states require bilingual narrow/wide captures and DOM facts', () => {
+    for (const kind of ['resource', 'resource-nested']) for (const width of [390, 1280]) for (const language of ['en', 'de']) {
+        for (const state of ['layout', 'empty', 'none', 'no-holders']) {
+            const id = `${kind}-${state}-${language}-${width}`;
+            assert(requiredCases('all').includes(id), `Missing Resource case: ${id}`);
+            for (const mutate of [r => r.screenshots = r.screenshots.filter(shot => shot.case !== id),
+                r => r.cases.find(item => item.id === id).facts = {}]) {
+                const report = valid(); mutate(report);
+                assert.throws(() => validateEvidence(report, 'all'), /Missing screenshot|Missing DOM facts/);
+            }
+        }
+    }
+});
 test('assets, CSP, errors, sources and owned cleanup are mandatory', () => {
     for (const mutate of [r => r.assets.pop(), r => r.assets[0].status = 404, r => r.cleanup[0].stopped = false,
         r => r.cleanup[0].databaseRemoved = false, r => r.failures.push('CSP error'), r => r.csp += " 'unsafe-inline'",

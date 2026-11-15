@@ -1,0 +1,554 @@
+✔ fingerprints include untracked source and required harness bytes (56.62143ms)
+✔ receipt validation rejects missing cases, false measurements, failed assets and leaks (17.502554ms)
+✔ read-only receipt verification rejects stale bytes and changed captures (35.184528ms)
+✔ smoke evidence rejects missing required cases (2.070651ms)
+✔ full evidence rejects smoke-only results (0.361305ms)
+✔ options reject unknown cases and flags (0.401245ms)
+✔ stock delegation cannot satisfy migrated root identity (0.845033ms)
+✔ missing runtime writes failed evidence (131.472099ms)
+✔ OS spawn failure replaces stale success with failed evidence (254.702398ms)
+✔ directory runtime override replaces stale success with failed evidence (147.304046ms)
+✔ fixture exiting before readiness records owned process cleanup (241.520856ms)
+✔ browser close failure still stops only the owned child (20.078746ms)
+✔ full validation rejects missing, corrupt or non-durable screenshots (3.680376ms)
+✔ full validation rejects zero modal observations and strict leakage (3.766555ms)
+✔ full validation rejects incorrect nonzero specimen counts (0.839955ms)
+✔ missing asset manifest fails closed (3.529488ms)
+✔ exact local bytes are accepted and undeclared URLs rejected (1.748004ms)
+✔ missing file and incorrect hash fail closed (2.814421ms)
+✔ SRI is checked against fixture declaration, not a substituted manifest (2.008796ms)
+✔ manifest paths cannot escape through traversal or symlink (1.879792ms)
+✔ CSS dependencies must be declared and unexpected manifest entries are rejected (2.996947ms)
+✔ options reject unknown cases, flags and missing values (1.131234ms)
+✔ default reports live in distinct private directories (1.013096ms)
+✔ sequential operations settle before the next starts and stop after rejection (15.964085ms)
+✔ git executable must be an explicit immutable executable file (1.902146ms)
+✔ startup readiness handles split output and removes listeners (0.957784ms)
+✔ startup timeout and early process exit reject without retaining listeners (6.384951ms)
+✔ explicit unavailable runtime exits nonzero without browser launch (85.370741ms)
+✔ owned process cleanup terminates only the supplied child (20.870027ms)
+✔ browser close rejection still tears down owned server and finalizes the primary failure report (12.037418ms)
+✔ secondary teardown and report errors cannot mask the primary orchestration failure (1.411808ms)
+✔ temporary report and failed ordinary run never write canonical evidence (10.987978ms)
+✔ a variant mismatch cannot overwrite another canonical report (3.278871ms)
+✔ failed explicit canonical refresh preserves the canonical report and captures (2.634641ms)
+✔ successful explicit canonical refresh publishes all captures before its report (3.700066ms)
+✔ accepts the captured choice outcomes (20.322724ms)
+✔ rejects contradictory initial-create-edit observation even with passed=true (15.209048ms)
+✔ rejects contradictory keyboard-change observation even with passed=true (13.276846ms)
+✔ rejects contradictory shared-active-kept observation even with passed=true (15.347086ms)
+✔ rejects contradictory unsaved-away-back observation even with passed=true (18.226926ms)
+✔ rejects contradictory final-inactive-cleared observation even with passed=true (23.411709ms)
+✔ rejects contradictory invalid-controller-zero-save observation even with passed=true (14.946622ms)
+✔ rejects contradictory active-required-redisplay observation even with passed=true (17.359668ms)
+✔ rejects contradictory exact-prefix-two-forms observation even with passed=true (18.600208ms)
+✔ rejects contradictory disabled-trusted observation even with passed=true (11.052454ms)
+✔ rejects contradictory independent-disabled observation even with passed=true (25.321165ms)
+✔ rejects contradictory native-reset observation even with passed=true (8.263282ms)
+✔ rejects contradictory canceled-reset observation even with passed=true (6.697883ms)
+✔ rejects contradictory modal-422-rebind observation even with passed=true (8.14978ms)
+✔ rejects contradictory unload-listener-cleanup observation even with passed=true (7.528143ms)
+✔ rejects contradictory usable-radio-focus observation even with passed=true (7.896479ms)
+✔ rejects contradictory adversarial-token-inert observation even with passed=true (8.489822ms)
+✔ rejects contradictory initial-create-edit: native control count (12.587748ms)
+✔ rejects contradictory final-inactive-cleared: reopened clearing (8.40827ms)
+✔ rejects contradictory invalid-controller-zero-save: native error (8.795043ms)
+✔ rejects contradictory invalid-controller-zero-save: database preservation (9.824936ms)
+✔ rejects contradictory disabled-trusted: disabled controller (16.002974ms)
+✔ rejects contradictory independent-disabled: release on active (9.944024ms)
+✔ rejects contradictory modal-422-rebind: unload timing (9.03825ms)
+✔ rejects contradictory modal-422-rebind: rebound field (10.148462ms)
+✔ rejects contradictory usable-radio-focus: checked radio (26.07474ms)
+✔ rejects contradictory adversarial-token-inert: native control count (13.585071ms)
+✔ compact styles distinguish borders from complete suppression (14.033998ms)
+✔ buffers split readiness records until the terminating newline (2.142599ms)
+✔ malformed complete records reject readiness and reach caller finally cleanup (0.894518ms)
+✔ an unterminated record followed by host exit is a startup failure (0.498421ms)
+✔ empty or incomplete evidence never passes (256.583544ms)
+✔ all 52 exact UI source IDs require passed cases and actual captures/DOM facts (19.476418ms)
+✔ Resource layouts and empty states require bilingual narrow/wide captures and DOM facts (328.491778ms)
+✔ assets, CSP, errors, sources and owned cleanup are mandatory (19.909972ms)
+✔ unrelated holder scenarios cannot prove view, child or check cardinality (9.671734ms)
+✔ criterion measurements, assertions and exact cardinalities are mandatory (12.05825ms)
+✔ startup timeout cleans only owned process/data and retains diagnostics (268.750707ms)
+✔ missing executable and early startup failure are cleaned (80.6248ms)
+✔ missing/mismatched cached bytes and undeclared remote URLs fail closed (2.513567ms)
+✔ browser close rejection still terminates and reaps fixture (101.14411ms)
+✔ browser close timeout still terminates and reaps fixture (113.0573ms)
+✔ successful cleanup retains a passing report (61.119328ms)
+✔ early startup failure retains original failure without resources (1.956279ms)
+✔ browser failure and server timeout retain both errors and reap after SIGKILL (132.237473ms)
+node:internal/assert/utils:77
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: Select an existing CV_FOCUS_PYTHON interpreter
+    at Object.<anonymous> (/home/alex/projects/alex/django-crud-views/tests/browser/presentation-config.test.cjs:8:1)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.21.0
+✖ tests/browser/presentation-config.test.cjs (95.593706ms)
+✔ evidence rejects missing required cases (3.050848ms)
+✔ valid complete schema passes, while missing and duplicate IDs reject (67.723158ms)
+✔ navigation evidence rejects false success, modal requests and wrong rows (37.678316ms)
+✔ Enter requires exact anchor focus and document resource type (23.351037ms)
+✔ matrix covers capped plain previews on every stock/custom page/modal surface (0.450459ms)
+✔ evidence rejects protected anchors and false preview counts (31.892517ms)
+✔ evidence rejects missing shortening and an empty detail frame when blockers exhaust the budget (22.140874ms)
+✔ evidence rejects stale source, recipe, screenshot and failed cleanup (254.159711ms)
+✔ recipe extraction rejects separated, duplicate, wrong-language markers and final-LF differences (19.967257ms)
+✔ options reject unsupported modes and flags (0.434495ms)
+✔ browser-close failure still stops owned child and preserves unrelated child (24.977988ms)
+✔ asynchronous OS spawn errors replace stale success with failure (203.224068ms)
+✔ early fixture exit records owned cleanup (193.119192ms)
+✔ shared recorded interpreter resolver exists without starting the CLI (10.223285ms)
+✔ asset capture reads each actual URL once and retains body errors without an unhandled rejection (1.361281ms)
+✖ real Tabler create uses the native check icon from its registered form floor (276.164178ms)
+✖ fresh process resolves the recorded executable with both overrides absent (231.172313ms)
+✔ actual CLI rejects invalid port "" first (50.094495ms)
+✔ actual CLI rejects invalid port "bad" first (45.546352ms)
+✔ actual CLI rejects invalid port "8143" first (40.230371ms)
+✔ actual CLI rejects invalid port "8144" first (57.899466ms)
+✔ actual CLI rejects invalid port "1023" first (36.970149ms)
+✔ actual CLI rejects invalid port "65536" first (40.716594ms)
+✔ actual CLI rejects invalid port "8145.1" first (36.132807ms)
+✔ CV_THEME_PYTHON rejects "" (3.930522ms)
+✔ CV_THEME_PYTHON rejects "relative" (3.329377ms)
+✔ CV_THEME_PYTHON rejects "/wrong/python" (2.283481ms)
+✔ CV_FOCUS_PYTHON rejects "" (2.28278ms)
+✔ CV_FOCUS_PYTHON rejects "relative" (2.339456ms)
+✔ CV_FOCUS_PYTHON rejects "/wrong/python" (1.911109ms)
+✔ presentation collision preserves the existing listener (69.21699ms)
+✖ recorded root and runtime resolve from an isolated script location with spaces, independently of cwd and siblings (214.313048ms)
+✔ partial delivery form writer preserves every other slot and cannot certify completion (1.887695ms)
+✖ browser startup failure cleans up its owned server and temporary copies (136.53628ms)
+✔ all requires actual label-safety and native Enter cases (1.337094ms)
+✔ smoke: complete control accepted (0.755529ms)
+✔ smoke: empty receipt rejected (0.259381ms)
+✔ smoke: missing native-first-page rejected (1.138386ms)
+✔ smoke: missing required-recovery-page rejected (0.204568ms)
+✔ smoke: failed case rejected (0.231899ms)
+✔ smoke: cleanup required (0.16546ms)
+✔ smoke: missing manifest directory rejected (0.156255ms)
+✔ smoke: missing manifest path rejected (0.158388ms)
+✔ smoke: missing manifest suppliedDirectory rejected (0.183187ms)
+✔ smoke: missing manifest sha256 rejected (0.200973ms)
+✔ smoke: missing command rejected (0.189396ms)
+✔ smoke: missing environment rejected (0.459683ms)
+✔ smoke: missing sources rejected (0.234342ms)
+✔ smoke: asset environment setting required (0.395386ms)
+✔ all: complete control accepted (0.236307ms)
+✔ all: empty receipt rejected (0.18624ms)
+✔ all: missing native-first-page rejected (0.130266ms)
+✔ all: missing required-recovery-page rejected (0.136045ms)
+✔ all: missing label-safety-page rejected (0.16625ms)
+✔ all: missing label-safety-modal rejected (0.115484ms)
+✔ all: missing empty-page rejected (0.17929ms)
+✔ all: missing empty-modal rejected (0.135214ms)
+✔ all: missing one-page rejected (0.17909ms)
+✔ all: missing one-modal rejected (0.114172ms)
+✔ all: missing all-none-page rejected (0.101544ms)
+✔ all: missing all-none-modal rejected (0.268064ms)
+✔ all: missing optional-page rejected (0.141594ms)
+✔ all: missing optional-modal rejected (0.154312ms)
+✔ all: missing mixed-page rejected (0.154373ms)
+✔ all: missing mixed-modal rejected (0.357458ms)
+✔ all: missing initial-blockers-page rejected (0.130787ms)
+✔ all: missing initial-blockers-modal rejected (0.131528ms)
+✔ all: missing post-blockers-page rejected (0.10579ms)
+✔ all: missing post-blockers-modal rejected (0.335024ms)
+✔ all: missing late-refusal-page rejected (2.001446ms)
+✔ all: missing late-refusal-modal rejected (0.176926ms)
+✔ all: missing invalid-choice-page rejected (0.127012ms)
+✔ all: missing invalid-choice-modal rejected (0.209506ms)
+✔ all: missing custom-errors-page rejected (0.190097ms)
+✔ all: missing custom-errors-modal rejected (0.152189ms)
+✔ all: missing cancel-omitted-page rejected (0.221493ms)
+✔ all: missing cancel-omitted-modal rejected (0.177827ms)
+✔ all: missing implicit-submit-custom-input-page rejected (0.243086ms)
+✔ all: missing textarea-enter-page rejected (0.13319ms)
+✔ all: missing modal-lifecycle rejected (0.143747ms)
+✔ all: missing radio-custom-page rejected (0.170807ms)
+✔ all: missing repeated-forms-page rejected (3.263257ms)
+✔ all: missing cancel-page rejected (0.164407ms)
+✔ all: missing keyboard-page rejected (0.099471ms)
+✔ all: missing long-page-375 rejected (0.153281ms)
+✔ all: missing long-page-1440 rejected (0.133642ms)
+✔ all: missing long-modal-375 rejected (0.124438ms)
+✔ all: missing long-modal-1440 rejected (0.156236ms)
+✔ all: failed case rejected (0.114352ms)
+✔ all: cleanup required (0.136546ms)
+✔ all: missing manifest directory rejected (0.339171ms)
+✔ all: missing manifest path rejected (0.141522ms)
+✔ all: missing manifest suppliedDirectory rejected (0.162525ms)
+✔ all: missing manifest sha256 rejected (0.134923ms)
+✔ all: missing command rejected (0.13265ms)
+✔ all: missing environment rejected (0.178078ms)
+✔ all: missing sources rejected (0.152449ms)
+✔ all: asset environment setting required (0.21206ms)
+✔ local assets enforce declarations, hashes, SRI, transitive fonts and containment (3.95607ms)
+ℹ tests 180
+ℹ suites 0
+ℹ pass 175
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2548.028753
+
+✖ failing tests:
+
+test at tests/browser/presentation-config.test.cjs:1:1
+✖ tests/browser/presentation-config.test.cjs (95.593706ms)
+  'test failed'
+
+test at tests/browser/theme-adoption-config.test.cjs:27:1
+✖ real Tabler create uses the native check icon from its registered form floor (276.164178ms)
+  AssertionError [ERR_ASSERTION]: Traceback (most recent call last):
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name
+      return next(iter(cls.discover(name=name)))
+  StopIteration
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "<string>", line 1, in <module>
+      import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))
+                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version
+      return distribution(distribution_name).version
+             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution
+      return Distribution.from_name(distribution_name)
+             ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name
+      raise PackageNotFoundError(name)
+  importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist
+  Error: Command failed: /home/alex/projects/alex/tabler-test/.venv/bin/python -c import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))
+  Traceback (most recent call last):
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name
+      return next(iter(cls.discover(name=name)))
+  StopIteration
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "<string>", line 1, in <module>
+      import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))
+                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version
+      return distribution(distribution_name).version
+             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution
+      return Distribution.from_name(distribution_name)
+             ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name
+      raise PackageNotFoundError(name)
+  importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist
+  
+      at genericNodeError (node:internal/errors:986:15)
+      at wrappedFn (node:internal/errors:540:14)
+      at checkExecSyncError (node:child_process:942:11)
+      at Object.execFileSync (node:child_process:978:15)
+      at resolveCompanionPython (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption.cjs:26:63)
+      at configuration (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption.cjs:65:22)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async main (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption.cjs:367:18)
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption-config.test.cjs:33:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/theme-adoption-config.test.cjs:42:1
+✖ fresh process resolves the recorded executable with both overrides absent (231.172313ms)
+  AssertionError [ERR_ASSERTION]: Traceback (most recent call last):
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name
+      return next(iter(cls.discover(name=name)))
+  StopIteration
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "<string>", line 1, in <module>
+      import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))
+                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version
+      return distribution(distribution_name).version
+             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution
+      return Distribution.from_name(distribution_name)
+             ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name
+      raise PackageNotFoundError(name)
+  importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist
+  node:child_process:981
+      throw err;
+      ^
+  
+  Error: Command failed: /home/alex/projects/alex/tabler-test/.venv/bin/python -c import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))
+  Traceback (most recent call last):
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name
+      return next(iter(cls.discover(name=name)))
+  StopIteration
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "<string>", line 1, in <module>
+      import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))
+                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version
+      return distribution(distribution_name).version
+             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution
+      return Distribution.from_name(distribution_name)
+             ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name
+      raise PackageNotFoundError(name)
+  importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist
+  
+      at genericNodeError (node:internal/errors:986:15)
+      at wrappedFn (node:internal/errors:540:14)
+      at checkExecSyncError (node:child_process:942:11)
+      at Object.execFileSync (node:child_process:978:15)
+      at Object.resolveCompanionPython (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption.cjs:26:63)
+      at [eval]:1:115
+      at runScriptInThisContext (node:internal/vm:219:10)
+      at node:internal/process/execution:451:12
+      at [eval]-wrapper:6:24
+      at runScriptInContext (node:internal/process/execution:449:60) {
+    status: 1,
+    signal: null,
+    output: [
+      null,
+      '',
+      'Traceback (most recent call last):\n' +
+        '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name\n' +
+        '    return next(iter(cls.discover(name=name)))\n' +
+        'StopIteration\n' +
+        '\n' +
+        'During handling of the above exception, another exception occurred:\n' +
+        '\n' +
+        'Traceback (most recent call last):\n' +
+        '  File "<string>", line 1, in <module>\n' +
+        "    import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))\n" +
+        '                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^\n' +
+        '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version\n' +
+        '    return distribution(distribution_name).version\n' +
+        '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n' +
+        '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution\n' +
+        '    return Distribution.from_name(distribution_name)\n' +
+        '           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n' +
+        '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name\n' +
+        '    raise PackageNotFoundError(name)\n' +
+        'importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist\n'
+    ],
+    pid: 344011,
+    stdout: '',
+    stderr: 'Traceback (most recent call last):\n' +
+      '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name\n' +
+      '    return next(iter(cls.discover(name=name)))\n' +
+      'StopIteration\n' +
+      '\n' +
+      'During handling of the above exception, another exception occurred:\n' +
+      '\n' +
+      'Traceback (most recent call last):\n' +
+      '  File "<string>", line 1, in <module>\n' +
+      "    import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))\n" +
+      '                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^\n' +
+      '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version\n' +
+      '    return distribution(distribution_name).version\n' +
+      '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n' +
+      '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution\n' +
+      '    return Distribution.from_name(distribution_name)\n' +
+      '           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n' +
+      '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name\n' +
+      '    raise PackageNotFoundError(name)\n' +
+      'importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist\n'
+  }
+  
+  Node.js v24.21.0
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption-config.test.cjs:45:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/theme-adoption-config.test.cjs:68:1
+✖ recorded root and runtime resolve from an isolated script location with spaces, independently of cwd and siblings (214.313048ms)
+  AssertionError [ERR_ASSERTION]: Traceback (most recent call last):
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name
+      return next(iter(cls.discover(name=name)))
+  StopIteration
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "<string>", line 1, in <module>
+      import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))
+                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version
+      return distribution(distribution_name).version
+             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution
+      return Distribution.from_name(distribution_name)
+             ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name
+      raise PackageNotFoundError(name)
+  importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist
+  Error: Command failed: /tmp/theme config J29ebi/venv with spaces/bin/python -c import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))
+  Traceback (most recent call last):
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name
+      return next(iter(cls.discover(name=name)))
+  StopIteration
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "<string>", line 1, in <module>
+      import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))
+                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version
+      return distribution(distribution_name).version
+             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution
+      return Distribution.from_name(distribution_name)
+             ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name
+      raise PackageNotFoundError(name)
+  importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist
+  
+      at genericNodeError (node:internal/errors:986:15)
+      at wrappedFn (node:internal/errors:540:14)
+      at checkExecSyncError (node:child_process:942:11)
+      at Object.execFileSync (node:child_process:978:15)
+      at resolveCompanionPython (/tmp/theme config J29ebi/core copy/tests/browser/theme-adoption.cjs:26:63)
+      at Object.configuration (/tmp/theme config J29ebi/core copy/tests/browser/theme-adoption.cjs:65:22)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+    status: 1,
+    signal: null,
+    output: [
+      null,
+      '',
+      'Traceback (most recent call last):\n' +
+        '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name\n' +
+        '    return next(iter(cls.discover(name=name)))\n' +
+        'StopIteration\n' +
+        '\n' +
+        'During handling of the above exception, another exception occurred:\n' +
+        '\n' +
+        'Traceback (most recent call last):\n' +
+        '  File "<string>", line 1, in <module>\n' +
+        "    import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))\n" +
+        '                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^\n' +
+        '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version\n' +
+        '    return distribution(distribution_name).version\n' +
+        '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n' +
+        '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution\n' +
+        '    return Distribution.from_name(distribution_name)\n' +
+        '           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n' +
+        '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name\n' +
+        '    raise PackageNotFoundError(name)\n' +
+        'importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist\n'
+    ],
+    pid: 344132,
+    stdout: '',
+    stderr: 'Traceback (most recent call last):\n' +
+      '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name\n' +
+      '    return next(iter(cls.discover(name=name)))\n' +
+      'StopIteration\n' +
+      '\n' +
+      'During handling of the above exception, another exception occurred:\n' +
+      '\n' +
+      'Traceback (most recent call last):\n' +
+      '  File "<string>", line 1, in <module>\n' +
+      "    import importlib.metadata,json,sys;print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':{n:importlib.metadata.version(n) for n in ['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']},'missing':[]}))\n" +
+      '                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^\n' +
+      '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 987, in version\n' +
+      '    return distribution(distribution_name).version\n' +
+      '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n' +
+      '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution\n' +
+      '    return Distribution.from_name(distribution_name)\n' +
+      '           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n' +
+      '  File "/home/alex/.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name\n' +
+      '    raise PackageNotFoundError(name)\n' +
+      'importlib.metadata.PackageNotFoundError: No package metadata was found for pytest-xdist\n'
+  }
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption-config.test.cjs:88:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/theme-adoption-config.test.cjs:116:1
+✖ browser startup failure cleans up its owned server and temporary copies (136.53628ms)
+  Error: ENOENT: no such file or directory, open '/tmp/theme-cleanup-wI4VA9/failure.json'
+      at Object.openSync (node:fs:621:18)
+      at Object.readFileSync (node:fs:487:35)
+      at TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/tests/browser/theme-adoption-config.test.cjs:122:66)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/theme-cleanup-wI4VA9/failure.json'
+  }

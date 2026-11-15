@@ -331,7 +331,8 @@ def test_real_terminal_json_preserves_escaped_values(process_env):
     plain = ANSI.sub("", result.stdout)
     assert plain == run_process(process_env, "/broken/", "sam", "--as-json").stdout
     data = json.loads(plain)
-    assert data["steps"][-1]["exception"]["message"] == 'quoted "value" \\ café 雪\nline\t\x1b[31m'
+    deciding = next(step for step in data["steps"] if step["n"] == data["decided_by"])
+    assert deciding["exception"]["message"] == 'quoted "value" \\ café 雪\nline\t\x1b[31m'
 
 
 def test_real_full_url_anonymous_and_username_collision(process_env):

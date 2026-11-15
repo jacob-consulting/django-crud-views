@@ -1,13 +1,36 @@
 """Format one shared access trace without evaluating authorization independently."""
 
 import json
+import re
 from typing import ClassVar
 
 from django.core.management import BaseCommand, CommandError
+from django.core.management.color import supports_color
+from django.utils.termcolors import make_style
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy, ngettext
 
 from crud_views.lib.access_trace import resolve_trace_user, trace_access
+
+
+def _style(value, role, enabled):
+    if not enabled:
+        return value
+    if role in {"skipped", "not_reached", "not_evaluated"}:
+        # Django's palette does not expose dim; keep this one explicit wrapper.
+        return "\x1b[2m" + value + "\x1b[0m"
+    color = {
+        "key": "cyan",
+        "passed": "green",
+        "allowed": "green",
+        "denied": "red",
+        "not_found": "red",
+        "error": "yellow",
+        "no_such_route": "yellow",
+        "login_redirect": "yellow",
+        "unavailable": "yellow",
+    }.get(role)
+    return make_style(fg=color)(value) if color else value
 
 
 def _text(value):
@@ -78,7 +101,7 @@ def _facts(row):
     return "; ".join(parts)
 
 
-def _format_text(trace):
+def _format_text(trace, color=False):
     data = trace.to_dict()
     actor = data["user"]
     if actor.get("anonymous"):
@@ -106,7 +129,7 @@ def _format_text(trace):
             _("%(number)s. %(result)s — %(facts)s")
             % {
                 "number": step["n"],
-                "result": _result_label(step["result"]),
+                "result": _style(_result_label(step["result"]), step["result"], color),
                 "facts": _facts(step),
             }
         )
@@ -117,19 +140,42 @@ def _format_text(trace):
         lines.append(
             _("%(outcome)s at step %(number)s.")
             % {
-                "outcome": _result_label(trace.outcome),
+                "outcome": _style(_result_label(trace.outcome), trace.outcome, color),
                 "number": trace.decided_by,
             }
         )
     else:
-        lines.append(_("Outcome: %(outcome)s.") % {"outcome": _result_label(trace.outcome)})
+        lines.append(
+            _("Outcome: %(outcome)s.")
+            % {
+                "outcome": _style(_result_label(trace.outcome), trace.outcome, color),
+            }
+        )
     if trace.outcome == "allowed":
         lines.append(_("This user may open the page; handler-phase checks are not evaluated."))
     return "\n".join(lines)
 
 
-def _format_json(trace):
-    return json.dumps(trace.to_dict(), ensure_ascii=True, indent=2)
+def _color_json(serialized):
+    """Wrap complete serialized string tokens; never decode/re-encode their escapes."""
+    key = None
+
+    def color_token(match):
+        nonlocal key
+        token = match.group()
+        if serialized[match.end() :].lstrip().startswith(":"):
+            key = json.loads(token)
+            return _style(token, "key", True)
+        role = json.loads(token) if key in {"result", "outcome"} else None
+        key = None
+        return _style(token, role, True)
+
+    return re.sub(r'"(?:\\.|[^"\\])*"', color_token, serialized)
+
+
+def _format_json(trace, color=False):
+    serialized = json.dumps(trace.to_dict(), ensure_ascii=True, indent=2)
+    return _color_json(serialized) if color else serialized
 
 
 class Command(BaseCommand):
@@ -151,10 +197,11 @@ class Command(BaseCommand):
         if not anonymous and actor is None:
             raise CommandError(_("Unknown user: %(user)s") % {"user": _text(user)}, returncode=2)
         trace = trace_access(path, actor)
+        color = not options["no_color"] and (options["force_color"] or (self.stdout.isatty() and supports_color()))
         if trace.outcome == "no_such_route" and not as_json:
             self.stderr.write(_("No such CRUD view route: %(path)s") % {"path": _text(trace.path)})
         else:
-            self.stdout.write(_format_json(trace) if as_json else _format_text(trace))
+            self.stdout.write(_format_json(trace, color) if as_json else _format_text(trace, color))
         code = {"allowed": 0, "denied": 1, "not_found": 1, "login_redirect": 1, "no_such_route": 2, "error": 2}[
             trace.outcome
         ]

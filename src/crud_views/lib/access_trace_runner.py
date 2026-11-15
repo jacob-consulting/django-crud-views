@@ -36,51 +36,54 @@ def _plan_gates(view):
                 edge, ancestor = chain[index]
                 pk = view.kwargs.get(edge.get_pk_name())
                 plan.append(
-                    dict(
-                        kind="ancestor_gate",
-                        viewset=ancestor.name,
-                        object={"model": ancestor.model._meta.label_lower, "pk": str(pk) if pk is not None else None},
-                        key=getattr(pair, selected[index]),
-                        source=source,
-                        provider=_effective_provider(ancestor),
-                        permission=None,
-                    )
+                    {
+                        "kind": "ancestor_gate",
+                        "viewset": ancestor.name,
+                        "object": {
+                            "model": ancestor.model._meta.label_lower,
+                            "pk": str(pk) if pk is not None else None,
+                        },
+                        "key": getattr(pair, selected[index]),
+                        "source": source,
+                        "provider": _effective_provider(ancestor),
+                        "permission": None,
+                    }
                 )
     except Exception as exc:
         plan.append(
-            dict(
-                kind="validation",
-                viewset=vs.name,
-                result="unavailable",
-                exception={"class": type(exc).__name__, "message": str(exc)},
-            )
+            {
+                "kind": "validation",
+                "viewset": vs.name,
+                "result": "unavailable",
+                "exception": {"class": type(exc).__name__, "message": str(exc)},
+            }
         )
     try:
         requirement = view.cv_get_requirement()
         kind = requirement["kind"]
         if kind != "none":
             plan.append(
-                dict(
-                    kind={"permission": "own_permission", "group": "manage_gate"}.get(kind, "custom_gate"),
-                    viewset=vs.name,
-                    key=requirement["value"] if kind == "permission" else None,
-                    group=requirement["value"] if kind == "group" else None,
-                    permission=None,
-                    source=f"{type(view).__module__}.{type(view).__qualname__}.cv_get_requirement",
-                )
+                {
+                    "kind": {"permission": "own_permission", "group": "manage_gate"}.get(kind, "custom_gate"),
+                    "viewset": vs.name,
+                    "key": requirement["value"] if kind == "permission" else None,
+                    "group": requirement["value"] if kind == "group" else None,
+                    "permission": None,
+                    "source": f"{type(view).__module__}.{type(view).__qualname__}.cv_get_requirement",
+                }
             )
         if isinstance(view, CrudViewPermissionRequiredMixin):
             plan.append(
-                dict(kind="action_state", viewset=vs.name, source="CrudViewPermissionRequiredMixin.has_permission")
+                {"kind": "action_state", "viewset": vs.name, "source": "CrudViewPermissionRequiredMixin.has_permission"}
             )
     except Exception as exc:
         plan.append(
-            dict(
-                kind="own_permission",
-                viewset=vs.name,
-                result="unavailable",
-                exception={"class": type(exc).__name__, "message": str(exc)},
-            )
+            {
+                "kind": "own_permission",
+                "viewset": vs.name,
+                "result": "unavailable",
+                "exception": {"class": type(exc).__name__, "message": str(exc)},
+            }
         )
     return plan
 

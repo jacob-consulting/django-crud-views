@@ -8,7 +8,7 @@ status: planning
 stopped_at: Phase 06.35 complete, ready to plan Phase 7
 last_updated: "2026-11-15T20:20:58.750Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 06.35 complete, transitioned to Phase 7
+last_activity_desc: "Phase 06.35 shipped as PR #376"
 state_head: af2946cdcebbd61fccfef8a55e89a4d56544e4ea
 progress:
   total_phases: 42
@@ -36,7 +36,7 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-15 — Phase 06.35 complete, transitioned to Phase 7
+Last activity: 2026-11-15 — Phase 06.35 shipped as PR #376
 
 Next: $gsd-discuss-phase 7
 

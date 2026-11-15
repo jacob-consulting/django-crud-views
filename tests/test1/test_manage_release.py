@@ -15,10 +15,23 @@ from lxml import html
 from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views.manage import ManageView
+from crud_views.lib.viewset import ViewSet
+from tests.test1.test_ancestor_authorization import isolated_routes
 from tests.test1.test_form_frame import _theme_templates
 from tests.test1.test_heading_docs import recipe
+from tests.test1.test_resource_manage import ManageItem
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+@pytest.fixture
+def cv_resource_manage():
+    def build(suffix):
+        viewset = ViewSet(model=ManageItem, name="releaseitem" + suffix, resource_permissions={})
+        return viewset, [viewset]
+
+    with isolated_routes(build) as viewset:
+        yield viewset
 
 
 @pytest.fixture
@@ -29,7 +42,7 @@ def developer(django_user_model):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+@pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author", "cv_resource_manage"])
 @pytest.mark.parametrize("enabled", [False, True])
 @pytest.mark.parametrize("mode", ["viewset", "path"])
 def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
@@ -44,7 +57,7 @@ def test_rendered_public_surface_matches_documentation(request, fixture, client,
     text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
     context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
     documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
-    if fixture == "cv_author":
+    if fixture != "cv_guardian_author":
         documented_context.remove("manage_guardian")
     assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
     access = response.context_data["manage_access_trace"]
@@ -79,7 +92,44 @@ def test_rendered_public_surface_matches_documentation(request, fixture, client,
     } == documented_classes
     registration = text.split("### Manage class registration\n", 1)[1]
     assert set(re.findall(r"`(manage:[\w-]+)`", registration)) == set(documented_classes)
-    assert len(documented_classes) == 19
+    assert len(documented_classes) == 20
+
+    identity = text.split("### Manage identity fields\n", 1)[1].split("\n### ", 1)[0]
+    identity_rows = re.findall(r"^\| `(\w+)` \| (shared|Resource only) \|", identity, re.M)
+    shared_fields = {key for key, scope in identity_rows if scope == "shared"}
+    resource_fields = {key for key, scope in identity_rows if scope == "Resource only"}
+    assert len(shared_fields) == 11
+    assert resource_fields == {"app_label", "pk_field", "pk_type"}
+    facts = response.context_data["manage_facts"]
+    assert {row["key"] for row in facts} == shared_fields | (resource_fields if viewset.is_resource else set())
+    assert len(facts) == (14 if viewset.is_resource else 11)
+    for row in facts:
+        assert set(row) == {"key", "value", "source", "is_default"} | (
+            {"icon"} if row["key"] == "icon_header" else set()
+        )
+
+    presentation = text.split("### Manage Presentation fields\n", 1)[1].split("\n### ", 1)[0]
+    documented_sections = dict(re.findall(r"^\| `([\w-]+)` \| (.*?) \|", presentation, re.M))
+    sections = response.context_data["manage_presentation"]["sections"]
+    assert {section["key"] for section in sections} == set(documented_sections)
+    assert len(sections) == 4
+    for section in sections:
+        assert set(section) == {"key", "label", "entries", "default_count"}
+        if section["key"] == "context-buttons":
+            continue  # Button-specific entries follow the existing context-button projection contract.
+        expected = set(re.findall(r"`(\w+)`", documented_sections[section["key"]]))
+        if section["key"] == "other" and not viewset.is_resource:
+            expected.remove("resource_permissions")
+        assert {entry["key"] for entry in section["entries"]} == expected
+    assert len(sections[-1]["entries"]) == (2 if viewset.is_resource else 1)
+
+
+def test_builder_registration_docs_cover_both_backing_types():
+    text = (ROOT / "docs/reference/theme.md").read_text()
+    builders = text.split("### Request-free manage builders\n", 1)[1].split("\n### ", 1)[0]
+    assert "A Resource ViewSet is an actual\nabsence example" not in builders
+    assert "both model and Resource" in builders
+    assert "before any diagnostic query" in builders
 
 
 @pytest.mark.django_db

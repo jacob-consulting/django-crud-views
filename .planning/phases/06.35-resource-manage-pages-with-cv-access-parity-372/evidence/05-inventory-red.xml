@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.590" timestamp="2026-11-15T18:44:39.884138+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_manage_release" name="test_rendered_public_surface_matches_documentation[viewset-False-cv_resource_manage]" time="0.393"><failure message="AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}&#10;  &#10;  Omitting 19 identical items, use -vv to show&#10;  Left contains 1 more item:&#10;  {'manage:badge-resource': 'badge bg-info text-dark'}&#10;  Use -v to get more diff">request = &lt;FixtureRequest for &lt;Function test_rendered_public_surface_matches_documentation[viewset-False-cv_resource_manage]&gt;&gt;
+fixture = 'cv_resource_manage'
+client = &lt;django.test.client.Client object at 0x7cda588f3a70&gt;
+developer = &lt;User: release-developer&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7cda588f19a0&gt;
+enabled = False, mode = 'viewset'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author", "cv_resource_manage"])
+    @pytest.mark.parametrize("enabled", [False, True])
+    @pytest.mark.parametrize("mode", ["viewset", "path"])
+    def test_rendered_public_surface_matches_documentation(request, fixture, client, developer, monkeypatch, enabled, mode):
+        viewset = request.getfixturevalue(fixture)
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", enabled)
+        client.force_login(developer)
+        response = client.get(
+            reverse(viewset.get_router_name("manage")),
+            {"cv_access_mode": mode, "cv_access_user": developer.username, "cv_access_path": "/missing/"},
+        )
+        assert response.status_code == 200
+        text = (ROOT / "docs/reference/theme.md").read_text().split("## Structured manage contracts\n", 1)[1]
+        context_section = text.split("### Prepared manage context\n", 1)[1].split("### Request-free manage builders", 1)[0]
+        documented_context = set(re.findall(r"^\| `(manage_\w+)` \|", context_section, re.M))
+        if fixture != "cv_guardian_author":
+            documented_context.remove("manage_guardian")
+        assert {key for key in response.context_data if key.startswith("manage_")} == documented_context
+        access = response.context_data["manage_access_trace"]
+        if not enabled:
+            assert access is None
+        else:
+            access_section = text.split("### Access trace mapping\n", 1)[1].split("### Access trace rows", 1)[0]
+            documented_access = set(re.findall(r"^\| `(\w+)` \|", access_section, re.M))
+            assert "error_field" in documented_access
+            # These are valid selections: only invalid web submissions add the optional field.
+            assert set(access) == documented_access - {"error_field"}
+            assert set(access["actor"]) == {"pk", "username", "active", "anonymous"}
+            assert access["actor"]["pk"] == str(developer.pk)
+            if mode == "path":
+                assert not access["rows"] and access["trace"]["outcome"] == "no_such_route"
+            else:
+                row_section = text.split("### Access trace rows\n", 1)[1].split("\n### ", 1)[0]
+                documented_rows = set(re.findall(r"^\| `(\w+)` \|", row_section, re.M))
+                assert [row["key"] for row in access["rows"]] == list(viewset.get_all_views())
+                assert all(set(row) == documented_rows for row in access["rows"])
+                assert response.context_data["manage_permissions"]["actor"]["id"] == developer.pk
+    
+        template = get_template("crud_views/view_manage.html").template
+        blocks = {block.name for block in template.nodelist.get_nodes_by_type(BlockNode)} - {"cv_content"}
+        documented_blocks = text.split("### Manage blocks\n", 1)[1].split("### Prepared manage context", 1)[0]
+        assert blocks == set(re.findall(r"^\| `(\w+)` \|", documented_blocks, re.M))
+    
+        buttons = (ROOT / "docs/reference/buttons.md").read_text()
+        documented_classes = dict(re.findall(r"^\| `(manage:[\w-]+)` \| `([^`]+)` \|", buttons, re.M))
+&gt;       assert {
+            key: value for key, value in DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")
+        } == documented_classes
+E       AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E         
+E         Omitting 19 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'manage:badge-resource': 'badge bg-info text-dark'}
+E         Use -v to get more diff
+
+tests/test1/test_manage_release.py:90: AssertionError</failure></testcase></testsuite></testsuites>

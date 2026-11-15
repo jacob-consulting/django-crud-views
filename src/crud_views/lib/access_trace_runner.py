@@ -381,7 +381,7 @@ def _run_trace(path, user):
     recorder = AccessRecorder()
     traced_class = None
     trace = AccessTrace(
-        path=_normalize_path(path),
+        path=path,
         untraced=[
             _("other middleware and URL decorators are not traced"),
             _("the synthetic request uses http://localhost; host-dependent project rules are not reproduced"),
@@ -389,6 +389,7 @@ def _run_trace(path, user):
     )
     with recording(recorder):
         try:
+            trace.path = _normalize_path(path)
             with transaction.atomic(using="default"):
                 try:
                     actor = _fresh_actor(user)

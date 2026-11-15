@@ -5,16 +5,25 @@ from unittest.mock import Mock, patch
 
 import pytest
 from django.contrib.auth.models import AnonymousUser, Permission
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
+from django.test import RequestFactory, override_settings
 
 from crud_views.lib.access_trace import AccessRecorder, recording, trace_access
 from crud_views.lib.views import DetailViewPermissionRequired, ListViewPermissionRequired
-from crud_views.lib.viewset import ParentViewSet
-from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin, GuardianQuerysetMixin
-from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
+from crud_views_guardian.lib.mixins import (
+    GuardianObjectPermissionMixin,
+    GuardianParentPermissionMixin,
+    GuardianQuerysetMixin,
+)
+from crud_views_guardian.lib.views import (
+    GuardianCreateViewPermissionRequired,
+    GuardianDetailViewPermissionRequired,
+    GuardianListViewPermissionRequired,
+)
 from crud_views_guardian.lib.viewset import GuardianViewSet
-from tests.test1.app.models import Book, Publisher
+from tests.test1.app.models import Book, BookNote, Publisher
 from tests.test1.test_access_trace import explode
 from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
 from tests.test1.test_manage_requirements import register
@@ -209,3 +218,239 @@ def test_object_state_is_separate_from_grant():
         assert len(own) == 1 and own[0].how == "active superuser" and own[0].result == "passed"
         deciding = result.steps[result.decided_by - 1]
         assert deciding.kind == "action_state" and deciding.object == {"model": "app.publisher", "pk": str(obj.pk)}
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "fallback,superuser,active,model_grant,object_grant,how",
+    [
+        (False, True, True, False, True, "active superuser"),
+        (True, True, True, True, True, "active superuser"),
+        (True, False, True, True, False, "model fallback"),
+        (True, False, True, False, True, "object grant"),
+        (False, False, True, False, True, "object grant"),
+        (False, True, True, False, False, None),
+        (True, True, False, True, True, None),
+    ],
+)
+def test_ancestor_branch_result_and_exact_order(
+    monkeypatch, fallback, superuser, active, model_grant, object_grant, how
+):
+    from crud_views_guardian.lib import ancestors
+
+    obj = Publisher.objects.create(name="ancestor")
+    calls = []
+    user = SimpleNamespace(is_authenticated=True, is_active=active, is_superuser=superuser)
+    user.has_perm = lambda perm: calls.append(("model", perm)) or model_grant
+    checker = SimpleNamespace(has_perm=lambda perm, row: calls.append(("object", perm, row.pk)) or object_grant)
+    factory = Mock(return_value=checker)
+    monkeypatch.setattr(ancestors, "_request_checker", factory)
+    vs = SimpleNamespace(name="ancestor", ancestor_policy=AncestorPolicy(accept_global_perms=fallback))
+    view = SimpleNamespace(cv_guardian_accept_global_perms=not fallback)
+    recorder = AccessRecorder()
+    with recording(recorder):
+        allowed = ancestors._guardian_ancestor_has_permission(vs, user, "app.view_publisher", obj, view=view)
+    assert allowed is (how is not None)
+    expected = [] if not active else ([("model", "app.view_publisher")] if fallback else [])
+    if active and not (fallback and model_grant):
+        expected.append(("object", "app.view_publisher", obj.pk))
+    assert calls == expected
+    assert factory.call_count == int(active and not (fallback and model_grant))
+    assert len(recorder.steps) == 1, "provider must report its successful branch or final refusal"
+    step = recorder.steps[0]
+    assert (step.kind, step.result, step.how) == ("object_grant", "passed" if allowed else "denied", how)
+    assert step.viewset == "ancestor" and step.object == {"model": "app.publisher", "pk": str(obj.pk)}
+    assert step.source == "ancestor_policy.accept_global_perms"
+
+
+def nested_routes(sfx, *, base=GuardianCreateViewPermissionRequired, fallback=False, outer_core=False, **attrs):
+    outer = (ViewSet if outer_core else GuardianViewSet)(model=Publisher, name="guardouter" + sfx)
+    inner = GuardianViewSet(
+        model=Book,
+        name="guardinner" + sfx,
+        parent=ParentViewSet(name=outer.name, attribute="publisher"),
+        ancestor_policy=AncestorPolicy(accept_global_perms=fallback),
+    )
+    leaf = GuardianViewSet(
+        model=BookNote, name="guardleaf" + sfx, parent=ParentViewSet(name=inner.name, attribute="book")
+    )
+    key = (
+        "create"
+        if base is GuardianCreateViewPermissionRequired
+        else "detail"
+        if base is GuardianDetailViewPermissionRequired
+        else "list"
+    )
+    view = register(base, leaf, key=key, get=explode, **attrs)
+    return (outer, inner, leaf, view, key), [outer, inner, leaf]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "fallback,outer_core,state", [(False, False, True), (True, False, True), (False, True, True), (False, False, False)]
+)
+def test_nested_create_parent_only_requirements_and_state(fallback, outer_core, state):
+    pub = Publisher.objects.create(name="outer")
+    book = Book.objects.create(title="inner", publisher=pub)
+    user = _user("create", (Publisher, "view"), (Book, "change"))
+    states = []
+
+    def state_hook(cls, actor, obj):
+        states.append(obj.pk)
+        assert type(obj) is Book
+        return state
+
+    with isolated_routes(
+        lambda s: nested_routes(s, fallback=fallback, outer_core=outer_core, cv_action_enabled=classmethod(state_hook))
+    ) as (outer, inner, leaf, view, key):
+        if not outer_core:
+            outer.assign_perm("view", user, pub)
+        if not fallback:
+            inner.assign_perm("change", user, book)
+        url = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+        result = trace_access(url, user)
+        assert result.outcome == ("allowed" if state else "denied")
+        assert view.cv_get_requirement()["kind"] == "none"
+        assert not any(s.kind == "own_permission" or s.permission == "app.add_booknote" for s in result.steps)
+        gates = [s for s in result.steps if s.kind == "ancestor_gate"]
+        assert [(s.viewset, s.permission, s.provider) for s in gates] == [
+            (outer.name, "app.view_publisher", "model" if outer_core else "guardian"),
+            (inner.name, "app.change_book", "guardian"),
+        ]
+        grants = [s for s in result.steps if s.kind == "object_grant"]
+        assert len(grants) == (1 if outer_core else 2)
+        assert grants[-1].how == ("model fallback" if fallback else "object grant")
+        assert states == [book.pk]
+        steps = [s for s in result.steps if s.kind == "action_state"]
+        assert len(steps) == 1 and steps[0].object == {"model": "app.book", "pk": str(book.pk)}
+        assert steps[0].result == ("passed" if state else "denied")
+        if not state:
+            assert result.decided_by == steps[0].n
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("base", [GuardianObjectPermissionMixin, GuardianQuerysetMixin, GuardianParentPermissionMixin])
+@pytest.mark.parametrize("actor", ["anonymous", "inactive", "active"])
+@pytest.mark.parametrize("behavior", ["redirect", "403", "404"])
+def test_nested_adapters_have_one_helper_owned_admission(base, actor, behavior, django_assert_num_queries):
+    user = (
+        AnonymousUser() if actor == "anonymous" else SimpleNamespace(is_authenticated=True, is_active=actor == "active")
+    )
+    view = base()
+    view.request = SimpleNamespace(user=user)
+    view.cv_guardian_anonymous_behavior = behavior
+    view.handle_no_permission = Mock(return_value=SimpleNamespace(status_code=302))
+    recorder = AccessRecorder()
+    exception = Http404 if actor == "anonymous" and behavior == "404" else PermissionDenied
+    with recording(recorder), django_assert_num_queries(0):
+        if actor == "inactive" or (actor == "anonymous" and behavior != "redirect"):
+            with pytest.raises(exception):
+                view._cv_ancestor_actor_response(protected=True)
+        else:
+            response = view._cv_ancestor_actor_response(protected=True)
+            assert response is (view.handle_no_permission.return_value if actor == "anonymous" else None)
+    assert len(recorder.steps) == 1
+    step = recorder.steps[0]
+    assert step.kind == "actor_admission" and step.source == "_guardian_actor_response"
+    assert step.result == (
+        "passed" if actor == "active" else "not_found" if actor == "anonymous" and behavior == "404" else "denied"
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("behavior", ["redirect", "403", "404"])
+@pytest.mark.parametrize("actor", ["anonymous", "inactive", "active"])
+def test_top_level_parent_dispatch_actor_report(behavior, actor):
+    user = AnonymousUser() if actor == "anonymous" else _user("top parent", superuser=True)
+    if actor == "inactive":
+        user.is_active = False
+        user.save()
+    with isolated_routes(
+        lambda s: local_routes(
+            s, base=GuardianCreateViewPermissionRequired, cv_guardian_anonymous_behavior=behavior, get=explode
+        )
+    ) as (vs, _):
+        result = trace_access(_url(vs, "tested"), user)
+        admissions = [s for s in result.steps if s.kind == "actor_admission"]
+        assert len(admissions) == 1
+        assert admissions[0].source == (
+            "_guardian_actor_response" if actor == "anonymous" else "GuardianParentPermissionMixin.dispatch"
+        )
+        assert result.outcome == (
+            "allowed"
+            if actor == "active"
+            else "not_found"
+            if actor == "anonymous" and behavior == "404"
+            else "login_redirect"
+            if actor == "anonymous" and behavior == "redirect"
+            else "denied"
+        )
+
+
+@pytest.mark.django_db
+def test_invalid_composition_precedes_actor_and_reports_original_error(monkeypatch):
+    from tests.test1.test_guardian_composition import UnsafeUpdate
+
+    monkeypatch.setattr(UnsafeUpdate, "cv_viewset", SimpleNamespace(parent=object()))
+    request = RequestFactory().get("/")
+    request.user = AnonymousUser()
+    recorder = AccessRecorder()
+    with recording(recorder), pytest.raises(ImproperlyConfigured, match="GuardianObjectPermissionMixin"):
+        UnsafeUpdate.as_view()(request)
+    assert len(recorder.steps) == 1
+    assert recorder.steps[0].kind == "validation" and recorder.steps[0].result == "error"
+
+
+@pytest.mark.django_db
+def test_ancestor_routing_refusal_precedes_provider_and_vocabulary():
+    from tests.test1.test_access_trace_ancestors import AuthShardRouter
+
+    pub = Publisher.objects.create(name="routing")
+    book = Book.objects.create(title="routing", publisher=pub)
+    with isolated_routes(nested_routes) as (outer, inner, leaf, _view, key):
+        user = _user("routing", superuser=True)
+        outer._default_permissions = {}
+        with override_settings(DATABASE_ROUTERS=[AuthShardRouter()]):
+            result = trace_access(_url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk}), user)
+        assert result.outcome == "error"
+        step = result.steps[result.decided_by - 1]
+        assert step.kind == "ancestor_gate" and "selected database 'shard'" in step.exception["message"]
+        assert step.permission is None
+        assert not any(s.kind == "object_grant" for s in result.steps)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("nested", [False, True])
+@pytest.mark.parametrize(
+    "base",
+    [GuardianCreateViewPermissionRequired, GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired],
+)
+@pytest.mark.parametrize("behavior", ["redirect", "403", "404"])
+@pytest.mark.parametrize("inactive", [False, True])
+def test_actor_refusal_is_deciding_before_any_lookup_or_count(nested, base, behavior, inactive):
+    user = _user("inactive", superuser=True) if inactive else AnonymousUser()
+    if inactive:
+        user.is_active = False
+        user.save()
+
+    def build(sfx):
+        if nested:
+            ns, routed = nested_routes(sfx, base=base, cv_guardian_anonymous_behavior=behavior)
+            outer, inner, leaf, view, key = ns
+            kwargs = {outer.name + "_pk": 9999, inner.name + "_pk": 9999}
+        else:
+            (leaf, view), routed = local_routes(sfx, base=base, cv_guardian_anonymous_behavior=behavior)
+            key, kwargs = "tested", {}
+        if base is GuardianDetailViewPermissionRequired:
+            kwargs["pk"] = 9999
+        return (leaf, key, kwargs), routed
+
+    with isolated_routes(build) as (leaf, key, kwargs):
+        result = trace_access(_url(leaf, key, **kwargs), user)
+        assert result.outcome == (
+            "denied" if inactive or behavior == "403" else "not_found" if behavior == "404" else "login_redirect"
+        )
+        deciding = result.steps[result.decided_by - 1]
+        assert deciding.kind == "actor_admission"
+        assert len([s for s in result.steps if s.kind == "actor_admission"]) == 1
+        assert not any(s.kind in {"ancestor_lookup", "object_lookup", "list_filter"} for s in result.steps)

@@ -197,8 +197,9 @@ def test_both_forms_share_username_first_selection(client, host, developer, djan
         identifier = "987654321"
     elif selector == "invalid_pk":
         identifier = "not-a-valid-pk"
-    response = submit(client, host, developer, cv_access_mode=mode, cv_access_user=identifier,
-                      cv_access_path="/author/manage/")
+    response = submit(
+        client, host, developer, cv_access_mode=mode, cv_access_user=identifier, cv_access_path="/author/manage/"
+    )
     data = response.context["manage_access_trace"]
     assert data["user_input"] == identifier
     if selector in {"unknown", "invalid_pk"}:
@@ -248,7 +249,7 @@ def test_only_successful_viewset_selection_changes_actor_label(
 
 @pytest.mark.parametrize("object_pk", [None, "valid", "invalid"])
 def test_route_inventory_and_own_pk_boundaries(host, developer, object_pk):
-    obj = host.model.objects.create(name="not rendered")
+    obj = host.model.objects.create(first_name="not", last_name="rendered")
     pk = str(obj.pk) if object_pk == "valid" else "not-a-pk" if object_pk else None
     data = host.get_view_class("manage")().get_manage_access_trace(host, developer, mode="viewset", object_pk=pk)
     assert [r["key"] for r in data["rows"]] == list(host.get_all_views())
@@ -278,28 +279,49 @@ def test_nested_parent_coordinates_and_extra_routes(client, developer, enabled):
 
     def build(sfx):
         grand = ViewSet(model=Publisher, name="acgrand" + sfx, ancestor_policy=AncestorPolicy(provider="none"))
-        parent = ViewSet(model=Book, name="acparent" + sfx, ancestor_policy=AncestorPolicy(provider="none"),
-                         parent=ParentViewSet(name=grand.name, attribute="publisher"))
-        leaf = ViewSet(model=BookNote, name="acleaf" + sfx, pk_name="note_id",
-                       parent=ParentViewSet(name=parent.name, attribute="book"))
-        for base, key in [(ListView, "list"), (CreateView, "create"), (DetailView, "detail"),
-                          (RedirectChildView, "redirect_child"), (PolymorphicCreateView, "polymorphic")]:
+        parent = ViewSet(
+            model=Book,
+            name="acparent" + sfx,
+            ancestor_policy=AncestorPolicy(provider="none"),
+            parent=ParentViewSet(name=grand.name, attribute="publisher"),
+        )
+        leaf = ViewSet(
+            model=BookNote,
+            name="acleaf" + sfx,
+            pk_name="note_id",
+            parent=ParentViewSet(name=parent.name, attribute="book"),
+        )
+        for base, key in [
+            (ListView, "list"),
+            (CreateView, "create"),
+            (DetailView, "detail"),
+            (RedirectChildView, "redirect_child"),
+            (PolymorphicCreateView, "polymorphic"),
+        ]:
             register(base, leaf, key=key)
         register(CreateView, leaf, key="post_only", http_method_names=["post"], cv_backend_only=True)
         register(CreateView, leaf, key="custom", cv_path_contribute=classmethod(lambda cls: "(?P<extra>[a-z]+)/"))
         return (grand, parent, leaf), [grand, parent, leaf]
 
-    with isolated_routes(build) as (grand, parent, leaf):
+    with isolated_routes(build) as (_grand, parent, leaf):
         pub = Publisher.objects.create(name="hidden publisher")
         book = Book.objects.create(title="hidden book", publisher=pub)
         note = BookNote.objects.create(note="hidden note", book=book)
         coords = {parent.parent.get_pk_name(): pub.pk, leaf.parent.get_pk_name(): book.pk}
         client.force_login(developer)
-        response = client.get(_url(leaf, "manage", **coords), {
-            "cv_access_mode": "viewset", "cv_access_user": developer.username, "cv_access_pk": note.pk,
-            **{k: "987654" for k in coords}, "extra": "tampered", "polymorphic_ctype_id": "1",
-            "redirect": "bad", "redirect_key": "bad",
-        })
+        response = client.get(
+            _url(leaf, "manage", **coords),
+            {
+                "cv_access_mode": "viewset",
+                "cv_access_user": developer.username,
+                "cv_access_pk": note.pk,
+                **dict.fromkeys(coords, "987654"),
+                "extra": "tampered",
+                "polymorphic_ctype_id": "1",
+                "redirect": "bad",
+                "redirect_key": "bad",
+            },
+        )
         assert response.status_code == 200
         data = response.context["manage_access_trace"]
         assert [r["key"] for r in data["rows"]] == list(leaf.get_all_views())
@@ -310,4 +332,34 @@ def test_nested_parent_coordinates_and_extra_routes(client, developer, enabled):
             assert rows[key]["instruction"] == "use the path field" and rows[key]["trace"] is None
         assert rows["post_only"]["trace"]
         assert any(step["result"] == "not_evaluated" for step in rows["post_only"]["trace"]["steps"])
-        assert "hidden note" not in html.fromstring(response.content).cssselect("#cv-manage-access-trace")[0].text_content()
+        assert (
+            "hidden note"
+            not in html.fromstring(response.content).cssselect("#cv-manage-access-trace")[0].text_content()
+        )
+
+
+def test_selected_guardian_row_reuses_strict_counts_once(
+    client, cv_guardian_author, developer, django_user_model, enabled, monkeypatch
+):
+    from guardian.shortcuts import assign_perm
+
+    from crud_views_guardian.lib.views import GuardianManageView
+    from tests.test1.test_manage_requirements import grant
+
+    actor = django_user_model.objects.create_user(username="strict actor")
+    obj = cv_guardian_author.model.objects.create(first_name="hidden", last_name="title")
+    cv_guardian_author.model.objects.create(first_name="other", last_name="hidden")
+    grant(actor, cv_guardian_author, "view")
+    assign_perm(cv_guardian_author.permissions["view"], actor, obj)
+    original = GuardianManageView.get_manage_actor_row
+    calls = []
+
+    def record(self, viewset, user):
+        calls.append(user.pk)
+        return original(self, viewset, user)
+
+    monkeypatch.setattr(GuardianManageView, "get_manage_actor_row", record)
+    response = submit(client, cv_guardian_author, developer, cv_access_mode="viewset", cv_access_user=actor.username)
+    assert calls == [developer.pk, actor.pk]
+    cell = next(c for c in response.context["manage_permissions"]["actor"]["cells"] if c["key"] == "view")
+    assert cell["model"] is True and cell["object_count"] == 1

@@ -755,9 +755,29 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         }
         if mode == "path":
             data["trace"] = trace_access(path, user).to_dict()
+        elif mode == "viewset":
+            supplied = route_kwargs or {}
+            parents = {name: supplied[name] for name in viewset.get_parent_url_args() if name in supplied}
+            for key, view_class in viewset.get_all_views().items():
+                row = {"key": key, "path": None, "instruction": None, "trace": None}
+                data["rows"].append(row)
+                # Match ViewSet.get_path_pk: cv_object owns the standard PK segment.
+                if view_class.cv_object and (object_pk is None or object_pk == ""):
+                    row["instruction"] = _("needs an object pk")
+                    continue
+                coordinates = dict(parents)
+                if view_class.cv_object:
+                    coordinates[viewset.pk_name] = object_pk
+                try:
+                    row["path"] = reverse(viewset.get_router_name(key), kwargs=coordinates)
+                except NoReverseMatch:
+                    # Extra contributed arguments and invalid converter values remain local to this row.
+                    row["instruction"] = _("use the path field")
+                    continue
+                row["trace"] = trace_access(row["path"], user).to_dict()
         return data
 
-    def _manage_access_query(self):
+    def _manage_access_query(self, permissions):
         """Read GET only after the opt-in switch and the normal hosting dispatch gates."""
         if not crud_views_settings.manage_access_trace:
             return None
@@ -795,6 +815,8 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             route_kwargs=self.kwargs,
         )
         result["user_input"] = data["user_input"]
+        if data["mode"] == "viewset":
+            permissions["actor"] = self.get_manage_actor_row(self.cv_viewset, actor)
         return result
 
     def get_context_data(self, **kwargs):
@@ -820,9 +842,9 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "manage_ancestor_policy": self.get_manage_ancestor_policy(self.cv_viewset, self.request.user),
                 "manage_presentation": self.get_manage_presentation(self.cv_viewset, self.request.user),
                 "manage_docs_base_url": self.manage_docs_base_url,
-                "manage_access_trace": self._manage_access_query(),
             }
         )
+        context["manage_access_trace"] = self._manage_access_query(context["manage_permissions"])
         return context
 
     def get_ancestor_policy_data(self) -> dict:

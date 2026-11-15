@@ -35,7 +35,7 @@
             </tr></thead>
             <tbody>
                 <tr data-manage-actor>
-                    <th scope="row">{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}</th>
+                    <th scope="row">{% if manage_access_trace.mode == 'viewset' and manage_access_trace.actor and not manage_access_trace.error %}{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (checked below){% endblocktranslate %}{% else %}{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}{% endif %}</th>
                     {% for cell in matrix.actor.cells %}<td data-permission="{{ cell.key }}">{% if cell.model %}<span class="{% cv_button_class 'manage' 'badge-model' %}">{% translate "model" %}</span>{% endif %}{% if cell.object_count %} <span class="{% cv_button_class 'manage' 'badge-objects' %}">{% blocktranslate count count=cell.object_count %}{{ count }} object{% plural %}{{ count }} objects{% endblocktranslate %}</span>{% endif %}{% if not cell.model and not cell.object_count %}—<span class="visually-hidden">{% translate "No permission or object grant" %}</span>{% endif %}</td>{% endfor %}
                 </tr>
             </tbody>
@@ -75,7 +75,7 @@
         {% endif %}
         {% endif %}
         {% else %}
-        <p data-manage-actor>{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}</p>
+        <p data-manage-actor>{% if manage_access_trace.mode == 'viewset' and manage_access_trace.actor and not manage_access_trace.error %}{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (checked below){% endblocktranslate %}{% else %}{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}{% endif %}</p>
         <p>{% translate "No permissions configured. Review this ViewSet's permission configuration." %}</p>
         {% endif %}
         <p>{% blocktranslate count count=matrix.superusers.count %}{{ count }} active superuser holds every permission{% plural %}{{ count }} active superusers hold every permission{% endblocktranslate %}{% if matrix.show_users and matrix.superusers.names %}: {{ matrix.superusers.names|join:", " }}{% endif %}</p>
@@ -95,6 +95,15 @@
     <section class="card mb-3" id="cv-manage-access-trace">
         <div class="card-header"><h2 class="h6 mb-0">{% translate "Access check" %}</h2></div>
         <div class="card-body">
+            <form method="get" class="mb-3">
+                <fieldset>
+                    <legend class="h6">{% translate "This ViewSet" %}</legend>
+                    <input type="hidden" name="cv_access_mode" value="viewset">
+                    <div class="mb-2"><label for="cv-access-viewset-user" class="form-label">{% translate "Username or primary key" %}</label><input class="form-control" id="cv-access-viewset-user" name="cv_access_user" value="{{ manage_access_trace.user_input }}" required></div>
+                    <div class="mb-2"><label for="cv-access-pk" class="form-label">{% translate "Object pk (optional)" %}</label><input class="form-control" id="cv-access-pk" name="cv_access_pk" value="{{ manage_access_trace.pk_input }}"></div>
+                    <button type="submit" class="{% cv_button_class 'form' 'submit' %}">{% translate "Check" %}</button>
+                </fieldset>
+            </form>
             <form method="get">
                 <fieldset>
                     <legend class="h6">{% translate "Any URL" %}</legend>
@@ -105,6 +114,15 @@
                 </fieldset>
             </form>
             {% if manage_access_trace.error %}<p role="alert">{{ manage_access_trace.error }}</p>{% endif %}
+            {% if manage_access_trace.actor %}<p>{% blocktranslate with username=manage_access_trace.actor.username %}Checking access for: {{ username }}{% endblocktranslate %}</p>{% endif %}
+            {% for row in manage_access_trace.rows %}
+                {% if row.trace %}
+                <details data-cv-access-row="{{ row.key }}">
+                    <summary><strong>{{ row.key }}</strong> <span data-cv-trace-result="{{ row.trace.outcome }}">{{ row.trace.outcome }}</span>{% if row.trace.decided_by %} — {% blocktranslate with number=row.trace.decided_by %}decided at step {{ number }}{% endblocktranslate %}{% endif %}</summary>
+                    {% include "crud_views/includes/access_trace.html" with trace=row.trace only %}
+                </details>
+                {% else %}<p data-cv-access-row="{{ row.key }}"><strong>{{ row.key }}</strong> — {{ row.instruction }}</p>{% endif %}
+            {% endfor %}
             {% if manage_access_trace.trace %}{% include "crud_views/includes/access_trace.html" with trace=manage_access_trace.trace only %}{% endif %}
         </div>
     </section>

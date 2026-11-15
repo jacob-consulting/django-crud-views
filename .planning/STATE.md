@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.35"
 current_phase_name: "Resource manage pages with cv_access parity (#372)"
 current_plan: "07"
-status: executing
-stopped_at: "Completed 06.35-06-PLAN.md; ready for plan 07"
-last_updated: "2026-11-15T18:56:50Z"
+status: verifying
+stopped_at: "Completed 06.35-07-PLAN.md; independent phase audits/reviews/verifier pending"
+last_updated: "2026-11-15T19:49:31Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 06.35 plan 06 complete; C11 135 passed and C12 374 passed; six compiled German messages and real bilingual Resource output verified; final H01 locale handoff closed; release acceptance remains with plan 07
-state_head: 922af8aa
+last_activity_desc: Phase 06.35 plan 07 complete; browser 82 cases and final normal/recorder 15226 passed each; 4.2/6.0 focused 902 passed each; 7/7 plans executed; independent phase verification pending
+state_head: f91adf19
 progress:
   total_phases: 42
   completed_phases: 27
   total_plans: 232
-  completed_plans: 231
+  completed_plans: 232
 milestone_name: milestone
 ---
 
@@ -34,10 +34,17 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 Phase: 06.35 (Resource manage pages with cv_access parity (#372)) — IN PROGRESS
 Current Plan: 07
 Total Plans in Phase: 7
-Status: Executing (6/7 plans complete)
-Last activity: 2026-11-15 — Plan 06 committed; six German Resource messages compiled and bilingual output verified; C11 135 passed and C12 374 passed
+Status: Verifying (7/7 plans executed; independent phase audits/reviews/verifier pending)
+Last activity: 2026-11-15 — Plan 07 committed; browser and final-source complete normal/recorder plus cached compatibility gates passed
 
-Next: $gsd-execute-phase 06.35
+Next: Complete parent-owned phase 06.35 security audit, code/UI review and canonical verification
+
+### Phase 06.35 plan 07 completion — 2026-11-15
+
+- Existing browser harness now requires 32 Resource scenarios while preserving all 52 prior criterion IDs: 82 cases and 81 screenshots passed in 88.031s. Executor visual inspection and DOM evidence cover en/de at 390/1280, badges, overflow, defaults, empty states and real hierarchy routes; no maintainer visual approval is implied.
+- Final source d7875821: complete Django 5.2 normal 15226 passed + 1 existing skip (404.83s), recorder 15226 passed + 1 existing skip (406.02s); cached Django 4.2/6.0 focused 902 passed each (37.60s/47.99s), four workers. The skip is the existing Django6-only CSP case; seven unavailable supported runtime combinations remain explicitly unexecuted.
+- Two demonstrated test-isolation defects fixed with RED/GREEN: correct Pydantic private-cache restoration and reuse existing Django 4.2 diagnostic reporter isolation. No production changes or weakened assertions. Both full modes were repeated after the final test-source edit; core/Guardian query totals remain exactly 9/21.
+- Duration: approximately 51 minutes; 2 tasks; task/evidence commits e5c867e0, 5ce02f5c, 633cb045, ac75e4a5, 523ad9f7, d7875821, 611cc273; committed summary f91adf19. ROADMAP SDK reports 7/7 and In Progress, complete=false. All H01 handoffs closed; independent phase audits/reviews/verifier remain pending. Unrelated state.json/config/.gitkeep/review-input changes preserved.
 
 ### Phase 06.35 plan 06 completion — 2026-11-15
 
@@ -1760,6 +1767,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T18:40:00Z
-Stopped at: Completed 06.35-04-PLAN.md; ready for plans 05/06
-Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-05-PLAN.md
+Last session: 2026-11-15T19:49:31Z
+Stopped at: Completed 06.35-07-PLAN.md; independent phase audits/reviews/verifier pending
+Resume file: None

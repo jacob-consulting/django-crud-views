@@ -1,0 +1,190 @@
+bringing up nodes...
+bringing up nodes...
+
+.....F...................F...............................FFFF........... [ 32%]
+........................................................F............... [ 64%]
+........................................F...F..........F..F........F.F.. [ 96%]
+FF.FFF.                                                                  [100%]
+=================================== FAILURES ===================================
+_________________ test_manage_registry_defaults_and_overrides __________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_button_classes.py:176: in test_manage_registry_defaults_and_overrides
+    assert {key: value for key, value in DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")} == {
+E   AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+_____________________ test_workflow_app_defaults_lifecycle _____________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_button_classes.py:249: in test_workflow_app_defaults_lifecycle
+    assert len(core) == 121
+E   AssertionError: assert 122 == 121
+E    +  where 122 = len({'heading:size-1': 'h1', 'heading:size-2': 'h2', 'heading:size-3': 'h3', 'heading:size-4': 'h4', ...})
+________________ test_workflow_app_defaults_fresh_setup[False] _________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_button_classes.py:410: in test_workflow_app_defaults_fresh_setup
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: Traceback (most recent call last):
+E       File "<string>", line 30, in <module>
+E     AssertionError
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python', '-c', 'WORK...e=1, stdout='', stderr='Traceback (most recent call last):\n  File "<string>", line 30, in <module>\nAssertionError\n').returncode
+_________________ test_workflow_app_defaults_fresh_setup[True] _________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_button_classes.py:410: in test_workflow_app_defaults_fresh_setup
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: Traceback (most recent call last):
+E       File "<string>", line 30, in <module>
+E     AssertionError
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python', '-c', 'WORK...e=1, stdout='', stderr='Traceback (most recent call last):\n  File "<string>", line 30, in <module>\nAssertionError\n').returncode
+_______ test_hierarchy_uses_only_explicit_coordinates_and_never_samples ________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_facts.py:87: in test_hierarchy_uses_only_explicit_coordinates_and_never_samples
+    assert data["children"][0]["route"] is None
+E   AssertionError: assert '/facts-root/<owner_pk>/facts-mid/<volume_pk>/facts-leaf/<facts_5544a9a5e7394018bcaf93d27f95214f_pk>/facts_b886a093a54f4110ac69de6af189445a/manage/' is None
+_______________ test_documented_default_key_count_matches_table ________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_button_classes.py:417: in test_documented_default_key_count_matches_table
+    assert int(counts[0]) == len(DEFAULT_BUTTON_CLASSES)
+E   AssertionError: assert 121 == 122
+E    +  where 121 = int('121')
+E    +  and   122 = len({'heading:size-1': 'h1', 'heading:size-2': 'h2', 'heading:size-3': 'h3', 'heading:size-4': 'h4', ...})
+_______________________ test_workflow_presentation_docs ________________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_theme_adoption_docs.py:298: in test_workflow_presentation_docs
+    assert manage_defaults == {
+E   AssertionError: assert {'manage:badg...e-group', ...} == {'manage:badg...primary', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Right contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+_________ test_shared_route_projection_contributed_empty_and_malformed _________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_facts.py:102: in test_shared_route_projection_contributed_empty_and_malformed
+    assert manage.get_manage_routes(empty, None) == manage.get_manage_views(empty, None) == []
+E   AssertionError: assert [{'key': 'man...error': None}] == [{'key': 'man...': None, ...}]
+E     
+E     At index 0 diff: {'key': 'manage', 'name': 'facts_5a995291eabe445ca0699e9a726370a7-manage', 'route': '/facts_5a995291eabe445ca0699e9a726370a7/manage/', 'route_error': None} != {'key': 'manage', 'route_name': 'facts_5a995291eabe445ca0699e9a726370a7-manage', 'route': '/facts_5a995291eabe445ca0699e9a726370a7/manage/', 'route_error': None, 'requirement': {'kind': 'group', 'value': 'CRUD_VIEWS_MANAGE', 'ancestor_applies': True}, 'permission': None, 'parent_requirement': None, 'requirement_metadata_error': None, 'guardian_policy': None, 'class_path': 'crud_views.lib.view.meta...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________ test_manage_german_catalog_covers_sources[crud_views] _____________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_locales.py:202: in test_manage_german_catalog_covers_sources
+    assert not missing, missing
+E   AssertionError: ['Resource', 'resource']
+E   assert not ['Resource', 'resource']
+_ test_rendered_public_surface_matches_documentation[viewset-False-cv_author] __
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_release.py:77: in test_rendered_public_surface_matches_documentation
+    assert {
+E   AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+________________________ test_default_table_is_complete ________________________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_button_classes.py:139: in test_default_table_is_complete
+    assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
+E   AssertionError: assert {'alert:close...success', ...} == {'alert:close...success', ...}
+E     
+E     Extra items in the left set:
+E     'manage:badge-resource'
+E     Use -v to get more diff
+_ test_rendered_public_surface_matches_documentation[viewset-False-cv_guardian_author] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_release.py:77: in test_rendered_public_surface_matches_documentation
+    assert {
+E   AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+__ test_rendered_public_surface_matches_documentation[viewset-True-cv_author] __
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_release.py:77: in test_rendered_public_surface_matches_documentation
+    assert {
+E   AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+_ test_rendered_public_surface_matches_documentation[viewset-True-cv_guardian_author] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_release.py:77: in test_rendered_public_surface_matches_documentation
+    assert {
+E   AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+___ test_rendered_public_surface_matches_documentation[path-False-cv_author] ___
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_release.py:77: in test_rendered_public_surface_matches_documentation
+    assert {
+E   AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+_ test_rendered_public_surface_matches_documentation[path-False-cv_guardian_author] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_release.py:77: in test_rendered_public_surface_matches_documentation
+    assert {
+E   AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+___ test_rendered_public_surface_matches_documentation[path-True-cv_author] ____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_release.py:77: in test_rendered_public_surface_matches_documentation
+    assert {
+E   AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+_ test_rendered_public_surface_matches_documentation[path-True-cv_guardian_author] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+tests/test1/test_manage_release.py:77: in test_rendered_public_surface_matches_documentation
+    assert {
+E   AssertionError: assert {'manage:badg...primary', ...} == {'manage:badg...e-group', ...}
+E     
+E     Omitting 19 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'manage:badge-resource': 'badge bg-info text-dark'}
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test1/test_button_classes.py::test_manage_registry_defaults_and_overrides
+FAILED tests/test1/test_button_classes.py::test_workflow_app_defaults_lifecycle
+FAILED tests/test1/test_button_classes.py::test_workflow_app_defaults_fresh_setup[False]
+FAILED tests/test1/test_button_classes.py::test_workflow_app_defaults_fresh_setup[True]
+FAILED tests/test1/test_manage_facts.py::test_hierarchy_uses_only_explicit_coordinates_and_never_samples
+FAILED tests/test1/test_button_classes.py::test_documented_default_key_count_matches_table
+FAILED tests/test1/test_theme_adoption_docs.py::test_workflow_presentation_docs
+FAILED tests/test1/test_manage_facts.py::test_shared_route_projection_contributed_empty_and_malformed
+FAILED tests/test1/test_manage_locales.py::test_manage_german_catalog_covers_sources[crud_views]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[viewset-False-cv_author]
+FAILED tests/test1/test_button_classes.py::test_default_table_is_complete - A...
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[viewset-False-cv_guardian_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[viewset-True-cv_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[viewset-True-cv_guardian_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[path-False-cv_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[path-False-cv_guardian_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[path-True-cv_author]
+FAILED tests/test1/test_manage_release.py::test_rendered_public_surface_matches_documentation[path-True-cv_guardian_author]
+18 failed, 205 passed in 3.03s

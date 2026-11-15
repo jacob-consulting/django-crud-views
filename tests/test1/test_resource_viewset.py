@@ -62,8 +62,8 @@ def test_permissions_none_means_empty():
     assert vs.permissions == OrderedDict()
 
 
-def test_no_auto_manage_view(vs_t2, cv_author):
-    assert vs_t2.has_view("manage") is False
+def test_auto_manage_view(vs_t2, cv_author):
+    assert vs_t2.has_view("manage") is True
     assert cv_author.has_view("manage") is True
 
 

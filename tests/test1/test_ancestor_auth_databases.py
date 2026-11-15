@@ -30,6 +30,7 @@ import pytest
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management import call_command
 from django.db import router
 from django.test import RequestFactory, override_settings
 from django.urls import resolve
@@ -135,6 +136,12 @@ def routes(monkeypatch):
 
 @pytest.fixture
 def world():
+    # These routing tests deliberately collide identities across aliases. A preceding
+    # default-only transaction test can leave post_migrate metadata at different IDs;
+    # rebuild both test databases before creating the paired rows and grants.
+    for alias in ("default", "shard"):
+        call_command("flush", database=alias, reset_sequences=True, interactive=False, verbosity=0)
+    ContentType.objects.clear_cache()
     rows = {}
     for alias in ("default", "shard"):
         publisher = Publisher.objects.using(alias).create(pk=41, name=f"{alias} publisher")

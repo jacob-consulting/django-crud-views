@@ -8,11 +8,14 @@ from crud_views.lib.access_trace import AccessRecorder, recording, trace_access
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views.manage import ManageView
 from crud_views.lib.viewset import ViewSet
+from tests.test1 import test_access_trace_ancestors as ancestors
 from tests.test1.app.models import Publisher
 from tests.test1.test_access_trace import explode
-from tests.test1.test_access_trace_ancestors import chain, coordinates, rows  # noqa: F401
+from tests.test1.test_access_trace_ancestors import chain, coordinates
 from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
 from tests.test1.test_manage_requirements import register
+
+rows = ancestors.rows
 
 
 @pytest.mark.django_db
@@ -37,7 +40,7 @@ def test_manage_trace_actual_branch(mode, debug, actor, monkeypatch, settings):
         user.groups.add(Group.objects.create(name="Project developers"))
     with isolated_routes(build) as vs:
         result = trace_access(_url(vs, "tested"), user)
-    allowed = actor == "member" and (mode == "yes" or mode == "debug_only" and debug)
+    allowed = actor == "member" and (mode == "yes" or (mode == "debug_only" and debug))
     assert result.outcome == ("allowed" if allowed else "login_redirect" if actor == "anonymous" else "denied")
     gates = [s for s in result.steps if s.kind == "manage_gate" and s.result != "not_reached"]
     assert len(gates) == 1
@@ -46,6 +49,16 @@ def test_manage_trace_actual_branch(mode, debug, actor, monkeypatch, settings):
     assert gate.provider == "none"
     assert mode in gate.message
     assert gate.result == ("passed" if allowed else "denied")
+    expected_branch = (
+        actor
+        if actor in {"anonymous", "inactive"}
+        else "disabled"
+        if mode == "no" or (mode == "debug_only" and not debug)
+        else "group_member"
+        if actor == "member"
+        else "not_member"
+    )
+    assert gate.how == expected_branch
     if not allowed:
         assert result.decided_by == gate.n
 

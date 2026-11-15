@@ -1,6 +1,7 @@
 """Planned requirements remain metadata; reached gates retain request ordering."""
 
 import pytest
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponseForbidden
 from django.test import RequestFactory, override_settings
@@ -201,3 +202,44 @@ def test_valid_planning_has_no_database_queries(rows, django_assert_num_queries)
             plan = _plan_gates(instance)
         assert [p["key"] for p in plan if p["kind"] == "ancestor_gate"] == ["view", "change"]
         assert all(p["source"] == "actions['tested']" for p in plan if p["kind"] == "ancestor_gate")
+
+
+@pytest.mark.django_db
+def test_invalid_plan_metadata_does_not_preempt_login(rows):
+    base = type("LoginFirstAction", (LoginRequiredMixin, ActionView), {"__module__": __name__})
+    with isolated_routes(lambda s: chain(s, base=base)) as (outer, inner, leaf, _):
+        result = trace_access(_url(leaf, "tested", **coordinates(outer, inner, *rows)), AnonymousUser())
+        assert result.outcome == "login_redirect"
+        assert any(row.get("result") == "unavailable" for row in result.plan)
+        assert not any(step.kind == "validation" and step.result == "error" for step in result.steps)
+
+
+@pytest.mark.django_db
+def test_one_level_leaf_mismatch_is_object_lookup_before_state(rows):
+    _pub, book, _ = rows
+    other = Publisher.objects.create(name="other")
+
+    def build(sfx):
+        parent = ViewSet(model=Publisher, name="leafparent" + sfx)
+        register(ListView, parent)
+        child = ViewSet(
+            model=Book, name="leafchild" + sfx, parent=ParentViewSet(name=parent.name, attribute="publisher")
+        )
+        register(
+            DetailViewPermissionRequired,
+            child,
+            get=explode,
+            get_queryset=lambda self: Book.objects.all(),
+            cv_action_enabled=classmethod(explode),
+        )
+        return (parent, child), [parent, child]
+
+    with isolated_routes(build) as (parent, child):
+        result = trace_access(
+            _url(child, "tested", **{parent.name + "_pk": other.pk, "pk": book.pk}),
+            _user("leaf mismatch", superuser=True),
+        )
+        assert result.outcome == "not_found"
+        assert result.steps[result.decided_by - 1].kind == "object_lookup"
+        assert any(s.kind == "ancestor_gate" and s.result == "passed" for s in result.steps)
+        assert all(s.result == "not_reached" for s in result.steps if s.kind == "action_state")

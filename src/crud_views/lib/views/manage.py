@@ -10,6 +10,7 @@ from django.utils.functional import SimpleLazyObject
 from django.utils.translation import gettext as _
 from django.views import generic
 
+from crud_views.lib.access_trace import get_recorder
 from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.check import (
     CheckUnknownAttributes,
@@ -57,14 +58,55 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         """Diagnostics require an active developer in every enabled mode."""
         from django.conf import settings as django_settings
 
+        recorder = get_recorder()
+        if recorder is not None:
+            owner = object()  # One invocation, even when class and actor repeat.
+            facts = {
+                "viewset": getattr(cls.cv_viewset, "name", None),
+                "group": crud_views_settings.manage_group,
+                "provider": "none",
+                "source": "ManageView._cv_manage_allowed",
+                "message": _("Manage mode: %(mode)s; DEBUG: %(debug)s")
+                % {"mode": crud_views_settings.manage_views_enabled, "debug": django_settings.DEBUG},
+            }
         if not user.is_authenticated or not user.is_active:
+            if recorder is not None:
+                recorder.record(
+                    owner,
+                    "manage_gate",
+                    **facts,
+                    result="denied",
+                    how="anonymous" if not user.is_authenticated else "inactive",
+                )
             return False
         mode = crud_views_settings.manage_views_enabled
         if mode == "no" or (mode == "debug_only" and not django_settings.DEBUG):
+            if recorder is not None:
+                recorder.record(owner, "manage_gate", **facts, result="denied", how="disabled")
             return False
         # Validate reached nested auth reads before the membership query, including action projection.
-        _check_nested_auth(cls, actor=user, model=cls.cv_viewset.model)
-        return user.groups.filter(name=crud_views_settings.manage_group).exists()
+        try:
+            _check_nested_auth(cls, actor=user, model=cls.cv_viewset.model)
+            allowed = user.groups.filter(name=crud_views_settings.manage_group).exists()
+        except Exception as exc:
+            if recorder is not None:
+                recorder.record(
+                    owner,
+                    "manage_gate",
+                    **facts,
+                    result="error",
+                    exception={"class": type(exc).__name__, "message": str(exc)},
+                )
+            raise
+        if recorder is not None:
+            recorder.record(
+                owner,
+                "manage_gate",
+                **facts,
+                result="passed" if allowed else "denied",
+                how="group_member" if allowed else "not_member",
+            )
+        return allowed
 
     def _cv_ancestor_actor_response(self, *, protected: bool):
         """Reject anonymous/inactive actors before lookup, including all-none ancestry."""

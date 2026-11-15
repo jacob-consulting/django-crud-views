@@ -70,7 +70,8 @@ def test_core_trace_contract(allowed, monkeypatch):
             assert kinds == ["route", "own_permission", "object_lookup", "action_state"]
             assert data["steps"][2]["object"] == {"model": "app.publisher", "pk": str(obj.pk)}
         else:
-            assert kinds == ["route", "own_permission"]
+            assert kinds == ["route", "own_permission", "action_state"]
+            assert data["steps"][-1]["result"] == "not_reached"
             assert data["decided_by"] == own["n"]
         assert all(
             set(step)

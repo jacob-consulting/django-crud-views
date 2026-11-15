@@ -16,7 +16,83 @@ from django.utils.translation import gettext as _
 from django.views.generic.list import MultipleObjectMixin
 
 from .access_trace import AccessRecorder, AccessTrace, get_recorder, recording
-from .view.base import CrudView
+from .view.base import CrudView, CrudViewPermissionRequiredMixin
+
+
+def _plan_gates(view):
+    """Declaration-only projection. Unavailable metadata never decides dispatch."""
+    from .ancestors import _effective_provider, _requirement_source, _selected_gates, _validate_ancestor_structure
+
+    plan = []
+    vs = view.cv_viewset
+    try:
+        if vs.parent is not None:
+            chain = _validate_ancestor_structure(vs)
+            source, pair = _requirement_source(type(view))
+            selected = _selected_gates(vs, chain)
+            for index in reversed(range(len(chain))):
+                if index not in selected:
+                    continue
+                edge, ancestor = chain[index]
+                pk = view.kwargs.get(edge.get_pk_name())
+                plan.append(
+                    dict(
+                        kind="ancestor_gate",
+                        viewset=ancestor.name,
+                        object={"model": ancestor.model._meta.label_lower, "pk": str(pk) if pk is not None else None},
+                        key=getattr(pair, selected[index]),
+                        source=source,
+                        provider=_effective_provider(ancestor),
+                        permission=None,
+                    )
+                )
+    except Exception as exc:
+        plan.append(
+            dict(
+                kind="validation",
+                viewset=vs.name,
+                result="unavailable",
+                exception={"class": type(exc).__name__, "message": str(exc)},
+            )
+        )
+    try:
+        requirement = view.cv_get_requirement()
+        kind = requirement["kind"]
+        if kind != "none":
+            plan.append(
+                dict(
+                    kind={"permission": "own_permission", "group": "manage_gate"}.get(kind, "custom_gate"),
+                    viewset=vs.name,
+                    key=requirement["value"] if kind == "permission" else None,
+                    group=requirement["value"] if kind == "group" else None,
+                    permission=None,
+                    source=f"{type(view).__module__}.{type(view).__qualname__}.cv_get_requirement",
+                )
+            )
+        if isinstance(view, CrudViewPermissionRequiredMixin):
+            plan.append(
+                dict(kind="action_state", viewset=vs.name, source="CrudViewPermissionRequiredMixin.has_permission")
+            )
+    except Exception as exc:
+        plan.append(
+            dict(
+                kind="own_permission",
+                viewset=vs.name,
+                result="unavailable",
+                exception={"class": type(exc).__name__, "message": str(exc)},
+            )
+        )
+    return plan
+
+
+def _merge_plan(recorder, plan):
+    """Append unvisited requirements after observations; never manufacture a decision."""
+    for row in plan:
+        if row.get("result") == "unavailable":
+            continue
+        matches = [step for step in recorder.steps if step.kind == row["kind"] and step.viewset == row["viewset"]]
+        if not matches:
+            recorder.record(recorder, **row, result="not_reached")
 
 
 class _MemorySession(SessionBase):
@@ -140,8 +216,11 @@ def _run_trace(path, user):
                     request = _TraceRequest(trace.path, actor)
                     request.resolver_match = match
                     view.setup(request, *match.args, **match.kwargs)
+                    trace.plan = _plan_gates(view)
                     response = view.dispatch(request, *match.args, **match.kwargs)
-                    if response.status_code == 403:
+                    if any(response is captured for captured in recorder._login_responses.values()):
+                        trace.outcome = "login_redirect"
+                    elif response.status_code == 403:
                         trace.outcome = "denied"
                     elif response.status_code == 404:
                         trace.outcome = "not_found"
@@ -168,6 +247,7 @@ def _run_trace(path, user):
                     exception={"class": type(exc).__name__, "message": str(exc)},
                 )
         finally:
+            _merge_plan(recorder, trace.plan)
             trace.steps = list(recorder.steps)
             terminal = [step for step in trace.steps if step.result in {"denied", "not_found", "error"}]
             trace.decided_by = terminal[-1].n if terminal else None

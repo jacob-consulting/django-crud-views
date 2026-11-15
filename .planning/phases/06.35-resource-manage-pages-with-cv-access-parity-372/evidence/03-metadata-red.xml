@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.496" timestamp="2026-11-15T18:23:16.703932+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_resource_manage_metadata" name="test_resource_manage_metadata[omitted-False]" time="0.327"><failure message="AssertionError: Resource metadata must include app_label separately from URL configuration&#10;assert 'app_label' in {'name': {'key': 'name', 'value': &quot;'metadataac927cbe'&quot;, 'source': 'set', 'is_default': False}, 'prefix': {'key': 'pref...ta', 'is_default': True}, 'pk_name': {'key': 'pk_name', 'value': &quot;'pk'&quot;, 'source': 'default', 'is_default': True}, ...}">client = &lt;django.test.client.Client object at 0x71743fd6c8f0&gt;
+django_user_model = &lt;class 'django.contrib.auth.models.User'&gt;, overrides = False
+mapping = 'omitted'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("overrides", [False, True])
+    @pytest.mark.parametrize("mapping", ["omitted", None, "empty", "mapped"])
+    def test_resource_manage_metadata(client, django_user_model, overrides, mapping):
+        declared = {} if mapping == "omitted" else {
+            "resource_permissions": {"view": "app.view_author"} if mapping == "mapped" else {} if mapping == "empty" else None
+        }
+        if overrides:
+            declared.update(verbose_name="", verbose_name_plural="custom items", ordering="", pk="[0-9]+", pk_name="route_id",
+                            context_actions_inline=False)
+    
+        def build(sfx):
+            vs = ViewSet(model=MetadataItem, name="metadata" + sfx, app="url_namespace", **declared)
+            return vs, [vs]
+    
+        with isolated_routes(build) as vs:
+            # App namespaces are deliberately different from the Resource's session-data namespace.
+            client.force_login(make_developer(django_user_model, "metadata developer"))
+            response = client.get(f"/{vs.prefix}/manage/")
+            assert response.status_code == 200
+            facts = {row["key"]: row for row in response.context["manage_facts"]}
+            assert facts["app"]["value"] == "'url_namespace'"
+            assert facts["app"]["source"] == "set"
+            for key, value in {"app_label": "storage_metadata", "pk_field": "storage_key", "pk_type": "[a-z]+"}.items():
+&gt;               assert key in facts, f"Resource metadata must include {key} separately from URL configuration"
+E               AssertionError: Resource metadata must include app_label separately from URL configuration
+E               assert 'app_label' in {'name': {'key': 'name', 'value': "'metadataac927cbe'", 'source': 'set', 'is_default': False}, 'prefix': {'key': 'pref...ta', 'is_default': True}, 'pk_name': {'key': 'pk_name', 'value': "'pk'", 'source': 'default', 'is_default': True}, ...}
+
+tests/test1/test_resource_manage_metadata.py:62: AssertionError</failure></testcase></testsuite></testsuites>

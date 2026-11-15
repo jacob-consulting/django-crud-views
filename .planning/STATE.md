@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.35"
 current_phase_name: "Resource manage pages with cv_access parity (#372)"
-current_plan: Not started
+current_plan: "02"
 status: executing
-stopped_at: "Phase 06.35 plan convergence complete (3/6 cycles); next: $gsd-execute-phase 06.35"
-last_updated: "2026-11-15T17:28:05.887Z"
+stopped_at: "Completed 06.35-01-PLAN.md; ready for plans 02 and 03"
+last_updated: "2026-11-15T18:12:00Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 06.35 converged after 3 review cycles; 7 plans, 14 tasks, 5 waves; no unresolved HIGH/actionable findings or revision conflicts; implementation not started
+last_activity_desc: Phase 06.35 plan 01 complete; C02 172 passed; 18 bounded H01 failures assigned to plans 03, 05 and 06; 6 plans remain
 state_head: 58c1e4d3503bb70745360abea9f4efa90703c843
 progress:
   total_phases: 42
   completed_phases: 27
   total_plans: 232
-  completed_plans: 225
+  completed_plans: 226
 milestone_name: milestone
 ---
 
@@ -31,13 +31,21 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 
 ## Current Position
 
-Phase: 06.35 (Resource manage pages with cv_access parity (#372)) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.35 (Resource manage pages with cv_access parity (#372)) — IN PROGRESS
+Current Plan: 02
 Total Plans in Phase: 7
-Status: Ready to execute
-Last activity: 2026-11-15 — Phase 06.35 converged after 3 review cycles; 7 plans, 14 tasks, 5 waves; no unresolved HIGH/actionable findings or revision conflicts; implementation not started
+Status: Executing (1/7 plans complete)
+Last activity: 2026-11-15 — Plan 01 committed; shared Resource manage registration/admission complete; C02 172 passed, H01 18 expected failures / 205 passed
 
 Next: $gsd-execute-phase 06.35
+
+### Phase 06.35 plan 01 completion — 2026-11-15
+
+- Automatic Resource manage registration reuses the existing ManageView without controller changes. Resource identity and badge render without either Resource loader; a separate granted actor proves mapped-permission display.
+- Existing ManageView always hides denied actions under both general action policies. Core/Guardian query baselines remain 9/21 SQL statements with exact table-count checks.
+- C01: 3 passed; C02: 172 passed with four workers. H01 deliberately remains failing: 18 expected failures, 205 passed. Routes belong to 03-01/C05, inventory/docs to 05-02/C10, and missing Resource/resource translations to 06-01/C11. Exact nodes and assertions are in 06.35-01-SUMMARY.md and evidence/01-h01.txt. No full-suite or phase completion claimed.
+- Duration: approximately 6 minutes; 2 tasks; 7 production/test files. Task commits: 4d1d07f5, 5bbc0244, 4a4b25b5. Summary: 5e952537. Requirements are approved prose, not formal requirement IDs.
+- Existing state.json and unrelated working-tree edits preserved; STATE.md updated directly by orchestrator instruction.
 
 ### Phase 06.34 UAT completion — 2026-11-15
 
@@ -1717,6 +1725,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T17:28:00.782Z
-Stopped at: Phase 06.35 plan convergence complete (3/6 cycles); next: $gsd-execute-phase 06.35
-Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-REVIEWS.md
+Last session: 2026-11-15T18:12:00Z
+Stopped at: Completed 06.35-01-PLAN.md; ready for plans 02 and 03
+Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-02-PLAN.md

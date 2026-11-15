@@ -162,6 +162,7 @@ def test_real_actor_selection_and_full_url(command, actor_kind, settings):
 @pytest.mark.django_db
 def test_route_configuration_error_is_a_trace(command, monkeypatch):
     from django.core.exceptions import ImproperlyConfigured
+
     from crud_views.lib import access_trace_runner
 
     def broken_resolver(path):
@@ -169,7 +170,7 @@ def test_route_configuration_error_is_a_trace(command, monkeypatch):
 
     monkeypatch.setattr(access_trace_runner, "resolve", broken_resolver)
     monkeypatch.setattr(command.Command, "check", explode)
-    code, stdout, stderr = invoke("/broken/", "--anonymous", "--as-json", skip_checks=False)
+    code, stdout, stderr = invoke("/broken/", "--anonymous", "--as-json")
     assert code == 2
     data = json.loads(stdout)
     assert data["outcome"] == "error"

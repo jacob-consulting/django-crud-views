@@ -685,10 +685,25 @@ Manage-group membership is independent of ordinary model and object permissions.
 Read endpoint and additionally passes normal ancestor authorization: membership does not bypass the ancestors,
 and an ancestor grant does not bypass the manage mode, active-account requirement or group membership.
 
-The actor row describes the signed-in account. To inspect Alice's results, temporarily add Alice
-to the manage group, sign in as Alice, inspect, then remove the membership. Alice can open diagnostics during
-that interval; the developer account does not impersonate her. Configuration tables remain configuration, rather
-than proof of a particular user's access.
+The actor row defaults to the signed-in account. To inspect Alice's results, use [cv_access](manage.md#cv_access)
+or enable the default-off [Access check](manage.md#access-check) card. A successful this-ViewSet selection replaces
+only that actor row, retaining strict helper counts; the endpoint being traced may separately accept global
+fallback and show more objects. Signing in as Alice with temporary manage-group membership remains a fallback
+for project request context. Selecting Alice in the card never impersonates her.
+
+### Interpreting access traces
+
+An admitted Guardian list reports **sees n of m objects**, including zero; actor, ancestor and state failures can
+still deny admission. Nested Guardian creates report parent-only authorization and parent state, with no own
+child add permission. Inactive actors are denied by protected Guardian gates; plain unprotected views can behave
+differently. See [diagnostic limits](manage.md#diagnostic-limits) before interpreting allowed as submit authority.
+
+The [list count boundary](manage.md#list-count-boundary) is before context-time parent scoping: the total is the
+pre-Guardian queryset and visible is the final returned queryset. An override omitting the parent filter can
+report more rows than the page renders. Default ViewSet querysets already scope to their parent. Separately,
+the later nested-list database configuration check is not evaluated because the page is not built; count changes
+do not repair or execute that check. Project overrides have only [custom method boundaries](manage.md#custom-method-boundaries)
+observed; the reported callable is not proof of an inner denial source.
 
 Stock cards consume `manage_permissions`, `manage_views`, `manage_guardian` and the shared prepared context.
 Legacy getter overrides affect only the legacy keys. The unchanged

@@ -319,3 +319,43 @@ can therefore yield more traced rows than the page renders. Default ViewSet quer
 For example, an unscoped four-row queryset may report **sees 3 of 4 objects** while context parent scoping leaves
 two rendered rows. Counts describe this boundary, not the rendered page. Resource lists report only their row count
 (`visible`, with `total=null`), because no Guardian filter comparison exists.
+
+### Diagnostic limits
+
+Tracing calls real authorization gates with a synthetic GET and a stub handler. It does not render the page,
+submit a form or execute an action. Ordered ancestor failures stop deeper lookups; a missing deeper object is
+not probed after an earlier denial. Protected core/Guardian gates enforce their own active-user rules; a plain
+unprotected view can admit an inactive user. Guardian list admission still includes actor, ancestor and state
+checks: an admitted list can be allowed with zero visible objects. A nested Guardian create checks its parents
+and parent action state, without inventing a child-object or child-model add permission.
+
+The trace always rolls back its **default-database transaction**, using a savepoint inside an existing transaction.
+It leaves no saved session and no delivered messages. This is not a cross-database or external-service sandbox:
+project gates/loaders may read external services, write another database or cause external effects. Process state,
+including process-wide caches populated during a trace, is not rolled back. Review project hooks before treating
+the tool as free of external side effects.
+
+The synthetic origin is `http://localhost`, with an empty query, no submitted body and no caller-supplied headers
+or project middleware context. Full-URL input does not recreate its host or original request. Host-, header-,
+query-, body- or method-dependent project rules may therefore differ. Custom methods are opaque at the
+[observed boundary](#custom-method-boundaries); arbitrary returned responses (including an early 200 or an
+unrecognized redirect) yield `error` with `UnsupportedTraceResponse`, not a fabricated allowed/login result.
+POST-only and action endpoints use an authorization-only GET-stub adaptation: their real POST handler and
+method-sensitive behavior are not evaluated, and this is not a claim that a real GET would avoid 405.
+
+Steps with `result=not_evaluated` identify applicable handler-phase checks:
+
+- The selected **workflow transition** permission is checked on submit.
+- The **nested-list** database configuration check happens when the page is built.
+- The **delete-preview** configuration/database check happens when the page is built.
+- Database configuration for nested **form/action/workflow writes** is checked on submit.
+
+These limits are distinct from [pre-context list counts](#list-count-boundary); changing a count does not execute
+the later database check. Allowed means **may open the page**, not permission to perform every submit operation.
+Real Resource `cv_get_item()` / `cv_get_items()` loaders run under the fresh traced user, including external reads,
+missing-item and action-state behavior; Resource lists report row counts. No Resource manage page is created.
+
+When installed, Django's `LoginRequiredMiddleware` or its subclass runs its real `process_view()` with the
+resolved view. The rest of the middleware chain does not run: **other middleware and URL decorators are not traced**.
+The result exposes identity-only model/PK values with no object title or rendered content, but an exception class
+and message is deliberately included. Project exception messages may contain sensitive data; no traceback is emitted.

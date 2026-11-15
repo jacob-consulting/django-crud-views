@@ -174,3 +174,47 @@ def test_documented_counts_are_before_context_parent_scoping(client, monkeypatch
         "Default ViewSet querysets",
     ):
         assert phrase in text
+
+
+def test_operational_boundaries_and_reference_links():
+    limits = " ".join(section("Diagnostic limits").split())
+    for boundary in (
+        "default-database transaction",
+        "savepoint",
+        "no saved session",
+        "no delivered messages",
+        "cross-database",
+        "external services",
+        "process-wide caches",
+        "http://localhost",
+        "empty query",
+        "headers",
+        "body",
+        "LoginRequiredMiddleware",
+        "process_view()",
+        "other middleware and URL decorators are not traced",
+        "UnsupportedTraceResponse",
+        "POST-only",
+        "workflow transition",
+        "nested-list",
+        "delete-preview",
+        "form/action/workflow writes",
+        "exception class and message",
+        "no object title",
+    ):
+        assert boundary in limits
+    for name in ("guardian", "nested", "resources"):
+        doc = reference(name)
+        links = re.findall(r"\]\(manage.md#([\w-]+)\)", doc)
+        assert "cv_access" in links and "diagnostic-limits" in links
+        targets = {h.lower().replace(" ", "-") for h in re.findall(r"^#{2,3} ([\w -]+)$", reference(), re.M)}
+        assert set(links) <= targets
+        if name != "resources":
+            assert "custom-method-boundaries" in links and "list-count-boundary" in links
+            text = " ".join(doc.split())
+            assert "omitting the parent filter" in text
+            assert "context-time parent scoping" in text
+            assert "nested-list database" in text
+    release = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased", 1)[1].split("\n## ", 1)[0]
+    added = release.split("### Added", 1)[1].split("\n### ", 1)[0]
+    assert "cv_access" in added and "CRUD_VIEWS_MANAGE_ACCESS_TRACE" in added

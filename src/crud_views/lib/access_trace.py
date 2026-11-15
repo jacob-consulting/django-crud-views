@@ -62,13 +62,18 @@ class AccessRecorder:
         self._owners = {}
         self._seen = []
         self._filters = {}
+        self._login_responses = {}
 
     def record(self, owner, kind, **facts):
         """Record scalar facts once per owner and identical report, never cache a gate."""
-        self._owners[id(owner)] = owner
         viewset = getattr(owner, "cv_viewset", None)
         if viewset is not None:
             facts.setdefault("viewset", viewset.name)
+        if isinstance(owner, type):
+            # A class is not a request identity. Each classmethod report belongs
+            # to a distinct invocation, even for the same class and actor.
+            owner = object()
+        self._owners[id(owner)] = owner
         step = AccessStep(n=0, kind=kind, **facts)
         projection = asdict(step)
         identity = (id(owner), projection)
@@ -84,10 +89,17 @@ class AccessRecorder:
         self._owners[id(owner)] = owner
         self._filters[id(owner)] = (before, after)
 
+    def capture_login_response(self, owner, response):
+        """Remember the actual response, without copying or classifying its URL."""
+        self._owners[id(owner)] = owner
+        self._login_responses[id(owner)] = response
+
     def clear(self):
         self._owners.clear()
         self._seen.clear()
         self._filters.clear()
+        self._login_responses.clear()
+        self.steps.clear()
 
 
 _recorder = ContextVar("crud_views_access_recorder", default=None)

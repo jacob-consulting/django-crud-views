@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.35"
 current_phase_name: "Resource manage pages with cv_access parity (#372)"
-current_plan: "04"
+current_plan: "05"
 status: executing
-stopped_at: "Completed 06.35-03-PLAN.md; ready for plan 04"
-last_updated: "2026-11-15T18:29:00Z"
+stopped_at: "Completed 06.35-04-PLAN.md; ready for plans 05/06"
+last_updated: "2026-11-15T18:40:00Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 06.35 plan 03 complete; C05 52 passed and C06 196 passed; H01 facts closed; theme/docs and locale handoffs remain with plans 05/06; 4 plans remain
-state_head: 89b22400
+last_activity_desc: Phase 06.35 plan 04 complete; C07 65 passed and C08 377 passed; complete Resource UI/CLI parity proven; theme/docs and locale handoffs remain with plans 05/06; 3 plans remain
+state_head: 6f886ea7
 progress:
   total_phases: 42
   completed_phases: 27
   total_plans: 232
-  completed_plans: 228
+  completed_plans: 229
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.35 (Resource manage pages with cv_access parity (#372)) — IN PROGRESS
-Current Plan: 04
+Current Plan: 05
 Total Plans in Phase: 7
-Status: Executing (3/7 plans complete)
-Last activity: 2026-11-15 — Plan 03 committed; Resource metadata/hierarchy and matrix presentation proven; C05 52 passed, C06 196 passed
+Status: Executing (4/7 plans complete)
+Last activity: 2026-11-15 — Plan 04 committed; Resource form/actor and complete UI/CLI parity proven; C07 65 passed, C08 377 passed
 
 Next: $gsd-execute-phase 06.35
+
+### Phase 06.35 plan 04 completion — 2026-11-15
+
+- 207 Resource integration cases prove default-off/idle boundaries, username-first and PK selection, complete host/session preservation, every executable ViewSet row and path form, standalone/core/Guardian ancestry, and English/German JSON/text/HTML parity.
+- Stock manage developer/ancestor gates, disabled/debug-only modes, safe error/actor rendering, contributed paths, explicit reads and local database rollback preserve existing contracts. No production changes, new output messages or dependency installations were needed.
+- C07: 65 passed (4.02s); C08: 377 passed (19.73s), four workers. Scoped Ruff/format/whitespace pass. Existing H01 theme/docs/locale handoffs remain assigned to plans 05/06; plan 07 owns release acceptance.
+- Duration: approximately 10 minutes; 2 tasks; task commits 2e5f6ccd and 58f5fed9; summary 6f886ea7. Three plans remain; no phase completion claimed. Unrelated state.json edits preserved.
 
 ### Phase 06.35 plan 03 completion — 2026-11-15
 
@@ -1739,6 +1746,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T18:29:00Z
-Stopped at: Completed 06.35-03-PLAN.md; ready for plan 04
-Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-04-PLAN.md
+Last session: 2026-11-15T18:40:00Z
+Stopped at: Completed 06.35-04-PLAN.md; ready for plans 05/06
+Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-05-PLAN.md

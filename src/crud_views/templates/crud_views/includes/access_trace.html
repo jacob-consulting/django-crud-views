@@ -1,0 +1,33 @@
+{% load i18n crud_views %}
+{% if step %}
+    <strong>{{ step.kind }}</strong>
+    {% if step.viewset %}{% translate "ViewSet:" %} {{ step.viewset }}{% endif %}
+    {% if step.object %}{% translate "Object:" %} {{ step.object.model }} {{ step.object.pk }}{% endif %}
+    {% if step.key %}{% translate "Key:" %} {{ step.key }}{% endif %}
+    {% if step.permission %}{% translate "Permission:" %} {{ step.permission }}{% endif %}
+    {% if step.group %}{% translate "Group:" %} {{ step.group }}{% endif %}
+    {% if step.provider %}{% translate "Provider:" %} {{ step.provider }}{% endif %}
+    {% if step.source %}{% translate "Source:" %} <code>{{ step.source }}</code>{% endif %}
+    {% if step.how %}{% translate "How:" %} {{ step.how }}{% endif %}
+    {% if step.result %}<span data-cv-trace-result="{{ step.result }}">{{ step.result }}</span>{% endif %}
+    {% if step.message %}<p>{{ step.message }}</p>{% endif %}
+    {% if step.exception %}<p>{{ step.exception.class }}: {{ step.exception.message }}</p>{% endif %}
+    {% if step.counts %}<p>{% if step.counts.total != None %}{% blocktranslate with visible=step.counts.visible total=step.counts.total %}sees {{ visible }} of {{ total }} objects{% endblocktranslate %}{% else %}{% blocktranslate count count=step.counts.visible %}{{ count }} row{% plural %}{{ count }} rows{% endblocktranslate %}{% endif %}</p>{% endif %}
+{% else %}
+<div data-cv-access-trace>
+    <dl>
+        <dt>{% translate "Path" %}</dt><dd><code>{{ trace.path }}</code></dd>
+        <dt>{% translate "Route" %}</dt><dd>{{ trace.route|default_if_none:"—" }}</dd>
+        <dt>{% translate "View" %}</dt><dd><code>{{ trace.view|default_if_none:"—" }}</code></dd>
+        <dt>{% translate "User" %}</dt><dd>{{ trace.user.username }} ({% translate "pk" %} {{ trace.user.pk }}, {% if trace.user.active %}{% translate "active" %}{% else %}{% translate "inactive" %}{% endif %})</dd>
+    </dl>
+    <h3 class="h6">{% translate "Plan" %}</h3>
+    <ul>{% for entry in trace.plan %}<li>{% include "crud_views/includes/access_trace.html" with step=entry only %}</li>{% empty %}<li>{% translate "No planned gates." %}</li>{% endfor %}</ul>
+    <h3 class="h6">{% translate "Steps" %}</h3>
+    <ol>{% for entry in trace.steps %}<li value="{{ entry.n }}">{% include "crud_views/includes/access_trace.html" with step=entry only %}</li>{% endfor %}</ol>
+    <p><strong>{% translate "Outcome:" %}</strong> <span data-cv-trace-result="{{ trace.outcome }}">{{ trace.outcome }}</span>{% if trace.decided_by %} — {% blocktranslate with number=trace.decided_by %}decided at step {{ number }}{% endblocktranslate %}{% endif %}</p>
+    {% if trace.outcome == 'allowed' %}<p>{% translate "This user may open the page; handler-phase checks are not evaluated." %}</p>{% endif %}
+    <h3 class="h6">{% translate "Limitations" %}</h3>
+    <ul>{% for limit in trace.untraced %}<li>{{ limit }}</li>{% endfor %}</ul>
+</div>
+{% endif %}

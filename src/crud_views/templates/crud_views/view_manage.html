@@ -90,6 +90,27 @@
     </section>
     {% endblock permission_holders %}
 
+    {% block manage_access_trace %}
+    {% if manage_access_trace %}
+    <section class="card mb-3" id="cv-manage-access-trace">
+        <div class="card-header"><h2 class="h6 mb-0">{% translate "Access check" %}</h2></div>
+        <div class="card-body">
+            <form method="get">
+                <fieldset>
+                    <legend class="h6">{% translate "Any URL" %}</legend>
+                    <input type="hidden" name="cv_access_mode" value="path">
+                    <div class="mb-2"><label for="cv-access-path-user" class="form-label">{% translate "Username or primary key" %}</label><input class="form-control" id="cv-access-path-user" name="cv_access_user" value="{{ manage_access_trace.user_input }}" required></div>
+                    <div class="mb-2"><label for="cv-access-path" class="form-label">{% translate "Path" %}</label><input class="form-control" id="cv-access-path" name="cv_access_path" value="{{ manage_access_trace.path_input }}" required></div>
+                    <button type="submit" class="{% cv_button_class 'form' 'submit' %}">{% translate "Check" %}</button>
+                </fieldset>
+            </form>
+            {% if manage_access_trace.error %}<p role="alert">{{ manage_access_trace.error }}</p>{% endif %}
+            {% if manage_access_trace.trace %}{% include "crud_views/includes/access_trace.html" with trace=manage_access_trace.trace only %}{% endif %}
+        </div>
+    </section>
+    {% endif %}
+    {% endblock manage_access_trace %}
+
     {% block manage_views %}
     <section class="card mb-3" id="cv-manage-views">
     <div class="card-header d-flex justify-content-between align-items-center">

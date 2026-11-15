@@ -10,7 +10,7 @@ from django.utils.functional import SimpleLazyObject
 from django.utils.translation import gettext as _
 from django.views import generic
 
-from crud_views.lib.access_trace import get_recorder
+from crud_views.lib.access_trace import get_recorder, resolve_trace_user, trace_access
 from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.check import (
     CheckUnknownAttributes,
@@ -736,6 +736,67 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         messages += collect_viewset_icon_checks([viewset])
         return {"count": len(checks), "messages": self._manage_check_messages(messages)}
 
+    def get_manage_access_trace(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None):
+        """Prepare scalar diagnostics from explicit inputs; never change the hosting actor."""
+        data = {
+            "mode": mode,
+            "user_input": user.get_username(),
+            "pk_input": object_pk or "",
+            "path_input": path or "",
+            "error": None,
+            "actor": {
+                "pk": str(user.pk),
+                "username": str(user.get_username()),
+                "active": bool(user.is_active),
+                "anonymous": bool(user.is_anonymous),
+            },
+            "rows": [],
+            "trace": None,
+        }
+        if mode == "path":
+            data["trace"] = trace_access(path, user).to_dict()
+        return data
+
+    def _manage_access_query(self):
+        """Read GET only after the opt-in switch and the normal hosting dispatch gates."""
+        if not crud_views_settings.manage_access_trace:
+            return None
+        query = self.request.GET
+        data = {
+            "mode": query.get("cv_access_mode", ""),
+            "user_input": query.get("cv_access_user", ""),
+            "pk_input": query.get("cv_access_pk", ""),
+            "path_input": query.get("cv_access_path", ""),
+            "error": None,
+            "actor": None,
+            "rows": [],
+            "trace": None,
+        }
+        if "cv_access_mode" not in query:
+            return data
+        if data["mode"] not in {"path", "viewset"}:
+            data["error"] = _("Choose this ViewSet or any URL.")
+        elif not data["user_input"]:
+            data["error"] = _("Enter a username or primary key.")
+        elif data["mode"] == "path" and not data["path_input"].strip():
+            data["error"] = _("Enter a path to check.")
+        if data["error"]:
+            return data
+        actor = resolve_trace_user(data["user_input"])
+        if actor is None:
+            data["error"] = _("Unknown user: %(user)s") % {"user": data["user_input"]}
+            return data
+        result = self.get_manage_access_trace(
+            self.cv_viewset,
+            actor,
+            mode=data["mode"],
+            object_pk=data["pk_input"],
+            path=data["path_input"],
+            route_kwargs=self.kwargs,
+        )
+        result["user_input"] = data["user_input"]
+        return result
+
     def get_context_data(self, **kwargs):
         # nested: the permission rows and holder diagnostics read auth records, which must be on default (06.18)
         _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
@@ -759,6 +820,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "manage_ancestor_policy": self.get_manage_ancestor_policy(self.cv_viewset, self.request.user),
                 "manage_presentation": self.get_manage_presentation(self.cv_viewset, self.request.user),
                 "manage_docs_base_url": self.manage_docs_base_url,
+                "manage_access_trace": self._manage_access_query(),
             }
         )
         return context

@@ -14,9 +14,84 @@ from django.utils.translation.template import templatize
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES = {
-    "crud_views": ["lib/views/manage.py", "templates/crud_views/view_manage.html"],
+    "crud_views": [
+        "lib/views/manage.py",
+        "lib/access_trace.py",
+        "lib/access_trace_runner.py",
+        "management/commands/cv_access.py",
+        "templates/crud_views/view_manage.html",
+        "templates/crud_views/includes/access_trace.html",
+    ],
     "crud_views_guardian": ["lib/views.py", "templates/crud_views/view_guardian_manage.html"],
 }
+
+
+@pytest.mark.parametrize(
+    "name,args,expected",
+    [
+        ("gettext", "'one'", ("one", "", None)),
+        ("gettext_lazy", "'one'", ("one", "", None)),
+        ("gettext_noop", "'one'", ("one", "", None)),
+        ("ngettext", "'one', 'many', count", ("one", "many", None)),
+        ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+        ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+        ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+        ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+    ],
+)
+@pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+    imports, call = {
+        "bare": (f"from django.utils.translation import {name}", name),
+        "alias": (f"from django.utils.translation import {name} as _", "_"),
+        "module": ("import django.utils.translation as tr", f"tr.{name}"),
+        "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+        "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+    }[style]
+    assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+
+
+def extract_fixture(tmp_path, monkeypatch, source, suffix="py"):
+    import sys
+
+    path = tmp_path / "src" / "example"
+    path.mkdir(parents=True)
+    (path / f"fixture.{suffix}").write_text(source)
+    monkeypatch.setattr(sys.modules[__name__], "ROOT", tmp_path)
+    monkeypatch.setitem(SOURCES, "example", [f"fixture.{suffix}"])
+    return messages("example")
+
+
+def test_extraction_ignores_non_django_calls(tmp_path, monkeypatch):
+    source = "from elsewhere import gettext as _\nimport elsewhere as tr\n_('foreign')\ntr.npgettext('c', 'a', 'b', n)"
+    assert extract_fixture(tmp_path, monkeypatch, source) == []
+
+
+@pytest.mark.parametrize("call", ["_(message)", "_(f'hello {name}')", "pgettext(context, 'one')", "ngettext('one', plural, n)", "_('hello %s')"])
+def test_extraction_rejects_dynamic_or_unnamed_messages(tmp_path, monkeypatch, call):
+    source = "from django.utils.translation import gettext as _, pgettext, ngettext\n" + call
+    with pytest.raises(ValueError):
+        extract_fixture(tmp_path, monkeypatch, source)
+
+
+def test_extraction_escaped_literals(tmp_path, monkeypatch):
+    source = r'''from django.utils.translation import gettext as _
+_("quoted \"word\"\nnext" " line")
+'''
+    assert extract_fixture(tmp_path, monkeypatch, source) == [('quoted "word"\nnext line', "", None)]
+
+
+def test_extraction_multiline_template_context_plural(tmp_path, monkeypatch):
+    source = '''{% load i18n %}{% translate "Open" context "verb" %}
+{% blocktranslate trimmed count count=items|length context "rows" %}
+    {{ count }} row
+{% plural %}
+    {{ count }} rows
+{% endblocktranslate %}'''
+    assert extract_fixture(tmp_path, monkeypatch, source, "html") == [
+        ("%(count)s row", "%(count)s rows", "rows"), ("Open", "", "verb")
+    ]
 
 
 def messages(package):

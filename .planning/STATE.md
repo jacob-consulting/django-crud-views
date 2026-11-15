@@ -1,25 +1,25 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.36"
+current_phase_name: ViewSet configuration CLI and versioned JSON contract
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.35 complete, ready to plan Phase 7
-last_updated: "2026-11-15T20:20:58.750Z"
+stopped_at: Phase 06.36 context gathered
+last_updated: "2026-11-15T21:54:13.157Z"
 last_activity: 2026-11-15
 last_activity_desc: "Phase 06.35 shipped as PR #376"
-state_head: af2946cdcebbd61fccfef8a55e89a4d56544e4ea
+state_head: 1cebea0f70d05b7bc3b162abaad5b0dee485eacd
 progress:
-  total_phases: 42
+  total_phases: 43
   completed_phases: 41
   total_plans: 232
   completed_plans: 232
-  percent: 98
+  percent: 95
 milestone_name: milestone
 ---
 
-Total Phases: 42
+Total Phases: 43
 
 # Project State
 
@@ -28,17 +28,17 @@ Total Phases: 42
 See: .planning/PROJECT.md (updated 2026-11-15)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.36 — ViewSet configuration CLI and versioned JSON contract (#371)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.36 — ViewSet configuration CLI and versioned JSON contract (#371)
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
 Last activity: 2026-11-15 — Phase 06.35 shipped as PR #376
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.36
 
 ### Phase 06.35 completion — 2026-11-15
 
@@ -1767,6 +1767,7 @@ None yet.
 - Phase 06.33 inserted after Phase 06.32: Structured manage page (#366); approved D-01–D-30 handover, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.34 inserted after Phase 06.33: Access trace: cv_access command and manage page form (#370); approved design D-01–D-23 (URGENT)
 - Phase 06.35 inserted after Phase 06.34: Approved issue #372; corrected from initial 06.25.2 at maintainer request; D-01–D-07 context captured
+- Phase 06.36 inserted after Phase 06.35: ViewSet configuration CLI and versioned JSON contract (#371); approved D-01–D-09, A-01–A-04 and acceptance items 1–10; builds on completed #372 before Phase 7 (URGENT)
 
 ## Deferred Items
 
@@ -1776,6 +1777,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T20:21:44Z
-Stopped at: Phase 06.35 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-15T21:54:07.798Z
+Stopped at: Phase 06.36 context gathered
+Resume file: .planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/06.36-CONTEXT.md

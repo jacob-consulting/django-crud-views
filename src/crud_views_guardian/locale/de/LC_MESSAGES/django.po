@@ -17,6 +17,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: lib/mixins.py
+#, python-format
+msgid "anonymous policy: %(behavior)s"
+msgstr "Regel für anonyme Benutzer: %(behavior)s"
+
+#: lib/mixins.py
+msgid "inactive actor"
+msgstr "inaktiver Benutzer"
+
+#: lib/mixins.py lib/ancestors.py
+#, python-format
+msgid "model fallback enabled: %(enabled)s"
+msgstr "Rückgriff auf Modellberechtigungen aktiviert: %(enabled)s"
+
+#: lib/mixins.py
+#, python-format
+msgid "queryset filter; model fallback enabled: %(enabled)s"
+msgstr "Queryset-Filter; Rückgriff auf Modellberechtigungen aktiviert: %(enabled)s"
+
 #: lib/views.py
 msgid "default"
 msgstr "Standard"

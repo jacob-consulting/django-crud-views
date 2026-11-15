@@ -5,27 +5,27 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.33 complete, ready to plan Phase 7
-last_updated: "2026-11-14T22:15:01.948Z"
-last_activity: 2026-11-14
-last_activity_desc: "Phase 06.33 shipped as PR #373"
-state_head: 614bed44008eb052c91b7945fc27ec819c8fda43
+stopped_at: Phase 06.34 complete, ready to plan Phase 7
+last_updated: "2026-11-15T11:35:40.853Z"
+last_activity: 2026-11-15
+last_activity_desc: "Phase 06.34 shipped as PR #374"
+state_head: 7c52bf683bead2089844368d1728a732938ca590
 progress:
-  total_phases: 40
+  total_phases: 41
   completed_phases: 27
-  total_plans: 215
-  completed_plans: 215
-  percent: 68
+  total_plans: 225
+  completed_plans: 225
+  percent: 66
 milestone_name: milestone
 ---
 
-Total Phases: 40
+Total Phases: 41
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-14)
+See: .planning/PROJECT.md (updated 2026-11-15)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -36,9 +36,75 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-14 -- Phase 06.33 shipped as PR #373
+Last activity: 2026-11-15 -- Phase 06.34 shipped as PR #374
 
-Next: $gsd-ship 06.33; Phase 7 is ready for planning.
+Next: $gsd-discuss-phase 7
+
+### Phase 06.34 UAT completion — 2026-11-15
+
+- Maintainer visual review passed; UAT 1/1, canonical verification passed, no completion blockers. All 10 plans complete. Seven unavailable runtime combinations remain unverified.
+
+### Phase 06.34 final verification — 2026-11-15
+
+- Canonical verification.status is human_needed with current fingerprint:36/36 merged must-haves,25artifacts,23links verified;92fresh independent checks pass. One consolidated human visual test saved in06.34-UAT.md. Phase not marked complete.
+- Final corrected-source release: full normal/on each14712passes+1existing CSP skip with exit0; supported4.2 1063passes+13existing feature skips;6.0 1076passes.63browser cases,804input source hashes and15command receipts independently verified. Additional regressions457JS,2integration,370examples pass.
+- Nyquist24/24tasks31/31clauses complete; security20/20threats closed; deep review clean with all4findings retained as fixed in disposition ledger; UI24/24all6warnings resolved. Seven unavailable runtime pairs remain unverified.
+- Audit fixes address malformed URLs, Guardian translations, custom-hook descriptor neutrality, once-only URI decoding, typed-username PK fallback and UI clarity/error association. No authorization policy change or dependencies installed.
+- Original dirty state.json and unrelated .gitkeep files preserved. No push, merge, publication or visual approval claimed. Next:$gsd-verify-work06.34.
+
+### Phase 06.34 plan 10 execution — 2026-11-15
+
+- Browser/release acceptance committed through66df22b1: 63 browser cases with source/asset/capture/cleanup checks. Full normal and recorder suites each14631 passes+1 existing CSP skip, captured exit0, unchanged source.
+- Cached Django4.2 822 passes+13 existing API skips;6.0 835 passes. Database fixture ordering resolved without changing production or existing assertions. Seven non3.12 runtime combinations and human visual UAT remain unverified.
+- All10/10 plans executed; phase remains pending review/verification. Original state.json and unrelated files preserved; no push/publication.
+
+### Phase 06.34 plan 09 execution — 2026-11-15
+
+- 100 German messages with matching compiled catalog, complete extraction and real-output coverage committed through2dc6e3da. Focused134 and enabled integration754 pass; Ruff/format/whitespace pass.
+- 9/10 plans complete; browser, full normal/recorded suite and release acceptance next. Known database fixture ordering remains an honest open check; original unrelated dirt preserved.
+
+### Phase 06.34 plan 08 execution — 2026-11-15
+
+- Operational docs, exact scalar schema/public inventories and diagnostic limitations committed through f9625007. 856 enabled tests, strict docs,17 anchors,121/139/19 inventories and Ruff/format pass.
+- 8/10 plans complete. German catalogs next; browser/full release gate remains10. No shared state.json or unrelated dirt changes.
+
+### Phase 06.34 plan 07 execution — 2026-11-15
+
+- Default-off Access check card, independent selected actor, complete route inventory, escaping/accessibility and ten registry keys committed through 9bfe7898. 754 enabled integration tests pass in36.42s; Ruff/format/whitespace pass.
+- Malformed URL form feedback fixed with RED/GREEN evidence. 7/10 plans complete; inventories/docs08, translations09 and browser/full acceptance10 remain. Original unrelated changes preserved.
+
+### Phase 06.34 plan 06 execution — 2026-11-15
+
+- cv_access command text/JSON, actor resolution, exit codes and terminal colors committed through 991372df. 54 command tests and605 recorder-enabled integration tests pass; Ruff/format/whitespace pass. Real pipes and PTYs covered.
+- 6/10 plans complete. Default-off manage card next; full-suite database ordering issue remains plan10 acceptance. Original unrelated changes preserved.
+
+### Phase 06.34 plan 05 execution — 2026-11-15
+
+- Fidelity grid and recorder CI committed through 073bcc81. Grid63, CI wiring24, enabled integration538 pass. Cached supported seams: Django5.2/6.0 each133; Django4.2 120 plus13 existing middleware-availability skips.
+- 5/10 plans complete. Full-suite acceptance and known database metadata ordering remain plan10 gates. CLI next; original local changes preserved.
+
+### Phase 06.34 plan 04 execution — 2026-11-15
+
+- Response provenance, custom boundaries, installed login middleware and method/handler limitations committed through ba5388ce. Final enabled trace451, separate routing346 and transactions49 pass; Ruff/format/whitespace pass.
+- Mixed-suite database metadata ordering failures reproduced using only unchanged tests and documented in deferred-items.md; full-suite acceptance remains outstanding. Owned rollback-fixture alias cleanup and inherited-login deciding-event bugs fixed with RED/GREEN evidence.
+- 4/10 plans complete; fidelity grid/CI next. Original local state.json and unrelated files preserved.
+
+### Phase 06.34 plan 03 execution — 2026-11-15
+
+- Guardian grants, lazy filtering, actor admission and parent-only create observations committed through 6a8520d1. 569 recorder-enabled integration tests and 432 routing/content-type tests pass; scoped Ruff/format/whitespace pass.
+- Narrow recorder tolerance preserves existing errors for unnamed ViewSet test doubles. 3/10 plans complete; full response provenance and safety are next. Original local changes preserved.
+
+### Phase 06.34 plan 02 execution — 2026-11-15
+
+- Ancestor, Resource and manage observations plus planned/reached requirement projection committed through 9f2c9e2a. The empty-plan follow-up from plan 01 is closed.
+- Final recorder-enabled integration: 277 passed in 15.73s on cached Django 5.2. Ruff/format/whitespace pass. Unreached local identity regression fixed with RED/GREEN evidence.
+- 2/10 plans complete; Guardian reporting is next. Original state.json and unrelated dirt remain preserved.
+
+### Phase 06.34 plan 01 execution — 2026-11-15
+
+- Core scalar trace, rollback runner, optional recorder and external recorder fixture committed; 124 enabled integration tests pass on cached Django 5.2, plus focused normal/recorded checks and Ruff.
+- Two RED/GREEN task pairs and summary/evidence committed through ddc18fcf. Plan 02 owns planned ancestor projection; plan 04 owns full response provenance. Full suite remains plan 10.
+- Sequential execution selected by GSD fork-base divergence. Original state.json and unrelated .gitkeep changes preserved. No installs, pushes or publication. 1/10 plans complete.
 
 ### Phase 06.33 completion — 2026-11-14
 
@@ -1042,7 +1108,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 204
+- Total plans completed: 216
 
 - Total plans completed: 186
 - Average duration: -
@@ -1088,6 +1154,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.29 | 2 | - | - |
 | 06.30 | 15 | - | - |
 | 06.33 | 10 | - | - |
+| 06.34 | 12 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1640,6 +1707,7 @@ None yet.
 - Phase 06.31 inserted after Phase 06.30: Issue #361: developer-only manage diagnostics and explicit group setup; carry approved D-01–D-07 from the issue handover. Complete before Phase 7. (URGENT)
 - Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
 - Phase 06.33 inserted after Phase 06.32: Structured manage page (#366); approved D-01–D-30 handover, before Phase 7 theme-surface freeze (URGENT)
+- Phase 06.34 inserted after Phase 06.33: Access trace: cv_access command and manage page form (#370); approved design D-01–D-23 (URGENT)
 
 ## Deferred Items
 
@@ -1649,6 +1717,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-14T22:12:46.723278+00:00
-Stopped at: Phase 06.33 complete, ready to plan Phase 7
+Last session: 2026-11-15
+Stopped at: Phase 06.34 complete, ready to plan Phase 7
 Resume file: None

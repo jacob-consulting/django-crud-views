@@ -872,11 +872,11 @@ msgstr "Modell-Meta"
 
 #: lib/views/manage.py
 msgid ""
-"model: model-level permission · objects: object grants; your row includes "
+"model: model-level permission · objects: object grants; the access row includes "
 "effective permissions and reachable objects"
 msgstr ""
-"Modell: Berechtigung auf Modellebene · Objekte: Objektberechtigungen; Ihre "
-"Zeile enthält wirksame Berechtigungen und erreichbare Objekte"
+"Modell: Berechtigung auf Modellebene · Objekte: Objektberechtigungen; die "
+"Zugriffszeile enthält wirksame Berechtigungen und erreichbare Objekte"
 
 #: lib/views/manage.py
 msgid "none"
@@ -948,3 +948,508 @@ msgid "✓ no issues · %(count)s system check for this ViewSet"
 msgid_plural "✓ no issues · %(count)s system checks for this ViewSet"
 msgstr[0] "✓ keine Probleme · %(count)s Systemprüfung für dieses ViewSet"
 msgstr[1] "✓ keine Probleme · %(count)s Systemprüfungen für dieses ViewSet"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "%(class)s: %(message)s"
+msgstr "%(class)s: %(message)s"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "%(count)s row"
+msgid_plural "%(count)s rows"
+msgstr[0] "%(count)s Zeile"
+msgstr[1] "%(count)s Zeilen"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "%(label)s: %(value)s"
+msgstr "%(label)s: %(value)s"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "%(number)s. %(result)s — %(facts)s"
+msgstr "%(number)s. %(result)s — %(facts)s"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "%(outcome)s at step %(number)s."
+msgstr "%(outcome)s bei Schritt %(number)s."
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "%(username)s (pk %(pk)s, %(state)s)"
+msgstr "%(username)s (pk %(pk)s, %(state)s)"
+
+#: templates/crud_views/view_manage.html
+msgid "Access check"
+msgstr "Zugriffsprüfung"
+
+#, python-format
+msgid "Access for: %(username)s (checked below)"
+msgstr "Zugriff für: %(username)s (unten geprüft)"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Action state"
+msgstr "Aktionszustand"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Actor admission"
+msgstr "Benutzerzulassung"
+
+#: lib/access_trace_runner.py management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Allowed"
+msgstr "Erlaubt"
+
+#: lib/access_trace_runner.py
+msgid ""
+"Allowed means this user may open the page; handler-phase checks are not "
+"evaluated."
+msgstr ""
+"Erlaubt bedeutet, dass dieser Benutzer die Seite öffnen darf; Prüfungen im "
+"Handler werden nicht ausgewertet."
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Ancestor gate"
+msgstr "Übergeordnete Zugriffsprüfung"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Ancestor lookup"
+msgstr "Suche im übergeordneten ViewSet"
+
+#: management/commands/cv_access.py
+msgid "Anonymous user"
+msgstr "Anonymer Benutzer"
+
+#: templates/crud_views/view_manage.html
+msgid "Any URL"
+msgstr "Beliebige URL"
+
+msgid ""
+"Authorization uses a synthetic GET stub; the POST handler and method-"
+"sensitive behavior are not evaluated."
+msgstr ""
+"Die Autorisierung verwendet einen synthetischen GET-Stub; der POST-Handler "
+"und methodenabhängiges Verhalten werden nicht ausgewertet."
+
+#: lib/views/manage.py templates/crud_views/view_manage.html
+msgid "Check"
+msgstr "Prüfen"
+
+#, python-format
+msgid "Checking access for: %(username)s"
+msgstr "Zugriffsprüfung für: %(username)s"
+
+#: lib/views/manage.py
+msgid "Choose this ViewSet or any URL."
+msgstr "Wählen Sie dieses ViewSet oder eine beliebige URL."
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Custom gate"
+msgstr "Benutzerdefinierte Zugriffsprüfung"
+
+#: lib/access_trace_runner.py
+msgid "Delete-preview configuration is checked when the page is built."
+msgstr ""
+"Die Konfiguration der Löschvorschau wird beim Aufbau der Seite geprüft."
+
+#: lib/access_trace_runner.py management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Denied"
+msgstr "Verweigert"
+
+#: lib/access_trace_runner.py
+msgid "Django's inherited access handler returned a login response."
+msgstr ""
+"Djangos geerbter Zugriffshandler hat eine Anmeldeantwort zurückgegeben."
+
+#: templates/crud_views/view_manage.html
+msgid "Documentation: Access check"
+msgstr "Dokumentation: Zugriffsprüfung"
+
+#: lib/views/manage.py
+msgid "Enter a path to check."
+msgstr "Geben Sie einen zu prüfenden Pfad ein."
+
+#: lib/views/manage.py
+msgid "Enter a username or primary key."
+msgstr "Geben Sie einen Benutzernamen oder Primärschlüssel ein."
+
+#: lib/views/manage.py
+msgid "Enter a valid path or URL."
+msgstr "Geben Sie einen gültigen Pfad oder eine gültige URL ein."
+
+#: templates/crud_views/view_manage.html
+#: templates/crud_views/includes/access_trace.html
+msgid "Group:"
+msgstr "Gruppe:"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "How"
+msgstr "Zugriffsgrund"
+
+#: templates/crud_views/includes/access_trace.html
+msgid "How:"
+msgstr "Zugriffsgrund:"
+
+#: templates/crud_views/includes/access_trace.html
+msgid "Key:"
+msgstr "Schlüssel:"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Limitation"
+msgstr "Einschränkung"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Limitations"
+msgstr "Einschränkungen"
+
+#: management/commands/cv_access.py
+msgid "Limitations:"
+msgstr "Einschränkungen:"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "List filter"
+msgstr "Listenfilter"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Login middleware"
+msgstr "Anmelde-Middleware"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Login redirect"
+msgstr "Weiterleitung zur Anmeldung"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Manage gate"
+msgstr "Verwaltungszugriffsprüfung"
+
+#: lib/views/manage.py
+#, python-format
+msgid "Manage mode: %(mode)s; DEBUG: %(debug)s"
+msgstr "Verwaltungsmodus: %(mode)s; DEBUG: %(debug)s"
+
+#: lib/access_trace_runner.py
+msgid "Nested-list database configuration is checked when the page is built."
+msgstr ""
+"Die Datenbankkonfiguration verschachtelter Listen wird beim Aufbau der Seite"
+" geprüft."
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "No planned gates."
+msgstr "Keine geplanten Zugriffsprüfungen."
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "No such CRUD view route: %(path)s"
+msgstr "Keine solche CRUD-View-Route: %(path)s"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "No such route"
+msgstr "Keine solche Route"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Not evaluated"
+msgstr "Nicht ausgewertet"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Not found"
+msgstr "Nicht gefunden"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Not reached"
+msgstr "Nicht erreicht"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Object grant"
+msgstr "Objektberechtigung"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Object lookup"
+msgstr "Objektsuche"
+
+#: templates/crud_views/view_manage.html
+msgid "Object pk (optional)"
+msgstr "Objekt-Primärschlüssel (optional)"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Object:"
+msgstr "Objekt:"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "Object: %(model)s %(pk)s"
+msgstr "Objekt: %(model)s %(pk)s"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Outcome:"
+msgstr "Ergebnis:"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "Outcome: %(outcome)s."
+msgstr "Ergebnis: %(outcome)s."
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Own permission"
+msgstr "Eigene Berechtigung"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Passed"
+msgstr "Bestanden"
+
+#: management/commands/cv_access.py templates/crud_views/view_manage.html
+#: templates/crud_views/includes/access_trace.html
+msgid "Path"
+msgstr "Pfad"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "Path: %(path)s"
+msgstr "Pfad: %(path)s"
+
+#: templates/crud_views/view_manage.html
+#: templates/crud_views/includes/access_trace.html
+msgid "Permission:"
+msgstr "Berechtigung:"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Plan"
+msgstr "Plan"
+
+#: management/commands/cv_access.py
+msgid "Plan:"
+msgstr "Plan:"
+
+#: management/commands/cv_access.py
+msgid "Print one versioned JSON trace document."
+msgstr "Ein versioniertes JSON-Dokument der Zugriffsprüfung ausgeben."
+
+#: management/commands/cv_access.py
+msgid "Project path or full URL (only its path is used)."
+msgstr "Projektpfad oder vollständige URL (nur deren Pfad wird verwendet)."
+
+#: management/commands/cv_access.py templates/crud_views/view_manage.html
+#: templates/crud_views/includes/access_trace.html
+msgid "Provider"
+msgstr "Provider"
+
+#: templates/crud_views/includes/access_trace.html
+msgid "Provider:"
+msgstr "Provider:"
+
+#: lib/views/manage.py management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Route"
+msgstr "Route"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "Route: %(route)s"
+msgstr "Route: %(route)s"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Skipped"
+msgstr "Übersprungen"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Source"
+msgstr "Quelle"
+
+#: templates/crud_views/includes/access_trace.html
+msgid "Source:"
+msgstr "Quelle:"
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Steps"
+msgstr "Schritte"
+
+#: management/commands/cv_access.py
+msgid "Steps:"
+msgstr "Schritte:"
+
+#: management/commands/cv_access.py
+msgid "Supply either a user or --anonymous, but not both."
+msgstr ""
+"Geben Sie entweder einen Benutzer oder --anonymous an, aber nicht beides."
+
+#: templates/crud_views/view_manage.html
+msgid "This ViewSet"
+msgstr "Dieses ViewSet"
+
+#: lib/access_trace_runner.py
+msgid ""
+"This observed method boundary refused access; the inner denying "
+"implementation is unknown."
+msgstr ""
+"An dieser beobachteten Methodengrenze wurde der Zugriff verweigert; die "
+"intern verweigernde Implementierung ist unbekannt."
+
+#: management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "This user may open the page; handler-phase checks are not evaluated."
+msgstr ""
+"Dieser Benutzer darf die Seite öffnen; Prüfungen im Handler werden nicht "
+"ausgewertet."
+
+#: management/commands/cv_access.py
+msgid "Trace the anonymous user instead of a named user."
+msgstr ""
+"Den Zugriff des anonymen Benutzers statt eines benannten Benutzers prüfen."
+
+#: management/commands/cv_access.py
+msgid ""
+"Trace whether a user may open a project URL, without running its view "
+"handler."
+msgstr ""
+"Prüfen, ob ein Benutzer eine Projekt-URL öffnen darf, ohne deren View-"
+"Handler auszuführen."
+
+#: lib/access_trace_runner.py management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Unavailable"
+msgstr "Nicht verfügbar"
+
+#: lib/views/manage.py management/commands/cv_access.py
+#, python-format
+msgid "Unknown user: %(user)s"
+msgstr "Unbekannter Benutzer: %(user)s"
+
+#: lib/access_trace_runner.py
+#, python-format
+msgid ""
+"Unsupported trace response (status %(status)s): no successful stub or "
+"recognized terminal response."
+msgstr ""
+"Nicht unterstützte Antwort der Zugriffsprüfung (Status %(status)s): kein "
+"erfolgreicher Stub und keine erkannte abschließende Antwort."
+
+#: lib/access_trace_runner.py management/commands/cv_access.py
+#: templates/crud_views/view_manage.html
+#: templates/crud_views/includes/access_trace.html
+msgid "User"
+msgstr "Benutzer"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "User: %(user)s"
+msgstr "Benutzer: %(user)s"
+
+#: management/commands/cv_access.py templates/crud_views/view_manage.html
+msgid "Username or primary key"
+msgstr "Benutzername oder Primärschlüssel"
+
+#: management/commands/cv_access.py
+msgid "Username or primary key; username matches take precedence."
+msgstr ""
+"Benutzername oder Primärschlüssel; Übereinstimmungen mit Benutzernamen haben"
+" Vorrang."
+
+#: lib/access_trace_runner.py management/commands/cv_access.py
+#: templates/crud_views/includes/access_trace.html
+msgid "Validation"
+msgstr "Validierung"
+
+#: lib/views/manage.py lib/access_trace_runner.py
+#: management/commands/cv_access.py templates/crud_views/view_manage.html
+#: templates/crud_views/includes/access_trace.html
+msgid "View"
+msgstr "View"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "View: %(view)s"
+msgstr "View: %(view)s"
+
+#: templates/crud_views/includes/access_trace.html
+msgid "ViewSet:"
+msgstr "ViewSet:"
+
+#: lib/access_trace_runner.py
+msgid ""
+"Workflow transition permissions are checked on submit and are not evaluated."
+msgstr ""
+"Berechtigungen für Workflow-Übergänge werden beim Absenden geprüft und hier "
+"nicht ausgewertet."
+
+#: lib/access_trace_runner.py
+msgid ""
+"Write database configuration is checked on submit and is not evaluated."
+msgstr ""
+"Die Datenbankkonfiguration für Schreibzugriffe wird beim Absenden geprüft "
+"und hier nicht ausgewertet."
+
+#: lib/views/manage.py lib/access_trace_runner.py
+#: management/commands/cv_access.py templates/crud_views/view_manage.html
+#: templates/crud_views/includes/access_trace.html
+msgid "active"
+msgstr "aktiv"
+
+#, python-format
+msgid "decided at step %(number)s"
+msgstr "entschieden bei Schritt %(number)s"
+
+#: lib/views/manage.py management/commands/cv_access.py
+#: templates/crud_views/view_manage.html
+#: templates/crud_views/includes/access_trace.html
+msgid "inactive"
+msgstr "inaktiv"
+
+#: lib/views/manage.py
+msgid "needs an object pk"
+msgstr "benötigt einen Objekt-Primärschlüssel"
+
+#: lib/access_trace_runner.py
+msgid "other middleware and URL decorators are not traced"
+msgstr "Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt"
+
+#: lib/views/manage.py lib/access_trace.py lib/access_trace_runner.py
+#: management/commands/cv_access.py templates/crud_views/view_manage.html
+#: templates/crud_views/includes/access_trace.html
+msgid "pk"
+msgstr "pk"
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "sees %(visible)s of %(total)s objects"
+msgstr "sieht %(visible)s von %(total)s Objekten"
+
+#: lib/access_trace_runner.py
+msgid ""
+"the synthetic request uses http://localhost; host-dependent project rules "
+"are not reproduced"
+msgstr ""
+"Die synthetische Anfrage verwendet http://localhost; hostabhängige "
+"Projektregeln werden nicht nachgebildet"
+
+#: lib/views/manage.py
+msgid "use the path field"
+msgstr "verwenden Sie das Pfadfeld"

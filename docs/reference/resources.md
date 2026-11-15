@@ -494,6 +494,14 @@ with warnings.catch_warnings():
 
 ## Limitations
 
+[cv_access](manage.md#cv_access) and the opt-in [Access check](manage.md#access-check) can trace Resource URLs
+without registering a Resource manage page. Real `cv_get_item()` and `cv_get_items()` loaders execute with the
+fresh traced user on the synthetic request, after applicable ancestor checks. Missing items report not found;
+action state is observed, and lists report a row count (`total=null`), not Guardian's n/m comparison. No object
+title or content is recorded. Loading may read an external source, and project loader/gate side effects outside
+the default database are not rolled back. The real action/form handler never runs. Read the
+[diagnostic limits](manage.md#diagnostic-limits) for synthetic origin, empty query, middleware and rollback scope.
+
 | Limitation | Why | Escape hatch |
 |---|---|---|
 | No create/update views | writes ⇒ the data has a home ⇒ model it as a real (possibly unmanaged) model | `CustomFormNoObjectView` + a dev hook for odd one-off cases |

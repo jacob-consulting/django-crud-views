@@ -1,0 +1,1 @@
+{"python": "3.12.3", "django": "5.2.19", "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python", "modules": {"crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py", "crud_views_guardian": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py"}}

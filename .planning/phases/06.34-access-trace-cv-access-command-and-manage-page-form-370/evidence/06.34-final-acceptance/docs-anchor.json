@@ -1,0 +1,19 @@
+{
+  "name": "docs-anchor",
+  "command": ".venv/bin/python -c 'from pathlib import Path; p=Path(\"/tmp/cv-0634-final-docs/reference/manage/index.html\"); text=p.read_text(); assert text.count(\"id=\"+chr(34)+\"access-check\"+chr(34)) == 1; print(\"Rendered Access check documentation anchor exists exactly once:\",p)'",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411.json",
+  "source_sha256": "5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411",
+  "started": "2026-11-15T08:24:16.981932+00:00",
+  "log": "docs-anchor.log",
+  "status": "passed",
+  "pid": 3907028,
+  "finished": "2026-11-15T08:24:17.036501+00:00",
+  "duration_seconds": 0.055,
+  "exit_code": 0,
+  "summary": [
+    "Rendered Access check documentation anchor exists exactly once: /tmp/cv-0634-final-docs/reference/manage/index.html"
+  ],
+  "counts": {},
+  "source_unchanged": true
+}

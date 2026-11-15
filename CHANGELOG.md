@@ -628,6 +628,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Access traces** (#370): `cv_access` explains a user's CRUD URL authorization with ordered checks, versioned
+  JSON and explicit diagnostic limits. The shared core/Guardian Access check card is opt-in through
+  `CRUD_VIEWS_MANAGE_ACCESS_TRACE = True` (default `False`), with username/PK selection and per-ViewSet or path
+  queries. Hosting access rules remain unchanged; the trace rolls back the default database but cannot undo
+  external effects. See [usage and limitations](docs/reference/manage.md#cv_access).
+
 - **Queryset-driven conditional fields** ([#360](https://github.com/jacob-consulting/django-crud-views/issues/360)):
   opt-in `QuerysetConditions` maps native model-choice selections to declared categories on base forms and
   independent ordinary/compact inline rows. Strict offered/selected coverage, explicit no-fields categories and

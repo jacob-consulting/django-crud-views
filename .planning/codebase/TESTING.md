@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
-last_mapped_at: 2026-11-14
+last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_at: 2026-11-15
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-14
+**Analysis Date:** 2026-11-15
 
 ## Test Framework
 
@@ -143,6 +143,16 @@ Vitest loads the real asset into jsdom before cases (`tests/js/toggle.test.js`, 
 - Native checkbox tests must model browser submission: checked controls submit their value; unchecked controls are omitted. Verify both the rendered native checkbox and omitted-value persistence (`examples/bootstrap5/formsets/tests.py`, `tests/lib/helper/forms.py`).
 - Browser-runner failure tests should verify a failed report, nonzero exit, original error retention, and fixture process reaping even when browser close or server shutdown fails (`tests/browser/presentation-cleanup.test.cjs`).
 
+## Access Tracing and Recorder (Phase 06.34)
+
+- Keep access tracing tests organized by behavior: core/ancestor/Guardian/Resource gates (`tests/test1/test_access_trace*.py`), command protocol and exit codes (`tests/test1/test_access_trace_command.py`), manage-page form behavior (`tests/test1/test_manage_access_trace.py`), and recorder lifecycle/neutrality (`tests/test1/test_access_trace_recorder.py`).
+- The external recorder fixture in `tests/conftest.py` is autouse but inert unless `CV_ACCESS_RECORD_REQUESTS=1`; it imports `AccessRecorder` only inside the enabled branch, wraps the full test in `recording(recorder)`, and clears retained data during teardown. Tests should assert both disabled and enabled fixture states (`tests/test1/test_access_trace_recorder.py::test_external_fixture_matches_switch`).
+- Recorder tests explicitly cover nested and exceptional context restoration, independent copied thread contexts, event deduplication without losing changed terminal results, and no actor retention. Keep login response capture identity private and lazy; clearing must empty all retained maps (`tests/test1/test_access_trace_recorder.py`).
+- CI's full Python session runs the same installed package and complete `tests` tree first with recording off and coverage on, then with recording on and coverage disabled. Both runs use `-n auto`; don't narrow the recorder pass or alter coverage accounting (`noxfile.py`, `tests/test1/test_access_trace_ci.py`, `.github/workflows/tests.yml`). The origin probe rejects checkout imports for both runs.
+- `tests/test1/test_access_trace_ci.py` executes nox wiring with a recording fake session rather than launching nox or installing dependencies. Preserve assertions for interpreter/Django matrix, nox skip rules, forwarded arguments, explicit environment, exact full-suite arguments, and coverage XML accounting; its mutation cases demonstrate rejection of common wiring regressions.
+- Final Phase 06.34 automated acceptance recorded fresh complete Python 3.12 / Django 5.2 runs at **14,712 passed, 1 existing skip** with recording off and on, plus 1,063 passed on Django 4.2 and 1,076 passed on Django 6.0 focused expanded selections, each multicore. These are phase evidence, not checks run during this map refresh. Maintainer visual UAT passed for the current desktop/mobile, English/German core/Guardian captures; seven declared-compatible runtime pairs remain unverified (`.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-UAT.md`, `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-FINAL-ACCEPTANCE-SUMMARY.md`).
+- The phase's canonical browser gate is a 63-case real-browser matrix; its 11 evidence/cleanup tests separately check receipts and failure paths (`tests/browser/access-trace.cjs`, `tests/browser/access-trace.test.cjs`). Browser automation remains distinct from the separately recorded maintainer visual pass (`.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-UAT.md`).
+
 ---
 
 ## Registry and Rendering Contract Tests
@@ -222,6 +232,6 @@ PYTHONPATH="$PWD/src:$PWD" npm run test:integration
 
 **Checks run during this map refresh:** None. Test/configuration patterns above were inspected from source and phase records only.
 
-*Testing analysis: 2026-11-14*
+- Wheel-installed nox sessions exercise the complete behavior suite from the installed distribution; nox sets `PYTHONPATH` empty and verifies the import origin. Local cached acceptance may explicitly use checkout `PYTHONPATH`; browser acceptance separately fingerprints source identity (`noxfile.py`, `tests/test1/test_access_trace_ci.py`).
 
-- Wheel-installed nox sessions must exercise the same behavioral tests as editable checkouts; do not require package imports to live beneath `src/`. Browser acceptance separately checks source identity. The ship integration fixture explicitly tests manage denial without group membership, admission after enrollment and hard-off denial in the isolated downstream checkout.
+*Testing analysis: 2026-11-15*

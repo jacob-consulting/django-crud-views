@@ -1,0 +1,29 @@
+{
+  "name": "browser-contracts",
+  "command": "node --test tests/browser/access-trace.test.cjs tests/browser/manage-presentation.test.cjs",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+  "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+  "started": "2026-11-15T07:09:29.842516+00:00",
+  "log": "browser-contracts.log",
+  "finished": "2026-11-15T07:09:31.901939+00:00",
+  "duration_seconds": 2.059,
+  "exit_code": 0,
+  "status": "passed",
+  "summary": [
+    "\u2714 criterion measurements, assertions and exact cardinalities are mandatory (10.472103ms)",
+    "\u2714 startup timeout cleans only owned process/data and retains diagnostics (266.705881ms)",
+    "\u2714 missing executable and early startup failure are cleaned (109.187587ms)",
+    "\u2714 missing/mismatched cached bytes and undeclared remote URLs fail closed (4.152257ms)",
+    "\u2139 tests 11",
+    "\u2139 suites 0",
+    "\u2139 pass 11",
+    "\u2139 fail 0",
+    "\u2139 cancelled 0",
+    "\u2139 skipped 0",
+    "\u2139 todo 0",
+    "\u2139 duration_ms 2011.129804"
+  ],
+  "counts": {},
+  "source_unchanged": true
+}

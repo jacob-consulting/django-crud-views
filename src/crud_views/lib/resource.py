@@ -6,6 +6,8 @@ from django.db import DEFAULT_DB_ALIAS
 from django.http import Http404
 from pydantic import BaseModel
 
+from crud_views.lib.access_trace import _object_identity, get_recorder
+
 # NOTE: this module must not import anything from crud_views.lib.viewset,
 # including its "leaf" submodules — importing e.g. viewset.path_regs still
 # executes the viewset package __init__, which imports this module back
@@ -163,4 +165,19 @@ class ResourceViewMixin:
         pk_name = self.cv_viewset.pk_name
         pk = self.kwargs[pk_name]
         url_kwargs = {k: v for k, v in self.kwargs.items() if k != pk_name}
-        return self.model.cv_get_item(self.request, pk, **url_kwargs)
+        recorder = get_recorder()
+        try:
+            obj = self.model.cv_get_item(self.request, pk, **url_kwargs)
+        except Http404:
+            if recorder is not None:
+                recorder.record(self, "object_lookup", result="not_found", source="ResourceViewMixin.get_object")
+            raise
+        if recorder is not None:
+            recorder.record(
+                self,
+                "object_lookup",
+                object=_object_identity(obj),
+                result="passed",
+                source="ResourceViewMixin.get_object",
+            )
+        return obj

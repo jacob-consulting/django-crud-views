@@ -484,6 +484,17 @@ answers as before.
 
 ### Ancestor querysets and the resolved parent
 
+For a denial, start with [cv_access](manage.md#cv_access) or the opt-in [Access check](manage.md#access-check).
+The trace shows ordered ancestors and the first deciding failure; later gates remain not reached. It does not
+probe deeper objects after an outer denial or grant new authority to the viewer. Project overrides are opaque
+[custom method boundaries](manage.md#custom-method-boundaries), not proven inner culprits.
+
+Trace [list counts](manage.md#list-count-boundary) precede context-time parent scoping. An override omitting the parent filter
+can report more rows than the rendered parent-scoped list; default ViewSet querysets already include that filter.
+Separately, the nested-list database check happens during page construction and is not evaluated by a trace.
+These are different boundaries: count adjustment neither builds the page nor validates its database selection.
+See all [diagnostic limits](manage.md#diagnostic-limits), including delete preview, submit-time writes and middleware.
+
 Each ancestor is loaded with `ancestor_viewset.get_queryset(view)`, where `view` is the requested child view
 (its request, user and URL kwargs). Put visibility rules that every descendant must respect, such as soft
 deletion or tenant scope, into an override of the ancestor **ViewSet's** `get_queryset`. A row that override

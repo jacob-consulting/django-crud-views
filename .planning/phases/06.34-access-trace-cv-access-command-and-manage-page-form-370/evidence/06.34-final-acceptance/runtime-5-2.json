@@ -1,0 +1,19 @@
+{
+  "name": "runtime-5-2",
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -c 'import json,pathlib,platform,sys,django,crud_views,crud_views_guardian; root=pathlib.Path(\"src\").resolve(); modules={m.__name__:str(pathlib.Path(m.__file__).resolve()) for m in (crud_views,crud_views_guardian)}; assert all(pathlib.Path(p).is_relative_to(root) for p in modules.values()); print(json.dumps({\"python\":platform.python_version(),\"django\":django.get_version(),\"executable\":sys.executable,\"modules\":modules}))'",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411.json",
+  "source_sha256": "5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411",
+  "started": "2026-11-15T08:22:48.024926+00:00",
+  "log": "runtime-5-2.log",
+  "status": "passed",
+  "pid": 3905182,
+  "finished": "2026-11-15T08:22:48.076109+00:00",
+  "duration_seconds": 0.051,
+  "exit_code": 0,
+  "summary": [
+    "{\"python\": \"3.12.3\", \"django\": \"5.2.19\", \"executable\": \"/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python\", \"modules\": {\"crud_views\": \"/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py\", \"crud_views_guardian\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py\"}}"
+  ],
+  "counts": {},
+  "source_unchanged": true
+}

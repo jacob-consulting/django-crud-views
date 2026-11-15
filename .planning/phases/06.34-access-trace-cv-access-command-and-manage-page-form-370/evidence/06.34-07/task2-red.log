@@ -1,0 +1,43 @@
+bringing up nodes...
+bringing up nodes...
+
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__ test_both_forms_share_username_first_selection[cv_author-username-viewset] __
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+client = <django.test.client.Client object at 0x7ce4df4d1bb0>
+host = ViewSet(author), developer = <User: diagnostic developer>
+django_user_model = <class 'django.contrib.auth.models.User'>, enabled = None
+mode = 'viewset', selector = 'username'
+
+    @pytest.mark.parametrize("mode", ["path", "viewset"])
+    @pytest.mark.parametrize("selector", ["username", "pk", "collision", "unknown", "invalid_pk"])
+    def test_both_forms_share_username_first_selection(client, host, developer, django_user_model, enabled, mode, selector):
+        actor = django_user_model.objects.create_user(username="nonnumeric actor")
+        identifier = actor.username
+        if selector in {"pk", "collision"}:
+            identifier = str(actor.pk)
+        if selector == "collision":
+            actor = django_user_model.objects.create_user(username=identifier)
+        elif selector == "unknown":
+            identifier = "987654321"
+        elif selector == "invalid_pk":
+            identifier = "not-a-valid-pk"
+        response = submit(client, host, developer, cv_access_mode=mode, cv_access_user=identifier,
+                          cv_access_path="/author/manage/")
+        data = response.context["manage_access_trace"]
+        assert data["user_input"] == identifier
+        if selector in {"unknown", "invalid_pk"}:
+            assert data["error"] and data["actor"] is None and not data["rows"] and data["trace"] is None
+        else:
+            assert data["actor"]["pk"] == str(actor.pk) and not data["error"]
+            if mode == "viewset":
+>               assert response.context["manage_permissions"]["actor"]["id"] == actor.pk
+E               assert 1 == 2
+E                +  where 2 = <User: nonnumeric actor>.pk
+
+tests/test1/test_manage_access_trace.py:205: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_manage_access_trace.py::test_both_forms_share_username_first_selection[cv_author-username-viewset]
+1 failed in 1.46s

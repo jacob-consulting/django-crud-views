@@ -1,0 +1,26 @@
+{
+  "name": "browser-smoke",
+  "command": "PYTHONPATH=src:. node tests/browser/access-trace.cjs --python .nox/tests-3-12-django-6-0/bin/python --case smoke --output /tmp/cv-0634-final-smoke.json",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-32688fabb217e5d8d13ceebf44450c8ed273f1f1d2da5d6c5d937708bfdd231d.json",
+  "source_sha256": "32688fabb217e5d8d13ceebf44450c8ed273f1f1d2da5d6c5d937708bfdd231d",
+  "started": "2026-11-15T08:21:15.684516+00:00",
+  "log": "browser-smoke.log",
+  "status": "failed",
+  "pid": 3903667,
+  "finished": "2026-11-15T08:21:20.781018+00:00",
+  "duration_seconds": 5.096,
+  "exit_code": 1,
+  "summary": [
+    "failed: 0 cases; /tmp/cv-0634-final-smoke.json",
+    "AssertionError [ERR_ASSERTION]: collapsed error summary shows exception class",
+    "",
+    "false !== true",
+    "",
+    "    at check (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:141:71)",
+    "    at run (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:179:21)",
+    "    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:307:9)"
+  ],
+  "counts": {},
+  "source_unchanged": true
+}

@@ -3,7 +3,8 @@
 The manage page is a read-only developer view of permissions and configuration. It requires an active,
 authenticated member of `CRUD_VIEWS_MANAGE_GROUP`, including staff and superusers, and an enabled manage mode.
 Nested pages also enforce their ancestors before reading diagnostic auth/grant data. See
-[manage access and group setup](settings.md#manage-diagnostics). This page adds no settings or access exceptions.
+[manage access and group setup](settings.md#manage-diagnostics). The optional [Access check](#access-check)
+card adds diagnostics without changing those hosting-page access rules.
 
 Permissions and Views occupy the main column; supporting cards stack beneath them on narrow screens.
 Each card's **?** link opens its section here in a new tab. Links are keyboard focusable, have a descriptive
@@ -42,7 +43,8 @@ direct grants, not a claim that all holder accounts can currently log in.
 Strict means **no global model-permission fallback**, not “ignore superusers”: Guardian's active-superuser
 all-object shortcut remains. A strict object count can therefore cover every object for an active superuser.
 See [Guardian helper policy](guardian.md#guardianmanageview). This is not a per-view access result for an
-arbitrary object, and no another-user form, impersonation or access-trace command is provided.
+arbitrary object. Use [Access check](#access-check) or [cv_access](#cv_access) for a concrete URL's result.
+Neither changes the signed-in user or creates an impersonation session.
 
 ## Views
 
@@ -158,5 +160,214 @@ class ProjectManageView(ManageView):
 
 For Guardian, subclass `crud_views_guardian.lib.views.GuardianManageView` instead. Existing global
 `CRUD_VIEWS_MANAGE_VIEW_CLASS` / `CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS` configuration also applies.
-The one context value `manage_docs_base_url` supplies every card/section link. Preserve all 11 anchors above in
-your hosted page. See [the public template and builder inventory](theme.md#structured-manage-contracts).
+The one context value `manage_docs_base_url` supplies every card/section link. Preserve the eleven unconditional
+help anchors above in your hosted page, plus `access-check` when the opt-in card is enabled. See
+[the public template and builder inventory](theme.md#structured-manage-contracts).
+
+## Access check
+
+Set `CRUD_VIEWS_MANAGE_ACCESS_TRACE = True` to show the Access check card under Permissions. Its default is
+`False`: no card is rendered and all `cv_access_*` GET parameters are ignored. The command below is unaffected.
+When enabled, anyone admitted to the hosting manage page may trace any user and any project CRUD path,
+including paths whose ancestors the viewer cannot open. The hosting page still requires its normal developer
+group, mode and ancestor checks. Opting in deliberately discloses object existence and another user's access
+(for example, not found versus denied). Object identities contain only model and PK, not titles or content;
+exception class/message disclosure can still expose information supplied by project code.
+
+Both linkable GET forms use a typed **username or primary key**, with no user picker. A matching username wins
+over another user's matching PK in both forms. Unknown users produce feedback and no trace. Inactive users are
+accepted as inputs; the real gates decide their result. Only the CLI offers an anonymous selector.
+
+- **For this ViewSet:** enter a user and optionally an object PK. This replaces only the Permissions actor row
+  with **Access for: username (checked below)**, using the existing effective model permissions and strict Guardian
+  counts. The viewer/session and holder rows stay unchanged. Every registered view appears, including backend-only
+  and POST-only views, with an expandable trace. An object view without a PK says **needs an object pk**.
+  Extra URL arguments (such as child redirects or polymorphic create), or an invalid PK converter value, say
+  **use the path field**. Nested parent coordinates come from the hosting manage URL, never from form inputs.
+- **For any URL:** enter a user and project path, or a full URL whose path is used. This returns one full trace
+  without replacing the Permissions actor row. No request is sent to the supplied host.
+
+The form parameters are `cv_access_mode` (`viewset` or `path`), `cv_access_user`, `cv_access_pk` and
+`cv_access_path`. Empty, invalid and unknown-user submissions keep the viewer's matrix row. Native disclosures
+work without JavaScript. Both forms share the command's trace semantics below.
+Collapsed results show the recorded deciding requirement/reason or list counts; the full disclosure retains
+every scalar detail. The arbitrary-path result shows its outcome before route metadata. Server validation is
+associated with the submitted user/path field, and submitted values remain available for correction.
+
+## cv_access
+
+Trace authorization through real dispatch and a stub handler:
+
+```bash
+python manage.py cv_access /customer/5/order/12/update/ sam
+python manage.py cv_access /customer/5/order/12/update/ 42 --as-json --no-color
+python manage.py cv_access 'https://example.com/customer/5/order/12/update/?page=2#item' sam
+python manage.py cv_access /author/list/ --anonymous
+python manage.py cv_access /author/list/ sam --as-json | jq
+```
+
+Replace paths/users with your project's routes and accounts. Users are loaded fresh from the project's user
+model; username matches take precedence over primary keys, including numeric usernames. A username conversion
+failure still permits primary-key lookup. Unknown selectors produce normal command/form feedback. Supply a user
+or `--anonymous`, never both. Full URLs are reduced to their path: host, query and fragment do not affect tracing.
+The extracted URI path is decoded once, as for a Django request, including URLs returned by `reverse()`.
+Literal plus signs stay unchanged; encoded question marks, hashes and percent signs remain path content.
+Text output contains Path, Route, View and User headers, a declaration-only Plan, numbered Steps, Limitations
+and the outcome with its deciding step. An allowed trace ends with:
+
+```text
+This user may open the page; handler-phase checks are not evaluated.
+```
+
+Terminal output uses green for passed/allowed, red for denial, dim for skipped/not reached, and yellow for errors.
+JSON colors keys and result/outcome values. Ordinary pipes and `--no-color` are uncolored; `--force-color`
+explicitly enables ANSI colors even in a pipe, so do not force color when a JSON parser expects plain JSON.
+The command uses fixed colors once Django enables coloring, not the configurable `DJANGO_COLORS` role palette.
+
+### Outcomes and streams
+
+| Outcome code | Exit | Meaning |
+|---|---|---|
+| `allowed` | `0` | May open the page; handler-phase checks remain unevaluated. |
+| `denied` | `1` | An observed authorization refusal (403). |
+| `not_found` | `1` | A lookup/refusal raised or returned 404. |
+| `login_redirect` | `1` | A recognized actual login response, not an arbitrary redirect. |
+| `error` | `2` | Exception or unsupported response, with class/message evidence. |
+| `no_such_route` | `2` | Path does not resolve to a CrudView. |
+
+Traces go to stdout in both formats, including denied/not-found/error traces; the nonzero status does not add
+another error line. An unknown user or wrong invocation produces a diagnostic on stderr and no trace document
+(exit 2), even with `--as-json`. Text no-route output is the one-line stderr message
+`No such CRUD view route: /missing/`. JSON no-route output is a full stdout document, with empty stderr.
+For an unresolved `/missing/`, `python manage.py cv_access /missing/ --anonymous --as-json --no-color` emits:
+
+```json
+{
+  "path": "/missing/",
+  "route": null,
+  "view": null,
+  "user": {"pk": null, "username": null, "active": false, "anonymous": true},
+  "outcome": "no_such_route",
+  "decided_by": 1,
+  "plan": [],
+  "steps": [{"n": 1, "kind": "route", "viewset": null, "object": null, "key": null,
+    "permission": null, "group": null, "provider": null, "source": null, "result": "not_found",
+    "how": null, "message": null, "exception": null, "counts": null}],
+  "untraced": ["other middleware and URL decorators are not traced",
+    "the synthetic request uses http://localhost; host-dependent project rules are not reproduced"],
+  "version": 1
+}
+```
+
+### Version 1 document
+
+`crud_views.lib.access_trace.trace_access(path, user)` returns an `AccessTrace`; `to_dict()` projects only
+JSON-compatible scalar data. `user=None` selects anonymous. `resolve_trace_user(identifier)` uses the same
+username-first lookup and returns a fresh user or `None` when unknown. CLI/web resolve unknown inputs before
+tracing. Check `version` before consuming the result. Codes are stable English identifiers; messages are translated.
+
+| Field | Meaning |
+|---|---|
+| `version` | Integer `1`. |
+| `path` | Normalized project path. |
+| `route` | Resolved route name, or null. |
+| `view` | Dotted resolved view class, or null. |
+| `user` | Mapping with string/null `pk`, string/null `username`, boolean `active` and `anonymous`. |
+| `outcome` | One of the six outcome codes above. |
+| `decided_by` | One-based deciding step number, or null. |
+| `plan` | Ordered declaration-only requirement mappings; may contain unavailable metadata. |
+| `steps` | Ordered `AccessStep` mappings, including unreached and unevaluated steps. |
+| `untraced` | List of human-readable diagnostic limitations. |
+
+### Step fields
+
+All step fields are present, with null for inapplicable data. Plan rows use a subset of these descriptive fields
+without a step number; plans describe intended requirements, not evidence that a gate ran. Permission codenames
+may stay null for unreached requirements even when their keys/source are known.
+The stock Django permission hook reports the permission it already read from the library's cached property.
+Overridden `get_permission_required()` hooks or `permission_required` properties remain opaque: the trace
+records their gate result without evaluating another requirement source or calling the hook again.
+
+| Field | Meaning |
+|---|---|
+| `n` | One-based step number. |
+| `kind` | Observation kind from the vocabulary below. |
+| `viewset` | ViewSet name, or null. |
+| `object` | Identity mapping with `model` label and string/null `pk`, or null; no object title. |
+| `key` | Requirement, action or limitation key, or null. |
+| `permission` | Full permission codename, or null. |
+| `group` | Required group name, or null. |
+| `provider` | Owning permission provider, such as `model`, `guardian` or `none`, or null. |
+| `source` | Requirement declaration or observed callable provenance, or null. |
+| `result` | Step result code, or null. |
+| `how` | Observed branch explanation code, or null; not a second permission decision. |
+| `message` | Human-readable explanation, or null. |
+| `exception` | Mapping with `class` and `message`, or null; no traceback. |
+| `counts` | Mapping with integer `visible` and integer/null `total`, or null. |
+
+Kinds are `route`, `validation`, `actor_admission`, `ancestor_lookup`, `ancestor_gate`, `own_permission`,
+`object_lookup`, `object_grant`, `list_filter`, `action_state`, `manage_gate`, `custom_gate`, `login_middleware`
+and `limitation`. Step results include `passed`, `denied`, `not_found`, `login_redirect`, `error`, `skipped`,
+`not_reached`, `not_evaluated` and `unavailable` (planning metadata). Use codes for scripts and message text for
+people. Sources retain requirements such as `ancestor_policy.read` or configured action/global defaults.
+Observed `how` values include `anonymous`, `inactive`, `active`, `no_rule`, `disabled`, `group_member`,
+`not_member`, `observed_boundary`, and Guardian's `object grant`, `model fallback`, `active superuser`.
+The last three describe the real successful grant branch, including direct/group grants, not another permission probe.
+
+### Custom method boundaries
+
+A `custom_gate` source identifies the class/method of the actual observed bound callable, with
+`how=observed_boundary`. Its message says the inner denying implementation is unknown. Inner `super()` calls
+and multiple project overrides are opaque: the named class is not proof of the inner culprit. Even an inherited
+library method may be the observed boundary above an uninstrumented refusal. If an instrumented gate reports
+the deciding refusal, its evidence is retained instead. This diagnostic does not inspect arbitrary project code.
+
+### List count boundary
+
+Guardian's **sees n of m objects** reports pre-context counts: `total` is the actual pre-Guardian queryset,
+and `visible` is the final get_queryset return, including outer project filtering. These counts exclude later
+`_scope_child_queryset` parent scoping, pagination and rendering filters. A project override omitting the parent filter
+can therefore yield more traced rows than the page renders. Default ViewSet querysets already carry parent filtering.
+For example, an unscoped four-row queryset may report **sees 3 of 4 objects** while context parent scoping leaves
+two rendered rows. Counts describe this boundary, not the rendered page. Resource lists report only their row count
+(`visible`, with `total=null`), because no Guardian filter comparison exists.
+
+### Diagnostic limits
+
+Tracing calls real authorization gates with a synthetic GET and a stub handler. It does not render the page,
+submit a form or execute an action. Ordered ancestor failures stop deeper lookups; a missing deeper object is
+not probed after an earlier denial. Protected core/Guardian gates enforce their own active-user rules; a plain
+unprotected view can admit an inactive user. Guardian list admission still includes actor, ancestor and state
+checks: an admitted list can be allowed with zero visible objects. A nested Guardian create checks its parents
+and parent action state, without inventing a child-object or child-model add permission.
+
+The trace always rolls back its **default-database transaction**, using a savepoint inside an existing transaction.
+It leaves no saved session and no delivered messages. This is not a cross-database or external-service sandbox:
+project gates/loaders may read external services, write another database or cause external effects. Process state,
+including process-wide caches populated during a trace, is not rolled back. Review project hooks before treating
+the tool as free of external side effects.
+
+The synthetic origin is `http://localhost`, with an empty query, no submitted body and no caller-supplied headers
+or project middleware context. Full-URL input does not recreate its host or original request. Host-, header-,
+query-, body- or method-dependent project rules may therefore differ. Custom methods are opaque at the
+[observed boundary](#custom-method-boundaries); arbitrary returned responses (including an early 200 or an
+unrecognized redirect) yield `error` with `UnsupportedTraceResponse`, not a fabricated allowed/login result.
+POST-only and action endpoints use an authorization-only GET-stub adaptation: their real POST handler and
+method-sensitive behavior are not evaluated, and this is not a claim that a real GET would avoid 405.
+
+Steps with `result=not_evaluated` identify applicable handler-phase checks:
+
+- The selected **workflow transition** permission is checked on submit.
+- The **nested-list** database configuration check happens when the page is built.
+- The **delete-preview** configuration/database check happens when the page is built.
+- Database configuration for nested **form/action/workflow writes** is checked on submit.
+
+These limits are distinct from [pre-context list counts](#list-count-boundary); changing a count does not execute
+the later database check. Allowed means **may open the page**, not permission to perform every submit operation.
+Real Resource `cv_get_item()` / `cv_get_items()` loaders run under the fresh traced user, including external reads,
+missing-item and action-state behavior; Resource lists report row counts. No Resource manage page is created.
+
+When installed, Django's `LoginRequiredMiddleware` or its subclass runs its real `process_view()` with the
+resolved view. The rest of the middleware chain does not run: **other middleware and URL decorators are not traced**.
+The result exposes identity-only model/PK values with no object title or rendered content, but an exception class
+and message is deliberately included. Project exception messages may contain sensitive data; no traceback is emitted.

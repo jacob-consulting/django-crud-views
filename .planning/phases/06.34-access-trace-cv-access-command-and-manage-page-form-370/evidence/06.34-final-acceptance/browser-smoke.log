@@ -1,0 +1,8 @@
+failed: 0 cases; /tmp/cv-0634-final-smoke.json
+AssertionError [ERR_ASSERTION]: collapsed error summary shows exception class
+
+false !== true
+
+    at check (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:141:71)
+    at run (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:179:21)
+    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:307:9)

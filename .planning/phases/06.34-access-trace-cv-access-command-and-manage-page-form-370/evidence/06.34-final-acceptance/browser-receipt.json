@@ -1,0 +1,19 @@
+{
+  "name": "browser-receipt",
+  "command": "node tests/browser/access-trace.cjs --verify .planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-10-browser-evidence.json",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411.json",
+  "source_sha256": "5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411",
+  "started": "2026-11-15T08:25:39.773579+00:00",
+  "log": "browser-receipt.log",
+  "status": "passed",
+  "pid": 3909446,
+  "finished": "2026-11-15T08:25:39.931137+00:00",
+  "duration_seconds": 0.158,
+  "exit_code": 0,
+  "summary": [
+    "Verified current source bytes, complete observations, captures and cleanup"
+  ],
+  "counts": {},
+  "source_unchanged": true
+}

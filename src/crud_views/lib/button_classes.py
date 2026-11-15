@@ -142,6 +142,16 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "manage:badge-policy-na": "badge bg-secondary",
     "manage:row-default": "cv-manage-default",
     "manage:help": "btn btn-sm btn-outline-secondary",
+    "manage:trace-allowed": "badge bg-success",
+    "manage:trace-denied": "badge bg-danger",
+    "manage:trace-not-found": "badge bg-warning text-dark",
+    "manage:trace-login-redirect": "badge bg-warning text-dark",
+    "manage:trace-error": "badge bg-warning text-dark",
+    "manage:trace-no-such-route": "badge bg-warning text-dark",
+    "manage:trace-passed": "badge bg-success",
+    "manage:trace-skipped": "badge bg-secondary",
+    "manage:trace-not-reached": "badge bg-secondary",
+    "manage:trace-not-evaluated": "badge bg-warning text-dark",
 }
 
 REMOVED_SETTINGS: dict[str, str] = {

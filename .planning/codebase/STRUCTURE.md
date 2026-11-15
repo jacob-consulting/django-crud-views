@@ -1,343 +1,210 @@
 ---
-last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
-last_mapped_at: 2026-11-14
+last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_at: 2026-11-15
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-14
+**Analysis Date:** 2026-11-15
 
 ## Directory Layout
 
 ```text
 django-crud-views/
 ├── src/
-│   ├── crud_views/                    # Core Django app: views, shared libraries, theme, assets
-│   ├── crud_views_object_detail/       # Rich object detail extension
-│   ├── crud_views_workflow/            # django-fsm integration
-│   ├── crud_views_polymorphic/         # django-polymorphic integration
-│   └── crud_views_guardian/            # django-guardian integration
+│   ├── crud_views/                    # Core Django app
+│   │   ├── lib/                        # ViewSet, CBVs, authorization, forms and support
+│   │   ├── management/commands/        # Package Django commands, including cv_access
+│   │   ├── templates/crud_views/       # Core Bootstrap 5 templates and partials
+│   │   └── static/crud_views/          # Core CSS/JavaScript
+│   ├── crud_views_guardian/            # django-guardian integration
+│   ├── crud_views_object_detail/       # ObjectDetailView and property presentation
+│   ├── crud_views_polymorphic/         # django-polymorphic flows
+│   └── crud_views_workflow/            # django-fsm integration and history models
 ├── tests/
-│   ├── test1/                          # Django test project, models, golden outputs, Python tests
+│   ├── test1/                          # Django integration/unit test project
 │   ├── js/                             # JavaScript unit tests
-│   ├── js-integration/                 # Browser/runtime integration tests
-│   └── browser/                        # Browser test support and templates
-├── examples/bootstrap5/                # Runnable integrated demo Django project
-├── docs/                               # User/developer documentation source
-├── site/                               # MkDocs site pages, static docs assets and examples
-├── requirements/                       # Split requirements inputs
-├── scripts/                            # Repository maintenance/build helpers
-├── .planning/                           # GSD plans, research, codebase maps and project state
-├── pyproject.toml                      # Python package, tooling and build configuration
-├── package.json                        # Browser-side tooling and npm scripts
-├── noxfile.py                          # Python/Django test and quality matrix
-└── taskfile.yaml                       # Common development task entry points
+│   ├── js-integration/                 # JavaScript integration tests
+│   ├── browser/                        # Browser tests and fixture servers
+│   └── lib/                            # Shared Python test helpers
+├── examples/bootstrap5/                # Consumer-style demo Django project
+├── docs/                               # MkDocs documentation source
+├── scripts/                            # Build/release and developer scripts
+├── .planning/                          # GSD plans, phase records and codebase maps
+├── pyproject.toml                      # Python package and tool configuration
+├── noxfile.py                          # Python/Django test matrix
+├── taskfile.yaml                       # Developer task aliases
+├── package.json                        # JavaScript test tooling
+└── mkdocs.yml                          # Documentation site configuration
 ```
 
 ## Directory Purposes
 
-**`src/crud_views/`:**
-- Purpose: Core distributable Django application.
-- Contains: App startup/checks, CBV integration, shared presentation and utility libraries, management commands, migrations, theme templates, static files, translations, and template tags.
-- Key files: `src/crud_views/apps.py`, `src/crud_views/checks.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/templatetags/crud_views.py`.
+**`src/crud_views/lib/`:**
+- Purpose: Core reusable runtime behavior.
+- Contains: `viewset/` registry/router, `view/` shared CrudView contracts, `views/` concrete CBVs, ancestor authorization, settings, checks, formsets, conditional fields, tables, crispy helpers and assets.
+- Key files: `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/settings.py`.
+- Add ViewSet-wide routing/registration behavior in `viewset/`; put cross-view behavior in `view/`; put operation-specific handlers in `views/`.
+
+**`src/crud_views/lib/access_trace.py` and `src/crud_views/lib/access_trace_runner.py`:**
+- Purpose: Context-local gate recording and the synthetic request runner for the `cv_access` diagnostics.
+- Contains: Versioned scalar trace result classes, recorder context manager, route/actor resolution, temporary request/session/message objects, handler stub and outcome mapping.
+- Key files: `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py`.
+- Gate-specific observations belong beside the existing enforcement gate in `src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views_guardian/lib/mixins.py`, or `src/crud_views/lib/views/manage.py`. Preserve the single recorder contract; do not implement separate authorization logic in the command or template.
 
 **`src/crud_views/lib/viewset/`:**
-- Purpose: View registry, URL router, PK handling and parent ViewSet descriptors.
-- Contains: `ViewSet`, path regexes and `ParentViewSet`.
+- Purpose: ViewSet declaration, registration, parent metadata and path converters.
+- Contains: `ViewSet`, `ParentViewSet`, and PK path registrations.
 - Key files: `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/viewset/parentviewset.py`, `src/crud_views/lib/viewset/path_regs.py`.
+- Guidance: Add URL shape or sibling lookup behavior to ViewSet APIs rather than embedding it in consumer URLconfs.
 
-**`src/crud_views/lib/view/`:**
-- Purpose: CrudView behavior and presentation contracts consumed across concrete CBVs and templates.
-- Contains: Base mixin, metaclass, context, action/menu grouping, buttons, card configuration, label modes, variants and visibility resolution.
-- Key files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/action_menu.py`, `src/crud_views/lib/view/buttons.py`.
-- Form Cancel URL resolution lives in `src/crud_views/lib/view/base.py`; the template-tag API is in `src/crud_views/templatetags/crud_views.py`, and button data/rendering is in `src/crud_views/lib/view/button_data.py` plus `src/crud_views/templates/crud_views/tags/button/form.html`.
-- Snippet metadata is assembled by `CrudView.cv_get_meta()` in `src/crud_views/lib/view/base.py`; child views expose lazy immediate `parent_object`, reusing ancestor-guard state after dispatch and otherwise resolving through the parent URL kwarg. Action/breadcrumb labels, context-button labels, and `LinkChildColumn` templates use separate contexts; see `docs/reference/templates.md`.
-- Header icon selection is implemented by `CrudView.cv_get_header_icon()` in `src/crud_views/lib/view/base.py`: only `None` inherits `ViewSet.icon_header`, while `""` suppresses. The public readability constants live in `src/crud_views/lib/icons.py` as plain values (`Icon.VIEWSET_DEFAULT is None`, `Icon.NONE == ""`). Heading templates should use the `cv_heading_icon` projection in `src/crud_views/templatetags/crud_views.py` to place library classes on the host heading and inline icon HTML inside it; getter overrides returning `None` suppress the icon.
-
-**`src/crud_views/lib/ancestors.py`, `ancestor_policy.py`, `ancestor_db.py`:**
-- Purpose: Ancestor authorization for nested ViewSets (engine, policy values, default-database boundary).
-- Contains: `_authorize_ancestors`, `_walk_ancestors`, `_validate_child_parent`, `_scope_child_queryset`; `AncestorPolicy`/`AncestorPermissions`; `_check_nested_*` database guards.
-- Key files: `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/ancestor_db.py`, `src/crud_views_guardian/lib/ancestors.py` (Guardian provider).
-- Tests: `tests/test1/test_ancestor_*.py`, `tests/test1/test_guardian_*.py`, `tests/test1/test_nested_viewset.py`; docs in `docs/reference/nested.md`.
-- Nested dispatch must reach `_authorize_ancestors` before the endpoint's state-loading permission check; core permission-required, Guardian, and manage views use dispatch bridges. The resolved chain is cached on the request view for child membership/list scoping and lazy snippet `parent_object` reuse (`src/crud_views/lib/view/base.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/views/manage.py`).
-
-**`src/crud_views/lib/deletion.py` and `src/crud_views/templates/crud_views/snippets/delete/`:**
-- Purpose: Build bounded related-object delete previews and render blocked relationships.
-- Contains: Collector-backed relationship summaries, protected-object labels, and preview/truncation presentation.
-- Key files: `src/crud_views/lib/deletion.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/templates/crud_views/view_delete.content.html`, `src/crud_views/templates/crud_views/snippets/delete/protected_objects.html`.
-
-**`src/crud_views/lib/views/`:**
-- Purpose: Concrete generic CRUD and action views.
-- Contains: List/card/detail/create/update/delete, custom form, manage diagnostics, child redirect, ordering and common mixins.
-- Key files: `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/views/detail.py`, `src/crud_views/lib/views/create.py`, `src/crud_views/lib/views/update.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/views/mixins.py`.
-- Manage pages require an active authenticated member of the configured manage group and the selected manage mode; the same gate controls the manage action and direct route. `ManageView` builds structured projections for permission matrices/holders, generated routes, ViewSet facts, upward hierarchy, presentation, registered view requirements/provenance and checks (`src/crud_views/lib/views/manage.py`). Extend its data-builder hooks for core fields; `GuardianManageView` in `src/crud_views_guardian/lib/views.py` augments holder rows with object-grant counts, adds Guardian policy metadata and appends scoped Guardian composition checks.
-- Permission descriptions are provided by each registered view's `cv_get_requirement()` in `src/crud_views/lib/view/base.py`; `ManageView._manage_requirement()` resolves local/selected-ancestor keys for display and reports missing metadata without authorizing. Provenance rows distinguish default, inherited, explicit, ViewSet/global fallback and model Meta values. Keep these builders descriptive and side-effect-bounded; custom templates/labels are not executed to derive descriptions.
-- Manage diagnostics collect only the selected ViewSet's checks: `viewset.checks()` plus the scoped collectors `collect_ancestor_checks([viewset])`, `collect_conditional_checks([viewset])`, and `collect_viewset_icon_checks([viewset])`; Guardian adds `collect_guardian_composition_checks([viewset])`. Do not replace this with global Django startup checks (`src/crud_views/checks.py`, `src/crud_views_guardian/checks.py`).
+**`src/crud_views/lib/view/` and `src/crud_views/lib/views/`:**
+- Purpose: Separate shared view integration from individual request handlers.
+- Contains: CrudView metaclass/base, action and context projections, visibility/variant helpers, plus list/detail/create/update/delete/action/manage CBVs.
+- Key files: `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/manage.py`.
+- Guidance: Keep generic handler lifecycle in the concrete CBV module; use the shared base/mixins for behavior that multiple operations need.
 
 **`src/crud_views/management/commands/`:**
-- Purpose: Django management commands shipped by the core app.
-- Contains: Static asset and configuration inspection utilities plus manage-group setup.
-- Key files: `src/crud_views/management/commands/cv_assets.py`, `src/crud_views/management/commands/crud_views_show.py`, `src/crud_views/management/commands/cv_manage_group.py`.
-- `cv_manage_group` idempotently creates only the configured manage diagnostics group. It creates no users and assigns no memberships or permissions; operator account assignment remains the host project's responsibility.
-
-**`src/crud_views/lib/` supporting modules:**
-- Purpose: Reusable domain and presentation services that do not belong to a single CBV.
-- Contains: Asset registry/pipeline support, resource abstraction, settings, breadcrumbs, icons, buttons, formsets, conditional fields/layouts, table configuration, crispy integration, messages, ordering and session helpers.
-- Key files: `src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `src/crud_views/lib/resource.py`, `src/crud_views/lib/settings.py`, `src/crud_views/lib/formsets/`, `src/crud_views/lib/conditional/`, `src/crud_views/lib/table/`, `src/crud_views/lib/crispy/`.
-- Theme class customization is centralized in `src/crud_views/lib/button_classes.py`; the independent `conditional:legend` and `formset:legend` slots are consumed by existing templates through `cv_button_class` and default to empty (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
-- Crispy layout helpers are public through `src/crud_views/lib/crispy/__init__.py`; `Column1`–`Column12` in `src/crud_views/lib/crispy/table.py` resolve the numbered `form:column-N` slots at render time. Extend this bounded helper family and registry when adding themed Bootstrap column widths.
-
-**`src/crud_views/lib/formsets/`:**
-- Purpose: Describe, initialize, recursively traverse and adapt nested inline formsets for view context and templates.
-- Contains: Public exports in `__init__.py`, recursive declarations in `formsets.py`, compact grid metadata/helper generation in `compact.py`, render-tree nodes in `render_tree.py`, orchestration mixins in `mixins.py`, and layout helpers in `layout.py` / `inline_formset.py`.
-- Key files: `src/crud_views/lib/formsets/__init__.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`.
-- Guidance: Add opt-in compact behavior to this package and its formset templates; declare it with `compact_layout` per `FormSet` node. Keep consumer declarations and comparison UI in the example app.
-- Custom widgets may inherit the publicly exported `CompactWidgetCompatible` marker alongside their Django widget class to promise complete compact rendering support; this bypasses widget-specific checks only and supplies no rendering behavior. Shared field coverage, roles, effective labels and row consistency are still validated (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/__init__.py`, `docs/reference/formsets.md`).
-- `CompactLayout.row_border` defaults to false; set it true per formset node to render the compact border hook on rows with visible legends. A false or empty row legend selects the plain compact row styling, suppressing border, padding, radius and card background. Borderless compact rows with legends keep the same non-border geometry as bordered rows (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/static/crud_views/css/formset.css`).
-
-**`src/crud_views/templates/crud_views/formsets/`:**
-- Purpose: Render the recursive formset tree and its browser controls.
-- Contains: `formset.html` for rows and child insertion, `compact_headings.html` for shared headings, control/empty-form partials, plus accompanying static JavaScript and CSS under `src/crud_views/static/crud_views/`.
-- Key files: `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/static/crud_views/js/formset.js`, `src/crud_views/static/crud_views/css/formset.css`.
-- Guidance: Preserve the existing row/control attributes and JavaScript add/delete/reorder contract when changing markup; compact class hooks are additive and per node.
-
-Compact rendering in `src/crud_views/lib/formsets/compact.py` projects and validates request-time field schemas, then `_compact_helper()` builds crispy layout objects around the existing bound fields and `FormControl`. The exact stock `django.forms.widgets.CheckboxInput` is supported. A custom subclass or custom template requires `CompactWidgetCompatible`; the marker is a compatibility promise, supplies no renderer, and leaves shared role/label/schema validation in force. `src/crud_views/templates/crud_views/formsets/formset.html` continues to own the common row, management form, hidden-field errors, recursion and crispy invocation, preserving the outer form, CSRF, validation and save lifecycle.
-
-**`src/crud_views/lib/conditional/`:**
-- Purpose: Declare and render server-enforced conditional form field groups and conditional formsets.
-- Contains: Checkbox and value-choice toggle sources, queryset-category toggle declarations, group validation/cleaning, crispy `ToggleGroup` layout, conditional formset handling, and shared layout helpers.
-- Key files: `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/lib/conditional/formset.py`.
-- Guidance: Put reusable controller and group behavior here. `ValueToggle` supports static single-choice fields with select/radio widgets. `QuerysetConditions` supports a native single `ModelChoiceField`, categories from a direct object attribute or annotation, and the final cleaned object as server authority. Keep controlled fields disjoint and explicit business clear values in `ConditionalGroup.empty_values`.
-- Scope: `ValueToggle` activates `ConditionalGroup` fields only. `ConditionalFormSet` rejects it and uses checkbox-style `ModelFieldToggle`/`UIFieldToggle` for whole-formset skip/purge (`src/crud_views/lib/conditional/formset.py`).
-- `QuerysetConditions` also activates conditional groups only; its render projection reads offered objects from the field queryset and should remain request/render-local. Categories with no fields still require the server group plus an explicit empty crispy `ToggleGroup` declaration (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/layout.py`).
-
-**`examples/bootstrap5/conditional/`:**
-- Purpose: Demonstrate checkbox and choice-controlled conditional fields and formsets in a consumer-style app.
-- Contains: Registration checkbox groups, Event conditional formsets, Customer choice-driven groups with dropdown/radio editors, and the separate queryset-backed conditional selection demo.
-- Key files: `examples/bootstrap5/conditional/models.py`, `examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/urls.py`, `examples/bootstrap5/queryset_conditional/`, `examples/bootstrap5/project/features.py`.
-- Guidance: Keep the two Customer editors on the same `CustomerForm` declarations/layout; `CustomerRadioForm` overrides only the `kind` widget. The queryset example demonstrates `QuerysetConditions` without coupling the opt-in API to the existing Customer form flow.
+- Purpose: Django management commands exposed by the core app.
+- Contains: Asset/configuration tools, manage-group setup, and access tracing.
+- Key files: `src/crud_views/management/commands/cv_access.py`, `src/crud_views/management/commands/cv_assets.py`, `src/crud_views/management/commands/cv_manage_group.py`, `src/crud_views/management/commands/crud_views_show.py`.
+- Guidance: Keep command argument parsing and output here; delegate runtime behavior to library APIs.
 
 **`src/crud_views/templates/crud_views/` and `src/crud_views/static/crud_views/`:**
-- Purpose: Bundled Bootstrap 5 theme and browser-side behavior.
-- Contains: Full view templates and content partials, tag partials, action/button snippets, formsets, modal shell/content, shared CSS/JS hooks, CSS and JavaScript adapters/components.
-- Key files: `src/crud_views/templates/crud_views/view_list.html`, `src/crud_views/templates/crud_views/view_create.html`, `src/crud_views/templates/crud_views/shared/`, `src/crud_views/templates/crud_views/tags/`, `src/crud_views/static/crud_views/js/`, `src/crud_views/static/crud_views/css/`.
-- Tooltip lifecycle: `src/crud_views/static/crud_views/js/tooltip.js` owns only package triggers marked `data-cv-tooltip`; it initializes on page readiness and modal/formset insertion, hides on click, and disposes modal triggers before replacement. `src/crud_views/static/crud_views/js/adapters.js` supplies the default Bootstrap tooltip adapter and guards queued callbacks after disposal. Keep app-owned `data-bs-toggle="tooltip"` triggers under host control.
+- Purpose: Core theme templates and browser behavior.
+- Contains: View templates/content blocks, shared UI snippets, formsets, CSS, JavaScript and adapters.
+- Key files: `src/crud_views/templates/crud_views/view_manage.html`, `src/crud_views/templates/crud_views/view_list.html`, `src/crud_views/static/crud_views/js/`, `src/crud_views/static/crud_views/css/`.
+- Guidance: Keep reusable markup in package templates and preserve documented template blocks and data attributes for host overrides.
 
-**`src/crud_views_object_detail/`:**
-- Purpose: Configurable detail properties and layouts, usable by a core detail view.
-- Contains: Property/group/link/badge configuration, resolvers, presentation mixin/view, layout packs, type templates, CSS and tab JS.
-- Key files: `src/crud_views_object_detail/lib/config.py`, `src/crud_views_object_detail/lib/resolvers.py`, `src/crud_views_object_detail/lib/presentation.py`, `src/crud_views_object_detail/lib/views.py`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/`, `src/crud_views_object_detail/templates/crud_views_object_detail/types/`.
-- Interactive layouts: `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` scopes tab lifecycle through `cv.adapters.tab`. Accordion markup in `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html` projects `presentation.selected` into initial classes and ARIA; Bootstrap's existing Collapse data API handles switching and parent-scoped close-all behavior through `data-bs-toggle`, `data-bs-target`, and `data-bs-parent`.
+**`src/crud_views_guardian/`, `src/crud_views_object_detail/`, `src/crud_views_polymorphic/`, `src/crud_views_workflow/`:**
+- Purpose: Optional integration apps packaged alongside core.
+- Contains: App configs, specialized classes, integration templates/translations, and tests under `tests/test1/`; workflow also has models and migrations.
+- Key files: `src/crud_views_guardian/lib/viewset.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views_object_detail/lib/views.py`, `src/crud_views_polymorphic/lib/create_select.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/migrations/`.
+- Guidance: Put integration-specific behavior in its app and keep core imports free from optional dependency imports.
 
-**`src/crud_views_workflow/`:**
-- Purpose: FSM transition and history integration.
-- Contains: Workflow views/forms/mixins, audit-history models and migrations, templates, app checks and translations.
-- Key files: `src/crud_views_workflow/lib/views.py` (request/database orchestration and hooks), `src/crud_views_workflow/lib/execution.py` (shared transition validation and transactional engine plus public helper), `src/crud_views_workflow/lib/forms.py` (transition choices, business blockers, comments and metadata), `src/crud_views_workflow/lib/widgets.py` (button presentation and registry resolution), `src/crud_views_workflow/apps.py` (workflow button-class defaults), `src/crud_views_workflow/lib/mixins.py` (model/history API), and `src/crud_views_workflow/models.py` plus `src/crud_views_workflow/migrations/` (audit persistence).
-- Button presentation reads optional transition `custom["variant"]` and `custom["icon"]` metadata in `WorkflowForm`, with the fixed variant vocabulary and theme/icon projection in `src/crud_views_workflow/lib/widgets.py`. Defaults come from the core button-class registry contribution in `src/crud_views_workflow/apps.py`; markup lives in `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`. This decorates controls only and leaves authorization, comments and execution in the existing workflow path.
-- Workflow badges and history content are themed in `src/crud_views_workflow/templates/crud_views_workflow/`; transition permission opt-in examples and regression tests are maintained under `tests/test1/`.
+**`tests/test1/`:**
+- Purpose: Main Django test project and most Python regression tests.
+- Contains: Feature-level test modules, `app/` test models, `project/` settings, `od/` object-detail tests, `od_app/` fixtures and golden files.
+- Key files: `tests/test1/conftest.py`, `tests/test1/app/models.py`, `tests/test1/project/`.
+- Access trace coverage: `tests/test1/test_access_trace*.py`, `tests/test1/test_manage_access_trace.py`; these exercise gate, middleware/route, command, manage form, serialization and safety boundaries.
 
-**`src/crud_views_polymorphic/`:**
-- Purpose: Polymorphic model CRUD flows.
-- Contains: Create type selector, specialized create/update/detail/delete views, shared utilities and app config.
-- Key files: `src/crud_views_polymorphic/lib/create_select.py`, `src/crud_views_polymorphic/lib/create.py`, `src/crud_views_polymorphic/lib/utils.py`.
-
-**`src/crud_views_guardian/`:**
-- Purpose: Per-object permission-aware ViewSets and management.
-- Contains: Specialized ViewSet, permission mixins/views, templates, checks and translations.
-- Key files: `src/crud_views_guardian/lib/viewset.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views_guardian/lib/views.py`.
-
-**`tests/`:**
-- Purpose: Python/Django behavior tests, browser-side JavaScript contracts and integration harnesses.
-- Contains: `tests/test1/` test project, app models and fixtures; `tests/js/`; `tests/js-integration/`; `tests/browser/`; shared helpers/golden files in `tests/lib/` and `tests/test1/golden/`.
-- Key files: `tests/test1/conftest.py`, `tests/test1/app/models.py`, `tests/lib/helper/`, `tests/js/helpers/`.
+**`tests/browser/`, `tests/js/`, `tests/js-integration/`, `tests/lib/`:**
+- Purpose: Browser behavior, JavaScript contracts, integration tests and shared Python helpers.
+- Contains: Node tests and `*.cjs` harnesses, Python fixture servers, templates and reusable helper modules.
+- Key files: `tests/browser/access-trace.test.cjs`, `tests/browser/access_trace_server.py`, `tests/browser/templates/`, `tests/js/`, `tests/js-integration/`, `tests/lib/helper/`.
 
 **`examples/bootstrap5/`:**
-- Purpose: Consumer-like demo application and integrated examples.
-- Contains: Django project settings/URLs, management commands and feature apps demonstrating list/detail/forms, nested data, resources, formsets, conditional fields, object detail, Guardian, workflow, polymorphic views, action menus and breadcrumbs.
-- Compact formsets are demonstrated beside classic formsets in `examples/bootstrap5/formsets/views.py`: `cv_formsets` remains the classic recursive tree and `cv_compact_formsets` opts questions and choices in independently. `CompactLayout.row_border` opts each compact node into bordered rows; the default is borderless but keeps padding, radius, background and margins. A false/empty `row_legend` selects the plain compact row treatment and suppresses those card decorations. The `compact_create` and `compact_update` views provide comparison routes without changing the default create/update flow. A separate Checklist CRUD family (`Checklist` / `ChecklistItem`) demonstrates the stock BooleanField checkbox in compact rows; its schema is in `models.py` and migration `migrations/0003_checklist_checklistitem.py`. `examples/bootstrap5/project/features.py` keeps one shared Formsets catalog/source-panel entry; `examples/bootstrap5/project/templatetags/example_tags.py` derives an additional nav-only Checklist link and active URL state from it.
+- Purpose: Consumer-style project that demonstrates public package APIs across feature apps.
+- Contains: Django settings/URLconf, feature applications, seed command, translations and documentation tests.
 - Key files: `examples/bootstrap5/project/settings_demo.py`, `examples/bootstrap5/project/urls.py`, `examples/bootstrap5/project/management/commands/seed.py`.
+- Guidance: Add a consumer example in the closest feature app and register it through the existing feature catalog where navigation is needed.
 
-**`docs/` and `site/`:**
-- Purpose: Documentation content and static site output/source support.
-- Contains: Getting-started, reference and development material, localized/documentation assets, screenshots and JavaScript documentation examples.
-- Key files: `docs/`, `site/`, `mkdocs.yml`.
+**`docs/`:**
+- Purpose: MkDocs source documentation.
+- Contains: Getting-started, reference, development guides and documentation assets.
+- Key files: `docs/reference/`, `docs/getting_started/`, `docs/development/`, `mkdocs.yml`.
+- Guidance: Public API changes should update the relevant reference page and executable documentation tests in `tests/test1/` where present.
 
 **`.planning/`:**
-- Purpose: GSD planning lifecycle, phase artifacts, research, codebase analyses and project-level state.
-- Contains: `.planning/codebase/`, `.planning/phases/`, `.planning/research/`, `.planning/quick/` and other workflow artifacts.
-
-## Test Layout Notes
-
-- `tests/test1/` holds ~280 flat `test_<feature>.py` modules (ancestor, button, cancel, card, formsets, guardian, workflow, resource, pipeline, docs-sync checks); sub-packages `tests/test1/od/` (object detail) with fixtures in `tests/test1/od_app/`, test models in `tests/test1/app/models.py`, project settings in `tests/test1/project/`.
-- `tests/browser/` holds Node `*.test.cjs` browser tests with Python fixture servers (`*_server.py`); `tests/js/` vitest units; `tests/js-integration/` integration.
-- Docs tests (`test_*_docs.py`) execute marked snippets from `docs/reference/*.md`. `examples/bootstrap5/` has its own `pytest.ini`, `test_docs_sync.py`, `test_i18n.py`.
-
-## Detail and Composition Navigation
-
-- `src/crud_views_object_detail/lib/conf.py`: object-detail settings singleton, including automatic-help default.
-- `src/crud_views_object_detail/lib/config.py`: strict help instructions and `choices_display` property configuration.
-- `src/crud_views_object_detail/lib/resolvers.py`: terminal metadata, scalar-owner traversal, help selection, and additive choice labels.
-- `src/crud_views_object_detail/templatetags/crud_views_object_detail.py`: raw/display context and value-template dispatch.
-- `tests/test1/od/test_choice_display.py` and `tests/test1/od/test_help_text_policy.py`: choice/help/query/lazy-policy regressions; fixtures live in `tests/test1/od_app/models.py`.
-- `tests/test1/test_object_detail_value_docs.py`: extracts and executes marked Python/Django recipes from published references and migration instructions.
-- `src/crud_views/templates/crud_views/tags/card.html`: empty `card_root`/`card_header` extension blocks preserve stock output; `tests/test1/test_card_blocks.py` exercises overrides.
-- `tests/test1/test_polymorphic_docs.py` and `docs/reference/polymorphic_view.md`: executable form-mapping guidance; selector labels are implemented in `src/crud_views_polymorphic/lib/create_select.py`.
+- Purpose: GSD project state and planning artifacts.
+- Contains: `.planning/codebase/`, `.planning/phases/`, `.planning/quick/`, `.planning/research/`, and project-level roadmap/state documents.
+- Guidance: Codebase maps describe current source organization; phase-specific rationale and receipts stay under their phase directory.
 
 ## Key File Locations
 
 **Entry Points:**
-- `src/crud_views/apps.py`: Core Django app config and registration of core checks.
-- `src/crud_views/management/commands/cv_manage_group.py`: Idempotent creation of the configured manage diagnostics group.
-- `src/crud_views/lib/views/manage.py`: Manage authorization plus structured permission, route, fact/provenance, hierarchy, presentation, view-requirement and scoped-check projections.
-- `src/crud_views/lib/view/base.py`: `CrudView.cv_get_requirement()` is the view contract used to describe the active local permission requirement and whether ancestor authorization applies.
-- `src/crud_views_guardian/lib/views.py`, `src/crud_views_guardian/checks.py`: Guardian manage projection (object grants, policy metadata, scoped composition diagnostics).
-- `src/crud_views/lib/viewset/__init__.py`: Public `ViewSet` definition and generated `urlpatterns`.
-- `src/crud_views/lib/view/meta.py`: Import-time CrudView class registration hook.
-- `examples/bootstrap5/project/settings_demo.py`: Demo project's Django settings.
+- `src/crud_views/apps.py`: Core Django app config and system-check registration.
+- `src/crud_views/lib/viewset/__init__.py`: `ViewSet` public routing/registration contract.
+- `src/crud_views/management/commands/cv_access.py`: `cv_access` CLI.
+- `src/crud_views/lib/views/manage.py`: Manage page diagnostics and opt-in access-trace form processing.
 - `examples/bootstrap5/project/urls.py`: Demo URL wiring.
 
 **Configuration:**
-- `pyproject.toml`: Build backend, package metadata, Python dependencies and Ruff/coverage configuration.
-- `taskfile.yaml`: Common task aliases.
-- `noxfile.py`: Environment matrix and test sessions.
-- `package.json`, `vitest.config.js`, `vitest.integration.config.js`: JavaScript development and browser test configuration.
-- `src/crud_views/lib/settings.py`: `CRUD_VIEWS_*` Django setting model and defaults.
-- `render.yaml`: Demo hosting/deployment configuration.
+- `pyproject.toml`: Package metadata, dependencies and Ruff/coverage settings.
+- `src/crud_views/lib/settings.py`: `CRUD_VIEWS_*` settings model.
+- `noxfile.py`: Supported Python/Django test sessions.
+- `taskfile.yaml`: Developer task aliases.
+- `package.json`, `vitest.config.js`, `vitest.integration.config.js`: JavaScript tooling.
+- `mkdocs.yml`: Documentation navigation/build configuration.
 
 **Core Logic:**
-- `src/crud_views/lib/viewset/__init__.py`: ViewSet registration, routing and queryset behavior.
-- `src/crud_views/lib/view/base.py`: CrudView cross-cutting behavior and context/link APIs.
-- `src/crud_views/lib/views/`: Concrete request handlers.
-- `src/crud_views/lib/view/`: Presentation/action resolution contracts.
-- `src/crud_views/lib/assets.py`: Static asset bundles and rendering registry.
-- `src/crud_views/lib/resource.py`: Non-ORM row interface.
-- `src/crud_views/lib/deletion.py`: Bounded delete preview and protection collection.
-- `src/crud_views/lib/table/table.py`: `Table` base (view context, `actions` column, `Meta.sequence`-aware default ordering).
-- `src/crud_views/lib/view/base.py`: `cv_get_meta()` creates page-snippet metadata; `cv_get_parent_object()` returns the immediate parent using the request's resolved ancestor when available; `cv_get_header_icon()` applies the None-only ViewSet fallback.
-- `src/crud_views/lib/icons.py`: semantic icon registry and plain public `Icon.VIEWSET_DEFAULT` / `Icon.NONE` constants.
-- `src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`: Transition button metadata, supported variant resolution and workflow theme defaults.
-- `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`: Native transition button markup and accessible label/help/blocker projection.
-- `src/crud_views/lib/formsets/compact.py`: explicit compact layout declarations, validated form schema projection, compact heading metadata and per-form crispy helper generation.
-- `src/crud_views/lib/formsets/render_tree.py`: recursive formset context tree; chooses compact helper generation only for nodes with `compact_layout` set.
-- `examples/bootstrap5/formsets/views.py`: classic/compact formset declarations and opt-in create/update comparison views.
-
-**Presentation and Browser Behavior:**
-- `src/crud_views/templates/crud_views/`: Core theme templates and reusable partials.
-- `src/crud_views/static/crud_views/`: Core CSS/JavaScript.
-- `src/crud_views/templatetags/crud_views.py`: `{% cv_heading_icon %}` host-class/inline-HTML projection, standalone icon tag, snippet-facing tags and theme API.
-- `src/crud_views/templatetags/crud_views.py` and `src/crud_views/lib/button_classes.py`: `{% cv_button_class %}` resolves existing theme class slots, including opt-in conditional/formset legend classes used by their current templates.
-- `src/crud_views_object_detail/templates/crud_views_object_detail/`: Object detail layout and field rendering packs.
-- `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`: Object-detail tab lifecycle bridge loaded through asset registration in `src/crud_views_object_detail/apps.py`.
-- `src/crud_views/lib/crispy/table.py` and `src/crud_views/lib/button_classes.py`: numbered `Column1`–`Column12` helpers resolve configurable `form:column-N` grid classes, with the Bootstrap 5 compatibility template at `src/crud_views/templates/crud_views/crispy/bootstrap5_column.html`.
+- `src/crud_views/lib/view/meta.py`: Import-time CrudView registration.
+- `src/crud_views/lib/view/base.py`: Shared CrudView contract and permission integration.
+- `src/crud_views/lib/ancestors.py`: Nested route authorization and child queryset scope.
+- `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py`: Access trace recording and execution.
+- `src/crud_views/lib/views/`: Core Django request handlers.
+- `src/crud_views_guardian/lib/`: Object permission provider and Guardian views.
+- `src/crud_views/lib/formsets/`, `src/crud_views/lib/conditional/`: Reusable complex form behavior.
 
 **Testing:**
-- `tests/test1/`: Python/Django tests and test app.
-- `tests/test1/test_workflow_execution.py`: public transition helper and view execution, validation/refusal, transaction, callback, and multi-database routing contracts.
-- `tests/test1/test_table_meta.py`: `Table` honours `Meta.sequence`, `sequence` kwarg precedence and `Meta.exclude` of `actions` (Phase 06.19).
+- `tests/test1/`: Main Python test suite.
+- `tests/test1/conftest.py`: Test Django initialization and fixtures.
+- `tests/browser/`: Browser harnesses and browser-level behavior.
 - `tests/js/`: JavaScript unit tests.
 - `tests/js-integration/`: JavaScript integration tests.
-- `tests/browser/`: Browser test harness assets.
-- `noxfile.py`: Supported Python/Django test matrix.
+- `examples/bootstrap5/test_docs_sync.py`: Demo documentation/example synchronization checks.
 
 ## Naming Conventions
 
 **Files:**
-- Python modules use lowercase snake_case, usually matching their class/feature (`src/crud_views/lib/views/action_ordered.py`, `src/crud_views/lib/view/action_menu.py`).
-- Django template files use descriptive view/partial names, with paired full/content templates where a view supports partial rendering (`view_create.html`, `view_create.content.html` in `src/crud_views/templates/crud_views/`).
-- Browser source and tests use lowercase kebab/dotted feature names (`src/crud_views/static/crud_views/js/list.filter.js`, `tests/js/list.filter.test.js`).
-- Extension apps use the `crud_views_<feature>` package prefix.
+- Python implementation modules use lowercase snake_case, such as `access_trace_runner.py` and `parentviewset.py`.
+- Python feature tests use `test_<feature>.py`, such as `tests/test1/test_access_trace_command.py`.
+- Browser tests use `*.test.cjs`; their harnesses use descriptive kebab-case `.cjs` names or Python `*_server.py` names.
+- Templates use descriptive lowercase names with `.html`; static files are grouped by CSS/JS under the owning app.
 
 **Directories:**
-- Python implementation is organized by concern under `lib/` (`view/`, `viewset/`, `views/`, `formsets/`, `conditional/`, `table/`).
-- Django apps use conventional `templates/<app namespace>/`, `static/<app namespace>/`, `templatetags/`, `locale/<language>/LC_MESSAGES/` and optional `migrations/` paths.
-- Examples are grouped under `examples/bootstrap5/<feature>/` with their own models, views, URLs and migrations where useful.
+- Importable packages use lowercase names, with separate `crud_views_*` roots for optional integrations.
+- Runtime support is grouped by responsibility under `src/crud_views/lib/`, including `views/`, `view/`, `viewset/`, `formsets/`, `conditional/`, `crispy/`, and `table/`.
+- Tests group project fixtures under `tests/test1/app/`, `tests/test1/project/` and `tests/test1/od_app/`.
 
 ## Where to Add New Code
 
-**New Feature:**
-- Primary code: Add a reusable core abstraction under `src/crud_views/lib/`; add a request handler to `src/crud_views/lib/views/` when it is a new view type.
-- Tests: Add Python behavior tests in the nearest `tests/test1/` feature module; extend browser tests under `tests/js/` or `tests/js-integration/` when client behavior changes.
-- User-facing theme: Add/update the corresponding template in `src/crud_views/templates/crud_views/`, Python template-tag/context support in `src/crud_views/templatetags/` or `src/crud_views/lib/view/`, and static behavior in `src/crud_views/static/crud_views/`.
-- Formset presentation: Extend `src/crud_views/lib/formsets/` and `src/crud_views/templates/crud_views/formsets/`; preserve classic rendering as the `compact_layout=None` path and add a demonstration under `examples/bootstrap5/formsets/`.
-- Interactive object-detail layouts: Put markup in `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/<layout>/`. For tabs, use the existing scoped lifecycle bridge in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and `cv.adapters.tab`; for accordion markup, preserve Bootstrap Collapse data attributes and render initial selected state from `presentation.selected` in the template.
-- Nested/ancestor authorization changes: edit `src/crud_views/lib/ancestors.py` (engine), `src/crud_views/lib/ancestor_policy.py` (config values), `src/crud_views/lib/ancestor_db.py` (database boundary); add tests as `tests/test1/test_ancestor_<aspect>.py` and update `docs/reference/nested.md`.
-- Demonstration: Add or update an example app under `examples/bootstrap5/<feature>/` and connect it through `examples/bootstrap5/project/`.
-- For form cancellation behavior, extend the request-aware resolver in `src/crud_views/lib/view/base.py` and its focused tests; preserve template access through `{% cv_cancel_url %}`.
-- For deletion relationship previews, change the collector/summary behavior in `src/crud_views/lib/deletion.py` and the corresponding partials in `src/crud_views/templates/crud_views/snippets/delete/`; keep protected references as plain labels and preserve the display budget.
-- For workflow presentation or permission examples, use `src/crud_views_workflow/lib/` and its templates; document and test permission checks as opt-in per transition.
-- For manage diagnostics, keep structured data builders in `src/crud_views/lib/views/manage.py` and presentation in the core/Guardian manage templates; implement requirement descriptions through `cv_get_requirement()` in `src/crud_views/lib/view/base.py` or its view override. Add per-ViewSet check collectors in `src/crud_views/checks.py` and explicitly pass the selected `[viewset]`; extend Guardian holder/policy data and its scoped composition check in `src/crud_views_guardian/lib/views.py` / `src/crud_views_guardian/checks.py`. Use `tests/test1/test_manage_*.py` and `tests/test1/test_manage_guardian.py` for regression coverage. For group creation lifecycle use `src/crud_views/management/commands/cv_manage_group.py`. Keep sample operator membership/grant setup in `examples/bootstrap5/project/`, not in the reusable command.
-- For workflow transition appearance, project finite variant/icon metadata through `src/crud_views_workflow/lib/forms.py` and `src/crud_views_workflow/lib/widgets.py`, defaults through `src/crud_views_workflow/apps.py`, and output through the transitions template. Preserve visible escaped labels and keep metadata out of authorization and execution.
-- For workflow business blockers or execution semantics, implement the model-only `workflow_check_transition(name, *, user)` contract in the consumer model, keep shared validation/execution in `src/crud_views_workflow/lib/execution.py`, and test public helper plus request behavior in `tests/test1/test_workflow_execution.py`. Do not treat business blockers as permission checks: django-fsm permissions/conditions gate transition availability, while the workflow view's page permission remains separately enforced.
+**New CRUD behavior:**
+- Shared behavior: `src/crud_views/lib/view/base.py` or a focused mixin/module under `src/crud_views/lib/view/`.
+- Operation-specific behavior: corresponding module under `src/crud_views/lib/views/`.
+- Tests: a feature-focused `tests/test1/test_<feature>.py`.
 
-**New Component/Module:**
-- Implementation: Place cross-view concepts in the closest `src/crud_views/lib/<concern>/` package; place a concrete Django CBV in `src/crud_views/lib/views/`.
-- Optional integration: Keep dependencies and specialized behavior in a dedicated `src/crud_views_<integration>/` app, following existing extension package layouts.
-- Object detail feature: Put config, resolution and view behavior under `src/crud_views_object_detail/lib/`; templates/assets belong to that app's namespace.
+**New authorization gate or trace fact:**
+- Enforcement: existing owning gate in `src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, or provider implementation under `src/crud_views_guardian/lib/`.
+- Trace fact: report through `get_recorder()` / `AccessRecorder` from `src/crud_views/lib/access_trace.py` beside that gate; do not infer decisions in `src/crud_views/management/commands/cv_access.py`.
+- Tests: gate-level `tests/test1/test_access_trace*.py`; command output tests in `tests/test1/test_access_trace_command.py`; manage integration in `tests/test1/test_manage_access_trace.py`.
+- Browser-facing form behavior: `src/crud_views/lib/views/manage.py`, `src/crud_views/templates/crud_views/view_manage.html` or its focused partial, with harness under `tests/browser/`.
 
-**Utilities:**
-- Shared helpers: Use focused modules under `src/crud_views/lib/`; if a helper is specific to presentation, put it in `src/crud_views/lib/view/` rather than in an unrelated generic utility.
-- Template API: Add tags to `src/crud_views/templatetags/crud_views.py` or `src/crud_views/templatetags/crud_views_formsets.py`; keep HTML in theme templates.
-- Static assets: Add files under `src/crud_views/static/crud_views/` and configure/register them through `src/crud_views/lib/settings.py` and `src/crud_views/lib/assets.py` as appropriate.
+**New optional integration:**
+- Implementation: add an app root under `src/crud_views_<integration>/` with `apps.py`, public `__init__.py`, focused `lib/`, and app-owned templates/static assets as needed.
+- Tests: add coverage in `tests/test1/` and keep optional imports out of core modules.
+
+**New documentation:**
+- Reference/API pages: `docs/reference/`.
+- Setup and usage pages: `docs/getting_started/`.
+- Developer process: `docs/development/`.
+- Add or update executable docs checks under `tests/test1/` when the page contains supported code examples.
+
+**Examples:**
+- Feature demo: relevant folder under `examples/bootstrap5/`.
+- Shared navigation/catalog metadata: `examples/bootstrap5/project/features.py` and related project template tags.
 
 ## Special Directories
 
-**`src/`:**
-- Purpose: Source-layout Python packages included in the built distribution.
-- Generated: No.
+**`src/*/migrations/`:**
+- Purpose: Django schema migrations for apps that own database models.
+- Generated: Yes, by Django migration tooling.
+- Committed: Yes; workflow migrations are in `src/crud_views_workflow/migrations/`.
+
+**`site/`:**
+- Purpose: Generated/static documentation site output used by the repository's publishing setup.
+- Generated: Yes, by the documentation build.
+- Committed: Present in the repository; edit source pages under `docs/` and configuration in `mkdocs.yml` rather than editing rendered output by hand.
+
+**`.planning/phases/`:**
+- Purpose: Phase plans, implementation summaries, validation artifacts and evidence.
+- Generated: No; maintained planning records.
 - Committed: Yes.
 
-**`src/*/templates/`, `src/*/static/`, `src/*/locale/`:**
-- Purpose: Django-discovered extension templates, static files and translations.
-- Generated: Source files are maintained in the repository; compiled translation `.mo` files are present alongside `.po` sources.
-- Committed: Yes.
-
-**`tests/test1/golden/`:**
-- Purpose: Expected rendered-output fixtures used to check presentation compatibility.
-- Generated: Some fixtures are generated/updated by project test helper workflows; treat them as test artifacts and inspect diffs.
-- Committed: Yes.
-
-**`node_modules/`, `.nox/`, `.pytest_cache/`, `.ruff_cache/`:**
-- Purpose: Local JavaScript dependencies, nox environments and tool caches.
+**`node_modules/`, `.venv/`, `.nox/`, `dist/`:**
+- Purpose: Installed JavaScript/Python environments, test environments and build artifacts.
 - Generated: Yes.
-- Committed: No; do not place product source here.
-
-**`.planning/`:**
-- Purpose: Project planning, mapping, research, phase execution and workflow artifacts.
-- Generated: Workflow-produced and human-maintained.
-- Committed: Yes in this repository workflow; keep codebase maps scoped to `.planning/codebase/`.
-
-## Label Override Navigation (Phase 06.20)
-
-- `src/crud_views/lib/viewset/__init__.py`: display-name fields, plain-string validation and `get_meta()` resolution; `src/crud_views/lib/lazy.py` supplies the existing lazy type.
-- `tests/test1/test_viewset_verbose_name.py`: defaults, independent fields, lazy language/construction behavior, Resource and Guardian inheritance, nested list heading.
-- `tests/test1/test_viewset_verbose_name_render.py`: headings/paragraphs, precedence, breadcrumb HTML, child links/buttons and message delivery.
-- `docs/reference/nested.md#labels`: contract and replacement declaration example; `docs/reference/breadcrumb.md`: variable semantics; `CHANGELOG.md`: issue #338 entry.
-
-## Permission declaration locations (Phase 06.22)
-
-- `src/crud_views/checks.py`: local and ancestor `viewset.E269` message builders inside the completed-registry check.
-- `src/crud_views/lib/ancestors.py`: private concrete-model vocabulary, suffix normalization, provider eligibility and shared pair-source helpers.
-- `src/crud_views/lib/viewset/__init__.py`: runtime permission-map population reuses the shared normalizer.
-- `tests/test1/test_permission_declarations.py`: declaration diagnostics, concrete-model boundaries, exclusions and zero-query checks.
-- `tests/test1/test_ancestor_docs.py`: executable custom-permission recipe and cross-link tests; `tests/test1/app/models.py` declares Author's `contact_author` permission while preserving OrderedModel Meta options.
-- `docs/reference/custom_form_view.md#a-permission-of-its-own`: canonical model/view recipe; action, Guardian and nested reference pages link or explain the applicable boundaries.
-
-## Header icons and snippet context (Phase 06.23)
-
-- `src/crud_views/lib/view/base.py`: `cv_get_header_icon()` uses the view value unless it is `None`, then falls back to `cv_viewset.icon_header`; `cv_get_meta()` provides ViewSet metadata, optional `object`, `view`, and lazy `parent_object` for nested views.
-- `src/crud_views/lib/icons.py`: import `Icon.VIEWSET_DEFAULT` and `Icon.NONE` from `crud_views.lib.icons`; these public constants are plain `None` and empty-string values. Do not treat them as enum/sentinel instances.
-- `src/crud_views/templatetags/crud_views.py`: `cv_heading_icon` splits selected icon presentation into host classes and inline markup for heading templates. Use the documented page/modal recipes in `docs/reference/templates.md`; a custom getter returning `None` suppresses rather than falling back again.
-- `docs/reference/templates.md#snippet-variables`: canonical snippet variable list and distinctions among page snippets, target action/breadcrumb labels, context-button labels, and `LinkChildColumn` context. Child `parent_object` is lazy and reuses request-authorized ancestor state after dispatch.
-- `tests/test1/test_heading_icons.py`, `tests/test1/test_snippet_docs.py`: header selection/rendering and documented snippet context contracts.
-
-## Compact Checklist example navigation
-
-- `examples/bootstrap5/formsets/models.py`: separate `Checklist` and `ChecklistItem` models, including the ordinary optional `done` BooleanField.
-- `examples/bootstrap5/formsets/migrations/0003_checklist_checklistitem.py`: creates both Checklist tables and the child relationship.
-- `examples/bootstrap5/formsets/views.py`: independent `cv_checklist` ViewSet and list/create/update flow; `ChecklistForm` places `Formsets()` in its crispy layout and the inline child opts in with `CompactLayout` for `label` and `done`.
-- `examples/bootstrap5/formsets/urls.py`: combines the Questionnaire and Checklist ViewSet URL patterns.
-- `examples/bootstrap5/project/features.py`: keep one shared Formsets feature record and source/code panel for both examples.
-- `examples/bootstrap5/project/templatetags/example_tags.py`: derive the direct Checklist navbar entry from the existing Formsets feature and keep active navigation associated with that shared record; do not add a second catalog feature.
+- Committed: No; do not place source changes there.
 
 ---
 
-*Structure analysis: 2026-11-14*
+*Structure analysis: 2026-11-15*

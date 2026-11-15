@@ -1,0 +1,728 @@
+bringing up nodes...
+bringing up nodes...
+
+FFFFFFFFFFFFFF                                                           [100%]
+=================================== FAILURES ===================================
+__ test_malformed_url_is_a_shared_trace_error_without_database_work[http://[] __
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+path = 'http://['
+django_assert_num_queries = functools.partial(<function _assert_num_queries at 0x7ab7d52119e0>, <_pytest.config.Config object at 0x7ab7d53c3410>)
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("path", ["http://[", "http://example.com\uff0fwrong/"])
+    def test_malformed_url_is_a_shared_trace_error_without_database_work(path, django_assert_num_queries):
+        from crud_views.lib.access_trace import trace_access
+    
+        with django_assert_num_queries(0):
+>           trace = trace_access(path, None)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_access_trace_validation.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/crud_views/lib/access_trace.py:124: in trace_access
+    return _run_trace(path, user)
+           ^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/access_trace_runner.py:384: in _run_trace
+    path=_normalize_path(path),
+         ^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/access_trace_runner.py:164: in _normalize_path
+    path = urlsplit(path).path or "/"
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+url = '', scheme = 'http', allow_fragments = True
+
+    @functools.lru_cache(typed=True)
+    def urlsplit(url, scheme='', allow_fragments=True):
+        """Parse a URL into 5 components:
+        <scheme>://<netloc>/<path>?<query>#<fragment>
+    
+        The result is a named 5-tuple with fields corresponding to the
+        above. It is either a SplitResult or SplitResultBytes object,
+        depending on the type of the url parameter.
+    
+        The username, password, hostname, and port sub-components of netloc
+        can also be accessed as attributes of the returned object.
+    
+        The scheme argument provides the default value of the scheme
+        component when no scheme is found in url.
+    
+        If allow_fragments is False, no attempt is made to separate the
+        fragment component from the previous component, which can be either
+        path or query.
+    
+        Note that % escapes are not expanded.
+        """
+    
+        url, scheme, _coerce_result = _coerce_args(url, scheme)
+        # Only lstrip url as some applications rely on preserving trailing space.
+        # (https://url.spec.whatwg.org/#concept-basic-url-parser would strip both)
+        url = url.lstrip(_WHATWG_C0_CONTROL_OR_SPACE)
+        scheme = scheme.strip(_WHATWG_C0_CONTROL_OR_SPACE)
+    
+        for b in _UNSAFE_URL_BYTES_TO_REMOVE:
+            url = url.replace(b, "")
+            scheme = scheme.replace(b, "")
+    
+        allow_fragments = bool(allow_fragments)
+        netloc = query = fragment = ''
+        i = url.find(':')
+        if i > 0 and url[0].isascii() and url[0].isalpha():
+            for c in url[:i]:
+                if c not in scheme_chars:
+                    break
+            else:
+                scheme, url = url[:i].lower(), url[i+1:]
+        if url[:2] == '//':
+            netloc, url = _splitnetloc(url, 2)
+            if (('[' in netloc and ']' not in netloc) or
+                    (']' in netloc and '[' not in netloc)):
+>               raise ValueError("Invalid IPv6 URL")
+E               ValueError: Invalid IPv6 URL
+
+/usr/lib/python3.12/urllib/parse.py:514: ValueError
+_ test_malformed_url_is_a_shared_trace_error_without_database_work[http://example.com\uff0fwrong/] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+path = 'http://example.com／wrong/'
+django_assert_num_queries = functools.partial(<function _assert_num_queries at 0x7ab7d52119e0>, <_pytest.config.Config object at 0x7ab7d53c3410>)
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("path", ["http://[", "http://example.com\uff0fwrong/"])
+    def test_malformed_url_is_a_shared_trace_error_without_database_work(path, django_assert_num_queries):
+        from crud_views.lib.access_trace import trace_access
+    
+        with django_assert_num_queries(0):
+>           trace = trace_access(path, None)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_access_trace_validation.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/crud_views/lib/access_trace.py:124: in trace_access
+    return _run_trace(path, user)
+           ^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/access_trace_runner.py:384: in _run_trace
+    path=_normalize_path(path),
+         ^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/access_trace_runner.py:164: in _normalize_path
+    path = urlsplit(path).path or "/"
+           ^^^^^^^^^^^^^^
+/usr/lib/python3.12/urllib/parse.py:521: in urlsplit
+    _checknetloc(netloc)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+netloc = 'example.com／wrong'
+
+    def _checknetloc(netloc):
+        if not netloc or netloc.isascii():
+            return
+        # looking for characters like \u2100 that expand to 'a/c'
+        # IDNA uses NFKC equivalence, so normalize for this check
+        import unicodedata
+        n = netloc.replace('@', '')   # ignore characters already included
+        n = n.replace(':', '')        # but not the surrounding text
+        n = n.replace('#', '')
+        n = n.replace('?', '')
+        netloc2 = unicodedata.normalize('NFKC', n)
+        if n == netloc2:
+            return
+        for c in '/?#@:':
+            if c in netloc2:
+>               raise ValueError("netloc '" + netloc + "' contains invalid " +
+                                 "characters under NFKC normalization")
+E               ValueError: netloc 'example.com／wrong' contains invalid characters under NFKC normalization
+
+/usr/lib/python3.12/urllib/parse.py:436: ValueError
+_______ test_german_guardian_command_translates_its_explanatory_message ________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+cv_guardian_author = ViewSet(guardian_author)
+django_user_model = <class 'django.contrib.auth.models.User'>
+
+    @pytest.mark.django_db
+    def test_german_guardian_command_translates_its_explanatory_message(cv_guardian_author, django_user_model):
+        """Guardian prose reaches the same translated output boundary as core prose."""
+        from django.urls import reverse
+        from django.utils import translation
+        from guardian.shortcuts import assign_perm
+    
+        from tests.test1.test_access_trace_command import invoke
+    
+        actor = django_user_model.objects.create_user(username="german diagnostic actor")
+        obj = cv_guardian_author.model.objects.create(first_name="private", last_name="contents")
+        assign_perm(cv_guardian_author.permissions["view"], actor, obj)
+        path = reverse(cv_guardian_author.get_router_name("detail"), kwargs={cv_guardian_author.pk_name: obj.pk})
+    
+        with translation.override("en"):
+            english_code, english, english_error = invoke(path, actor.username, "--no-color")
+        with translation.override("de"):
+            german_code, german, german_error = invoke(path, actor.username, "--no-color")
+    
+        assert english_code == german_code == 0
+        assert english_error == german_error == ""
+        assert "model fallback enabled: False" in english
+        assert "Schritte:" in german
+>       assert "model fallback enabled:" not in german, "Guardian's explanatory prose remains English in German output"
+E       AssertionError: Guardian's explanatory prose remains English in German output
+E       assert 'model fallback enabled:' not in 'Pfad: /guar...sgewertet.\n'
+E         
+E         'model fallback enabled:' is contained here:
+E           f95f6d2b; model fallback enabled: False
+E           6. Bestanden — Aktionszustand; ViewSet: guardian_author; Quelle: GuardianObjectPermissionMixin.get_object; Objekt: app.author bbc59033-07be-4c8b-805b-fbadf95f6d2b
+E           
+E           Einschränkungen:
+E             Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt...
+E         
+E         ...Full output truncated, use '-vv' to show
+
+tests/test1/test_access_trace_validation.py:63: AssertionError
+____ test_guardian_message_family_is_localized_in_real_json[anonymous-list] ____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+kind = 'list', actor_kind = 'anonymous'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["detail", "list", "create"])
+    @pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "active"])
+    def test_guardian_message_family_is_localized_in_real_json(kind, actor_kind):
+        from django.utils import translation
+    
+        from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
+        from tests.test1.app.models import Book, Publisher
+        from tests.test1.test_access_trace_command import invoke
+        from tests.test1.test_access_trace_guardian import local_routes, nested_routes
+        from tests.test1.test_access_trace_locales import stable
+        from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+    
+        actor = _user("translated", superuser=True)
+        if actor_kind == "inactive":
+            actor.is_active = False
+            actor.save()
+        selector = ["--anonymous"] if actor_kind == "anonymous" else [actor.username]
+        pub = Publisher.objects.create(name="private contents")
+        book = Book.objects.create(title="private contents", publisher=pub)
+        base = GuardianDetailViewPermissionRequired if kind == "detail" else GuardianListViewPermissionRequired
+        build = nested_routes if kind == "create" else lambda suffix: local_routes(suffix, base=base)
+        with isolated_routes(build) as routes:
+            if kind == "create":
+                outer, inner, leaf, _, key = routes
+                path = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+            else:
+                vs, _ = routes
+                path = _url(vs, "tested", **({"pk": pub.pk} if kind == "detail" else {}))
+            results = {}
+            for language in ("en", "de"):
+                with translation.override(language):
+                    code, output, error = invoke(path, *selector, "--as-json", "--no-color")
+                assert code == {"active": 0, "inactive": 1, "anonymous": 1}[actor_kind] and error == ""
+                results[language] = json.loads(output)
+            assert stable(results["en"]) == stable(results["de"])
+            english = [s["message"] for s in results["en"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            german = [s["message"] for s in results["de"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            assert english and len(english) == len(german)
+>           assert all(en != de for en, de in zip(english, german, strict=True))
+E           assert False
+E            +  where False = all(<generator object test_guardian_message_family_is_localized_in_real_json.<locals>.<genexpr> at 0x7ab7cdeb82b0>)
+
+tests/test1/test_access_trace_validation.py:105: AssertionError
+___ test_guardian_message_family_is_localized_in_real_json[anonymous-detail] ___
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+kind = 'detail', actor_kind = 'anonymous'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["detail", "list", "create"])
+    @pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "active"])
+    def test_guardian_message_family_is_localized_in_real_json(kind, actor_kind):
+        from django.utils import translation
+    
+        from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
+        from tests.test1.app.models import Book, Publisher
+        from tests.test1.test_access_trace_command import invoke
+        from tests.test1.test_access_trace_guardian import local_routes, nested_routes
+        from tests.test1.test_access_trace_locales import stable
+        from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+    
+        actor = _user("translated", superuser=True)
+        if actor_kind == "inactive":
+            actor.is_active = False
+            actor.save()
+        selector = ["--anonymous"] if actor_kind == "anonymous" else [actor.username]
+        pub = Publisher.objects.create(name="private contents")
+        book = Book.objects.create(title="private contents", publisher=pub)
+        base = GuardianDetailViewPermissionRequired if kind == "detail" else GuardianListViewPermissionRequired
+        build = nested_routes if kind == "create" else lambda suffix: local_routes(suffix, base=base)
+        with isolated_routes(build) as routes:
+            if kind == "create":
+                outer, inner, leaf, _, key = routes
+                path = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+            else:
+                vs, _ = routes
+                path = _url(vs, "tested", **({"pk": pub.pk} if kind == "detail" else {}))
+            results = {}
+            for language in ("en", "de"):
+                with translation.override(language):
+                    code, output, error = invoke(path, *selector, "--as-json", "--no-color")
+                assert code == {"active": 0, "inactive": 1, "anonymous": 1}[actor_kind] and error == ""
+                results[language] = json.loads(output)
+            assert stable(results["en"]) == stable(results["de"])
+            english = [s["message"] for s in results["en"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            german = [s["message"] for s in results["de"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            assert english and len(english) == len(german)
+>           assert all(en != de for en, de in zip(english, german, strict=True))
+E           assert False
+E            +  where False = all(<generator object test_guardian_message_family_is_localized_in_real_json.<locals>.<genexpr> at 0x760bdcb38ad0>)
+
+tests/test1/test_access_trace_validation.py:105: AssertionError
+___ test_guardian_message_family_is_localized_in_real_json[anonymous-create] ___
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+kind = 'create', actor_kind = 'anonymous'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["detail", "list", "create"])
+    @pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "active"])
+    def test_guardian_message_family_is_localized_in_real_json(kind, actor_kind):
+        from django.utils import translation
+    
+        from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
+        from tests.test1.app.models import Book, Publisher
+        from tests.test1.test_access_trace_command import invoke
+        from tests.test1.test_access_trace_guardian import local_routes, nested_routes
+        from tests.test1.test_access_trace_locales import stable
+        from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+    
+        actor = _user("translated", superuser=True)
+        if actor_kind == "inactive":
+            actor.is_active = False
+            actor.save()
+        selector = ["--anonymous"] if actor_kind == "anonymous" else [actor.username]
+        pub = Publisher.objects.create(name="private contents")
+        book = Book.objects.create(title="private contents", publisher=pub)
+        base = GuardianDetailViewPermissionRequired if kind == "detail" else GuardianListViewPermissionRequired
+        build = nested_routes if kind == "create" else lambda suffix: local_routes(suffix, base=base)
+        with isolated_routes(build) as routes:
+            if kind == "create":
+                outer, inner, leaf, _, key = routes
+                path = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+            else:
+                vs, _ = routes
+                path = _url(vs, "tested", **({"pk": pub.pk} if kind == "detail" else {}))
+            results = {}
+            for language in ("en", "de"):
+                with translation.override(language):
+                    code, output, error = invoke(path, *selector, "--as-json", "--no-color")
+                assert code == {"active": 0, "inactive": 1, "anonymous": 1}[actor_kind] and error == ""
+                results[language] = json.loads(output)
+            assert stable(results["en"]) == stable(results["de"])
+            english = [s["message"] for s in results["en"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            german = [s["message"] for s in results["de"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            assert english and len(english) == len(german)
+>           assert all(en != de for en, de in zip(english, german, strict=True))
+E           assert False
+E            +  where False = all(<generator object test_guardian_message_family_is_localized_in_real_json.<locals>.<genexpr> at 0x7ab7cdf75700>)
+
+tests/test1/test_access_trace_validation.py:105: AssertionError
+___ test_guardian_message_family_is_localized_in_real_json[inactive-detail] ____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+kind = 'detail', actor_kind = 'inactive'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["detail", "list", "create"])
+    @pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "active"])
+    def test_guardian_message_family_is_localized_in_real_json(kind, actor_kind):
+        from django.utils import translation
+    
+        from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
+        from tests.test1.app.models import Book, Publisher
+        from tests.test1.test_access_trace_command import invoke
+        from tests.test1.test_access_trace_guardian import local_routes, nested_routes
+        from tests.test1.test_access_trace_locales import stable
+        from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+    
+        actor = _user("translated", superuser=True)
+        if actor_kind == "inactive":
+            actor.is_active = False
+            actor.save()
+        selector = ["--anonymous"] if actor_kind == "anonymous" else [actor.username]
+        pub = Publisher.objects.create(name="private contents")
+        book = Book.objects.create(title="private contents", publisher=pub)
+        base = GuardianDetailViewPermissionRequired if kind == "detail" else GuardianListViewPermissionRequired
+        build = nested_routes if kind == "create" else lambda suffix: local_routes(suffix, base=base)
+        with isolated_routes(build) as routes:
+            if kind == "create":
+                outer, inner, leaf, _, key = routes
+                path = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+            else:
+                vs, _ = routes
+                path = _url(vs, "tested", **({"pk": pub.pk} if kind == "detail" else {}))
+            results = {}
+            for language in ("en", "de"):
+                with translation.override(language):
+                    code, output, error = invoke(path, *selector, "--as-json", "--no-color")
+                assert code == {"active": 0, "inactive": 1, "anonymous": 1}[actor_kind] and error == ""
+                results[language] = json.loads(output)
+            assert stable(results["en"]) == stable(results["de"])
+            english = [s["message"] for s in results["en"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            german = [s["message"] for s in results["de"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            assert english and len(english) == len(german)
+>           assert all(en != de for en, de in zip(english, german, strict=True))
+E           assert False
+E            +  where False = all(<generator object test_guardian_message_family_is_localized_in_real_json.<locals>.<genexpr> at 0x760bdcb3b2a0>)
+
+tests/test1/test_access_trace_validation.py:105: AssertionError
+____ test_guardian_message_family_is_localized_in_real_json[inactive-list] _____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+kind = 'list', actor_kind = 'inactive'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["detail", "list", "create"])
+    @pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "active"])
+    def test_guardian_message_family_is_localized_in_real_json(kind, actor_kind):
+        from django.utils import translation
+    
+        from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
+        from tests.test1.app.models import Book, Publisher
+        from tests.test1.test_access_trace_command import invoke
+        from tests.test1.test_access_trace_guardian import local_routes, nested_routes
+        from tests.test1.test_access_trace_locales import stable
+        from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+    
+        actor = _user("translated", superuser=True)
+        if actor_kind == "inactive":
+            actor.is_active = False
+            actor.save()
+        selector = ["--anonymous"] if actor_kind == "anonymous" else [actor.username]
+        pub = Publisher.objects.create(name="private contents")
+        book = Book.objects.create(title="private contents", publisher=pub)
+        base = GuardianDetailViewPermissionRequired if kind == "detail" else GuardianListViewPermissionRequired
+        build = nested_routes if kind == "create" else lambda suffix: local_routes(suffix, base=base)
+        with isolated_routes(build) as routes:
+            if kind == "create":
+                outer, inner, leaf, _, key = routes
+                path = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+            else:
+                vs, _ = routes
+                path = _url(vs, "tested", **({"pk": pub.pk} if kind == "detail" else {}))
+            results = {}
+            for language in ("en", "de"):
+                with translation.override(language):
+                    code, output, error = invoke(path, *selector, "--as-json", "--no-color")
+                assert code == {"active": 0, "inactive": 1, "anonymous": 1}[actor_kind] and error == ""
+                results[language] = json.loads(output)
+            assert stable(results["en"]) == stable(results["de"])
+            english = [s["message"] for s in results["en"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            german = [s["message"] for s in results["de"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            assert english and len(english) == len(german)
+>           assert all(en != de for en, de in zip(english, german, strict=True))
+E           assert False
+E            +  where False = all(<generator object test_guardian_message_family_is_localized_in_real_json.<locals>.<genexpr> at 0x7ab7ce80ec20>)
+
+tests/test1/test_access_trace_validation.py:105: AssertionError
+___ test_guardian_message_family_is_localized_in_real_json[inactive-create] ____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+kind = 'create', actor_kind = 'inactive'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["detail", "list", "create"])
+    @pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "active"])
+    def test_guardian_message_family_is_localized_in_real_json(kind, actor_kind):
+        from django.utils import translation
+    
+        from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
+        from tests.test1.app.models import Book, Publisher
+        from tests.test1.test_access_trace_command import invoke
+        from tests.test1.test_access_trace_guardian import local_routes, nested_routes
+        from tests.test1.test_access_trace_locales import stable
+        from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+    
+        actor = _user("translated", superuser=True)
+        if actor_kind == "inactive":
+            actor.is_active = False
+            actor.save()
+        selector = ["--anonymous"] if actor_kind == "anonymous" else [actor.username]
+        pub = Publisher.objects.create(name="private contents")
+        book = Book.objects.create(title="private contents", publisher=pub)
+        base = GuardianDetailViewPermissionRequired if kind == "detail" else GuardianListViewPermissionRequired
+        build = nested_routes if kind == "create" else lambda suffix: local_routes(suffix, base=base)
+        with isolated_routes(build) as routes:
+            if kind == "create":
+                outer, inner, leaf, _, key = routes
+                path = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+            else:
+                vs, _ = routes
+                path = _url(vs, "tested", **({"pk": pub.pk} if kind == "detail" else {}))
+            results = {}
+            for language in ("en", "de"):
+                with translation.override(language):
+                    code, output, error = invoke(path, *selector, "--as-json", "--no-color")
+                assert code == {"active": 0, "inactive": 1, "anonymous": 1}[actor_kind] and error == ""
+                results[language] = json.loads(output)
+            assert stable(results["en"]) == stable(results["de"])
+            english = [s["message"] for s in results["en"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            german = [s["message"] for s in results["de"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            assert english and len(english) == len(german)
+>           assert all(en != de for en, de in zip(english, german, strict=True))
+E           assert False
+E            +  where False = all(<generator object test_guardian_message_family_is_localized_in_real_json.<locals>.<genexpr> at 0x760bdcb3a190>)
+
+tests/test1/test_access_trace_validation.py:105: AssertionError
+____ test_guardian_message_family_is_localized_in_real_json[active-detail] _____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+kind = 'detail', actor_kind = 'active'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["detail", "list", "create"])
+    @pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "active"])
+    def test_guardian_message_family_is_localized_in_real_json(kind, actor_kind):
+        from django.utils import translation
+    
+        from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
+        from tests.test1.app.models import Book, Publisher
+        from tests.test1.test_access_trace_command import invoke
+        from tests.test1.test_access_trace_guardian import local_routes, nested_routes
+        from tests.test1.test_access_trace_locales import stable
+        from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+    
+        actor = _user("translated", superuser=True)
+        if actor_kind == "inactive":
+            actor.is_active = False
+            actor.save()
+        selector = ["--anonymous"] if actor_kind == "anonymous" else [actor.username]
+        pub = Publisher.objects.create(name="private contents")
+        book = Book.objects.create(title="private contents", publisher=pub)
+        base = GuardianDetailViewPermissionRequired if kind == "detail" else GuardianListViewPermissionRequired
+        build = nested_routes if kind == "create" else lambda suffix: local_routes(suffix, base=base)
+        with isolated_routes(build) as routes:
+            if kind == "create":
+                outer, inner, leaf, _, key = routes
+                path = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+            else:
+                vs, _ = routes
+                path = _url(vs, "tested", **({"pk": pub.pk} if kind == "detail" else {}))
+            results = {}
+            for language in ("en", "de"):
+                with translation.override(language):
+                    code, output, error = invoke(path, *selector, "--as-json", "--no-color")
+                assert code == {"active": 0, "inactive": 1, "anonymous": 1}[actor_kind] and error == ""
+                results[language] = json.loads(output)
+            assert stable(results["en"]) == stable(results["de"])
+            english = [s["message"] for s in results["en"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            german = [s["message"] for s in results["de"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            assert english and len(english) == len(german)
+>           assert all(en != de for en, de in zip(english, german, strict=True))
+E           assert False
+E            +  where False = all(<generator object test_guardian_message_family_is_localized_in_real_json.<locals>.<genexpr> at 0x7ab7cdeb8040>)
+
+tests/test1/test_access_trace_validation.py:105: AssertionError
+_____ test_guardian_message_family_is_localized_in_real_json[active-list] ______
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+kind = 'list', actor_kind = 'active'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["detail", "list", "create"])
+    @pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "active"])
+    def test_guardian_message_family_is_localized_in_real_json(kind, actor_kind):
+        from django.utils import translation
+    
+        from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
+        from tests.test1.app.models import Book, Publisher
+        from tests.test1.test_access_trace_command import invoke
+        from tests.test1.test_access_trace_guardian import local_routes, nested_routes
+        from tests.test1.test_access_trace_locales import stable
+        from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+    
+        actor = _user("translated", superuser=True)
+        if actor_kind == "inactive":
+            actor.is_active = False
+            actor.save()
+        selector = ["--anonymous"] if actor_kind == "anonymous" else [actor.username]
+        pub = Publisher.objects.create(name="private contents")
+        book = Book.objects.create(title="private contents", publisher=pub)
+        base = GuardianDetailViewPermissionRequired if kind == "detail" else GuardianListViewPermissionRequired
+        build = nested_routes if kind == "create" else lambda suffix: local_routes(suffix, base=base)
+        with isolated_routes(build) as routes:
+            if kind == "create":
+                outer, inner, leaf, _, key = routes
+                path = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+            else:
+                vs, _ = routes
+                path = _url(vs, "tested", **({"pk": pub.pk} if kind == "detail" else {}))
+            results = {}
+            for language in ("en", "de"):
+                with translation.override(language):
+                    code, output, error = invoke(path, *selector, "--as-json", "--no-color")
+                assert code == {"active": 0, "inactive": 1, "anonymous": 1}[actor_kind] and error == ""
+                results[language] = json.loads(output)
+            assert stable(results["en"]) == stable(results["de"])
+            english = [s["message"] for s in results["en"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            german = [s["message"] for s in results["de"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            assert english and len(english) == len(german)
+>           assert all(en != de for en, de in zip(english, german, strict=True))
+E           assert False
+E            +  where False = all(<generator object test_guardian_message_family_is_localized_in_real_json.<locals>.<genexpr> at 0x760bdd796a80>)
+
+tests/test1/test_access_trace_validation.py:105: AssertionError
+____ test_guardian_message_family_is_localized_in_real_json[active-create] _____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+kind = 'create', actor_kind = 'active'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("kind", ["detail", "list", "create"])
+    @pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "active"])
+    def test_guardian_message_family_is_localized_in_real_json(kind, actor_kind):
+        from django.utils import translation
+    
+        from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
+        from tests.test1.app.models import Book, Publisher
+        from tests.test1.test_access_trace_command import invoke
+        from tests.test1.test_access_trace_guardian import local_routes, nested_routes
+        from tests.test1.test_access_trace_locales import stable
+        from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+    
+        actor = _user("translated", superuser=True)
+        if actor_kind == "inactive":
+            actor.is_active = False
+            actor.save()
+        selector = ["--anonymous"] if actor_kind == "anonymous" else [actor.username]
+        pub = Publisher.objects.create(name="private contents")
+        book = Book.objects.create(title="private contents", publisher=pub)
+        base = GuardianDetailViewPermissionRequired if kind == "detail" else GuardianListViewPermissionRequired
+        build = nested_routes if kind == "create" else lambda suffix: local_routes(suffix, base=base)
+        with isolated_routes(build) as routes:
+            if kind == "create":
+                outer, inner, leaf, _, key = routes
+                path = _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk})
+            else:
+                vs, _ = routes
+                path = _url(vs, "tested", **({"pk": pub.pk} if kind == "detail" else {}))
+            results = {}
+            for language in ("en", "de"):
+                with translation.override(language):
+                    code, output, error = invoke(path, *selector, "--as-json", "--no-color")
+                assert code == {"active": 0, "inactive": 1, "anonymous": 1}[actor_kind] and error == ""
+                results[language] = json.loads(output)
+            assert stable(results["en"]) == stable(results["de"])
+            english = [s["message"] for s in results["en"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            german = [s["message"] for s in results["de"]["steps"] if s["provider"] == "guardian" and s["message"]]
+            assert english and len(english) == len(german)
+>           assert all(en != de for en, de in zip(english, german, strict=True))
+E           assert False
+E            +  where False = all(<generator object test_guardian_message_family_is_localized_in_real_json.<locals>.<genexpr> at 0x7ab7cdcf8a00>)
+
+tests/test1/test_access_trace_validation.py:105: AssertionError
+_________ test_malformed_full_url_keeps_command_error_exit_code[text] __________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+process_env = {'PYTHONPATH': 'src:.', 'SHELL': '/bin/bash', 'COLORTERM': '', 'NVM_INC': '/home/alex/.nvm/versions/node/v24.21.0/include/node', ...}
+as_json = False
+
+    @pytest.mark.parametrize("as_json", [False, True], ids=["text", "json"])
+    def test_malformed_full_url_keeps_command_error_exit_code(process_env, as_json):
+        """A malformed URL is a wrong call/error, never an authorization denial."""
+        args = ["http://[", "--anonymous", *(["--as-json"] if as_json else [])]
+    
+        result = run_process(process_env, *args)
+    
+>       assert result.returncode == 2, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/alex/projects/alex/django-crud-views/tests/test1/access_trace_cli_fixture.py", line 62, in <module>
+E             main()
+E           File "/home/alex/projects/alex/django-crud-views/tests/test1/access_trace_cli_fixture.py", line 58, in main
+E             Command().run_from_argv([sys.argv[0], "cv_access", *sys.argv[1:]])
+E           File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/management/base.py", line 420, in run_from_argv
+E             self.execute(*args, **cmd_options)
+E           File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/management/base.py", line 464, in execute
+E             output = self.handle(*args, **options)
+E                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/alex/projects/alex/django-crud-views/src/crud_views/management/commands/cv_access.py", line 203, in handle
+E             trace = trace_access(path, actor)
+E                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/access_trace.py", line 124, in trace_access
+E             return _run_trace(path, user)
+E                    ^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/access_trace_runner.py", line 384, in _run_trace
+E             path=_normalize_path(path),
+E                  ^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/access_trace_runner.py", line 164, in _normalize_path
+E             path = urlsplit(path).path or "/"
+E                    ^^^^^^^^^^^^^^
+E           File "/usr/lib/python3.12/urllib/parse.py", line 514, in urlsplit
+E             raise ValueError("Invalid IPv6 URL")
+E         ValueError: Invalid IPv6 URL
+E         
+E       assert 1 == 2
+E        +  where 1 = CompletedProcess(args=['/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python', '-m', 'test....12/urllib/parse.py", line 514, in urlsplit\n    raise ValueError("Invalid IPv6 URL")\nValueError: Invalid IPv6 URL\n').returncode
+
+tests/test1/test_access_trace_validation.py:20: AssertionError
+_________ test_malformed_full_url_keeps_command_error_exit_code[json] __________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+process_env = {'PYTHONPATH': 'src:.', 'SHELL': '/bin/bash', 'COLORTERM': '', 'NVM_INC': '/home/alex/.nvm/versions/node/v24.21.0/include/node', ...}
+as_json = True
+
+    @pytest.mark.parametrize("as_json", [False, True], ids=["text", "json"])
+    def test_malformed_full_url_keeps_command_error_exit_code(process_env, as_json):
+        """A malformed URL is a wrong call/error, never an authorization denial."""
+        args = ["http://[", "--anonymous", *(["--as-json"] if as_json else [])]
+    
+        result = run_process(process_env, *args)
+    
+>       assert result.returncode == 2, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/alex/projects/alex/django-crud-views/tests/test1/access_trace_cli_fixture.py", line 62, in <module>
+E             main()
+E           File "/home/alex/projects/alex/django-crud-views/tests/test1/access_trace_cli_fixture.py", line 58, in main
+E             Command().run_from_argv([sys.argv[0], "cv_access", *sys.argv[1:]])
+E           File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/management/base.py", line 420, in run_from_argv
+E             self.execute(*args, **cmd_options)
+E           File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/management/base.py", line 464, in execute
+E             output = self.handle(*args, **options)
+E                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/alex/projects/alex/django-crud-views/src/crud_views/management/commands/cv_access.py", line 203, in handle
+E             trace = trace_access(path, actor)
+E                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/access_trace.py", line 124, in trace_access
+E             return _run_trace(path, user)
+E                    ^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/access_trace_runner.py", line 384, in _run_trace
+E             path=_normalize_path(path),
+E                  ^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/access_trace_runner.py", line 164, in _normalize_path
+E             path = urlsplit(path).path or "/"
+E                    ^^^^^^^^^^^^^^
+E           File "/usr/lib/python3.12/urllib/parse.py", line 514, in urlsplit
+E             raise ValueError("Invalid IPv6 URL")
+E         ValueError: Invalid IPv6 URL
+E         
+E       assert 1 == 2
+E        +  where 1 = CompletedProcess(args=['/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python', '-m', 'test....12/urllib/parse.py", line 514, in urlsplit\n    raise ValueError("Invalid IPv6 URL")\nValueError: Invalid IPv6 URL\n').returncode
+
+tests/test1/test_access_trace_validation.py:20: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_access_trace_validation.py::test_malformed_url_is_a_shared_trace_error_without_database_work[http://[]
+FAILED tests/test1/test_access_trace_validation.py::test_malformed_url_is_a_shared_trace_error_without_database_work[http://example.com\uff0fwrong/]
+FAILED tests/test1/test_access_trace_validation.py::test_german_guardian_command_translates_its_explanatory_message
+FAILED tests/test1/test_access_trace_validation.py::test_guardian_message_family_is_localized_in_real_json[anonymous-list]
+FAILED tests/test1/test_access_trace_validation.py::test_guardian_message_family_is_localized_in_real_json[anonymous-detail]
+FAILED tests/test1/test_access_trace_validation.py::test_guardian_message_family_is_localized_in_real_json[anonymous-create]
+FAILED tests/test1/test_access_trace_validation.py::test_guardian_message_family_is_localized_in_real_json[inactive-detail]
+FAILED tests/test1/test_access_trace_validation.py::test_guardian_message_family_is_localized_in_real_json[inactive-list]
+FAILED tests/test1/test_access_trace_validation.py::test_guardian_message_family_is_localized_in_real_json[inactive-create]
+FAILED tests/test1/test_access_trace_validation.py::test_guardian_message_family_is_localized_in_real_json[active-detail]
+FAILED tests/test1/test_access_trace_validation.py::test_guardian_message_family_is_localized_in_real_json[active-list]
+FAILED tests/test1/test_access_trace_validation.py::test_guardian_message_family_is_localized_in_real_json[active-create]
+FAILED tests/test1/test_access_trace_validation.py::test_malformed_full_url_keeps_command_error_exit_code[text]
+FAILED tests/test1/test_access_trace_validation.py::test_malformed_full_url_keeps_command_error_exit_code[json]
+14 failed in 4.39s

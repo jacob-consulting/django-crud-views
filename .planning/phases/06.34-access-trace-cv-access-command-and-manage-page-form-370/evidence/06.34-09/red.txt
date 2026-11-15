@@ -1,0 +1,1700 @@
+bringing up nodes...
+bringing up nodes...
+
+.F..F..F.F.FFFFFFFFFFFF.FFFFFFFF.FFFFFFFFFFFFFFFF.FF..FF....FFF...F      [100%]
+=================================== FAILURES ===================================
+____ test_notices_are_assembled_once_and_reach_every_real_output[cv_author] ____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+client = <django.test.client.Client object at 0x740032bee8a0>
+host = ViewSet(author), developer = <User: diagnostic developer>, enabled = None
+
+    def test_notices_are_assembled_once_and_reach_every_real_output(client, host, developer, enabled):
+        path = "/author/manage/"
+        documents = {}
+        for language, notice in NOTICES.items():
+            with translation.override(language):
+                trace = trace_access(path, developer)
+                data = trace.to_dict()
+>               assert notice in data["untraced"]
+E               AssertionError: assert 'Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt' in ['other middleware and URL decorators are not traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced', 'Allowed means this user may open the page; handler-phase checks are not evaluated.']
+
+tests/test1/test_access_trace_locales.py:43: AssertionError
+_ test_notices_are_assembled_once_and_reach_every_real_output[cv_guardian_author] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+client = <django.test.client.Client object at 0x740032ada4e0>
+host = ViewSet(guardian_author), developer = <User: diagnostic developer>
+enabled = None
+
+    def test_notices_are_assembled_once_and_reach_every_real_output(client, host, developer, enabled):
+        path = "/author/manage/"
+        documents = {}
+        for language, notice in NOTICES.items():
+            with translation.override(language):
+                trace = trace_access(path, developer)
+                data = trace.to_dict()
+>               assert notice in data["untraced"]
+E               AssertionError: assert 'Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt' in ['other middleware and URL decorators are not traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced', 'Allowed means this user may open the page; handler-phase checks are not evaluated.']
+
+tests/test1/test_access_trace_locales.py:43: AssertionError
+____ test_extraction_gettext_signatures[bare-gettext_noop-'one'-expected2] _____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032bed910>
+name = 'gettext_noop', args = "'one'", expected = ('one', '', None)
+style = 'bare'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[bare-ngettext_lazy-'one', 'many', count-expected4] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032ad9490>
+name = 'ngettext_lazy', args = "'one', 'many', count"
+expected = ('one', 'many', None), style = 'bare'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', None)]
+E         
+E         Right contains one more item: ('one', 'many', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[alias-ngettext_lazy-'one', 'many', count-expected4] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat6')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032aa25d0>
+name = 'ngettext_lazy', args = "'one', 'many', count"
+expected = ('one', 'many', None), style = 'alias'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [('one', '', None)] == [('one', 'many', None)]
+E         
+E         At index 0 diff: ('one', '', None) != ('one', 'many', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+__ test_extraction_gettext_signatures[alias-pgettext-'ctx', 'one'-expected5] ___
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat7')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032bed9d0>
+name = 'pgettext', args = "'ctx', 'one'", expected = ('one', '', 'ctx')
+style = 'alias'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [('ctx', '', None)] == [('one', '', 'ctx')]
+E         
+E         At index 0 diff: ('ctx', '', None) != ('one', '', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[alias-pgettext_lazy-'ctx', 'one'-expected6] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat8')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032690440>
+name = 'pgettext_lazy', args = "'ctx', 'one'", expected = ('one', '', 'ctx')
+style = 'alias'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [('ctx', '', None)] == [('one', '', 'ctx')]
+E         
+E         At index 0 diff: ('ctx', '', None) != ('one', '', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[alias-npgettext-'ctx', 'one', 'many', count-expected7] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat9')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032aa1070>
+name = 'npgettext', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'alias'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [('ctx', '', None)] == [('one', 'many', 'ctx')]
+E         
+E         At index 0 diff: ('ctx', '', None) != ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[alias-npgettext_lazy-'ctx', 'one', 'many', count-expected8] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat10')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7400326bb1d0>
+name = 'npgettext_lazy', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'alias'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [('ctx', '', None)] == [('one', 'many', 'ctx')]
+E         
+E         At index 0 diff: ('ctx', '', None) != ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+______ test_extraction_gettext_signatures[module-gettext-'one'-expected0] ______
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat11')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032af4200>
+name = 'gettext', args = "'one'", expected = ('one', '', None), style = 'module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+___ test_extraction_gettext_signatures[module-gettext_lazy-'one'-expected1] ____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat12')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032c03e60>
+name = 'gettext_lazy', args = "'one'", expected = ('one', '', None)
+style = 'module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+___ test_extraction_gettext_signatures[module-gettext_noop-'one'-expected2] ____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat13')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7400326708c0>
+name = 'gettext_noop', args = "'one'", expected = ('one', '', None)
+style = 'module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[module-ngettext-'one', 'many', count-expected3] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat14')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a6ade0>
+name = 'ngettext', args = "'one', 'many', count"
+expected = ('one', 'many', None), style = 'module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', None)]
+E         
+E         Right contains one more item: ('one', 'many', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[module-ngettext_lazy-'one', 'many', count-expected4] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat15')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032b53170>
+name = 'ngettext_lazy', args = "'one', 'many', count"
+expected = ('one', 'many', None), style = 'module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', None)]
+E         
+E         Right contains one more item: ('one', 'many', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+__ test_extraction_gettext_signatures[module-pgettext-'ctx', 'one'-expected5] __
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat16')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a6ae40>
+name = 'pgettext', args = "'ctx', 'one'", expected = ('one', '', 'ctx')
+style = 'module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', 'ctx')]
+E         
+E         Right contains one more item: ('one', '', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[module-pgettext_lazy-'ctx', 'one'-expected6] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat17')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a3a2a0>
+name = 'pgettext_lazy', args = "'ctx', 'one'", expected = ('one', '', 'ctx')
+style = 'module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', 'ctx')]
+E         
+E         Right contains one more item: ('one', '', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[module-npgettext-'ctx', 'one', 'many', count-expected7] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat18')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032692690>
+name = 'npgettext', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', 'ctx')]
+E         
+E         Right contains one more item: ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[module-npgettext_lazy-'ctx', 'one', 'many', count-expected8] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat19')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032adb260>
+name = 'npgettext_lazy', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', 'ctx')]
+E         
+E         Right contains one more item: ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+___ test_extraction_gettext_signatures[from_module-gettext-'one'-expected0] ____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat20')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032aa00b0>
+name = 'gettext', args = "'one'", expected = ('one', '', None)
+style = 'from_module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[from_module-gettext_lazy-'one'-expected1] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat21')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74003265b3e0>
+name = 'gettext_lazy', args = "'one'", expected = ('one', '', None)
+style = 'from_module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[from_module-gettext_noop-'one'-expected2] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat22')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74003b593e60>
+name = 'gettext_noop', args = "'one'", expected = ('one', '', None)
+style = 'from_module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[from_module-ngettext-'one', 'many', count-expected3] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat23')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032c02210>
+name = 'ngettext', args = "'one', 'many', count"
+expected = ('one', 'many', None), style = 'from_module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', None)]
+E         
+E         Right contains one more item: ('one', 'many', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[from_module-ngettext_lazy-'one', 'many', count-expected4] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat24')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74003265b350>
+name = 'ngettext_lazy', args = "'one', 'many', count"
+expected = ('one', 'many', None), style = 'from_module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', None)]
+E         
+E         Right contains one more item: ('one', 'many', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[from_module-pgettext-'ctx', 'one'-expected5] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat25')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a680e0>
+name = 'pgettext', args = "'ctx', 'one'", expected = ('one', '', 'ctx')
+style = 'from_module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', 'ctx')]
+E         
+E         Right contains one more item: ('one', '', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[from_module-pgettext_lazy-'ctx', 'one'-expected6] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat26')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032b53bf0>
+name = 'pgettext_lazy', args = "'ctx', 'one'", expected = ('one', '', 'ctx')
+style = 'from_module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', 'ctx')]
+E         
+E         Right contains one more item: ('one', '', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[from_module-npgettext-'ctx', 'one', 'many', count-expected7] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat27')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a69970>
+name = 'npgettext', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'from_module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', 'ctx')]
+E         
+E         Right contains one more item: ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[from_module-npgettext_lazy-'ctx', 'one', 'many', count-expected8] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat28')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032b53c20>
+name = 'npgettext_lazy', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'from_module'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', 'ctx')]
+E         
+E         Right contains one more item: ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+____ test_extraction_gettext_signatures[qualified-gettext-'one'-expected0] _____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat29')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032b50a40>
+name = 'gettext', args = "'one'", expected = ('one', '', None)
+style = 'qualified'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+__ test_extraction_gettext_signatures[qualified-gettext_lazy-'one'-expected1] __
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat30')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032c01820>
+name = 'gettext_lazy', args = "'one'", expected = ('one', '', None)
+style = 'qualified'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+__ test_extraction_gettext_signatures[qualified-gettext_noop-'one'-expected2] __
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat31')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032c02810>
+name = 'gettext_noop', args = "'one'", expected = ('one', '', None)
+style = 'qualified'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', None)]
+E         
+E         Right contains one more item: ('one', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[qualified-ngettext-'one', 'many', count-expected3] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat32')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032c00b30>
+name = 'ngettext', args = "'one', 'many', count"
+expected = ('one', 'many', None), style = 'qualified'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', None)]
+E         
+E         Right contains one more item: ('one', 'many', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[qualified-ngettext_lazy-'one', 'many', count-expected4] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat33')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032c038f0>
+name = 'ngettext_lazy', args = "'one', 'many', count"
+expected = ('one', 'many', None), style = 'qualified'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', None)]
+E         
+E         Right contains one more item: ('one', 'many', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[qualified-pgettext-'ctx', 'one'-expected5] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat34')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032c01fa0>
+name = 'pgettext', args = "'ctx', 'one'", expected = ('one', '', 'ctx')
+style = 'qualified'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', 'ctx')]
+E         
+E         Right contains one more item: ('one', '', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[qualified-pgettext_lazy-'ctx', 'one'-expected6] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat35')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032b51ee0>
+name = 'pgettext_lazy', args = "'ctx', 'one'", expected = ('one', '', 'ctx')
+style = 'qualified'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', 'ctx')]
+E         
+E         Right contains one more item: ('one', '', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[qualified-npgettext-'ctx', 'one', 'many', count-expected7] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat36')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032c02210>
+name = 'npgettext', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'qualified'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', 'ctx')]
+E         
+E         Right contains one more item: ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[qualified-npgettext_lazy-'ctx', 'one', 'many', count-expected8] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_gettext_signat37')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a83560>
+name = 'npgettext_lazy', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'qualified'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', 'ctx')]
+E         
+E         Right contains one more item: ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+___________________ test_extraction_ignores_non_django_calls ___________________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_ignores_non_dj0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a680e0>
+
+    def test_extraction_ignores_non_django_calls(tmp_path, monkeypatch):
+        source = "from elsewhere import gettext as _\nimport elsewhere as tr\n_('foreign')\ntr.npgettext('c', 'a', 'b', n)"
+>       assert extract_fixture(tmp_path, monkeypatch, source) == []
+E       AssertionError: assert [('foreign', '', None)] == []
+E         
+E         Left contains one more item: ('foreign', '', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:68: AssertionError
+_______ test_extraction_rejects_dynamic_or_unnamed_messages[_(message)] ________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_rejects_dynami0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a81c40>
+call = '_(message)'
+
+    @pytest.mark.parametrize("call", ["_(message)", "_(f'hello {name}')", "pgettext(context, 'one')", "ngettext('one', plural, n)", "_('hello %s')"])
+    def test_extraction_rejects_dynamic_or_unnamed_messages(tmp_path, monkeypatch, call):
+        source = "from django.utils.translation import gettext as _, pgettext, ngettext\n" + call
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test1/test_manage_locales.py:74: Failed
+___ test_extraction_rejects_dynamic_or_unnamed_messages[_(f'hello {name}')] ____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_rejects_dynami1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a836b0>
+call = "_(f'hello {name}')"
+
+    @pytest.mark.parametrize("call", ["_(message)", "_(f'hello {name}')", "pgettext(context, 'one')", "ngettext('one', plural, n)", "_('hello %s')"])
+    def test_extraction_rejects_dynamic_or_unnamed_messages(tmp_path, monkeypatch, call):
+        source = "from django.utils.translation import gettext as _, pgettext, ngettext\n" + call
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test1/test_manage_locales.py:74: Failed
+_ test_extraction_rejects_dynamic_or_unnamed_messages[pgettext(context, 'one')] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_rejects_dynami2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032a83890>
+call = "pgettext(context, 'one')"
+
+    @pytest.mark.parametrize("call", ["_(message)", "_(f'hello {name}')", "pgettext(context, 'one')", "ngettext('one', plural, n)", "_('hello %s')"])
+    def test_extraction_rejects_dynamic_or_unnamed_messages(tmp_path, monkeypatch, call):
+        source = "from django.utils.translation import gettext as _, pgettext, ngettext\n" + call
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test1/test_manage_locales.py:74: Failed
+_ test_extraction_rejects_dynamic_or_unnamed_messages[ngettext('one', plural, n)] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_rejects_dynami3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032b50650>
+call = "ngettext('one', plural, n)"
+
+    @pytest.mark.parametrize("call", ["_(message)", "_(f'hello {name}')", "pgettext(context, 'one')", "ngettext('one', plural, n)", "_('hello %s')"])
+    def test_extraction_rejects_dynamic_or_unnamed_messages(tmp_path, monkeypatch, call):
+        source = "from django.utils.translation import gettext as _, pgettext, ngettext\n" + call
+        with pytest.raises(ValueError):
+>           extract_fixture(tmp_path, monkeypatch, source)
+
+tests/test1/test_manage_locales.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_manage_locales.py:63: in extract_fixture
+    return messages("example")
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+package = 'example'
+
+    def messages(package):
+        """Use Django's template extractor; AST string arguments retain plural/context keys."""
+        found = set()
+        for relative in SOURCES[package]:
+            source = (ROOT / "src" / package / relative).read_text()
+            if relative.endswith(".html"):
+                source = templatize(source)
+                # templatize produces xgettext input, not an executable Python module.
+                literal = r"""u?(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")"""
+                calls = re.findall(
+                    rf"\b(?:gettext|ngettext|pgettext|npgettext)\({literal}(?:,\s*{literal})*(?:, count)?\)", source
+                )
+                nodes = [ast.parse(call).body[0].value for call in calls]
+            else:
+                nodes = [node for node in ast.walk(ast.parse(source)) if isinstance(node, ast.Call)]
+            for node in nodes:
+                if not isinstance(node.func, ast.Name) or node.func.id not in {
+                    "_",
+                    "gettext",
+                    "gettext_lazy",
+                    "ngettext",
+                    "pgettext",
+                    "npgettext",
+                }:
+                    continue
+                args = [arg.value for arg in node.args if isinstance(arg, ast.Constant) and isinstance(arg.value, str)]
+                context = args.pop(0) if node.func.id in {"pgettext", "npgettext"} else None
+                if args:
+>                   found.add((args[0], args[1] if "ngettext" in node.func.id else "", context))
+                                        ^^^^^^^
+E                   IndexError: list index out of range
+
+tests/test1/test_manage_locales.py:125: IndexError
+______ test_extraction_rejects_dynamic_or_unnamed_messages[_('hello %s')] ______
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_rejects_dynami4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032aa10d0>
+call = "_('hello %s')"
+
+    @pytest.mark.parametrize("call", ["_(message)", "_(f'hello {name}')", "pgettext(context, 'one')", "ngettext('one', plural, n)", "_('hello %s')"])
+    def test_extraction_rejects_dynamic_or_unnamed_messages(tmp_path, monkeypatch, call):
+        source = "from django.utils.translation import gettext as _, pgettext, ngettext\n" + call
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test1/test_manage_locales.py:74: Failed
+______________ test_extraction_multiline_template_context_plural _______________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw1/test_extraction_multiline_temp0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x740032aa0bf0>
+
+    def test_extraction_multiline_template_context_plural(tmp_path, monkeypatch):
+        source = '''{% load i18n %}{% translate "Open" context "verb" %}
+    {% blocktranslate trimmed count count=items|length context "rows" %}
+        {{ count }} row
+    {% plural %}
+        {{ count }} rows
+    {% endblocktranslate %}'''
+>       assert extract_fixture(tmp_path, monkeypatch, source, "html") == [
+            ("%(count)s row", "%(count)s rows", "rows"), ("Open", "", "verb")
+        ]
+E       AssertionError: assert [('Open', '', 'verb')] == [('%(count)s ..., '', 'verb')]
+E         
+E         At index 0 diff: ('Open', '', 'verb') != ('%(count)s row', '%(count)s rows', 'rows')
+E         Right contains one more item: ('Open', '', 'verb')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:92: AssertionError
+____________ test_manage_german_catalog_covers_sources[crud_views] _____________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+package = 'crud_views'
+
+    @pytest.mark.parametrize("package", SOURCES)
+    def test_manage_german_catalog_covers_sources(package):
+        catalog = polib.pofile(str(ROOT / "src" / package / "locale/de/LC_MESSAGES/django.po"))
+        missing = []
+        for msgid, plural, context in messages(package):
+            entry = catalog.find(msgid, msgctxt=context)
+            if entry is None or entry.fuzzy or not entry.translated() or entry.msgid_plural != plural:
+                missing.append(msgid)
+>       assert not missing, missing
+E       AssertionError: ['%(class)s: %(message)s', '%(count)s row', '%(label)s: %(value)s', '%(number)s. %(result)s — %(facts)s', '%(outcome)s at step %(number)s.', '%(username)s (pk %(pk)s, %(state)s)', ...]
+E       assert not ['%(class)s: %(message)s', '%(count)s row', '%(label)s: %(value)s', '%(number)s. %(result)s — %(facts)s', '%(outcome)s at step %(number)s.', '%(username)s (pk %(pk)s, %(state)s)', ...]
+
+tests/test1/test_manage_locales.py:137: AssertionError
+_ test_extraction_gettext_signatures[bare-pgettext_lazy-'ctx', 'one'-expected6] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw0/test_extraction_gettext_signat0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70e26f442180>
+name = 'pgettext_lazy', args = "'ctx', 'one'", expected = ('one', '', 'ctx')
+style = 'bare'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', '', 'ctx')]
+E         
+E         Right contains one more item: ('one', '', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[bare-npgettext-'ctx', 'one', 'many', count-expected7] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw0/test_extraction_gettext_signat1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70e26f40d040>
+name = 'npgettext', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'bare'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [('one', '', 'ctx')] == [('one', 'many', 'ctx')]
+E         
+E         At index 0 diff: ('one', '', 'ctx') != ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[bare-npgettext_lazy-'ctx', 'one', 'many', count-expected8] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw0/test_extraction_gettext_signat2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70e26f8fd070>
+name = 'npgettext_lazy', args = "'ctx', 'one', 'many', count"
+expected = ('one', 'many', 'ctx'), style = 'bare'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [] == [('one', 'many', 'ctx')]
+E         
+E         Right contains one more item: ('one', 'many', 'ctx')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+_ test_extraction_gettext_signatures[alias-ngettext-'one', 'many', count-expected3] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3248/popen-gw0/test_extraction_gettext_signat6')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70e26f4426c0>
+name = 'ngettext', args = "'one', 'many', count"
+expected = ('one', 'many', None), style = 'alias'
+
+    @pytest.mark.parametrize(
+        "name,args,expected",
+        [
+            ("gettext", "'one'", ("one", "", None)),
+            ("gettext_lazy", "'one'", ("one", "", None)),
+            ("gettext_noop", "'one'", ("one", "", None)),
+            ("ngettext", "'one', 'many', count", ("one", "many", None)),
+            ("ngettext_lazy", "'one', 'many', count", ("one", "many", None)),
+            ("pgettext", "'ctx', 'one'", ("one", "", "ctx")),
+            ("pgettext_lazy", "'ctx', 'one'", ("one", "", "ctx")),
+            ("npgettext", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+            ("npgettext_lazy", "'ctx', 'one', 'many', count", ("one", "many", "ctx")),
+        ],
+    )
+    @pytest.mark.parametrize("style", ["bare", "alias", "module", "from_module", "qualified"])
+    def test_extraction_gettext_signatures(tmp_path, monkeypatch, name, args, expected, style):
+        imports, call = {
+            "bare": (f"from django.utils.translation import {name}", name),
+            "alias": (f"from django.utils.translation import {name} as _", "_"),
+            "module": ("import django.utils.translation as tr", f"tr.{name}"),
+            "from_module": ("from django.utils import translation as tr", f"tr.{name}"),
+            "qualified": ("import django.utils.translation", f"django.utils.translation.{name}"),
+        }[style]
+>       assert extract_fixture(tmp_path, monkeypatch, f"{imports}\n{call}({args})") == [expected]
+E       AssertionError: assert [('one', '', None)] == [('one', 'many', None)]
+E         
+E         At index 0 diff: ('one', '', None) != ('one', 'many', None)
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:52: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_access_trace_locales.py::test_notices_are_assembled_once_and_reach_every_real_output[cv_author]
+FAILED tests/test1/test_access_trace_locales.py::test_notices_are_assembled_once_and_reach_every_real_output[cv_guardian_author]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[bare-gettext_noop-'one'-expected2]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[bare-ngettext_lazy-'one', 'many', count-expected4]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[alias-ngettext_lazy-'one', 'many', count-expected4]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[alias-pgettext-'ctx', 'one'-expected5]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[alias-pgettext_lazy-'ctx', 'one'-expected6]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[alias-npgettext-'ctx', 'one', 'many', count-expected7]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[alias-npgettext_lazy-'ctx', 'one', 'many', count-expected8]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[module-gettext-'one'-expected0]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[module-gettext_lazy-'one'-expected1]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[module-gettext_noop-'one'-expected2]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[module-ngettext-'one', 'many', count-expected3]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[module-ngettext_lazy-'one', 'many', count-expected4]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[module-pgettext-'ctx', 'one'-expected5]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[module-pgettext_lazy-'ctx', 'one'-expected6]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[module-npgettext-'ctx', 'one', 'many', count-expected7]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[module-npgettext_lazy-'ctx', 'one', 'many', count-expected8]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[from_module-gettext-'one'-expected0]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[from_module-gettext_lazy-'one'-expected1]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[from_module-gettext_noop-'one'-expected2]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[from_module-ngettext-'one', 'many', count-expected3]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[from_module-ngettext_lazy-'one', 'many', count-expected4]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[from_module-pgettext-'ctx', 'one'-expected5]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[from_module-pgettext_lazy-'ctx', 'one'-expected6]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[from_module-npgettext-'ctx', 'one', 'many', count-expected7]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[from_module-npgettext_lazy-'ctx', 'one', 'many', count-expected8]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[qualified-gettext-'one'-expected0]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[qualified-gettext_lazy-'one'-expected1]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[qualified-gettext_noop-'one'-expected2]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[qualified-ngettext-'one', 'many', count-expected3]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[qualified-ngettext_lazy-'one', 'many', count-expected4]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[qualified-pgettext-'ctx', 'one'-expected5]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[qualified-pgettext_lazy-'ctx', 'one'-expected6]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[qualified-npgettext-'ctx', 'one', 'many', count-expected7]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[qualified-npgettext_lazy-'ctx', 'one', 'many', count-expected8]
+FAILED tests/test1/test_manage_locales.py::test_extraction_ignores_non_django_calls
+FAILED tests/test1/test_manage_locales.py::test_extraction_rejects_dynamic_or_unnamed_messages[_(message)]
+FAILED tests/test1/test_manage_locales.py::test_extraction_rejects_dynamic_or_unnamed_messages[_(f'hello {name}')]
+FAILED tests/test1/test_manage_locales.py::test_extraction_rejects_dynamic_or_unnamed_messages[pgettext(context, 'one')]
+FAILED tests/test1/test_manage_locales.py::test_extraction_rejects_dynamic_or_unnamed_messages[ngettext('one', plural, n)]
+FAILED tests/test1/test_manage_locales.py::test_extraction_rejects_dynamic_or_unnamed_messages[_('hello %s')]
+FAILED tests/test1/test_manage_locales.py::test_extraction_multiline_template_context_plural
+FAILED tests/test1/test_manage_locales.py::test_manage_german_catalog_covers_sources[crud_views]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[bare-pgettext_lazy-'ctx', 'one'-expected6]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[bare-npgettext-'ctx', 'one', 'many', count-expected7]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[bare-npgettext_lazy-'ctx', 'one', 'many', count-expected8]
+FAILED tests/test1/test_manage_locales.py::test_extraction_gettext_signatures[alias-ngettext-'one', 'many', count-expected3]
+48 failed, 19 passed in 2.07s

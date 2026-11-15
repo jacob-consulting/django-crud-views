@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
-last_mapped_at: 2026-11-14
+last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_at: 2026-11-15
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-14
+**Analysis Date:** 2026-11-15
 
 ## Naming Patterns
 
@@ -150,4 +150,12 @@ Ruff's `I` rule enforces import sorting. Follow the grouping visible in `tests/t
 - For request rendering, assert parsed DOM roles, table scopes, accessible wrappers, stable card IDs, safe links, hostile-text escaping, and no inline event/style/script payloads. Use lxml helpers already present in `tests/test1/test_manage_cards.py`; test responsive real-browser layout separately in `tests/browser/manage-presentation.cjs`.
 - Keep core and Guardian coverage parameterized through the existing ViewSet fixtures. An absent manage registration must raise before database reads for auth-dependent builders, while pure view inventory remains safe (`tests/test1/test_manage_cards.py`, `tests/test1/test_manage_guardian.py`).
 
-*Convention analysis: 2026-11-14*
+## Access Tracing and Recorder (Phase 06.34)
+
+- Treat access tracing as observational instrumentation around existing authorization gates. Preserve runtime call signatures and outcomes; recorder assertions should prove both the trace event and unchanged request/direct-call behavior (`src/crud_views/lib/access_trace.py`, `tests/test1/test_access_trace_recorder.py`).
+- Keep recorder context scoped with the `recording()` context manager and `ContextVar`; test nested restoration, exceptions, copied concurrent contexts, and independent invocations. Avoid retaining actor/model objects in recorder ownership or event data (`src/crud_views/lib/access_trace.py`, `tests/test1/test_access_trace_recorder.py`).
+- Make collection opt-in through `CV_ACCESS_RECORD_REQUESTS=1`. The external autouse fixture in `tests/conftest.py` imports the recorder lazily after Django setup, clears it on teardown, and yields `None` when disabled. Preserve import-before-settings safety (`tests/conftest.py`, `tests/test1/test_access_trace_recorder.py`).
+- For nox wiring changes, keep complete normal and actual-recorder runs on the same freshly installed distribution, with explicit `PYTHONPATH=""` and recorder values `0` then `1`. Update the executable wiring assertions and installed-origin probe together (`noxfile.py`, `tests/test1/test_access_trace_ci.py`, `.github/workflows/tests.yml`).
+- Keep access trace tests split by contract: recorder/context safety (`tests/test1/test_access_trace_recorder.py`), trace behavior and gate fidelity (`tests/test1/test_access_trace.py`, `tests/test1/test_access_trace_*.py`), command behavior (`tests/test1/test_access_trace_command.py`), and manage form/presentation (`tests/test1/test_manage_access_trace.py`).
+
+*Convention analysis: 2026-11-15*

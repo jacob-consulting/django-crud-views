@@ -1,0 +1,68 @@
+bringing up nodes...
+bringing up nodes...
+
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+____ test_notices_are_assembled_once_and_reach_every_real_output[cv_author] ____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+client = <django.test.client.Client object at 0x7e70a363cd40>
+host = ViewSet(author), developer = <User: diagnostic developer>, enabled = None
+
+    def test_notices_are_assembled_once_and_reach_every_real_output(client, host, developer, enabled):
+        path = "/author/manage/"
+        documents = {}
+        for language, notice in NOTICES.items():
+            with translation.override(language):
+                trace = trace_access(path, developer)
+                data = trace.to_dict()
+>               assert notice in data["untraced"]
+E               AssertionError: assert 'Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt' in ['other middleware and URL decorators are not traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced', 'Allowed means this user may open the page; handler-phase checks are not evaluated.']
+
+tests/test1/test_access_trace_locales.py:43: AssertionError
+______________ test_extraction_multiline_template_context_plural _______________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3249/popen-gw0/test_extraction_multiline_temp0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e70a363cda0>
+
+    def test_extraction_multiline_template_context_plural(tmp_path, monkeypatch):
+        source = '''{% load i18n %}{% translate "Open" context "verb" %}
+    {% blocktranslate trimmed count count=items|length context "rows" %}
+        {{ count }} row
+    {% plural %}
+        {{ count }} rows
+    {% endblocktranslate %}'''
+>       assert extract_fixture(tmp_path, monkeypatch, source, "html") == [
+            ("%(count)s row", "%(count)s rows", "rows"), ("Open", "", "verb")
+        ]
+E       AssertionError: assert [('Open', '', 'verb')] == [('%(count)s ..., '', 'verb')]
+E         
+E         At index 0 diff: ('Open', '', 'verb') != ('%(count)s row', '%(count)s rows', 'rows')
+E         Right contains one more item: ('Open', '', 'verb')
+E         Use -v to get more diff
+
+tests/test1/test_manage_locales.py:92: AssertionError
+_ test_notices_are_assembled_once_and_reach_every_real_output[cv_guardian_author] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+client = <django.test.client.Client object at 0x79f47aeab050>
+host = ViewSet(guardian_author), developer = <User: diagnostic developer>
+enabled = None
+
+    def test_notices_are_assembled_once_and_reach_every_real_output(client, host, developer, enabled):
+        path = "/author/manage/"
+        documents = {}
+        for language, notice in NOTICES.items():
+            with translation.override(language):
+                trace = trace_access(path, developer)
+                data = trace.to_dict()
+>               assert notice in data["untraced"]
+E               AssertionError: assert 'Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt' in ['other middleware and URL decorators are not traced', 'the synthetic request uses http://localhost; host-dependent project rules are not reproduced', 'Allowed means this user may open the page; handler-phase checks are not evaluated.']
+
+tests/test1/test_access_trace_locales.py:43: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_access_trace_locales.py::test_notices_are_assembled_once_and_reach_every_real_output[cv_author]
+FAILED tests/test1/test_manage_locales.py::test_extraction_multiline_template_context_plural
+FAILED tests/test1/test_access_trace_locales.py::test_notices_are_assembled_once_and_reach_every_real_output[cv_guardian_author]
+3 failed in 1.60s

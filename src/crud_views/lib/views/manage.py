@@ -1,6 +1,7 @@
 import inspect
 from collections import OrderedDict
 from types import SimpleNamespace
+from urllib.parse import urlsplit
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
@@ -10,6 +11,7 @@ from django.utils.functional import SimpleLazyObject
 from django.utils.translation import gettext as _
 from django.views import generic
 
+from crud_views.lib.access_trace import get_recorder, resolve_trace_user, trace_access
 from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.check import (
     CheckUnknownAttributes,
@@ -57,14 +59,55 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         """Diagnostics require an active developer in every enabled mode."""
         from django.conf import settings as django_settings
 
+        recorder = get_recorder()
+        if recorder is not None:
+            owner = object()  # One invocation, even when class and actor repeat.
+            facts = {
+                "viewset": getattr(cls.cv_viewset, "name", None),
+                "group": crud_views_settings.manage_group,
+                "provider": "none",
+                "source": "ManageView._cv_manage_allowed",
+                "message": _("Manage mode: %(mode)s; DEBUG: %(debug)s")
+                % {"mode": crud_views_settings.manage_views_enabled, "debug": django_settings.DEBUG},
+            }
         if not user.is_authenticated or not user.is_active:
+            if recorder is not None:
+                recorder.record(
+                    owner,
+                    "manage_gate",
+                    **facts,
+                    result="denied",
+                    how="anonymous" if not user.is_authenticated else "inactive",
+                )
             return False
         mode = crud_views_settings.manage_views_enabled
         if mode == "no" or (mode == "debug_only" and not django_settings.DEBUG):
+            if recorder is not None:
+                recorder.record(owner, "manage_gate", **facts, result="denied", how="disabled")
             return False
         # Validate reached nested auth reads before the membership query, including action projection.
-        _check_nested_auth(cls, actor=user, model=cls.cv_viewset.model)
-        return user.groups.filter(name=crud_views_settings.manage_group).exists()
+        try:
+            _check_nested_auth(cls, actor=user, model=cls.cv_viewset.model)
+            allowed = user.groups.filter(name=crud_views_settings.manage_group).exists()
+        except Exception as exc:
+            if recorder is not None:
+                recorder.record(
+                    owner,
+                    "manage_gate",
+                    **facts,
+                    result="error",
+                    exception={"class": type(exc).__name__, "message": str(exc)},
+                )
+            raise
+        if recorder is not None:
+            recorder.record(
+                owner,
+                "manage_gate",
+                **facts,
+                result="passed" if allowed else "denied",
+                how="group_member" if allowed else "not_member",
+            )
+        return allowed
 
     def _cv_ancestor_actor_response(self, *, protected: bool):
         """Reject anonymous/inactive actors before lookup, including all-none ancestry."""
@@ -694,6 +737,98 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         messages += collect_viewset_icon_checks([viewset])
         return {"count": len(checks), "messages": self._manage_check_messages(messages)}
 
+    def get_manage_access_trace(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None):
+        """Prepare scalar diagnostics from explicit inputs; never change the hosting actor."""
+        data = {
+            "mode": mode,
+            "user_input": user.get_username(),
+            "pk_input": object_pk or "",
+            "path_input": path or "",
+            "error": None,
+            "actor": {
+                "pk": str(user.pk),
+                "username": str(user.get_username()),
+                "active": bool(user.is_active),
+                "anonymous": bool(user.is_anonymous),
+            },
+            "rows": [],
+            "trace": None,
+        }
+        if mode == "path":
+            data["trace"] = trace_access(path, user).to_dict()
+        elif mode == "viewset":
+            supplied = route_kwargs or {}
+            parents = {name: supplied[name] for name in viewset.get_parent_url_args() if name in supplied}
+            for key, view_class in viewset.get_all_views().items():
+                row = {"key": key, "path": None, "instruction": None, "trace": None}
+                data["rows"].append(row)
+                # Match ViewSet.get_path_pk: cv_object owns the standard PK segment.
+                if view_class.cv_object and (object_pk is None or object_pk == ""):
+                    row["instruction"] = _("needs an object pk")
+                    continue
+                coordinates = dict(parents)
+                if view_class.cv_object:
+                    coordinates[viewset.pk_name] = object_pk
+                try:
+                    row["path"] = reverse(viewset.get_router_name(key), kwargs=coordinates)
+                except NoReverseMatch:
+                    # Extra contributed arguments and invalid converter values remain local to this row.
+                    row["instruction"] = _("use the path field")
+                    continue
+                row["trace"] = trace_access(row["path"], user).to_dict()
+        return data
+
+    def _manage_access_query(self, permissions):
+        """Read GET only after the opt-in switch and the normal hosting dispatch gates."""
+        if not crud_views_settings.manage_access_trace:
+            return None
+        query = self.request.GET
+        data = {
+            "mode": query.get("cv_access_mode", ""),
+            "user_input": query.get("cv_access_user", ""),
+            "pk_input": query.get("cv_access_pk", ""),
+            "path_input": query.get("cv_access_path", ""),
+            "error": None,
+            "actor": None,
+            "rows": [],
+            "trace": None,
+        }
+        if "cv_access_mode" not in query:
+            return data
+        if data["mode"] not in {"path", "viewset"}:
+            data["error"] = _("Choose this ViewSet or any URL.")
+        elif not data["user_input"]:
+            data["error"] = _("Enter a username or primary key.")
+            data["error_field"] = "user"
+        elif data["mode"] == "path" and not data["path_input"].strip():
+            data["error"] = _("Enter a path to check.")
+            data["error_field"] = "path"
+        elif data["mode"] == "path":
+            try:
+                urlsplit(data["path_input"])
+            except ValueError:
+                data["error"] = _("Enter a valid path or URL.")
+                data["error_field"] = "path"
+        if data["error"]:
+            return data
+        actor = resolve_trace_user(data["user_input"])
+        if actor is None:
+            data["error"] = _("Unknown user: %(user)s") % {"user": data["user_input"]}
+            data["error_field"] = "user"
+            return data
+        result = self.get_manage_access_trace(
+            self.cv_viewset,
+            actor,
+            mode=data["mode"],
+            object_pk=data["pk_input"],
+            path=data["path_input"],
+            route_kwargs=self.kwargs,
+        )
+        result["user_input"] = data["user_input"]
+        if data["mode"] == "viewset":
+            permissions["actor"] = self.get_manage_actor_row(self.cv_viewset, actor)
+        return result
+
     def get_context_data(self, **kwargs):
         # nested: the permission rows and holder diagnostics read auth records, which must be on default (06.18)
         _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
@@ -719,6 +854,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 "manage_docs_base_url": self.manage_docs_base_url,
             }
         )
+        context["manage_access_trace"] = self._manage_access_query(context["manage_permissions"])
         return context
 
     def get_ancestor_policy_data(self) -> dict:

@@ -1,0 +1,4 @@
+.BEFORE_BOOK_IDS {'default': [('app', 'book', 55)], 'shard': [('app', 'book', 17)]}
+AFTER_IDENTICAL True
+.
+2 passed in 1.37s

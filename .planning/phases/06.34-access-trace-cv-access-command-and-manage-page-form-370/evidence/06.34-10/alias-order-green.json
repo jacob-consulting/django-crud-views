@@ -1,0 +1,21 @@
+{
+  "name": "alias-order-green",
+  "command": "CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_transactions.py::test_on_commit_error_after_real_commit_keeps_data tests/test1/test_ancestor_auth_databases.py::test_top_level_guardian_and_manage_keep_their_routing -n 0 -q",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+  "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+  "started": "2026-11-15T07:07:54.771059+00:00",
+  "log": "alias-order-green.log",
+  "finished": "2026-11-15T07:07:56.995553+00:00",
+  "duration_seconds": 2.224,
+  "exit_code": 0,
+  "status": "passed",
+  "summary": [
+    "..                                                                       [100%]",
+    "2 passed in 1.44s"
+  ],
+  "counts": {
+    "passed": 2
+  },
+  "source_unchanged": true
+}

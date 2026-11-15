@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.477" timestamp="2026-11-15T06:22:29.448997+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_manage_access_trace" name="test_malformed_path_is_form_feedback[cv_author]" time="0.422"><failure message="assert 500 == 200&#10; +  where 500 = &lt;HttpResponseServerError status_code=500, &quot;text/html; charset=utf-8&quot;&gt;.status_code">client = &lt;django.test.client.Client object at 0x76ee149b9400&gt;
+host = ViewSet(author), developer = &lt;User: diagnostic developer&gt;, enabled = None
+
+    def test_malformed_path_is_form_feedback(client, host, developer, enabled):
+        client.raise_request_exception = False
+        response = submit(client, host, developer, cv_access_mode="path", cv_access_user=developer.username,
+                          cv_access_path="http://[")
+&gt;       assert response.status_code == 200
+E       assert 500 == 200
+E        +  where 500 = &lt;HttpResponseServerError status_code=500, "text/html; charset=utf-8"&gt;.status_code
+
+tests/test1/test_manage_access_trace.py:482: AssertionError</failure></testcase></testsuite></testsuites>

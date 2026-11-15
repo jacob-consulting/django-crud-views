@@ -1,0 +1,22 @@
+{
+  "name": "browser-smoke-2",
+  "command": "PYTHONPATH=src:. node tests/browser/access-trace.cjs --python .nox/tests-3-12-django-6-0/bin/python --case smoke --output /tmp/cv-0634-final-smoke2.json",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411.json",
+  "source_sha256": "5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411",
+  "started": "2026-11-15T08:22:00.096159+00:00",
+  "log": "browser-smoke-2.log",
+  "status": "passed",
+  "pid": 3904370,
+  "finished": "2026-11-15T08:22:09.047801+00:00",
+  "duration_seconds": 8.952,
+  "exit_code": 0,
+  "summary": [
+    "passed: core-viewset-en-390-js",
+    "passed: guardian-viewset-en-390-js",
+    "passed: hosting-authorization",
+    "passed: 3 cases; /tmp/cv-0634-final-smoke2.json"
+  ],
+  "counts": {},
+  "source_unchanged": true
+}

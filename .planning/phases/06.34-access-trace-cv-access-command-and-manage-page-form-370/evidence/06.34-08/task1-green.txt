@@ -1,0 +1,120 @@
+bringing up nodes...
+bringing up nodes...
+
+..FFF.                                                                   [100%]
+=================================== FAILURES ===================================
+___________ test_enabled_help_anchor_and_setting_contract[cv_author] ___________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+request = <FixtureRequest for <Function test_enabled_help_anchor_and_setting_contract[cv_author]>>
+fixture = 'cv_author'
+client = <django.test.client.Client object at 0x7403b93de0c0>
+developer = <User: docs-developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7403b93de1e0>
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+    def test_enabled_help_anchor_and_setting_contract(request, fixture, client, developer, monkeypatch):
+        host = request.getfixturevalue(fixture)
+        assert CrudViewsSettings.model_fields["manage_access_trace"].default is False
+        assert "| CRUD_VIEWS_MANAGE_ACCESS_TRACE |" in reference("settings")
+        assert "[Access check](manage.md#access-check)" in reference("settings")
+        monkeypatch.setattr(crud_views_settings, "manage_access_trace", True)
+        monkeypatch.setattr(host.get_view_class("manage"), "manage_docs_base_url", "https://example.test/manage/")
+        client.force_login(developer)
+        response = client.get(reverse(host.get_router_name("manage")))
+        assert response.status_code == 200
+        links = html.fromstring(response.content).cssselect("[data-cv-manage-help]")
+>       assert {link.get("href") for link in links} == {
+            "https://example.test/manage/#" + anchor for anchor in ANCHORS | {"access-check"}
+        }
+E       AssertionError: assert {'https://exa...ntation', ...} == {'https://exa...issions', ...}
+E         
+E         Extra items in the right set:
+E         'https://example.test/manage/#guardian'
+E         Use -v to get more diff
+
+tests/test1/test_access_trace_docs.py:83: AssertionError
+_______ test_documented_custom_boundary_has_unknown_inner_origin[False] ________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+inner_denies = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("inner_denies", [True, False])
+    def test_documented_custom_boundary_has_unknown_inner_origin(inner_denies):
+        calls = []
+    
+        class Inner(DetailViewPermissionRequired):
+            def has_permission(self):
+                calls.append("inner")
+                return not inner_denies
+    
+        class Outer(Inner):
+            def has_permission(self):
+                calls.append("outer")
+                result = super().has_permission()
+                return result if inner_denies else False
+    
+        def build(suffix):
+            vs = ViewSet(model=Publisher, name="docboundary" + suffix)
+            register(Outer, vs)
+            return vs, [vs]
+    
+        with isolated_routes(build) as vs:
+            trace = trace_access(_url(vs, "tested", pk=1), _user("boundary"))
+        decision = trace.steps[trace.decided_by - 1]
+        assert trace.outcome == "denied" and calls == ["outer", "inner"]
+        assert decision.kind == "custom_gate" and decision.how == "observed_boundary"
+        assert decision.source == f"{Outer.__module__}.{Outer.__qualname__}.has_permission"
+        assert "inner" in decision.message and "unknown" in decision.message
+        text = section("Custom method boundaries")
+        for phrase in ("observed_boundary", "actual observed bound callable", "inner denying implementation is unknown", "super()", "inherited library method"):
+>           assert phrase in text
+E           AssertionError: assert 'inherited library method' in '\nA `custom_gate` source identifies the class/method of the actual observed bound callable, with\n`how=observed_bound...ts\nthe deciding refusal, its evidence is retained instead. This diagnostic does not inspect arbitrary project code.\n'
+
+tests/test1/test_access_trace_docs.py:119: AssertionError
+________ test_documented_custom_boundary_has_unknown_inner_origin[True] ________
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+inner_denies = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("inner_denies", [True, False])
+    def test_documented_custom_boundary_has_unknown_inner_origin(inner_denies):
+        calls = []
+    
+        class Inner(DetailViewPermissionRequired):
+            def has_permission(self):
+                calls.append("inner")
+                return not inner_denies
+    
+        class Outer(Inner):
+            def has_permission(self):
+                calls.append("outer")
+                result = super().has_permission()
+                return result if inner_denies else False
+    
+        def build(suffix):
+            vs = ViewSet(model=Publisher, name="docboundary" + suffix)
+            register(Outer, vs)
+            return vs, [vs]
+    
+        with isolated_routes(build) as vs:
+            trace = trace_access(_url(vs, "tested", pk=1), _user("boundary"))
+        decision = trace.steps[trace.decided_by - 1]
+        assert trace.outcome == "denied" and calls == ["outer", "inner"]
+        assert decision.kind == "custom_gate" and decision.how == "observed_boundary"
+        assert decision.source == f"{Outer.__module__}.{Outer.__qualname__}.has_permission"
+        assert "inner" in decision.message and "unknown" in decision.message
+        text = section("Custom method boundaries")
+        for phrase in ("observed_boundary", "actual observed bound callable", "inner denying implementation is unknown", "super()", "inherited library method"):
+>           assert phrase in text
+E           AssertionError: assert 'inherited library method' in '\nA `custom_gate` source identifies the class/method of the actual observed bound callable, with\n`how=observed_bound...ts\nthe deciding refusal, its evidence is retained instead. This diagnostic does not inspect arbitrary project code.\n'
+
+tests/test1/test_access_trace_docs.py:119: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_access_trace_docs.py::test_enabled_help_anchor_and_setting_contract[cv_author]
+FAILED tests/test1/test_access_trace_docs.py::test_documented_custom_boundary_has_unknown_inner_origin[False]
+FAILED tests/test1/test_access_trace_docs.py::test_documented_custom_boundary_has_unknown_inner_origin[True]
+3 failed, 3 passed in 2.04s

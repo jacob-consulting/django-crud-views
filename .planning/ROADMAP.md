@@ -60,6 +60,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance. (completed 2026-11-13)
 - [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
 - [x] **Phase 06.33: Structured manage page (#366) (INSERTED)** - approved D-01–D-30 issue handover; permission matrix, collapsible views and switchable defaults. (completed 2026-11-14)
+- [x] **Phase 06.34: Access trace: cv_access command and manage page form (#370) (INSERTED)** - approved D-01–D-23 design; real authorization trace, shell command and opt-in manage form. (completed 2026-11-15)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1943,6 +1944,53 @@ Plans:
 **Wave 9** *(blocked on Wave 8 completion)*
 - [x] 06.33-10-PLAN.md
 
+### Phase 06.34: Access trace: cv_access command and manage page form (#370) (INSERTED)
+
+**Goal:** Developers can explain whether one user may open one URL and which check decided the outcome, using the real authorization code through a shell command and an opt-in manage-page form.
+**Source:** [Issue #370 — gsd-handover](https://github.com/jacob-consulting/django-crud-views/issues/370#gsd-handover), approved 2026-11-14. Carry decisions D-01–D-23 and all acceptance criteria into planning without reopening settled choices absent a concrete conflict. The repository design is `superpowers/specs/2026-11-14-access-trace-design.md`; the approved mockup is `superpowers/specs/2026-11-14-access-trace-mockup.html`.
+**Requirements:** One core trace function with an optional context-local recorder inside the real authorization gates; real dispatch with a stub handler, ordered checks, requirement provenance, deciding outcome, Guardian filtering and Resource lookups. Always roll back the default-database transaction, preserve authorization behavior and query costs outside tracing, and expose the approved handler-phase and middleware limitations. Deliver `cv_access <path> <user>` with anonymous support, versioned JSON, terminal color handling and specified exit codes, followed by the manage-page Access check card behind `CRUD_VIEWS_MANAGE_ACCESS_TRACE = False`. Reuse #366's user-parameterized matrix and requirement APIs; support per-ViewSet and arbitrary-path checks, registry-backed CSP-compatible markup, documentation and German translations. Prove recorder neutrality with the whole existing suite under an enabled recorder, and trace fidelity with the approved view-kind × actor grid.
+**Depends on:** Phase 06.33
+**Ordering:** Implement recorder/trace, then command, then page form. Settle the new public trace, setting and theme contracts before Phase 7's stability freeze. Issues #371 and #372 are related follow-ups, not blockers.
+**Scope exclusions:** No impersonation, changed access policy, second implementation of authorization, real view handlers, configuration dump (#371), Resource manage pages (#372), or bulk mode beyond the specified per-view form results. Preserve the design's explicit limits for custom gates, external effects, handler-phase checks, other middleware and URL decorators.
+**Success Criteria**:
+
+1. Core, nested, Guardian, manage and Resource traces report ordered checks and provenance, the first deciding step, and the approved outcomes; pending and unevaluated checks remain explicit.
+2. Traces run no real handler, leave no default-database writes, and agree with real requests across the approved grid; the existing suite also passes unchanged with recording enabled.
+3. The command supports username/primary-key resolution, anonymous users, full-URL path extraction, text/versioned JSON, Django color controls and exit codes 0/1/2 as specified.
+4. The Access check card is absent and its parameters ignored by default; when enabled, authorized manage viewers can check another user's per-view outcomes or any path with nested URL context, accessible native disclosure and registry-backed styling.
+5. Documentation, settings reference, help anchors and German strings cover the command, card, JSON, default-off exposure and the approved operational limitations.
+
+**Plans:** 10/10 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.34-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.34-02-PLAN.md
+- [x] 06.34-03-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.34-04-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.34-05-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.34-06-PLAN.md
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [x] 06.34-07-PLAN.md
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [x] 06.34-08-PLAN.md
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [x] 06.34-09-PLAN.md
+
+**Wave 9** *(blocked on Wave 8 completion)*
+- [x] 06.34-10-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -1973,6 +2021,8 @@ Phase 06.32 must also settle before this freeze; include its transition metadata
 `workflow:transition-<variant>` class keys (#362) in the stability review.
 Phase 06.33 must also settle before this freeze; include its manage template/context compatibility,
 `manage:*` class keys and public requirement-description API (#366) in the stability review.
+Phase 06.34 must also settle before this freeze; include its public access-trace contracts,
+`CRUD_VIEWS_MANAGE_ACCESS_TRACE` setting and new `manage:*` outcome keys (#370) in the stability review.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -2068,4 +2118,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.31. Developer-only manage diagnostics (#361) | 6/6 | Complete | 2026-11-13 |
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
+| 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

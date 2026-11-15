@@ -1,0 +1,71 @@
+bringing up nodes...
+bringing up nodes...
+
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______________ test_malformed_path_is_form_feedback[cv_author] ________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+client = <django.test.client.Client object at 0x76ee149b9400>
+host = ViewSet(author), developer = <User: diagnostic developer>, enabled = None
+
+    def test_malformed_path_is_form_feedback(client, host, developer, enabled):
+        client.raise_request_exception = False
+        response = submit(client, host, developer, cv_access_mode="path", cv_access_user=developer.username,
+                          cv_access_path="http://[")
+>       assert response.status_code == 200
+E       assert 500 == 200
+E        +  where 500 = <HttpResponseServerError status_code=500, "text/html; charset=utf-8">.status_code
+
+tests/test1/test_manage_access_trace.py:482: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    django.request:log.py:293 Internal Server Error: /author/manage/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 54, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 329, in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/base.py", line 144, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/base.py", line 228, in get
+    context = self.get_context_data(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 847, in get_context_data
+    context["manage_access_trace"] = self._manage_access_query(context["manage_permissions"])
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 809, in _manage_access_query
+    result = self.get_manage_access_trace(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/manage.py", line 757, in get_manage_access_trace
+    data["trace"] = trace_access(path, user).to_dict()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/access_trace.py", line 124, in trace_access
+    return _run_trace(path, user)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/access_trace_runner.py", line 384, in _run_trace
+    path=_normalize_path(path),
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/access_trace_runner.py", line 164, in _normalize_path
+    path = urlsplit(path).path or "/"
+           ^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/parse.py", line 514, in urlsplit
+    raise ValueError("Invalid IPv6 URL")
+ValueError: Invalid IPv6 URL
+=========================== short test summary info ============================
+FAILED tests/test1/test_manage_access_trace.py::test_malformed_path_is_form_feedback[cv_author]
+1 failed in 1.50s

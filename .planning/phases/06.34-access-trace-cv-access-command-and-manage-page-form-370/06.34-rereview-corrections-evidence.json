@@ -1,0 +1,47 @@
+{
+  "purpose": "independent re-review follow-up corrections; not phase/release acceptance",
+  "tested_head": "e4a415026488e8dafb67d305f2f8e3b191cebf38",
+  "base": "7ad0bba58900e07a01e7f17527129899583a1c6a",
+  "commits": [
+    "fa1977d993759aa72ab6f6a9aeea718449b1703c",
+    "524ade42bd4dbb69c2fe2e8142dd1f9a6a7c7b18",
+    "129be6dd7321da703c5d82cc2b034269428b0ff3",
+    "a852fab8b34a0944e4581e4d9ffd34c01480db95",
+    "98b6ff08276c753b5e52051efccc4674f27f4685",
+    "b6c4f2f0c2af8886adc30027a8d1c5addc3165c2",
+    "e4a415026488e8dafb67d305f2f8e3b191cebf38"
+  ],
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "django": "5.2.19",
+  "source_origin": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+  "sha256": {
+    "docs/reference/manage.md": "ef80f8e35a5694d37d6b142372b46dc6b159306bde15d7e3d5ac48cb67e33816",
+    "docs/reference/theme.md": "b4aaf8c82c355466c643feae0ef1c6228ef407fc424f1e5e853e3e0f831ad7e4",
+    "src/crud_views/lib/access_trace_runner.py": "eddeb4585fd28f7530b5382ab7779bc5cb9afdffeda4810c69ed62155e3b191e",
+    "src/crud_views/lib/view/base.py": "7b8114bfec5d37cfe1df4bc9a8e41af626d4f261a7471e3df47e894da3c963e1",
+    "src/crud_views/lib/views/manage.py": "01e36c9f70452f1a87d5af243f1708476aea5b673138bc5d4558508130dbc8f5",
+    "src/crud_views/locale/de/LC_MESSAGES/django.mo": "cdf8c1b075d70ad7cda70ccd9bfd6675bc007d34b424c7dd6004685d28ed638e",
+    "src/crud_views/locale/de/LC_MESSAGES/django.po": "321570389c0d31f1e6633d65fcd0334a1afd998d7e953252184769ef1591ef53",
+    "src/crud_views/templates/crud_views/includes/access_trace.html": "49b70fb3d36ba862830c18de1932b13257e46987513b256686fbb605182293c0",
+    "src/crud_views/templates/crud_views/view_manage.html": "3f1ecfe899d24c2ec97c5c4d3cde421193a2420f8e3d28f6cc895301c84feea9",
+    "tests/test1/test_access_trace_docs.py": "c05a7ad3bf520c6891851d9758c6571e920b1232eb60def61430902a2fe33d15",
+    "tests/test1/test_access_trace_paths.py": "a49d4bef865894a5f66d619dcbbfc26d16b675a5a0a7d886834310a1e2b4b702",
+    "tests/test1/test_access_trace_recorder.py": "3fa7e906b92ab07059514fac80c1521917c8c37c1404a66ca2815d2df71e2132",
+    "tests/test1/test_access_trace_user_fields.py": "d64dc29c40e45d747d063ea51f9ebfd1078f413d9b68ea3385b6bff069335545",
+    "tests/test1/test_manage_access_trace.py": "22e205194569e9be6dc16b3d37691e5f725afb9878490209bb91b0203e659aef",
+    "tests/test1/test_manage_release.py": "964b3ce408e08154253fc10674af31b8a01d81386c7e40fe035f8079058ea0a9"
+  },
+  "final_command": "CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_access_trace_recorder.py tests/test1/test_access_trace.py tests/test1/test_access_trace_ancestors.py tests/test1/test_ancestor_costs.py tests/test1/test_ancestor_operations.py tests/test1/test_access_trace_docs.py tests/test1/test_manage_release.py tests/test1/test_manage_access_trace.py tests/test1/test_theme_adoption_docs.py -n 4 -q",
+  "result": {
+    "passed": 329,
+    "seconds": 11.21,
+    "exit_code": 0
+  },
+  "log_sha256": "bd6096b338936a310fc991b4d1c73d781391a8db3b4ea4285fe8019f7944ae13",
+  "limits": [
+    "No full-suite rerun",
+    "No fresh browser acceptance",
+    "No other Python or Django runtime validation",
+    "Independent re-review pending"
+  ]
+}

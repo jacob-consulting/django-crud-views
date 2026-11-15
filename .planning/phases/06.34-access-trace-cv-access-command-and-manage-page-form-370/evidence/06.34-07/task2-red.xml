@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.431" timestamp="2026-11-15T06:17:07.196869+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_manage_access_trace" name="test_both_forms_share_username_first_selection[cv_author-username-viewset]" time="0.466"><failure message="assert 1 == 2&#10; +  where 2 = &lt;User: nonnumeric actor&gt;.pk">client = &lt;django.test.client.Client object at 0x7ce4df4d1bb0&gt;
+host = ViewSet(author), developer = &lt;User: diagnostic developer&gt;
+django_user_model = &lt;class 'django.contrib.auth.models.User'&gt;, enabled = None
+mode = 'viewset', selector = 'username'
+
+    @pytest.mark.parametrize("mode", ["path", "viewset"])
+    @pytest.mark.parametrize("selector", ["username", "pk", "collision", "unknown", "invalid_pk"])
+    def test_both_forms_share_username_first_selection(client, host, developer, django_user_model, enabled, mode, selector):
+        actor = django_user_model.objects.create_user(username="nonnumeric actor")
+        identifier = actor.username
+        if selector in {"pk", "collision"}:
+            identifier = str(actor.pk)
+        if selector == "collision":
+            actor = django_user_model.objects.create_user(username=identifier)
+        elif selector == "unknown":
+            identifier = "987654321"
+        elif selector == "invalid_pk":
+            identifier = "not-a-valid-pk"
+        response = submit(client, host, developer, cv_access_mode=mode, cv_access_user=identifier,
+                          cv_access_path="/author/manage/")
+        data = response.context["manage_access_trace"]
+        assert data["user_input"] == identifier
+        if selector in {"unknown", "invalid_pk"}:
+            assert data["error"] and data["actor"] is None and not data["rows"] and data["trace"] is None
+        else:
+            assert data["actor"]["pk"] == str(actor.pk) and not data["error"]
+            if mode == "viewset":
+&gt;               assert response.context["manage_permissions"]["actor"]["id"] == actor.pk
+E               assert 1 == 2
+E                +  where 2 = &lt;User: nonnumeric actor&gt;.pk
+
+tests/test1/test_manage_access_trace.py:205: AssertionError</failure></testcase></testsuite></testsuites>

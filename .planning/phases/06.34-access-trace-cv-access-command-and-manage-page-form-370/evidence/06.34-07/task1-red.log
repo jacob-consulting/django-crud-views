@@ -1,0 +1,21 @@
+bringing up nodes...
+bringing up nodes...
+
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________________ test_setting_and_disabled_no_work[cv_author] _________________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+client = <django.test.client.Client object at 0x7836365bd250>
+host = ViewSet(author), developer = <User: diagnostic developer>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7836365bf170>
+
+    def test_setting_and_disabled_no_work(client, host, developer, monkeypatch):
+>       assert "manage_access_trace" in CrudViewsSettings.model_fields
+E       AssertionError: assert 'manage_access_trace' in {'extends': FieldInfo(annotation=Union[str, NoneType], required=False, default='app/crud_views.html'), 'manage_views_e...lse, default='CRUD_VIEWS_MANAGE'), 'manage_show_users': FieldInfo(annotation=bool, required=False, default=False), ...}
+E        +  where {'extends': FieldInfo(annotation=Union[str, NoneType], required=False, default='app/crud_views.html'), 'manage_views_e...lse, default='CRUD_VIEWS_MANAGE'), 'manage_show_users': FieldInfo(annotation=bool, required=False, default=False), ...} = CrudViewsSettings.model_fields
+
+tests/test1/test_manage_access_trace.py:40: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_manage_access_trace.py::test_setting_and_disabled_no_work[cv_author]
+1 failed in 1.23s

@@ -51,6 +51,7 @@ from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured, Perm
 from django.db.models import QuerySet
 from django.http import Http404
 
+from crud_views.lib.access_trace import _object_identity, get_recorder
 from crud_views.lib.ancestor_db import _check_nested_auth, _require_default_alias
 from crud_views.lib.ancestor_policy import AncestorPermissions
 from crud_views.lib.exceptions import ViewSetNotFoundError
@@ -411,13 +412,24 @@ def _deny_anonymous(view: CrudView):
         return handler()
     from django.contrib.auth.views import redirect_to_login
 
-    return redirect_to_login(view.request.get_full_path())
+    response = redirect_to_login(view.request.get_full_path())
+    if (recorder := get_recorder()) is not None:
+        recorder.capture_login_response(view, response)
+    return response
 
 
 def _protected_actor_response(view: CrudView):
     """Actor rule of protected ancestry: anonymous → the endpoint's anonymous response, authenticated inactive
     (superusers included) → 403, else None. Used by the views' ``_cv_ancestor_actor_response`` adapters."""
     user = view.request.user
+    if (recorder := get_recorder()) is not None:
+        recorder.record(
+            view,
+            "actor_admission",
+            result="passed" if user.is_authenticated and user.is_active else "denied",
+            how="anonymous" if not user.is_authenticated else "active" if user.is_active else "inactive",
+            source="ancestors._protected_actor_response",
+        )
     if not user.is_authenticated:
         return _deny_anonymous(view)
     if not user.is_active:
@@ -459,10 +471,24 @@ def _authorize_ancestors(view: CrudView):
     if viewset is None or viewset.parent is None:
         return None
     # static validation first: structure, relationships and declarations, before any actor/object/permission work
-    chain = _validate_ancestor_structure(viewset)
-    _validate_action_declarations(viewset)
-    pair = _operation_requirements(type(view))
-    selected = _selected_gates(viewset, chain)
+    recorder = get_recorder()
+    try:
+        chain = _validate_ancestor_structure(viewset)
+        _validate_action_declarations(viewset)
+        pair = _operation_requirements(type(view))
+        selected = _selected_gates(viewset, chain)
+    except Exception as exc:
+        if recorder is not None:
+            recorder.record(
+                view,
+                "validation",
+                result="error",
+                source="ancestors._authorize_ancestors",
+                exception={"class": type(exc).__name__, "message": str(exc)},
+            )
+        raise
+    if recorder is not None:
+        recorder.record(view, "validation", result="passed", source="ancestors._authorize_ancestors")
 
     # actor admission before any lookup; all-none ancestry keeps only the endpoint's own early rule
     response = view._cv_ancestor_actor_response(protected=bool(selected))
@@ -474,13 +500,66 @@ def _authorize_ancestors(view: CrudView):
     outer = None
     for index in reversed(range(len(chain))):
         edge, ancestor = chain[index]
-        obj = _resolve_ancestor(view, edge, ancestor, outer)
+        try:
+            obj = _resolve_ancestor(view, edge, ancestor, outer)
+        except Exception as exc:
+            if recorder is not None:
+                recorder.record(
+                    view,
+                    "ancestor_lookup",
+                    viewset=ancestor.name,
+                    result="not_found" if isinstance(exc, Http404) else "error",
+                    source="ancestors._resolve_ancestor",
+                    exception={"class": type(exc).__name__, "message": str(exc)},
+                )
+            raise
+        if recorder is not None:
+            recorder.record(
+                view,
+                "ancestor_lookup",
+                viewset=ancestor.name,
+                object=_object_identity(obj),
+                result="passed",
+                source="ancestors._resolve_ancestor",
+            )
         if index in selected:
             # the gate's auth records must be on default, before its vocabulary and any provider shortcut
-            _check_nested_auth(view, actor=user, model=ancestor.model, obj=obj, provider=_effective_provider(ancestor))
             key = pair.nearest if selected[index] == "nearest" else pair.higher
-            permission = _permission_name(viewset, ancestor, key, view.cv_key)
-            if not ancestor._ancestor_has_permission(user, permission, obj, view=view):
+            permission = None
+            try:
+                _check_nested_auth(
+                    view, actor=user, model=ancestor.model, obj=obj, provider=_effective_provider(ancestor)
+                )
+                permission = _permission_name(viewset, ancestor, key, view.cv_key)
+                allowed = ancestor._ancestor_has_permission(user, permission, obj, view=view)
+            except Exception as exc:
+                if recorder is not None:
+                    recorder.record(
+                        view,
+                        "ancestor_gate",
+                        viewset=ancestor.name,
+                        object=_object_identity(obj),
+                        key=key,
+                        permission=permission,
+                        provider=_effective_provider(ancestor),
+                        source=_requirement_source(type(view))[0],
+                        result="error",
+                        exception={"class": type(exc).__name__, "message": str(exc)},
+                    )
+                raise
+            if recorder is not None:
+                recorder.record(
+                    view,
+                    "ancestor_gate",
+                    viewset=ancestor.name,
+                    object=_object_identity(obj),
+                    key=key,
+                    permission=permission,
+                    provider=_effective_provider(ancestor),
+                    source=_requirement_source(type(view))[0],
+                    result="passed" if allowed else "denied",
+                )
+            if not allowed:
                 raise PermissionDenied
         resolved.insert(0, obj)
         outer = obj

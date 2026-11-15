@@ -2,6 +2,20 @@ import nox
 
 DJANGO_VERSIONS = ["4.2", "5.2", "6.0"]
 
+# Both complete suites must exercise the freshly installed distribution. Cached
+# local checks use checkout PYTHONPATH explicitly; CI must catch packaging defects.
+_INSTALLED_PROJECT_ORIGIN = """
+from pathlib import Path
+import sysconfig
+import crud_views
+
+origin = Path(crud_views.__file__).resolve()
+paths = sysconfig.get_paths()
+print(f"Installed crud_views: {origin}")
+assert any(origin.is_relative_to(Path(paths[key]).resolve()) for key in ("purelib", "platlib")), origin
+assert not origin.is_relative_to(Path("src").resolve()), origin
+"""
+
 
 @nox.session(python=["3.12", "3.13", "3.14", "3.15"], venv_backend="uv")
 @nox.parametrize("django", DJANGO_VERSIONS)
@@ -13,10 +27,34 @@ def tests(session, django):
     session.install(f"django~={django}.0")
     session.install(".[polymorphic,workflow,ordered,test]")
 
+    import_env = {"PYTHONPATH": "", "CV_ACCESS_RECORD_REQUESTS": "0"}
+    session.run("python", "-c", _INSTALLED_PROJECT_ORIGIN, env=import_env)
+
     # One XML report per session: all sessions run from the repo root, so a shared
     # coverage.xml would be overwritten by each session in turn. See issue #105.
     xml_report = f"--cov-report=xml:coverage-py{session.python}-dj{django}.xml"
-    session.run("pytest", "tests", "-n", "auto", "--cov", "--cov-report=term-missing", xml_report, *session.posargs)
+    session.run(
+        "pytest",
+        "tests",
+        "-n",
+        "auto",
+        "--cov",
+        "--cov-report=term-missing",
+        xml_report,
+        *session.posargs,
+        env=import_env,
+    )
+    # Observe every existing request again, with the same package and assertions.
+    # --no-cov also overrides coverage options supplied through pytest addopts.
+    session.run(
+        "pytest",
+        "tests",
+        "-n",
+        "auto",
+        "--no-cov",
+        *session.posargs,
+        env={**import_env, "CV_ACCESS_RECORD_REQUESTS": "1"},
+    )
 
 
 # The declared floors in pyproject.toml ("django-crispy-forms (>=2.0)", "crispy-bootstrap5 (>=2023.10)"). The pins are

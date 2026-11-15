@@ -1,0 +1,12 @@
+import pathlib
+import subprocess
+import sys
+
+root = pathlib.Path.cwd()
+name, command = sys.argv[1:]
+with open(f"/tmp/cv0634final-{name}-supervisor.log", "w") as log:
+    process = subprocess.Popen(
+        [str(root / ".venv/bin/python"), "/tmp/cv0634final_run.py", name, command],
+        stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, start_new_session=True,
+    )
+print(name, process.pid)

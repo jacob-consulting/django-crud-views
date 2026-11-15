@@ -54,11 +54,13 @@ def test_resource_manage_model_query_preservation(request, fixture, client, djan
     client.force_login(actor)
     # Shared ViewSet fixtures retain vocabulary caches across tests. Reproduce the
     # original cold baseline independently of worker scheduling, then restore it.
-    monkeypatch.setattr(vs, "_default_permissions", None)
     ContentType.objects.clear_cache()
     clear_ct_cache()
-    with CaptureQueriesContext(connection) as queries:
-        response = client.get(reverse(vs.get_router_name("manage")))
+    previous_permissions = vs._default_permissions
+    with monkeypatch.context() as cache_patch:
+        cache_patch.setattr(vs, "_default_permissions", None)
+        with CaptureQueriesContext(connection) as queries:
+            response = client.get(reverse(vs.get_router_name("manage")))
     assert response.status_code == 200
     counts = Counter(table for query in queries for table in set(re.findall(r'(?:FROM|JOIN) "([^"]+)"', query["sql"])))
     expected = {
@@ -83,6 +85,7 @@ def test_resource_manage_model_query_preservation(request, fixture, client, djan
         )
     assert len(queries) == (21 if fixture == "cv_guardian_author" else 9)
     assert counts == expected
+    assert getattr(vs, "_default_permissions", object()) is previous_permissions, "Restore shared vocabulary cache"
 
 
 def test_resource_manage_tracer(client, django_user_model):

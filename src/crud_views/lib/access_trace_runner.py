@@ -1,7 +1,7 @@
 """Synthetic GET dispatch for access diagnostics; no real handler or persistent stores."""
 
 from types import MethodType
-from urllib.parse import urlsplit
+from urllib.parse import unquote_to_bytes, urlsplit
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -14,6 +14,7 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBase
 from django.urls import Resolver404, resolve
+from django.utils.encoding import repercent_broken_unicode
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 from django.views.generic.list import MultipleObjectMixin
@@ -162,6 +163,9 @@ class _TraceRequest(HttpRequest):
 
 def _normalize_path(path):
     path = urlsplit(path).path or "/"
+    # Split before decoding: encoded ?/# belong to the path. Like Django's WSGI
+    # request boundary, retain invalid UTF-8 as escapes and decode exactly once.
+    path = repercent_broken_unicode(unquote_to_bytes(path)).decode()
     return path if path.startswith("/") else "/" + path
 
 

@@ -1,0 +1,32 @@
+{
+  "name": "javascript",
+  "command": "npm test -- tests/js/manage.test.js --maxWorkers=4",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411.json",
+  "source_sha256": "5c6acde8a6150ebeb7f3dc8f519df982f38babc9f6e0b842b1caf2ee58182411",
+  "started": "2026-11-15T08:23:33.892122+00:00",
+  "log": "javascript.log",
+  "status": "passed",
+  "pid": 3906146,
+  "finished": "2026-11-15T08:23:36.519945+00:00",
+  "duration_seconds": 2.628,
+  "exit_code": 0,
+  "summary": [
+    "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:",
+    "  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json",
+    "Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.",
+    "",
+    " RUN  v5.0.5 /home/alex/projects/alex/django-crud-views",
+    "",
+    "",
+    " Test Files  1 passed (1)",
+    "      Tests  10 passed (10)",
+    "   Start at  08:23:34",
+    "   Duration  1.86s (environment 75%, tests 18%, setup 4%, transform 1%, worker 1%)",
+    ""
+  ],
+  "counts": {
+    "passed": 10
+  },
+  "source_unchanged": true
+}

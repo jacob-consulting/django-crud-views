@@ -1,0 +1,37 @@
+"""Temporary command recorder: no package installs and no inherited secrets in output."""
+import datetime
+import hashlib
+import json
+import pathlib
+import re
+import subprocess
+import sys
+import time
+
+ROOT = pathlib.Path.cwd()
+OUT = ROOT / ".planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-final-acceptance"
+name, command = sys.argv[1:]
+files = subprocess.check_output(["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "src", "tests", "docs", "noxfile.py", "pyproject.toml", "mkdocs.yml"]).decode().split("\0")
+snapshot = {file: hashlib.sha256((ROOT / file).read_bytes()).hexdigest() for file in sorted(set(files)) if file}
+manifest = json.dumps(snapshot, sort_keys=True).encode()
+fingerprint = hashlib.sha256(manifest).hexdigest()
+(OUT / f"sources-{fingerprint}.json").write_bytes(manifest + b"\n")
+record = {"name": name, "command": command, "cwd": str(ROOT), "source_manifest": f"sources-{fingerprint}.json", "source_sha256": fingerprint,
+          "started": datetime.datetime.now(datetime.timezone.utc).isoformat(), "log": name + ".log"}
+start = time.monotonic()
+record["status"] = "running"
+(OUT / (name + ".json")).write_text(json.dumps(record, indent=2) + "\n")
+with (OUT / record["log"]).open("w") as log:
+    process = subprocess.Popen(command, shell=True, executable="/bin/bash", stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+    record["pid"] = process.pid
+    (OUT / (name + ".json")).write_text(json.dumps(record, indent=2) + "\n")
+    process.wait()
+record.update(finished=datetime.datetime.now(datetime.timezone.utc).isoformat(), duration_seconds=round(time.monotonic()-start, 3), exit_code=process.returncode,
+              status="passed" if process.returncode == 0 else "failed")
+content = (OUT / record["log"]).read_text()
+record["summary"] = content.splitlines()[-12:]
+record["counts"] = {kind: int(count) for count, kind in re.findall(r"(\d+) (passed|failed|skipped|errors?|deselected)", content[-3000:])}
+record["source_unchanged"] = all((ROOT / file).exists() and hashlib.sha256((ROOT / file).read_bytes()).hexdigest() == value for file, value in snapshot.items())
+(OUT / (name + ".json")).write_text(json.dumps(record, indent=2) + "\n")
+print(json.dumps(record, indent=2), flush=True)
+sys.exit(process.returncode)

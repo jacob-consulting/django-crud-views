@@ -1,0 +1,19 @@
+✔ fingerprints include untracked source and required harness bytes (46.06153ms)
+✔ receipt validation rejects missing cases, false measurements, failed assets and leaks (9.913329ms)
+✔ read-only receipt verification rejects stale bytes and changed captures (29.620165ms)
+✔ empty or incomplete evidence never passes (114.82449ms)
+✔ all 52 exact UI source IDs require passed cases and actual captures/DOM facts (14.492169ms)
+✔ assets, CSP, errors, sources and owned cleanup are mandatory (14.436735ms)
+✔ unrelated holder scenarios cannot prove view, child or check cardinality (11.176002ms)
+✔ criterion measurements, assertions and exact cardinalities are mandatory (7.633674ms)
+✔ startup timeout cleans only owned process/data and retains diagnostics (265.322345ms)
+✔ missing executable and early startup failure are cleaned (111.976849ms)
+✔ missing/mismatched cached bytes and undeclared remote URLs fail closed (5.448089ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2026.351029

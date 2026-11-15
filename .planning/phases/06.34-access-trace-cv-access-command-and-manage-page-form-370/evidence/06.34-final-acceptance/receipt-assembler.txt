@@ -1,0 +1,60 @@
+"""Build the final reviewed-source release receipt from newly executed commands."""
+import datetime
+import hashlib
+import json
+import pathlib
+import shutil
+import subprocess
+import xml.etree.ElementTree as ET
+
+from cv0634final_commands import commands, PHASE, OUT
+
+root = pathlib.Path.cwd()
+phase = root / PHASE
+out = root / OUT
+runs = [json.loads((out / (name + ".json")).read_text()) for name in commands]
+assert all(r["status"] == "passed" and r["exit_code"] == 0 and r["source_unchanged"] for r in runs)
+assert len({r["source_sha256"] for r in runs}) == 1
+manifest_path = out / runs[0]["source_manifest"]
+manifest = json.loads(manifest_path.read_text())
+paths = set(subprocess.check_output(["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "src", "tests", "docs", "noxfile.py", "pyproject.toml", "mkdocs.yml"]).decode().split("\0")) - {""}
+assert paths == set(manifest)
+assert all(hashlib.sha256((root / p).read_bytes()).hexdigest() == h for p, h in manifest.items())
+critical = ["test_external_fixture_matches_switch", "test_real_pipe_and_terminal_color_controls", "test_actual_login_middleware_or_supported_absence", "test_grid_inventory_is_exact_and_unskipped", "test_malformed_full_url_keeps_command_error_exit_code", "test_guardian_message_family_is_localized_in_real_json", "test_requirement_hook_runs_once_without_reading_unused_property", "test_classproperty_requirements_remain_opaque_without_extra_reads", "test_uri_coordinates_match_real_requests", "test_encoded_object_pk_matches_real_lookup", "test_username_and_pk_lookup_with_real_typed_fields", "test_valid_username_still_wins_over_pk", "test_validation_belongs_to_submitted_form", "test_recorded_summary_precedes_metadata_and_keeps_full_scalar_trace", "test_summary_shows_zero_list_counts_and_allowed_boundary_once", "test_actor_neutral_matrix_and_result_spacing", "test_documented_access_mapping_distinguishes_optional_web_validation", "test_enabled_help_anchor_and_setting_contract"]
+test_evidence = {}
+for name in ("full-normal", "full-recorder", "supported-4-2", "supported-6-0"):
+    cases = list(ET.parse(out / (name + ".xml")).iter("testcase"))
+    matched = {prefix: [c.attrib for c in cases if c.get("name", "").startswith(prefix)] for prefix in critical}
+    assert all(matched.values()), (name, [p for p, rows in matched.items() if not rows])
+    assert all(not list(c) for c in cases if any(c.get("name", "").startswith(p) for p in critical))
+    test_evidence[name] = {"collected":len(cases), "critical_cases":matched, "skips":[{**c.attrib,"reason":c.find("skipped").get("message")} for c in cases if c.find("skipped") is not None]}
+browser_path = phase / "06.34-10-browser-evidence.json"
+browser = json.loads(browser_path.read_text())
+assert browser["status"] == "passed" and len(browser["cases"]) == 63
+assert all(all(c["facts"]["presentation"].values()) for c in browser["cases"])
+ui_checks = {}
+for case in browser["cases"]:
+    for assertion in case["assertions"]:
+        if any(word in assertion["name"] for word in ("collapsed", "actor-neutral", "error belongs")):
+            assert assertion["actual"] == assertion["expected"]
+            ui_checks.setdefault(assertion["name"], []).append(case["id"])
+record = {
+    "status":"passed-with-documented-runtime-and-human-limits", "generated":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "scope":"Final acceptance after Nyquist and independent review corrections; no prior test run is reused as a pass.",
+    "source_head":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+    "source_manifest":str(manifest_path.relative_to(phase)), "source_sha256":runs[0]["source_sha256"], "source_files":len(manifest),
+    "source_hash_encoding":"SHA256 of sorted-key JSON bytes excluding the manifest's final newline; each value hashes current file bytes.",
+    "source_manifest_file_sha256":hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+    "command_artifacts_directory":"evidence/06.34-final-acceptance", "commands":runs, "executed_test_evidence":test_evidence,
+    "runtime_facts":{r["name"]:json.loads((out/r["log"]).read_text()) for r in runs if r["name"].startswith("runtime-")},
+    "browser":{"receipt":"06.34-10-browser-evidence.json","sha256":hashlib.sha256(browser_path.read_bytes()).hexdigest(),"cases":63,"screenshots":len(browser["screenshots"]),"source_files":len(browser["sources"]["files"]),"started":browser["started"],"finished":browser["finished"],"versions":browser["server"]["versions"],"chromium":browser["browser"]["version"],"playwright":json.loads((pathlib.Path(browser["browser"]["playwright"])/"package.json").read_text())["version"],"node":subprocess.check_output(["node","--version"],text=True).strip(),"cleanup":browser["cleanup"],"review_ui_assertions":ui_checks},
+    "recording_proof":{"environment":"CV_ACCESS_RECORD_REQUESTS=1","fixture":"tests/conftest.py::record_access_requests","assertion":"tests/test1/test_access_trace_recorder.py::test_external_fixture_matches_switch","no_exclusions":True,"complete_suite":"full-recorder"},
+    "review_coverage":{"malformed_urls_and_german_guardian":"test_access_trace_validation.py", "neutral_custom_hooks_and_static_descriptors":"test_access_trace_recorder.py", "once_only_uri_decoding":"test_access_trace_paths.py", "typed_username_pk_fallback":"test_access_trace_user_fields.py", "reviewed_presentation_and_optional_error_field":"test_manage_access_trace.py and test_access_trace_docs.py"},
+    "history":{"prior_acceptance":"66df22b1: canonical receipts and 06.34-10-SUMMARY.md describe the earlier source snapshot.","current_diagnostics":"evidence/06.34-final-acceptance/browser-contract-red.log and browser-smoke*.json/log retain assertion development. First smoke wrongly assumed exception-class precedence; reviewed markup prefers its recorded message/how, which the corrected assertion verifies without changing production code."},
+    "unavailable_compatible_matrix":[{"python":p,"django":d,"status":"unverified","reason":"No cached compatible dependency environment; no installations or upgrades."} for p,versions in (("3.13",("4.2","5.2","6.0")),("3.14",("5.2","6.0")),("3.15",("5.2","6.0"))) for d in versions],
+    "runtime_inventory":{"python_paths":{v:shutil.which("python"+v) for v in ("3.12","3.13","3.14","3.15")},"note":"Python3.15.0rc2 executable has no Django/pytest/Guardian; default .venv3.12.3/Django6.1.2 is used only for docs/lint tooling."},
+    "incompatible_matrix":[{"python":p,"django":"4.2","reason":"Existing nox matrix explicitly excludes this pair."} for p in ("3.14","3.15")],
+    "limitations":["Human visual UAT remains pending; no phase-completion, security-audit or validation disposition is asserted here.","Seven declared-compatible runtime pairs remain unverified.","Existing Vite native-loader warning is retained; all10 JavaScript regressions pass.","No dependency install, runtime upgrade, CI dispatch, developer database/server access, push or publication occurred."]
+}
+(phase / "06.34-10-release-evidence.json").write_text(json.dumps(record,indent=2)+"\n")
+print(json.dumps({"commands":len(runs),"source_files":len(manifest),"source_sha256":record["source_sha256"],"browser_cases":63,"critical_test_groups":len(critical),"status":record["status"]}))

@@ -3,6 +3,7 @@
 import ast
 import gettext
 import re
+from collections import Counter
 from pathlib import Path
 
 import polib
@@ -98,6 +99,12 @@ def test_extraction_multiline_template_context_plural(tmp_path, monkeypatch):
     ]
 
 
+def test_extraction_keyword_literals(tmp_path, monkeypatch):
+    source = """from django.utils.translation import npgettext_lazy as tr
+tr(context="rows", singular="%(count)s row", plural="%(count)s rows", number="count")"""
+    assert extract_fixture(tmp_path, monkeypatch, source) == [("%(count)s row", "%(count)s rows", "rows")]
+
+
 SIGNATURES = {
     "gettext": ("message",),
     "gettext_lazy": ("message",),
@@ -179,7 +186,13 @@ def test_manage_german_catalog_covers_sources(package):
     missing = []
     for msgid, plural, context in messages(package):
         entry = catalog.find(msgid, msgctxt=context)
-        if entry is None or entry.fuzzy or not entry.translated() or entry.msgid_plural != plural:
+        if (
+            entry is None
+            or entry.fuzzy
+            or not entry.translated()
+            or entry.msgid_plural != plural
+            or entry.msgctxt != context
+        ):
             missing.append(msgid)
     assert not missing, missing
 
@@ -212,12 +225,48 @@ def test_manage_compiled_catalog_matches_po_semantics(package):
             for count in (0, 1, 2, 21):
                 value = compiled.ngettext(key, entry.msgid_plural, count)
                 assert value == entry.msgstr_plural[int(count != 1)]
-                assert set(re.findall(r"%\([^)]+\)[sd]", value)) == set(
+                assert Counter(re.findall(r"%\([^)]+\)[sd]", value)) == Counter(
                     re.findall(r"%\([^)]+\)[sd]", entry.msgid if count == 1 else entry.msgid_plural)
                 )
         else:
             assert compiled.gettext(key) == entry.msgstr
-            assert set(re.findall(r"%\([^)]+\)[sd]", entry.msgstr)) == set(re.findall(r"%\([^)]+\)[sd]", entry.msgid))
+            assert Counter(re.findall(r"%\([^)]+\)[sd]", entry.msgstr)) == Counter(
+                re.findall(r"%\([^)]+\)[sd]", entry.msgid)
+            )
+
+
+def test_compiled_contextual_plural_validation(tmp_path, monkeypatch):
+    import sys
+
+    stem = tmp_path / "src/example/locale/de/LC_MESSAGES/django"
+    stem.parent.mkdir(parents=True)
+    catalog = polib.POFile()
+    catalog.metadata = {
+        "Language": "de",
+        "Content-Type": "text/plain; charset=UTF-8",
+        "Plural-Forms": "nplurals=2; plural=(n != 1);",
+    }
+    catalog.extend(
+        [
+            polib.POEntry(msgid="Open", msgctxt="verb", msgstr="Öffnen"),
+            polib.POEntry(msgid="Open", msgctxt="state", msgstr="Offen"),
+            polib.POEntry(
+                msgid="%(count)s row",
+                msgid_plural="%(count)s rows",
+                msgctxt="rows",
+                msgstr_plural={0: "%(count)s Zeile", 1: "%(count)s Zeilen"},
+            ),
+        ]
+    )
+    catalog.save(str(stem.with_suffix(".po")))
+    catalog.save_as_mofile(str(stem.with_suffix(".mo")))
+    monkeypatch.setattr(sys.modules[__name__], "ROOT", tmp_path)
+    test_manage_compiled_catalog_matches_po_semantics("example")
+    # A stale binary must fail even if the changed entry is outside today's emitter list.
+    catalog[0].msgstr = "Aufmachen"
+    catalog.save(str(stem.with_suffix(".po")))
+    with pytest.raises(AssertionError):
+        test_manage_compiled_catalog_matches_po_semantics("example")
 
 
 @pytest.mark.django_db

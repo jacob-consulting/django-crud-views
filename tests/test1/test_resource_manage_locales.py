@@ -211,7 +211,8 @@ def test_resource_manage_localized_trace_parity(client, localized_resource, mode
             assert response.wsgi_request.user.pk == env.developer.pk
             data = response.context["manage_access_trace"]
             root = html.fromstring(response.content)
-            assert not root.cssselect("script")
+            assert not root.cssselect("#cv-manage-access-trace script")
+            assert "&lt;script&gt;selected&lt;/script&gt;" in response.content.decode()
             rows = data["rows"] if mode == "viewset" else [{"key": "path", "path": path, "trace": data["trace"]}]
             if mode == "viewset":
                 assert [row["key"] for row in rows] == list(env.vs.get_all_views())
@@ -223,6 +224,8 @@ def test_resource_manage_localized_trace_parity(client, localized_resource, mode
                 assert stderr == "" and json.loads(stdout) == trace
                 expected = "denied" if row["key"] == "manage" else "error" if broken else "allowed"
                 assert trace["outcome"] == expected
+                assert trace["version"] == 1
+                assert all(step["provider"] != "resource" for step in trace["steps"])
                 assert code == {"allowed": 0, "denied": 1, "error": 2}[expected]
                 _, text, stderr = invoke(row["path"], env.actor.username, "--no-color")
                 assert stderr == ""
@@ -231,6 +234,17 @@ def test_resource_manage_localized_trace_parity(client, localized_resource, mode
                     if mode == "viewset"
                     else root.get_element_by_id("cv-manage-access-trace")
                 ).text_content()
+                outcome_label = {
+                    "en": {"allowed": "Allowed", "denied": "Denied", "error": "Error"},
+                    "de": {"allowed": "Erlaubt", "denied": "Verweigert", "error": "Fehler"},
+                }[language][expected]
+                assert outcome_label in panel and outcome_label in text
+                notice = (
+                    "Andere Middleware und URL-Dekoratoren werden nicht nachverfolgt"
+                    if language == "de"
+                    else "other middleware and URL decorators are not traced"
+                )
+                assert notice in trace["untraced"]
                 for notice in trace["untraced"]:
                     assert notice in panel and notice in text
                 for step in trace["steps"]:

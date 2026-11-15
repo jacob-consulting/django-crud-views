@@ -877,9 +877,10 @@ for declaration provenance; this is not a general guarantee about other Pydantic
 
 ### Access trace mapping
 
-The enabled context has the following exact keys, even before submission or on invalid input. Data remains
-escaped text; exception messages are deliberately disclosed by this opt-in feature. The direct builder returns
-the same shape for valid inputs, using the supplied username; the web adapter preserves the user's typed selector.
+The enabled context always contains the eight base fields below. The web adapter adds the optional `error_field`
+only for user/path validation failures. Data remains escaped text; exception messages are deliberately disclosed
+by this opt-in feature. The direct builder returns only the base fields for valid inputs, using the supplied
+username; the web adapter preserves the user's typed selector.
 
 | Field | Meaning |
 |---|---|
@@ -891,6 +892,7 @@ the same shape for valid inputs, using the supplied username; the web adapter pr
 | `actor` | Selected user identity: string `pk`, string `username`, boolean `active` and `anonymous`; `None` before a valid selection. |
 | `rows` | All registered view rows in ViewSet mode; empty otherwise. |
 | `trace` | Version-1 scalar trace dictionary in path mode; `None` otherwise. |
+| `error_field` | Optional web-adapter field: `user` for an empty/unknown selector, or `path` for an empty/invalid path. It is absent before submission, on valid input, for invalid-mode errors, and from the direct builder. Use it with `mode` to associate `error` with the submitted form's input. |
 
 ### Access trace rows
 

@@ -136,6 +136,53 @@ def test_enabled_help_anchor_and_setting_contract(request, fixture, client, deve
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
+@pytest.mark.parametrize(
+    "case,error_field",
+    [
+        ("initial", None),
+        ("valid", None),
+        ("mode", None),
+        ("unknown_user", "user"),
+        ("empty_user", "user"),
+        ("empty_path", "path"),
+        ("invalid_path", "path"),
+    ],
+)
+def test_documented_access_mapping_distinguishes_optional_web_validation(
+    request, fixture, client, developer, monkeypatch, case, error_field
+):
+    host = request.getfixturevalue(fixture)
+    monkeypatch.setattr(crud_views_settings, "manage_access_trace", True)
+    client.force_login(developer)
+    query = {"cv_access_mode": "path", "cv_access_user": developer.username, "cv_access_path": "/missing/"}
+    if case == "initial":
+        query = {}
+    elif case == "mode":
+        query["cv_access_mode"] = "invalid"
+    elif case in {"unknown_user", "empty_user"}:
+        query["cv_access_user"] = "unknown" if case == "unknown_user" else ""
+    elif case in {"empty_path", "invalid_path"}:
+        query["cv_access_path"] = "" if case == "empty_path" else "http://["
+    response = client.get(reverse(host.get_router_name("manage")), query)
+    assert response.status_code == 200
+    mapping = response.context["manage_access_trace"]
+    documented = reference("theme").split("### Access trace mapping\n", 1)[1].split("\n### ", 1)[0]
+    rows = dict(re.findall(r"^\| `(\w+)` \| (.+) \|$", documented, re.M))
+    assert "error_field" in rows, "The theme contract must describe field-associated validation"
+    assert "optional" in rows["error_field"].lower()
+    assert "`user`" in rows["error_field"] and "`path`" in rows["error_field"]
+    assert "direct builder" in rows["error_field"] and "absent" in rows["error_field"]
+    base_fields = set(rows) - {"error_field"}
+    assert set(mapping) == base_fields | ({"error_field"} if error_field else set())
+    if error_field:
+        assert mapping["error_field"] == error_field
+        assert mapping["error"] and mapping["actor"] is None
+    builder = host.get_view_class("manage")().get_manage_access_trace(host, developer, mode="path", path="/missing/")
+    assert set(builder) == base_fields
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("inner_denies", [True, False])
 def test_documented_custom_boundary_has_unknown_inner_origin(inner_denies):
     calls = []

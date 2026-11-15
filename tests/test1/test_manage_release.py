@@ -52,7 +52,10 @@ def test_rendered_public_surface_matches_documentation(request, fixture, client,
         assert access is None
     else:
         access_section = text.split("### Access trace mapping\n", 1)[1].split("### Access trace rows", 1)[0]
-        assert set(access) == set(re.findall(r"^\| `(\w+)` \|", access_section, re.M))
+        documented_access = set(re.findall(r"^\| `(\w+)` \|", access_section, re.M))
+        assert "error_field" in documented_access
+        # These are valid selections: only invalid web submissions add the optional field.
+        assert set(access) == documented_access - {"error_field"}
         assert set(access["actor"]) == {"pk", "username", "active", "anonymous"}
         assert access["actor"]["pk"] == str(developer.pk)
         if mode == "path":

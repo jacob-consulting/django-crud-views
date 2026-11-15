@@ -61,11 +61,20 @@ def _plan_gates(view):
     try:
         requirement = view.cv_get_requirement()
         kind = requirement["kind"]
+        identity = None
+        if view.cv_object:
+            meta = vs.model._meta
+            pk = view.kwargs.get(vs.pk_name)
+            identity = {
+                "model": getattr(meta, "label_lower", None) or f"{meta.app_label}.{vs.model.__name__.lower()}",
+                "pk": str(pk) if pk is not None else None,
+            }
         if kind != "none":
             plan.append(
                 {
                     "kind": {"permission": "own_permission", "group": "manage_gate"}.get(kind, "custom_gate"),
                     "viewset": vs.name,
+                    "object": identity,
                     "key": requirement["value"] if kind == "permission" else None,
                     "group": requirement["value"] if kind == "group" else None,
                     "permission": None,
@@ -74,7 +83,12 @@ def _plan_gates(view):
             )
         if isinstance(view, CrudViewPermissionRequiredMixin):
             plan.append(
-                {"kind": "action_state", "viewset": vs.name, "source": "CrudViewPermissionRequiredMixin.has_permission"}
+                {
+                    "kind": "action_state",
+                    "viewset": vs.name,
+                    "object": identity,
+                    "source": "CrudViewPermissionRequiredMixin.has_permission",
+                }
             )
     except Exception as exc:
         plan.append(

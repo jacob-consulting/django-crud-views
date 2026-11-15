@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from django.urls import resolve, reverse
+from guardian.shortcuts import clear_ct_cache
 from lxml import html
 
 from crud_views.lib.resource import Resource
@@ -46,12 +47,16 @@ def make_developer(django_user_model, username):
 
 
 @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
-def test_resource_manage_model_query_preservation(request, fixture, client, django_user_model):
+def test_resource_manage_model_query_preservation(request, fixture, client, django_user_model, monkeypatch):
     vs = request.getfixturevalue(fixture)
     actor = make_developer(django_user_model, "baseline developer")
     # Login/setup are outside measurement; the actual request resolves a fresh actor.
     client.force_login(actor)
+    # Shared ViewSet fixtures retain vocabulary caches across tests. Reproduce the
+    # original cold baseline independently of worker scheduling, then restore it.
+    monkeypatch.setattr(vs, "_default_permissions", None)
     ContentType.objects.clear_cache()
+    clear_ct_cache()
     with CaptureQueriesContext(connection) as queries:
         response = client.get(reverse(vs.get_router_name("manage")))
     assert response.status_code == 200

@@ -76,14 +76,23 @@
         {% endif %}
         {% else %}
         <p data-manage-actor>{% if manage_access_trace.mode == 'viewset' and manage_access_trace.actor and not manage_access_trace.error %}{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (checked below){% endblocktranslate %}{% else %}{% blocktranslate with username=matrix.actor.label %}Access for: {{ username }} (you){% endblocktranslate %}{% endif %}</p>
+        {% if cv.is_resource %}
+        <p>{% translate "No Resource permissions declared" %}</p>
+        <p>{% translate "Developer-group access, ancestor checks and custom view restrictions apply separately." %}</p>
+        {% else %}
         <p>{% translate "No permissions configured. Review this ViewSet's permission configuration." %}</p>
+        {% endif %}
         {% endif %}
         <p>{% blocktranslate count count=matrix.superusers.count %}{{ count }} active superuser holds every permission{% plural %}{{ count }} active superusers hold every permission{% endblocktranslate %}{% if matrix.show_users and matrix.superusers.names %}: {{ matrix.superusers.names|join:", " }}{% endif %}</p>
         {% if matrix.columns and not matrix.groups and not matrix.users %}
         <h3 class="h6">{% translate "No direct permission holders" %}</h3>
         <p>{% translate "Permissions inherited through groups appear in group rows. Review the access row and active-superuser count above." %}</p>
         {% endif %}
+        {% if cv.is_resource %}
+        <p class="text-muted">{% translate "resource: explicitly mapped Django permission; no per-item grants. The access row includes effective permissions." %}</p>
+        {% else %}
         <p class="text-muted">{% translate "model: model-level permission · objects: object grants; the access row includes effective permissions and reachable objects" %}</p>
+        {% endif %}
         {% if manage_guardian %}<p class="text-muted">{% translate "Guardian actor counts use the strict ViewSet helper, including group grants. An active superuser reaches every object; ordinary global model permissions do not add objects." %}</p>{% endif %}
         {% endwith %}
         </div>

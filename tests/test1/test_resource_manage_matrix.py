@@ -19,7 +19,10 @@ pytestmark = pytest.mark.django_db
 RESOURCE_LEGEND = (
     "resource: explicitly mapped Django permission; no per-item grants. The access row includes effective permissions."
 )
-MODEL_LEGEND = "model: model-level permission · objects: object grants; the access row includes effective permissions and reachable objects"
+MODEL_LEGEND = (
+    "model: model-level permission · objects: object grants; "
+    "the access row includes effective permissions and reachable objects"
+)
 EMPTY_COPY = "No permissions configured. Review this ViewSet's permission configuration."
 
 
@@ -140,7 +143,7 @@ def test_resource_manage_matrix_preserves_model_labels(request, fixture, client,
     actor = make_developer(django_user_model, "model matrix developer")
     actor.user_permissions.add(Permission.objects.get(content_type__app_label="app", codename="view_author"))
     if fixture == "cv_guardian_author":
-        author = Author.objects.create(name="Object grant")
+        author = Author.objects.create(first_name="Object", last_name="grant")
         assign_perm("app.view_author", actor, author)
     client.force_login(actor)
     response = client.get(reverse(vs.get_router_name("manage")))

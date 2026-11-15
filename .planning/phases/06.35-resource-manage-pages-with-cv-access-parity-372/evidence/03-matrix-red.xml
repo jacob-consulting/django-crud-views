@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.557" timestamp="2026-11-15T18:25:51.778420+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_resource_manage_matrix" name="test_resource_manage_matrix_empty[None]" time="0.392"><failure message="AssertionError: assert 'No Resource permissions declared' in '\n        \n            Permissions\n            ?\n        \n        \n        \n        \n        Access for: empty...object grants; the access row includes effective permissions and reachable objects\n        \n        \n        \n    '&#10;[+2 more lines; full report in element text]">client = &lt;django.test.client.Client object at 0x7a9e46d5ea20&gt;
+django_user_model = &lt;class 'django.contrib.auth.models.User'&gt;, mapping = None
+
+    @pytest.mark.parametrize("mapping", [None, {}])
+    def test_resource_manage_matrix_empty(client, django_user_model, mapping):
+        def build(sfx):
+            vs = ViewSet(model=ManageItem, name="empty_matrix" + sfx, resource_permissions=mapping)
+            return vs, [vs]
+    
+        with isolated_routes(build) as vs:
+            client.force_login(make_developer(django_user_model, "empty map developer"))
+            response = client.get(reverse(vs.get_router_name("manage")))
+            assert response.status_code == 200
+            matrix = response.context["manage_permissions"]
+            assert matrix["columns"] == matrix["actor"]["cells"] == matrix["groups"] == []
+            card = html.fromstring(response.content).get_element_by_id("cv-manage-permissions")
+&gt;           assert "No Resource permissions declared" in card.text_content()
+E           AssertionError: assert 'No Resource permissions declared' in '\n        \n            Permissions\n            ?\n        \n        \n        \n        \n        Access for: empty...object grants; the access row includes effective permissions and reachable objects\n        \n        \n        \n    '
+E            +  where '\n        \n            Permissions\n            ?\n        \n        \n        \n        \n        Access for: empty...object grants; the access row includes effective permissions and reachable objects\n        \n        \n        \n    ' = text_content()
+E            +    where text_content = &lt;Element section at 0x7a9e46baf070&gt;.text_content
+
+tests/test1/test_resource_manage_matrix.py:39: AssertionError</failure></testcase></testsuite></testsuites>

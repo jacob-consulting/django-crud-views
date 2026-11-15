@@ -1,21 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.35"
+current_phase_name: Resource manage pages with cv_access parity
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.34 complete, ready to plan Phase 7
-last_updated: "2026-11-15T11:35:40.853Z"
+stopped_at: Phase 06.35 context gathered; convergence planning starting
+last_updated: "2026-11-15T15:57:22.497Z"
 last_activity: 2026-11-15
-last_activity_desc: "Phase 06.34 shipped as PR #374"
-state_head: 7c52bf683bead2089844368d1728a732938ca590
+last_activity_desc: Phase 06.35 context captured; merged phase 06.34 baseline for planning
+state_head: a04480837cef6dabe72f31f2c0049114e004882b
 progress:
-  total_phases: 41
+  total_phases: 42
   completed_phases: 27
   total_plans: 225
   completed_plans: 225
-  percent: 66
 milestone_name: milestone
 ---
 
@@ -28,17 +27,17 @@ Total Phases: 41
 See: .planning/PROJECT.md (updated 2026-11-15)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.35 — Resource manage pages with cv_access parity (#372)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.35 — Resource manage pages with cv_access parity (#372)
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-15 -- Phase 06.34 shipped as PR #374
+Last activity: 2026-11-15 — Phase 06.35 context captured; merged phase 06.34 baseline for planning
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.35
 
 ### Phase 06.34 UAT completion — 2026-11-15
 
@@ -1708,6 +1707,7 @@ None yet.
 - Phase 06.32 inserted after Phase 06.29: Issue #362: workflow transition variant and icon metadata; explicitly assigned 06.32, approved low-complexity handover D-01–D-09. Independent of 06.30/06.31 in other worktrees; complete before Phase 7. (URGENT)
 - Phase 06.33 inserted after Phase 06.32: Structured manage page (#366); approved D-01–D-30 handover, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.34 inserted after Phase 06.33: Access trace: cv_access command and manage page form (#370); approved design D-01–D-23 (URGENT)
+- Phase 06.35 inserted after Phase 06.34: Approved issue #372; corrected from initial 06.25.2 at maintainer request; D-01–D-07 context captured
 
 ## Deferred Items
 
@@ -1717,6 +1717,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15
-Stopped at: Phase 06.34 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-15T15:57:12.715Z
+Stopped at: Phase 06.35 context gathered; convergence planning starting
+Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-CONTEXT.md

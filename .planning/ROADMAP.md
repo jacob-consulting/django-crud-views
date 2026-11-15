@@ -60,7 +60,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.31: Developer-only manage diagnostics (#361) (INSERTED)** - approved issue handover; explicit developer-group access, production diagnostics, group setup command, and migration guidance. (completed 2026-11-13)
 - [x] **Phase 06.32: Workflow transition variant and icon metadata (#362) (INSERTED)** - approved low-complexity issue handover; transition metadata, theme classes, icons, and preserved workflow behavior. (completed 2026-11-13)
 - [x] **Phase 06.33: Structured manage page (#366) (INSERTED)** - approved D-01–D-30 issue handover; permission matrix, collapsible views and switchable defaults. (completed 2026-11-14)
-- [ ] **Phase 06.34: Access trace: cv_access command and manage page form (#370) (INSERTED)** - approved D-01–D-23 design; real authorization trace, shell command and opt-in manage form.
+- [x] **Phase 06.34: Access trace: cv_access command and manage page form (#370) (INSERTED)** - approved D-01–D-23 design; real authorization trace, shell command and opt-in manage form. (completed 2026-11-15)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -1960,7 +1960,7 @@ Plans:
 4. The Access check card is absent and its parameters ignored by default; when enabled, authorized manage viewers can check another user's per-view outcomes or any path with nested URL context, accessible native disclosure and registry-backed styling.
 5. Documentation, settings reference, help anchors and German strings cover the command, card, JSON, default-off exposure and the approved operational limitations.
 
-**Plans:** 10/10 plans executed
+**Plans:** 10/10 plans complete
 
 Plans:
 **Wave 1**
@@ -2118,5 +2118,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.31. Developer-only manage diagnostics (#361) | 6/6 | Complete | 2026-11-13 |
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
-| 06.34. Access trace: cv_access command and manage page form (#370) | 0/TBD | Not started | - |
+| 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

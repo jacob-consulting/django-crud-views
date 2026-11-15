@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Access tracing through real authorization gates, `cv_access`, opt-in manage forms and German documentation — Phase 06.34; canonical verification and maintainer visual UAT passed. Seven unavailable runtime combinations remain unverified.
+
 - ✓ Structured manage diagnostics with permission holders, strict Guardian object counts, declaration provenance, scoped checks, accessible defaults/help, German locales and migration contracts — Phase 06.33
 
 <!-- Inferred from the existing codebase (0.30.0 + unreleased). -->
@@ -239,4 +241,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-14 after completing Phase 06.33*
+*Last updated: 2026-11-15 after Phase 06.34*

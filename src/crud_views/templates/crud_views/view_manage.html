@@ -306,7 +306,7 @@
             <ul class="list-group list-group-flush">
             {% for item in manage_hierarchy.children %}
                 <li class="list-group-item" data-manage-child>{{ item.name }}<br><code>{{ item.model }}</code><br>
-                    {% if item.resource %}{% translate "Resource, no manage page" %}{% else %}<code>{{ item.route_name }}</code> → {% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}{% endif %}
+                    <code>{{ item.route_name }}</code> → {% if item.route_error %}{{ item.route_error }}{% else %}<code>{{ item.route }}</code>{% endif %}
                 </li>
             {% empty %}<li class="list-group-item">{% translate "No child ViewSets" %}</li>{% endfor %}
             </ul>

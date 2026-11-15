@@ -3,6 +3,7 @@
 from types import MethodType
 from urllib.parse import urlsplit
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import AccessMixin
 from django.contrib.auth.models import AnonymousUser
@@ -13,6 +14,7 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBase
 from django.urls import Resolver404, resolve
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 from django.views.generic.list import MultipleObjectMixin
 
@@ -286,16 +288,53 @@ def _classify_response(response, view, recorder):
         return "denied"
     if status == 404:
         return "not_found"
-    if status is not None and 300 <= status < 400:
-        if any(response is captured for captured in recorder._login_responses.values()):
-            return "login_redirect"
-    if status is not None and 200 <= status < 300:
-        if getattr(view, "_cv_trace_stub_completed", False) and not _terminal_since(recorder):
-            return "allowed"
+    if (
+        status is not None
+        and 300 <= status < 400
+        and any(response is captured for captured in recorder._login_responses.values())
+    ):
+        return "login_redirect"
+    if (
+        status is not None
+        and 200 <= status < 300
+        and getattr(view, "_cv_trace_stub_completed", False)
+        and not _terminal_since(recorder)
+    ):
+        return "allowed"
     raise UnsupportedTraceResponse(
         _("Unsupported trace response (status %(status)s): no successful stub or recognized terminal response.")
         % {"status": status}
     )
+
+
+def _run_login_middleware(request, match, recorder):
+    try:
+        from django.contrib.auth.middleware import LoginRequiredMiddleware
+    except ImportError:  # Django 4.2 has no login middleware.
+        return None
+    for dotted_path in settings.MIDDLEWARE:
+        cls = import_string(dotted_path)
+        if not isinstance(cls, type) or not issubclass(cls, LoginRequiredMiddleware):
+            continue
+        middleware = cls(lambda request: HttpResponse())
+        source = _method_source(middleware, "process_view", middleware.process_view)
+        try:
+            response = middleware.process_view(request, match.func, match.args, match.kwargs)
+            if response is None:
+                result = "passed"
+            else:
+                if isinstance(response, HttpResponseBase) and 300 <= response.status_code < 400:
+                    recorder.capture_login_response(middleware, response)
+                result = _classify_response(response, None, recorder)
+                if result == "login_redirect":
+                    result = "denied"
+        except Exception as exc:
+            recorder.record(middleware, "login_middleware", result=_exception_outcome(exc), source=source)
+            raise
+        recorder.record(middleware, "login_middleware", result=result, source=source)
+        if response is not None:
+            return response
+    return None
 
 
 def _run_trace(path, user):
@@ -325,17 +364,20 @@ def _run_trace(path, user):
                     trace.route = match.view_name
                     trace.view = f"{cls.__module__}.{cls.__qualname__}"
                     recorder.record(recorder, "route", result="passed")
-                    view = cls(**match.func.view_initkwargs)
-                    view.get = MethodType(_handler_stub, view)
                     request = _TraceRequest(trace.path, actor)
                     request.resolver_match = match
-                    view.setup(request, *match.args, **match.kwargs)
-                    view.get = MethodType(_handler_stub, view)
-                    view._cv_trace_stub_completed = False
-                    _observe_custom_methods(view, recorder)
-                    _observe_denial_response(view, recorder)
-                    trace.plan = _plan_gates(view)
-                    response = view.dispatch(request, *match.args, **match.kwargs)
+                    view = None
+                    response = _run_login_middleware(request, match, recorder)
+                    if response is None:
+                        view = cls(**match.func.view_initkwargs)
+                        view.get = MethodType(_handler_stub, view)
+                        view.setup(request, *match.args, **match.kwargs)
+                        view.get = MethodType(_handler_stub, view)
+                        view._cv_trace_stub_completed = False
+                        _observe_custom_methods(view, recorder)
+                        _observe_denial_response(view, recorder)
+                        trace.plan = _plan_gates(view)
+                        response = view.dispatch(request, *match.args, **match.kwargs)
                     trace.outcome = _classify_response(response, view, recorder)
                 finally:
                     transaction.set_rollback(True, using="default")
@@ -359,7 +401,7 @@ def _run_trace(path, user):
         finally:
             _merge_plan(recorder, trace.plan)
             trace.steps = list(recorder.steps)
-            terminal = [step for step in trace.steps if step.result in {"denied", "not_found", "error"}]
+            terminal = _terminal_since(recorder)
             trace.decided_by = terminal[-1].n if terminal else None
             recorder.clear()
     return trace

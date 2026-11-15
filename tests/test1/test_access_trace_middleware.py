@@ -93,7 +93,7 @@ def test_installed_real_login_middleware_controls_plain_view(middleware_route, s
     settings.MIDDLEWARE = [__name__ + ".Unrelated"] + ([LOGIN] if installed else [])
     result = trace(url, AnonymousUser() if anonymous else _user("middleware"))
     assert result.outcome == ("login_redirect" if installed and anonymous else "allowed")
-    login_steps = [s for s in result.steps if s.kind == "login"]
+    login_steps = [s for s in result.steps if s.kind == "login_middleware"]
     assert len(login_steps) == int(installed)
     if installed:
         assert result.steps[1] is login_steps[0]
@@ -116,7 +116,7 @@ def test_callback_metadata_and_configured_subclass_order(middleware_route, setti
         settings.MIDDLEWARE.append(__name__ + ".Never")
     result = trace("https://discarded.example" + url + "?ignored=true", AnonymousUser())
     assert result.outcome == ("allowed" if exempt else "login_redirect")
-    reached = [s for s in result.steps if s.kind == "login"]
+    reached = [s for s in result.steps if s.kind == "login_middleware"]
     assert [s.source for s in reached] == [__name__ + ".First.process_view", __name__ + ".Second.process_view"]
     assert [event[0] for event in events] == ["first", "second", "response"]
     assert all(event[1] is callback for event in events[:2])
@@ -152,7 +152,7 @@ def test_subclass_denials_and_errors_keep_login_boundary(middleware_route, setti
     result = trace(url, AnonymousUser())
     assert result.outcome == outcome
     step = result.steps[result.decided_by - 1]
-    assert step.kind == "login"
+    assert step.kind == "login_middleware"
     assert step.source == __name__ + ".Second.process_view"
     if outcome == "error":
         assert step.exception["class"] == ("ValueError" if mode == "raise500" else "UnsupportedTraceResponse")
@@ -165,7 +165,7 @@ def test_absent_feature_branch_and_fixed_notice(middleware_route, monkeypatch, s
     settings.MIDDLEWARE = [__name__ + ".Unrelated"]
     result = trace(url, AnonymousUser())
     assert result.outcome == "allowed"
-    assert not [s for s in result.steps if s.kind == "login"]
+    assert not [s for s in result.steps if s.kind == "login_middleware"]
     for report in (result, trace("/missing-route/", AnonymousUser())):
         assert "other middleware and URL decorators are not traced" in report.untraced
 
@@ -179,5 +179,5 @@ def test_login_precedes_failing_planning_and_setup(middleware_route, settings, m
     settings.MIDDLEWARE = [LOGIN]
     result = trace(url, AnonymousUser())
     assert result.outcome == "login_redirect"
-    assert [s.kind for s in result.steps] == ["route", "login"]
+    assert [s.kind for s in result.steps] == ["route", "login_middleware"]
     assert "other middleware and URL decorators are not traced" in result.untraced

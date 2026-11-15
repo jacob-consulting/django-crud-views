@@ -49,7 +49,7 @@ only a valid this-ViewSet selection changes the matrix actor. Path mode retains 
 For the same URL, selected actor and data state, UI and CLI share the complete trace: outcome, deciding step,
 ordered observations, counts, errors and limitations, including checks of Resource manage URLs themselves.
 The `resource` badge is presentation, not a new trace `provider`: providers still identify the actual gate
-(for example `model`, `guardian` or `none`). Version-1 JSON keys and command exit/stream contracts below remain
+(for example `core`, `guardian` or `none`). Version-1 JSON keys and command exit/stream contracts below remain
 unchanged. Explicit tracing may read external data; rollback cannot undo external reads or project side effects.
 See [diagnostic limits](#diagnostic-limits) and [Resource limitations](resources.md#limitations).
 
@@ -339,7 +339,7 @@ records their gate result without evaluating another requirement source or calli
 | `key` | Requirement, action or limitation key, or null. |
 | `permission` | Full permission codename, or null. |
 | `group` | Required group name, or null. |
-| `provider` | Owning permission provider, such as `model`, `guardian` or `none`, or null. |
+| `provider` | Owning permission provider, such as `core`, `guardian` or `none`, or null. |
 | `source` | Requirement declaration or observed callable provenance, or null. |
 | `result` | Step result code, or null. |
 | `how` | Observed branch explanation code, or null; not a second permission decision. |
@@ -407,7 +407,8 @@ Steps with `result=not_evaluated` identify applicable handler-phase checks:
 These limits are distinct from [pre-context list counts](#list-count-boundary); changing a count does not execute
 the later database check. Allowed means **may open the page**, not permission to perform every submit operation.
 Real Resource `cv_get_item()` / `cv_get_items()` loaders run under the fresh traced user, including external reads,
-missing-item and action-state behavior; Resource lists report row counts. No Resource manage page is created.
+missing-item and action-state behavior; Resource lists report row counts. Resource manage pages are registered
+automatically; only explicitly submitted checks run these loaders, not ordinary page inspection.
 
 When installed, Django's `LoginRequiredMiddleware` or its subclass runs its real `process_view()` with the
 resolved view. The rest of the middleware chain does not run: **other middleware and URL decorators are not traced**.

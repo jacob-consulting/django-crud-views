@@ -158,7 +158,12 @@ def test_resource_manage_guidance_and_migration():
     resources = (ROOT / "docs/reference/resources.md").read_text()
     migration = (ROOT / "docs/migrating-1.0.md").read_text()
     release = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased", 1)[1].split("\n## ", 1)[0]
-    for obsolete in ("Resource, no manage page", "No Resource manage route is introduced", "No `ManageView`"):
+    for obsolete in (
+        "Resource, no manage page",
+        "No Resource manage route is introduced",
+        "No Resource manage page is created",
+        "No `ManageView`",
+    ):
         assert obsolete not in manage + resources
     section = manage.split("## Resource manage pages\n", 1)[1].split("\n## ", 1)[0]
     for contract in (

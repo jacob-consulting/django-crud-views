@@ -875,6 +875,50 @@ its effective setting fallback and an additional `declared_value` of `"''"`. Nor
 are recorded before validators infer defaults. Pydantic `model_construct` bypasses that record and is unsupported
 for declaration provenance; this is not a general guarantee about other Pydantic construction paths.
 
+### Manage identity fields
+
+`manage_facts` has eleven shared rows, plus three rows only for Resources. Every row retains the shape above;
+the Resource branch adds no context key or block. The backing `model` row contains the dotted Resource class
+and is labeled Resource. Model and Guardian facts retain their existing eleven fields.
+
+| Field | Scope | Meaning |
+|---|---|---|
+| `name` | shared | ViewSet registration name |
+| `prefix` | shared | Relative URL prefix |
+| `pk` | shared | Effective URL PK pattern |
+| `pk_name` | shared | URL PK keyword |
+| `app` | shared | ViewSet URL namespace |
+| `model` | shared | Dotted model or Resource class |
+| `parent` | shared | Declared parent configuration |
+| `verbose_name` | shared | Effective singular name |
+| `verbose_name_plural` | shared | Effective plural name |
+| `ordering` | shared | Effective ordering |
+| `icon_header` | shared | Icon name/value plus the extra `icon` rendering value |
+| `app_label` | Resource only | Resource metadata namespace, distinct from URL namespace `app` |
+| `pk_field` | Resource only | Resource metadata field used as the item identifier |
+| `pk_type` | Resource only | Resource metadata PK converter/pattern, distinct from the effective URL `pk` |
+
+The three Resource-only rows have source `Resource metadata` and `is_default=True`. Effective names, ordering
+and inferred PK use that source too when inherited from Resource metadata. Constructor overrides retain the
+existing set/default classification; metadata is not inferred by loading a sample item.
+
+### Manage Presentation fields
+
+The same four sections exist for model, Guardian and Resource ViewSets. Section and entry shapes stay as above.
+
+| Section | Entries |
+|---|---|
+| `context-buttons` | Declared button projections; an empty list produces the existing `context_buttons` row with `empty_buttons=True` |
+| `templates-and-actions` | `extends`, `inaccessible_actions`, `context_actions_inline`, `list_actions_inline`, `card_actions_inline` |
+| `label-modes` | `context_actions_label_mode`, `list_actions_label_mode`, `form_actions_label_mode` |
+| `other` | `manage_view_class`; Resources only also add `resource_permissions` |
+
+The Other section has one entry for model/Guardian ViewSets, two for Resources. The Resource mapping uses the
+ordinary field-row shape and records constructor provenance: omitted `None` is default, explicit `None`/`{}`
+is set, and populated mappings retain their displayed value. It introduces no new section or alias.
+Permission cells keep the `model` boolean and `object_count=None` for Resources; the Resource badge changes
+the label, not the cell schema or trace provider. The matrix reads the explicit mapping through `viewset.permissions`.
+
 ### Access trace mapping
 
 The enabled context always contains the eight base fields below. The web adapter adds the optional `error_field`
@@ -937,9 +981,9 @@ Configuration/matrix builders describe policy; the trace builder runs the bounde
 authorizes the hosting request. The web adapter remains responsible for admission,
 active-account/group/mode checks and actual ancestor authorization. Auth-reading builders use the **supplied**
 ViewSet's registered manage class for the existing nested database/auth guard before diagnostic reads. If that
-class is absent, they raise the fixed
-`ImproperlyConfigured("Manage diagnostics require a registered manage view")`. A Resource ViewSet is an actual
-absence example; this does not add Resource diagnostics. `manage_views_enabled="no"` still registers model
+class is absent, they raise the fixed exception before any diagnostic query:
+`ImproperlyConfigured("Manage diagnostics require a registered manage view")`. A deliberately incomplete
+registration is an actual absence example. `manage_views_enabled="no"` still registers both model and Resource
 AutoManageView/URLs and controls availability/context actions. Pure configuration/route projections have no
 auth-read dependency. View metadata that needs permission maps, and Guardian's enriched inventory, also use
 the auth guard. Pass `route_kwargs` explicitly for hierarchy links instead of inventing an object or request.
@@ -1045,13 +1089,17 @@ def ready(self):
     register_button_classes({"manage:help": "theme-help", "manage:row-default": "theme-default"})
 ```
 
-All nineteen keys are inventoried with exact defaults in [Buttons](buttons.md#the-class-table): `manage:badge-model`,
+All twenty keys are inventoried with exact defaults in [Buttons](buttons.md#the-class-table): `manage:badge-model`,
+`manage:badge-resource`,
 `manage:badge-objects`, `manage:badge-permission`, `manage:badge-group`, `manage:badge-policy-global`,
 `manage:badge-policy-strict`, `manage:badge-policy-na`, `manage:row-default`, `manage:help`,
 `manage:trace-allowed`, `manage:trace-denied`, `manage:trace-not-found`, `manage:trace-login-redirect`,
 `manage:trace-error`, `manage:trace-no-such-route`, `manage:trace-passed`, `manage:trace-skipped`,
 `manage:trace-not-reached`, `manage:trace-not-evaluated`.
 Project `CRUD_VIEWS_BUTTON_CLASSES` entries override theme registrations per key; `""` or `None` clears classes.
+`manage:badge-resource` defaults to `badge bg-info text-dark`. It labels explicitly mapped Django permissions
+across Resource actor/group/user/overflow cells, never per-item grants. Empty class overrides retain the label;
+model/Guardian badges and trace provider names remain unchanged. The totals are 122 core keys and 140 with workflow.
 Replacing the default-row class also replaces its CSS muting without affecting the switch's data markers.
 
 Retain the [external manage assets](javascript.md#manage-defaults) through the existing asset loader.

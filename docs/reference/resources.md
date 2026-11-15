@@ -492,10 +492,24 @@ with warnings.catch_warnings():
         pk: str
 ```
 
+## Manage diagnostics
+
+Resource ViewSets automatically register the existing `ManageView` and manage action using the same settings
+and developer-group admission as model ViewSets. The `"no"` mode still registers the route but denies access
+and suppresses automatic manage actions. Nested Resources retain their model ancestors' authorization and
+default-database restrictions, including Guardian model ancestors. Opening the built-in manage page does not
+call `cv_get_item()` or `cv_get_items()`; parent-model and auth-table reads remain legitimate. Custom overrides
+and checks are project code, not sandboxed by that boundary.
+
+The page shows Resource metadata/provenance, actual hierarchy routes and the explicit `resource_permissions`
+mapping. Empty mappings produce zero columns, not a public-access claim. The **resource** badge describes a
+mapped Django permission, not an item grant. See [Resource manage pages](manage.md#resource-manage-pages)
+for metadata keys, theme overrides, user visibility and selected-actor semantics.
+
 ## Limitations
 
 [cv_access](manage.md#cv_access) and the opt-in [Access check](manage.md#access-check) can trace Resource URLs
-without registering a Resource manage page. Real `cv_get_item()` and `cv_get_items()` loaders execute with the
+from the automatically registered manage page or the command. Real `cv_get_item()` and `cv_get_items()` loaders execute with the
 fresh traced user on the synthetic request, after applicable ancestor checks. Missing items report not found;
 action state is observed, and lists report a row count (`total=null`), not Guardian's n/m comparison. No object
 title or content is recorded. Loading may read an external source, and project loader/gate side effects outside
@@ -508,7 +522,6 @@ the default database are not rolled back. The real action/form handler never run
 | No django-filter integration | `FilterSet` is welded to querysets | filter inside `cv_get_items` (the `request` is available there); an in-memory filter helper is a possible future addition |
 | Pagination is in-memory only, no continuation tokens | not the right tool for very large listings | materialize the list yourself; Django's `Paginator` works fine on lists |
 | Resources are leaves — cannot be a nesting parent | parent-object resolution and FK-based child filtering assume an ORM-queryable parent | none in v1; register flat Resource ViewSets, or encode a path into the pk (§ [Primary keys](#primary-keys-for-path-like-data)) |
-| No `ManageView` | model/session tooling, doesn't apply | — |
 | No django-guardian / workflow / polymorphic integration | all three are deeply ORM-bound | `GuardianViewSet` rejects a Resource model with a pydantic `ValidationError` at construction time; workflow and polymorphic simply have no Resource equivalent |
 | Ordering/card mixins that call queryset methods (e.g. the ordered card-list mixin's `order_by`) | Resources are plain lists, not querysets | sort inside `cv_get_items` instead |
 

@@ -1,0 +1,17 @@
+
+> django-crud-views-js-tests@1.0.0 test:integration
+> vitest run --config vitest.integration.config.js --reporter=dot
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.integration.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /home/alex/projects/alex/django-crud-views
+
+··
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  20:11:02
+   Duration  18.77s (tests 94%, environment 5%)
+

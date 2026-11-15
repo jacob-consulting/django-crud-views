@@ -1,0 +1,22 @@
+✔ node rejects port "8143" before runtime discovery (63.16892ms)
+✔ node rejects port "8144" before runtime discovery (37.437475ms)
+✔ node rejects port "1023" before runtime discovery (29.442558ms)
+✔ node rejects port "65536" before runtime discovery (32.705104ms)
+✔ node rejects port "" before runtime discovery (29.496018ms)
+✔ node rejects port "no-port" before runtime discovery (55.499713ms)
+✔ node rejects port "8145.5" before runtime discovery (30.253208ms)
+✔ python rejects port "8143" before runtime discovery (25.298013ms)
+✔ python rejects port "8144" before runtime discovery (21.354149ms)
+✔ python rejects port "1023" before runtime discovery (21.707331ms)
+✔ python rejects port "65536" before runtime discovery (20.991473ms)
+✔ python rejects port "" before runtime discovery (21.002288ms)
+✔ python rejects port "no-port" before runtime discovery (21.674762ms)
+✔ python rejects port "8145.5" before runtime discovery (21.275239ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 530.36807

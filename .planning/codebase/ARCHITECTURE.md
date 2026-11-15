@@ -1,415 +1,214 @@
 ---
-last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
-last_mapped_at: 2026-11-14
+last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_at: 2026-11-15
 ---
-<!-- refreshed: 2026-11-14 -->
-
+<!-- refreshed: 2026-11-15 -->
 # Architecture
 
-**Analysis Date:** 2026-11-14
+**Analysis Date:** 2026-11-15
 
 ## System Overview
 
 ```text
-┌──────────────────────────────────────────────────────────────────────────┐
-│                    Django host project / application                     │
-│ ViewSet declarations + CrudView subclasses + host templates/config       │
-│ `examples/bootstrap5/` · consumer applications                            │
-└──────────────────────────────┬───────────────────────────────────────────┘
-                               │ class creation / URL inclusion
+┌─────────────────────────────────────────────────────────────┐
+│ Consumer declarations                                       │
+│ ViewSets + CrudView subclasses                              │
+│ `src/crud_views/lib/viewset/` `src/crud_views/lib/view/`    │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ class creation registers views
                                ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│ Core orchestration: `src/crud_views/lib/viewset/` + `lib/view/`           │
-│ Registry, URL patterns, sibling links, context, permissions, checks        │
-└───────────────┬───────────────────┬────────────────────┬─────────────────┘
-                │                   │                    │
-                ▼                   ▼                    ▼
-┌─────────────────────┐ ┌────────────────────┐ ┌─────────────────────────┐
-│ Generic Django CBVs │ │ Optional extensions│ │ Presentation adapters   │
-│ `lib/views/`        │ │ `src/crud_views_*` │ │ templates, tags, CSS/JS │
-└──────────┬──────────┘ └──────────┬─────────┘ │ `templates/`, `static/` │
-           │                       │           └────────────┬────────────┘
-           └───────────────────────┴────────────────────────┘
-                                   ▼
-             Django ORM models or `Resource` data providers
-             HTTP response / rendered page or modal partial
+┌─────────────────────────────────────────────────────────────┐
+│ Routing and request behavior                                │
+│ `src/crud_views/lib/views/` `src/crud_views/lib/ancestors.py`│
+└────────────┬─────────────────────┬──────────────────────────┘
+             │                     │
+             ▼                     ▼
+┌──────────────────────┐  ┌──────────────────────────────────┐
+│ Django auth / ORM    │  │ Presentation and integrations    │
+│ core or Guardian     │  │ templates, forms, tables, assets │
+└──────────────────────┘  └──────────────────────────────────┘
 ```
 
 ## Component Responsibilities
 
 | Component | Responsibility | File |
 |-----------|----------------|------|
-| ViewSet registry and router | Pydantic-configured model/resource registry, view registration, URL generation, parent filtering, permission maps | `src/crud_views/lib/viewset/__init__.py` |
-| Parent relationship descriptor | Names and resolves parent ViewSets, URL PK args and model relationship attributes | `src/crud_views/lib/viewset/parentviewset.py` |
-| View registration metaclass | Registers a class with its `cv_viewset` and adopts the ViewSet model by default | `src/crud_views/lib/view/meta.py` |
-| CrudView integration base | Sibling/action resolution, context, routing, message rendering, access policy, write transaction hooks | `src/crud_views/lib/view/base.py` |
-| Django generic views | List/card/detail/create/update/delete, action, child and manage request handlers | `src/crud_views/lib/views/` |
-| Manage diagnostics | Developer-gated structured projections for model and object grants, route/view requirements, declared configuration provenance, and ViewSet-scoped checks | `src/crud_views/lib/views/manage.py` |
-| Presentation model | Button/action grouping, context, labels, variants, visibility and metadata | `src/crud_views/lib/view/` |
-| Asset and theme delivery | Registry of app-contributed JS/CSS and theme-template tags/config | `src/crud_views/lib/assets.py`, `src/crud_views/templatetags/crud_views.py` |
-| Object detail extension | Configurable property groups, typed property resolvers, layout templates, detail view integration | `src/crud_views_object_detail/lib/` |
-| Workflow extension | FSM transition form actions, configurable button variant/icon presentation, and workflow history/audit model | `src/crud_views_workflow/lib/` |
-| Polymorphic extension | Type selection and model-specific create/update/detail views | `src/crud_views_polymorphic/lib/` |
-| Guardian extension | Object permission-aware ViewSet, view mixins, permission management screens | `src/crud_views_guardian/lib/` |
-| Resource abstraction | Pydantic-backed, non-ORM row contract for read-oriented views | `src/crud_views/lib/resource.py` |
-| Semantic icon contract | Plain-value `Icon` constants, inherited/overridden view header icon selection, registry resolution and template projection | `src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templatetags/crud_views.py` |
-| Legend class hooks | Existing button-class registry supplies the `conditional:legend` and `formset:legend` slots to their respective rendered legends | `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html` |
-| Startup validation | Django checks over registered ViewSets, views, templates, asset declarations and extension configuration | `src/crud_views/checks.py`, `src/crud_views_workflow/checks.py`, `src/crud_views_guardian/checks.py` |
-| Manage group setup command | Idempotently creates only the configured diagnostics group; does not grant permissions or memberships | `src/crud_views/management/commands/cv_manage_group.py` |
-| Ancestor authorization engine | Request-local guard for nested ViewSets: static ancestry validation, actor admission, outermost-inward ancestor resolution and permission gates, child/parent membership checks | `src/crud_views/lib/ancestors.py` |
-| Ancestor policy values | Strict Pydantic `AncestorPolicy` / `AncestorPermissions` (provider, cascade, read/write/action permission pairs) | `src/crud_views/lib/ancestor_policy.py` |
-| Nested default-database boundary | Refuses non-`default` aliases for nested ORM data, writes and authorization records | `src/crud_views/lib/ancestor_db.py` |
-| Guardian ancestor provider | Object-permission gate for a `GuardianViewSet` used as an ancestor | `src/crud_views_guardian/lib/ancestors.py` |
-| Delete preview and protection | Bounded related-object preview, protected-row labels, and deletion lifecycle integration | `src/crud_views/lib/deletion.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/templates/crud_views/snippets/delete/` |
-| Nested formset rendering | Request-local recursive formset tree with per-node classic or compact presentation | `src/crud_views/lib/formsets/`, `src/crud_views/templates/crud_views/formsets/` |
-| Choice-driven conditional groups | Server-side `ValueToggle` validation maps canonical single-choice values to disjoint field groups; inactive fields clear using recognized native empty values or explicit `empty_values` | `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py` |
-| Queryset-backed conditional groups | Opt-in `QuerysetConditions` maps offered and selected native `ModelChoiceField` objects to declared categories; final cleaned object controls server validation and render-context-local option projection drives browser visibility | `src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py` |
-| Numbered crispy columns | `Column1` through `Column12` provide numbered Bootstrap grid defaults through the `form:column-N` class registry, using render-local copies and a narrowly audited Bootstrap 5 template bridge | `src/crud_views/lib/crispy/table.py`, `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/crispy/bootstrap5_column.html` |
+| ViewSet registry/router | Stores model and view metadata, registers view classes, derives names/PK routing, and builds URL patterns | `src/crud_views/lib/viewset/__init__.py` |
+| View declaration integration | Applies `cv_` attributes, sibling links/context, permission helpers, and ancestor request hooks | `src/crud_views/lib/view/base.py` |
+| View registration metaclass | Registers concrete subclasses against their declared ViewSet during class creation | `src/crud_views/lib/view/meta.py` |
+| CRUD request handlers | Implements list/detail/create/update/delete/action and manage request lifecycles | `src/crud_views/lib/views/` |
+| Nested authorization | Validates ancestry, resolves parent objects, applies inherited permission policy, and scopes child querysets | `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_policy.py` |
+| Developer manage diagnostics | Projects ViewSet permissions, routes, checks, configuration and optional access traces | `src/crud_views/lib/views/manage.py` |
+| Access trace engine | Records authorization results in context-local storage and dispatches a bounded synthetic request | `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py` |
+| Guardian extension | Replaces core permission provider and adds object-grant querying and Guardian-specific management | `src/crud_views_guardian/lib/` |
+| Optional feature apps | Add object-detail presentation, FSM workflow and polymorphic creation flows | `src/crud_views_object_detail/lib/`, `src/crud_views_workflow/lib/`, `src/crud_views_polymorphic/lib/` |
 
 ## Pattern Overview
 
-**Overall:** Registry-driven composition of Django class-based views with a reusable server-rendered Bootstrap 5 presentation layer.
+**Overall:** Declarative ViewSet registry over Django class-based views, with opt-in extension apps and mixins.
 
 **Key Characteristics:**
-- A `ViewSet` instance is the central router and shared configuration boundary. A concrete view joins it declaratively through `cv_viewset` and `cv_key`.
-- Form Cancel navigation is resolved per request through `cv_get_cancel_url()` and exposed to the form-button renderer; resolution accounts for access, nested objects, and request origin/query state (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/button_data.py`).
-- Protected-delete previews have a bounded display budget and render protected-object references as plain labels (`src/crud_views/lib/deletion.py`, `src/crud_views/templates/crud_views/snippets/delete/protected_objects.html`).
-- Workflow transitions use the shared form-frame and themeable presentation contracts; transition button metadata can select one of eight fixed variants and an optional icon while preserving the full caption. The documented opt-in page gate uses explicit transition rules and is covered by request tests (`src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/templates/crud_views_workflow/`, `tests/test1/`).
-- Nested requests pass through one ancestor-authorization guard (`_authorize_ancestors`) before any endpoint work: it resolves each ancestor through its own ViewSet queryset, applies per-ancestor permission gates (provider `model`, `guardian` or `none`; full cascade or nearest-only) and stores the resolved chain on the view instance (`src/crud_views/lib/ancestors.py`). Top-level requests do no ancestor work.
-- `CrudViewMetaClass` performs registration during class creation; consumers include the ViewSet's `urlpatterns` from their Django URL configuration.
-- `CrudView.cv_get_meta()` adds `view` and, only for child ViewSets, a `SimpleLazyObject` for immediate `parent_object`; resolving it delegates to `cv_get_parent_object()`, which reuses the ancestor guard's resolved parent when available and otherwise looks up the parent from the URL kwarg (`src/crud_views/lib/view/base.py`).
-- Header icon selection is a separate view presentation contract: `cv_get_header_icon()` returns `cv_icon_header` whenever it is not `None`, including `""` for suppression; only `None` falls back to `ViewSet.icon_header`. `Icon.VIEWSET_DEFAULT` and `Icon.NONE` in `crud_views.lib.icons` are plain primitive constants (`None` and `""`), not enum objects. Heading templates resolve the selected value through `cv_heading_icon` to host classes plus inline HTML; a custom getter returning `None` suppresses rather than re-running attribute fallback (`src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templatetags/crud_views.py`, `docs/reference/icons.md`).
-- Page-owned header, paragraph, message, and list/card filter-header snippets render `cv_get_meta()` data: ViewSet metadata, `object` when present, the current `view`, and a lazy immediate `parent_object` only on nested ViewSets. Request dispatch's ancestor state is reused if that lazy value is read; direct/pre-dispatch reads resolve the parent through its URL kwarg. Action/breadcrumb labels and context-button labels use distinct contracts (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/buttons.py`, `docs/reference/templates.md`).
-- Concrete request handlers combine the package's `CrudView` mixin with Django generic CBVs; permission-required classes add `CrudViewPermissionRequiredMixin`.
-- The core theme is implemented in Django templates and template tags. App-contributed behavior can add static assets through `register_assets()` from an app's `AppConfig.ready()`.
-- Object-detail tabs are scoped by `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` and delegate lifecycle to `cv.adapters.tab`. Accordion templates render Bootstrap `data-bs-toggle="collapse"`, target, and parent attributes; `presentation.selected` sets initial classes and ARIA state, while Bootstrap's existing Collapse data API handles switching and close-all behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
-- Optional packages depend on the core public view abstractions and are enabled by installing their app and declaring their specialized views.
-- Formsets are declared as a recursive `FormSets`/`FormSet` tree owned by `FormSetMixin`; compact presentation is opt-in independently at each node through immutable `CompactLayout` and `CompactColumn` values. Request-time schema projection validates field coverage, supported widget shape, effective labels and uniform row metadata before crispy renders. The compact helper composes crispy `Layout`/`Row`/`Div`/`Field` objects around the same bound fields and existing formset controls, so the page-owned outer form, CSRF, validation and save flow remain shared; `compact_layout=None` uses the classic helper unchanged. The exact stock `django.forms.widgets.CheckboxInput` class is in the supported widget set. Custom subclasses/templates require the public `CompactWidgetCompatible` marker, which skips widget-specific checks only and transfers responsibility for complete accessible/dynamic rendering to the widget author; shared field coverage, role, label and row-consistency validation remains (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/formset.html`).
-- Compact row borders are separately opt-in with `CompactLayout.row_border=False` by default. The existing formset template adds `cv-formset-row-bordered` only to compact rows with a visible legend and an enabled option; borderless compact rows retain padding, radius, background and spacing, while rows with `row_legend=False` or `""` suppress those card decorations (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/static/crud_views/css/formset.css`).
-- Legend class customization is a narrow extension of the existing button-class registry: `conditional:legend` and `formset:legend` are resolved by `{% cv_button_class %}` in the existing conditional-group and formset templates. Each slot remains empty by default and independently configurable; this adds no rendering abstraction (`src/crud_views/lib/button_classes.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
-- Choice-driven field groups use `ValueToggle(field, values)` over a standard static `ChoiceField`/`TypedChoiceField` with `Select` or `RadioSelect`; activation is decided from validated server-side form data, not JavaScript. Configuration checks require canonical choice tokens, disjoint controlled fields, and no group/controller overlap. Off groups clear through bounded native field/model empty values or explicit `empty_values` (`src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/group.py`).
-- `ValueToggle` is supported for `ConditionalGroup` only. Whole-formset activation via `ConditionalFormSet` remains checkbox-based (`ModelFieldToggle` or `UIFieldToggle`), enforced by its Pydantic validator; do not use choice-value controllers to skip or purge entire formsets (`src/crud_views/lib/conditional/formset.py`).
-- `QuerysetConditions` extends conditional field groups for one native single `ModelChoiceField`: it declares category keys and a direct category attribute/annotation, uses unique concrete integer/text/UUID selection identity, and provides `when(*keys)` toggles. Validation uses the final inherited `cleaned_data` selected object as authority; rendering projects offered categories once per render context from the field queryset, preserves native widget labels, and reports unmatched coverage on bound responses. Register an empty server group and explicit empty `ToggleGroup` when a category activates no fields. It cannot control whole formsets (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/lib/conditional/formset.py`).
-- The conditional example defines four groups on `CustomerForm`, including shared Wholesale/Distributor business fields, and `CustomerRadioForm` changes only the `kind` widget. The business group explicitly clears `payment_terms` to the persisted `unset` choice, while nullable `price_tier` clears to `None` even though new instances default to `A` (`examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/models.py`).
+- A consumer declares a ViewSet and binds CrudView subclasses to it; `CrudViewMetaClass` registers them at import/class-definition time.
+- URL generation and sibling-view lookup are centralized on the ViewSet rather than duplicated in consumer URL declarations.
+- Django generic views own the standard HTTP/form lifecycle; package mixins add registration, permission, nested-object, and presentation behavior.
+- Authorization normally runs in the request path. Access tracing observes reports emitted by those gates and does not run a second policy evaluator.
+- Optional integrations are separate installable Django apps and keep provider-specific behavior out of the core path.
 
 ## Layers
 
-**ViewSet and registration layer:**
-- Purpose: Collect related views and derive consistent names, URLs, parent relations and permissions.
-- Location: `src/crud_views/lib/viewset/`, `src/crud_views/lib/view/meta.py`
-- Contains: `ViewSet`, `ParentViewSet`, PK path regexes, and `CrudViewMetaClass`.
-- Depends on: Django model metadata and URL APIs, Pydantic, `CrudView` definitions.
-- Used by: Consumer URL configuration, views, template context and system checks.
+**Consumer declarations:**
+- Purpose: Define the model/resource, route prefix, permissions, nested parent and view classes.
+- Location: Consumer application modules; examples live under `examples/bootstrap5/`.
+- Contains: `ViewSet(...)` objects and subclasses of exported CRUD views.
+- Depends on: Public exports from `crud_views` and optional extension packages.
+- Used by: Import-time registration and Django URL configuration.
 
-**Request and domain integration layer:**
-- Purpose: Handle HTTP dispatch and CRUD behavior while preserving ViewSet sibling awareness.
-- Location: `src/crud_views/lib/views/`, `src/crud_views/lib/view/base.py`
-- Contains: CRUD CBVs, action/order operations, card/list views, create-parent mixins and form processing.
-- Depends on: Django CBVs/ORM/forms, optional `django-filter`, `django-tables2`, crispy forms integrations.
-- Used by: Django URL dispatch and extension-package subclasses.
+**Registration and routing:**
+- Purpose: Maintain the registry, generate Django URL patterns, and connect routes to registered classes.
+- Location: `src/crud_views/lib/viewset/` and `src/crud_views/lib/view/meta.py`.
+- Contains: `ViewSet`, `ParentViewSet`, PK converters and metaclass behavior.
+- Depends on: Django URL APIs, model metadata, Pydantic configuration.
+- Used by: Consumer root URLconf and all sibling-link helpers.
 
-**Shared behavior and presentation layer:**
-- Purpose: Compute action visibility, button data, labels, breadcrumbs, icons, settings, messages, forms and list/table support.
-- Location: `src/crud_views/lib/view/`, `src/crud_views/lib/conditional/`, `src/crud_views/lib/formsets/`, `src/crud_views/lib/table/`, `src/crud_views/lib/crispy/`
-- Contains: Focused helpers and presentation data models; theme settings are centralized in `src/crud_views/lib/settings.py`.
-- Depends on: View/ViewSet configuration, request/user state, and optional Django presentation packages.
-- Used by: CBVs, template tags and the core theme.
+**Request and authorization:**
+- Purpose: Execute CRUD handlers and enforce local and inherited access requirements.
+- Location: `src/crud_views/lib/views/`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`.
+- Contains: Django CBV subclasses, permission mixins, object lookup, parent resolution and query scoping.
+- Depends on: Django auth/ORM and, in the optional extension, django-guardian.
+- Used by: Django URL dispatch.
 
-**Crispy numbered column helpers:**
-- Purpose: Provide convenient Bootstrap grid columns in consumer crispy layouts while allowing theme class overrides through the existing registry.
-- Location: `src/crud_views/lib/crispy/table.py`, public exports in `src/crud_views/lib/crispy/__init__.py`.
-- Contains: `Column1` through `Column12`, each defaulting to its matching `col-md-N` class; `_ThemedColumn.render()` resolves `form:column-N` on a render-local copy, preserving the declared helper instance.
-- Depends on: crispy-forms `Column`, the `form:column-N` slots in `src/crud_views/lib/button_classes.py`, and crispy's configured template pack. For the exact installed `crispy-bootstrap5` source, implicit-template helpers use `src/crud_views/templates/crud_views/crispy/bootstrap5_column.html`; explicit templates and other template packs retain their own rendering.
-- Used by: Consumer form layouts and core form layouts (`src/crud_views/lib/crispy/form.py`, `src/crud_views/lib/formsets/inline_formset.py`).
+**Presentation and support:**
+- Purpose: Build forms, action data, table/formset layouts, templates and static asset behavior.
+- Location: `src/crud_views/lib/`, `src/crud_views/templates/`, `src/crud_views/static/`.
+- Contains: Cross-view context/presentation helpers and reusable template/UI components.
+- Depends on: Django templates and optional crispy-forms, django-tables2 and django-filter packages.
+- Used by: CRUD views and application template overrides.
 
-**Nested formset layer:**
-- Purpose: Build and render recursively nested inline formsets with independent classic or compact layout choice per node.
-- Location: `src/crud_views/lib/formsets/`, `src/crud_views/templates/crud_views/formsets/`
-- Contains: Formset declarations/cloning, recursive render-tree nodes, compact field projection, crispy helper generation and recursive templates.
-- Depends on: Django inline formsets, crispy-forms, the owning create/update view and Bootstrap grid classes.
-- Used by: `FormSetMixin` in create/update view compositions and formset feature apps.
-
-**Theme and browser layer:**
-- Purpose: Render complete views and reusable components, and supply progressive-enhancement JavaScript.
-- Location: `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/`
-- Contains: View templates, theme partials/tags, button/action templates, modal shell/content, table/formset templates, CSS and JS adapters.
-- Depends on: Django template context and Bootstrap 5 conventions; integrations may provide optional JavaScript adapters.
-- Used by: Host templates loading `{% load crud_views %}` and extending the configured base template.
-
-**Extension applications:**
-- Purpose: Add specialized view behavior without placing optional dependency coupling in the core request handlers.
-- Location: `src/crud_views_object_detail/`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`
-- Contains: App configs, Python extensions, translations, and where needed their own templates, static assets and migrations.
-- Depends on: Core `CrudView`/ViewSet APIs plus the corresponding optional Django ecosystem package.
-- Used by: Consumer projects that install and configure the extension.
-
-**Workflow transition presentation:**
-- Purpose: Project FSM transition choices into native submit buttons with optional theme classes and icons while preserving full labels and the existing permission/execution pipeline.
-- Location: `src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`.
-- Contains: Per-transition `custom["variant"]` and `custom["icon"]` metadata, a fixed eight-variant vocabulary, existing button-class registry resolution and core icon-host projection.
-- Depends on: Workflow transition choices and core button/icon registry. Unsupported variants fall back to `form:submit:label`; metadata does not change transition availability, comments or execution.
-- Used by: `WorkflowForm` when the view opts into `cv_transition_presentation = "buttons"`.
-
-**Object-detail layout adapter:**
-- Purpose: Render property groups into layout packs and initialize interactive tabs while keeping UI-library ownership behind the theme adapter API.
-- Location: `src/crud_views_object_detail/lib/presentation.py`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`
-- Contains: Per-render component identity/presentation data, layout templates and scoped tab lifecycle bridge. Accordion initial selected state is projected into CSS classes and ARIA attributes by the templates; Bootstrap's Collapse data API owns subsequent interaction.
-- Depends on: Core asset registry and `cv.adapters` contracts.
-- Used by: Object-detail pages and modal content in consumer projects.
+**Extension apps:**
+- Purpose: Add optional integrations without requiring every consumer to use them.
+- Location: `src/crud_views_guardian/`, `src/crud_views_object_detail/`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`.
+- Contains: App configs, integration-specific views/mixins, templates and translations; workflow also owns audit models/migrations.
+- Depends on: Core package and each integration's third-party library.
+- Used by: Consumers that install and add the corresponding Django app.
 
 ## Data Flow
 
 ### Primary Request Path
 
-1. The consumer declares a `ViewSet` and associates `CrudView` subclasses using `cv_viewset`; class creation registers the view in `src/crud_views/lib/view/meta.py`.
-2. Django resolves a generated pattern from `ViewSet.urlpatterns` (`src/crud_views/lib/viewset/__init__.py`), matching the ViewSet prefix, optional ancestor prefixes/PKs, object PK and view path.
-3. The concrete CBV dispatches the request. `CrudView` supplies sibling URL/context behavior, model defaults and optional permission-aware action state (`src/crud_views/lib/view/base.py`).
-4. Object querysets are obtained from the ViewSet and filtered by parent attributes for nested ViewSets; Resource-based views instead use resource-specific mixins and row-provider methods (`src/crud_views/lib/resource.py`).
-5. The CBV renders a full page or configured content partial; template tags resolve the view context and render theme components (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/`).
+1. The consumer URLconf includes a ViewSet's generated patterns (`src/crud_views/lib/viewset/__init__.py`).
+2. Django resolves the route to a registered view class; class registration happened through `CrudViewMetaClass` (`src/crud_views/lib/view/meta.py`).
+3. The view's dispatch and mixins execute ancestor checks, local permission gates, object lookup, and the inherited Django handler (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/views/`).
+4. The handler constructs context/form/table data and renders a package or consumer-overridden template (`src/crud_views/templates/crud_views/`).
 
-### Snippet Metadata and Parent Lookup
+### Nested Request Path
 
-1. View-owned header, paragraph, message and list/card filter-header snippets receive ViewSet metadata plus `object` when present and `view` (`src/crud_views/lib/view/base.py`, `docs/reference/templates.md`).
-2. Child snippets receive lazy immediate `parent_object`; unused values trigger no lookup. Dispatched requests reuse ancestor-guard state; calls without that state resolve using the parent URL kwarg and `get_object_or_404`.
-3. Action and breadcrumb labels omit `view` and `parent_object`; context-button labels use button data. `LinkChildColumn` templates add child ViewSet variables to the host list context and do not create `parent_object`, though they can inherit it (`docs/reference/templates.md`).
+1. `ParentViewSet` declarations describe URL ancestry (`src/crud_views/lib/viewset/parentviewset.py`).
+2. Ancestor validation and resolution check the configured chain, actor requirements, and selected inherited permission gates (`src/crud_views/lib/ancestors.py`).
+3. Child querysets are scoped to the resolved parent; create views can assign the parent FK (`src/crud_views/lib/views/child.py`, `src/crud_views/lib/views/create.py`).
+4. Guardian ViewSets use the extension's provider for object-level grants (`src/crud_views_guardian/lib/viewset.py`, `src/crud_views_guardian/lib/ancestors.py`).
 
-The snippet-variable contract is deliberately bounded: `object`, `view`, optional lazy `parent_object`, the singular/plural names in resolved and translated forms, and `viewset` (also `cv`). There is no top-level `parent_object` key or separate `request`/`user` key; snippets can reach the latter through `view.request`. Labels rendered for another view do not receive the rendering page's `view` or `parent_object`. Context-button label templates receive resolved button data instead (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/view/buttons.py`, `docs/reference/templates.md`).
+### Access Trace Path (Phase 06.34)
 
-### Header Icon Selection and Rendering
-
-1. The view's `cv_icon_header` is selected unless it is exactly `None`; that value means inherit `ViewSet.icon_header`. Empty string is an explicit suppression value (`src/crud_views/lib/view/base.py`).
-2. `Icon.VIEWSET_DEFAULT` and `Icon.NONE` are public readability constants from `crud_views.lib.icons`, defined as the primitive values `None` and `""`. They are not enum/sentinel instances, and `VIEWSET_DEFAULT` has inheritance meaning only for `cv_icon_header` (`src/crud_views/lib/icons.py`, `docs/reference/icons.md`).
-3. The standard page/modal heading template calls `cv_heading_icon` with the getter and location. It projects the resolved icon to host-library classes and inline HTML so a host theme can put the class on its own heading and place icon markup inside it. The standalone `cv_header_icon` tag remains an icon renderer and does not provide the heading host-class projection (`src/crud_views/templatetags/crud_views.py`, `docs/reference/templates.md`).
-4. A custom `cv_get_header_icon()` implementation owns its return value; returning `None` means no icon and does not invoke the class-attribute/ViewSet fallback again (`src/crud_views/lib/view/base.py`, `tests/test1/test_heading_icons.py`).
-
-### Nested Request Path (ancestor authorization)
-
-1. `CrudView.dispatch()` calls `_cv_ancestor_guard()`; permission-required views reach the engine through `CrudViewPermissionRequiredMixin.dispatch`, Guardian views through `GuardianParentPermissionMixin.dispatch`, manage views through `ManageView.dispatch` (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/`, `src/crud_views_guardian/lib/mixins.py`).
-2. `_authorize_ancestors(view)` validates declared ancestry via `_walk_ancestors` (bounded, no DB), selects the operation's permission pair from `_operation_family` (finite table; custom actions need an exact `ancestor_policy.actions` entry) and the gated levels (`src/crud_views/lib/ancestors.py`).
-3. Actor admission runs before any lookup via `_cv_ancestor_actor_response(protected=...)`: anonymous gets login redirect (Guardian: configured 403/404), inactive 403.
-4. Ancestors resolve outermost inward through each ViewSet's queryset (404 when missing); each selected gate checks `ancestor_db._check_nested_auth` (default database only) then the provider (403 on denial).
-5. The resolved `_AncestorState` is cached on the view; `cv_get_parent_object()` reuses it. `CrudView.get_object` calls `_validate_child_parent` and list views `_scope_child_queryset`, so a child queryset override cannot leak another parent's rows; Resource leaves are skipped.
-6. Nested ORM data, writes and delete aliases are restricted to the `default` database by `src/crud_views/lib/ancestor_db.py`.
-
-Configuration: per-ViewSet `ViewSet.ancestor_policy` (`AncestorPolicy`) plus global `CRUD_VIEWS_ANCESTOR_PERMISSION_CASCADE`, `CRUD_VIEWS_ANCESTOR_READ_PERMISSIONS`, `CRUD_VIEWS_ANCESTOR_WRITE_PERMISSIONS` in `src/crud_views/lib/settings.py`. Structure/action declaration problems surface as system checks in `src/crud_views/checks.py`. Docs: `docs/reference/nested.md`, `docs/reference/guardian.md`.
-
-### Asset and Theme Flow
-
-1. Core assets are selected from `CrudViewsSettings`; extensions may register bundles during `AppConfig.ready()` (`src/crud_views/lib/assets.py`).
-2. `{% cv_css %}` and `{% cv_js %}` render enabled bundle entries; optional django-pipeline integration consumes lazy sources from `src/crud_views/lib/pipeline.py`.
-3. The theme's shared templates and JavaScript adapters initialize configured behavior such as modals, tooltips, list filters, formsets and action controls (`src/crud_views/templates/crud_views/shared/`, `src/crud_views/static/crud_views/js/`).
-4. `src/crud_views_object_detail/apps.py` registers the object-detail script bundle; `tabs.js` initializes/disposes marked tab triggers on document readiness and modal load/unload. Accordion `presentation.selected` determines initial expanded/collapsed classes and `aria-expanded`; Bootstrap's data API handles later trigger clicks and parent-scoped collapse behavior (`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`).
-5. Core tooltips are opt-in on package-owned `[data-cv-tooltip]` triggers. `tooltip.js` initializes them on document readiness, modal content load, and added formset rows; it hides the clicked trigger's tooltip and disposes modal-contained instances before replacement. App-owned Bootstrap tooltip markers are left to the host (`src/crud_views/static/crud_views/js/tooltip.js`). The default adapter uses `Tooltip.getInstance()` for hide/dispose and guards Bootstrap's queued transition callbacks after disposal so stale completion work cannot act on a replacement instance (`src/crud_views/static/crud_views/js/adapters.js`).
-
-### Extension Flow
-
-1. Consumer installs an extension app and imports its public classes from the app package/lib public API (for example `src/crud_views_object_detail/lib/__init__.py`).
-2. Specialized views subclass core CBVs or mixins; extension `AppConfig.ready()` registers system checks or assets where applicable.
-3. Extension templates and static assets override/extend the core output through Django's template/static lookup mechanisms.
-
-**State Management:**
-- ViewSet instances and the asset registry are process-level registries protected by locks where mutation is shared (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/assets.py`).
-- Per-request state lives on Django view instances, request/session data, and the generated `ViewContext` (`src/crud_views/lib/view/context.py`).
-- CRUD writes are atomic by default through `CrudView.cv_atomic` and the view processing hooks in `src/crud_views/lib/view/base.py`; database aliases are resolved by the view.
-- Resource rows are obtained per request from a consumer-defined `Resource.cv_get_items()` or `cv_get_item()` rather than stored in the Django ORM (`src/crud_views/lib/resource.py`).
-
-**Workflow transition execution:** `WorkflowView` and public `run_transition()` share the private engine in `src/crud_views_workflow/lib/execution.py`. It verifies the selected database alias and persisted actor/object identity, validates availability/business/comment policy, then saves model state and `WorkflowInfo` within one alias-specific atomic block. View follow-ups use `transaction.on_commit()` on that same alias (`src/crud_views_workflow/lib/views.py`).
-
-### Object-Detail Resolution and Presentation
-
-1. `ObjectDetailMixin.get_property_display()` selects list, exact-model mapping or dynamic configuration; `get_context_data()` forwards the view to shared resolution (`src/crud_views_object_detail/lib/mixins.py`). Complete object-detail views already contain this mixin; compose it first only with core/Guardian/polymorphic views that lack it (`docs/reference/object_detail_view.md`).
-2. `resolve_property()` walks terminal field metadata and the existing runtime path. The runtime walk returns raw value plus scalar owner; `_resolve_value()` remains the value-only wrapper (`src/crud_views_object_detail/lib/resolvers.py`). Collection expansion/order and query behavior remain intact.
-3. Help instructions resolve explicit lazy/string text, property booleans, nullable view policy, then cached project policy. Only terminal metadata supplies automatic help; resolution does not mutate shared configuration.
-4. `ResolvedProperty.value` stays raw; `choice_label` is additive. The value tag dispatches badge → explicit template → choice text → ordinary type and passes both raw `value` and presentation `display_value` (`src/crud_views_object_detail/templatetags/crud_views_object_detail.py`).
-5. Stock char/text/default leaves mark exact None/empty display strings. Badge/custom/relation/collection handling retains its separate contract; copied templates require explicit adoption (`docs/migrating-1.0.md`).
+1. `cv_access` resolves a username/PK and calls the public `trace_access()` entry point (`src/crud_views/management/commands/cv_access.py`, `src/crud_views/lib/access_trace.py`).
+2. The runner resolves only CrudView routes, refreshes the actor, and dispatches a synthetic GET inside a rollback transaction with memory-only session/message stores (`src/crud_views/lib/access_trace_runner.py`).
+3. Authorization gates report scalar facts to a `ContextVar` recorder while executing their normal checks (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/views/manage.py`).
+4. The handler is replaced with a stub, so the trace answers whether the page can be opened without running the real view handler; it records a versioned scalar result and explicit limitations.
+5. The manage page can opt into the same engine via `CRUD_VIEWS_MANAGE_ACCESS_TRACE`; query parameters select an explicit user and either a path or current ViewSet (`src/crud_views/lib/views/manage.py`).
 
 ## Key Abstractions
 
 **ViewSet:**
-- Purpose: Shared model/resource, URL, permission and presentation configuration for a family of views.
-- Examples: `src/crud_views/lib/viewset/__init__.py`, `examples/bootstrap5/library/views.py`, `examples/bootstrap5/nested/views.py`
-- Pattern: Instantiate once, then register view classes by declaring `cv_viewset` and unique `cv_key`; include its generated URL patterns.
+- Purpose: Collection-level registry, routing contract and permission metadata.
+- Examples: `src/crud_views/lib/viewset/__init__.py`, `src/crud_views_guardian/lib/viewset.py`.
+- Pattern: One ViewSet instance is bound to view classes at declaration time; its generated URLs and lookup methods are the source of sibling-route relationships.
 
 **CrudView:**
-- Purpose: Cross-cutting mixin enabling sibling links, context, access-aware action resolution and standard CRUD settings.
-- Examples: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/create.py`
-- Pattern: Mix into a Django generic CBV; use package-provided concrete classes for standard operations.
-
-**ParentViewSet:**
-- Purpose: Describe the parent ViewSet and relation used in nested URLs and child queryset constraints.
-- Examples: `src/crud_views/lib/viewset/parentviewset.py`, `examples/bootstrap5/nested/views.py`
-- Pattern: Declare a child ViewSet with a parent reference and a FK/relationship attribute; use parent-aware create behavior for new children.
+- Purpose: Shared mixin contract for package CBVs, including ViewSet access and cross-view behavior.
+- Examples: `src/crud_views/lib/view/base.py`, concrete handlers in `src/crud_views/lib/views/`.
+- Pattern: Combine `CrudView` with a Django generic view and use `cv_` class attributes for package configuration.
 
 **AncestorPolicy:**
-- Purpose: Typed, stateless per-ViewSet configuration of ancestor authorization (strict: no coercion, no extra fields).
-- Examples: `src/crud_views/lib/ancestor_policy.py`, `ViewSet.ancestor_policy` in `src/crud_views/lib/viewset/__init__.py`
-- Pattern: `provider` / `accept_global_perms` apply when the ViewSet is an ancestor; `cascade` / `read` / `write` / `actions` apply to requests targeting it. Construction-time constraints are validated in `ViewSet._validate_ancestor_policy()`.
+- Purpose: Describes which inherited permissions and provider behavior apply to nested requests.
+- Examples: `src/crud_views/lib/ancestor_policy.py`, enforcement in `src/crud_views/lib/ancestors.py`.
+- Pattern: Declare policy on the child ViewSet; enforcement resolves the real parent chain during requests.
 
-**Resource:**
-- Purpose: Supply read-oriented table/list data without requiring a Django model.
-- Examples: `src/crud_views/lib/resource.py`, Resource view support in `src/crud_views/lib/views/`
-- Pattern: Define typed Pydantic rows and implement `cv_get_items()`; do not use model write views because Resource ViewSets are explicitly read-only.
+**AccessTrace / AccessRecorder:**
+- Purpose: Return an explainable projection of gates encountered during one authorization attempt.
+- Examples: `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py`.
+- Pattern: Gate code records only scalar facts under a context-local recorder. The diagnostic runner never caches or substitutes authorization decisions; unknown custom behavior and handler-phase checks remain explicit limitations.
 
-**Table:**
-- Purpose: django-tables2 base table that carries the view context and an `actions` (`ActionColumn`) column.
-- Examples: `src/crud_views/lib/table/table.py`, `tests/test1/test_table_meta.py`
-- Pattern: Without a `sequence` kwarg or `Meta.sequence`, `Table.__init__` defaults to `("...", "actions")` so actions render last. A declared `Meta.sequence` is used as written (it should name `"actions"` to place it; otherwise django-tables2 places it first among unlisted columns). A caller `sequence` kwarg wins over both. Remove the column with `Meta.exclude = ("actions",)` (Phase 06.19, #337).
-
-**Presentation contract:**
-- Purpose: Pass normalized semantic action/button/context data from Python to templates.
-- Examples: `src/crud_views/lib/view/action_menu.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/context.py`, `src/crud_views/lib/view/button_data.py`
-- Pattern: Resolve presentation through the helpers and template tags rather than constructing markup in view code.
-
-**FormSet / CompactLayout:**
-- Purpose: Describe recursive formset structure, deletion/order metadata and optional compact field/control grid without embedding markup in consumer views.
-- Examples: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/compact.py`, `examples/bootstrap5/formsets/views.py`
-- Pattern: Keep classic crispy helpers on classic inline formsets; opt into compact with `compact_layout=CompactLayout(...)` per node. `_compact_schema()` projects and validates request-bound fields, `_compact_helper()` creates crispy layout objects around the original fields and `FormControl`, and `XForm.helper` chooses this path only for opted-in nodes. The exact stock `django.forms.widgets.CheckboxInput` is supported. A widget subclass or custom template crosses the compatibility boundary only by inheriting `CompactWidgetCompatible`; that marker supplies no renderer, and the author owns labels/groups, headings, help/errors, prefixed IDs/names and dynamic rows (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`).
-- Border treatment is independent: `row_border=True` enables a border only when the compact row has a nonempty legend; the default is borderless while retaining the compact row geometry. `row_legend=False` or `""` selects the plain presentation with border, padding, radius and card background suppressed (`src/crud_views/lib/formsets/formsets.py`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/static/crud_views/css/formset.css`).
-
-**Checklist example composition:**
-- Purpose: Exercise compact rendering of an ordinary BooleanField in a separate end-to-end CRUD family.
-- Examples: `examples/bootstrap5/formsets/models.py`, `examples/bootstrap5/formsets/views.py`, `examples/bootstrap5/formsets/migrations/0003_checklist_checklistitem.py`
-- Pattern: `Checklist` and `ChecklistItem` have their own `cv_checklist` ViewSet and create/list/update views. `ChecklistForm` places `Formsets()` in its crispy layout; its compact child declares `label` plus the native `done` checkbox. The demo catalog remains one `formsets` feature in `examples/bootstrap5/project/features.py`; `examples/bootstrap5/project/templatetags/example_tags.py` adds a direct Checklist navigation link by deriving it from that shared feature entry.
-
-### Nested formset request and persistence path
-
-1. The normal create/update view dispatch and permission mixins authorize the endpoint before `FormSetMixin` builds form context; `get_context_data()` clones and initializes the declared tree from the request and parent form (`src/crud_views/lib/formsets/mixins.py`).
-2. Each `XFormSet` and `XForm` node retains its bound Django form/formset and recursive children. Compact nodes lazily project one consistent field schema and select a per-row crispy helper; classic nodes keep the existing formset helper (`src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/compact.py`).
-3. POST validation runs the main form and all formsets, including conditional-formset evaluation. On success, `FormSetMixin.cv_form_valid()` atomically saves the parent form followed by the recursive formset tree using the view's database alias. The compact helper does not own validation or persistence (`src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/formsets.py`).
-4. Dynamic-row requests pass through the same endpoint dispatch/permission boundary, validate declared fragment coordinates against the persisted root/ancestry, then render a single empty-row fragment; they do not build the full editor (`src/crud_views/lib/formsets/mixins.py`).
-
-### Choice-driven conditional group flow
-
-1. `ConditionalGroupModelForm` initializes group declarations and injects any transient `UIFieldToggle` fields; `ValueToggle` controllers reference an existing single-choice field (`src/crud_views/lib/conditional/group.py`).
-2. During full cleaning, configuration validation checks field/widget shape, canonical choices, group overlap and controller presence before Django validates submitted fields (`src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/toggle.py`).
-3. `ValueToggle.is_on()` reads the cleaned selected choice; each group is then required or cleared server-side. Persistence uses native empty values only for recognized form/model pairs, with explicit `empty_values` for business sentinels or unsupported pairs (`src/crud_views/lib/conditional/group.py`).
-4. `ToggleGroup` connects the same controller to the rendered fieldset. Browser JavaScript controls visibility as progressive enhancement; it does not decide validation or persistence (`src/crud_views/lib/conditional/layout.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`).
-5. `CustomerRadioForm` inherits the same conditional groups and layout as `CustomerForm` and overrides only the `kind` widget, so the dropdown and radio routes exercise identical server behavior (`examples/bootstrap5/conditional/views.py`).
-
-### Queryset-driven conditional group flow
-
-1. The form declaration creates `QuerysetConditions(controller, conditional_key=..., keys=...)`; each `when(...)` toggle is assigned to a `ConditionalGroup` and matching crispy `ToggleGroup` (`src/crud_views/lib/conditional/queryset.py`, `examples/bootstrap5/queryset_conditional/`).
-2. During form cleaning, the group mixin validates the native ModelChoice field shape and category coverage, then uses the final cleaned model object to decide active/required fields. Inactive fields use the existing bounded clearing and persistence pipeline (`src/crud_views/lib/conditional/group.py`).
-3. During rendering, layout wrappers project categories from the offered queryset into option tokens in the Django render context; no choice labels are reconstructed and no request payload decides active server validation (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/layout.py`, `src/crud_views/templates/crud_views/conditional/toggle_group.html`).
-4. When `allow_unmatched` is false, an offered or selected object with an undeclared category raises a coverage configuration error; a bound render keeps the diagnostic visible alongside the submitted form errors. An all-no-fields category still needs an explicit empty layout guard for option visibility coverage.
+**ManageView:**
+- Purpose: Developer-only inspection page for a ViewSet's declarations and runtime diagnostics.
+- Examples: `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`.
+- Pattern: Require active authenticated access and configured manage-group membership; diagnostics are separately opt-in where they can perform additional authorization work.
 
 ## Entry Points
 
 **Django app initialization:**
-- Location: `src/crud_views/apps.py`
-- Triggers: Django app registry startup.
-- Responsibilities: Register core system checks via `ready()` importing `crud_views.checks`.
+- Location: `src/crud_views/apps.py` and each extension's `apps.py`.
+- Triggers: Django app loading.
+- Responsibilities: Register app-specific checks, translations, and presentation defaults.
 
-**Manage diagnostics:**
-- Location: `src/crud_views/lib/views/manage.py`, with the Guardian extension in `src/crud_views_guardian/lib/views.py`.
-- Triggers: Authenticated developer opens the manage action or direct manage URL.
-- Responsibilities: Require active manage-group membership (plus configured mode and nested ancestor authorization), then project permission holders, current-user results, registered view details and declared ancestor policy. `src/crud_views/management/commands/cv_manage_group.py` creates the configured group without granting permissions or memberships.
+**Generated ViewSet URLs:**
+- Location: `src/crud_views/lib/viewset/__init__.py`.
+- Triggers: Inclusion by the consumer URLconf.
+- Responsibilities: Route collection and object operations to registered view classes.
 
-### Manage diagnostics request path
+**Access trace command:**
+- Location: `src/crud_views/management/commands/cv_access.py`.
+- Triggers: `manage.py cv_access <path> <user>` or `--anonymous`.
+- Responsibilities: Validate arguments, resolve the actor, render text or versioned JSON, and return outcome-specific exit codes.
 
-1. `ManageView.dispatch()` runs nested ancestor authorization before the normal permission mixin (`src/crud_views/lib/views/manage.py`).
-2. The manage gate requires an authenticated active user, an enabled diagnostics mode, and membership in `CRUD_VIEWS_MANAGE_GROUP`; staff/superuser status and `DEBUG=True` do not independently grant access (`src/crud_views/lib/settings.py`, `src/crud_views/lib/views/manage.py`). The auto-registered action uses the same access check and hides itself when denied.
-3. Authorized pages build explicit data projections in `ManageView`: permission matrices and holder rows (`get_manage_permissions()`), generated route summaries (`get_manage_routes()`), ViewSet facts with constructor/model-Meta provenance (`get_manage_facts()`), upward hierarchy links (`get_manage_hierarchy()`), presentation values (`get_manage_presentation()`), registered view sections (`get_manage_views()`), and scoped diagnostics (`get_manage_checks()`) (`src/crud_views/lib/views/manage.py`). Templates consume these structures; they do not inspect ViewSet internals themselves.
-4. Permission descriptions come from each registered view's `cv_get_requirement()` contract. `_manage_requirement()` resolves the local permission key and, where configured, the selected nearest ancestor pair; missing or structurally unavailable metadata is returned as a presentation error. This is descriptive metadata, not an authorization decision. `get_manage_views()` also records class path, route, sectioned `cv_*` values, and source as default, inherited, ViewSet/global fallback, or explicitly set (`src/crud_views/lib/views/manage.py`, `src/crud_views/lib/view/base.py`).
-5. Core checks are deliberately scoped to the one ViewSet: `get_manage_checks()` combines its own `viewset.checks()` with collectors accepting `[viewset]` for ancestor, conditional and icon checks, then normalizes unsilenced Django messages. It does not run the global startup check registry (`src/crud_views/lib/views/manage.py`, `src/crud_views/checks.py`). `GuardianManageView` appends the Guardian composition collector for that same ViewSet (`src/crud_views_guardian/lib/views.py`, `src/crud_views_guardian/checks.py`).
-6. Guardian specializes the same projection hooks: it validates Guardian grant database routes, merges aggregated object-level grants and distinct object counts into group/user holder rows, adds strict/global-fallback policy metadata per applicable view, and exposes the helper policy (`src/crud_views_guardian/lib/views.py`). The shared actor admission and page gate remain in `ManageView`; `cv_manage_group` creates only the configured group.
-
-**ViewSet URL inclusion:**
-- Location: `src/crud_views/lib/viewset/__init__.py` (`ViewSet.urlpatterns`)
-- Triggers: Consumer URLconf includes the ViewSet patterns.
-- Responsibilities: Convert registered view classes into named Django routes and attach the generated dispatch callbacks.
-
-**View class registration:**
-- Location: `src/crud_views/lib/view/meta.py`
-- Triggers: Import-time class creation when a subclass declares `cv_viewset`.
-- Responsibilities: Validate key presence, register the class, and inherit the configured model when omitted.
-
-**Theme template tags:**
-- Location: `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templatetags/crud_views_formsets.py`
-- Triggers: Django template rendering after host templates load the tag libraries.
-- Responsibilities: Expose view/action context and render theme components/forms.
+**Manage page access trace:**
+- Location: `src/crud_views/lib/views/manage.py`.
+- Triggers: GET submission when `CRUD_VIEWS_MANAGE_ACCESS_TRACE` is enabled and the hosting manage request passes its normal checks.
+- Responsibilities: Run path or ViewSet traces for the explicitly selected user and project route coordinates.
 
 ## Architectural Constraints
 
-- **Threading:** Django request handling follows the host server's model; module registries use `threading.Lock` for registration/snapshot operations in `src/crud_views/lib/viewset/__init__.py` and `src/crud_views/lib/assets.py`.
-- **Global state:** `_REGISTRY` stores named ViewSets in `src/crud_views/lib/viewset/__init__.py`; `_REGISTRY` stores asset bundles in `src/crud_views/lib/assets.py`; settings are loaded as `crud_views_settings` in `src/crud_views/lib/settings.py`.
-- **Circular imports:** `src/crud_views/lib/resource.py` is intentionally kept as a leaf and documents that importing any `viewset` module from it triggers a cycle through `viewset/__init__.py`.
-- **Ancestor guard ordering:** The guard must run before an endpoint's own `has_permission()` or state loading; new view compositions must reach `_authorize_ancestors` via one of the existing dispatch bridges. Wave one supports only the `default` database for nested requests (`src/crud_views/lib/ancestor_db.py`).
-- **Import-time registration:** View class declarations require their ViewSet to exist first and can fail on duplicate keys/names; keep declaration/import order explicit (`src/crud_views/lib/view/meta.py`, `src/crud_views/lib/viewset/__init__.py`).
-- **Theme coupling:** The bundled presentation targets Bootstrap 5 and Django templates; theme-facing changes should update the matching template, Python context/tag contract, and browser behavior where relevant (`src/crud_views/templates/crud_views/`, `src/crud_views/lib/view/`, `src/crud_views/static/crud_views/`).
-- **Adapter boundary:** Package-owned browser modules should use semantic methods on `cv.adapters` when they implement behavior through a UI library. Object-detail tabs are explicitly marked and disposed on modal unload; accordion markup relies on Bootstrap's declarative Collapse data API instead (`src/crud_views/static/crud_views/js/adapters.js`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`).
-- **Tooltip lifecycle:** Only `[data-cv-tooltip]` is owned by core initialization. Keep its init, hide, and dispose behavior behind `cv.adapters.tooltip`; modal unload must occur while old content is attached, and late Bootstrap transition callbacks must be guarded after disposal (`src/crud_views/static/crud_views/js/tooltip.js`, `src/crud_views/static/crud_views/js/adapters.js`).
-- **Optional dependencies:** Keep integrations in their dedicated extension packages or guarded core integration modules, and use the public core classes where supported (`src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`, `src/crud_views/lib/crispy/`).
+- **Threading/context:** The ViewSet registry is module-level and guarded by a `threading.Lock`; trace recorder state uses `ContextVar` so concurrent request contexts do not share one recorder (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/access_trace.py`).
+- **Database effects:** Access traces execute inside a transaction marked for rollback on the default database, and substitute in-memory session/message storage (`src/crud_views/lib/access_trace_runner.py`). Custom gates can still have arbitrary side effects; the runner does not claim general sandboxing.
+- **Trace scope:** Only resolved CrudView routes are traced. The diagnostic request is synthetic GET to `http://localhost`; host-dependent rules, other middleware/decorators, and handler-phase checks are not reproduced (`src/crud_views/lib/access_trace_runner.py`).
+- **Import-time registration:** Import order matters because view classes register with ViewSets during class construction (`src/crud_views/lib/view/meta.py`).
+- **Nested URL shape:** Parent PK arguments belong to URL ancestry while the target ViewSet's PK belongs to the child route (`src/crud_views/lib/viewset/parentviewset.py`, `src/crud_views/lib/viewset/path_regs.py`).
+- **Optional integrations:** Guardian, workflow, object-detail and polymorphic packages are separate Django apps with provider-specific behavior (`src/crud_views_guardian/`, `src/crud_views_workflow/`, `src/crud_views_object_detail/`, `src/crud_views_polymorphic/`).
 
 ## Anti-Patterns
 
-### Bypassing ViewSet sibling resolution
+### Reimplementing sibling route construction
 
-**What happens:** A view or template hard-codes sibling URLs instead of using the CrudView/ViewSet URL and context APIs.
-**Why it's wrong:** Nested prefixes, PK types, namespace names and access-aware action behavior are centrally derived and can diverge from hard-coded paths.
-**Do this instead:** Resolve URLs and actions through `CrudView.cv_get_url()`, `cv_get_context()` and template tags in `src/crud_views/lib/view/base.py` and `src/crud_views/templatetags/crud_views.py`.
+**What happens:** Code hand-builds routes or reverse names instead of asking the owning ViewSet.
+**Why it's wrong:** It can lose PK conversion, parent coordinates and registered custom route behavior.
+**Do this instead:** Use the ViewSet routing methods in `src/crud_views/lib/viewset/__init__.py` and resolve declared siblings through `CrudView` in `src/crud_views/lib/view/base.py`.
 
-### Rendering presentation directly from request handlers
+### Duplicating authorization in diagnostics
 
-**What happens:** View code emits Bootstrap markup or duplicates action selection logic.
-**Why it's wrong:** It bypasses normalized presentation data and makes full-page, modal and theme rendering inconsistent.
-**Do this instead:** Return context through `CrudView` and render reusable theme components in `src/crud_views/templates/crud_views/` via the corresponding tag/context helpers.
+**What happens:** A diagnostic independently guesses permissions and reports that as the user's access result.
+**Why it's wrong:** It diverges from provider, ancestor, object and custom gates in the real request path.
+**Do this instead:** Observe existing gate results through the recorder in `src/crud_views/lib/access_trace.py`; keep unobserved behavior labeled as a limitation in `src/crud_views/lib/access_trace_runner.py`.
+
+### Running the real handler during an access trace
+
+**What happens:** A diagnostic executes a list/detail/form handler to decide whether access is granted.
+**Why it's wrong:** It can run business logic, render expensive content, or cause writes.
+**Do this instead:** Preserve the synthetic request and handler stub in `src/crud_views/lib/access_trace_runner.py`; add only explicitly bounded, rollback-safe gate observations.
 
 ## Error Handling
 
-**Strategy:** Fail fast for invalid static configuration, use Django's standard HTTP exceptions and form validation for request errors, and expose system-check messages for startup-time diagnostics.
+**Strategy:** Use Django's normal 403/404 behavior for requests, package exceptions for invalid ViewSet declarations, and explicit structured outcomes for diagnostics.
 
 **Patterns:**
-- `cv_raise()` raises package-specific configuration errors for invalid registry/view operations (`src/crud_views/lib/exceptions.py`).
-- Django `Http404`, permission handling and form errors are used at the request boundary (`src/crud_views/lib/views/`, `src/crud_views/lib/view/base.py`).
-- Checks are yielded from ViewSets and extensions, then registered with Django (`src/crud_views/checks.py`, `src/crud_views_workflow/checks.py`, `src/crud_views_guardian/checks.py`).
-- Database writes follow the transaction boundary controlled by `cv_atomic` and `cv_on_commit()` (`src/crud_views/lib/view/base.py`).
+- Ancestor configuration and lookup failures are validated in `src/crud_views/lib/ancestors.py` and surface as Django/package exceptions in the normal request path.
+- `cv_access` maps allowed, denied, not-found, login-redirect, no-route and error results to documented command exit statuses (`src/crud_views/management/commands/cv_access.py`).
+- Trace steps may preserve exception class/message as scalar data; `AccessTrace.version` identifies the JSON contract (`src/crud_views/lib/access_trace.py`).
 
 ## Cross-Cutting Concerns
 
-**Logging:** No package-wide application logging layer is present; Django and host application logging remain in control.
-**Validation:** Pydantic validates ViewSet, Resource and object-detail configuration; Django forms and startup system checks validate request data and package configuration (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/resource.py`, `src/crud_views_object_detail/lib/config.py`, `src/crud_views/checks.py`).
-**Authentication:** Nested requests additionally authorize every protected ancestor (`src/crud_views/lib/ancestors.py`). Core permission-required CBVs integrate Django's permission mixins; Guardian adds object-level permission checks in `src/crud_views_guardian/lib/`.
-
-## Permission and Snippet Boundary
-
-- The ancestor guard is a request-time security boundary for nested ViewSets, not just a queryset convenience: it validates declared ancestry, admits or rejects actors before ancestor lookups, resolves ancestor objects outermost inward, applies the configured provider/permission pair, and caches the resolved chain on the request view (`src/crud_views/lib/ancestors.py`).
-- Core permission-required dispatch reaches the ancestor guard before Django's `PermissionRequiredMixin` state-loading `has_permission()`; Guardian and manage views have corresponding dispatch bridges. Subsequent child object retrieval validates parent membership, and list context scopes child rows (`src/crud_views/lib/view/base.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/ancestors.py`).
-- Snippet `parent_object` reads reuse this authorized/cached immediate parent after dispatch. Template snippets do not establish or bypass authorization; accessing the lazy object outside the guarded request path performs the documented parent lookup and may raise 404 (`src/crud_views/lib/view/base.py`, `docs/reference/templates.md`).
-
-## ViewSet Label Metadata (Phase 06.20)
-
-- `ViewSet.verbose_name` and `verbose_name_plural` are independent optional `LazyStr` fields. `get_meta()` resolves explicit overrides per call under the active language; `None` preserves the model/Resource metadata path, including lazy values (`src/crud_views/lib/viewset/__init__.py`).
-- `check_verbose_name()` rejects blank plain strings without stripping stored values or evaluating lazy objects at construction. There is no automatic pluralization or ancestor fallback.
-- Existing `CrudView.cv_get_meta()`, snippets, breadcrumbs, child-column and button consumers receive the resolved names. Explicit labels keep precedence; model-centric deletion/404 text and permission identity are unchanged (`src/crud_views/lib/view/base.py`, `docs/reference/nested.md#labels`). No new queries or consumer state are added.
-
-## Conditional and Formset Legend Classes (Phase 06.25.1)
-
-- The existing `cv_button_class` template tag resolves independent `conditional:legend` and `formset:legend` slots through the existing class registry (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/button_classes.py`).
-- The hook is consumed directly by the existing conditional `ToggleGroup` and formset fieldset templates; defaults are empty, so no class is added unless configured (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`).
-- Keep future legend customization at these tag/template call sites. No parallel rendering abstraction is needed.
-
-## Choice-driven conditional groups
-
-- `ValueToggle` is the choice-value controller in `src/crud_views/lib/conditional/toggle.py`; it accepts string/integer tokens against a static native `ChoiceField`/`TypedChoiceField` with `Select`/`RadioSelect`.
-- `ConditionalGroup` and `ConditionalGroupFormMixin` in `src/crud_views/lib/conditional/group.py` validate declarations, enforce required fields when active, and clear inactive fields. Keep controlled fields disjoint and never control another group’s controller.
-- Automatic clearing is limited to recognized standard field/model pairs. Use `empty_values` for an explicit business sentinel, as Customer does for `payment_terms="unset"`; nullable `price_tier` demonstrates automatic `None` clearing (`examples/bootstrap5/conditional/views.py`, `examples/bootstrap5/conditional/models.py`).
-- `CustomerForm` covers consumer-only, shared business, wholesale-only and distributor-only groups. The shared business group remains active when switching between Wholesale and Distributor; `CustomerRadioForm` reuses its declarations and changes only the controller widget (`examples/bootstrap5/conditional/views.py`).
-
-## Numbered crispy columns
-
-- Public helpers `Column1` through `Column12` are exported by `src/crud_views/lib/crispy/__init__.py` and implemented in `src/crud_views/lib/crispy/table.py`.
-- Their defaults map to `form:column-1` through `form:column-12` in `src/crud_views/lib/button_classes.py`; custom `css_class` values are appended to the resolved class. Direct post-construction assignment of `css_class` disables registry resolution for that instance.
-- Rendering copies the layout object before applying registry classes. The compatibility bridge selects `src/crud_views/templates/crud_views/crispy/bootstrap5_column.html` only when the active pack is Bootstrap 5, the resolved template is the installed crispy-bootstrap5 column, and its source exactly matches the audited template; explicit templates and customized/other packs stay on their configured path (`src/crud_views/lib/crispy/table.py`).
-
-## Permission declaration diagnostics (Phase 06.22)
-
-- `check_ancestor_declarations` first completes the configured URL resolver tree, snapshots the ViewSet registry, and runs completion-dependent checks only when that barrier succeeds (`src/crud_views/checks.py`).
-- `_permission_key_messages` checks only registered core permission-required views. `_ancestor_pair_messages` walks ancestry, selects protected gates, and checks only pairs consumed by registered endpoints. Both emit `viewset.E269` without querying the database.
-- `_concrete_opts`, `_declared_permission_keys`, and `_permission_key` mirror concrete-model runtime vocabulary, including proxy handling and exact terminal suffix removal (`src/crud_views/lib/ancestors.py`).
-- `_requirement_source` returns the pair and diagnostic source; `_operation_requirements` delegates to it. Action overrides, explicit family overrides and global defaults retain their established order. Pair diagnostics deduplicate by key and ancestor.
-- Guardian/Resource exclusions, E202/E260/E266/E268 ownership, and runtime authorization backstops remain separate. Startup validation establishes declared vocabulary, not persisted auth rows or user grants.
+**Logging:** No shared request logger is imposed; Django and consumer applications own logging configuration.
+**Validation:** ViewSet declaration checks and Django system checks are implemented in `src/crud_views/lib/check.py`, `src/crud_views/checks.py`, and extension check modules.
+**Authentication:** Local permissions use Django auth; nested checks use `src/crud_views/lib/ancestors.py`; per-object permissions are added by `src/crud_views_guardian/lib/mixins.py`.
+**Presentation:** Context and action projections are prepared by `src/crud_views/lib/view/` and rendered by overridable templates under `src/crud_views/templates/`.
 
 ---
 
-*Architecture analysis: 2026-11-14*
+*Architecture analysis: 2026-11-15*

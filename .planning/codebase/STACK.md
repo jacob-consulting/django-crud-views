@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-14
-last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
+last_mapped_at: 2026-11-15
+last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-14
+**Analysis Date:** 2026-11-15
 
 ## Languages
 
@@ -35,7 +35,7 @@ last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
 - django-tables2 >=2.5.3 and django-filter >=21.1 - list tables and filtering (`src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`)
 
 **Testing:**
-- pytest, pytest-django, pytest-cov, pytest-xdist, pytest-mock, pytest-random-order - Python tests (`pyproject.toml`, `noxfile.py`)
+- pytest, pytest-django, pytest-cov, pytest-xdist, pytest-mock, pytest-random-order - Python tests (`pyproject.toml`, `noxfile.py`); Nox runs the suite against the installed distribution and repeats it with request-access recording enabled (`noxfile.py`)
 - Vitest, jsdom, and jQuery - dev-only JavaScript tests (`package.json`)
 
 **Build/Dev:**
@@ -53,6 +53,7 @@ last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
 **Infrastructure:**
 - `[workflow]`: `django-fsm-2`, `django-fsm-2-admin`; `[polymorphic]`: `django-polymorphic`; `[ordered]`: `django-ordered-model`; `[guardian]`: `django-guardian` (`pyproject.toml`)
 - `[all]` combines the four extension extras; `[test]` adds test tooling and Django integrations; `[examples]` adds Pygments (`pyproject.toml`)
+- Access tracing is an optional, context-local diagnostic path using Django's resolver, auth, middleware, and ORM APIs; it adds no runtime dependency or request middleware (`src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py`).
 - Phase 06.30 conditional form fields add the opt-in `QuerysetConditions` API for native single-select `ModelChoiceField` controllers. It declares category keys on the field queryset and uses the selected, field-cleaned model object for server-side validation (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`).
 - Compact formsets expose the strict boolean `CompactLayout.row_border` option; it is presentation metadata and adds no dependency (`src/crud_views/lib/formsets/compact.py`).
 - Manage diagnostics use Django auth groups and settings (`CRUD_VIEWS_MANAGE_VIEWS_ENABLED`, `CRUD_VIEWS_MANAGE_GROUP`); `cv_manage_group` creates the configured group without changing membership or permissions (`src/crud_views/lib/settings.py`, `src/crud_views/management/commands/cv_manage_group.py`).
@@ -87,4 +88,4 @@ last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
 
 ---
 
-*Stack analysis: 2026-11-14*
+*Stack analysis: 2026-11-15*

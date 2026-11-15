@@ -1,10 +1,10 @@
 ---
-last_mapped_at: 2026-11-14
-last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
+last_mapped_at: 2026-11-15
+last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-14
+**Analysis Date:** 2026-11-15
 
 ## APIs & External Services
 
@@ -12,6 +12,8 @@ last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
 - Uses Django app registration, URL routing, templates, settings, ORM, auth/permissions, content types, messages, and system checks (`src/crud_views/apps.py`, `src/crud_views/lib/viewset/`, `src/crud_views/checks.py`).
   - SDK/Client: Django APIs
   - Auth: The host project configures users, middleware, backends, and permissions.
+- **Access tracing:** `trace_access()` synthetically resolves and dispatches a CRUD URL with a GET handler stub while observing existing gate results; `python manage.py cv_access <path> <user>` (or `--anonymous`) prints text or versioned JSON (`--as-json`). It does not invoke the real page handler. The `CRUD_VIEWS_MANAGE_ACCESS_TRACE` setting (default `False`) enables the same diagnostics in the normal manage page after its normal authorization; the CLI is an explicit diagnostic operation, not automatic request middleware (`src/crud_views/lib/settings.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/management/commands/cv_access.py`). Traces report limits for non-CRUD routes, other middleware/decorators, host-dependent rules, and handler-phase authorization; synthetic dispatch runs in an atomic transaction marked for rollback (`src/crud_views/lib/access_trace_runner.py`).
+- **Request-access recording in tests:** package gate code reports scalar observations only when the test context has an `AccessRecorder`; the root pytest conftest enables that context when `CV_ACCESS_RECORD_REQUESTS=1` (`src/crud_views/lib/access_trace.py`, `tests/conftest.py`). Nox verifies the normal suite with recording disabled, then re-runs it enabled (`noxfile.py`). This switch is for the test harness, not a required deployment setting.
 
 **Forms, tables, and filtering:**
 - django-crispy-forms and crispy-bootstrap5 render Bootstrap forms; django-tables2 and django-filter integrate list tables and filters (`src/crud_views/lib/crispy/`, `src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`).
@@ -82,7 +84,7 @@ last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
 - Documentation is built with MkDocs on Read the Docs (`mkdocs.yml`, `.readthedocs.yaml`).
 
 **CI Pipeline:**
-- GitHub Actions cover Python/Django tests, lint, docs, JavaScript tests, release publication, demo deployment, and README examples (`.github/workflows/`).
+- GitHub Actions cover Python/Django tests, lint, docs, JavaScript tests, release publication, demo deployment, and README examples (`.github/workflows/`). Python Nox sessions test both with `CV_ACCESS_RECORD_REQUESTS=0` and `=1`, each using `pytest -n auto` (`noxfile.py`).
 - Release publication uses PyPI trusted publishing; coverage uploads to Codecov (`.github/workflows/publish.yml`, `.github/workflows/tests.yml`).
 - The demo workflow deploys release tags through the Render API; credentials are configured in GitHub/Render settings (`.github/workflows/demo.yml`).
 - Optional local tunnel uses Cloudflare Tunnel through Docker Compose (`dev/docker-compose.yaml`); `dev/.env.example` documents local configuration keys. No populated `dev/.env` file is present.
@@ -105,4 +107,4 @@ last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
 
 ---
 
-*Integration audit: 2026-11-14*
+*Integration audit: 2026-11-15*

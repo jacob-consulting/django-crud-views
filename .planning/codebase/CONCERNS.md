@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 65be53c4ea87bd861b7039075b45bfe928ae7ac8
-last_mapped_at: 2026-11-14
+last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_at: 2026-11-15
 ---
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-14
+**Analysis Date:** 2026-11-15
 
 ## Tech Debt
 
@@ -31,6 +31,12 @@ last_mapped_at: 2026-11-14
 - Files: `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_db.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views_guardian/lib/ancestors.py`
 - Impact: changes can affect request ordering, database routing, visibility, permission decisions, and query count across endpoint types.
 - Fix approach: retain the opt-in bounded policy model and use focused `tests/test1/test_ancestor_*.py` coverage for query budgets, routing, Guardian, migration, and redirects when changing it.
+
+**Access-trace instrumentation spans authorization owners and a synthetic dispatcher:**
+- Issue: access tracing observes outcomes computed by core, ancestor, Resource, manage, and Guardian paths, then uses synthetic GET dispatch and a handler stub to report them. Ordinary request recording is opt-in; the command and manage form invoke tracing explicitly.
+- Files: `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/resource.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/ancestors.py`, `src/crud_views_guardian/lib/mixins.py`
+- Impact: adding or changing a gate can leave diagnostics incomplete if its actual decision is not recorded. Traces intentionally do not run the real handler and do not model arbitrary project middleware effects, external side effects, additional database routing, or host/header/body/method-specific rules; these are documented bounds, not defects.
+- Fix approach: keep reports tied to already-computed authorization results, preserve default-off behavior, and update `tests/test1/test_access_trace*.py` plus `tests/test1/test_access_trace_grid.py` for each supported owner. Expand simulation only for a concrete application need.
 
 **Assertions used for caller/configuration contracts:**
 - Issue: assertions enforce some public or configuration preconditions and disappear under optimized Python. Examples include permission-map lookup and workflow/Guardian configuration checks.
@@ -147,11 +153,6 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 
 ## Dependencies at Risk
 
-**JavaScript test environment differs from declared ranges:**
-- Risk: the phase 06.27 checks found installed Vitest 5.0.3 and jsdom 30.1.2 while `package.json` declares `^5.0.5` and `^30.1.3`; the Vite config also emits a CommonJS/ESM advisory under the future native config loader.
-- Impact: local JS test results use versions below the declared minimum and may not represent a clean install; current tests passed on the installed runtime.
-- Migration plan: reconcile lockfile/install state with declared ranges and assess the config advisory during environment maintenance; no production dependency or feature change is required by this evidence.
-
 **Django 4.2 support floor:**
 - Risk: Django 4.2 remains the declared package floor and is included in the supported-version test matrix.
 - Impact: the oldest compatibility line increases maintenance and release-verification work.
@@ -182,10 +183,16 @@ None independently confirmed.
 - Priority: Medium
 
 **Cross-environment and browser scope:**
-- What's not tested: phase 06.33 release evidence covers Python 3.12 with Django 4.2/5.2/6.0; seven declared Python/Django combinations lack prepared environments. Browser evidence covers Chromium 149 only; Firefox, WebKit, older engines, installed external themes, and assistive-technology behavior are not certified. In older engines, Presentation help using `::details-content` is available after expanding its disclosure, so the experience differs from current Chromium.
-- Files: `.planning/phases/06.33-structured-manage-page-366/deferred-items.md`, `.planning/phases/06.33-structured-manage-page-366/06.33-VERIFICATION.md`, `src/crud_views/static/crud_views/css/manage.css`, `tests/browser/manage-presentation.cjs`
-- Risk: compatibility or presentation differences outside the recorded environments remain unestablished; this is a verification boundary, not a confirmed defect. Phase 06.33 UAT passed, and its eight review findings are resolved.
+- What's not tested: phase 06.34 release evidence covers Python 3.12 with Django 4.2/5.2/6.0; seven supported runtime pairs lack prepared environments: Python 3.13 × Django 4.2/5.2/6.0, Python 3.14 × Django 5.2/6.0, and Python 3.15 × Django 5.2/6.0. Browser evidence for the access trace covers Chromium only; Firefox, WebKit, older engines, installed external themes, and assistive-technology behavior are not certified. Python 3.14/3.15 with Django 4.2 are unsupported pairs, not missing runs.
+- Files: `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`, `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-REGRESSION.md`, `tests/browser/access-trace.cjs`
+- Risk: behavior outside recorded runtime/browser environments remains unestablished; this is a verification boundary, not a confirmed defect. Phase 06.34 verification is passed at 36/36, and the human visual UAT is complete and passed in `06.34-UAT.md`. The verification report's original pending-human-review prose and final-acceptance summaries are historical snapshots.
 - Priority: Low
+
+**Access-trace project-specific dispatch behavior:**
+- What's not tested: arbitrary external middleware/service side effects, additional databases, host/header/body/method-specific rules, and behavior hidden inside custom super-call frames. The trace reports an observed custom-method boundary when it can identify one and marks inner ownership unknown.
+- Files: `src/crud_views/lib/access_trace_runner.py`, `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`, `docs/reference/manage.md`
+- Risk: consumers may overread a diagnostic as a universal prediction if these explicit simulation limits are omitted from downstream documentation.
+- Priority: Low; retain the documented exclusions.
 
 **Compact formset consumer extension hooks:**
 - What's not tested: arbitrary third-party widgets/templates, compact-column mutation in `add_fields()`, query-issuing constructors/`get_form_kwargs(None)`, and compact polymorphic forms are outside the documented support contract.
@@ -203,6 +210,8 @@ Phase 06.30 is verified at 54/54 must-haves in `.planning/phases/06.30-queryset-
 
 Phase 06.31's seeded example command had a critical rollback defect during review; the final implementation wraps user/group/permission setup and feature seeding in a transaction, and `.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-REVIEW-DISPOSITION.md` records the finding fixed with zero open findings. The incident is closed, not a current vulnerability. Phase 06.32's workflow variant/icon integration is verified at 7/7 must-haves in `.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-VERIFICATION.md`; its declared registry and asset prerequisites are intentional.
 
+Phase 06.34's access trace is verified at 36/36 in `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`; the current UAT record in `06.34-UAT.md` is complete with the human visual check passed. Earlier verification prose about pending human review and the review disposition's pending UI re-audit note predate refreshed captures and UAT; they are historical, not open findings. Seven unavailable runtime pairs remain an explicit coverage gap. The four code-review findings and six UI warnings are recorded as fixed; no active phase review blocker remains.
+
 ---
 
-*Concerns audit: 2026-11-14*
+*Concerns audit: 2026-11-15*
